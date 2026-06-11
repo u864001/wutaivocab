@@ -11,10 +11,7 @@
     </script>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.css">
-    <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
-
+    
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
@@ -22,7 +19,11 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.css">
+    <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
+    
     <style>
         .no-select { user-select: none; -webkit-user-select: none; }
         .touch-none { touch-action: none; -webkit-touch-callout: none; }
@@ -34,7 +35,20 @@
     
     <div id="root"></div>
 
-    <script type="text/babel" data-type="module" src="./js/App.js"></script>
+    <script type="text/babel">
+        window.addEventListener('touchmove', function(e) { if(e.target.closest('[draggable]')) { e.preventDefault(); } }, {passive: false});
+        MobileDragDrop.polyfill({ holdToDrag: 0 });
+    </script>
+
+    <script type="text/babel" src="js/audio.js"></script>
+    <script type="text/babel" src="js/helpers.js"></script>
+    
+    <script type="text/babel" src="js/Leaderboard.js"></script>
+    <script type="text/babel" src="js/MeteorGame.js"></script>
+    <script type="text/babel" src="js/SpellingGame.js"></script>
+    <script type="text/babel" src="js/StandardQuiz.js"></script>
+    <script type="text/babel" src="js/BattleGame.js"></script>
+    <script type="text/babel" src="js/App.js"></script>
 
 </body>
 </html>
