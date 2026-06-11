@@ -234,7 +234,7 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
          {/* 加入底部 QR Code 方便學生掃描 */}
          <footer className="mt-4 flex flex-col items-center justify-center text-slate-400 pb-8">
              <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-200 mb-2 transition-transform hover:scale-110">
-                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://u864001.github.io/vedaivocab/" alt="Game QR Code" className="w-20 h-20 opacity-80" />
+                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://u864001.github.io/wutaivocab/" alt="Game QR Code" className="w-20 h-20 opacity-80" />
              </div>
              <p className="text-xs font-bold"><i className="fa-solid fa-qrcode"></i> 掃描 QR Code 快速加入遊戲</p>
          </footer>
