@@ -210,7 +210,7 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
                     </button>
                 </div>
 
-                <h2 className="text-lg font-bold text-slate-700 mb-4 px-2">3. 傳統測驗與遊戲</h2>
+                <h2 className="text-lg font-bold text-slate-700 mb-4 px-2">4. 傳統測驗與遊戲</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <button onClick={() => onNavigate('spelling')} disabled={isQuizDisabled} className={`rounded-2xl p-4 border-2 flex flex-col items-center text-center gap-2 transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-white hover:border-pink-300'}`}>
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isQuizDisabled ? 'bg-slate-200' : 'bg-pink-100 text-pink-600'}`}><i className="fa-solid fa-puzzle-piece"></i></div>
