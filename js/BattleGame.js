@@ -14,13 +14,15 @@ function BattleGame({ onBack, wordDatabase, dbRef, user, settings }) {
                 if (data.status === 'playing' && view !== 'playing') setView('playing');
                 if (data.status === 'finished' && view !== 'result') setView('result');
                 
-                // ⚡ 優化：如果是房主，即時監聽全體玩家是否皆已陣亡
-                if (data.status === 'playing' && data.hostId === user.uid) {
-                    const players = Object.values(data.players || {});
-                    if (players.length > 0 && players.every(p => p.isDead)) {
-                        dbRef.collection('rooms').doc(doc.id).update({ status: 'finished' }).catch(()=>{});
-                    }
-                }
+                // ⚡ 優化：房主即時監聽「倖存者數量」，如果剩餘 1 人(含)以下，提早結束遊戲！
+             if (data.status === 'playing' && data.hostId === user.uid) {
+                 const players = Object.values(data.players || {});
+                 const aliveCount = players.filter(p => !p.isDead).length;
+                 // 多人對戰剩 1 人或全滅，或者單機測試全滅，就提早結算
+                 if ((players.length > 1 && aliveCount <= 1) || (players.length === 1 && aliveCount === 0)) {
+                     dbRef.collection('rooms').doc(doc.id).update({ status: 'finished' }).catch(()=>{});
+                 }
+             }
             } else {
                 alert('房間已關閉或解散！');
                 onBack();
@@ -160,11 +162,14 @@ function BattleGame({ onBack, wordDatabase, dbRef, user, settings }) {
     if (view === 'playing') return <BattleArena roomData={roomData} dbRef={dbRef} user={user} wordDatabase={wordDatabase} />;
     
     if (view === 'result') {
-        // ⚡ 依照賸餘血量與分數排序（0血的玩家會自然落在下方）
-        const ranks = Object.values(roomData.players || {}).sort((a, b) => {
-            if ((b.lives || 0) !== (a.lives || 0)) return (b.lives || 0) - (a.lives || 0);
-            return (b.score || 0) - (a.score || 0);
-        });
+     // ⚡ 依照總分排序：原本分數 + (剩餘愛心 x 10)
+     const ranks = Object.values(roomData.players || {}).map(p => ({
+         ...p,
+         finalScore: (p.score || 0) + ((p.lives || 0) * 10)
+     })).sort((a, b) => {
+         if (a.isDead !== b.isDead) return a.isDead ? 1 : -1; // 活著的依然優先排上面
+         return b.finalScore - a.finalScore; // 同樣生死狀態下，純比總分
+     });
         return (
             <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-900 animate-[fadeIn_0.5s_ease-out]">
                 <div className="bg-slate-800 rounded-3xl shadow-2xl p-8 max-w-md w-full border border-slate-700 text-center">
@@ -183,10 +188,13 @@ function BattleGame({ onBack, wordDatabase, dbRef, user, settings }) {
                                     <span>#{i+1}</span>
                                     <span className={p.isDead ? 'font-normal' : ''}>{p.name} {p.isDead && <span className="text-[10px] bg-red-950/80 text-red-400 border border-red-900 px-1.5 py-0.5 rounded ml-1 font-bold inline-block">OUT</span>}</span>
                                 </div>
-                                <div className="flex gap-4 text-sm font-mono">
-                                    <span className={p.isDead ? 'text-slate-600' : 'text-red-500'}><i className="fa-solid fa-heart"></i> {p.lives}</span>
-                                    <span className={p.isDead ? 'text-slate-600' : 'text-blue-400'}><i className="fa-solid fa-star"></i> {p.score}</span>
-                                </div>
+                                <div className="flex gap-2 sm:gap-4 text-xs sm:text-sm font-mono items-center">
+                                 <span className={p.isDead ? 'text-slate-600' : 'text-red-500'} title="愛心轉換分數"><i className="fa-solid fa-heart"></i> {p.lives}x10</span>
+                                 <span className={p.isDead ? 'text-slate-600' : 'text-slate-400'}>+</span>
+                                 <span className={p.isDead ? 'text-slate-600' : 'text-blue-400'} title="答題分數"><i className="fa-solid fa-star"></i> {p.score}</span>
+                                 <span className={p.isDead ? 'text-slate-600' : 'text-slate-400'}>=</span>
+                                 <span className={p.isDead ? 'text-slate-500 font-bold' : 'text-yellow-400 font-black text-base sm:text-lg'}>{p.finalScore}</span>
+                             </div>
                             </div>
                         ))}
                     </div>
