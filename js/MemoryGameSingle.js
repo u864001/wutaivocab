@@ -1,4 +1,4 @@
-// 明確宣告 React 核心 Hook 來源，防止 CDN 環境下編譯失聯
+// 明確宣告 React 核心 Hook 來源
 const { useState, useEffect, useMemo, useCallback } = React;
 
 function MemoryGameSingle({ onBack, settings, wordDatabase }) {
@@ -19,21 +19,23 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
     const initDeck = useCallback(() => {
         if (availableWords.length === 0) return;
 
-        // 1. 隨機洗牌
         const shuffledWords = [...availableWords].sort(() => Math.random() - 0.5);
-        
-        // 2. 動態決定要取幾組單字（最多 9 組，若題庫太少則全取）
         const pairCount = Math.min(shuffledWords.length, 9);
         const selectedWords = shuffledWords.slice(0, pairCount);
 
-        // 3. 製作單字卡 (張數 = pairCount * 2)
         let newCards = [];
         selectedWords.forEach(word => {
-            newCards.push({ id: `en-${word.english}`, matchId: word.english, text: word.english, type: 'en', isPowerUp: false });
-            newCards.push({ id: `zh-${word.english}`, matchId: word.english, text: word.chinese, type: 'zh', isPowerUp: false });
+            // 🌟 終極防護：自動相容多種常見的試算表欄位命名
+            const enText = word.en || word.english || word.word || "[英文遺失]";
+            const zhText = word.zh || word.chinese || word.translation || "[中文遺失]";
+            // 用英文單字當作配對的唯一 ID
+            const matchKey = enText; 
+
+            newCards.push({ id: `en-${matchKey}`, matchId: matchKey, text: enText, type: 'en', isPowerUp: false });
+            newCards.push({ id: `zh-${matchKey}`, matchId: matchKey, text: zhText, type: 'zh', isPowerUp: false });
         });
 
-        // 4. 固定隨機混入 2 張道具卡
+        // 固定隨機混入 2 張道具卡
         const powerUpTypes = [
             { icon: 'fa-gem', color: 'text-emerald-500', name: 'Bonus' },
             { icon: 'fa-bolt', color: 'text-yellow-400', name: 'Lightning' }
@@ -42,7 +44,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
             newCards.push({ id: `powerup-${idx}`, matchId: `powerup-${idx}`, icon: p.icon, color: p.color, text: p.name, type: 'powerup', isPowerUp: true });
         });
 
-        // 5. 全體大洗牌
         newCards = newCards.sort(() => Math.random() - 0.5);
         
         setCards(newCards);
@@ -51,16 +52,13 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
         setIsAnimating(false);
     }, [availableWords]);
 
-    // 初始載入與波段更新時發牌
     useEffect(() => {
         initDeck();
     }, [wave, initDeck]);
 
-    // 翻牌處理
     const handleCardClick = (index) => {
         if (isAnimating || flippedIndices.includes(index) || matchedIds.includes(cards[index].matchId)) return;
 
-        // 道具卡觸發邏輯
         if (cards[index].isPowerUp) {
             const powerId = cards[index].matchId;
             setMatchedIds(prev => {
@@ -80,7 +78,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
             const card1 = cards[newFlipped[0]];
             const card2 = cards[newFlipped[1]];
 
-            // 檢查配對：matchId 相同且一張英文一張中文
             if (card1.matchId === card2.matchId && card1.type !== card2.type) {
                 setTimeout(() => {
                     setMatchedIds(prev => {
@@ -93,7 +90,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
                     setIsAnimating(false);
                 }, 600);
             } else {
-                // 失敗蓋回
                 setTimeout(() => {
                     setFlippedIndices([]);
                     setIsAnimating(false);
@@ -102,9 +98,7 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
         }
     };
 
-    // 檢查是否完成當前波段
     const checkWaveComplete = (currentMatchedCount) => {
-        // 總目標數 = 實際單字組數 + 2張道具卡
         const totalUniqueItems = (cards.length - 2) / 2 + 2;
         if (currentMatchedCount >= totalUniqueItems && cards.length > 0) {
             setTimeout(() => {
@@ -123,12 +117,10 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
     }
 
     return (
-        <div className="max-w-5xl mx-auto w-full p-4 sm:p-6 flex flex-col h-screen select-none">
-            
-            {/* 一致性頂部導覽列 */}
+        <div className="max-w-5xl mx-auto w-full p-4 sm:p-6 flex flex-col h-screen select-none animate-[fadeIn_0.5s_ease-out]">
             <header className="shrink-0 flex justify-between items-center mb-4 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
                 <button onClick={onBack} className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold transition-colors flex items-center gap-2">
-                    <i className="fa-solid fa-arrow-left"></i> 返回上一層
+                    <i className="fa-solid fa-arrow-left"></i> 返回大廳
                 </button>
                 
                 <div className="flex items-center gap-4">
@@ -143,7 +135,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
                 </div>
             </header>
 
-            {/* 核心 4x5 網格對戰盤面 */}
             <div className="flex-1 min-h-0 flex items-center justify-center">
                 <div className="w-full h-full max-h-[75vh] grid grid-cols-5 grid-rows-4 gap-2 sm:gap-3 p-2 bg-slate-200 dark:bg-slate-950 rounded-3xl shadow-inner">
                     {cards.map((card, index) => {
@@ -161,14 +152,12 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
                                         : 'bg-blue-600 hover:bg-blue-500 shadow-[0_4px_0_rgb(29,78,216)] hover:-translate-y-0.5'
                                 } ${isMatched && !card.isPowerUp ? 'opacity-40 scale-95 border-emerald-500' : ''}`}
                             >
-                                {/* 牌背狀態 */}
                                 {!isFlipped && (
                                     <div className="text-blue-300/60">
                                         <i className="fa-solid fa-globe text-2xl sm:text-3xl animate-pulse"></i>
                                     </div>
                                 )}
 
-                                {/* 牌面內容 */}
                                 {isFlipped && (
                                     <div className="w-full text-center p-1">
                                         {card.isPowerUp ? (
@@ -188,7 +177,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
                                     </div>
                                 )}
 
-                                {/* 成功過關小勾勾 */}
                                 {isMatched && !card.isPowerUp && (
                                     <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-white text-[10px] border border-white shadow">
                                         <i className="fa-solid fa-check"></i>
