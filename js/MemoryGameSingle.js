@@ -1,3 +1,6 @@
+// 明確宣告 React 核心 Hook 來源，防止 CDN 環境下編譯失聯
+const { useState, useEffect, useMemo, useCallback } = React;
+
 function MemoryGameSingle({ onBack, settings, wordDatabase }) {
     const [cards, setCards] = useState([]);
     const [flippedIndices, setFlippedIndices] = useState([]);
@@ -8,6 +11,7 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
 
     // 從題庫中篩選出使用者選擇的範圍
     const availableWords = useMemo(() => {
+        if (!wordDatabase || !settings || !settings.selectedUnits) return [];
         return wordDatabase.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
     }, [settings, wordDatabase]);
 
@@ -15,18 +19,21 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
     const initDeck = useCallback(() => {
         if (availableWords.length === 0) return;
 
-        // 1. 隨機挑選 9 個單字
+        // 1. 隨機洗牌
         const shuffledWords = [...availableWords].sort(() => Math.random() - 0.5);
-        const selectedWords = shuffledWords.slice(0, 9);
+        
+        // 2. 動態決定要取幾組單字（最多 9 組，若題庫太少則全取）
+        const pairCount = Math.min(shuffledWords.length, 9);
+        const selectedWords = shuffledWords.slice(0, pairCount);
 
-        // 2. 製作 18 張單字卡 (9張英文 + 9張中文)
+        // 3. 製作單字卡 (張數 = pairCount * 2)
         let newCards = [];
         selectedWords.forEach(word => {
             newCards.push({ id: `en-${word.english}`, matchId: word.english, text: word.english, type: 'en', isPowerUp: false });
             newCards.push({ id: `zh-${word.english}`, matchId: word.english, text: word.chinese, type: 'zh', isPowerUp: false });
         });
 
-        // 3. 隨機挑選 2 張道具卡 (單機版先以加分卡代替測試)
+        // 4. 固定隨機混入 2 張道具卡
         const powerUpTypes = [
             { icon: 'fa-gem', color: 'text-emerald-500', name: 'Bonus' },
             { icon: 'fa-bolt', color: 'text-yellow-400', name: 'Lightning' }
@@ -35,8 +42,9 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
             newCards.push({ id: `powerup-${idx}`, matchId: `powerup-${idx}`, icon: p.icon, color: p.color, text: p.name, type: 'powerup', isPowerUp: true });
         });
 
-        // 4. 洗牌
+        // 5. 全體大洗牌
         newCards = newCards.sort(() => Math.random() - 0.5);
+        
         setCards(newCards);
         setFlippedIndices([]);
         setMatchedIds([]);
@@ -48,35 +56,36 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
         initDeck();
     }, [wave, initDeck]);
 
-    // 翻牌邏輯
+    // 翻牌處理
     const handleCardClick = (index) => {
-        // 防止重複點擊或動畫播放中點擊
         if (isAnimating || flippedIndices.includes(index) || matchedIds.includes(cards[index].matchId)) return;
 
-        // 如果是道具卡 (單機版直接觸發效果並消除)
+        // 道具卡觸發邏輯
         if (cards[index].isPowerUp) {
-            setMatchedIds(prev => [...prev, cards[index].matchId]);
-            setScore(prev => prev + 50); // 道具卡加分
-            checkWaveComplete(matchedIds.length + 1);
+            const powerId = cards[index].matchId;
+            setMatchedIds(prev => {
+                const newMatched = [...prev, powerId];
+                checkWaveComplete(newMatched.length);
+                return newMatched;
+            });
+            setScore(prev => prev + 50);
             return;
         }
 
         const newFlipped = [...flippedIndices, index];
         setFlippedIndices(newFlipped);
 
-        // 如果翻開了兩張牌
         if (newFlipped.length === 2) {
             setIsAnimating(true);
             const card1 = cards[newFlipped[0]];
             const card2 = cards[newFlipped[1]];
 
+            // 檢查配對：matchId 相同且一張英文一張中文
             if (card1.matchId === card2.matchId && card1.type !== card2.type) {
-                // 配對成功
                 setTimeout(() => {
                     setMatchedIds(prev => {
                         const newMatched = [...prev, card1.matchId];
-                        checkWaveComplete(newMatched.length + (cards.filter(c => c.isPowerUp).length)); 
-                        // 計算消除進度：配對成功的字組 + 已經用掉的道具卡
+                        checkWaveComplete(newMatched.length);
                         return newMatched;
                     });
                     setScore(prev => prev + 10);
@@ -84,7 +93,7 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
                     setIsAnimating(false);
                 }, 600);
             } else {
-                // 配對失敗，蓋回去
+                // 失敗蓋回
                 setTimeout(() => {
                     setFlippedIndices([]);
                     setIsAnimating(false);
@@ -95,27 +104,35 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
 
     // 檢查是否完成當前波段
     const checkWaveComplete = (currentMatchedCount) => {
-        // 9組單字 + 2張道具卡 = 11個獨立的 matchId
-        if (currentMatchedCount >= 11) {
+        // 總目標數 = 實際單字組數 + 2張道具卡
+        const totalUniqueItems = (cards.length - 2) / 2 + 2;
+        if (currentMatchedCount >= totalUniqueItems && cards.length > 0) {
             setTimeout(() => {
                 setWave(prev => prev + 1);
-            }, 1500);
+            }, 1200);
         }
     };
 
-    if (availableWords.length === 0) return <div className="text-center p-10">請先返回大廳選擇題庫！</div>;
+    if (availableWords.length === 0) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-900 text-white">
+                <p className="text-xl font-bold mb-4">⚠️ 請先返回外層大廳選擇有效的複習範圍！</p>
+                <button onClick={onBack} className="px-6 py-3 bg-blue-600 rounded-xl font-bold">返回大廳</button>
+            </div>
+        );
+    }
 
     return (
-        <div className="max-w-5xl mx-auto w-full p-4 sm:p-6 animate-[fadeIn_0.5s_ease-out] flex flex-col h-screen">
+        <div className="max-w-5xl mx-auto w-full p-4 sm:p-6 flex flex-col h-screen select-none">
             
-            {/* 標準化頂部導覽列 (採用一致性設計) */}
+            {/* 一致性頂部導覽列 */}
             <header className="shrink-0 flex justify-between items-center mb-4 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
                 <button onClick={onBack} className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold transition-colors flex items-center gap-2">
                     <i className="fa-solid fa-arrow-left"></i> 返回上一層
                 </button>
                 
                 <div className="flex items-center gap-4">
-                    <div className="text-center hidden sm:block">
+                    <div className="text-center">
                         <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Wave</span>
                         <span className="text-xl font-black text-blue-600 dark:text-blue-400">{wave}</span>
                     </div>
@@ -126,49 +143,55 @@ function MemoryGameSingle({ onBack, settings, wordDatabase }) {
                 </div>
             </header>
 
-            {/* 遊戲區域：強制 4x5 網格 */}
+            {/* 核心 4x5 網格對戰盤面 */}
             <div className="flex-1 min-h-0 flex items-center justify-center">
-                <div className="w-full h-full max-h-[80vh] grid grid-cols-5 grid-rows-4 gap-2 sm:gap-3 lg:gap-4 p-2 bg-slate-100 dark:bg-slate-900 rounded-3xl border-4 border-slate-200 dark:border-slate-700 shadow-inner">
+                <div className="w-full h-full max-h-[75vh] grid grid-cols-5 grid-rows-4 gap-2 sm:gap-3 p-2 bg-slate-200 dark:bg-slate-950 rounded-3xl shadow-inner">
                     {cards.map((card, index) => {
                         const isFlipped = flippedIndices.includes(index) || matchedIds.includes(card.matchId);
                         const isMatched = matchedIds.includes(card.matchId);
 
                         return (
                             <button
-                                key={index}
+                                key={card.id || index}
                                 onClick={() => handleCardClick(index)}
                                 disabled={isMatched}
-                                className={`relative w-full h-full rounded-xl sm:rounded-2xl flex items-center justify-center p-2 transition-all duration-300 transform perspective-1000 ${
-                                    isFlipped ? 'bg-white dark:bg-slate-800 shadow-md border-2 border-blue-200 dark:border-blue-800 rotate-0' : 'bg-blue-500 hover:bg-blue-400 shadow-[0_4px_0_rgb(29,78,216)] hover:-translate-y-1'
-                                } ${isMatched && !card.isPowerUp ? 'opacity-50 scale-95 border-emerald-400 dark:border-emerald-600' : ''}`}
+                                className={`relative w-full h-full rounded-xl sm:rounded-2xl flex items-center justify-center p-1 transition-all duration-300 ${
+                                    isFlipped 
+                                        ? 'bg-white dark:bg-slate-800 shadow-md border-2 border-blue-400' 
+                                        : 'bg-blue-600 hover:bg-blue-500 shadow-[0_4px_0_rgb(29,78,216)] hover:-translate-y-0.5'
+                                } ${isMatched && !card.isPowerUp ? 'opacity-40 scale-95 border-emerald-500' : ''}`}
                             >
-                                {/* 牌背 (未翻開) */}
+                                {/* 牌背狀態 */}
                                 {!isFlipped && (
-                                    <div className="text-blue-300 opacity-50">
-                                        <i className="fa-solid fa-planet-ringed text-3xl sm:text-4xl"></i>
+                                    <div className="text-blue-300/60">
+                                        <i className="fa-solid fa-globe text-2xl sm:text-3xl animate-pulse"></i>
                                     </div>
                                 )}
 
-                                {/* 牌面 (已翻開) */}
+                                {/* 牌面內容 */}
                                 {isFlipped && (
-                                    <div className="animate-[zoomIn_0.2s_ease-out] w-full text-center break-words">
+                                    <div className="w-full text-center p-1">
                                         {card.isPowerUp ? (
-                                            <div className="flex flex-col items-center gap-1 sm:gap-2">
-                                                <i className={`fa-solid ${card.icon} text-3xl sm:text-4xl ${card.color} animate-bounce`}></i>
-                                                <span className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-200">{card.text}</span>
+                                            <div className="flex flex-col items-center justify-center">
+                                                <i className={`fa-solid ${card.icon} text-2xl sm:text-3xl ${card.color} mb-1`}></i>
+                                                <span className="text-[10px] sm:text-xs font-black text-slate-700 dark:text-slate-200">{card.text}</span>
                                             </div>
                                         ) : (
-                                            <span className={`font-bold ${card.type === 'en' ? 'text-lg sm:text-xl lg:text-2xl text-blue-600 dark:text-blue-400' : 'text-base sm:text-lg lg:text-xl text-slate-700 dark:text-slate-200'}`}>
+                                            <span className={`font-bold block break-all ${
+                                                card.type === 'en' 
+                                                    ? 'text-sm sm:text-base md:text-lg text-blue-600 dark:text-blue-400 font-mono' 
+                                                    : 'text-xs sm:text-sm md:text-base text-slate-700 dark:text-slate-200'
+                                            }`}>
                                                 {card.text}
                                             </span>
                                         )}
                                     </div>
                                 )}
 
-                                {/* 配對成功的打勾特效 */}
+                                {/* 成功過關小勾勾 */}
                                 {isMatched && !card.isPowerUp && (
-                                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white border-2 border-white shadow-sm animate-[ping_0.5s_ease-out_1_reverse]">
-                                        <i className="fa-solid fa-check text-xs"></i>
+                                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center text-white text-[10px] border border-white shadow">
+                                        <i className="fa-solid fa-check"></i>
                                     </div>
                                 )}
                             </button>
