@@ -14,11 +14,10 @@ function BattleGame({ onBack, wordDatabase, dbRef, user, settings }) {
                 if (data.status === 'playing' && view !== 'playing') setView('playing');
                 if (data.status === 'finished' && view !== 'result') setView('result');
                 
-                // ⚡ 優化：房主即時監聽「倖存者數量」，如果剩餘 1 人(含)以下，提早結束遊戲！
+                // ⚡ 房主即時監聽「倖存者數量」，如果剩餘 1 人(含)以下，提早結束遊戲
              if (data.status === 'playing' && data.hostId === user.uid) {
                  const players = Object.values(data.players || {});
                  const aliveCount = players.filter(p => !p.isDead).length;
-                 // 多人對戰剩 1 人或全滅，或者單機測試全滅，就提早結算
                  if ((players.length > 1 && aliveCount <= 1) || (players.length === 1 && aliveCount === 0)) {
                      dbRef.collection('rooms').doc(doc.id).update({ status: 'finished' }).catch(()=>{});
                  }
@@ -162,13 +161,12 @@ function BattleGame({ onBack, wordDatabase, dbRef, user, settings }) {
     if (view === 'playing') return <BattleArena roomData={roomData} dbRef={dbRef} user={user} wordDatabase={wordDatabase} />;
     
     if (view === 'result') {
-     // ⚡ 依照總分排序：原本分數 + (剩餘愛心 x 10)
      const ranks = Object.values(roomData.players || {}).map(p => ({
          ...p,
          finalScore: (p.score || 0) + ((p.lives || 0) * 10)
      })).sort((a, b) => {
-         if (a.isDead !== b.isDead) return a.isDead ? 1 : -1; // 活著的依然優先排上面
-         return b.finalScore - a.finalScore; // 同樣生死狀態下，純比總分
+         if (a.isDead !== b.isDead) return a.isDead ? 1 : -1; 
+         return b.finalScore - a.finalScore; 
      });
         return (
             <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-900 animate-[fadeIn_0.5s_ease-out]">
@@ -179,7 +177,7 @@ function BattleGame({ onBack, wordDatabase, dbRef, user, settings }) {
                         {ranks.map((p, i) => (
                             <div key={i} className={`flex items-center justify-between p-4 rounded-xl font-bold border ${
                                 p.isDead 
-                                ? 'bg-slate-800/40 text-slate-500 border-slate-700/50' // ⚡ 提早陣亡：暗色字體呈現
+                                ? 'bg-slate-800/40 text-slate-500 border-slate-700/50' 
                                 : i === 0 
                                     ? 'bg-yellow-500/20 border-yellow-500 text-yellow-400' 
                                     : 'bg-slate-700 text-white border-slate-600'
@@ -223,7 +221,6 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
     const meteorRef = useRef(null);
     const containerRef = useRef(null);
 
-    // 題庫過濾
     useEffect(() => {
         const allowedUnits = roomData?.selectedUnits || [];
         let filtered = wordDatabase.filter(w => allowedUnits.includes(`${w.book}-${w.lesson}`));
@@ -233,14 +230,19 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
         setQueue(repeatedDb);
     }, [wordDatabase, roomData?.selectedUnits]);
 
-    // 地平線攻擊監聽
+    // ⚡ 修正：地平線防線機制大幅平衡調整
     useEffect(() => {
         if (!roomData?.players) return;
         let currentTotalAttacks = 0;
         Object.keys(roomData.players).forEach(uid => { if (uid !== user.uid) currentTotalAttacks += (roomData.players[uid].attacks || 0); });
         
         if (currentTotalAttacks > prevTotalAttacks && !myState.isDead) {
-            setMyState(prev => ({ ...prev, horizon: Math.min(3, prev.horizon + 1) }));
+            const incomingHits = currentTotalAttacks - prevTotalAttacks;
+            setMyState(prev => {
+                // 每次被攻擊上升 3%，最高絕對不超過畫面的 30%
+                const newHorizon = Math.min(30, prev.horizon + (3 * incomingHits));
+                return { ...prev, horizon: newHorizon };
+            });
             soundEngine.wrong(); 
             if(containerRef.current) {
                 containerRef.current.classList.add('animate-[shake_0.5s_ease-in-out]');
@@ -250,7 +252,6 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
         setPrevTotalAttacks(currentTotalAttacks);
     }, [roomData, user.uid, myState.isDead]);
 
-    // 突襲隕石監聽
     useEffect(() => {
         if (!roomData?.players) return;
         const currentAssaults = {};
@@ -284,7 +285,6 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
         setPrevAssaults(currentAssaults);
     }, [roomData, user.uid, myState.isDead]);
 
-    // 突襲時限監聽
     useEffect(() => {
         if (assaultMeteors.length === 0 || myState.isDead) return;
         let animationFrameId;
@@ -308,7 +308,6 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
         return () => cancelAnimationFrame(animationFrameId);
     }, [assaultMeteors, myState.isDead]);
 
-    // 狀態同步
     useEffect(() => {
         if (!dbRef || !user || !roomData?.id) return;
         dbRef.collection('rooms').doc(roomData.id).update({
@@ -316,7 +315,6 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
         }).catch(()=>{});
     }, [myState.score, myState.lives, myState.combo, myState.horizon, myState.attacks, myState.assaults, myState.isDead]);
 
-    // ⚡ 修正：計時器不再受 myState.isDead 限制，確保死後依然保持全局倒數
     useEffect(() => {
         if (timeLeft <= 0) return;
         const timer = setInterval(() => {
@@ -339,7 +337,8 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
 
     const spawnMeteor = (wordObj) => {
         const baseDuration = 6.5; 
-        const dropDuration = Math.max(2.2, baseDuration - (myState.horizon * 1.2)); 
+        // ⚡ 修正：隕石加速幅度下修，最高 30% 時，只會扣減 1.8 秒，保證仍有約 4.7 秒的反應時間
+        const dropDuration = Math.max(2.5, baseDuration - (myState.horizon * 0.06)); 
         setCurrentMeteor({ wordObj, x: 10 + Math.random() * 80, duration: dropDuration, isExploding: false, startTime: performance.now() });
         playAudio(wordObj.en);
     };
@@ -358,8 +357,8 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
             const elapsed = (now - currentMeteor.startTime) / 1000;
             const progress = Math.min(elapsed / currentMeteor.duration, 1);
             
-            // ⚡ 修正：由 100 改為 82，保證隕石底端碰觸到紅網立刻觸發爆炸扣心
-            const bottomLimit = 82 - (myState.horizon * 18); 
+            // ⚡ 修正：地平線高度完美對接隕石底端判定
+            const bottomLimit = 82 - myState.horizon; 
             const easeInProgress = progress * progress; 
             const currentY = -15 + (easeInProgress * (bottomLimit + 15)); 
 
@@ -388,7 +387,6 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
         setMyState(prev => { const newLives = prev.lives - 1; return { ...prev, lives: newLives, combo: 0, isDead: newLives <= 0 }; });
     };
 
-    // ⚡ 修正：全數採用 onClick 阻斷雙重觸發，徹底解決 Queue 佇列卡死與 Combo 錯亂問題
     const handleShoot = (opt) => {
         if (!currentMeteor || currentMeteor.isExploding || myState.isDead) return;
         
@@ -408,12 +406,13 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
                 
                 if (newCombo === 3) {
                     newAttacks += 1; 
-                    newHorizon = Math.max(0, prev.horizon - 1); 
+                    // ⚡ 修正：自我治癒量大幅提升，一口氣降低 12% (相當於抵銷 4 次攻擊)
+                    newHorizon = Math.max(0, prev.horizon - 12); 
                     extraScore = 5; 
                 } else if (newCombo === 5) {
                     newAssaults += 1; 
                     extraScore = 15; 
-                    newCombo = 0; // 5連擊完美歸零
+                    newCombo = 0; 
                 }
                 
                 return { ...prev, score: prev.score + 1 + speedBonus + extraScore, combo: newCombo, horizon: newHorizon, attacks: newAttacks, assaults: newAssaults };
@@ -453,7 +452,6 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
     return (
         <div className="flex-1 flex flex-col w-full h-[100dvh] bg-slate-900 overflow-hidden no-select font-sans relative">
             <header className="bg-slate-950 border-b border-slate-800 p-2 flex justify-around items-center shrink-0 z-40">
-                {/* ⚡ 加上房號看板，方便斷線者抬頭看 */}
                 <div className="flex flex-col items-center bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
                     <span className="text-white font-mono font-black text-xl leading-none">{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
                     <span className="text-yellow-400 font-black text-[10px] tracking-widest mt-1">ROOM {roomData?.code}</span>
@@ -466,7 +464,8 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
                             <span className="text-blue-400 text-xs font-bold"><i className="fa-solid fa-star"></i> {p.score}</span>
                         </div>
                         <div className="w-16 h-1.5 bg-slate-800 mt-1 rounded-full overflow-hidden border border-slate-700">
-                            <div className="h-full bg-gradient-to-r from-orange-500 to-red-600 transition-all duration-300" style={{ width: `${((p.horizon || 0) / 3) * 100}%` }}></div>
+                            {/* ⚡ 修正：頂部狀態列也以最高 30% 作為視覺滿載基準 */}
+                            <div className="h-full bg-gradient-to-r from-orange-500 to-red-600 transition-all duration-300" style={{ width: `${Math.min(100, ((p.horizon || 0) / 30) * 100)}%` }}></div>
                         </div>
                     </div>
                 ))}
@@ -474,7 +473,6 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
 
             <main ref={containerRef} className="flex-1 relative w-full stars-bg overflow-hidden transition-all duration-300">
                 
-                {/* 💥 渲染突襲隕石 💥 */}
                 {assaultMeteors.map(m => (
                     <div key={m.id} onClick={(e) => handleAssaultClick(m.id, e)} className="absolute z-50 flex flex-col items-center justify-center cursor-pointer pointer-events-auto" style={{ left: `${m.x}%`, top: `${m.y}%`, animation: 'growAssault 5s linear forwards' }}>
                         <div className="bg-red-600/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full mb-1 border border-red-800 whitespace-nowrap shadow-[0_0_15px_rgba(220,38,38,0.8)]">
@@ -490,10 +488,10 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
                     </div>
                 ))}
 
-                {/* 實體地平線過載電網 */}
-                <div className="absolute bottom-0 w-full bg-red-950/40 border-t-4 border-red-500 flex flex-col items-center justify-start transition-all duration-500 z-10 overflow-hidden" style={{ height: `${myState.horizon * 18}%` }}>
+                {/* ⚡ 修正：地平線完美結合 % 高度，不會破圖或蓋掉整個螢幕 */}
+                <div className="absolute bottom-0 w-full bg-red-950/40 border-t-4 border-red-500 flex flex-col items-center justify-start transition-all duration-500 z-10 overflow-hidden" style={{ height: `${myState.horizon}%` }}>
                     <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(239,68,68,0.1)_25%,transparent_25%,transparent_50%,rgba(239,68,68,0.1)_50%,rgba(239,68,68,0.1)_75%,transparent_75%,transparent)] bg-[length:40px_40px] animate-[pulse_1.5s_infinite]"></div>
-                    {myState.horizon > 0 && <div className="relative pt-1 text-red-400 font-black text-[10px] tracking-widest animate-pulse flex items-center gap-1"><i className="fa-solid fa-triangle-exclamation"></i> 防線縮短 LEVEL {myState.horizon}</div>}
+                    {myState.horizon > 0 && <div className="relative pt-1 text-red-400 font-black text-[10px] tracking-widest animate-pulse flex items-center gap-1"><i className="fa-solid fa-triangle-exclamation"></i> 防線縮短 危險等級 {Math.ceil(myState.horizon / 3)}</div>}
                 </div>
 
                 {myState.isDead && (
@@ -504,7 +502,6 @@ function BattleArena({ roomData, dbRef, user, wordDatabase }) {
                     </div>
                 )}
 
-                {/* 正常單字隕石 */}
                 {currentMeteor && !myState.isDead && (
                     <div ref={meteorRef} className="absolute transform -translate-x-1/2 flex flex-col items-center z-20 pointer-events-none" style={{ left: `${currentMeteor.x}%`, top: '-15%' }}>
                         {currentMeteor.isExploding ? (
