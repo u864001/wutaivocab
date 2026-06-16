@@ -43,18 +43,27 @@ function App() {
                 } catch (e) { console.warn("官方題庫讀取失敗", e); }
 
                 let customData = [];
-                // 🌟 加回正確的參數：gid=0&single=true&output=csv
                 const CUSTOM_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRMfkieB3uqgN4_yq7gAuamhO-fSAqBcH5qMbhq0ouiFgWqeizxLRKsW7mg-wJlL1TZ0sohpLz5zuA1/pub?gid=0&single=true&output=csv";
                 try {
                     const res2 = await fetch(`${CUSTOM_SHEET_CSV_URL}&t=${new Date().getTime()}`);
-                    if (res2.ok) {
-                        customData = parseCSV(await res2.text());
-                    } else {
-                        console.warn("客製化題庫狀態錯誤");
-                    }
+                    if (res2.ok) customData = parseCSV(await res2.text());
                 } catch (e) { console.warn("客製化題庫網路錯誤", e); }
 
-                const combinedData = [...officialData, ...customData];
+                let combinedData = [...officialData, ...customData];
+                
+                // 🌟 終極防呆正規化：確保 book 和 lesson 絕對有值，且解除數字限制
+                combinedData = combinedData.map(w => {
+                    const rawBook = w.book !== undefined ? w.book : (w.Book !== undefined ? w.Book : 'Custom');
+                    const rawLesson = w.lesson !== undefined ? w.lesson : (w.Lesson !== undefined ? w.Lesson : '1');
+                    return {
+                        ...w,
+                        book: String(rawBook).trim(),
+                        lesson: String(rawLesson).trim()
+                    };
+                });
+                // 濾除完全空白的無效行
+                combinedData = combinedData.filter(w => w.en || w.zh || w.english || w.chinese);
+
                 setWordDatabase(combinedData.length > 0 ? combinedData : DEFAULT_WORD_DATABASE);
             } catch (error) {
                 setWordDatabase(DEFAULT_WORD_DATABASE);
@@ -86,7 +95,8 @@ function App() {
     }, [wordDatabase]);
 
     const qualifyingBook = useMemo(() => {
-        const selectedBooks = [...new Set(settings.selectedUnits.map(u => parseInt(u.split('-')[0], 10)))];
+        // 🌟 核心修復：移除了原先致命的 parseInt，讓 "Custom" 等文字冊別也能通過判定！
+        const selectedBooks = [...new Set(settings.selectedUnits.map(u => u.split('-')[0]))];
         if (selectedBooks.length !== 1) return null; 
         const book = selectedBooks[0];
         const selectedUnitsCount = settings.selectedUnits.length;
@@ -272,6 +282,7 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
                                 <div className="flex items-center justify-between p-3 cursor-pointer" onClick={() => toggleBookExpand(book)}>
                                     <div className="flex items-center gap-3">
                                         <i className={`fa-solid fa-chevron-${isExp ? 'up' : 'down'} text-slate-400 w-4`}></i>
+                                        {/* 🌟 若是文字就直接印出文字，若是數字就加上「第X冊」 */}
                                         <h3 className="font-bold text-lg">{isNaN(book) ? book : `${t.bookPrefix}${book}${t.bookSuffix}`}</h3>
                                         {(isFull || isPart) && <span className="w-2 h-2 rounded-full bg-emerald-500"></span>}
                                     </div>
