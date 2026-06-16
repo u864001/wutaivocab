@@ -30,16 +30,33 @@ function App() {
         return () => unsubscribe();
     }, [user, dbRef]);
 
+    // 🚀 雙題庫合併讀取引擎
     useEffect(() => {
         const fetchWordData = async () => {
             try {
-                const response = await fetch(`${GOOGLE_SHEET_CSV_URL}&t=${new Date().getTime()}`);
-                if (!response.ok) throw new Error("Fetch failed");
-                const parsedData = parseCSV(await response.text());
-                setWordDatabase(parsedData.length > 0 ? parsedData : DEFAULT_WORD_DATABASE);
+                // 1. 抓取官方題庫
+                let officialData = [];
+                try {
+                    const res1 = await fetch(`${GOOGLE_SHEET_CSV_URL}&t=${new Date().getTime()}`);
+                    if (res1.ok) officialData = parseCSV(await res1.text());
+                } catch (e) { console.warn("官方題庫讀取失敗", e); }
+
+                // 2. 抓取 Custom 客製化題庫
+                let customData = [];
+                const CUSTOM_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRMfkieB3uqgN4_yq7gAuamhO-fSAqBcH5qMbhq0ouiFgWqeizxLRKsW7mg-wJlL1TZ0sohpLz5zuA1/pub?gid=0&single=true&output=csv";
+                try {
+                    const res2 = await fetch(`${CUSTOM_SHEET_CSV_URL}&t=${new Date().getTime()}`);
+                    if (res2.ok) customData = parseCSV(await res2.text());
+                } catch (e) { console.warn("客製化題庫讀取失敗", e); }
+
+                // 3. 合併資料並更新至系統
+                const combinedData = [...officialData, ...customData];
+                setWordDatabase(combinedData.length > 0 ? combinedData : DEFAULT_WORD_DATABASE);
             } catch (error) {
                 setWordDatabase(DEFAULT_WORD_DATABASE);
-            } finally { setIsLoading(false); }
+            } finally { 
+                setIsLoading(false); 
+            }
         };
         fetchWordData();
     }, []);
@@ -97,9 +114,9 @@ function App() {
             {currentView === 'leaderboard' && <LeaderboardView onBack={() => navigateTo('lobby')} leaderboards={leaderboards} groupedUnits={groupedUnits} />}
             {currentView === 'battle' && <BattleGame onBack={() => navigateTo('lobby')} wordDatabase={wordDatabase} dbRef={dbRef} user={user} settings={settings} />}
             
-            {/* 新增記憶翻牌遊戲路由 */}
+            {/* 記憶翻牌遊戲路由 - 已正式接上 onSaveScore 通道 */}
             {currentView === 'memory_lobby' && <MemoryLobby onNavigate={navigateTo} mode={gameMode} settings={settings} wordDatabase={wordDatabase} />}
-            {currentView === 'memory_single' && <MemoryGameSingle onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} />}
+            {currentView === 'memory_single' && <MemoryGameSingle onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} onSaveScore={handleSaveScore} />}
             {currentView === 'memory_multi' && <MemoryGameMulti onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} dbRef={dbRef} user={user} />}
         </div>
     );
@@ -148,13 +165,20 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
                         return (
                             <div key={book} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
                                 <div className="flex items-center justify-between p-3 cursor-pointer" onClick={() => toggleBookExpand(book)}>
-                                    <div className="flex items-center gap-3"><i className={`fa-solid fa-chevron-${isExp ? 'up' : 'down'} text-slate-400 w-4`}></i><h3 className="font-bold text-lg">第 {book} 冊</h3>{(isFull || isPart) && <span className="w-2 h-2 rounded-full bg-emerald-500"></span>}</div>
-                                    <button onClick={(e) => { e.stopPropagation(); selectAllInBook(book); }} className={`text-xs font-bold px-3 py-1.5 rounded-full ${isFull ? 'bg-indigo-100 text-indigo-700' : isPart ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-600'}`}>{isFull ? '取消全冊' : '全選此冊'}</button>
+                                    <div className="flex items-center gap-3">
+                                        <i className={`fa-solid fa-chevron-${isExp ? 'up' : 'down'} text-slate-400 w-4`}></i>
+                                        {/* 如果 Book 是文字(如 Custom/Holiday)，就直接顯示；若是數字，則顯示第 X 冊 */}
+                                        <h3 className="font-bold text-lg">{isNaN(book) ? book : `第 ${book} 冊`}</h3>
+                                        {(isFull || isPart) && <span className="w-2 h-2 rounded-full bg-emerald-500"></span>}
+                                    </div>
+                                    <button onClick={(e) => { e.stopPropagation(); selectAllInBook(book); }} className={`text-xs font-bold px-3 py-1.5 rounded-full ${isFull ? 'bg-indigo-100 text-indigo-700' : isPart ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-600'}`}>{isFull ? '取消全選' : '全選此範圍'}</button>
                                 </div>
                                 {isExp && (
                                     <div className="p-3 pt-0 border-t border-slate-100 flex flex-wrap gap-2">
-                                        {Array.from(groupedUnits[book]).sort((a,b) => getLessonWeight(a) - getLessonWeight(b)).map(lesson => (
-                                            <button key={`${book}-${lesson}`} onClick={() => toggleUnit(book, lesson)} className={`px-4 py-2 rounded-xl text-sm font-bold border-2 ${settings.selectedUnits.includes(`${book}-${lesson}`) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-600'}`}>{typeof lesson === 'number' ? `第 ${lesson} 課` : lesson}</button>
+                                        {Array.from(groupedUnits[book]).sort((a,b) => String(a).localeCompare(String(b), undefined, {numeric: true})).map(lesson => (
+                                            <button key={`${book}-${lesson}`} onClick={() => toggleUnit(book, lesson)} className={`px-4 py-2 rounded-xl text-sm font-bold border-2 ${settings.selectedUnits.includes(`${book}-${lesson}`) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-600'}`}>
+                                                {isNaN(lesson) ? lesson : `第 ${lesson} 課`}
+                                            </button>
                                         ))}
                                     </div>
                                 )}
@@ -195,7 +219,6 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
                         <i className="fa-solid fa-chevron-right text-slate-500 text-2xl group-hover:text-red-400 group-hover:translate-x-2 transition-transform hidden sm:block"></i>
                     </button>
 
-                    {/* 新增：記憶翻牌 多人連線入口 */}
                     <button onClick={() => onNavigate('memory_lobby', 'multi')} disabled={isQuizDisabled} className={`w-full mt-4 rounded-3xl p-6 sm:p-8 flex items-center justify-between transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-900 hover:shadow-2xl hover:shadow-blue-500/20 border border-slate-700 group'}`}>
                         <div className="flex items-center gap-6">
                             <div className="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all"><i className="fa-solid fa-clone text-3xl"></i></div>
@@ -222,7 +245,6 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
                         <div><h3 className="font-bold">看英文選中文</h3><p className="text-xs text-slate-300 mt-1">單機生存挑戰</p></div>
                     </button>
                     
-                    {/* 新增：記憶翻牌 單人模式入口 */}
                     <button onClick={() => onNavigate('memory_lobby', 'single')} disabled={isQuizDisabled} className={`rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-slate-800 border-slate-700 hover:border-cyan-400 hover:shadow-lg text-white'}`}>
                         <div className="w-14 h-14 rounded-full flex items-center justify-center bg-cyan-500 text-white"><i className="fa-solid fa-clone text-2xl"></i></div>
                         <div><h3 className="font-bold">記憶翻牌</h3><p className="text-xs text-slate-300 mt-1">單機配對練習</p></div>
