@@ -7,8 +7,6 @@ function App() {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [wordDatabase, setWordDatabase] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-
-    // 🌟 新增：全站語系狀態
     const [lang, setLang] = useState('zh-TW');
 
     const [leaderboards, setLeaderboards] = useState([]);
@@ -45,11 +43,16 @@ function App() {
                 } catch (e) { console.warn("官方題庫讀取失敗", e); }
 
                 let customData = [];
-                const CUSTOM_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRMfkieB3uqgN4_yq7gAuamhO-fSAqBcH5qMbhq0ouiFgWqeizxLRKsW7mg-wJlL1TZ0sohpLz5zuA1/pub?gid=0&single=true&output=csv";
+                // 🌟 修正：拿掉 gid=0，讓它自動抓取第一個分頁
+                const CUSTOM_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRMfkieB3uqgN4_yq7gAuamhO-fSAqBcH5qMbhq0ouiFgWqeizxLRKsW7mg-wJlL1TZ0sohpLz5zuA1/pub?output=csv";
                 try {
                     const res2 = await fetch(`${CUSTOM_SHEET_CSV_URL}&t=${new Date().getTime()}`);
-                    if (res2.ok) customData = parseCSV(await res2.text());
-                } catch (e) { console.warn("客製化題庫讀取失敗", e); }
+                    if (res2.ok) {
+                        customData = parseCSV(await res2.text());
+                    } else {
+                        console.warn("客製化題庫 404，請確認是否已點擊『檔案->共用->發布到網路』");
+                    }
+                } catch (e) { console.warn("客製化題庫網路錯誤", e); }
 
                 const combinedData = [...officialData, ...customData];
                 setWordDatabase(combinedData.length > 0 ? combinedData : DEFAULT_WORD_DATABASE);
@@ -98,7 +101,6 @@ function App() {
 
     return (
         <div className="min-h-screen flex flex-col pb-10">
-            {/* 🌟 頂部全站導覽列：加入雙語切換 */}
             <div className="max-w-4xl mx-auto w-full p-4 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     <span className="font-extrabold text-xl tracking-wider text-slate-800 dark:text-slate-100">霧臺國小</span>
@@ -117,15 +119,11 @@ function App() {
             </div>
 
             {currentView === 'lobby' && <Lobby onNavigate={navigateTo} settings={settings} setSettings={setSettings} wordDatabase={wordDatabase} groupedUnits={groupedUnits} qualifyingBook={qualifyingBook} lang={lang} />}
-            
-            {/* 舊遊戲維持原樣，未來再逐步雙語化 */}
             {['zh-en', 'en-zh', 'listening', 'hard'].includes(currentView) && <StandardQuiz mode={currentView} onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} qualifyingBook={qualifyingBook} onSaveScore={handleSaveScore} />}
             {currentView === 'spelling' && <SpellingGame onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} qualifyingBook={qualifyingBook} onSaveScore={handleSaveScore} />}
             {currentView === 'meteor' && <MeteorGame subMode={gameMode} onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} qualifyingBook={qualifyingBook} onSaveScore={handleSaveScore} />}
             {currentView === 'leaderboard' && <LeaderboardView onBack={() => navigateTo('lobby')} leaderboards={leaderboards} groupedUnits={groupedUnits} />}
             {currentView === 'battle' && <BattleGame onBack={() => navigateTo('lobby')} wordDatabase={wordDatabase} dbRef={dbRef} user={user} settings={settings} />}
-            
-            {/* 記憶翻牌區 */}
             {currentView === 'memory_lobby' && <MemoryLobby onNavigate={navigateTo} mode={gameMode} settings={settings} wordDatabase={wordDatabase} />}
             {currentView === 'memory_single' && <MemoryGameSingle onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} onSaveScore={handleSaveScore} />}
             {currentView === 'memory_multi' && <MemoryGameMulti onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} dbRef={dbRef} user={user} />}
@@ -134,7 +132,6 @@ function App() {
 }
 
 function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, qualifyingBook, lang }) {
-    // 🌟 大廳雙語字典
     const dict = {
         'zh-TW': {
             title: '霧臺國小 英文學習平台',
@@ -223,7 +220,6 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
         setSettings(prev => ({ ...prev, selectedUnits: allUnits.every(u => prev.selectedUnits.includes(u)) ? prev.selectedUnits.filter(u => !u.startsWith(`${book}-`)) : [...new Set([...prev.selectedUnits, ...allUnits])] }));
     };
 
-    // 🌟 修復 1：單元排序權重 (Starter -> 數字 -> Festival)
     const getLessonWeight = (lesson) => {
         const str = String(lesson).toLowerCase();
         if (str.includes('starter')) return -1;
@@ -232,7 +228,6 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
         return isNaN(num) ? 50 : num;
     };
 
-    // 🌟 修復 2：冊別排序 (數字冊排前面，字串冊排後面)
     const sortedBooks = Object.keys(groupedUnits).sort((a, b) => {
         const numA = parseInt(a);
         const numB = parseInt(b);
