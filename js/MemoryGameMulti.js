@@ -1,43 +1,129 @@
 const { useState, useEffect, useCallback, useRef, useMemo } = React;
 
 function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
-    const [gameState, setGameState] = useState(null);
+    const [view, setView] = useState('menu'); // 'menu' | 'waiting' | 'playing'
+    const [playerName, setPlayerName] = useState('');
+    const [roomCodeInput, setRoomCodeInput] = useState('');
+    const [roomData, setRoomData] = useState(null);
+    const [errorMsg, setErrorMsg] = useState('');
     const [lang, setLang] = useState('zh-TW');
-    const [localPeek, setLocalPeek] = useState([]); // 偷看卡本機狀態
-    const [localCoins, setLocalCoins] = useState(0); // 金幣雨本機計分
+    
+    const [localPeek, setLocalPeek] = useState([]); 
+    const [localCoins, setLocalCoins] = useState(0); 
 
     const dict = {
-        'zh-TW': { waiting: '等待房主發牌...', turn: '輪到 %team% 回合', locked: '已鎖定', frozen: '冰凍中', myTurn: '🔥 你的回合！' },
-        'en': { waiting: 'Waiting for host to deal...', turn: '%team%\'s turn', locked: 'Locked', frozen: 'Frozen', myTurn: '🔥 YOUR TURN!' }
+        'zh-TW': { 
+            title: '多人連線記憶翻牌', menuDesc: '2~4 隊區網連線，支援功能卡策略大亂鬥！',
+            namePlh: '輸入名字', codePlh: '4位數房號', createBtn: '創建房間', joinBtn: '加入/重連',
+            waiting: '等待對手與分隊...', roomCode: '房間代碼', joinedTitle: '已加入玩家與隊伍',
+            startBtn: '開始對戰！', waitHost: '等待房主開始...', leaveBtn: '離開房間',
+            turn: '輪到 %team% 回合', locked: '已鎖定', frozen: '冰凍中', myTurn: '🔥 你的回合！',
+            teamRed: '紅隊', teamBlue: '藍隊', teamGreen: '綠隊', teamYellow: '黃隊'
+        },
+        'en': { 
+            title: 'Multiplayer Memory', menuDesc: '2-4 teams LAN match with power-up cards!',
+            namePlh: 'Enter Name', codePlh: '4-digit Code', createBtn: 'Create Room', joinBtn: 'Join/Reconnect',
+            waiting: 'Waiting for players...', roomCode: 'Room Code', joinedTitle: 'Joined Players & Teams',
+            startBtn: 'Start Match!', waitHost: 'Waiting for host...', leaveBtn: 'Leave Room',
+            turn: '%team%\'s turn', locked: 'Locked', frozen: 'Frozen', myTurn: '🔥 YOUR TURN!',
+            teamRed: 'Red', teamBlue: 'Blue', teamGreen: 'Green', teamYellow: 'Yellow'
+        }
     };
     const t = dict[lang];
 
+    const teamColors = {
+        '紅隊': 'bg-red-600 border-red-400 text-white shadow-red-600/30',
+        '藍隊': 'bg-blue-600 border-blue-400 text-white shadow-blue-600/30',
+        '綠隊': 'bg-emerald-600 border-emerald-400 text-white shadow-emerald-600/30',
+        '黃隊': 'bg-amber-500 border-amber-400 text-yellow-950 shadow-amber-500/30',
+        'Red': 'bg-red-600 border-red-400 text-white shadow-red-600/30',
+        'Blue': 'bg-blue-600 border-blue-400 text-white shadow-blue-600/30',
+        'Green': 'bg-emerald-600 border-emerald-400 text-white shadow-emerald-600/30',
+        'Yellow': 'bg-amber-500 border-amber-400 text-yellow-950 shadow-amber-500/30'
+    };
+
+    // 1. 監聽房間狀態
     useEffect(() => {
-        if (!dbRef || !settings.roomId) return;
-        const unsubscribe = dbRef.collection('rooms').doc(settings.roomId).onSnapshot(doc => {
-            if (doc.exists) setGameState(doc.data());
+        if (!roomData?.id || !dbRef) return;
+        const unsubscribe = dbRef.collection('rooms').doc(roomData.id).onSnapshot(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                setRoomData({ id: doc.id, ...data });
+                if (data.status === 'playing' && view !== 'playing') setView('playing');
+                if (data.status === 'finished' && view !== 'result') setView('menu'); // 簡化結束回選單
+            } else {
+                alert('房間已解散！');
+                onBack();
+            }
         });
         return () => unsubscribe();
-    }, [dbRef, settings.roomId]);
+    }, [roomData?.id, dbRef, view, onBack]);
 
+    // 2. 收集金幣雨結算監聽
     useEffect(() => {
-        if (!gameState || !dbRef || !user) return;
-        if (gameState.hostId === user.uid && !gameState.board) {
-            initBoardAndSync();
-        }
-    }, [gameState?.hostId, gameState?.board]);
-
-    // 💰 監聽金幣雨結束，將本機收集的金幣「一次性」寫入 Firebase (保護額度)
-    useEffect(() => {
-        if (gameState && !gameState.activeEffect && localCoins > 0) {
-            dbRef.collection('rooms').doc(settings.roomId).update({
+        if (view === 'playing' && roomData && !roomData.activeEffect && localCoins > 0) {
+            dbRef.collection('rooms').doc(roomData.id).update({
                 [`players.${user.uid}.score`]: firebase.firestore.FieldValue.increment(localCoins)
             }).then(() => setLocalCoins(0));
         }
-    }, [gameState?.activeEffect, localCoins, dbRef, settings.roomId, user.uid]);
+    }, [roomData?.activeEffect, localCoins, view, dbRef, roomData?.id, user.uid]);
 
-    const initBoardAndSync = async () => {
-        const allowedUnits = gameState.selectedUnits || [];
+    // 3. 創建房間
+    const handleCreateRoom = async () => {
+        if (!playerName.trim()) return setErrorMsg('請輸入有效名字');
+        if (!settings?.selectedUnits || settings.selectedUnits.length === 0) return setErrorMsg('請先回到主畫面勾選對戰的單字範圍！');
+        
+        setErrorMsg('');
+        const newCode = Math.floor(1000 + Math.random() * 9000).toString();
+        const defaultTeam = lang === 'zh-TW' ? '紅隊' : 'Red';
+        const initialRoom = {
+            code: newCode, status: 'waiting', createdAt: Date.now(), hostId: user.uid,
+            selectedUnits: settings.selectedUnits,
+            players: { [user.uid]: { name: playerName.trim(), team: defaultTeam, isHost: true, score: 0, isFrozen: false } }
+        };
+        try {
+            const docRef = await dbRef.collection('rooms').add(initialRoom);
+            setRoomData({ id: docRef.id, ...initialRoom });
+            setView('waiting');
+        } catch (e) { setErrorMsg('建立房間失敗'); }
+    };
+
+    // 4. 加入房間
+    const handleJoinRoom = async () => {
+        if (!playerName.trim()) return setErrorMsg('請輸入有效名字');
+        if (roomCodeInput.length !== 4) return setErrorMsg('請輸入 4 位數房號');
+        setErrorMsg('');
+
+        try {
+            const snapshot = await dbRef.collection('rooms').where('code', '==', roomCodeInput).get();
+            if (snapshot.empty) return setErrorMsg('找不到該房間代碼');
+            const roomDoc = snapshot.docs[0];
+            const data = roomDoc.data();
+            
+            const defaultTeam = lang === 'zh-TW' ? '藍隊' : 'Blue';
+            if (data.status === 'playing') return setErrorMsg('對戰已開始，無法加入');
+
+            await dbRef.collection('rooms').doc(roomDoc.id).update({
+                [`players.${user.uid}`]: { name: playerName.trim(), team: defaultTeam, isHost: false, score: 0, isFrozen: false }
+            });
+            setRoomData({ id: roomDoc.id, ...data });
+            setView('waiting');
+        } catch (e) { setErrorMsg('加入房間失敗'); }
+    };
+
+    // 5. 在等待室更換隊伍顏色
+    const handleSelectTeam = async (teamName) => {
+        if (!roomData || !user) return;
+        await dbRef.collection('rooms').doc(roomData.id).update({
+            [`players.${user.uid}.team`]: teamName
+        });
+    };
+
+    // 6. 房主正式啟動遊戲：進行發牌與初始化
+    const handleStartGame = async () => {
+        if (roomData.hostId !== user.uid) return;
+
+        const allowedUnits = roomData.selectedUnits || [];
         let filteredWords = wordDatabase.filter(w => allowedUnits.includes(`${w.book}-${w.lesson}`));
         if (filteredWords.length === 0) filteredWords = wordDatabase;
         
@@ -66,37 +152,49 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         });
 
         newBoard = newBoard.sort(() => 0.5 - Math.random());
-        const teams = [...new Set(Object.values(gameState.players).map(p => p.team))].sort();
+        const teams = [...new Set(Object.values(roomData.players).map(p => p.team))].sort();
 
-        await dbRef.collection('rooms').doc(settings.roomId).update({
-            board: newBoard, turnOrder: teams, currentTeamIndex: 0, currentTeam: teams[0],
-            turnState: { flippedIndices: [], comboCount: 0, isAnimating: false }, activeEffect: null 
+        await dbRef.collection('rooms').doc(roomData.id).update({
+            status: 'playing',
+            board: newBoard,
+            turnOrder: teams,
+            currentTeamIndex: 0,
+            currentTeam: teams[0],
+            turnState: { flippedIndices: [], comboCount: 0, isAnimating: false },
+            activeEffect: null 
         });
     };
 
-    const isMyTurn = () => {
-        if (!gameState || !gameState.players[user.uid]) return false;
-        return gameState.currentTeam === gameState.players[user.uid].team;
+    const handleLeaveRoom = async () => {
+        if (roomData?.id && dbRef && user) {
+            if (roomData.hostId === user.uid) await dbRef.collection('rooms').doc(roomData.id).delete();
+            else await dbRef.collection('rooms').doc(roomData.id).update({ [`players.${user.uid}`]: firebase.firestore.FieldValue.delete() });
+        }
+        onBack();
     };
 
-    const myTeam = gameState?.players?.[user?.uid]?.team;
+    const isMyTurn = () => {
+        if (!roomData || !roomData.players?.[user.uid]) return false;
+        return roomData.currentTeam === roomData.players[user.uid].team;
+    };
 
+    const myTeam = roomData?.players?.[user?.uid]?.team;
+
+    // 7. 遊戲核心點擊判定
     const handleCardClick = async (index) => {
-        if (!gameState || !gameState.board || !isMyTurn()) return;
-        const roomRef = dbRef.collection('rooms').doc(settings.roomId);
-        let newBoard = [...gameState.board];
+        if (!roomData || !roomData.board || !isMyTurn()) return;
+        const roomRef = dbRef.collection('rooms').doc(roomData.id);
+        let newBoard = [...roomData.board];
         const card = newBoard[index];
 
-        // 🌟 處理偷看與上鎖
-        if (gameState.activeEffect && gameState.activeEffect.triggerTeam === myTeam) {
+        if (roomData.activeEffect && roomData.activeEffect.triggerTeam === myTeam) {
             if (card.status !== 'hidden' || card.isPowerUp) return; 
-
-            if (gameState.activeEffect.cardId === 'powerup_lock') {
+            if (roomData.activeEffect.cardId === 'powerup_lock') {
                 newBoard[index].lockedBy = myTeam;
                 soundEngine.play('click'); 
                 await roomRef.update({ board: newBoard, activeEffect: null });
             } 
-            else if (gameState.activeEffect.cardId === 'powerup_peek') {
+            else if (roomData.activeEffect.cardId === 'powerup_peek') {
                 setLocalPeek(prev => [...prev, index]);
                 soundEngine.play('laser');
                 if (localPeek.length === 1) {
@@ -107,10 +205,10 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
             return;
         }
 
-        if (gameState.turnState.isAnimating || card.status === 'matched' || gameState.turnState.flippedIndices.includes(index) || gameState.activeEffect) return;
+        if (roomData.turnState.isAnimating || card.status === 'matched' || roomData.turnState.flippedIndices.includes(index) || roomData.activeEffect) return;
         if (card.lockedBy && card.lockedBy !== myTeam) return;
 
-        let newTurnState = { ...gameState.turnState };
+        let newTurnState = { ...roomData.turnState };
 
         if (card.isPowerUp) {
             newBoard[index].status = 'matched';
@@ -138,7 +236,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
             const isMatch = (newBoard[idx1].matchId === newBoard[idx2].matchId) && (newBoard[idx1].type !== newBoard[idx2].type);
 
             setTimeout(async () => {
-                let nextTeamIndex = gameState.currentTeamIndex;
+                let nextTeamIndex = roomData.currentTeamIndex;
                 let nextComboCount = newTurnState.comboCount;
 
                 if (isMatch) {
@@ -146,34 +244,55 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                     newBoard[idx2].status = 'matched';
                     soundEngine.play('correct');
                     
-                    const updatedPlayers = { ...gameState.players };
+                    const updatedPlayers = { ...roomData.players };
                     Object.keys(updatedPlayers).forEach(uid => {
                         if (updatedPlayers[uid].team === myTeam) updatedPlayers[uid].score += 10;
                     });
 
                     if (nextComboCount < 1) nextComboCount += 1;
                     else {
-                        nextTeamIndex = (gameState.currentTeamIndex + 1) % gameState.turnOrder.length;
+                        nextTeamIndex = (roomData.currentTeamIndex + 1) % roomData.turnOrder.length;
                         nextComboCount = 0;
                     }
 
-                    await roomRef.update({ board: newBoard, players: updatedPlayers, currentTeamIndex: nextTeamIndex, currentTeam: gameState.turnOrder[nextTeamIndex], turnState: { flippedIndices: [], comboCount: nextComboCount, isAnimating: false }});
+                    // 檢查下一隊是否被冰凍
+                    let checkNextTeam = roomData.turnOrder[nextTeamIndex];
+                    let isNextFrozen = Object.values(updatedPlayers).some(p => p.team === checkNextTeam && p.isFrozen);
+                    if (isNextFrozen) {
+                        // 解凍並跳過
+                        Object.keys(updatedPlayers).forEach(uid => {
+                            if (updatedPlayers[uid].team === checkNextTeam) updatedPlayers[uid].isFrozen = false;
+                        });
+                        nextTeamIndex = (nextTeamIndex + 1) % roomData.turnOrder.length;
+                    }
+
+                    await roomRef.update({ board: newBoard, players: updatedPlayers, currentTeamIndex: nextTeamIndex, currentTeam: roomData.turnOrder[nextTeamIndex], turnState: { flippedIndices: [], comboCount: nextComboCount, isAnimating: false }});
                 } else {
                     soundEngine.play('wrong');
-                    nextTeamIndex = (gameState.currentTeamIndex + 1) % gameState.turnOrder.length;
-                    await roomRef.update({ currentTeamIndex: nextTeamIndex, currentTeam: gameState.turnOrder[nextTeamIndex], turnState: { flippedIndices: [], comboCount: 0, isAnimating: false }});
+                    nextTeamIndex = (roomData.currentTeamIndex + 1) % roomData.turnOrder.length;
+                    
+                    const updatedPlayers = { ...roomData.players };
+                    let checkNextTeam = roomData.turnOrder[nextTeamIndex];
+                    let isNextFrozen = Object.values(updatedPlayers).some(p => p.team === checkNextTeam && p.isFrozen);
+                    if (isNextFrozen) {
+                        Object.keys(updatedPlayers).forEach(uid => {
+                            if (updatedPlayers[uid].team === checkNextTeam) updatedPlayers[uid].isFrozen = false;
+                        });
+                        nextTeamIndex = (nextTeamIndex + 1) % roomData.turnOrder.length;
+                    }
+
+                    await roomRef.update({ players: updatedPlayers, currentTeamIndex: nextTeamIndex, currentTeam: roomData.turnOrder[nextTeamIndex], turnState: { flippedIndices: [], comboCount: 0, isAnimating: false }});
                 }
             }, 1200);
         }
     };
 
-    // --- 🌟 處理所有卡片的最終結算與特效派發 ---
     const resolveEffect = async (targetTeam = null) => {
-        if (!gameState || !gameState.activeEffect) return;
-        const roomRef = dbRef.collection('rooms').doc(settings.roomId);
-        const effect = gameState.activeEffect;
-        let updatedPlayers = { ...gameState.players };
-        let newBoard = [...gameState.board];
+        if (!roomData || !roomData.activeEffect) return;
+        const roomRef = dbRef.collection('rooms').doc(roomData.id);
+        const effect = roomData.activeEffect;
+        let updatedPlayers = { ...roomData.players };
+        let newBoard = [...roomData.board];
 
         if (effect.cardId === 'powerup_bonus') {
             Object.keys(updatedPlayers).forEach(uid => {
@@ -194,7 +313,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
             await roomRef.update({ players: updatedPlayers, activeEffect: null });
         }
         else if (effect.cardId === 'powerup_lightning') {
-            // 自動尋找一對尚未翻開的牌
             let enIndex = newBoard.findIndex(c => c.status === 'hidden' && c.type === 'en' && !c.isPowerUp);
             if (enIndex !== -1) {
                 let zhIndex = newBoard.findIndex(c => c.status === 'hidden' && c.type === 'zh' && c.matchId === newBoard[enIndex].matchId);
@@ -209,55 +327,112 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
             await roomRef.update({ board: newBoard, players: updatedPlayers, activeEffect: null });
         }
         else if (effect.cardId === 'powerup_radar') {
-            // 切換為雷達模式
             await roomRef.update({ activeEffect: { ...effect, step: 'radar_active' } });
-            // 房主負責計時關閉，避免多台裝置重複執行
-            if (gameState.hostId === user.uid) {
+            if (roomData.hostId === user.uid) {
                 setTimeout(async () => { await roomRef.update({ activeEffect: null }); }, 3000);
             }
         }
         else if (effect.cardId === 'powerup_coin') {
-            // 切換為金幣雨模式
             await roomRef.update({ activeEffect: { ...effect, step: 'coin_raining' } });
-            if (gameState.hostId === user.uid) {
+            if (roomData.hostId === user.uid) {
                 setTimeout(async () => { await roomRef.update({ activeEffect: null }); }, 4000);
             }
         }
     };
 
-    if (!gameState || !gameState.board) {
+    // --- 🎮 視窗渲染 A：主選單輸入名稱與房號 ---
+    if (view === 'menu') return (
+        <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-900 text-white animate-[fadeIn_0.4s_ease-out]">
+            <div className="bg-slate-800 rounded-3xl shadow-2xl p-8 max-w-md w-full border border-slate-700 text-center">
+                <div className="w-16 h-16 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i className="fa-solid fa-clone text-3xl"></i>
+                </div>
+                <h2 className="text-3xl font-black">{t.title}</h2>
+                <p className="text-slate-400 text-sm mt-2 mb-6">{t.menuDesc}</p>
+                <div className="space-y-4">
+                    <input type="text" value={playerName} onChange={e=>setPlayerName(e.target.value)} placeholder={t.namePlh} className="w-full p-4 rounded-xl bg-slate-900 border-2 border-slate-600 text-white font-bold text-center focus:border-blue-500 outline-none" />
+                    {errorMsg && <p className="text-red-400 font-bold text-sm">{errorMsg}</p>}
+                    <div className="grid grid-cols-2 gap-4 pt-2">
+                        <button onClick={handleCreateRoom} className="p-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black shadow-lg transition-transform hover:scale-105">{t.createBtn}</button>
+                        <div className="flex flex-col gap-2">
+                            <input type="text" maxLength="4" value={roomCodeInput} onChange={e=>setRoomCodeInput(e.target.value.replace(/\D/g, ''))} placeholder={t.codePlh} className="w-full p-3 rounded-xl bg-slate-900 border-2 border-slate-600 text-white font-black text-center tracking-widest outline-none focus:border-indigo-500" />
+                            <button onClick={handleJoinRoom} className="p-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black shadow-lg transition-transform hover:scale-105">{t.joinBtn}</button>
+                        </div>
+                    </div>
+                    <button onClick={onBack} className="w-full mt-4 text-slate-500 hover:text-slate-300 font-bold">返回大廳</button>
+                </div>
+            </div>
+        </div>
+    );
+
+    // --- 🎮 視窗渲染 B：多隊分色分組等待室 ---
+    if (view === 'waiting') {
+        const playersList = roomData?.players ? Object.values(roomData.players) : [];
+        const isHost = roomData?.hostId === user?.uid;
+        const availableTeams = lang === 'zh-TW' ? ['紅隊', '藍隊', '綠隊', '黃隊'] : ['Red', 'Blue', 'Green', 'Yellow'];
+        
         return (
-            <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-900 text-white">
-                <i className="fa-solid fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i><p className="font-bold">{t.waiting}</p>
+            <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-900 text-white animate-[fadeIn_0.4s_ease-out]">
+                <div className="bg-slate-800 rounded-3xl shadow-2xl p-6 max-w-lg w-full border border-slate-700 text-center">
+                    <span className="text-sm font-bold text-slate-400">{t.roomCode}</span>
+                    <div className="text-5xl font-black text-yellow-400 tracking-[0.2em] mb-6 bg-slate-900 py-3 rounded-xl border border-slate-700 shadow-inner">{roomData?.code}</div>
+                    
+                    <h3 className="text-left font-bold text-slate-400 mb-2">1. 選擇你的陣營顏色</h3>
+                    <div className="grid grid-cols-4 gap-2 mb-6">
+                        {availableTeams.map(team => (
+                            <button key={team} onClick={() => handleSelectTeam(team)} className={`p-3 rounded-xl font-black border-2 transition-all ${myTeam === team ? teamColors[team] + ' scale-105 border-white' : 'bg-slate-900 border-slate-700 opacity-60'}`}>
+                                {team}
+                            </button>
+                        ))}
+                    </div>
+
+                    <h3 className="text-left font-bold text-slate-400 mb-2">{t.joinedTitle} ({playersList.length}/4)</h3>
+                    <div className="space-y-2 mb-6 min-h-[140px]">
+                        {playersList.map((p, i) => (
+                            <div key={i} className="flex items-center justify-between bg-slate-700 p-3 rounded-xl border border-slate-600">
+                                <span className="font-bold text-white">{p.name}</span>
+                                <span className={`px-4 py-1 rounded-full font-black text-sm shadow-md ${teamColors[p.team]}`}>{p.team}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {isHost ? (
+                        <button onClick={handleStartGame} disabled={playersList.length < 2} className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-500 text-white rounded-xl font-black text-xl shadow-lg hover:scale-105 disabled:opacity-50 transition-all">
+                            {playersList.length < 2 ? '等待對手加入陣營...' : t.startBtn}
+                        </button>
+                    ) : (
+                        <div className="w-full py-4 bg-slate-700 text-slate-400 rounded-xl font-black text-xl flex items-center justify-center gap-3"><i className="fa-solid fa-spinner fa-spin"></i> {t.waitHost}</div>
+                    )}
+                    <button onClick={handleLeaveRoom} className="w-full mt-4 text-slate-500 hover:text-red-400 font-bold">{t.leaveBtn}</button>
+                </div>
             </div>
         );
     }
 
-    const isTargetingBoard = gameState.activeEffect && gameState.activeEffect.triggerTeam === myTeam && gameState.activeEffect.type === 'interactive_board';
-    const isRadarActive = gameState.activeEffect?.cardId === 'powerup_radar' && gameState.activeEffect?.step === 'radar_active';
-    const isCoinRaining = gameState.activeEffect?.cardId === 'powerup_coin' && gameState.activeEffect?.step === 'coin_raining';
-    
-    // 金幣雨的隨機掉落資料 (只有發動隊伍需要算)
+    // --- 🎮 視窗渲染 C：正式記憶翻牌遊戲戰場 (Phase 4 特效完整包) ---
+    const isTargetingBoard = roomData.activeEffect && roomData.activeEffect.triggerTeam === myTeam && roomData.activeEffect.type === 'interactive_board';
+    const isRadarActive = roomData.activeEffect?.cardId === 'powerup_radar' && roomData.activeEffect?.step === 'radar_active';
+    const isCoinRaining = roomData.activeEffect?.cardId === 'powerup_coin' && roomData.activeEffect?.step === 'coin_raining';
     const coins = Array.from({length: 15}).map((_,i) => ({ id: i, left: Math.random()*90, delay: Math.random()*2, duration: 1.5 + Math.random()*1.5 }));
 
     return (
-        <div className="flex-1 flex flex-col p-4 bg-slate-900 overflow-hidden select-none">
+        <div className="flex-1 flex flex-col p-4 bg-slate-900 overflow-hidden select-none text-white animate-[fadeIn_0.5s_ease-out]">
             <header className="flex justify-between items-center mb-4 bg-slate-800 p-4 rounded-2xl shadow-lg border border-slate-700 shrink-0 relative z-20">
-                <button onClick={onBack} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-white font-bold transition-colors">
+                <button onClick={handleLeaveRoom} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-white font-bold transition-colors">
                     <i className="fa-solid fa-arrow-left"></i>
                 </button>
                 <div className="text-center flex-1">
                     <h2 className={`text-2xl font-black ${isMyTurn() ? 'text-yellow-400 animate-pulse' : 'text-slate-300'}`}>
-                        {isMyTurn() ? t.myTurn : t.turn.replace('%team%', gameState.currentTeam)}
+                        {isMyTurn() ? t.myTurn : t.turn.replace('%team%', roomData.currentTeam)}
                     </h2>
                     <p className="text-sm font-bold text-slate-500">
-                        {isMyTurn() && gameState.turnState.comboCount > 0 && !gameState.activeEffect ? "🌟 COMBO! 再翻一次" : ""}
+                        {isMyTurn() && roomData.turnState.comboCount > 0 && !roomData.activeEffect ? "🌟 COMBO! 再翻一次" : ""}
                     </p>
                 </div>
                 <div className="text-right bg-slate-900 px-4 py-2 rounded-xl border border-slate-700">
                     <span className="text-xs text-slate-500 font-bold block">本隊分數</span>
                     <span className="text-xl font-black text-emerald-400">
-                        {gameState.players[user.uid]?.score || 0}
+                        {roomData.players[user.uid]?.score || 0}
                         {localCoins > 0 && <span className="text-yellow-400 text-sm ml-1 animate-bounce">+{localCoins}</span>}
                     </span>
                 </div>
@@ -265,28 +440,26 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
 
             <main className="flex-1 min-h-0 flex items-center justify-center relative z-10">
                 <div className={`w-full h-full max-h-[80vh] grid grid-cols-5 sm:grid-cols-8 gap-1.5 sm:gap-2 p-2 rounded-3xl border transition-colors ${isTargetingBoard ? 'bg-purple-950/40 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-slate-950 border-slate-800'}`}>
-                    {gameState.board.map((card, index) => {
+                    {roomData.board.map((card, index) => {
                         const isPermanentlyFlipped = card.status === 'matched';
-                        const isTemporarilyFlipped = gameState.turnState.flippedIndices.includes(index);
+                        const isTemporarilyFlipped = roomData.turnState.flippedIndices.includes(index);
                         const isPeeked = localPeek.includes(index); 
                         const isFlipped = isPermanentlyFlipped || isTemporarilyFlipped || isPeeked;
                         const isLocked = card.lockedBy !== null;
 
                         const isTargetable = isTargetingBoard && !isPermanentlyFlipped && !card.isPowerUp;
                         const targetClass = isTargetable ? 'ring-2 ring-purple-400 animate-pulse cursor-crosshair' : (isTargetingBoard ? 'opacity-30' : '');
-                        
-                        // 📡 雷達發動時，未翻開的牌會變為半透明字體
                         const showRadarText = isRadarActive && !isFlipped && !card.isPowerUp;
 
                         return (
                             <button
                                 key={index}
                                 onClick={() => handleCardClick(index)}
-                                disabled={isPermanentlyFlipped || (gameState.turnState.isAnimating && !isTargetingBoard) || (!isMyTurn() && !isTargetingBoard)}
+                                disabled={isPermanentlyFlipped || (roomData.turnState.isAnimating && !isTargetingBoard) || (!isMyTurn() && !isTargetingBoard)}
                                 className={`relative w-full h-full rounded-lg sm:rounded-xl flex flex-col items-center justify-center p-1 transition-all duration-300 ${
                                     isFlipped || showRadarText
                                         ? 'bg-slate-800 border border-slate-600' 
-                                        : 'bg-gradient-to-b from-blue-600 to-blue-800 shadow-md border border-blue-400/30'
+                                        : 'bg-gradient-to-b from-blue-600 to-blue-800 hover:from-blue-500 shadow-md border border-blue-400/30'
                                 } ${isPermanentlyFlipped ? 'opacity-20 pointer-events-none' : ''} ${targetClass}`}
                             >
                                 {!isFlipped && !isLocked && !showRadarText && <i className="fa-solid fa-globe text-blue-300/40 text-xl sm:text-2xl"></i>}
@@ -304,18 +477,18 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                     })}
                 </div>
 
-                {/* --- 💰 金幣雨圖層 (只有觸發隊伍能點擊) --- */}
+                {/* --- 金幣雨圖層 --- */}
                 {isCoinRaining && (
                     <div className="absolute inset-0 pointer-events-none z-40 overflow-hidden rounded-3xl">
                         {coins.map(c => (
                             <div key={c.id} 
-                                className={`absolute text-yellow-400 text-4xl animate-[fall_linear_forwards] ${gameState.activeEffect.triggerTeam === myTeam ? 'pointer-events-auto cursor-pointer hover:scale-125' : 'opacity-50'}`}
+                                className={`absolute text-yellow-400 text-4xl animate-[fall_linear_forwards] ${roomData.activeEffect.triggerTeam === myTeam ? 'pointer-events-auto cursor-pointer hover:scale-125' : 'opacity-50'}`}
                                 style={{ left: `${c.left}%`, top: '-10%', animationDuration: `${c.duration}s`, animationDelay: `${c.delay}s` }}
                                 onPointerDown={(e) => { 
                                     e.target.style.display='none'; 
-                                    if(gameState.activeEffect.triggerTeam === myTeam) {
+                                    if(roomData.activeEffect.triggerTeam === myTeam) {
                                         soundEngine.play('coin');
-                                        setLocalCoins(prev => prev + 2); // 每顆金幣 2 分
+                                        setLocalCoins(prev => prev + 2);
                                     }
                                 }}
                             >
@@ -326,23 +499,23 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                 )}
 
                 {/* --- 互動卡片發動 UI (Overlay) --- */}
-                {gameState.activeEffect && gameState.activeEffect.step === 'selecting' && (
+                {roomData.activeEffect && roomData.activeEffect.step === 'selecting' && (
                     <div className="absolute inset-0 bg-black/80 z-50 flex flex-col items-center justify-center rounded-3xl backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-                        <h3 className="text-3xl font-black text-yellow-400 mb-2 drop-shadow-md">{gameState.activeEffect.triggerTeam} 翻到了 {gameState.activeEffect.cardName}！</h3>
+                        <h3 className="text-3xl font-black text-yellow-400 mb-2 drop-shadow-md">{roomData.activeEffect.triggerTeam} 翻到了 {roomData.activeEffect.cardName}！</h3>
                         
-                        {gameState.activeEffect.triggerTeam === myTeam ? (
+                        {roomData.activeEffect.triggerTeam === myTeam ? (
                             <div className="mt-6 flex flex-col items-center">
-                                {gameState.activeEffect.type === 'auto' && (
+                                {roomData.activeEffect.type === 'auto' && (
                                     <button onClick={() => resolveEffect()} className="px-8 py-3 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black rounded-full text-xl shadow-[0_0_20px_rgba(234,179,8,0.5)] animate-bounce">
                                         立即發動效果！
                                     </button>
                                 )}
-                                {gameState.activeEffect.type === 'interactive_board' && (
+                                {roomData.activeEffect.type === 'interactive_board' && (
                                     <p className="text-purple-400 font-bold text-xl animate-pulse bg-purple-900/50 px-6 py-3 rounded-full border border-purple-500"><i className="fa-solid fa-hand-pointer mr-2"></i>請點擊後方盤面上的單字卡...</p>
                                 )}
-                                {gameState.activeEffect.type === 'interactive_team' && (
+                                {roomData.activeEffect.type === 'interactive_team' && (
                                     <div className="flex gap-4 mt-4">
-                                        {gameState.turnOrder.filter(t => t !== myTeam).map(team => (
+                                        {roomData.turnOrder.filter(t => t !== myTeam).map(team => (
                                             <button key={team} onClick={() => resolveEffect(team)} className="px-6 py-4 bg-slate-800 hover:bg-slate-700 border-2 border-slate-500 rounded-xl font-bold text-xl transition-transform hover:scale-110">
                                                 對 {team} 使用
                                             </button>
