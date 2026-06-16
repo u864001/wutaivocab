@@ -7,52 +7,60 @@ function CoinRainMinigame({ onComplete }) {
     const [miniScore, setMiniScore] = useState(0);
     const [timeLeft, setTimeLeft] = useState(10);
     const [isExploding, setIsExploding] = useState(false);
+    
+    // 防護鎖：確保結算只呼叫一次
+    const hasCompletedRef = useRef(false);
 
     // 倒數計時器
     useEffect(() => {
-        if (timeLeft <= 0 && !isExploding) {
+        if (timeLeft <= 0 && !isExploding && !hasCompletedRef.current) {
+            hasCompletedRef.current = true;
             onComplete(miniScore);
             return;
         }
-        if (isExploding) return;
+        if (isExploding || hasCompletedRef.current) return;
         const timer = setTimeout(() => setTimeLeft(l => l - 1), 1000);
         return () => clearTimeout(timer);
     }, [timeLeft, isExploding, miniScore, onComplete]);
 
-    // 隨機生成掉落物 (75% 金幣, 25% 炸彈)
+    // 隨機生成掉落物
     useEffect(() => {
-        if (isExploding || timeLeft <= 0) return;
+        if (isExploding || timeLeft <= 0 || hasCompletedRef.current) return;
         const spawnInterval = setInterval(() => {
             const isBomb = Math.random() < 0.25;
             setItems(prev => [...prev, {
-                id: Math.random().toString(36).substr(2, 9),
+                id: Math.random().toString(36).substring(2, 9),
                 type: isBomb ? 'bomb' : 'coin',
-                left: Math.floor(Math.random() * 80) + 10, // 橫向隨機 10% ~ 90%
-                duration: Math.random() * 2 + 2 // 掉落速度 2~4 秒
+                left: Math.floor(Math.random() * 80) + 10,
+                duration: Math.random() * 2 + 2 
             }]);
-        }, 400); // 每 0.4 秒掉一個
+        }, 400); 
         return () => clearInterval(spawnInterval);
     }, [isExploding, timeLeft]);
 
     const handleItemClick = (id, type) => {
-        if (isExploding) return;
+        if (isExploding || hasCompletedRef.current) return;
         if (type === 'coin') {
             setMiniScore(s => s + 1);
             setItems(prev => prev.filter(item => item.id !== id));
         } else if (type === 'bomb') {
             setIsExploding(true);
             setTimeout(() => {
-                onComplete(miniScore); // 炸彈爆炸後，結算已得金幣並結束
+                if (!hasCompletedRef.current) {
+                    hasCompletedRef.current = true;
+                    onComplete(miniScore); 
+                }
             }, 1500);
         }
     };
 
     return (
         <div className="fixed inset-0 z-50 bg-black/80 flex flex-col items-center overflow-hidden">
-            <style>{`
+            {/* 使用安全的方式注入動畫樣式 */}
+            <style dangerouslySetInnerHTML={{ __html: `
                 @keyframes fallDown { from { top: -10%; } to { top: 110%; } }
                 .falling-item { animation: fallDown linear forwards; }
-            `}</style>
+            `}} />
             
             <div className="mt-10 text-white text-center z-10">
                 <h2 className="text-3xl font-black text-yellow-400 drop-shadow-md mb-2">金幣雨 (Coin Rain)</h2>
@@ -63,7 +71,6 @@ function CoinRainMinigame({ onComplete }) {
                 {isExploding && <div className="mt-20 text-6xl animate-bounce">💥 踩到炸彈啦！結算中...</div>}
             </div>
 
-            {/* 掉落物渲染區 */}
             {!isExploding && items.map(item => (
                 <button 
                     key={item.id}
@@ -80,8 +87,6 @@ function CoinRainMinigame({ onComplete }) {
 
 // 🃏 主遊戲組件
 function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
-    // 預留雙語字典檔機制
-    const lang = 'zh-TW'; 
     const t = {
         title: '星際記憶翻牌 (單局挑戰)',
         gameOver: '挑戰完成！',
@@ -103,15 +108,18 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
     const [radarActive, setRadarActive] = useState(false);
     const [activeMinigame, setActiveMinigame] = useState(null);
 
-    // 從題庫中篩選範圍
+    // 防護鎖：確保遊戲結束結算只觸發一次
+    const isFinishingRef = useRef(false);
+
     const availableWords = useMemo(() => {
         if (!wordDatabase || !settings || !settings.selectedUnits) return [];
         return wordDatabase.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
     }, [settings, wordDatabase]);
 
-    // 初始化牌組 (一局定勝負)
     const initDeck = useCallback(() => {
         if (availableWords.length === 0) return;
+
+        isFinishingRef.current = false; // 重置防護鎖
 
         const shuffledWords = [...availableWords].sort(() => Math.random() - 0.5);
         const pairCount = Math.min(shuffledWords.length, 9);
@@ -127,7 +135,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
             newCards.push({ id: `zh-${matchKey}`, matchId: matchKey, text: zhText, type: 'zh', isPowerUp: false });
         });
 
-        // 隨機挑選 2 張單機專屬功能卡
         const spPowerUps = [
             { id: 'powerup_bonus', icon: 'fa-gem', color: 'text-emerald-400', name: '加分卡 (+30)' },
             { id: 'powerup_radar', icon: 'fa-satellite-dish', color: 'text-green-400', name: '雷達卡 (透視)' },
@@ -152,10 +159,9 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
 
     useEffect(() => { initDeck(); }, [initDeck]);
 
-    // 處理功能卡邏輯 (不消耗翻牌次數)
     const triggerPowerUp = (powerId, cardIndex) => {
         setIsAnimating(true);
-        setTimeout(() => setIsAnimating(false), 1000); // 鎖定盤面 1 秒展示特效
+        setTimeout(() => setIsAnimating(false), 1000); 
 
         if (powerId === 'powerup_bonus') {
             setScore(s => s + 30);
@@ -172,14 +178,12 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
         } 
         else if (powerId === 'powerup_lightning') {
             if (flippedIndices.length === 0) {
-                // 第1張抽到：隨機找一對沒翻過的消除，並結束回合
                 const unmatchedWords = cards.filter(c => !c.isPowerUp && !matchedIds.includes(c.matchId));
                 if (unmatchedWords.length > 0) {
                     setMatchedIds(prev => [...prev, unmatchedWords[0].matchId]);
                     setScore(s => s + 10);
                 }
             } else if (flippedIndices.length === 1) {
-                // 第2張抽到：直接把第1張的另一半找出來消除，並結束回合
                 const targetMatchId = cards[flippedIndices[0]].matchId;
                 setMatchedIds(prev => [...prev, targetMatchId]);
                 setScore(s => s + 10);
@@ -196,14 +200,12 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
 
         const card = cards[index];
 
-        // 碰到功能卡 -> 執行功能，且不算入 flippedIndices (維持玩家目前的翻牌階段)
         if (card.isPowerUp) {
             setMatchedIds(prev => [...prev, card.matchId]);
             triggerPowerUp(card.matchId, index);
             return;
         }
 
-        // 一般單字卡邏輯
         const newFlipped = [...flippedIndices, index];
         setFlippedIndices(newFlipped);
 
@@ -228,20 +230,21 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
         }
     };
 
-    // 檢查遊戲結束 (一局定勝負：所有卡牌都進了 matchedIds)
+    // 安全的結算檢查機制
     useEffect(() => {
-        if (cards.length > 0 && matchedIds.length >= (cards.length - 2) / 2 + 2) { // 9對 + 2張道具 = 11
+        const totalUniqueItems = cards.length > 0 ? (cards.length - 2) / 2 + 2 : 0;
+        
+        if (cards.length > 0 && matchedIds.length >= totalUniqueItems && !isFinishingRef.current) {
+            isFinishingRef.current = true; // 上鎖，確保不會無限迴圈
             const timeTaken = Math.floor((Date.now() - startTime) / 1000);
-            // 基礎獎勵：2分鐘內完成有額外加分，越快越多
             const calculatedBonus = Math.max(0, 120 - timeTaken); 
             setTimeBonus(calculatedBonus);
             setTimeout(() => setGameOver(true), 1500);
         }
-    }, [matchedIds, cards, startTime]);
+    }, [matchedIds, cards.length, startTime]);
 
     const handleFinishAndSave = () => {
         const finalScore = score + timeBonus;
-        // 如果 App.js 尚未傳入 onSaveScore，就直接返回大廳；若有傳入則儲存。
         if (onSaveScore) {
             onSaveScore({ gameMode: 'memory_single', score: finalScore, date: new Date().toISOString() });
         }
@@ -266,7 +269,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                 }} />
             )}
 
-            {/* 一致性頂部導覽列 */}
             <header className="shrink-0 flex justify-between items-center mb-4 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
                 <button onClick={onBack} className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold transition-colors flex items-center gap-2">
                     <i className="fa-solid fa-arrow-left"></i> 返回
@@ -282,7 +284,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                 </div>
             </header>
 
-            {/* 遊戲結束結算畫面 */}
             {gameOver ? (
                 <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 text-center animate-[zoomIn_0.3s_ease-out]">
                     <i className="fa-solid fa-trophy text-6xl text-yellow-400 mb-6 drop-shadow-lg"></i>
@@ -305,7 +306,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                     </button>
                 </div>
             ) : (
-                /* 4x5 網格對戰盤面 */
                 <div className="flex-1 min-h-0 flex items-center justify-center">
                     <div className={`w-full h-full max-h-[75vh] grid grid-cols-5 grid-rows-4 gap-2 sm:gap-3 p-2 bg-slate-200 dark:bg-slate-950 rounded-3xl shadow-inner transition-all duration-500 ${radarActive ? 'ring-4 ring-green-400 shadow-[0_0_30px_rgba(74,222,128,0.5)]' : ''}`}>
                         {cards.map((card, index) => {
