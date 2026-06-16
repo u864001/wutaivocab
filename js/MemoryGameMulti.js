@@ -1,9 +1,10 @@
-const { useState, useEffect, useCallback, useRef } = React;
+const { useState, useEffect, useCallback, useRef, useMemo } = React;
 
 function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
     const [gameState, setGameState] = useState(null);
     const [lang, setLang] = useState('zh-TW');
-    const [localPeek, setLocalPeek] = useState([]); // 本機端的偷看狀態，不傳上 Firebase
+    const [localPeek, setLocalPeek] = useState([]); // 偷看卡本機狀態
+    const [localCoins, setLocalCoins] = useState(0); // 金幣雨本機計分
 
     const dict = {
         'zh-TW': { waiting: '等待房主發牌...', turn: '輪到 %team% 回合', locked: '已鎖定', frozen: '冰凍中', myTurn: '🔥 你的回合！' },
@@ -25,6 +26,15 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
             initBoardAndSync();
         }
     }, [gameState?.hostId, gameState?.board]);
+
+    // 💰 監聽金幣雨結束，將本機收集的金幣「一次性」寫入 Firebase (保護額度)
+    useEffect(() => {
+        if (gameState && !gameState.activeEffect && localCoins > 0) {
+            dbRef.collection('rooms').doc(settings.roomId).update({
+                [`players.${user.uid}.score`]: firebase.firestore.FieldValue.increment(localCoins)
+            }).then(() => setLocalCoins(0));
+        }
+    }, [gameState?.activeEffect, localCoins, dbRef, settings.roomId, user.uid]);
 
     const initBoardAndSync = async () => {
         const allowedUnits = gameState.selectedUnits || [];
@@ -59,12 +69,8 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         const teams = [...new Set(Object.values(gameState.players).map(p => p.team))].sort();
 
         await dbRef.collection('rooms').doc(settings.roomId).update({
-            board: newBoard,
-            turnOrder: teams,
-            currentTeamIndex: 0,
-            currentTeam: teams[0],
-            turnState: { flippedIndices: [], comboCount: 0, isAnimating: false },
-            activeEffect: null 
+            board: newBoard, turnOrder: teams, currentTeamIndex: 0, currentTeam: teams[0],
+            turnState: { flippedIndices: [], comboCount: 0, isAnimating: false }, activeEffect: null 
         });
     };
 
@@ -75,40 +81,34 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
 
     const myTeam = gameState?.players?.[user?.uid]?.team;
 
-    // --- 核心：卡片點擊與功能卡標靶判定 ---
     const handleCardClick = async (index) => {
         if (!gameState || !gameState.board || !isMyTurn()) return;
-
         const roomRef = dbRef.collection('rooms').doc(settings.roomId);
         let newBoard = [...gameState.board];
         const card = newBoard[index];
 
-        // 🌟 狀態 1：目前正在執行「需要點擊盤面」的功能卡 (偷看卡 / 上鎖卡)
+        // 🌟 處理偷看與上鎖
         if (gameState.activeEffect && gameState.activeEffect.triggerTeam === myTeam) {
-            if (card.status !== 'hidden' || card.isPowerUp) return; // 只能選還沒翻開的單字牌
+            if (card.status !== 'hidden' || card.isPowerUp) return; 
 
             if (gameState.activeEffect.cardId === 'powerup_lock') {
-                // 執行上鎖
                 newBoard[index].lockedBy = myTeam;
-                soundEngine.play('click'); // 假設有音效引擎
+                soundEngine.play('click'); 
                 await roomRef.update({ board: newBoard, activeEffect: null });
             } 
             else if (gameState.activeEffect.cardId === 'powerup_peek') {
-                // 執行偷看 (只存在本機狀態，不傳 Firebase，防止作弊)
                 setLocalPeek(prev => [...prev, index]);
                 soundEngine.play('laser');
-                // 偷看 2 張後結束卡片效果
                 if (localPeek.length === 1) {
-                    setTimeout(() => { setLocalPeek([]); }, 3000); // 3秒後蓋牌
+                    setTimeout(() => { setLocalPeek([]); }, 3000); 
                     await roomRef.update({ activeEffect: null });
                 }
             }
             return;
         }
 
-        // 🌟 狀態 2：正常翻牌邏輯
-        if (gameState.turnState.isAnimating || card.status === 'matched' || gameState.turnState.flippedIndices.includes(index)) return;
-        if (card.lockedBy && card.lockedBy !== myTeam) return; // 別人鎖的不能點
+        if (gameState.turnState.isAnimating || card.status === 'matched' || gameState.turnState.flippedIndices.includes(index) || gameState.activeEffect) return;
+        if (card.lockedBy && card.lockedBy !== myTeam) return;
 
         let newTurnState = { ...gameState.turnState };
 
@@ -117,13 +117,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
             soundEngine.play('powerup');
             await roomRef.update({
                 board: newBoard,
-                activeEffect: {
-                    triggerTeam: myTeam,
-                    cardId: card.id,
-                    cardName: card.text,
-                    type: card.powerType, 
-                    step: 'selecting'
-                }
+                activeEffect: { triggerTeam: myTeam, cardId: card.id, cardName: card.text, type: card.powerType, step: 'selecting' }
             });
             return;
         }
@@ -163,52 +157,72 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                         nextComboCount = 0;
                     }
 
-                    await roomRef.update({
-                        board: newBoard, players: updatedPlayers,
-                        currentTeamIndex: nextTeamIndex, currentTeam: gameState.turnOrder[nextTeamIndex],
-                        turnState: { flippedIndices: [], comboCount: nextComboCount, isAnimating: false }
-                    });
+                    await roomRef.update({ board: newBoard, players: updatedPlayers, currentTeamIndex: nextTeamIndex, currentTeam: gameState.turnOrder[nextTeamIndex], turnState: { flippedIndices: [], comboCount: nextComboCount, isAnimating: false }});
                 } else {
                     soundEngine.play('wrong');
                     nextTeamIndex = (gameState.currentTeamIndex + 1) % gameState.turnOrder.length;
-                    await roomRef.update({
-                        currentTeamIndex: nextTeamIndex, currentTeam: gameState.turnOrder[nextTeamIndex],
-                        turnState: { flippedIndices: [], comboCount: 0, isAnimating: false }
-                    });
+                    await roomRef.update({ currentTeamIndex: nextTeamIndex, currentTeam: gameState.turnOrder[nextTeamIndex], turnState: { flippedIndices: [], comboCount: 0, isAnimating: false }});
                 }
             }, 1200);
         }
     };
 
-    // --- 執行自動卡片 (加分、雷達等) 或 處理隊伍選擇卡片 ---
+    // --- 🌟 處理所有卡片的最終結算與特效派發 ---
     const resolveEffect = async (targetTeam = null) => {
         if (!gameState || !gameState.activeEffect) return;
         const roomRef = dbRef.collection('rooms').doc(settings.roomId);
         const effect = gameState.activeEffect;
         let updatedPlayers = { ...gameState.players };
+        let newBoard = [...gameState.board];
 
         if (effect.cardId === 'powerup_bonus') {
             Object.keys(updatedPlayers).forEach(uid => {
                 if (updatedPlayers[uid].team === myTeam) updatedPlayers[uid].score += 30;
             });
+            await roomRef.update({ players: updatedPlayers, activeEffect: null });
         } 
         else if (effect.cardId === 'powerup_freeze' && targetTeam) {
-            // 標記該隊伍為冰凍狀態
             Object.keys(updatedPlayers).forEach(uid => {
                 if (updatedPlayers[uid].team === targetTeam) updatedPlayers[uid].isFrozen = true;
             });
+            await roomRef.update({ players: updatedPlayers, activeEffect: null });
         }
         else if (effect.cardId === 'powerup_winwin' && targetTeam) {
-            // 記錄雙贏連結 (簡化：立即獲得 15 分，雙方皆大歡喜)
             Object.keys(updatedPlayers).forEach(uid => {
-                if (updatedPlayers[uid].team === myTeam || updatedPlayers[uid].team === targetTeam) {
-                    updatedPlayers[uid].score += 15;
-                }
+                if (updatedPlayers[uid].team === myTeam || updatedPlayers[uid].team === targetTeam) updatedPlayers[uid].score += 15;
             });
+            await roomRef.update({ players: updatedPlayers, activeEffect: null });
         }
-        // 閃電、金幣、雷達 會在 Phase 4 完善，目前先清除狀態讓遊戲繼續
-        
-        await roomRef.update({ players: updatedPlayers, activeEffect: null });
+        else if (effect.cardId === 'powerup_lightning') {
+            // 自動尋找一對尚未翻開的牌
+            let enIndex = newBoard.findIndex(c => c.status === 'hidden' && c.type === 'en' && !c.isPowerUp);
+            if (enIndex !== -1) {
+                let zhIndex = newBoard.findIndex(c => c.status === 'hidden' && c.type === 'zh' && c.matchId === newBoard[enIndex].matchId);
+                if (zhIndex !== -1) {
+                    newBoard[enIndex].status = 'matched';
+                    newBoard[zhIndex].status = 'matched';
+                    Object.keys(updatedPlayers).forEach(uid => {
+                        if (updatedPlayers[uid].team === myTeam) updatedPlayers[uid].score += 10;
+                    });
+                }
+            }
+            await roomRef.update({ board: newBoard, players: updatedPlayers, activeEffect: null });
+        }
+        else if (effect.cardId === 'powerup_radar') {
+            // 切換為雷達模式
+            await roomRef.update({ activeEffect: { ...effect, step: 'radar_active' } });
+            // 房主負責計時關閉，避免多台裝置重複執行
+            if (gameState.hostId === user.uid) {
+                setTimeout(async () => { await roomRef.update({ activeEffect: null }); }, 3000);
+            }
+        }
+        else if (effect.cardId === 'powerup_coin') {
+            // 切換為金幣雨模式
+            await roomRef.update({ activeEffect: { ...effect, step: 'coin_raining' } });
+            if (gameState.hostId === user.uid) {
+                setTimeout(async () => { await roomRef.update({ activeEffect: null }); }, 4000);
+            }
+        }
     };
 
     if (!gameState || !gameState.board) {
@@ -219,12 +233,16 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         );
     }
 
-    // 判斷當前盤面是否為「選牌標靶模式」
     const isTargetingBoard = gameState.activeEffect && gameState.activeEffect.triggerTeam === myTeam && gameState.activeEffect.type === 'interactive_board';
+    const isRadarActive = gameState.activeEffect?.cardId === 'powerup_radar' && gameState.activeEffect?.step === 'radar_active';
+    const isCoinRaining = gameState.activeEffect?.cardId === 'powerup_coin' && gameState.activeEffect?.step === 'coin_raining';
+    
+    // 金幣雨的隨機掉落資料 (只有發動隊伍需要算)
+    const coins = Array.from({length: 15}).map((_,i) => ({ id: i, left: Math.random()*90, delay: Math.random()*2, duration: 1.5 + Math.random()*1.5 }));
 
     return (
         <div className="flex-1 flex flex-col p-4 bg-slate-900 overflow-hidden select-none">
-            <header className="flex justify-between items-center mb-4 bg-slate-800 p-4 rounded-2xl shadow-lg border border-slate-700 shrink-0">
+            <header className="flex justify-between items-center mb-4 bg-slate-800 p-4 rounded-2xl shadow-lg border border-slate-700 shrink-0 relative z-20">
                 <button onClick={onBack} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-white font-bold transition-colors">
                     <i className="fa-solid fa-arrow-left"></i>
                 </button>
@@ -238,22 +256,27 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                 </div>
                 <div className="text-right bg-slate-900 px-4 py-2 rounded-xl border border-slate-700">
                     <span className="text-xs text-slate-500 font-bold block">本隊分數</span>
-                    <span className="text-xl font-black text-emerald-400">{gameState.players[user.uid]?.score || 0}</span>
+                    <span className="text-xl font-black text-emerald-400">
+                        {gameState.players[user.uid]?.score || 0}
+                        {localCoins > 0 && <span className="text-yellow-400 text-sm ml-1 animate-bounce">+{localCoins}</span>}
+                    </span>
                 </div>
             </header>
 
-            <main className="flex-1 min-h-0 flex items-center justify-center relative">
+            <main className="flex-1 min-h-0 flex items-center justify-center relative z-10">
                 <div className={`w-full h-full max-h-[80vh] grid grid-cols-5 sm:grid-cols-8 gap-1.5 sm:gap-2 p-2 rounded-3xl border transition-colors ${isTargetingBoard ? 'bg-purple-950/40 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]' : 'bg-slate-950 border-slate-800'}`}>
                     {gameState.board.map((card, index) => {
                         const isPermanentlyFlipped = card.status === 'matched';
                         const isTemporarilyFlipped = gameState.turnState.flippedIndices.includes(index);
-                        const isPeeked = localPeek.includes(index); // 偷看卡專屬狀態
+                        const isPeeked = localPeek.includes(index); 
                         const isFlipped = isPermanentlyFlipped || isTemporarilyFlipped || isPeeked;
                         const isLocked = card.lockedBy !== null;
 
-                        // 選牌模式下，把已經翻過或鎖定的牌變暗
                         const isTargetable = isTargetingBoard && !isPermanentlyFlipped && !card.isPowerUp;
                         const targetClass = isTargetable ? 'ring-2 ring-purple-400 animate-pulse cursor-crosshair' : (isTargetingBoard ? 'opacity-30' : '');
+                        
+                        // 📡 雷達發動時，未翻開的牌會變為半透明字體
+                        const showRadarText = isRadarActive && !isFlipped && !card.isPowerUp;
 
                         return (
                             <button
@@ -261,19 +284,19 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                                 onClick={() => handleCardClick(index)}
                                 disabled={isPermanentlyFlipped || (gameState.turnState.isAnimating && !isTargetingBoard) || (!isMyTurn() && !isTargetingBoard)}
                                 className={`relative w-full h-full rounded-lg sm:rounded-xl flex flex-col items-center justify-center p-1 transition-all duration-300 ${
-                                    isFlipped 
+                                    isFlipped || showRadarText
                                         ? 'bg-slate-800 border border-slate-600' 
-                                        : 'bg-gradient-to-b from-blue-600 to-blue-800 hover:from-blue-500 shadow-md border border-blue-400/30'
+                                        : 'bg-gradient-to-b from-blue-600 to-blue-800 shadow-md border border-blue-400/30'
                                 } ${isPermanentlyFlipped ? 'opacity-20 pointer-events-none' : ''} ${targetClass}`}
                             >
-                                {!isFlipped && !isLocked && <i className="fa-solid fa-globe text-blue-300/40 text-xl sm:text-2xl"></i>}
-                                {isLocked && !isFlipped && <div className="text-center"><i className="fa-solid fa-lock text-slate-400 text-xl"></i><span className="block text-[8px] text-slate-500 mt-1">{card.lockedBy}</span></div>}
+                                {!isFlipped && !isLocked && !showRadarText && <i className="fa-solid fa-globe text-blue-300/40 text-xl sm:text-2xl"></i>}
+                                {isLocked && !isFlipped && !showRadarText && <div className="text-center"><i className="fa-solid fa-lock text-slate-400 text-xl"></i><span className="block text-[8px] text-slate-500 mt-1">{card.lockedBy}</span></div>}
                                 
-                                {isFlipped && (
+                                {(isFlipped || showRadarText) && (
                                     card.isPowerUp ? (
-                                        <div className="text-center"><i className={`fa-solid ${card.icon} text-2xl sm:text-3xl text-yellow-400 mb-1`}></i><span className="block text-[9px] sm:text-xs font-black text-slate-300">{card.text}</span></div>
+                                        <div className={`text-center ${showRadarText ? 'opacity-40' : ''}`}><i className={`fa-solid ${card.icon} text-2xl sm:text-3xl text-yellow-400 mb-1`}></i><span className="block text-[9px] sm:text-xs font-black text-slate-300">{card.text}</span></div>
                                     ) : (
-                                        <span className={`font-bold block break-all text-center ${card.type === 'en' ? 'text-blue-400 font-mono text-sm sm:text-base' : 'text-slate-200 text-xs sm:text-sm'}`}>{card.text}</span>
+                                        <span className={`font-bold block break-all text-center ${showRadarText ? 'opacity-40' : ''} ${card.type === 'en' ? 'text-blue-400 font-mono text-sm sm:text-base' : 'text-slate-200 text-xs sm:text-sm'}`}>{card.text}</span>
                                     )
                                 )}
                             </button>
@@ -281,12 +304,32 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                     })}
                 </div>
 
+                {/* --- 💰 金幣雨圖層 (只有觸發隊伍能點擊) --- */}
+                {isCoinRaining && (
+                    <div className="absolute inset-0 pointer-events-none z-40 overflow-hidden rounded-3xl">
+                        {coins.map(c => (
+                            <div key={c.id} 
+                                className={`absolute text-yellow-400 text-4xl animate-[fall_linear_forwards] ${gameState.activeEffect.triggerTeam === myTeam ? 'pointer-events-auto cursor-pointer hover:scale-125' : 'opacity-50'}`}
+                                style={{ left: `${c.left}%`, top: '-10%', animationDuration: `${c.duration}s`, animationDelay: `${c.delay}s` }}
+                                onPointerDown={(e) => { 
+                                    e.target.style.display='none'; 
+                                    if(gameState.activeEffect.triggerTeam === myTeam) {
+                                        soundEngine.play('coin');
+                                        setLocalCoins(prev => prev + 2); // 每顆金幣 2 分
+                                    }
+                                }}
+                            >
+                                <i className="fa-solid fa-coin drop-shadow-[0_0_10px_rgba(234,179,8,0.8)]"></i>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 {/* --- 互動卡片發動 UI (Overlay) --- */}
-                {gameState.activeEffect && (
+                {gameState.activeEffect && gameState.activeEffect.step === 'selecting' && (
                     <div className="absolute inset-0 bg-black/80 z-50 flex flex-col items-center justify-center rounded-3xl backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
                         <h3 className="text-3xl font-black text-yellow-400 mb-2 drop-shadow-md">{gameState.activeEffect.triggerTeam} 翻到了 {gameState.activeEffect.cardName}！</h3>
                         
-                        {/* 狀態 A：等待觸發隊伍操作 */}
                         {gameState.activeEffect.triggerTeam === myTeam ? (
                             <div className="mt-6 flex flex-col items-center">
                                 {gameState.activeEffect.type === 'auto' && (
@@ -308,12 +351,14 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                                 )}
                             </div>
                         ) : (
-                            /* 狀態 B：其他隊伍只能乾瞪眼等待 */
                             <p className="text-slate-400 font-bold mt-6 text-xl animate-pulse"><i className="fa-solid fa-hourglass-half mr-2"></i>等待對方執行動作...</p>
                         )}
                     </div>
                 )}
             </main>
+            <style dangerouslySetInnerHTML={{__html: `
+                @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+            `}} />
         </div>
     );
 }
