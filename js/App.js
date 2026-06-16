@@ -1,3 +1,5 @@
+const { useState, useEffect, useMemo, useCallback } = React;
+
 function App() {
     const [currentView, setCurrentView] = useState('lobby');
     const [gameMode, setGameMode] = useState(null); 
@@ -5,6 +7,9 @@ function App() {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [wordDatabase, setWordDatabase] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    // 🌟 新增：全站語系狀態
+    const [lang, setLang] = useState('zh-TW');
 
     const [leaderboards, setLeaderboards] = useState([]);
     const [user, setUser] = useState(null);
@@ -30,18 +35,15 @@ function App() {
         return () => unsubscribe();
     }, [user, dbRef]);
 
-    // 🚀 雙題庫合併讀取引擎
     useEffect(() => {
         const fetchWordData = async () => {
             try {
-                // 1. 抓取官方題庫
                 let officialData = [];
                 try {
                     const res1 = await fetch(`${GOOGLE_SHEET_CSV_URL}&t=${new Date().getTime()}`);
                     if (res1.ok) officialData = parseCSV(await res1.text());
                 } catch (e) { console.warn("官方題庫讀取失敗", e); }
 
-                // 2. 抓取 Custom 客製化題庫
                 let customData = [];
                 const CUSTOM_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRMfkieB3uqgN4_yq7gAuamhO-fSAqBcH5qMbhq0ouiFgWqeizxLRKsW7mg-wJlL1TZ0sohpLz5zuA1/pub?gid=0&single=true&output=csv";
                 try {
@@ -49,14 +51,11 @@ function App() {
                     if (res2.ok) customData = parseCSV(await res2.text());
                 } catch (e) { console.warn("客製化題庫讀取失敗", e); }
 
-                // 3. 合併資料並更新至系統
                 const combinedData = [...officialData, ...customData];
                 setWordDatabase(combinedData.length > 0 ? combinedData : DEFAULT_WORD_DATABASE);
             } catch (error) {
                 setWordDatabase(DEFAULT_WORD_DATABASE);
-            } finally { 
-                setIsLoading(false); 
-            }
+            } finally { setIsLoading(false); }
         };
         fetchWordData();
     }, []);
@@ -99,22 +98,34 @@ function App() {
 
     return (
         <div className="min-h-screen flex flex-col pb-10">
+            {/* 🌟 頂部全站導覽列：加入雙語切換 */}
             <div className="max-w-4xl mx-auto w-full p-4 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     <span className="font-extrabold text-xl tracking-wider text-slate-800 dark:text-slate-100">霧臺國小</span>
-                    {user && dbRef ? <div className="ml-2 flex items-center gap-1 text-xs font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full"><i className="fa-solid fa-wifi text-[10px] animate-pulse"></i> 已連線</div> : <div className="ml-2 flex items-center gap-1 text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full"><i className="fa-solid fa-globe text-[10px]"></i> 單機版</div>}
+                    {user && dbRef ? <div className="ml-2 flex items-center gap-1 text-xs font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full hidden sm:flex"><i className="fa-solid fa-wifi text-[10px] animate-pulse"></i> 已連線</div> : <div className="ml-2 flex items-center gap-1 text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full hidden sm:flex"><i className="fa-solid fa-globe text-[10px]"></i> 單機版</div>}
                 </div>
-                <button onClick={() => { setIsDarkMode(!isDarkMode); document.documentElement.classList.toggle('dark'); }} className="p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">{isDarkMode ? <i className="fa-solid fa-sun"></i> : <i className="fa-solid fa-moon"></i>}</button>
+                
+                <div className="flex items-center gap-2">
+                    <div className="bg-slate-200 dark:bg-slate-700 rounded-full p-1 flex">
+                        <button onClick={() => setLang('zh-TW')} className={`px-3 py-1 text-xs sm:text-sm font-bold rounded-full transition-all ${lang === 'zh-TW' ? 'bg-white dark:bg-slate-600 shadow-sm text-blue-600 dark:text-white' : 'text-slate-500 dark:text-slate-300'}`}>ZH</button>
+                        <button onClick={() => setLang('en')} className={`px-3 py-1 text-xs sm:text-sm font-bold rounded-full transition-all ${lang === 'en' ? 'bg-white dark:bg-slate-600 shadow-sm text-blue-600 dark:text-white' : 'text-slate-500 dark:text-slate-300'}`}>EN</button>
+                    </div>
+                    <button onClick={() => { setIsDarkMode(!isDarkMode); document.documentElement.classList.toggle('dark'); }} className="p-2 w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors">
+                        {isDarkMode ? <i className="fa-solid fa-sun"></i> : <i className="fa-solid fa-moon"></i>}
+                    </button>
+                </div>
             </div>
 
-            {currentView === 'lobby' && <Lobby onNavigate={navigateTo} settings={settings} setSettings={setSettings} wordDatabase={wordDatabase} groupedUnits={groupedUnits} qualifyingBook={qualifyingBook} />}
+            {currentView === 'lobby' && <Lobby onNavigate={navigateTo} settings={settings} setSettings={setSettings} wordDatabase={wordDatabase} groupedUnits={groupedUnits} qualifyingBook={qualifyingBook} lang={lang} />}
+            
+            {/* 舊遊戲維持原樣，未來再逐步雙語化 */}
             {['zh-en', 'en-zh', 'listening', 'hard'].includes(currentView) && <StandardQuiz mode={currentView} onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} qualifyingBook={qualifyingBook} onSaveScore={handleSaveScore} />}
             {currentView === 'spelling' && <SpellingGame onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} qualifyingBook={qualifyingBook} onSaveScore={handleSaveScore} />}
             {currentView === 'meteor' && <MeteorGame subMode={gameMode} onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} qualifyingBook={qualifyingBook} onSaveScore={handleSaveScore} />}
             {currentView === 'leaderboard' && <LeaderboardView onBack={() => navigateTo('lobby')} leaderboards={leaderboards} groupedUnits={groupedUnits} />}
             {currentView === 'battle' && <BattleGame onBack={() => navigateTo('lobby')} wordDatabase={wordDatabase} dbRef={dbRef} user={user} settings={settings} />}
             
-            {/* 記憶翻牌遊戲路由 - 已正式接上 onSaveScore 通道 */}
+            {/* 記憶翻牌區 */}
             {currentView === 'memory_lobby' && <MemoryLobby onNavigate={navigateTo} mode={gameMode} settings={settings} wordDatabase={wordDatabase} />}
             {currentView === 'memory_single' && <MemoryGameSingle onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} onSaveScore={handleSaveScore} />}
             {currentView === 'memory_multi' && <MemoryGameMulti onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} dbRef={dbRef} user={user} />}
@@ -122,9 +133,87 @@ function App() {
     );
 }
 
-function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, qualifyingBook }) {
-    const selectedWordCount = wordDatabase.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`)).length;
-    const isQuizDisabled = selectedWordCount === 0;
+function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, qualifyingBook, lang }) {
+    // 🌟 大廳雙語字典
+    const dict = {
+        'zh-TW': {
+            title: '霧臺國小 英文學習平台',
+            dbLoaded: `雲端題庫已載入：共 ${wordDatabase.length} 個單字`,
+            leaderboard: '看全校英雄榜',
+            sec1Title: '1. 設定複習範圍',
+            selectAll: '全選',
+            clearAll: '清空',
+            selectedCount: `已選 ${wordDatabase.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`)).length} 字`,
+            bookPrefix: '第 ',
+            bookSuffix: ' 冊',
+            cancelBook: '取消全選',
+            selectBook: '全選此範圍',
+            unitPrefix: '第 ',
+            unitSuffix: ' 課',
+            qCount: '每次出題數量',
+            q5: '隨機 5 題', q10: '隨機 10 題', q20: '隨機 20 題', qAll: '範圍內全部題目',
+            reqMet: '🎯 範圍達標！選擇「20題」或「全部」即可上榜',
+            reqFail: '須單冊選滿 2 個單元 (或 20 字) 才能挑戰榮譽榜。',
+            sec2Title: '2. 多人連線對戰',
+            battleTitle: '星際地平線死鬥',
+            battleDesc: '2~4 人區網對戰，支援陷害與防線拔河，活到最後即是贏家！',
+            memMultiTitle: '星際記憶翻牌',
+            memMultiDesc: '2~4 隊區網連線回合制，支援正增強道具卡對戰！',
+            sec3Title: '3. 單人挑戰模式',
+            metZhEn: '看中文選英文',
+            metEnZh: '看英文選中文',
+            metDesc: '單機生存挑戰',
+            memSingle: '記憶翻牌',
+            memSingleDesc: '單機配對練習',
+            abcGame: 'ABC 防衛戰',
+            abcDesc: '一二年級專屬',
+            sec4Title: '4. 傳統測驗與遊戲',
+            spelling: '拖曳拼字',
+            typeZhEn: '中翻英打字',
+            typeEnZh: '英翻中打字',
+            listening: '聽力測驗'
+        },
+        'en': {
+            title: 'Wutai English Platform',
+            dbLoaded: `Database loaded: ${wordDatabase.length} words`,
+            leaderboard: 'View Leaderboard',
+            sec1Title: '1. Select Review Range',
+            selectAll: 'Select All',
+            clearAll: 'Clear',
+            selectedCount: `${wordDatabase.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`)).length} Selected`,
+            bookPrefix: 'Book ',
+            bookSuffix: '',
+            cancelBook: 'Deselect All',
+            selectBook: 'Select This Range',
+            unitPrefix: 'Unit ',
+            unitSuffix: '',
+            qCount: 'Questions per round',
+            q5: 'Random 5', q10: 'Random 10', q20: 'Random 20', qAll: 'All in range',
+            reqMet: '🎯 Range met! Select "20" or "All" to qualify for ranking.',
+            reqFail: 'Select at least 2 units (or 20 words) from a single book to qualify.',
+            sec2Title: '2. Multiplayer',
+            battleTitle: 'Horizon Deathmatch',
+            battleDesc: '2-4 players LAN battle. Survive to the end!',
+            memMultiTitle: 'Memory Match',
+            memMultiDesc: '2-4 teams turn-based match with power-up cards!',
+            sec3Title: '3. Solo Challenges',
+            metZhEn: 'ZH to EN',
+            metEnZh: 'EN to ZH',
+            metDesc: 'Survival Mode',
+            memSingle: 'Memory Match',
+            memSingleDesc: 'Solo Practice',
+            abcGame: 'ABC Defense',
+            abcDesc: 'Grade 1-2 only',
+            sec4Title: '4. Classic Games',
+            spelling: 'Spelling',
+            typeZhEn: 'Type: ZH to EN',
+            typeEnZh: 'Type: EN to ZH',
+            listening: 'Listening Quiz'
+        }
+    };
+    const t = dict[lang];
+
+    const isQuizDisabled = wordDatabase.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`)).length === 0;
     const [expandedBooks, setExpandedBooks] = useState([]); 
 
     const toggleBookExpand = (book) => setExpandedBooks(prev => prev.includes(book) ? prev.filter(b => b !== book) : [...prev, book]);
@@ -134,30 +223,51 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
         setSettings(prev => ({ ...prev, selectedUnits: allUnits.every(u => prev.selectedUnits.includes(u)) ? prev.selectedUnits.filter(u => !u.startsWith(`${book}-`)) : [...new Set([...prev.selectedUnits, ...allUnits])] }));
     };
 
+    // 🌟 修復 1：單元排序權重 (Starter -> 數字 -> Festival)
+    const getLessonWeight = (lesson) => {
+        const str = String(lesson).toLowerCase();
+        if (str.includes('starter')) return -1;
+        if (str.includes('festival')) return 100;
+        const num = parseInt(str.replace(/\D/g, ''));
+        return isNaN(num) ? 50 : num;
+    };
+
+    // 🌟 修復 2：冊別排序 (數字冊排前面，字串冊排後面)
+    const sortedBooks = Object.keys(groupedUnits).sort((a, b) => {
+        const numA = parseInt(a);
+        const numB = parseInt(b);
+        const isNumA = !isNaN(numA);
+        const isNumB = !isNaN(numB);
+        if (isNumA && isNumB) return numA - numB;
+        if (isNumA && !isNumB) return -1;
+        if (!isNumA && isNumB) return 1;
+        return a.localeCompare(b);
+    });
+
     return (
         <div className="max-w-4xl mx-auto w-full p-4 sm:p-6 animate-[fadeIn_0.5s_ease-out]">
             <header className="mb-6 sm:mb-8 text-center relative">
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-600 dark:text-blue-400 mb-2">霧臺國小 英文學習平台</h1>
-                <p className="text-sm text-slate-500">雲端題庫已載入：共 {wordDatabase.length} 個單字</p>
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-600 dark:text-blue-400 mb-2">{t.title}</h1>
+                <p className="text-sm text-slate-500">{t.dbLoaded}</p>
                 <div className="mt-6 flex justify-center">
                     <button onClick={() => onNavigate('leaderboard')} className="group flex items-center gap-3 px-8 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-yellow-950 font-black rounded-full shadow-lg transition-transform hover:scale-105">
-                        <i className="fa-solid fa-trophy text-xl text-yellow-100"></i> <span className="text-lg">看全校英雄榜</span>
+                        <i className="fa-solid fa-trophy text-xl text-yellow-100"></i> <span className="text-lg">{t.leaderboard}</span>
                     </button>
                 </div>
             </header>
 
             <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-4 sm:p-6 mb-8">
                 <div className="flex flex-col sm:flex-row justify-between mb-4 gap-4">
-                    <h2 className="flex items-center gap-2 text-blue-600 font-bold text-lg"><i className="fa-solid fa-gear text-xl"></i> 1. 設定複習範圍</h2>
+                    <h2 className="flex items-center gap-2 text-blue-600 font-bold text-lg"><i className="fa-solid fa-gear text-xl"></i> {t.sec1Title}</h2>
                     <div className="flex items-center gap-3">
-                        <button onClick={() => setSettings(s => ({ ...s, selectedUnits: wordDatabase.map(w => `${w.book}-${w.lesson}`) }))} className="text-sm font-bold text-slate-500 hover:text-blue-600">全選</button>
-                        <button onClick={() => setSettings(s => ({ ...s, selectedUnits: [] }))} className="text-sm font-bold text-slate-500 hover:text-red-500">清空</button>
-                        <div className={`text-sm font-bold px-3 py-1 rounded-full ${isQuizDisabled ? 'bg-slate-100 text-slate-500' : 'bg-emerald-100 text-emerald-700'}`}>已選 {selectedWordCount} 字</div>
+                        <button onClick={() => setSettings(s => ({ ...s, selectedUnits: wordDatabase.map(w => `${w.book}-${w.lesson}`) }))} className="text-sm font-bold text-slate-500 hover:text-blue-600">{t.selectAll}</button>
+                        <button onClick={() => setSettings(s => ({ ...s, selectedUnits: [] }))} className="text-sm font-bold text-slate-500 hover:text-red-500">{t.clearAll}</button>
+                        <div className={`text-sm font-bold px-3 py-1 rounded-full ${isQuizDisabled ? 'bg-slate-100 text-slate-500' : 'bg-emerald-100 text-emerald-700'}`}>{t.selectedCount}</div>
                     </div>
                 </div>
 
                 <div className="space-y-3">
-                    {Object.keys(groupedUnits).sort((a,b)=>a-b).map(book => {
+                    {sortedBooks.map(book => {
                         const allUnits = Array.from(groupedUnits[book]).map(l => `${book}-${l}`);
                         const isFull = allUnits.every(u => settings.selectedUnits.includes(u));
                         const isPart = allUnits.some(u => settings.selectedUnits.includes(u)) && !isFull;
@@ -167,19 +277,24 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
                                 <div className="flex items-center justify-between p-3 cursor-pointer" onClick={() => toggleBookExpand(book)}>
                                     <div className="flex items-center gap-3">
                                         <i className={`fa-solid fa-chevron-${isExp ? 'up' : 'down'} text-slate-400 w-4`}></i>
-                                        {/* 如果 Book 是文字(如 Custom/Holiday)，就直接顯示；若是數字，則顯示第 X 冊 */}
-                                        <h3 className="font-bold text-lg">{isNaN(book) ? book : `第 ${book} 冊`}</h3>
+                                        <h3 className="font-bold text-lg">{isNaN(book) ? book : `${t.bookPrefix}${book}${t.bookSuffix}`}</h3>
                                         {(isFull || isPart) && <span className="w-2 h-2 rounded-full bg-emerald-500"></span>}
                                     </div>
-                                    <button onClick={(e) => { e.stopPropagation(); selectAllInBook(book); }} className={`text-xs font-bold px-3 py-1.5 rounded-full ${isFull ? 'bg-indigo-100 text-indigo-700' : isPart ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-600'}`}>{isFull ? '取消全選' : '全選此範圍'}</button>
+                                    <button onClick={(e) => { e.stopPropagation(); selectAllInBook(book); }} className={`text-xs font-bold px-3 py-1.5 rounded-full ${isFull ? 'bg-indigo-100 text-indigo-700' : isPart ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-600'}`}>{isFull ? t.cancelBook : t.selectBook}</button>
                                 </div>
                                 {isExp && (
                                     <div className="p-3 pt-0 border-t border-slate-100 flex flex-wrap gap-2">
-                                        {Array.from(groupedUnits[book]).sort((a,b) => String(a).localeCompare(String(b), undefined, {numeric: true})).map(lesson => (
-                                            <button key={`${book}-${lesson}`} onClick={() => toggleUnit(book, lesson)} className={`px-4 py-2 rounded-xl text-sm font-bold border-2 ${settings.selectedUnits.includes(`${book}-${lesson}`) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-600'}`}>
-                                                {isNaN(lesson) ? lesson : `第 ${lesson} 課`}
-                                            </button>
-                                        ))}
+                                        {Array.from(groupedUnits[book]).sort((a,b) => getLessonWeight(a) - getLessonWeight(b)).map(lesson => {
+                                            const isLessonNum = !isNaN(parseInt(lesson.toString().replace(/\D/g, '')));
+                                            const displayStr = (!isLessonNum || String(lesson).toLowerCase().includes('starter') || String(lesson).toLowerCase().includes('festival')) 
+                                                ? lesson 
+                                                : `${t.unitPrefix}${lesson}${t.unitSuffix}`;
+                                            return (
+                                                <button key={`${book}-${lesson}`} onClick={() => toggleUnit(book, lesson)} className={`px-4 py-2 rounded-xl text-sm font-bold border-2 ${settings.selectedUnits.includes(`${book}-${lesson}`) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-300 dark:bg-slate-800'}`}>
+                                                    {displayStr}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>
@@ -187,15 +302,15 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
                     })}
                     <div className="pt-4 flex flex-col lg:flex-row justify-between gap-4">
                         <div className="shrink-0">
-                            <label className="text-sm font-semibold text-slate-500 mb-2 block">每次出題數量</label>
-                            <select className="p-3 w-full sm:w-64 border rounded-xl bg-slate-50 font-semibold" value={settings.count} onChange={(e) => setSettings({...settings, count: e.target.value})}>
-                                <option value="5">隨機 5 題</option><option value="10">隨機 10 題</option><option value="20">隨機 20 題</option><option value="all">範圍內全部題目</option>
+                            <label className="text-sm font-semibold text-slate-500 mb-2 block">{t.qCount}</label>
+                            <select className="p-3 w-full sm:w-64 border rounded-xl bg-slate-50 dark:bg-slate-700 font-semibold text-slate-700 dark:text-slate-200" value={settings.count} onChange={(e) => setSettings({...settings, count: e.target.value})}>
+                                <option value="5">{t.q5}</option><option value="10">{t.q10}</option><option value="20">{t.q20}</option><option value="all">{t.qAll}</option>
                             </select>
                         </div>
                         <div className="flex-1 flex items-end justify-end">
                             {qualifyingBook !== null ? 
-                                <div className="text-sm font-bold px-4 py-3 rounded-xl bg-yellow-50 text-yellow-600 border border-yellow-200 flex items-center gap-2"><i className="fa-solid fa-star"></i> 🎯 範圍達標！選擇「20題」或「全部」即可上榜</div> : 
-                                <div className="text-xs sm:text-sm font-medium px-4 py-3 rounded-xl bg-slate-100 text-slate-500 border flex items-center gap-2"><i className="fa-solid fa-circle-info"></i> 須單冊選滿 2 個單元 (或 20 字) 才能挑戰榮譽榜。</div>
+                                <div className="text-sm font-bold px-4 py-3 rounded-xl bg-yellow-50 text-yellow-600 border border-yellow-200 flex items-center gap-2"><i className="fa-solid fa-star"></i> {t.reqMet}</div> : 
+                                <div className="text-xs sm:text-sm font-medium px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 border border-slate-200 dark:border-slate-600 flex items-center gap-2"><i className="fa-solid fa-circle-info"></i> {t.reqFail}</div>
                             }
                         </div>
                     </div>
@@ -205,26 +320,26 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
             <section className="mb-8">
                 <div className="flex items-center gap-2 mb-4 px-2">
                     <i className="fa-solid fa-fire text-red-500 text-xl"></i>
-                    <h2 className="text-lg font-bold text-slate-700 dark:text-slate-200">2. 多人連線對戰</h2>
+                    <h2 className="text-lg font-bold text-slate-700 dark:text-slate-200">{t.sec2Title}</h2>
                 </div>
                 <div className="mb-4">
-                    <button onClick={() => onNavigate('battle')} disabled={isQuizDisabled} className={`w-full rounded-3xl p-6 sm:p-8 flex items-center justify-between transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 hover:shadow-2xl hover:shadow-red-500/20 border border-slate-700 group'}`}>
+                    <button onClick={() => onNavigate('battle')} disabled={isQuizDisabled} className={`w-full rounded-3xl p-6 sm:p-8 flex items-center justify-between transition-all ${isQuizDisabled ? 'bg-slate-100 dark:bg-slate-800 opacity-50' : 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 hover:shadow-2xl hover:shadow-red-500/20 border border-slate-700 group'}`}>
                         <div className="flex items-center gap-6">
                             <div className="w-16 h-16 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500 group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all"><i className="fa-solid fa-swords text-3xl"></i></div>
                             <div className="text-left">
-                                <h3 className="font-black text-2xl text-white mb-1 tracking-wide">星際地平線死鬥 <span className="text-xs bg-red-600 text-white px-2 py-1 rounded-full ml-2 align-middle">BETA</span></h3>
-                                <p className="text-slate-400 font-medium text-sm">2~4 人區網對戰，支援陷害與防線拔河，活到最後即是贏家！</p>
+                                <h3 className="font-black text-2xl text-slate-800 dark:text-white sm:text-white mb-1 tracking-wide">{t.battleTitle} <span className="text-xs bg-red-600 text-white px-2 py-1 rounded-full ml-2 align-middle">BETA</span></h3>
+                                <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">{t.battleDesc}</p>
                             </div>
                         </div>
                         <i className="fa-solid fa-chevron-right text-slate-500 text-2xl group-hover:text-red-400 group-hover:translate-x-2 transition-transform hidden sm:block"></i>
                     </button>
 
-                    <button onClick={() => onNavigate('memory_lobby', 'multi')} disabled={isQuizDisabled} className={`w-full mt-4 rounded-3xl p-6 sm:p-8 flex items-center justify-between transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-900 hover:shadow-2xl hover:shadow-blue-500/20 border border-slate-700 group'}`}>
+                    <button onClick={() => onNavigate('memory_lobby', 'multi')} disabled={isQuizDisabled} className={`w-full mt-4 rounded-3xl p-6 sm:p-8 flex items-center justify-between transition-all ${isQuizDisabled ? 'bg-slate-100 dark:bg-slate-800 opacity-50' : 'bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-900 hover:shadow-2xl hover:shadow-blue-500/20 border border-slate-700 group'}`}>
                         <div className="flex items-center gap-6">
                             <div className="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all"><i className="fa-solid fa-clone text-3xl"></i></div>
                             <div className="text-left">
-                                <h3 className="font-black text-2xl text-white mb-1 tracking-wide">星際記憶翻牌 <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full ml-2 align-middle">NEW</span></h3>
-                                <p className="text-slate-300 font-medium text-sm">2~4 隊區網連線回合制，支援正增強道具卡對戰！</p>
+                                <h3 className="font-black text-2xl text-slate-800 dark:text-white sm:text-white mb-1 tracking-wide">{t.memMultiTitle} <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full ml-2 align-middle">NEW</span></h3>
+                                <p className="text-slate-500 dark:text-slate-300 font-medium text-sm">{t.memMultiDesc}</p>
                             </div>
                         </div>
                         <i className="fa-solid fa-chevron-right text-slate-500 text-2xl group-hover:text-blue-400 group-hover:translate-x-2 transition-transform hidden sm:block"></i>
@@ -233,53 +348,53 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
 
                 <div className="flex items-center gap-2 mb-4 px-2 mt-8">
                     <i className="fa-solid fa-rocket text-indigo-500 text-xl"></i>
-                    <h2 className="text-lg font-bold text-slate-700 dark:text-slate-200">3. 單人挑戰模式</h2>
+                    <h2 className="text-lg font-bold text-slate-700 dark:text-slate-200">{t.sec3Title}</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <button onClick={() => onNavigate('meteor', 'zh-en')} disabled={isQuizDisabled} className={`rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-slate-800 border-slate-700 hover:border-indigo-400 hover:shadow-lg text-white'}`}>
+                    <button onClick={() => onNavigate('meteor', 'zh-en')} disabled={isQuizDisabled} className={`rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all ${isQuizDisabled ? 'bg-slate-100 dark:bg-slate-800 opacity-50' : 'bg-slate-800 border-slate-700 hover:border-indigo-400 hover:shadow-lg text-white'}`}>
                         <div className="w-14 h-14 rounded-full flex items-center justify-center bg-indigo-500 text-white"><i className="fa-solid fa-meteor text-2xl"></i></div>
-                        <div><h3 className="font-bold">看中文選英文</h3><p className="text-xs text-slate-300 mt-1">單機生存挑戰</p></div>
+                        <div><h3 className="font-bold">{t.metZhEn}</h3><p className="text-xs text-slate-300 mt-1">{t.metDesc}</p></div>
                     </button>
-                    <button onClick={() => onNavigate('meteor', 'en-zh')} disabled={isQuizDisabled} className={`rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-slate-800 border-slate-700 hover:border-emerald-400 hover:shadow-lg text-white'}`}>
+                    <button onClick={() => onNavigate('meteor', 'en-zh')} disabled={isQuizDisabled} className={`rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all ${isQuizDisabled ? 'bg-slate-100 dark:bg-slate-800 opacity-50' : 'bg-slate-800 border-slate-700 hover:border-emerald-400 hover:shadow-lg text-white'}`}>
                         <div className="w-14 h-14 rounded-full flex items-center justify-center bg-emerald-500 text-white"><i className="fa-solid fa-meteor text-2xl"></i></div>
-                        <div><h3 className="font-bold">看英文選中文</h3><p className="text-xs text-slate-300 mt-1">單機生存挑戰</p></div>
+                        <div><h3 className="font-bold">{t.metEnZh}</h3><p className="text-xs text-slate-300 mt-1">{t.metDesc}</p></div>
                     </button>
                     
-                    <button onClick={() => onNavigate('memory_lobby', 'single')} disabled={isQuizDisabled} className={`rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-slate-800 border-slate-700 hover:border-cyan-400 hover:shadow-lg text-white'}`}>
+                    <button onClick={() => onNavigate('memory_lobby', 'single')} disabled={isQuizDisabled} className={`rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all ${isQuizDisabled ? 'bg-slate-100 dark:bg-slate-800 opacity-50' : 'bg-slate-800 border-slate-700 hover:border-cyan-400 hover:shadow-lg text-white'}`}>
                         <div className="w-14 h-14 rounded-full flex items-center justify-center bg-cyan-500 text-white"><i className="fa-solid fa-clone text-2xl"></i></div>
-                        <div><h3 className="font-bold">記憶翻牌</h3><p className="text-xs text-slate-300 mt-1">單機配對練習</p></div>
+                        <div><h3 className="font-bold">{t.memSingle}</h3><p className="text-xs text-slate-300 mt-1">{t.memSingleDesc}</p></div>
                     </button>
 
                     <button onClick={() => onNavigate('meteor', 'abc')} className="rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all bg-gradient-to-br from-yellow-400 to-orange-500 hover:scale-105 hover:shadow-lg text-white border-transparent">
                         <div className="w-14 h-14 rounded-full flex items-center justify-center bg-white/20 text-white"><i className="fa-solid fa-font text-2xl"></i></div>
-                        <div><h3 className="font-bold">ABC 防衛戰</h3><p className="text-xs text-orange-100 mt-1">一二年級專屬</p></div>
+                        <div><h3 className="font-bold">{t.abcGame}</h3><p className="text-xs text-orange-100 mt-1">{t.abcDesc}</p></div>
                     </button>
                 </div>
 
-                <h2 className="text-lg font-bold text-slate-700 mb-4 px-2">4. 傳統測驗與遊戲</h2>
+                <h2 className="text-lg font-bold text-slate-700 dark:text-slate-200 mb-4 px-2">{t.sec4Title}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <button onClick={() => onNavigate('spelling')} disabled={isQuizDisabled} className={`rounded-2xl p-4 border-2 flex flex-col items-center text-center gap-2 transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-white hover:border-pink-300'}`}>
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isQuizDisabled ? 'bg-slate-200' : 'bg-pink-100 text-pink-600'}`}><i className="fa-solid fa-puzzle-piece"></i></div>
-                        <div><h3 className="font-bold text-sm">拖曳拼字</h3></div>
+                    <button onClick={() => onNavigate('spelling')} disabled={isQuizDisabled} className={`rounded-2xl p-4 border-2 flex flex-col items-center text-center gap-2 transition-all ${isQuizDisabled ? 'bg-slate-100 dark:bg-slate-800 opacity-50' : 'bg-white dark:bg-slate-800 hover:border-pink-300'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isQuizDisabled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-pink-100 text-pink-600'}`}><i className="fa-solid fa-puzzle-piece"></i></div>
+                        <div><h3 className="font-bold text-sm text-slate-700 dark:text-slate-200">{t.spelling}</h3></div>
                     </button>
-                    <button onClick={() => onNavigate('zh-en')} disabled={isQuizDisabled} className={`rounded-2xl p-4 border-2 flex flex-col items-center text-center gap-2 transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-white hover:border-blue-300'}`}>
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isQuizDisabled ? 'bg-slate-200' : 'bg-blue-100 text-blue-600'}`}><i className="fa-solid fa-keyboard"></i></div>
-                        <div><h3 className="font-bold text-sm">中翻英打字</h3></div>
+                    <button onClick={() => onNavigate('zh-en')} disabled={isQuizDisabled} className={`rounded-2xl p-4 border-2 flex flex-col items-center text-center gap-2 transition-all ${isQuizDisabled ? 'bg-slate-100 dark:bg-slate-800 opacity-50' : 'bg-white dark:bg-slate-800 hover:border-blue-300'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isQuizDisabled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-blue-100 text-blue-600'}`}><i className="fa-solid fa-keyboard"></i></div>
+                        <div><h3 className="font-bold text-sm text-slate-700 dark:text-slate-200">{t.typeZhEn}</h3></div>
                     </button>
-                    <button onClick={() => onNavigate('en-zh')} disabled={isQuizDisabled} className={`rounded-2xl p-4 border-2 flex flex-col items-center text-center gap-2 transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-white hover:border-emerald-300'}`}>
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isQuizDisabled ? 'bg-slate-200' : 'bg-emerald-100 text-emerald-600'}`}><i className="fa-solid fa-language"></i></div>
-                        <div><h3 className="font-bold text-sm">英翻中打字</h3></div>
+                    <button onClick={() => onNavigate('en-zh')} disabled={isQuizDisabled} className={`rounded-2xl p-4 border-2 flex flex-col items-center text-center gap-2 transition-all ${isQuizDisabled ? 'bg-slate-100 dark:bg-slate-800 opacity-50' : 'bg-white dark:bg-slate-800 hover:border-emerald-300'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isQuizDisabled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-emerald-100 text-emerald-600'}`}><i className="fa-solid fa-language"></i></div>
+                        <div><h3 className="font-bold text-sm text-slate-700 dark:text-slate-200">{t.typeEnZh}</h3></div>
                     </button>
-                    <button onClick={() => onNavigate('listening')} disabled={isQuizDisabled} className={`rounded-2xl p-4 border-2 flex flex-col items-center text-center gap-2 transition-all ${isQuizDisabled ? 'bg-slate-100 opacity-50' : 'bg-white hover:border-purple-300'}`}>
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isQuizDisabled ? 'bg-slate-200' : 'bg-purple-100 text-purple-600'}`}><i className="fa-solid fa-volume-high"></i></div>
-                        <div><h3 className="font-bold text-sm">聽力測驗</h3></div>
+                    <button onClick={() => onNavigate('listening')} disabled={isQuizDisabled} className={`rounded-2xl p-4 border-2 flex flex-col items-center text-center gap-2 transition-all ${isQuizDisabled ? 'bg-slate-100 dark:bg-slate-800 opacity-50' : 'bg-white dark:bg-slate-800 hover:border-purple-300'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isQuizDisabled ? 'bg-slate-200 dark:bg-slate-700' : 'bg-purple-100 text-purple-600'}`}><i className="fa-solid fa-volume-high"></i></div>
+                        <div><h3 className="font-bold text-sm text-slate-700 dark:text-slate-200">{t.listening}</h3></div>
                  </button>
              </div>
          </section>
 
          <footer className="mt-4 flex flex-col items-center justify-center text-slate-400 pb-8">
-             <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-200 mb-2 transition-transform hover:scale-110">
-                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://u864001.github.io/wutaivocab/" alt="Game QR Code" className="w-20 h-20 opacity-80" />
+             <div className="bg-white dark:bg-slate-800 p-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 mb-2 transition-transform hover:scale-110">
+                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://u864001.github.io/wutaivocab/" alt="Game QR Code" className="w-20 h-20 opacity-80 dark:invert" />
              </div>
              <p className="text-xs font-bold"><i className="fa-solid fa-qrcode"></i> 掃描 QR Code 快速加入遊戲</p>
          </footer>
