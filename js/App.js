@@ -43,14 +43,14 @@ function App() {
                 } catch (e) { console.warn("官方題庫讀取失敗", e); }
 
                 let customData = [];
-                // 🌟 修正：拿掉 gid=0，讓它自動抓取第一個分頁
-                const CUSTOM_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRMfkieB3uqgN4_yq7gAuamhO-fSAqBcH5qMbhq0ouiFgWqeizxLRKsW7mg-wJlL1TZ0sohpLz5zuA1/pub?output=csv";
+                // 🌟 加回正確的參數：gid=0&single=true&output=csv
+                const CUSTOM_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRMfkieB3uqgN4_yq7gAuamhO-fSAqBcH5qMbhq0ouiFgWqeizxLRKsW7mg-wJlL1TZ0sohpLz5zuA1/pub?gid=0&single=true&output=csv";
                 try {
                     const res2 = await fetch(`${CUSTOM_SHEET_CSV_URL}&t=${new Date().getTime()}`);
                     if (res2.ok) {
                         customData = parseCSV(await res2.text());
                     } else {
-                        console.warn("客製化題庫 404，請確認是否已點擊『檔案->共用->發布到網路』");
+                        console.warn("客製化題庫狀態錯誤");
                     }
                 } catch (e) { console.warn("客製化題庫網路錯誤", e); }
 
