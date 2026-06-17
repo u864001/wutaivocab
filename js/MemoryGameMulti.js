@@ -1,11 +1,7 @@
-const { useState, useEffect, useRef, useMemo } = React;
-
 // ===================================================================
 // 純函式工具：不依賴元件內部狀態，可在 Firestore 交易(transaction)中重複呼叫
 // ===================================================================
 
-// 加分。若有其他隊伍用了雙贏卡與「這次得分的隊伍」結盟(winWinWith === 得分隊)，
-// 該結盟隊伍也一併獲得相同分數，並在觸發後立刻清除(消耗)結盟，確保只生效一次。
 function addScore(players, scoringTeam, points) {
     const next = {};
     Object.keys(players).forEach(uid => { next[uid] = { ...players[uid] }; });
@@ -30,7 +26,6 @@ function addScore(players, scoringTeam, points) {
     return next;
 }
 
-// 換到下一隊；若下一隊被冰凍，自動解凍並再跳過一隊(可連續處理多隊同時被冰凍的狀況)。
 function advanceTurn(turnOrder, currentTeamIndex, players) {
     const nextPlayers = {};
     Object.keys(players).forEach(uid => { nextPlayers[uid] = { ...players[uid] }; });
@@ -50,22 +45,93 @@ function advanceTurn(turnOrder, currentTeamIndex, players) {
     return { currentTeamIndex: nextIndex, players: nextPlayers };
 }
 
-function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
+function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = 'zh-TW', setLang }) {
+    // 🛠️ 修復 1：將 Hooks 移入 Component 內部，絕對避免全域常數衝突 (SyntaxError)
+    const { useState, useEffect, useRef, useMemo } = React;
+
+    // 🛠️ 修復 2：建置 V4 架構標準雙語字典檔
+    const dict = {
+        'zh-TW': {
+            title: '多人記憶翻牌',
+            namePlaceholder: '輸入你的名字',
+            createRoom: '創建房間',
+            roomPlaceholder: '4位房號',
+            joinRoom: '加入',
+            backToLobby: '返回大廳',
+            leaveRoom: '離開房間',
+            roomCode: '房間代碼',
+            chooseTeam: '選擇你的隊伍',
+            currentPlayers: '目前玩家',
+            startGame: '開始遊戲',
+            waitingHost: '等待房主開始...',
+            yourTurn: '🔥 你的回合',
+            teamAction: ' 行動中',
+            championBoard: '🏆 霧臺國小英雄榜 🏆',
+            selectTargetText1: '請點擊場上任',
+            selectTargetText2: '張未翻開的卡片',
+            chooseTargetTeam: '請選擇施放目標',
+            useOn: '對【',
+            useAction: '】使用',
+            minigameRunning: '正在進行金幣雨小遊戲...',
+            pleaseWait: '請稍候，遊戲會自動繼續',
+            score: '得分:',
+            minigameSettle: '金幣雨結算',
+            got: '獲得',
+            errorNoName: '請輸入名字',
+            errorNoRoom: '請輸入房號',
+            errorWrongRoom: '房號錯誤，請確認後再試一次',
+            errorStarted: '這場遊戲已經開始，無法加入',
+            errorNeedTeams: '至少需要 2 個不同的隊伍才能開始遊戲，請大家先選好隊伍',
+            errorNoWords: '題庫單字不足，請先回大廳選擇複習範圍'
+        },
+        'en-US': {
+            title: 'Multiplayer Memory',
+            namePlaceholder: 'Enter your name',
+            createRoom: 'Create Room',
+            roomPlaceholder: '4-digit Code',
+            joinRoom: 'Join',
+            backToLobby: 'Back to Lobby',
+            leaveRoom: 'Leave Room',
+            roomCode: 'Room Code',
+            chooseTeam: 'Choose Your Team',
+            currentPlayers: 'Current Players',
+            startGame: 'Start Game',
+            waitingHost: 'Waiting for Host...',
+            yourTurn: '🔥 Your Turn',
+            teamAction: "'s Turn",
+            championBoard: '🏆 Wutai Heroes 🏆',
+            selectTargetText1: 'Please click',
+            selectTargetText2: 'unflipped card(s)',
+            chooseTargetTeam: 'Choose Target Team',
+            useOn: 'Use on [',
+            useAction: ']',
+            minigameRunning: 'is playing Coin Rain...',
+            pleaseWait: 'Please wait, game will resume shortly',
+            score: 'Score:',
+            minigameSettle: 'Coin Rain Results',
+            got: 'got',
+            errorNoName: 'Please enter a name',
+            errorNoRoom: 'Please enter a room code',
+            errorWrongRoom: 'Invalid room code, please try again',
+            errorStarted: 'Game already started, cannot join',
+            errorNeedTeams: 'At least 2 different teams are required to start',
+            errorNoWords: 'Not enough words in database, please select units in lobby'
+        }
+    };
+    const t = dict[lang] || dict['zh-TW'];
+
     const [view, setView] = useState('menu');
     const [playerName, setPlayerName] = useState('');
     const [roomCodeInput, setRoomCodeInput] = useState('');
     const [roomData, setRoomData] = useState(null);
     const [errorMsg, setErrorMsg] = useState('');
 
-    // 金幣雨小遊戲狀態：刻意保留在「本機端」，因為這是個人裝置的本地小遊戲
     const [miniGameItems, setMiniGameItems] = useState([]);
     const [miniGameActive, setMiniGameActive] = useState(false);
     const [isExploded, setIsExploded] = useState(false);
     const [miniGameScore, setMiniGameScore] = useState(0);
     const [miniGameSettlement, setMiniGameSettlement] = useState(null);
     const [effectSplash, setEffectSplash] = useState(null);
-
-    // 用 ref 即時記錄金幣雨分數，避免 setTimeout callback 讀到過期(stale)的分數
     const miniGameScoreRef = useRef(0);
 
     const teamNames = ['紅隊', '藍隊', '綠隊', '黃隊'];
@@ -80,7 +146,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
     const isMyTurn = () => roomData?.currentTeam === myTeam;
     const playSfx = (name) => { if (window.soundEngine) window.soundEngine.play(name); };
 
-    // 可用單字：優先使用大廳設定的範圍，若篩選後沒有單字則退回完整題庫，避免卡關
     const availableWords = useMemo(() => {
         if (!wordDatabase || wordDatabase.length === 0) return [];
         if (settings?.selectedUnits?.length) {
@@ -90,27 +155,21 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         return wordDatabase;
     }, [wordDatabase, settings]);
 
-    // ---- Firestore 房間監聽 ----
     useEffect(() => {
         if (!roomData?.id || !dbRef) return;
         const unsubscribe = dbRef.collection('rooms').doc(roomData.id).onSnapshot(doc => {
-            if (doc.exists) {
-                setRoomData({ id: doc.id, ...doc.data() });
-            } else {
-                onBack();
-            }
+            if (doc.exists) setRoomData({ id: doc.id, ...doc.data() });
+            else onBack();
         });
         return () => unsubscribe();
     }, [roomData?.id]);
 
-    // ---- 依房間狀態切換畫面，獨立成自己的 effect，避免閉包記住舊的 view 值 ----
     useEffect(() => {
         if (!roomData) return;
         if (roomData.status === 'playing' && view !== 'playing') setView('playing');
         if (roomData.status === 'finished' && view !== 'result') setView('result');
     }, [roomData?.status]);
 
-    // ---- 只由房主負責偵測「全部卡片配對完成」並寫入 finished，避免每位玩家都各自重複寫入 ----
     useEffect(() => {
         if (!roomData?.board || roomData.status !== 'playing' || !dbRef || !user) return;
         if (roomData.hostId !== user.uid) return;
@@ -120,7 +179,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         }
     }, [roomData?.board, roomData?.status]);
 
-    // ---- 安全機制：若道具效果卡住超過 20 秒(例如發動者裝置斷線)，由房主自動清除，避免整場卡死 ----
     useEffect(() => {
         if (!roomData?.id || !dbRef || !user || roomData.hostId !== user.uid) return;
         const interval = setInterval(() => {
@@ -132,9 +190,8 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         return () => clearInterval(interval);
     }, [roomData?.id, roomData?.activeEffect, roomData?.hostId, user?.uid]);
 
-    // ---- 建立房間 ----
     const handleCreateRoom = async () => {
-        if (!playerName.trim()) return setErrorMsg('請輸入名字');
+        if (!playerName.trim()) return setErrorMsg(t.errorNoName);
         setErrorMsg('');
         const newCode = Math.floor(1000 + Math.random() * 9000).toString();
         const initialRoom = {
@@ -146,16 +203,15 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         setView('waiting');
     };
 
-    // ---- 加入房間 ----
     const handleJoinRoom = async () => {
-        if (!playerName.trim()) return setErrorMsg('請輸入名字');
-        if (!roomCodeInput.trim()) return setErrorMsg('請輸入房號');
+        if (!playerName.trim()) return setErrorMsg(t.errorNoName);
+        if (!roomCodeInput.trim()) return setErrorMsg(t.errorNoRoom);
         setErrorMsg('');
         const snap = await dbRef.collection('rooms').where('code', '==', roomCodeInput.trim()).get();
-        if (snap.empty) return setErrorMsg('房號錯誤，請確認後再試一次');
+        if (snap.empty) return setErrorMsg(t.errorWrongRoom);
         const roomDoc = snap.docs[0];
         const data = roomDoc.data();
-        if (data.status !== 'waiting') return setErrorMsg('這場遊戲已經開始，無法加入');
+        if (data.status !== 'waiting') return setErrorMsg(t.errorStarted);
         const count = Object.keys(data.players || {}).length;
         const defaultTeam = teamNames[count % teamNames.length];
         const newPlayer = { name: playerName.trim(), team: defaultTeam, isHost: false, score: 0, isFrozen: false, winWinWith: null };
@@ -164,18 +220,16 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         setView('waiting');
     };
 
-    // ---- 在等待室自由換隊(可多人共用同一隊) ----
     const handleChangeTeam = async (newTeam) => {
         if (!roomData || !user) return;
         await dbRef.collection('rooms').doc(roomData.id).update({ [`players.${user.uid}.team`]: newTeam });
     };
 
-    // ---- 房主開始遊戲：用真實題庫(wordDatabase)產生卡牌，而不是測試用的 A~F 假資料 ----
     const handleStartGame = async () => {
         setErrorMsg('');
         const teams = [...new Set(Object.values(roomData.players).map(p => p.team))];
-        if (teams.length < 2) return setErrorMsg('至少需要 2 個不同的隊伍才能開始遊戲，請大家先選好隊伍');
-        if (availableWords.length === 0) return setErrorMsg('題庫單字不足，請先回大廳選擇複習範圍');
+        if (teams.length < 2) return setErrorMsg(t.errorNeedTeams);
+        if (availableWords.length === 0) return setErrorMsg(t.errorNoWords);
 
         const shuffledWords = [...availableWords].sort(() => Math.random() - 0.5);
         const pairCount = Math.min(shuffledWords.length, 6);
@@ -208,14 +262,12 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         });
     };
 
-    // ---- 點擊卡片 ----
     const handleCardClick = async (index) => {
         if (!roomData || !isMyTurn() || roomData.turnState.isAnimating || view !== 'playing') return;
         const roomRef = dbRef.collection('rooms').doc(roomData.id);
         const card = roomData.board[index];
         if (!card) return;
 
-        // 道具發動中，正在等待玩家選擇目標卡片(上鎖卡 / 偷看卡)
         if (roomData.activeEffect?.step === 'selecting_target') {
             if (card.status !== 'hidden' || card.isPowerUp) return;
             if (roomData.activeEffect.power === 'lock') {
@@ -238,7 +290,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         if (card.status === 'matched' || roomData.turnState.flippedIndices.includes(index)) return;
         if (card.lockedBy && card.lockedBy !== myTeam) return;
 
-        // 翻到道具卡：立即公告並發動效果，不佔用本回合的翻牌次數
         if (card.isPowerUp) {
             playSfx('powerup');
             setEffectSplash(card);
@@ -254,7 +305,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
             return;
         }
 
-        // 一般翻牌邏輯
         const newFlipped = [...roomData.turnState.flippedIndices, index];
         if (newFlipped.length === 1) {
             await roomRef.update({ "turnState.flippedIndices": newFlipped });
@@ -297,7 +347,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         }
     };
 
-    // ---- 道具卡公告完之後，決定接下來要做什麼 ----
     const processEffectAuto = async (card) => {
         const roomRef = dbRef.collection('rooms').doc(roomData.id);
         if (['peek', 'lock'].includes(card.power)) {
@@ -309,7 +358,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         }
     };
 
-    // ---- 實際執行道具效果 ----
     const executeEffect = async (power, targetTeam = null) => {
         const roomRef = dbRef.collection('rooms').doc(roomData.id);
 
@@ -360,7 +408,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                     const flipped = turnState.flippedIndices;
 
                     if (flipped.length === 0) {
-                        // 閃電卡是本回合「第一張」被選到：隨機劈中場上一組尚未翻開的配對
                         const hiddenPairs = board.filter(c => c.status === 'hidden' && !c.isPowerUp);
                         if (hiddenPairs.length === 0) {
                             tx.update(roomRef, { activeEffect: null });
@@ -373,20 +420,17 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                             tx.update(roomRef, { board, players, activeEffect: null, "turnState.comboCount": (turnState.comboCount || 0) + 1 });
                         }
                     } else {
-                        // 閃電卡是本回合「第二張」被選到：劈中第一張卡對應的另一半
                         const firstCard = board[flipped[0]];
                         const pairIdx = board.findIndex(c => c.matchId === firstCard.matchId && c.id !== firstCard.id);
                         board = board.map((c, idx) => (idx === flipped[0] || idx === pairIdx) ? { ...c, status: 'matched' } : c);
                         players = addScore(players, myTeam, 10);
 
                         if ((turnState.comboCount || 0) === 0) {
-                            // 這是本隊本回合的第一輪：正常開啟第二回合，保留同隊繼續翻牌
                             tx.update(roomRef, {
                                 board, players, activeEffect: null,
                                 turnState: { flippedIndices: [], comboCount: 1, isAnimating: false }
                             });
                         } else {
-                            // 已經身處加碼回合(第二輪以上)：完成配對給分，但不再開啟下一輪，換下一隊
                             const advanced = advanceTurn(turnOrder, currentTeamIndex, players);
                             tx.update(roomRef, {
                                 board, players: advanced.players, activeEffect: null,
@@ -401,7 +445,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         } catch (e) { console.error('道具效果執行失敗', e); }
     };
 
-    // ---- 金幣雨：開始 ----
     const startCoinMiniGame = () => {
         miniGameScoreRef.current = 0;
         setMiniGameActive(true);
@@ -411,18 +454,14 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         const items = [];
         for (let i = 0; i < 40; i++) {
             items.push({
-                id: i,
-                type: i % 4 === 0 ? 'bomb' : 'coin',
-                left: Math.random() * 90,
-                delay: Math.random() * 6,        // 0~6 秒內陸續出現
-                duration: 2 + Math.random() * 1  // 落下 2~3 秒，確保最晚也能在第 9 秒前落地完畢
+                id: i, type: i % 4 === 0 ? 'bomb' : 'coin',
+                left: Math.random() * 90, delay: Math.random() * 6, duration: 2 + Math.random() * 1
             });
         }
         setMiniGameItems(items);
         setTimeout(() => endMiniGame(), 10000);
     };
 
-    // ---- 金幣雨：結束。無論是踩到炸彈提前結束、還是安全撐完 10 秒，都先顯示結算畫面，再把分數併入主分數 ----
     const endMiniGame = () => {
         const finalScore = miniGameScoreRef.current;
         setMiniGameActive(false);
@@ -443,17 +482,33 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
         }, 1800);
     };
 
-    // --- 頒獎台 UI ---
+    // 🛠️ 修復 3：全頁面整合雙語切換按鈕與導覽列同步設計
+    const TopHeader = () => (
+        <header className="h-14 sm:h-16 flex justify-between items-center bg-slate-900 px-4 border-b border-slate-700 shrink-0 z-30 shadow-md">
+            <button onClick={onBack} className="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors border border-slate-600">
+                <i className="fa-solid fa-arrow-left text-lg text-white"></i>
+            </button>
+            <div className="flex-1 text-center font-black text-lg tracking-wider text-slate-200 truncate px-4">
+                {t.title}
+            </div>
+            {setLang && (
+                <button onClick={() => setLang(lang === 'zh-TW' ? 'en-US' : 'zh-TW')}
+                    className="px-3 py-1.5 rounded-lg bg-indigo-600/80 hover:bg-indigo-500 text-white font-bold border border-indigo-400 transition-colors shadow-sm">
+                    {lang === 'zh-TW' ? 'EN' : '中文'}
+                </button>
+            )}
+        </header>
+    );
+
     if (view === 'result') {
-        const sortedTeams = Object.values(roomData.players)
-            .sort((a, b) => b.score - a.score);
-        const podium = [sortedTeams[1], sortedTeams[0], sortedTeams[2]].filter(t => t); // 2, 1, 3 順序排版
+        const sortedTeams = Object.values(roomData.players).sort((a, b) => b.score - a.score);
+        const podium = [sortedTeams[1], sortedTeams[0], sortedTeams[2]].filter(team => team);
 
         return (
             <div className="fixed inset-0 z-[300] bg-slate-950 flex flex-col items-center justify-center p-6 text-white overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/40 via-transparent to-transparent animate-pulse"></div>
-                <h1 className="text-4xl sm:text-6xl font-black text-yellow-400 mb-8 sm:mb-16 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)] z-10 animate-bounce">
-                    🏆 全校英雄榜 🏆
+                <h1 className="text-4xl sm:text-6xl font-black text-yellow-400 mb-8 sm:mb-16 drop-shadow-[0_0_15px_rgba(234,179,8,0.5)] z-10 animate-bounce text-center">
+                    {t.championBoard}
                 </h1>
 
                 <div className="relative flex items-end justify-center w-full max-w-4xl h-64 sm:h-80 mb-12 z-10 px-4">
@@ -498,76 +553,72 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                     )}
                 </div>
 
-                {sortedTeams.length > 3 && (
-                    <div className="bg-slate-900/80 px-8 py-3 rounded-full border border-slate-700 text-slate-400 font-bold mb-8 animate-fadeUp">
-                        4. {sortedTeams[3].name} - {sortedTeams[3].score} 分
-                    </div>
-                )}
-
                 <button onClick={onBack} className="px-12 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full text-xl font-black shadow-xl hover:scale-110 transition-transform active:scale-95 z-10 border-2 border-white/20">
-                    <i className="fa-solid fa-house mr-2"></i> 返回大廳
+                    <i className="fa-solid fa-house mr-2"></i> {t.backToLobby}
                 </button>
             </div>
         );
     }
 
-    // --- 選單畫面 ---
     if (view === 'menu') return (
-        <div className="flex-1 flex items-center justify-center bg-slate-900 p-4 text-white">
-            <div className="bg-slate-800 p-8 rounded-3xl w-full max-w-md border border-slate-700 shadow-2xl">
-                <h1 className="text-3xl font-black text-center mb-6">多人記憶翻牌</h1>
-                <input type="text" value={playerName} onChange={e => setPlayerName(e.target.value)} placeholder="輸入你的名字" className="w-full p-4 rounded-xl bg-slate-900 border-2 border-slate-600 mb-4" />
-                <div className="grid grid-cols-2 gap-4">
-                    <button onClick={handleCreateRoom} className="bg-blue-600 p-4 rounded-xl font-bold">創建房間</button>
-                    <div className="flex flex-col gap-2">
-                        <input type="text" maxLength="4" value={roomCodeInput} onChange={e => setRoomCodeInput(e.target.value)} placeholder="4位房號" className="p-2 rounded-lg bg-slate-900 border border-slate-600 text-center text-white" />
-                        <button onClick={handleJoinRoom} className="bg-indigo-600 p-2 rounded-lg font-bold">加入</button>
-                    </div>
-                </div>
-                {errorMsg && <div className="text-red-400 text-sm mt-4 text-center font-bold">{errorMsg}</div>}
-                <button onClick={onBack} className="w-full mt-6 text-slate-400 text-sm">返回大廳</button>
-            </div>
-        </div>
-    );
-
-    // --- 等待室畫面 ---
-    if (view === 'waiting') return (
-        <div className="flex-1 flex items-center justify-center bg-slate-900 p-4 text-white">
-            <div className="bg-slate-800 p-8 rounded-3xl w-full max-w-md text-center border border-slate-700">
-                <div className="text-sm text-slate-400">房間代碼</div>
-                <div className="text-5xl font-black text-yellow-400 mb-6 tracking-widest">{roomData.code}</div>
-
-                <div className="text-left text-sm text-slate-400 mb-2">選擇你的隊伍</div>
-                <div className="grid grid-cols-2 gap-2 mb-6">
-                    {teamNames.map(t => (
-                        <button key={t} onClick={() => handleChangeTeam(t)}
-                            className={`p-3 rounded-xl font-bold border-2 transition-all ${teamColors[t]} ${myTeam === t ? 'ring-4 ring-white scale-105' : 'opacity-50 hover:opacity-100 border-transparent'}`}>
-                            {t}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="text-left text-sm text-slate-400 mb-2">目前玩家</div>
-                <div className="space-y-2 mb-8">
-                    {Object.values(roomData.players).map((p, i) => (
-                        <div key={i} className={`p-3 rounded-xl flex justify-between ${teamColors[p.team]}`}>
-                            <span>{p.name}{p.isHost ? ' 👑' : ''}</span><span>{p.team}</span>
+        <div className="flex flex-col h-full bg-slate-950">
+            <TopHeader />
+            <div className="flex-1 flex items-center justify-center p-4 text-white">
+                <div className="bg-slate-800 p-8 rounded-3xl w-full max-w-md border border-slate-700 shadow-2xl">
+                    <input type="text" value={playerName} onChange={e => setPlayerName(e.target.value)} placeholder={t.namePlaceholder} className="w-full p-4 rounded-xl bg-slate-900 border-2 border-slate-600 mb-4" />
+                    <div className="grid grid-cols-2 gap-4">
+                        <button onClick={handleCreateRoom} className="bg-blue-600 hover:bg-blue-500 p-4 rounded-xl font-bold transition-colors">{t.createRoom}</button>
+                        <div className="flex flex-col gap-2">
+                            <input type="text" maxLength="4" value={roomCodeInput} onChange={e => setRoomCodeInput(e.target.value)} placeholder={t.roomPlaceholder} className="p-2 rounded-lg bg-slate-900 border border-slate-600 text-center text-white font-black" />
+                            <button onClick={handleJoinRoom} className="bg-indigo-600 hover:bg-indigo-500 p-2 rounded-lg font-bold transition-colors">{t.joinRoom}</button>
                         </div>
-                    ))}
+                    </div>
+                    {errorMsg && <div className="text-red-400 text-sm mt-4 text-center font-bold">{errorMsg}</div>}
                 </div>
-
-                {errorMsg && <div className="text-red-400 text-sm mb-4 font-bold">{errorMsg}</div>}
-
-                {roomData.hostId === user.uid ? (
-                    <button onClick={handleStartGame} className="w-full bg-blue-600 py-4 rounded-xl font-black text-xl animate-pulse shadow-lg shadow-blue-600/30">開始遊戲</button>
-                ) : <div className="text-slate-400 animate-pulse">等待房主開始...</div>}
-
-                <button onClick={onBack} className="w-full mt-4 text-slate-400 text-sm">離開房間</button>
             </div>
         </div>
     );
 
-    // --- 遊戲進行中畫面 ---
+    if (view === 'waiting') return (
+        <div className="flex flex-col h-full bg-slate-950">
+            <TopHeader />
+            <div className="flex-1 flex items-center justify-center p-4 text-white">
+                <div className="bg-slate-800 p-8 rounded-3xl w-full max-w-md text-center border border-slate-700 shadow-2xl">
+                    <div className="text-sm text-slate-400">{t.roomCode}</div>
+                    <div className="text-5xl font-black text-yellow-400 mb-6 tracking-widest bg-slate-900 py-3 rounded-xl border border-yellow-500/30">{roomData.code}</div>
+
+                    <div className="text-left text-sm text-slate-400 mb-2">{t.chooseTeam}</div>
+                    <div className="grid grid-cols-2 gap-2 mb-6">
+                        {teamNames.map(teamName => (
+                            <button key={teamName} onClick={() => handleChangeTeam(teamName)}
+                                className={`p-3 rounded-xl font-bold border-2 transition-all ${teamColors[teamName]} ${myTeam === teamName ? 'ring-4 ring-white scale-105' : 'opacity-50 hover:opacity-100 border-transparent'}`}>
+                                {t[teamName === '紅隊' ? 'redTeam' : teamName === '藍隊' ? 'blueTeam' : teamName === '綠隊' ? 'greenTeam' : 'yellowTeam'] || teamName}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="text-left text-sm text-slate-400 mb-2">{t.currentPlayers}</div>
+                    <div className="space-y-2 mb-8 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                        {Object.values(roomData.players).map((p, i) => (
+                            <div key={i} className={`p-3 rounded-xl flex justify-between font-bold border border-slate-600/50 shadow-sm ${teamColors[p.team]}`}>
+                                <span>{p.name}{p.isHost ? ' 👑' : ''}</span>
+                                <span>{t[p.team === '紅隊' ? 'redTeam' : p.team === '藍隊' ? 'blueTeam' : p.team === '綠隊' ? 'greenTeam' : 'yellowTeam'] || p.team}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {errorMsg && <div className="text-red-400 text-sm mb-4 font-bold">{errorMsg}</div>}
+
+                    {roomData.hostId === user.uid ? (
+                        <button onClick={handleStartGame} className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black text-xl animate-pulse shadow-[0_0_15px_rgba(37,99,235,0.5)] transition-colors">{t.startGame}</button>
+                    ) : <div className="text-slate-400 animate-pulse font-bold bg-slate-900 py-4 rounded-xl">{t.waitingHost}</div>}
+
+                    <button onClick={onBack} className="w-full mt-6 text-slate-400 hover:text-white transition-colors text-sm underline underline-offset-4">{t.leaveRoom}</button>
+                </div>
+            </div>
+        </div>
+    );
+
     const totalCards = roomData.board.length;
     const gridCols = 5;
     const gridRows = Math.max(1, Math.ceil(totalCards / gridCols));
@@ -576,50 +627,60 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
 
     return (
         <div className="fixed inset-0 flex flex-col bg-slate-950 text-white overflow-hidden">
-            <header className="h-14 sm:h-16 flex justify-between items-center bg-slate-900 px-4 border-b border-slate-800 shrink-0 z-30">
-                <button onClick={onBack} className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center"><i className="fa-solid fa-arrow-left text-sm"></i></button>
-                <div className="text-center">
-                    <div className={`text-base sm:text-lg font-black ${isMyTurn() ? 'text-yellow-400 animate-pulse' : 'text-slate-400'}`}>
-                        {isMyTurn() ? '🔥 你的回合' : `${roomData.currentTeam} 行動中`}
+            <header className="h-14 sm:h-16 flex justify-between items-center bg-slate-900 px-4 border-b border-slate-800 shrink-0 z-30 shadow-md">
+                <button onClick={onBack} className="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors">
+                    <i className="fa-solid fa-arrow-left text-lg"></i>
+                </button>
+                <div className="flex-1 flex justify-center items-center">
+                    <div className={`text-base sm:text-lg font-black px-6 py-1.5 rounded-full border-2 ${isMyTurn() ? 'text-yellow-400 border-yellow-500/50 bg-yellow-900/20 animate-pulse' : 'text-slate-400 border-slate-700 bg-slate-800/50'}`}>
+                        {isMyTurn() ? t.yourTurn : `${t[roomData.currentTeam === '紅隊' ? 'redTeam' : roomData.currentTeam === '藍隊' ? 'blueTeam' : roomData.currentTeam === '綠隊' ? 'greenTeam' : 'yellowTeam'] || roomData.currentTeam}${t.teamAction}`}
                     </div>
                 </div>
-                <div className="flex gap-1">
-                    {Object.keys(teamScores).map(t => (
-                        <div key={t} className={`px-2 py-0.5 rounded text-[10px] font-bold ${teamColors[t]}`}>{t} {teamScores[t]}</div>
+                <div className="flex gap-1.5">
+                    {Object.keys(teamScores).map(teamName => (
+                        <div key={teamName} className={`px-2 py-1 rounded-md text-xs sm:text-sm font-black border border-white/20 shadow-sm flex flex-col items-center leading-tight ${teamColors[teamName]}`}>
+                            <span>{t[teamName === '紅隊' ? 'redTeam' : teamName === '藍隊' ? 'blueTeam' : teamName === '綠隊' ? 'greenTeam' : 'yellowTeam'] || teamName}</span>
+                            <span>{teamScores[teamName]}</span>
+                        </div>
                     ))}
                 </div>
             </header>
 
             {roomData.activeEffect?.step === 'selecting_target' && isMyTurn() && (
-                <div className="absolute top-16 left-1/2 -translate-x-1/2 z-40 bg-purple-600 text-white px-6 py-2 rounded-full font-black shadow-2xl animate-bounce border-2 border-white">
-                    請點擊場上任 {roomData.activeEffect.power === 'peek' ? '2' : '1'} 張未翻開的卡片
+                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 bg-purple-600 text-white px-6 py-3 rounded-full font-black shadow-2xl animate-bounce border-2 border-white">
+                    {t.selectTargetText1} {roomData.activeEffect.power === 'peek' ? '2' : '1'} {t.selectTargetText2}
                 </div>
             )}
 
             {roomData.activeEffect?.step === 'choosing_team' && isMyTurn() && (
-                <div className="absolute inset-0 z-40 bg-black/60 flex flex-col items-center justify-center p-4">
-                    <h2 className="text-2xl font-black mb-4">請選擇施放目標</h2>
-                    <div className="flex gap-4">
-                        {roomData.turnOrder.filter(t => t !== myTeam).map(team => (
-                            <button key={team} onClick={() => executeEffect(roomData.activeEffect.power, team)} className={`px-6 py-3 rounded-xl font-bold ${teamColors[team]}`}>對【{team}】使用</button>
+                <div className="absolute inset-0 z-40 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-4">
+                    <h2 className="text-3xl font-black mb-8 drop-shadow-lg">{t.chooseTargetTeam}</h2>
+                    <div className="flex flex-wrap justify-center gap-4">
+                        {roomData.turnOrder.filter(teamName => teamName !== myTeam).map(teamName => (
+                            <button key={teamName} onClick={() => executeEffect(roomData.activeEffect.power, teamName)} 
+                                className={`px-8 py-4 rounded-2xl font-black text-xl border-4 shadow-xl hover:scale-110 transition-transform active:scale-95 ${teamColors[teamName]}`}>
+                                {t.useOn}{t[teamName === '紅隊' ? 'redTeam' : teamName === '藍隊' ? 'blueTeam' : teamName === '綠隊' ? 'greenTeam' : 'yellowTeam'] || teamName}{t.useAction}
+                            </button>
                         ))}
                     </div>
                 </div>
             )}
 
             {roomData.activeEffect?.step === 'minigame_running' && !miniGameActive && (
-                <div className="absolute inset-0 z-40 bg-black/50 flex items-center justify-center p-4">
-                    <div className="bg-slate-800 px-8 py-6 rounded-2xl text-center border border-yellow-500/50">
-                        <i className="fa-solid fa-coins text-4xl text-yellow-400 mb-3 animate-bounce"></i>
-                        <p className="text-lg font-bold">{roomData.activeEffect.triggerTeam} 正在進行金幣雨小遊戲...</p>
-                        <p className="text-sm text-slate-400 mt-1">請稍候，遊戲會自動繼續</p>
+                <div className="absolute inset-0 z-40 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-slate-800 px-8 py-8 rounded-3xl text-center border-2 border-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.3)]">
+                        <i className="fa-solid fa-coins text-6xl text-yellow-400 mb-4 animate-bounce"></i>
+                        <p className="text-2xl font-black mb-2">
+                            {t[roomData.activeEffect.triggerTeam === '紅隊' ? 'redTeam' : roomData.activeEffect.triggerTeam === '藍隊' ? 'blueTeam' : roomData.activeEffect.triggerTeam === '綠隊' ? 'greenTeam' : 'yellowTeam'] || roomData.activeEffect.triggerTeam} {t.minigameRunning}
+                        </p>
+                        <p className="text-slate-400 font-bold">{t.pleaseWait}</p>
                     </div>
                 </div>
             )}
 
-            <main className="flex-1 relative flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+            <main className="flex-1 relative flex items-center justify-center p-2 sm:p-6 overflow-hidden">
                 <div
-                    className={`gap-1.5 sm:gap-3 w-full h-full max-w-5xl max-h-full ${roomData.activeEffect?.step === 'selecting_target' && isMyTurn() ? 'ring-4 ring-purple-500 rounded-2xl bg-purple-900/20' : ''}`}
+                    className={`gap-2 sm:gap-4 w-full h-full max-w-6xl max-h-full transition-all duration-300 ${roomData.activeEffect?.step === 'selecting_target' && isMyTurn() ? 'ring-4 ring-purple-500/50 rounded-2xl bg-purple-900/10 p-2' : ''}`}
                     style={{ display: 'grid', gridTemplateColumns: `repeat(${gridCols}, 1fr)`, gridTemplateRows: `repeat(${gridRows}, 1fr)` }}
                 >
                     {roomData.board.map((card, idx) => {
@@ -633,19 +694,19 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                                 key={idx}
                                 onClick={() => handleCardClick(idx)}
                                 disabled={isMatched || (roomData.turnState.isAnimating && roomData.activeEffect?.step !== 'selecting_target')}
-                                className={`relative rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-300 border-2 overflow-hidden ${
-                                    isFlipped ? 'bg-slate-800 border-slate-600' : 'bg-blue-600 border-blue-400 shadow-[0_4px_0_#1e40af]'
-                                } ${isMatched ? 'opacity-20' : ''} ${isRadarRevealed ? 'opacity-60 ring-2 ring-green-400' : ''}`}
+                                className={`relative rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300 border-2 overflow-hidden ${
+                                    isFlipped ? 'bg-slate-800 border-slate-600 shadow-inner' : 'bg-gradient-to-b from-blue-500 to-blue-700 border-blue-400 shadow-[0_6px_0_#1e3a8a] active:translate-y-[6px] active:shadow-none hover:brightness-110'
+                                } ${isMatched ? 'opacity-30 grayscale' : ''} ${isRadarRevealed ? 'opacity-80 ring-4 ring-green-400/80 bg-slate-700' : ''}`}
                             >
                                 {isFlipped ? (
-                                    <div className="text-center p-1">
-                                        {card.isPowerUp ? <i className={`fa-solid ${card.icon} text-xl sm:text-3xl text-yellow-400`}></i> : <span className="text-sm sm:text-2xl font-bold break-all leading-none">{card.text}</span>}
+                                    <div className="text-center p-2">
+                                        {card.isPowerUp ? <i className={`fa-solid ${card.icon} text-3xl sm:text-5xl text-yellow-400 drop-shadow-md`}></i> : <span className="text-lg sm:text-3xl font-black break-all leading-tight">{card.text}</span>}
                                     </div>
                                 ) : (
-                                    <i className="fa-solid fa-question text-blue-300/10 text-xl sm:text-3xl"></i>
+                                    <i className="fa-solid fa-question text-white/20 text-3xl sm:text-5xl drop-shadow-sm"></i>
                                 )}
                                 {card.lockedBy && !isFlipped && (
-                                    <div className="absolute inset-0 bg-red-900/40 flex items-center justify-center"><i className="fa-solid fa-lock text-red-500"></i></div>
+                                    <div className="absolute inset-0 bg-red-900/60 backdrop-blur-[2px] flex items-center justify-center"><i className="fa-solid fa-lock text-red-500 text-3xl drop-shadow-[0_0_5px_rgba(0,0,0,0.8)]"></i></div>
                                 )}
                             </button>
                         );
@@ -654,13 +715,15 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
             </main>
 
             {miniGameActive && (
-                <div className="fixed inset-0 z-[100] bg-indigo-950/90 overflow-hidden touch-none">
-                    <div className="absolute top-20 left-1/2 -translate-x-1/2 text-4xl font-black text-yellow-400 z-[110]">得分: {miniGameScore}</div>
+                <div className="fixed inset-0 z-[100] bg-indigo-950/95 overflow-hidden touch-none backdrop-blur-sm">
+                    <div className="absolute top-24 left-1/2 -translate-x-1/2 text-5xl font-black text-yellow-400 z-[110] drop-shadow-[0_0_15px_rgba(234,179,8,0.6)] bg-slate-900/50 px-8 py-3 rounded-full border border-yellow-500/30">
+                        {t.score} {miniGameScore}
+                    </div>
                     {miniGameItems.map(item => (
                         <div
                             key={item.id}
-                            className="absolute text-5xl animate-[fall_linear_forwards] cursor-pointer p-4"
-                            style={{ left: `${item.left}%`, top: '-10%', animationDuration: `${item.duration}s`, animationDelay: `${item.delay}s`, zIndex: item.type === 'bomb' ? 2 : 1 }}
+                            className="absolute text-6xl sm:text-7xl animate-[fall_linear_forwards] cursor-pointer p-6 hover:scale-110 transition-transform"
+                            style={{ left: `${item.left}%`, top: '-15%', animationDuration: `${item.duration}s`, animationDelay: `${item.delay}s`, zIndex: item.type === 'bomb' ? 2 : 1 }}
                             onPointerDown={() => {
                                 if (isExploded) return;
                                 if (item.type === 'bomb') {
@@ -673,55 +736,63 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user }) {
                                 }
                             }}
                         >
-                            <i className={`fa-solid ${item.type === 'coin' ? 'fa-coins text-yellow-400' : 'fa-bomb text-red-500'} drop-shadow-lg`}></i>
+                            <i className={`fa-solid ${item.type === 'coin' ? 'fa-coins text-yellow-400' : 'fa-bomb text-red-500'} drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]`}></i>
                         </div>
                     ))}
                     {isExploded && (
-                        <div className="absolute inset-0 bg-red-600/80 flex items-center justify-center z-[120]">
-                            <i className="fa-solid fa-explosion text-9xl text-white animate-ping"></i>
+                        <div className="absolute inset-0 bg-red-600/90 flex items-center justify-center z-[120]">
+                            <i className="fa-solid fa-explosion text-[200px] text-white animate-ping drop-shadow-2xl"></i>
                         </div>
                     )}
                 </div>
             )}
 
             {miniGameSettlement && (
-                <div className="fixed inset-0 z-[150] bg-black/85 flex flex-col items-center justify-center text-white">
-                    <i className="fa-solid fa-coins text-6xl text-yellow-400 mb-4 animate-bounce"></i>
-                    <h2 className="text-2xl font-black mb-2">金幣雨結算</h2>
-                    <p className="text-5xl font-black text-yellow-400">+{miniGameSettlement.score} 分</p>
+                <div className="fixed inset-0 z-[150] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center text-white">
+                    <i className="fa-solid fa-coins text-8xl text-yellow-400 mb-6 animate-bounce drop-shadow-[0_0_30px_rgba(234,179,8,0.5)]"></i>
+                    <h2 className="text-4xl font-black mb-4 tracking-widest">{t.minigameSettle}</h2>
+                    <p className="text-7xl font-black text-yellow-400">+{miniGameSettlement.score}</p>
                 </div>
             )}
 
             {effectSplash && (
-                <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-black/80 backdrop-blur-md animate-[fadeIn_0.3s_ease-out]">
-                    <div className="text-yellow-400 text-9xl mb-4 animate-bounce"><i className={`fa-solid ${effectSplash.icon}`}></i></div>
-                    <h2 className="text-5xl font-black text-white">{myTeam} 獲得</h2>
-                    <h3 className="text-7xl font-black text-yellow-400 mt-2">{effectSplash.text}</h3>
+                <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-black/85 backdrop-blur-md animate-[fadeIn_0.3s_ease-out]">
+                    <div className="text-yellow-400 text-[150px] mb-8 animate-bounce drop-shadow-[0_0_40px_rgba(234,179,8,0.6)]"><i className={`fa-solid ${effectSplash.icon}`}></i></div>
+                    <h2 className="text-5xl sm:text-6xl font-black text-white drop-shadow-lg">
+                        {t[myTeam === '紅隊' ? 'redTeam' : myTeam === '藍隊' ? 'blueTeam' : myTeam === '綠隊' ? 'greenTeam' : 'yellowTeam'] || myTeam} {t.got}
+                    </h2>
+                    <h3 className="text-7xl sm:text-8xl font-black text-yellow-400 mt-6 tracking-widest">{effectSplash.text}</h3>
                 </div>
             )}
 
             <style>{`
                 @keyframes fall {
-                    0% { transform: translateY(-10vh) rotate(0deg); }
-                    100% { transform: translateY(110vh) rotate(360deg); }
+                    0% { transform: translateY(-15vh) rotate(0deg); }
+                    100% { transform: translateY(115vh) rotate(360deg); }
                 }
                 @keyframes zoomIn {
-                    from { opacity: 0; transform: scale(0.5); }
+                    from { opacity: 0; transform: scale(0.3); }
                     to { opacity: 1; transform: scale(1); }
                 }
                 @keyframes fadeInLeft {
-                    from { opacity: 0; transform: translateX(-50px); }
+                    from { opacity: 0; transform: translateX(-80px); }
                     to { opacity: 1; transform: translateX(0); }
                 }
                 @keyframes fadeInRight {
-                    from { opacity: 0; transform: translateX(50px); }
+                    from { opacity: 0; transform: translateX(80px); }
                     to { opacity: 1; transform: translateX(0); }
                 }
                 @keyframes fadeIn {
                     from { opacity: 0; }
                     to { opacity: 1; }
                 }
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
             `}</style>
         </div>
     );
 }
+
+// 🛠️ 修復 4：確保 Babel 編譯後，此元件能順利曝露在 window 中供 App.js 抓取
+window.MemoryGameMulti = MemoryGameMulti;
