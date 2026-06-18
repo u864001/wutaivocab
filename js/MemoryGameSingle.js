@@ -7,52 +7,76 @@ function CoinRainMinigame({ onComplete }) {
     const [miniScore, setMiniScore] = useState(0);
     const [timeLeft, setTimeLeft] = useState(10);
     const [isExploding, setIsExploding] = useState(false);
-    
+    const [settlement, setSettlement] = useState(null);
+
     // 防護鎖：確保結算只呼叫一次
     const hasCompletedRef = useRef(false);
+    // 即時記錄分數，避免 setTimeout/setInterval 內讀到過期(stale)的分數
+    const miniScoreRef = useRef(0);
 
-    // 倒數計時器
-    useEffect(() => {
-        if (timeLeft <= 0 && !isExploding && !hasCompletedRef.current) {
-            hasCompletedRef.current = true;
-            onComplete(miniScore);
-            return;
-        }
-        if (isExploding || hasCompletedRef.current) return;
-        const timer = setTimeout(() => setTimeLeft(l => l - 1), 1000);
-        return () => clearTimeout(timer);
-    }, [timeLeft, isExploding, miniScore, onComplete]);
+    const finish = () => {
+        if (hasCompletedRef.current) return;
+        hasCompletedRef.current = true;
+        const finalScore = miniScoreRef.current;
+        setSettlement({ score: finalScore });
+        setTimeout(() => onComplete(finalScore), 1800);
+    };
 
-    // 隨機生成掉落物
+    // 倒數計時器：掛載時啟動一次即可，不會因為分數變動而被重新建立/重設
+    // (修復：原本依賴 miniScore，導致每點一次金幣，當下那一秒的倒數就被重新計時，
+    //  讓小遊戲實際時間遠超過設計中的 10 秒)
     useEffect(() => {
-        if (isExploding || timeLeft <= 0 || hasCompletedRef.current) return;
+        const timer = setInterval(() => {
+            setTimeLeft(l => {
+                if (l <= 1) {
+                    clearInterval(timer);
+                    finish();
+                    return 0;
+                }
+                return l - 1;
+            });
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    // 隨機生成掉落物：同樣只在掛載時啟動一次
+    // (修復：原本依賴 timeLeft，每秒都會被重新建立一次，導致掉落節奏不穩定)
+    useEffect(() => {
         const spawnInterval = setInterval(() => {
+            if (hasCompletedRef.current) return;
             const isBomb = Math.random() < 0.25;
             setItems(prev => [...prev, {
                 id: Math.random().toString(36).substring(2, 9),
                 type: isBomb ? 'bomb' : 'coin',
                 left: Math.floor(Math.random() * 80) + 10,
-                duration: Math.random() * 2 + 2 
+                duration: Math.random() * 2 + 2
             }]);
-        }, 400); 
+        }, 400);
         return () => clearInterval(spawnInterval);
-    }, [isExploding, timeLeft]);
+    }, []);
 
     const handleItemClick = (id, type) => {
         if (isExploding || hasCompletedRef.current) return;
         if (type === 'coin') {
+            miniScoreRef.current += 1;
             setMiniScore(s => s + 1);
             setItems(prev => prev.filter(item => item.id !== id));
         } else if (type === 'bomb') {
             setIsExploding(true);
-            setTimeout(() => {
-                if (!hasCompletedRef.current) {
-                    hasCompletedRef.current = true;
-                    onComplete(miniScore); 
-                }
-            }, 1500);
+            setTimeout(() => finish(), 1500);
         }
     };
+
+    // 結算畫面：無論是踩到炸彈提前結束、還是安全撐完 10 秒，都先顯示這次拿到的分數
+    if (settlement) {
+        return (
+            <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center text-white">
+                <i className="fa-solid fa-coins text-7xl text-yellow-400 mb-6 animate-bounce drop-shadow-[0_0_20px_rgba(234,179,8,0.5)]"></i>
+                <h2 className="text-2xl font-black mb-3 tracking-widest">金幣雨結算</h2>
+                <p className="text-6xl font-black text-yellow-400">+{settlement.score} 分</p>
+            </div>
+        );
+    }
 
     return (
         <div className="fixed inset-0 z-50 bg-black/80 flex flex-col items-center overflow-hidden">
@@ -74,11 +98,11 @@ function CoinRainMinigame({ onComplete }) {
             {!isExploding && items.map(item => (
                 <button 
                     key={item.id}
-                    onClick={() => handleItemClick(item.id, item.type)}
+                    onPointerDown={() => handleItemClick(item.id, item.type)}
                     className="falling-item absolute text-5xl hover:scale-125 transition-transform"
                     style={{ left: `${item.left}%`, animationDuration: `${item.duration}s` }}
                 >
-                    {item.type === 'coin' ? <i className="fa-solid fa-coin text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]"></i> : <i className="fa-solid fa-bomb text-slate-800 drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]"></i>}
+                    {item.type === 'coin' ? <i className="fa-solid fa-coins text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]"></i> : <i className="fa-solid fa-bomb text-slate-800 drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]"></i>}
                 </button>
             ))}
         </div>
@@ -126,10 +150,12 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
         const selectedWords = shuffledWords.slice(0, pairCount);
 
         let newCards = [];
-        selectedWords.forEach(word => {
+        selectedWords.forEach((word, idx) => {
             const enText = word.en || word.english || word.word || "[英文遺失]";
             const zhText = word.zh || word.chinese || word.translation || "[中文遺失]";
-            const matchKey = enText; 
+            // 修復：matchId 改用題目索引而非英文單字本身，
+            // 避免題庫中剛好出現兩個相同英文拼字、但對應不同中文意思的單字時被誤判成同一組
+            const matchKey = `pair_${idx}`;
 
             newCards.push({ id: `en-${matchKey}`, matchId: matchKey, text: enText, type: 'en', isPowerUp: false });
             newCards.push({ id: `zh-${matchKey}`, matchId: matchKey, text: zhText, type: 'zh', isPowerUp: false });
@@ -168,7 +194,8 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
         } 
         else if (powerId === 'powerup_radar') {
             setRadarActive(true);
-            setTimeout(() => setRadarActive(false), 2000);
+            // 修復：原本只透視 2 秒，跟「雷達卡透視 5 秒」的設計不一致，改成 5000ms
+            setTimeout(() => setRadarActive(false), 5000);
         } 
         else if (powerId === 'powerup_peek') {
             const validIndices = cards.map((c, i) => i).filter(i => !matchedIds.includes(cards[i].matchId) && !flippedIndices.includes(i) && i !== cardIndex);
@@ -180,7 +207,9 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
             if (flippedIndices.length === 0) {
                 const unmatchedWords = cards.filter(c => !c.isPowerUp && !matchedIds.includes(c.matchId));
                 if (unmatchedWords.length > 0) {
-                    setMatchedIds(prev => [...prev, unmatchedWords[0].matchId]);
+                    // 修復：原本永遠挑陣列裡第一個，改成真正隨機抽一組
+                    const pick = unmatchedWords[Math.floor(Math.random() * unmatchedWords.length)];
+                    setMatchedIds(prev => [...prev, pick.matchId]);
                     setScore(s => s + 10);
                 }
             } else if (flippedIndices.length === 1) {
@@ -231,17 +260,20 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
     };
 
     // 安全的結算檢查機制
+    // 修復：改用「卡牌實際擁有的相異 matchId 數量」來判斷全部配對完成，
+    // 不再用「總卡數 -2 +2」這種綁定剛好 2 張道具卡數量的寫法，避免日後道具卡數量調整就跟著壞掉
     useEffect(() => {
-        const totalUniqueItems = cards.length > 0 ? (cards.length - 2) / 2 + 2 : 0;
-        
-        if (cards.length > 0 && matchedIds.length >= totalUniqueItems && !isFinishingRef.current) {
+        if (cards.length === 0 || isFinishingRef.current) return;
+        const totalUniqueItems = new Set(cards.map(c => c.matchId)).size;
+
+        if (matchedIds.length >= totalUniqueItems) {
             isFinishingRef.current = true; // 上鎖，確保不會無限迴圈
             const timeTaken = Math.floor((Date.now() - startTime) / 1000);
             const calculatedBonus = Math.max(0, 120 - timeTaken); 
             setTimeBonus(calculatedBonus);
             setTimeout(() => setGameOver(true), 1500);
         }
-    }, [matchedIds, cards.length, startTime]);
+    }, [matchedIds, cards, startTime]);
 
     const handleFinishAndSave = () => {
         const finalScore = score + timeBonus;
@@ -261,7 +293,7 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
     }
 
     return (
-        <div className="max-w-5xl mx-auto w-full p-4 sm:p-6 flex flex-col h-screen select-none animate-[fadeIn_0.5s_ease-out]">
+        <div className="max-w-5xl mx-auto w-full p-4 sm:p-6 flex flex-col h-[100dvh] select-none animate-[fadeIn_0.5s_ease-out]">
             {activeMinigame === 'coin_rain' && (
                 <CoinRainMinigame onComplete={(miniScore) => {
                     setScore(s => s + miniScore);
@@ -306,8 +338,16 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                     </button>
                 </div>
             ) : (
-                <div className="flex-1 min-h-0 flex items-center justify-center">
-                    <div className={`w-full h-full max-h-[75vh] grid grid-cols-5 grid-rows-4 gap-2 sm:gap-3 p-2 bg-slate-200 dark:bg-slate-950 rounded-3xl shadow-inner transition-all duration-500 ${radarActive ? 'ring-4 ring-green-400 shadow-[0_0_30px_rgba(74,222,128,0.5)]' : ''}`}>
+                <div className="flex-1 min-h-0 flex items-center justify-center overflow-y-auto">
+                    <div
+                        className={`w-full max-w-full gap-2 sm:gap-3 p-2 bg-slate-200 dark:bg-slate-950 rounded-3xl shadow-inner transition-all duration-500 ${radarActive ? 'ring-4 ring-green-400 shadow-[0_0_30px_rgba(74,222,128,0.5)]' : ''}`}
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 160px))',
+                            justifyContent: 'center',
+                            alignContent: 'center'
+                        }}
+                    >
                         {cards.map((card, index) => {
                             const isPermanentlyFlipped = matchedIds.includes(card.matchId);
                             const isTemporarilyFlipped = flippedIndices.includes(index) || peekIndices.includes(index);
@@ -320,7 +360,8 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                                     key={card.id || index}
                                     onClick={() => handleCardClick(index)}
                                     disabled={isPermanentlyFlipped || isRadarRevealed}
-                                    className={`relative w-full h-full rounded-xl sm:rounded-2xl flex items-center justify-center p-1 transition-all duration-300 ${
+                                    style={{ aspectRatio: '3 / 2' }}
+                                    className={`relative w-full rounded-xl sm:rounded-2xl flex items-center justify-center p-1 transition-all duration-300 ${
                                         isFlipped 
                                             ? 'bg-white dark:bg-slate-800 shadow-md border-2 border-blue-400' 
                                             : 'bg-blue-600 hover:bg-blue-500 shadow-[0_4px_0_rgb(29,78,216)] hover:-translate-y-0.5'
@@ -340,10 +381,10 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                                                     <span className="text-[10px] sm:text-xs font-black text-slate-700 dark:text-slate-200">{card.text}</span>
                                                 </div>
                                             ) : (
-                                                <span className={`font-bold block break-all ${
+                                                <span className={`font-bold block break-words ${
                                                     card.type === 'en' 
-                                                        ? 'text-sm sm:text-base md:text-lg text-blue-600 dark:text-blue-400 font-mono' 
-                                                        : 'text-xs sm:text-sm md:text-base text-slate-700 dark:text-slate-200'
+                                                        ? 'text-base sm:text-lg md:text-xl text-blue-600 dark:text-blue-400 font-mono' 
+                                                        : 'text-sm sm:text-base md:text-lg text-slate-700 dark:text-slate-200'
                                                 }`}>
                                                     {card.text}
                                                 </span>
