@@ -134,6 +134,8 @@ function App() {
         // 進入排行榜時才讀 Firestore（快取有效就不讀）
         if (view === 'leaderboard') loadLeaderboard();
     };
+    // 🌟 註冊全域方法供 Leaderboard.js 呼叫
+    window.navigateToAdmin = () => navigateTo('admin');
 
     const handleSaveScore = async (scoreData) => {
         // 先更新本機畫面（不等 Firestore 回應，體感更流暢）
@@ -215,6 +217,7 @@ function App() {
             {currentView === 'memory_lobby' && <MemoryLobby onNavigate={navigateTo} mode={gameMode} settings={settings} wordDatabase={wordDatabase} />}
             {currentView === 'memory_single' && <MemoryGameSingle onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} onSaveScore={handleSaveScore} />}
             {currentView === 'memory_multi' && <MemoryGameMulti onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} dbRef={dbRef} user={user} />}
+            {currentView === 'admin' && <AdminDashboard onBack={() => navigateTo('lobby')} dbRef={dbRef} lang={lang} setLang={setLang} />}
         </div>
     );
 }
