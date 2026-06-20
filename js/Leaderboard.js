@@ -1,4 +1,4 @@
-function LeaderboardView({ onBack, leaderboards, groupedUnits }) {
+function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCachedAt, onRefresh }) {
     const availableBooks = Object.keys(groupedUnits).sort((a,b)=>a-b);
     const [selectedBook, setSelectedBook] = useState('ABC'); 
     const [viewWeek, setViewWeek] = useState(getWeekNumber());
@@ -42,7 +42,18 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits }) {
 
     return (
         <div className="flex-1 flex flex-col p-4 sm:p-6 w-full max-w-7xl mx-auto">
-            <header className="mb-6"><button onClick={onBack} className="text-slate-500 hover:text-blue-600 font-bold"><i className="fa-solid fa-chevron-left"></i> 返回大廳</button></header>
+            <header className="mb-6 flex items-center justify-between flex-wrap gap-3">
+                <button onClick={onBack} className="text-slate-500 hover:text-blue-600 font-bold"><i className="fa-solid fa-chevron-left"></i> 返回大廳</button>
+                <div className="flex items-center gap-3 text-sm text-slate-400">
+                    {leaderboardCachedAt > 0 && (
+                        <span>上次更新：{Math.round((Date.now() - leaderboardCachedAt) / 60000)} 分鐘前</span>
+                    )}
+                    <button onClick={onRefresh}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 rounded-full font-bold transition-colors border border-slate-200">
+                        <i className="fa-solid fa-rotate-right text-xs"></i> 重新整理
+                    </button>
+                </div>
+            </header>
             <div className="w-full bg-slate-50 rounded-3xl shadow-lg p-6 border">
                 <div className="text-center mb-6"><h2 className="text-3xl font-black text-yellow-600 mb-2"><i className="fa-solid fa-crown"></i> 全校榮譽榜</h2></div>
                 <div className="flex justify-center items-center gap-4 mb-8">
