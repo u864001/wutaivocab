@@ -79,6 +79,7 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
                         {renderModeTable('zh-en', '中翻英打字', 'fa-solid fa-keyboard', 'text-blue-600', 'bg-blue-50')}
                         {renderModeTable('en-zh', '英翻中打字', 'fa-solid fa-language', 'text-teal-600', 'bg-teal-50')}
                         {renderModeTable('listening', '聽力測驗', 'fa-solid fa-volume-high', 'text-purple-600', 'bg-purple-50')}
+                        {renderModeTable('memory_single', '記憶翻牌', 'fa-solid fa-clone', 'text-cyan-600', 'bg-cyan-50')} 
                     </div>
                 )}
             </div>
