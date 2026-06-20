@@ -262,6 +262,21 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         });
     };
 
+    // ── 防止手機下拉重新整理等干擾對戰的系統手勢(僅在遊戲進行中生效) ──
+    useEffect(() => {
+        if (view !== 'playing') return;
+        const prev = { overscroll: document.body.style.overscrollBehavior, overflow: document.body.style.overflow };
+        document.body.style.overscrollBehavior = 'none';
+        document.body.style.overflow = 'hidden';
+        const blockPull = (e) => { if (e.touches && e.touches.length > 0) e.preventDefault(); };
+        document.addEventListener('touchmove', blockPull, { passive: false });
+        return () => {
+            document.body.style.overscrollBehavior = prev.overscroll;
+            document.body.style.overflow = prev.overflow;
+            document.removeEventListener('touchmove', blockPull);
+        };
+    }, [view]);
+
     const handleCardClick = async (index) => {
         if (!roomData || !isMyTurn() || roomData.turnState.isAnimating || view !== 'playing') return;
         const roomRef = dbRef.collection('rooms').doc(roomData.id);
@@ -613,6 +628,19 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                         <button onClick={handleStartGame} className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black text-xl animate-pulse shadow-[0_0_15px_rgba(37,99,235,0.5)] transition-colors">{t.startGame}</button>
                     ) : <div className="text-slate-400 animate-pulse font-bold bg-slate-900 py-4 rounded-xl">{t.waitingHost}</div>}
 
+                    {/* QR Code：純客戶端產生，不增加任何 Firebase 讀取次數 */}
+                    <div className="mt-4 mb-2 flex flex-col items-center gap-2">
+                        <p className="text-xs text-slate-400">學生可掃描進入房間</p>
+                        <div className="bg-white p-2 rounded-xl shadow-inner">
+                            <img
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${roomData.code}&margin=6`}
+                                alt={`房號 ${roomData.code} 的 QR Code`}
+                                width="140" height="140"
+                                style={{ borderRadius: 8, display: 'block' }}
+                            />
+                        </div>
+                        <p className="text-[10px] text-slate-500">掃描後手動輸入右上方 4 位數房號</p>
+                    </div>
                     <button onClick={onBack} className="w-full mt-6 text-slate-400 hover:text-white transition-colors text-sm underline underline-offset-4">{t.leaveRoom}</button>
                 </div>
             </div>
@@ -764,6 +792,15 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                     <h3 className="text-7xl sm:text-8xl font-black text-yellow-400 mt-6 tracking-widest">{effectSplash.text}</h3>
                 </div>
             )}
+
+            {/* 逃生按鈕：在 fixed 全螢幕佈局最底部，避免遊戲卡死時無法離開 */}
+            <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-1 z-[50] pointer-events-none">
+                <button onClick={onBack}
+                    className="pointer-events-auto"
+                    style={{ fontSize: 11, color: 'rgba(100,116,139,0.7)', border: 'none', background: 'none', cursor: 'pointer', padding: '4px 20px', letterSpacing: 1 }}>
+                    ← 返回遊戲大廳
+                </button>
+            </div>
 
             <style>{`
                 @keyframes fall {
