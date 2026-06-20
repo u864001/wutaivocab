@@ -5,6 +5,15 @@ const BOARD_W = 700;
 const BOARD_H = 400;
 const COLS = 5;
 
+// 安全取得週次的純函式 (Fallback，確保一定有週次能上榜)
+const getWeekNumberSafe = () => {
+    if (typeof window.getWeekNumber === 'function') return window.getWeekNumber();
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+};
+
 // ── 金幣雨子元件：以 position:absolute 運行在棋盤容器內，天然被棋盤邊界裁切 ──
 function CoinRainMinigame({ onComplete }) {
     const [items, setItems] = useState([]);
@@ -14,11 +23,9 @@ function CoinRainMinigame({ onComplete }) {
 
     const hasCompletedRef = useRef(false);
     const miniScoreRef = useRef(0);
-    // 用 ref 存 onComplete，讓 effect 可以存取最新版本的 callback，同時不讓它觸發 effect 重建
     const onCompleteRef = useRef(onComplete);
     onCompleteRef.current = onComplete;
 
-    // 倒數計時器：只在掛載時啟動一次，點金幣不會打斷它(修復原版最嚴重的 bug)
     useEffect(() => {
         const timer = setInterval(() => {
             setTimeLeft(l => {
@@ -34,9 +41,8 @@ function CoinRainMinigame({ onComplete }) {
             });
         }, 1000);
         return () => clearInterval(timer);
-    }, []); // 空依賴陣列：只建立一次
+    }, []);
 
-    // 掉落物生成器：只在掛載時啟動一次，節奏穩定
     useEffect(() => {
         const spawner = setInterval(() => {
             if (hasCompletedRef.current) return;
@@ -74,13 +80,11 @@ function CoinRainMinigame({ onComplete }) {
                 .coin-fall { position: absolute; animation: fallDown linear forwards; }
             `}} />
 
-            {/* 分數與倒數顯示 */}
             <div style={{ position: 'absolute', top: 14, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 20, zIndex: 60 }}>
                 <span style={{ background: '#1e293b', color: '#e2e8f0', padding: '5px 16px', borderRadius: 10, fontWeight: 900, fontSize: 18, border: '1px solid #475569' }}>⏱ {timeLeft}s</span>
                 <span style={{ background: '#422006', color: '#fbbf24', padding: '5px 16px', borderRadius: 10, fontWeight: 900, fontSize: 18, border: '1px solid #92400e' }}>🪙 {miniScore}pt</span>
             </div>
 
-            {/* 掉落物 */}
             {!isExploding && items.map(item => (
                 <button key={item.id} className="coin-fall"
                     onPointerDown={() => handlePointerDown(item.id, item.type)}
@@ -93,20 +97,11 @@ function CoinRainMinigame({ onComplete }) {
                 </button>
             ))}
 
-            {/* 爆炸畫面 */}
             {isExploding && (
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(220,38,38,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 90, borderRadius: 24 }}>
                     💥
                 </div>
             )}
-
-            {/* 逃生按鈕：遊戲進行時固定顯示在底部，scale 框架外，避免任何狀況卡死 */}
-            <div style={{ flexShrink: 0, textAlign: 'center', padding: '4px 0', background: 'rgba(15,23,42,0.6)' }}>
-                <button onClick={onBack}
-                    style={{ fontSize: 12, color: '#64748b', border: 'none', background: 'none', cursor: 'pointer', padding: '6px 20px', letterSpacing: 1 }}>
-                    ← 返回遊戲大廳
-                </button>
-            </div>
         </div>
     );
 }
@@ -116,7 +111,7 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
     const t = {
         title: '星際記憶翻牌',
         gameOver: '挑戰完成！',
-        saveScore: '儲存分數並回大廳',
+        saveScore: '送出成績並回大廳',
         missingWords: '⚠️ 題庫單字不足，請回大廳重新設定。'
     };
 
@@ -128,13 +123,14 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
     const [gameOver, setGameOver] = useState(false);
     const [startTime, setStartTime] = useState(Date.now());
     const [timeBonus, setTimeBonus] = useState(0);
+    const [finalTime, setFinalTime] = useState(0); // 紀錄通關秒數
     const [peekIndices, setPeekIndices] = useState([]);
     const [radarActive, setRadarActive] = useState(false);
     const [activeMinigame, setActiveMinigame] = useState(null);
     const [miniGameSettlement, setMiniGameSettlement] = useState(null);
+    const [playerName, setPlayerName] = useState(localStorage.getItem('wutai_player_name') || ''); // 玩家名稱狀態
     const isFinishingRef = useRef(false);
 
-    // ── 等比縮放：用 ResizeObserver 偵測 wrapper 大小，計算讓棋盤完整顯示所需的 scale ──
     const wrapperRef = useRef(null);
     const [scale, setScale] = useState(1);
     useEffect(() => {
@@ -149,13 +145,11 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
         return () => ro.disconnect();
     }, []);
 
-    // ── 可用單字 ──
     const availableWords = useMemo(() => {
         if (!wordDatabase || !settings || !settings.selectedUnits) return [];
         return wordDatabase.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
     }, [settings, wordDatabase]);
 
-    // ── 初始化牌組 ──
     const initDeck = useCallback(() => {
         if (availableWords.length === 0) return;
         isFinishingRef.current = false;
@@ -166,15 +160,15 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
         selectedWords.forEach((word, idx) => {
             const enText = word.en || word.english || word.word || '[英文遺失]';
             const zhText = word.zh || word.chinese || word.translation || '[中文遺失]';
-            const matchKey = `pair_${idx}`; // 用索引當代號，避免同拼字不同義的單字撞名
+            const matchKey = `pair_${idx}`;
             newCards.push({ id: `en-${matchKey}`, matchId: matchKey, text: enText, type: 'en', isPowerUp: false });
             newCards.push({ id: `zh-${matchKey}`, matchId: matchKey, text: zhText, type: 'zh', isPowerUp: false });
         });
         const allPowerUps = [
-            { id: 'powerup_bonus',     icon: 'fa-gem',            color: '#34d399', name: '加分卡 (+30)' },
+            { id: 'powerup_bonus',     icon: 'fa-gem',             color: '#34d399', name: '加分卡 (+30)' },
             { id: 'powerup_radar',     icon: 'fa-satellite-dish', color: '#4ade80', name: '雷達卡 (透視)' },
-            { id: 'powerup_peek',      icon: 'fa-eye',            color: '#818cf8', name: '偷看卡 (2張)' },
-            { id: 'powerup_lightning', icon: 'fa-bolt',           color: '#fde047', name: '閃電卡 (自動)' },
+            { id: 'powerup_peek',      icon: 'fa-eye',             color: '#818cf8', name: '偷看卡 (2張)' },
+            { id: 'powerup_lightning', icon: 'fa-bolt',            color: '#fde047', name: '閃電卡 (自動)' },
             { id: 'powerup_coin',      icon: 'fa-coins',          color: '#fbbf24', name: '金幣雨' }
         ];
         allPowerUps.sort(() => Math.random() - 0.5).slice(0, 2).forEach((p, idx) => {
@@ -189,8 +183,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
         setIsAnimating(false);
     }, [availableWords]);
 
-
-    // ── 防止手機下拉重新整理和雙指縮放等干擾遊戲的系統手勢 ──
     useEffect(() => {
         const prev = { overscroll: document.body.style.overscrollBehavior, overflow: document.body.style.overflow };
         document.body.style.overscrollBehavior = 'none';
@@ -206,7 +198,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
 
     useEffect(() => { initDeck(); }, [initDeck]);
 
-    // ── 道具效果 ──
     const triggerPowerUp = (powerId, cardIndex) => {
         setIsAnimating(true);
         setTimeout(() => setIsAnimating(false), 1000);
@@ -214,7 +205,7 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
             setScore(s => s + 30);
         } else if (powerId === 'powerup_radar') {
             setRadarActive(true);
-            setTimeout(() => setRadarActive(false), 5000); // 修復：5秒而非原本的2秒
+            setTimeout(() => setRadarActive(false), 5000);
         } else if (powerId === 'powerup_peek') {
             const validIndices = cards.map((_, i) => i).filter(i =>
                 !matchedIds.includes(cards[i].matchId) && !flippedIndices.includes(i) && i !== cardIndex
@@ -225,7 +216,7 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
             if (flippedIndices.length === 0) {
                 const unmatched = cards.filter(c => !c.isPowerUp && !matchedIds.includes(c.matchId));
                 if (unmatched.length > 0) {
-                    const pick = unmatched[Math.floor(Math.random() * unmatched.length)]; // 修復：真正隨機
+                    const pick = unmatched[Math.floor(Math.random() * unmatched.length)];
                     setMatchedIds(prev => [...prev, pick.matchId]);
                     setScore(s => s + 10);
                 }
@@ -239,7 +230,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
         }
     };
 
-    // ── 點擊卡牌 ──
     const handleCardClick = (index) => {
         if (isAnimating || flippedIndices.includes(index) || matchedIds.includes(cards[index].matchId) || peekIndices.includes(index)) return;
         const card = cards[index];
@@ -262,24 +252,44 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
         }
     };
 
-    // ── 結算判斷：用 Set 計算相異 matchId 數量，不再用固定公式，道具卡數量改了也不會壞 ──
     useEffect(() => {
         if (cards.length === 0 || isFinishingRef.current) return;
         const totalUnique = new Set(cards.map(c => c.matchId)).size;
         if (matchedIds.length >= totalUnique) {
             isFinishingRef.current = true;
             const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+            setFinalTime(timeTaken); // 紀錄通關總秒數
             setTimeBonus(Math.max(0, 120 - timeTaken));
             setTimeout(() => setGameOver(true), 1500);
         }
     }, [matchedIds, cards, startTime]);
 
+    // ── 完美對齊排行榜的送分邏輯 ──
     const handleFinishAndSave = () => {
-        if (onSaveScore) onSaveScore({ gameMode: 'memory_single', score: score + timeBonus, date: new Date().toISOString() });
+        if (!playerName.trim()) {
+            alert('請輸入你的名字才能上榜喔！');
+            return;
+        }
+        localStorage.setItem('wutai_player_name', playerName.trim());
+
+        // 解析出單一冊別 (如果不只一冊，則標記為 Mixed，依據設定這不會干擾單冊榜單)
+        const books = [...new Set(settings?.selectedUnits?.map(u => u.split('-')[0]) || [])];
+        const qualifyBook = books.length === 1 ? books[0] : 'Mixed';
+
+        if (onSaveScore) {
+            onSaveScore({ 
+                name: playerName.trim(),
+                mode: 'memory_single', // 必須與 Leaderboard 對應
+                book: qualifyBook,
+                week: getWeekNumberSafe(), // 自動抓取正確週次
+                score: score + timeBonus,
+                time: finalTime,
+                date: new Date().toISOString() 
+            });
+        }
         onBack();
     };
 
-    // ── 題庫不足時的提示畫面 ──
     if (availableWords.length === 0) {
         return (
             <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0f172a', color: 'white', padding: 24 }}>
@@ -295,7 +305,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
         <div style={{ width: '100%', height: '100dvh', display: 'flex', flexDirection: 'column', userSelect: 'none', touchAction: 'none', overscrollBehavior: 'none' }}
              className="bg-slate-50 dark:bg-slate-900">
 
-            {/* 金幣雨結算疊層：在 transform 容器外面，使用 position:fixed 不受 scale 影響，確保全螢幕可見 */}
             {miniGameSettlement && (
                 <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.93)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
                     <i className="fa-solid fa-coins" style={{ fontSize: 76, color: '#fbbf24', marginBottom: 20 }}></i>
@@ -304,7 +313,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                 </div>
             )}
 
-            {/* ── 頂部標題列 ── */}
             <header style={{ flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px' }}
                     className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
                 <button onClick={onBack} style={{ padding: '8px 14px', borderRadius: 12, fontWeight: 700, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
@@ -318,16 +326,15 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                 </div>
             </header>
 
-            {/* ── 主內容區 ── */}
             {gameOver ? (
-                // ── 結算畫面 ──
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, overflowY: 'auto' }}>
                     <div style={{ background: 'white', borderRadius: 24, padding: 32, textAlign: 'center', maxWidth: 400, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.1)' }}
-                         className="dark:bg-slate-800">
+                         className="dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
                         <i className="fa-solid fa-trophy" style={{ fontSize: 56, color: '#fbbf24', marginBottom: 20 }}></i>
                         <h2 style={{ fontSize: 26, fontWeight: 900, marginBottom: 20 }} className="text-slate-800 dark:text-white">{t.gameOver}</h2>
+                        
                         <div style={{ borderRadius: 16, padding: 20, marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 12 }}
-                             className="bg-slate-50 dark:bg-slate-900">
+                             className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700">
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 700 }} className="text-slate-600 dark:text-slate-300">
                                 <span>配對得分</span><span>{score} 分</span>
                             </div>
@@ -339,42 +346,37 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                                 <span>總分</span><span>{score + timeBonus} 分</span>
                             </div>
                         </div>
+
+                        {/* 🌟 新增：玩家名稱輸入框 */}
+                        <input 
+                            type="text" 
+                            value={playerName} 
+                            onChange={e => setPlayerName(e.target.value)} 
+                            placeholder="請輸入你的名字以上榜" 
+                            style={{ width: '100%', padding: '14px', borderRadius: '16px', border: '2px solid #e2e8f0', marginBottom: '20px', fontSize: '18px', textAlign: 'center', fontWeight: 900, outline: 'none' }}
+                            className="bg-white text-slate-800 focus:border-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:focus:border-blue-400 transition-colors"
+                        />
+
                         <button onClick={handleFinishAndSave}
-                                style={{ padding: '14px 24px', background: 'linear-gradient(135deg, #2563eb, #4f46e5)', color: 'white', borderRadius: 16, fontWeight: 700, fontSize: 17, border: 'none', cursor: 'pointer', width: '100%' }}>
+                                style={{ padding: '16px 24px', background: 'linear-gradient(135deg, #2563eb, #4f46e5)', color: 'white', borderRadius: 16, fontWeight: 900, fontSize: 18, border: 'none', cursor: 'pointer', width: '100%', boxShadow: '0 10px 25px rgba(37,99,235,0.3)' }}
+                                className="hover:scale-[1.02] active:scale-95 transition-transform">
                             <i className="fa-solid fa-upload" style={{ marginRight: 8 }}></i>{t.saveScore}
                         </button>
                     </div>
                 </div>
             ) : (
-                // ── 棋盤 Scale Wrapper ──
-                // 這個 div 填滿剩餘高度，ResizeObserver 偵測它的尺寸來計算 scale
                 <div ref={wrapperRef} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}
                      className="bg-slate-100 dark:bg-slate-950">
-
-                    {/* 固定設計尺寸的棋盤容器：透過 CSS transform scale 等比縮放到任何螢幕 */}
                     <div style={{
-                        width: BOARD_W,
-                        height: BOARD_H,
-                        flexShrink: 0,
-                        transform: `scale(${scale})`,
-                        transformOrigin: 'center center',
-                        position: 'relative',  // 讓金幣雨的 position:absolute 有參照點
-                        overflow: 'hidden',     // 裁切金幣雨，讓它不會溢出棋盤邊框
-                        borderRadius: 24,
+                        width: BOARD_W, height: BOARD_H, flexShrink: 0,
+                        transform: `scale(${scale})`, transformOrigin: 'center center',
+                        position: 'relative', overflow: 'hidden', borderRadius: 24,
                         background: radarActive ? 'rgba(16,185,129,0.12)' : undefined,
-                        boxShadow: radarActive
-                            ? '0 0 0 4px #4ade80, 0 0 40px rgba(74,222,128,0.4), inset 0 2px 10px rgba(0,0,0,0.2)'
-                            : 'inset 0 2px 10px rgba(0,0,0,0.2)',
+                        boxShadow: radarActive ? '0 0 0 4px #4ade80, 0 0 40px rgba(74,222,128,0.4), inset 0 2px 10px rgba(0,0,0,0.2)' : 'inset 0 2px 10px rgba(0,0,0,0.2)',
                         transition: 'box-shadow 0.5s, background 0.5s',
-                        // 棋盤本身也是 grid 容器
-                        display: 'grid',
-                        gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-                        gridTemplateRows: `repeat(${ROWS}, 1fr)`,
-                        gap: 8,
-                        padding: 10
+                        display: 'grid', gridTemplateColumns: `repeat(${COLS}, 1fr)`, gridTemplateRows: `repeat(${ROWS}, 1fr)`, gap: 8, padding: 10
                     }} className="bg-slate-200 dark:bg-slate-950">
 
-                        {/* 金幣雨：position:absolute 疊在棋盤上，自然受到 overflow:hidden 裁切在棋盤邊界內 */}
                         {activeMinigame === 'coin_rain' && (
                             <CoinRainMinigame onComplete={(miniScore) => {
                                 setActiveMinigame(null);
@@ -386,7 +388,6 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                             }} />
                         )}
 
-                        {/* 卡牌 */}
                         {cards.map((card, index) => {
                             const isPermanentlyFlipped = matchedIds.includes(card.matchId);
                             const isTemporarilyFlipped = flippedIndices.includes(index) || peekIndices.includes(index);
@@ -395,36 +396,20 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
 
                             return (
                                 <button
-                                    key={card.id || index}
-                                    onClick={() => handleCardClick(index)}
-                                    disabled={isPermanentlyFlipped || isRadarRevealed}
+                                    key={card.id || index} onClick={() => handleCardClick(index)} disabled={isPermanentlyFlipped || isRadarRevealed}
                                     style={{
-                                        position: 'relative',
-                                        width: '100%',
-                                        height: '100%',
-                                        borderRadius: 10,
-                                        border: isRadarRevealed ? '2px solid #4ade80'
-                                              : isFlipped    ? '2px solid #93c5fd'
-                                              :                 '2px solid #3b82f6',
-                                        background: isRadarRevealed ? 'rgba(5,150,105,0.25)'
-                                                  : isFlipped    ? 'white'
-                                                  :                 'linear-gradient(160deg, #3b82f6, #1d4ed8)',
+                                        position: 'relative', width: '100%', height: '100%', borderRadius: 10,
+                                        border: isRadarRevealed ? '2px solid #4ade80' : isFlipped ? '2px solid #93c5fd' : '2px solid #3b82f6',
+                                        background: isRadarRevealed ? 'rgba(5,150,105,0.25)' : isFlipped ? 'white' : 'linear-gradient(160deg, #3b82f6, #1d4ed8)',
                                         boxShadow: isFlipped ? 'inset 0 2px 6px rgba(0,0,0,0.1)' : '0 4px 0 #1e40af',
                                         opacity: isPermanentlyFlipped && !card.isPowerUp ? 0.35 : 1,
                                         transform: isPermanentlyFlipped && !card.isPowerUp ? 'scale(0.95)' : 'none',
                                         cursor: isPermanentlyFlipped || isRadarRevealed ? 'default' : 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        padding: 5,
-                                        transition: 'all 0.3s',
-                                        overflow: 'hidden'
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, transition: 'all 0.3s', overflow: 'hidden'
                                     }}
                                     className={isFlipped && !isRadarRevealed ? 'dark:bg-slate-800' : ''}
                                 >
-                                    {!isFlipped && (
-                                        <i className="fa-solid fa-globe" style={{ fontSize: 22, color: 'rgba(147,197,253,0.45)' }}></i>
-                                    )}
+                                    {!isFlipped && <i className="fa-solid fa-globe" style={{ fontSize: 22, color: 'rgba(147,197,253,0.45)' }}></i>}
                                     {isFlipped && (
                                         <div style={{ width: '100%', textAlign: 'center', padding: '0 2px' }}>
                                             {card.isPowerUp ? (
@@ -433,18 +418,10 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                                                     <span style={{ fontSize: 10, fontWeight: 900, lineHeight: 1.2 }} className="text-slate-600 dark:text-slate-300">{card.text}</span>
                                                 </div>
                                             ) : (
-                                                // 字體尺寸用 px：因為在固定設計座標系內，會隨 scale 等比縮放，視覺效果穩定
                                                 <span style={{
-                                                    display: 'block',
-                                                    fontSize: card.type === 'en' ? 19 : 16,
-                                                    fontWeight: 700,
-                                                    lineHeight: 1.25,
-                                                    wordBreak: 'break-word',
-                                                    color: card.type === 'en' ? '#2563eb' : '#334155',
-                                                    fontFamily: card.type === 'en' ? 'monospace, monospace' : 'inherit'
-                                                }} className={card.type === 'en' ? 'dark:text-blue-400' : 'dark:text-slate-100'}>
-                                                    {card.text}
-                                                </span>
+                                                    display: 'block', fontSize: card.type === 'en' ? 19 : 16, fontWeight: 700, lineHeight: 1.25,
+                                                    wordBreak: 'break-word', color: card.type === 'en' ? '#2563eb' : '#334155', fontFamily: card.type === 'en' ? 'monospace, monospace' : 'inherit'
+                                                }} className={card.type === 'en' ? 'dark:text-blue-400' : 'dark:text-slate-100'}>{card.text}</span>
                                             )}
                                         </div>
                                     )}
@@ -460,12 +437,8 @@ function MemoryGameSingle({ onBack, settings, wordDatabase, onSaveScore }) {
                 </div>
             )}
 
-            {/* 逃生按鈕：遊戲進行時固定顯示在底部，scale 框架外，避免任何狀況卡死 */}
             <div style={{ flexShrink: 0, textAlign: 'center', padding: '4px 0', background: 'rgba(15,23,42,0.6)' }}>
-                <button onClick={onBack}
-                    style={{ fontSize: 12, color: '#64748b', border: 'none', background: 'none', cursor: 'pointer', padding: '6px 20px', letterSpacing: 1 }}>
-                    ← 返回遊戲大廳
-                </button>
+                <button onClick={onBack} style={{ fontSize: 12, color: '#64748b', border: 'none', background: 'none', cursor: 'pointer', padding: '6px 20px', letterSpacing: 1 }}>← 返回遊戲大廳</button>
             </div>
         </div>
     );
