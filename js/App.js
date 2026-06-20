@@ -25,13 +25,50 @@ function App() {
         } catch(e) { setFirebaseInitialized(true); }
     }, []);
 
-    useEffect(() => {
-        if (!user || !dbRef) return; 
-        const unsubscribe = dbRef.collection('leaderboard').onSnapshot((snapshot) => {
-            setLeaderboards(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        });
-        return () => unsubscribe();
-    }, [user, dbRef]);
+    // 排行榜快取設定：只在「進入排行榜頁面」或「手動重新整理」時才讀 Firestore
+    // 5 分鐘快取：同一裝置在快取期間重新整理不會消耗任何讀取次數
+    const [leaderboardCachedAt, setLeaderboardCachedAt] = React.useState(0);
+    const LB_CACHE_KEY = 'lb_cache_v3';
+    const LB_CACHE_TTL = 5 * 60 * 1000; // 5 分鐘
+
+    const loadLeaderboard = React.useCallback(async (force = false) => {
+        if (!dbRef) return;
+        const now = Date.now();
+        // 快取有效：直接用本機資料，不碰 Firestore
+        if (!force) {
+            try {
+                const cached = JSON.parse(localStorage.getItem(LB_CACHE_KEY) || 'null');
+                if (cached && (now - cached.t) < LB_CACHE_TTL) {
+                    setLeaderboards(cached.d);
+                    setLeaderboardCachedAt(cached.t);
+                    return;
+                }
+            } catch(e) {}
+        }
+        // 快取失效：只讀「本週」與「上週」資料（2 次讀取，各 1 份 Firestore 查詢）
+        // 加了 .where() 之後，只讀到符合條件的文件，不會讀整個 collection
+        try {
+            const cw = getWeekNumber();
+            const [s1, s2] = await Promise.all([
+                dbRef.collection('leaderboard').where('week', '==', cw).get(),
+                dbRef.collection('leaderboard').where('week', '==', cw - 1).get()
+            ]);
+            const data = [
+                ...s1.docs.map(d => ({ id: d.id, ...d.data() })),
+                ...s2.docs.map(d => ({ id: d.id, ...d.data() }))
+            ];
+            setLeaderboards(data);
+            setLeaderboardCachedAt(now);
+            localStorage.setItem(LB_CACHE_KEY, JSON.stringify({ d: data, t: now }));
+        } catch(e) {
+            console.error('排行榜載入失敗', e);
+            // 網路失敗時退回過期快取，確保畫面不空白
+            try {
+                const cached = JSON.parse(localStorage.getItem(LB_CACHE_KEY) || 'null');
+                if (cached) { setLeaderboards(cached.d); setLeaderboardCachedAt(cached.t); }
+            } catch(e2) {}
+        }
+    }, [dbRef]);
 
     useEffect(() => {
         const fetchWordData = async () => {
@@ -94,13 +131,37 @@ function App() {
         soundEngine.init(); 
         setGameMode(mode);
         setCurrentView(view);
+        // 進入排行榜時才讀 Firestore（快取有效就不讀）
+        if (view === 'leaderboard') loadLeaderboard();
     };
 
     const handleSaveScore = async (scoreData) => {
+        // 先更新本機畫面（不等 Firestore 回應，體感更流暢）
+        setLeaderboards(prev => [...prev, { ...scoreData, userId: user?.uid }]);
+
         if (dbRef && user) {
-            try { await dbRef.collection('leaderboard').add({...scoreData, userId: user.uid}); } 
-            catch(e) { setLeaderboards(prev => [...prev, scoreData]); }
-        } else setLeaderboards(prev => [...prev, scoreData]); 
+            try {
+                // Upsert：同一使用者在相同「週×模式×冊」下只保留最佳分數
+                // 這樣排行榜 collection 大小長期可控，不會無限成長
+                const existing = leaderboards.find(l =>
+                    l.userId === user.uid &&
+                    l.mode === scoreData.mode &&
+                    String(l.book) === String(scoreData.book) &&
+                    l.week === scoreData.week
+                );
+                if (existing) {
+                    const isBetter = scoreData.score > (existing.score || 0) ||
+                        (scoreData.score === existing.score && (scoreData.time || 9999) < (existing.time || 9999));
+                    if (isBetter) {
+                        await dbRef.collection('leaderboard').doc(existing.id).update({ ...scoreData, userId: user.uid });
+                    }
+                } else {
+                    await dbRef.collection('leaderboard').add({ ...scoreData, userId: user.uid });
+                }
+                // 寫入後使本機快取失效，下次進排行榜頁會取得最新資料
+                localStorage.removeItem(LB_CACHE_KEY);
+            } catch(e) { console.error('分數儲存失敗', e); }
+        }
     };
 
     const groupedUnits = useMemo(() => {
@@ -149,7 +210,7 @@ function App() {
             {['zh-en', 'en-zh', 'listening', 'hard'].includes(currentView) && <StandardQuiz mode={currentView} onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} qualifyingBook={qualifyingBook} onSaveScore={handleSaveScore} />}
             {currentView === 'spelling' && <SpellingGame onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} qualifyingBook={qualifyingBook} onSaveScore={handleSaveScore} />}
             {currentView === 'meteor' && <MeteorGame subMode={gameMode} onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} qualifyingBook={qualifyingBook} onSaveScore={handleSaveScore} />}
-            {currentView === 'leaderboard' && <LeaderboardView onBack={() => navigateTo('lobby')} leaderboards={leaderboards} groupedUnits={groupedUnits} />}
+            {currentView === 'leaderboard' && <LeaderboardView onBack={() => navigateTo('lobby')} leaderboards={leaderboards} groupedUnits={groupedUnits} leaderboardCachedAt={leaderboardCachedAt} onRefresh={() => loadLeaderboard(true)} />}
             {currentView === 'battle' && <BattleGame onBack={() => navigateTo('lobby')} wordDatabase={wordDatabase} dbRef={dbRef} user={user} settings={settings} />}
             {currentView === 'memory_lobby' && <MemoryLobby onNavigate={navigateTo} mode={gameMode} settings={settings} wordDatabase={wordDatabase} />}
             {currentView === 'memory_single' && <MemoryGameSingle onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} onSaveScore={handleSaveScore} />}
