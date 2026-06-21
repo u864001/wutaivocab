@@ -3,16 +3,16 @@ const { useState, useEffect, useRef } = React;
 function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [passwordInput, setPasswordInput] = useState('');
-    const [activeTab, setActiveTab] = useState('rooms'); // 'rooms', 'scores', 'snapshot'
+    const [activeTab, setActiveTab] = useState('rooms'); // 可切換分頁: 'rooms', 'scores', 'snapshot'
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
-    // 資料狀態
+    // 資料儲存狀態
     const [rooms, setRooms] = useState([]);
     const [scores, setScores] = useState([]);
     const [targetWeek, setTargetWeek] = useState(() => {
         const getWeekSafe = typeof window.getWeekNumber === 'function' ? window.getWeekNumber() : 0;
-        return getWeekSafe > 1 ? getWeekSafe - 1 : 1; // 預設打包上一週
+        return getWeekSafe > 1 ? getWeekSafe - 1 : 1; // 預設帶入上一週的週次
     });
 
     const dict = {
@@ -73,7 +73,8 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
         if (passwordInput === 'wt7902230') setIsAuthenticated(true);
         else showMessage(t.wrongPwd, 'error');
     };
-// ── 1. 幽靈房間管理 ──
+
+    // ── 1. 幽靈房間管理與統計 ──
     const fetchRooms = async () => {
         if (!dbRef) return;
         setLoading(true);
@@ -91,7 +92,6 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
         showMessage('房間已刪除');
     };
 
-    // 🌟 新增：一鍵清理無效房間 (自動刪除 finished 與 waiting)
     const clearGhostRooms = async () => {
         if (!window.confirm('確定要一鍵清除所有「已結束 (finished)」與「等待中 (waiting)」的房間嗎？')) return;
         setLoading(true);
@@ -110,6 +110,7 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
         }
         setLoading(false);
     };
+
     // ── 2. 異常分數管理 ──
     const fetchScores = async () => {
         if (!dbRef) return;
@@ -128,7 +129,7 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
         showMessage('成績已刪除');
     };
 
-    // ── 3. 歷史快照打包 (核心省流機制) ──
+    // ── 3. 歷史快照打包 (核心省流機制，多文件縮減至單一文件) ──
     const createSnapshot = async () => {
         if (!window.confirm(t.snapshotWarning)) return;
         setLoading(true);
@@ -140,7 +141,7 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
                 return;
             }
 
-            // 將該週資料依模式與冊別分組
+            // 分組並依最高分進行排序
             const grouped = {};
             snap.docs.forEach(doc => {
                 const d = doc.data();
@@ -149,7 +150,7 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
                 grouped[key].push({ id: doc.id, ...d });
             });
 
-            // 每組只取 Top 10，壓縮成 JSON
+            // 進行 Top 10 篩選
             const snapshotData = {};
             Object.keys(grouped).forEach(key => {
                 snapshotData[key] = grouped[key]
@@ -157,14 +158,14 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
                     .slice(0, 10);
             });
 
-            // 存入單一快照文件
+            // 以單一 JSON 字串寫入封存節點
             await dbRef.collection('history').doc(`week_${targetWeek}`).set({
                 week: parseInt(targetWeek),
                 data: JSON.stringify(snapshotData),
                 createdAt: Date.now()
             });
 
-            // 批次刪除已打包的原始資料 (徹底釋放資料庫空間)
+            // 執行批次原子刪除，徹底釋放主集合空間
             const batch = dbRef.batch();
             snap.docs.forEach(doc => batch.delete(doc.ref));
             await batch.commit();
@@ -184,7 +185,6 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
         }
     }, [activeTab, isAuthenticated]);
 
-    // ── 介面渲染 ──
     if (!isAuthenticated) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
@@ -217,7 +217,7 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
             </div>
 
             <main className="flex-1 bg-slate-900 rounded-3xl border border-slate-800 p-4 sm:p-6 overflow-hidden flex flex-col">
-{/* 幽靈房間分頁 */}
+                {/* 幽靈房間分頁 */}
                 {activeTab === 'rooms' && (
                     <div className="flex flex-col h-full">
                         <div className="flex flex-wrap justify-between items-end mb-6 gap-4">
@@ -240,20 +240,30 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
                             </div>
                         </div>
                         <div className="overflow-y-auto flex-1 custom-scrollbar bg-slate-950/50 rounded-xl border border-slate-800">
-                            {/* ... 下方的 table 保持不變 ... */}
+                            <table className="w-full text-left">
+                                <thead className="bg-slate-800 text-slate-400 sticky top-0"><tr><th className="p-3 rounded-tl-lg">ID</th><th className="p-3">{t.roomCode}</th><th className="p-3">{t.status}</th><th className="p-3 rounded-tr-lg">操作</th></tr></thead>
+                                <tbody>
+                                    {rooms.length === 0 ? <tr><td colSpan="4" className="text-center p-8 text-slate-500">{t.noData}</td></tr> : rooms.map(r => (
+                                        <tr key={r.id} className="border-b border-slate-800 hover:bg-slate-800/50">
+                                            <td className="p-3 font-mono text-xs text-slate-500">{r.id}</td><td className="p-3 font-bold text-yellow-400">{r.code}</td>
+                                            <td className="p-3"><span className={`px-2 py-1 rounded text-xs font-bold ${r.status === 'playing' ? 'bg-emerald-900/50 text-emerald-400' : 'bg-slate-700 text-slate-300'}`}>{r.status}</span></td>
+                                            <td className="p-3"><button onClick={() => deleteRoom(r.id)} className="px-3 py-1 bg-red-900/50 hover:bg-red-600 text-red-200 rounded font-bold transition-colors">{t.delete}</button></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
                             </table>
                         </div>
-                    </>
+                    </div>
                 )}
 
                 {/* 異常分數分頁 */}
                 {activeTab === 'scores' && (
-                    <>
+                    <div className="flex flex-col h-full">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-bold text-white">最新 50 筆成績</h2>
                             <button onClick={fetchScores} disabled={loading} className="text-slate-400 hover:text-white"><i className={`fa-solid fa-rotate-right ${loading ? 'fa-spin' : ''}`}></i> {t.refresh}</button>
                         </div>
-                        <div className="overflow-y-auto flex-1 custom-scrollbar">
+                        <div className="overflow-y-auto flex-1 custom-scrollbar bg-slate-950/50 rounded-xl border border-slate-800">
                             <table className="w-full text-left">
                                 <thead className="bg-slate-800 text-slate-400 sticky top-0"><tr><th className="p-3 rounded-tl-lg">{t.player}</th><th className="p-3">{t.score}</th><th className="p-3">{t.mode}</th><th className="p-3 rounded-tr-lg">操作</th></tr></thead>
                                 <tbody>
@@ -267,7 +277,7 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
                                 </tbody>
                             </table>
                         </div>
-                    </>
+                    </div>
                 )}
 
                 {/* 快照打包分頁 */}
