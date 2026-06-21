@@ -479,11 +479,28 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
              </div>
          </section>
 
-         <footer className="mt-4 flex flex-col items-center justify-center text-slate-400 pb-8">
+         <footer className="mt-8 flex flex-col items-center justify-center text-slate-400 pb-8">
              <div className="bg-white dark:bg-slate-800 p-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 mb-2 transition-transform hover:scale-110">
                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://u864001.github.io/wutaivocab/" alt="Game QR Code" className="w-20 h-20 opacity-80 dark:invert" />
              </div>
-             <p className="text-xs font-bold"><i className="fa-solid fa-qrcode"></i> 掃描 QR Code 快速加入遊戲</p>
+             <p className="text-xs font-bold mb-6"><i className="fa-solid fa-qrcode"></i> 掃描 QR Code 快速加入遊戲</p>
+             
+             {/* 🌟 開發者留名與防機器人信箱區塊 */}
+             <div className="flex flex-col items-center gap-1 border-t border-slate-200 dark:border-slate-700/50 pt-6 w-full max-w-xs">
+                 <div className="text-xs font-bold text-slate-400 dark:text-slate-500">
+                     Designed & Developed by <span className="text-slate-600 dark:text-slate-400 font-black">Mark</span>
+                 </div>
+                 {/* 利用 onClick 動態組合網址，讓 HTML 源碼中找不到完整的 email 字串 */}
+                 <button 
+                     onClick={(e) => {
+                         e.preventDefault();
+                         window.location.href = 'mailto:' + 'u864001' + '@' + 'wutps.ptc.edu.tw';
+                     }}
+                     className="text-[11px] font-medium text-slate-400 hover:text-blue-500 transition-colors flex items-center gap-1"
+                 >
+                     <i className="fa-regular fa-envelope"></i> 聯絡開發者
+                 </button>
+             </div>
          </footer>
         </div>
     );
