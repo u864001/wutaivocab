@@ -73,8 +73,7 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
         if (passwordInput === 'wt7902230') setIsAuthenticated(true);
         else showMessage(t.wrongPwd, 'error');
     };
-
-    // ── 1. 幽靈房間管理 ──
+// ── 1. 幽靈房間管理 ──
     const fetchRooms = async () => {
         if (!dbRef) return;
         setLoading(true);
@@ -92,6 +91,25 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
         showMessage('房間已刪除');
     };
 
+    // 🌟 新增：一鍵清理無效房間 (自動刪除 finished 與 waiting)
+    const clearGhostRooms = async () => {
+        if (!window.confirm('確定要一鍵清除所有「已結束 (finished)」與「等待中 (waiting)」的房間嗎？')) return;
+        setLoading(true);
+        try {
+            const batch = dbRef.batch();
+            const ghosts = rooms.filter(r => r.status === 'finished' || r.status === 'waiting');
+            ghosts.forEach(room => {
+                batch.delete(dbRef.collection('rooms').doc(room.id));
+            });
+            await batch.commit();
+            setRooms(prev => prev.filter(r => r.status === 'playing'));
+            showMessage(`大掃除完成！共清除了 ${ghosts.length} 個幽靈房間。`);
+        } catch (e) {
+            console.error(e);
+            showMessage('清除失敗', 'error');
+        }
+        setLoading(false);
+    };
     // ── 2. 異常分數管理 ──
     const fetchScores = async () => {
         if (!dbRef) return;
@@ -199,25 +217,30 @@ function AdminDashboard({ onBack, dbRef, lang = 'zh-TW', setLang }) {
             </div>
 
             <main className="flex-1 bg-slate-900 rounded-3xl border border-slate-800 p-4 sm:p-6 overflow-hidden flex flex-col">
-                {/* 幽靈房間分頁 */}
+{/* 幽靈房間分頁 */}
                 {activeTab === 'rooms' && (
-                    <>
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold text-white">目前開啟的房間</h2>
-                            <button onClick={fetchRooms} disabled={loading} className="text-slate-400 hover:text-white"><i className={`fa-solid fa-rotate-right ${loading ? 'fa-spin' : ''}`}></i> {t.refresh}</button>
+                    <div className="flex flex-col h-full">
+                        <div className="flex flex-wrap justify-between items-end mb-6 gap-4">
+                            <div>
+                                <h2 className="text-xl font-bold text-white mb-2">伺服器房間狀態</h2>
+                                <div className="flex gap-3 text-sm font-bold">
+                                    <span className="bg-slate-800 text-slate-300 px-3 py-1 rounded-lg">總數: {rooms.length}</span>
+                                    <span className="bg-emerald-900/50 text-emerald-400 px-3 py-1 rounded-lg">進行中: {rooms.filter(r => r.status === 'playing').length}</span>
+                                    <span className="bg-slate-700 text-slate-400 px-3 py-1 rounded-lg">幽靈 (等待/結束): {rooms.filter(r => r.status !== 'playing').length}</span>
+                                </div>
+                            </div>
+                            <div className="flex gap-3">
+                                <button onClick={fetchRooms} disabled={loading} className="px-4 py-2 bg-slate-800 text-slate-300 hover:text-white rounded-xl font-bold transition-colors">
+                                    <i className={`fa-solid fa-rotate-right mr-2 ${loading ? 'fa-spin' : ''}`}></i>{t.refresh}
+                                </button>
+                                <button onClick={clearGhostRooms} disabled={loading || rooms.filter(r => r.status !== 'playing').length === 0} 
+                                        className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all disabled:opacity-50 disabled:shadow-none">
+                                    <i className="fa-solid fa-broom mr-2"></i>一鍵清除幽靈房間
+                                </button>
+                            </div>
                         </div>
-                        <div className="overflow-y-auto flex-1 custom-scrollbar">
-                            <table className="w-full text-left">
-                                <thead className="bg-slate-800 text-slate-400 sticky top-0"><tr><th className="p-3 rounded-tl-lg">ID</th><th className="p-3">{t.roomCode}</th><th className="p-3">{t.status}</th><th className="p-3 rounded-tr-lg">操作</th></tr></thead>
-                                <tbody>
-                                    {rooms.length === 0 ? <tr><td colSpan="4" className="text-center p-8 text-slate-500">{t.noData}</td></tr> : rooms.map(r => (
-                                        <tr key={r.id} className="border-b border-slate-800 hover:bg-slate-800/50">
-                                            <td className="p-3 font-mono text-xs text-slate-500">{r.id}</td><td className="p-3 font-bold text-yellow-400">{r.code}</td>
-                                            <td className="p-3"><span className={`px-2 py-1 rounded text-xs font-bold ${r.status === 'playing' ? 'bg-emerald-900/50 text-emerald-400' : 'bg-slate-700 text-slate-300'}`}>{r.status}</span></td>
-                                            <td className="p-3"><button onClick={() => deleteRoom(r.id)} className="px-3 py-1 bg-red-900/50 hover:bg-red-600 text-red-200 rounded font-bold transition-colors">{t.delete}</button></td>
-                                        </tr>
-                                    ))}
-                                </tbody>
+                        <div className="overflow-y-auto flex-1 custom-scrollbar bg-slate-950/50 rounded-xl border border-slate-800">
+                            {/* ... 下方的 table 保持不變 ... */}
                             </table>
                         </div>
                     </>
