@@ -15,12 +15,11 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
     const handleTitleClick = () => {
         clickCount.current += 1;
         if (clickCount.current >= 5) {
-            // 觸發全域導航前往 'admin' 頁面 (需在 App.js 實作 window.navigateToAdmin)
             if (window.navigateToAdmin) window.navigateToAdmin();
             clickCount.current = 0;
         }
         clearTimeout(clickTimer.current);
-        clickTimer.current = setTimeout(() => { clickCount.current = 0; }, 1500); // 1.5秒內要點完 5 下
+        clickTimer.current = setTimeout(() => { clickCount.current = 0; }, 1500);
     };
 
     const renderModeTable = (modeKey, modeName, icon, colorClass, bgClass) => {
@@ -54,7 +53,7 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
                                         <td className="py-2 pl-2 font-black">
                                             {idx === 0 ? <span className="text-yellow-500"><i className="fa-solid fa-trophy"></i> 1</span> : idx+1}
                                         </td>
-                                        <td className="py-2 font-bold truncate max-w-[100px]">{r?.name}</td>
+                                        <td className="py-2 font-bold truncate max-w-[100px]">{r?.name || 'Player'}</td>
                                         <td className="py-2 text-emerald-600 font-bold text-center">{r?.score} 分</td>
                                         <td className="py-2 pr-2 text-right text-slate-400 font-mono text-xs">{r?.time ? `${r.time}秒` : ''}</td>
                                     </tr>
@@ -85,7 +84,6 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
             </header>
             
             <div className="w-full bg-slate-50 rounded-3xl shadow-lg p-6 border">
-                {/* 🌟 加上觸發後台的 onClick 事件，並讓游標變成點擊樣式 */}
                 <div className="text-center mb-6">
                     <h2 onClick={handleTitleClick} className="text-3xl font-black text-yellow-600 mb-2 cursor-pointer select-none transition-transform active:scale-95 inline-block">
                         <i className="fa-solid fa-crown"></i> 全校榮譽榜
@@ -117,10 +115,11 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {/* 原有遊戲與 🌟 新增的記憶翻牌單機版 */}
                         {renderModeTable('meteor-zh-en', '隕石戰(中選英)', 'fa-solid fa-meteor', 'text-indigo-600', 'bg-indigo-50')}
                         {renderModeTable('meteor-en-zh', '隕石戰(英選中)', 'fa-solid fa-meteor', 'text-emerald-600', 'bg-emerald-50')}
                         {renderModeTable('memory_single', '記憶翻牌', 'fa-solid fa-clone', 'text-cyan-600', 'bg-cyan-50')}
+                        {/* 🌟 新增貪食蛇模式 */}
+                        {renderModeTable('snake_single', '貪食蛇大冒險', 'fa-solid fa-staff-snake', 'text-green-600', 'bg-green-50')}
                         {renderModeTable('spelling', '拖曳拼字', 'fa-solid fa-puzzle-piece', 'text-pink-600', 'bg-pink-50')}
                         {renderModeTable('zh-en', '中翻英打字', 'fa-solid fa-keyboard', 'text-blue-600', 'bg-blue-50')}
                         {renderModeTable('en-zh', '英翻中打字', 'fa-solid fa-language', 'text-teal-600', 'bg-teal-50')}
@@ -132,5 +131,4 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
     );
 }
 
-// 若有需要掛載到全域
 window.LeaderboardView = LeaderboardView;
