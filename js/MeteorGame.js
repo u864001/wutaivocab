@@ -182,8 +182,24 @@ function MeteorGame({ subMode, onBack, settings, wordDatabase, qualifyingBook, o
         const drop = (now) => {
             const elapsed = (now - start) / 1000;
             const progress = Math.min(elapsed / currentMeteor.duration, 1);
-            const easeInProgress = progress * progress;
-            const currentY = -15 + (easeInProgress * 100);
+
+            // ── 兩段式落下：上 1/4 等速 → 後段平滑加速，末速限制 80% ──
+            // Phase 1（前 50% 時間）：y 從 -15% 到 25%，等速勻速
+            // Phase 2（後 50% 時間）：y 從 25% 到 85%
+            //   使用 f(p2) = (1/3)p2² + (2/3)p2
+            //   → p2=0 時速度 = Phase 1 末速（無突變）
+            //   → p2=1 時速度 = 原末速的 80%（精確上限）
+            const ph1Dur = currentMeteor.duration * 0.50;
+            let currentY;
+            if (elapsed <= ph1Dur) {
+                const p1 = elapsed / ph1Dur;
+                currentY = -15 + p1 * 40;                          // 等速：-15% → 25%
+            } else {
+                const p2 = Math.min((elapsed - ph1Dur) / ph1Dur, 1);
+                const ep2 = (1/3) * p2 * p2 + (2/3) * p2;          // 平滑加速（含上限）
+                currentY = 25 + ep2 * 60;                           // 加速：25% → 85%
+            }
+
             if (meteorRef.current) meteorRef.current.style.top = `${currentY}%`;
             if (progress >= 1) handleMiss();
             else animationFrameId = requestAnimationFrame(drop);
@@ -267,7 +283,7 @@ function MeteorGame({ subMode, onBack, settings, wordDatabase, qualifyingBook, o
     /* ═══ VISUAL FX: UFO spawn timer ═══ */
     useEffect(() => {
         if (!hasStarted || isFinished || ufoVisible) return;
-        const delay = 12000 + Math.random() * 14000;
+        const delay = 8000 + Math.random() * 8000;
         const t = setTimeout(() => {
             const rawDx = (Math.random() - 0.5) * 0.08;
             ufoPosRef.current = {
@@ -288,6 +304,10 @@ function MeteorGame({ subMode, onBack, settings, wordDatabase, qualifyingBook, o
     /* ═══ VISUAL FX: UFO movement RAF ═══ */
     useEffect(() => {
         if (!ufoVisible || !hasStarted || isFinished) return;
+        // 若玩家未點擊，20~28 秒後自動無聲離場，確保每局能見到多次 UFO
+        const autoDismiss = setTimeout(() => {
+            if (ufoPhaseRef.current === 'moving') fleeUfo(false);
+        }, 20000 + Math.random() * 8000);
         const animate = () => {
             if (ufoPhaseRef.current === 'moving') {
                 const p = ufoPosRef.current;
@@ -304,8 +324,8 @@ function MeteorGame({ subMode, onBack, settings, wordDatabase, qualifyingBook, o
             ufoRafRef.current = requestAnimationFrame(animate);
         };
         ufoRafRef.current = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(ufoRafRef.current);
-    }, [ufoVisible, hasStarted, isFinished]);
+        return () => { cancelAnimationFrame(ufoRafRef.current); clearTimeout(autoDismiss); };
+    }, [ufoVisible, hasStarted, isFinished, fleeUfo]);
 
     /* ═══ VISUAL FX: clean up on game end ═══ */
     useEffect(() => {
