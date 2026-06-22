@@ -218,6 +218,9 @@ function App() {
             {currentView === 'memory_single' && <MemoryGameSingle onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} onSaveScore={handleSaveScore} />}
             {currentView === 'memory_multi' && <MemoryGameMulti onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} dbRef={dbRef} user={user} />}
             {currentView === 'admin' && <AdminDashboard onBack={() => navigateTo('lobby')} dbRef={dbRef} lang={lang} setLang={setLang} />}
+            
+            {/* 🌟 貪食蛇單人版路由掛載 */}
+            {currentView === 'snake_single' && <SnakeSingle onBack={() => navigateTo('lobby')} settings={settings} wordDatabase={wordDatabase} qualifyingBook={qualifyingBook} onSaveScore={handleSaveScore} />}
         </div>
     );
 }
@@ -255,6 +258,8 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
             memSingleDesc: '單機配對練習',
             abcGame: 'ABC 防衛戰',
             abcDesc: '一二年級專屬',
+            snakeGame: '貪食蛇大冒險', // 🌟 新增貪食蛇字典檔
+            snakeDesc: '叢林拼字生存戰',
             sec4Title: '4. 傳統測驗與遊戲',
             spelling: '拖曳拼字',
             typeZhEn: '中翻英打字',
@@ -292,6 +297,8 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
             memSingleDesc: 'Solo Practice',
             abcGame: 'ABC Defense',
             abcDesc: 'Grade 1-2 only',
+            snakeGame: 'Jungle Snake', // 🌟 新增貪食蛇字典檔
+            snakeDesc: 'Spell & Survive',
             sec4Title: '4. Classic Games',
             spelling: 'Spelling',
             typeZhEn: 'Type: ZH to EN',
@@ -452,7 +459,13 @@ function Lobby({ onNavigate, settings, setSettings, wordDatabase, groupedUnits, 
                         <div><h3 className="font-bold">{t.memSingle}</h3><p className="text-xs text-slate-300 mt-1">{t.memSingleDesc}</p></div>
                     </button>
 
-                    <button onClick={() => onNavigate('meteor', 'abc')} className="rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all bg-gradient-to-br from-yellow-400 to-orange-500 hover:scale-105 hover:shadow-lg text-white border-transparent">
+                    {/* 🌟 插入貪食蛇按鈕 */}
+                    <button onClick={() => onNavigate('snake_single')} disabled={isQuizDisabled} className={`rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all ${isQuizDisabled ? 'bg-slate-100 dark:bg-slate-800 opacity-50' : 'bg-slate-800 border-slate-700 hover:border-green-400 hover:shadow-lg text-white'}`}>
+                        <div className="w-14 h-14 rounded-full flex items-center justify-center bg-green-500 text-white"><i className="fa-solid fa-staff-snake text-2xl"></i></div>
+                        <div><h3 className="font-bold">{t.snakeGame}</h3><p className="text-xs text-slate-300 mt-1">{t.snakeDesc}</p></div>
+                    </button>
+
+                    <button onClick={() => onNavigate('meteor', 'abc')} className="rounded-2xl p-5 border-2 flex flex-col items-center text-center gap-3 transition-all bg-gradient-to-br from-yellow-400 to-orange-500 hover:scale-105 hover:shadow-lg text-white border-transparent lg:col-start-1 lg:col-end-5 w-full max-w-sm mx-auto">
                         <div className="w-14 h-14 rounded-full flex items-center justify-center bg-white/20 text-white"><i className="fa-solid fa-font text-2xl"></i></div>
                         <div><h3 className="font-bold">{t.abcGame}</h3><p className="text-xs text-orange-100 mt-1">{t.abcDesc}</p></div>
                     </button>
