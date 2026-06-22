@@ -2,28 +2,28 @@ const { useState, useEffect, useMemo, useCallback, useRef } = React;
 
 const UFO_SVGS = [
     <svg key="u0" viewBox="0 0 82 38" width="70" height="32" style={{display:'block'}}>
-        <ellipse cx="41" cy="29" rx="37" ry="9.5" fill="#0d1d3a" stroke="#1e3a8a" strokeWidth="1"/>
-        <path d="M18,29 Q41,10 64,29" fill="#091527"/>
-        <path d="M18,29 Q41,10 64,29" fill="none" stroke="#152e70" strokeWidth="0.8"/>
-        <ellipse cx="41" cy="22" rx="12" ry="8" fill="#0b1c3a" stroke="#1a2e68" strokeWidth="0.7"/>
-        <circle cx="28" cy="28" r="2.3" fill="#3b82f6" opacity="0.55"/>
-        <circle cx="41" cy="29.5" r="2.3" fill="#60a5fa" opacity="0.5"/>
-        <circle cx="54" cy="28" r="2.3" fill="#3b82f6" opacity="0.55"/>
+        <ellipse cx="41" cy="29" rx="37" ry="9.5" fill="#1c2e50" stroke="#2a52b5" strokeWidth="1"/>
+        <path d="M18,29 Q41,10 64,29" fill="#122038"/>
+        <path d="M18,29 Q41,10 64,29" fill="none" stroke="#1e4292" strokeWidth="0.8"/>
+        <ellipse cx="41" cy="22" rx="12" ry="8" fill="#172c4a" stroke="#243e82" strokeWidth="0.7"/>
+        <circle cx="28" cy="28" r="2.3" fill="#3b82f6" opacity="0.75"/>
+        <circle cx="41" cy="29.5" r="2.3" fill="#60a5fa" opacity="0.70"/>
+        <circle cx="54" cy="28" r="2.3" fill="#3b82f6" opacity="0.75"/>
     </svg>,
     <svg key="u1" viewBox="0 0 74 54" width="62" height="45" style={{display:'block'}}>
-        <ellipse cx="37" cy="42" rx="33" ry="11" fill="#0d1d3a" stroke="#1e3a8a" strokeWidth="1"/>
-        <circle cx="37" cy="28" r="19" fill="#091527" stroke="#152e70" strokeWidth="1"/>
-        <circle cx="31" cy="24" r="6.5" fill="#0c1e40" opacity="0.5"/>
-        <circle cx="22" cy="41" r="2.5" fill="#818cf8" opacity="0.5"/>
-        <circle cx="37" cy="44" r="2.5" fill="#a5b4fc" opacity="0.45"/>
-        <circle cx="52" cy="41" r="2.5" fill="#818cf8" opacity="0.5"/>
+        <ellipse cx="37" cy="42" rx="33" ry="11" fill="#1c2e50" stroke="#2a52b5" strokeWidth="1"/>
+        <circle cx="37" cy="28" r="19" fill="#122038" stroke="#1e4292" strokeWidth="1"/>
+        <circle cx="31" cy="24" r="6.5" fill="#172c4a" opacity="0.6"/>
+        <circle cx="22" cy="41" r="2.5" fill="#818cf8" opacity="0.70"/>
+        <circle cx="37" cy="44" r="2.5" fill="#a5b4fc" opacity="0.65"/>
+        <circle cx="52" cy="41" r="2.5" fill="#818cf8" opacity="0.70"/>
     </svg>,
     <svg key="u2" viewBox="0 0 84 44" width="72" height="37" style={{display:'block'}}>
-        <polygon points="42,5 72,32 12,32" fill="#091527" stroke="#1e3a8a" strokeWidth="1"/>
-        <rect x="12" y="32" width="60" height="8" rx="4" fill="#0d1d3a" stroke="#1a2e68" strokeWidth="0.8"/>
-        <circle cx="25" cy="32" r="2.2" fill="#6366f1" opacity="0.5"/>
-        <circle cx="42" cy="37" r="2.2" fill="#818cf8" opacity="0.5"/>
-        <circle cx="59" cy="32" r="2.2" fill="#6366f1" opacity="0.5"/>
+        <polygon points="42,5 72,32 12,32" fill="#122038" stroke="#2a52b5" strokeWidth="1"/>
+        <rect x="12" y="32" width="60" height="8" rx="4" fill="#1c2e50" stroke="#243e82" strokeWidth="0.8"/>
+        <circle cx="25" cy="32" r="2.2" fill="#6366f1" opacity="0.70"/>
+        <circle cx="42" cy="37" r="2.2" fill="#818cf8" opacity="0.70"/>
+        <circle cx="59" cy="32" r="2.2" fill="#6366f1" opacity="0.70"/>
     </svg>
 ];
 
@@ -158,7 +158,8 @@ function MeteorGame({ subMode, onBack, settings, wordDatabase, qualifyingBook, o
     };
 
     const spawnMeteor = (wordObj) => {
-        const dropDuration = Math.max(1.5, 5 - (score * 0.15));
+        // ×1.6：Phase 1 等速段拉長，初速 = 舊版 50%，末速維持 80% 上限
+        const dropDuration = Math.max(2.4, (5 - (score * 0.15)) * 1.6);
         const xPos = 10 + Math.random() * 80;
         setCurrentMeteor({ wordObj, x: xPos, duration: dropDuration, isExploding: false, id: Date.now() });
         if (subMode !== 'zh-en' && subMode !== 'abc') playAudio(wordObj.en);
@@ -183,21 +184,23 @@ function MeteorGame({ subMode, onBack, settings, wordDatabase, qualifyingBook, o
             const elapsed = (now - start) / 1000;
             const progress = Math.min(elapsed / currentMeteor.duration, 1);
 
-            // ── 兩段式落下：上 1/4 等速 → 後段平滑加速，末速限制 80% ──
-            // Phase 1（前 50% 時間）：y 從 -15% 到 25%，等速勻速
-            // Phase 2（後 50% 時間）：y 從 25% 到 85%
-            //   使用 f(p2) = (1/3)p2² + (2/3)p2
-            //   → p2=0 時速度 = Phase 1 末速（無突變）
-            //   → p2=1 時速度 = 原末速的 80%（精確上限）
-            const ph1Dur = currentMeteor.duration * 0.50;
+            // ── 兩段式落下（修訂版）──
+            // 設 D = 原始基準時間，新 duration = 1.6D
+            // Phase 1（前 1.0D = 62.5% 總時）：y -15%→25%  等速，初速 = 舊版 50%
+            // Phase 2（後 0.6D = 37.5% 總時）：y 25%→85%   平滑加速
+            //   f(p2) = 0.6·p2² + 0.4·p2
+            //   p2=0 速度 = Phase 1 末速（完全銜接，無突變）
+            //   p2=1 速度 = 160/D = 原自由落體末速的 80%（精確上限）
+            const ph1Dur = currentMeteor.duration / 1.6;      // = 1.0D（62.5%）
+            const ph2Dur = currentMeteor.duration - ph1Dur;   // = 0.6D（37.5%）
             let currentY;
             if (elapsed <= ph1Dur) {
                 const p1 = elapsed / ph1Dur;
-                currentY = -15 + p1 * 40;                          // 等速：-15% → 25%
+                currentY = -15 + p1 * 40;                     // 等速：-15% → 25%
             } else {
-                const p2 = Math.min((elapsed - ph1Dur) / ph1Dur, 1);
-                const ep2 = (1/3) * p2 * p2 + (2/3) * p2;          // 平滑加速（含上限）
-                currentY = 25 + ep2 * 60;                           // 加速：25% → 85%
+                const p2 = Math.min((elapsed - ph1Dur) / ph2Dur, 1);
+                const ep2 = 0.6 * p2 * p2 + 0.4 * p2;        // 平滑加速（連續且有末速上限）
+                currentY = 25 + ep2 * 60;                     // 加速：25% → 85%
             }
 
             if (meteorRef.current) meteorRef.current.style.top = `${currentY}%`;
