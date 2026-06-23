@@ -403,7 +403,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             drawMeadowFlower(bgCtx, fx, fy, flowerColors[fi % flowerColors.length], 3 + pr(fi * 13) * 3);
         }
 
-        const spawnNextWord = () => {
+       const spawnNextWord = () => {
             activeWordObj = filteredWords[Math.floor(Math.random() * filteredWords.length)];
             targetWordStr = activeWordObj.en.replace(/\s+/g, '').toUpperCase();
             currentLetterIndex = 0;
@@ -412,14 +412,59 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             setCurrentWordObj(activeWordObj);
             setSpelledLetters("");
             playVoice(activeWordObj.en);
+
             for (let i = 0; i < targetWordStr.length; i++) {
                 let char = targetWordStr[i];
-                let isValid = false, newX, newY;
-                while (!isValid) {
-                    newX = Math.floor(Math.random() * (GRID_W - 2)) + 1;
-                    newY = Math.floor(Math.random() * (GRID_H - 2)) + 1;
-                    isValid = !snake.some(s => s.x === newX && s.y === newY) && !mapLetters.some(l => l.x === newX && l.y === newY);
+                let isValid = false, newX = 1, newY = 1;
+                let attempts = 0;
+
+                while (!isValid && attempts < 200) {
+                    // 階段 1 & 2 (0-100次): 縮小範圍，避開最外圈樹叢邊界
+                    // 階段 3 (100-200次): 恢復全草地範圍 (應急方案)
+                    if (attempts < 100) {
+                        newX = Math.floor(Math.random() * (GRID_W - 4)) + 2; // X範圍 2 ~ 21
+                        newY = Math.floor(Math.random() * (GRID_H - 4)) + 2; // Y範圍 2 ~ 11
+                    } else {
+                        newX = Math.floor(Math.random() * (GRID_W - 2)) + 1; // X範圍 1 ~ 22
+                        newY = Math.floor(Math.random() * (GRID_H - 2)) + 1; // Y範圍 1 ~ 12
+                    }
+
+                    // 基本天條：不能長在蛇身上，也不能跟已經長出來的字母重疊
+                    let onSnake = snake.some(s => s.x === newX && s.y === newY);
+                    let onLetter = mapLetters.some(l => l.x === newX && l.y === newY);
+
+                    if (!onSnake && !onLetter) {
+                        isValid = true;
+
+                        // 規則 A: 避開正上方 UI 題板遮擋區 (設定為 X:7~16, Y:1~4)
+                        if (attempts < 100) {
+                            if (newX >= 7 && newX <= 16 && newY <= 4) {
+                                isValid = false;
+                            }
+                        }
+
+                        // 規則 B: 避開其他字母，九宮格周圍不要有東西 (限階段 1 執行)
+                        if (isValid && attempts < 50) {
+                            let isAdjacent = mapLetters.some(l => Math.abs(l.x - newX) <= 1 && Math.abs(l.y - newY) <= 1);
+                            if (isAdjacent) {
+                                isValid = false;
+                            }
+                        }
+                    }
+                    attempts++;
                 }
+
+                // 極端防護：如果運氣太差 200 次都沒抽中，強制掃描第一個空的草地塞入
+                if (!isValid) {
+                    for (let gy = 1; gy < GRID_H - 1 && !isValid; gy++) {
+                        for (let gx = 1; gx < GRID_W - 1 && !isValid; gx++) {
+                            if (!snake.some(s => s.x === gx && s.y === gy) && !mapLetters.some(l => l.x === gx && l.y === gy)) {
+                                newX = gx; newY = gy; isValid = true;
+                            }
+                        }
+                    }
+                }
+
                 mapLetters.push({ char, x: newX, y: newY, id: i });
             }
         };
