@@ -1,6 +1,5 @@
 // ===================================================================
-// MemoryGameMulti.js - 邊界防護強化版 (v4.1)
-// 修正：偷看/上鎖卡無目標時自動跳過；閃電卡無目標時無效化
+// MemoryGameMulti.js - 穩定版 v5 (修正 hooks 順序 & QR 自動帶入)
 // ===================================================================
 
 function addScore(players, scoringTeam, points) {
@@ -77,7 +76,8 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
             errorWrongRoom: '房號錯誤，請確認後再試一次',
             errorStarted: '這場遊戲已經開始，無法加入',
             errorNeedTeams: '至少需要 2 個不同的隊伍才能開始遊戲，請大家先選好隊伍',
-            errorNoWords: '題庫單字不足，請先回大廳選擇複習範圍（至少需要8組單字）'
+            errorNoWords: '題庫單字不足，請先回大廳選擇複習範圍（至少需要8組單字）',
+            scanToJoin: '掃描 QR Code 快速加入'
         },
         'en-US': {
             title: 'Multiplayer Memory',
@@ -110,7 +110,8 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
             errorWrongRoom: 'Invalid room code, please try again',
             errorStarted: 'Game already started, cannot join',
             errorNeedTeams: 'At least 2 different teams are required to start',
-            errorNoWords: 'Not enough words in database (at least 8 pairs required)'
+            errorNoWords: 'Not enough words in database (at least 8 pairs required)',
+            scanToJoin: 'Scan QR Code to join'
         }
     };
     const t = dict[lang] || dict['zh-TW'];
@@ -145,6 +146,16 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         try { if (window.soundEngine) window.soundEngine.play(name); } catch(e) {}
     };
 
+    // 從 URL 自動讀取房間代碼
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const room = params.get('room');
+        if (room && room.length === 4) {
+            setRoomCodeInput(room);
+        }
+    }, []);
+
+    // 防止下拉刷新與縮放
     useEffect(() => {
         const originalOverscroll = document.body.style.overscrollBehavior;
         const originalTouchAction = document.body.style.touchAction;
@@ -164,6 +175,21 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         }
         return wordDatabase;
     }, [wordDatabase, settings]);
+
+    // 提前計算隊伍分數與順序（解決 hooks 順序問題）
+    const teamScores = useMemo(() => {
+        const scores = {};
+        if (roomData?.players) {
+            Object.values(roomData.players).forEach(p => {
+                scores[p.team] = (scores[p.team] || 0) + p.score;
+            });
+        }
+        return scores;
+    }, [roomData?.players]);
+
+    const orderedTeams = useMemo(() => {
+        return teamNames.filter(t => teamScores[t] !== undefined);
+    }, [teamScores]);
 
     useEffect(() => {
         if (!roomData?.id || !dbRef) return;
@@ -311,12 +337,11 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                 await roomRef.update({ board: newBoard });
             } catch(e) { console.error(e); processingRef.current = false; return; }
 
-            // ----- 針對偷看/上鎖卡，檢查是否還有合法目標 -----
+            // 偷看/上鎖卡檢查目標
             if (card.power === 'peek' || card.power === 'lock') {
                 const hiddenNormal = newBoard.filter(c => c.status === 'hidden' && !c.isPowerUp);
                 const needed = card.power === 'peek' ? 2 : 1;
                 if (hiddenNormal.length < needed) {
-                    // 沒有足夠目標，直接跳過效果
                     await roomRef.update({ activeEffect: null }).catch(()=>{});
                     processingRef.current = false;
                     setTimeout(() => setEffectSplash(null), 800);
@@ -337,12 +362,10 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                         const turnOrder = data.turnOrder;
                         let currentTeamIndex = data.currentTeamIndex;
                         let nextCombo = data.turnState.comboCount || 0;
-                        const turnState = data.turnState;
                         let switchTurn = false;
                         let effectApplied = false;
 
                         if (data.turnState.comboCount === 0) {
-                            // 基本回合
                             if (currentFlipped.length === 0) {
                                 const hiddenPairs = board.filter(c => c.status === 'hidden' && !c.isPowerUp);
                                 if (hiddenPairs.length > 0) {
@@ -355,7 +378,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                                         effectApplied = true;
                                     }
                                 }
-                                if (effectApplied) nextCombo = 1; // 成功才給獎勵回合
+                                if (effectApplied) nextCombo = 1;
                             } else if (currentFlipped.length === 1) {
                                 const firstCard = board[currentFlipped[0]];
                                 const pairIdx = board.findIndex(c => c.matchId === firstCard.matchId && c.id !== firstCard.id);
@@ -367,7 +390,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                                 }
                             }
                         } else {
-                            // 獎勵回合中
                             if (currentFlipped.length === 0) {
                                 const hiddenPairs = board.filter(c => c.status === 'hidden' && !c.isPowerUp);
                                 if (hiddenPairs.length > 0) {
@@ -377,16 +399,10 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                                     if (pairIdx !== -1) {
                                         board = board.map((c, idx) => (idx === selfIdx || idx === pairIdx) ? { ...c, status: 'matched' } : c);
                                         players = addScore(players, myTeam, 10);
-                                        effectApplied = true;
                                     }
                                 }
-                                if (effectApplied) {
-                                    switchTurn = true;
-                                    nextCombo = 0;
-                                } else {
-                                    switchTurn = true;
-                                    nextCombo = 0;
-                                }
+                                switchTurn = true;
+                                nextCombo = 0;
                             } else if (currentFlipped.length === 1) {
                                 const firstCard = board[currentFlipped[0]];
                                 const pairIdx = board.findIndex(c => c.matchId === firstCard.matchId && c.id !== firstCard.id);
@@ -557,8 +573,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                 await roomRef.update({ "activeEffect.step": 'selecting_target' });
             } else if (['bonus', 'radar', 'coin'].includes(card.power)) {
                 executeEffect(card.power);
-            } else if (card.power === 'lightning') {
-                // handled
             } else {
                 await roomRef.update({ "activeEffect.step": 'choosing_team' });
             }
@@ -584,7 +598,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                 const data = snap.data();
                 if (!data) return;
                 let players = data.players;
-                let board = data.board;
 
                 if (power === 'bonus') {
                     players = addScore(players, myTeam, 30);
@@ -648,6 +661,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         }, 1800);
     };
 
+    // ========== UI 元件 ==========
     const TopHeader = () => (
         <header className="h-14 sm:h-16 flex justify-between items-center bg-slate-900 px-4 border-b border-slate-700 shrink-0 z-30 shadow-md">
             <button onClick={onBack} className="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors border border-slate-600">
@@ -739,50 +753,53 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         </div>
     );
 
-    if (view === 'waiting') return (
-        <div className="flex flex-col h-full bg-slate-950">
-            <TopHeader />
-            <div className="flex-1 flex items-center justify-center p-4 text-white">
-                <div className="bg-slate-800 p-8 rounded-3xl w-full max-w-md text-center border border-slate-700 shadow-2xl">
-                    <div className="text-sm text-slate-400">{t.roomCode}</div>
-                    <div className="text-5xl font-black text-yellow-400 mb-6 tracking-widest bg-slate-900 py-3 rounded-xl border border-yellow-500/30">{roomData.code}</div>
-                    <div className="text-left text-sm text-slate-400 mb-2">{t.chooseTeam}</div>
-                    <div className="grid grid-cols-2 gap-2 mb-6">
-                        {teamNames.map(teamName => (
-                            <button key={teamName} onClick={() => handleChangeTeam(teamName)}
-                                className={`p-3 rounded-xl font-bold border-2 transition-all ${teamColors[teamName]} ${myTeam === teamName ? 'ring-4 ring-white scale-105' : 'opacity-50 hover:opacity-100 border-transparent'}`}>
-                                {teamName}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="text-left text-sm text-slate-400 mb-2">{t.currentPlayers}</div>
-                    <div className="space-y-2 mb-8 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-                        {Object.values(roomData.players).map((p, i) => (
-                            <div key={i} className={`p-3 rounded-xl flex justify-between font-bold border border-slate-600/50 shadow-sm ${teamColors[p.team]}`}>
-                                <span>{p.name}{p.isHost ? ' 👑' : ''}</span>
-                                <span>{p.team}</span>
-                            </div>
-                        ))}
-                    </div>
-                    {errorMsg && <div className="text-red-400 text-sm mb-4 font-bold">{errorMsg}</div>}
-                    {roomData.hostId === user.uid ? (
-                        <button onClick={handleStartGame} className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black text-xl animate-pulse shadow-[0_0_15px_rgba(37,99,235,0.5)] transition-colors">{t.startGame}</button>
-                    ) : <div className="text-slate-400 animate-pulse font-bold bg-slate-900 py-4 rounded-xl">{t.waitingHost}</div>}
-                    <div className="mt-4 mb-2 flex flex-col items-center gap-2">
-                        <div className="bg-white p-2 rounded-xl shadow-inner">
-                            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${roomData.code}&margin=6`} alt="QR Code" width="140" height="140" />
+    if (view === 'waiting') {
+        // 生成快速加入 QR Code 網址
+        const joinUrl = window.location.origin + window.location.pathname + '?room=' + roomData.code;
+        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(joinUrl)}&margin=6`;
+        return (
+            <div className="flex flex-col h-full bg-slate-950">
+                <TopHeader />
+                <div className="flex-1 flex items-center justify-center p-4 text-white">
+                    <div className="bg-slate-800 p-8 rounded-3xl w-full max-w-md text-center border border-slate-700 shadow-2xl">
+                        <div className="text-sm text-slate-400">{t.roomCode}</div>
+                        <div className="text-5xl font-black text-yellow-400 mb-6 tracking-widest bg-slate-900 py-3 rounded-xl border border-yellow-500/30">{roomData.code}</div>
+                        <div className="text-left text-sm text-slate-400 mb-2">{t.chooseTeam}</div>
+                        <div className="grid grid-cols-2 gap-2 mb-6">
+                            {teamNames.map(teamName => (
+                                <button key={teamName} onClick={() => handleChangeTeam(teamName)}
+                                    className={`p-3 rounded-xl font-bold border-2 transition-all ${teamColors[teamName]} ${myTeam === teamName ? 'ring-4 ring-white scale-105' : 'opacity-50 hover:opacity-100 border-transparent'}`}>
+                                    {teamName}
+                                </button>
+                            ))}
                         </div>
+                        <div className="text-left text-sm text-slate-400 mb-2">{t.currentPlayers}</div>
+                        <div className="space-y-2 mb-8 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                            {Object.values(roomData.players).map((p, i) => (
+                                <div key={i} className={`p-3 rounded-xl flex justify-between font-bold border border-slate-600/50 shadow-sm ${teamColors[p.team]}`}>
+                                    <span>{p.name}{p.isHost ? ' 👑' : ''}</span>
+                                    <span>{p.team}</span>
+                                </div>
+                            ))}
+                        </div>
+                        {errorMsg && <div className="text-red-400 text-sm mb-4 font-bold">{errorMsg}</div>}
+                        {roomData.hostId === user.uid ? (
+                            <button onClick={handleStartGame} className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black text-xl animate-pulse shadow-[0_0_15px_rgba(37,99,235,0.5)] transition-colors">{t.startGame}</button>
+                        ) : <div className="text-slate-400 animate-pulse font-bold bg-slate-900 py-4 rounded-xl">{t.waitingHost}</div>}
+                        <div className="mt-4 mb-2 flex flex-col items-center gap-2">
+                            <p className="text-xs text-slate-400">{t.scanToJoin}</p>
+                            <div className="bg-white p-2 rounded-xl shadow-inner">
+                                <img src={qrSrc} alt="QR Code" width="140" height="140" />
+                            </div>
+                        </div>
+                        <button onClick={onBack} className="w-full mt-6 text-slate-400 hover:text-white transition-colors text-sm underline underline-offset-4">{t.leaveRoom}</button>
                     </div>
-                    <button onClick={onBack} className="w-full mt-6 text-slate-400 hover:text-white transition-colors text-sm underline underline-offset-4">{t.leaveRoom}</button>
                 </div>
             </div>
-        </div>
-    );
+        );
+    }
 
-    const teamScores = {};
-    Object.values(roomData.players).forEach(p => { teamScores[p.team] = (teamScores[p.team] || 0) + p.score; });
-    const orderedTeams = useMemo(() => teamNames.filter(t => teamScores[t] !== undefined), [teamScores]);
-
+    // 遊戲主畫面 (view === 'playing')
     return (
         <div className="fixed inset-0 flex flex-col bg-slate-950 text-white overflow-hidden">
             <header className="h-14 sm:h-16 flex justify-between items-center bg-slate-900 px-4 border-b border-slate-800 shrink-0 z-30 shadow-md">
