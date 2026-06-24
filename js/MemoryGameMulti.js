@@ -1,5 +1,6 @@
 // ===================================================================
-// MemoryGameMulti.js - 最終穩定版 (v3 完整檔)
+// MemoryGameMulti.js - 邊界防護強化版 (v4.1)
+// 修正：偷看/上鎖卡無目標時自動跳過；閃電卡無目標時無效化
 // ===================================================================
 
 function addScore(players, scoringTeam, points) {
@@ -144,7 +145,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         try { if (window.soundEngine) window.soundEngine.play(name); } catch(e) {}
     };
 
-    // 防止下拉刷新與縮放
     useEffect(() => {
         const originalOverscroll = document.body.style.overscrollBehavior;
         const originalTouchAction = document.body.style.touchAction;
@@ -269,7 +269,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         });
     };
 
-    // ========== 核心翻牌邏輯 ==========
     const handleCardClick = async (index) => {
         if (!roomData || !isMyTurn() || view !== 'playing') return;
         if (processingRef.current) return;
@@ -277,7 +276,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         const card = roomData.board[index];
         if (!card) return;
 
-        // 處理 activeEffect 目標選取
         if (roomData.activeEffect?.step === 'selecting_target') {
             if (card.status !== 'hidden' || card.isPowerUp) return;
             processingRef.current = true;
@@ -304,19 +302,122 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         if (card.status === 'matched' || roomData.turnState.flippedIndices.includes(index)) return;
         if (card.lockedBy && card.lockedBy !== myTeam) return;
 
-        // 功能卡 (僅限於 flippedIndices 為空)
         if (card.isPowerUp) {
-            if (roomData.turnState.flippedIndices.length !== 0) return;
             processingRef.current = true;
             playSfx('powerup');
             setEffectSplash(card);
             const newBoard = roomData.board.map((c, i) => i === index ? { ...c, status: 'matched' } : c);
             try {
-                await roomRef.update({
-                    board: newBoard,
-                    activeEffect: { power: card.power, icon: card.icon, text: card.text, triggerTeam: myTeam, step: 'announcing', startedAt: Date.now() }
-                });
-            } catch(e) { console.error(e); }
+                await roomRef.update({ board: newBoard });
+            } catch(e) { console.error(e); processingRef.current = false; return; }
+
+            // ----- 針對偷看/上鎖卡，檢查是否還有合法目標 -----
+            if (card.power === 'peek' || card.power === 'lock') {
+                const hiddenNormal = newBoard.filter(c => c.status === 'hidden' && !c.isPowerUp);
+                const needed = card.power === 'peek' ? 2 : 1;
+                if (hiddenNormal.length < needed) {
+                    // 沒有足夠目標，直接跳過效果
+                    await roomRef.update({ activeEffect: null }).catch(()=>{});
+                    processingRef.current = false;
+                    setTimeout(() => setEffectSplash(null), 800);
+                    return;
+                }
+            }
+
+            if (card.power === 'lightning') {
+                const currentFlipped = roomData.turnState.flippedIndices;
+                const currentCombo = roomData.turnState.comboCount || 0;
+                try {
+                    await dbRef.runTransaction(async (tx) => {
+                        const snap = await tx.get(roomRef);
+                        const data = snap.data();
+                        if (!data || data.status !== 'playing') return;
+                        let board = data.board;
+                        let players = data.players;
+                        const turnOrder = data.turnOrder;
+                        let currentTeamIndex = data.currentTeamIndex;
+                        let nextCombo = data.turnState.comboCount || 0;
+                        const turnState = data.turnState;
+                        let switchTurn = false;
+                        let effectApplied = false;
+
+                        if (data.turnState.comboCount === 0) {
+                            // 基本回合
+                            if (currentFlipped.length === 0) {
+                                const hiddenPairs = board.filter(c => c.status === 'hidden' && !c.isPowerUp);
+                                if (hiddenPairs.length > 0) {
+                                    const pick = hiddenPairs[Math.floor(Math.random() * hiddenPairs.length)];
+                                    const pairIdx = board.findIndex(c => c.matchId === pick.matchId && c.id !== pick.id);
+                                    const selfIdx = board.findIndex(c => c.id === pick.id);
+                                    if (pairIdx !== -1) {
+                                        board = board.map((c, idx) => (idx === selfIdx || idx === pairIdx) ? { ...c, status: 'matched' } : c);
+                                        players = addScore(players, myTeam, 10);
+                                        effectApplied = true;
+                                    }
+                                }
+                                if (effectApplied) nextCombo = 1; // 成功才給獎勵回合
+                            } else if (currentFlipped.length === 1) {
+                                const firstCard = board[currentFlipped[0]];
+                                const pairIdx = board.findIndex(c => c.matchId === firstCard.matchId && c.id !== firstCard.id);
+                                if (pairIdx !== -1) {
+                                    board = board.map((c, idx) => (idx === currentFlipped[0] || idx === pairIdx) ? { ...c, status: 'matched' } : c);
+                                    players = addScore(players, myTeam, 10);
+                                    effectApplied = true;
+                                    nextCombo = 1;
+                                }
+                            }
+                        } else {
+                            // 獎勵回合中
+                            if (currentFlipped.length === 0) {
+                                const hiddenPairs = board.filter(c => c.status === 'hidden' && !c.isPowerUp);
+                                if (hiddenPairs.length > 0) {
+                                    const pick = hiddenPairs[Math.floor(Math.random() * hiddenPairs.length)];
+                                    const pairIdx = board.findIndex(c => c.matchId === pick.matchId && c.id !== pick.id);
+                                    const selfIdx = board.findIndex(c => c.id === pick.id);
+                                    if (pairIdx !== -1) {
+                                        board = board.map((c, idx) => (idx === selfIdx || idx === pairIdx) ? { ...c, status: 'matched' } : c);
+                                        players = addScore(players, myTeam, 10);
+                                        effectApplied = true;
+                                    }
+                                }
+                                if (effectApplied) {
+                                    switchTurn = true;
+                                    nextCombo = 0;
+                                } else {
+                                    switchTurn = true;
+                                    nextCombo = 0;
+                                }
+                            } else if (currentFlipped.length === 1) {
+                                const firstCard = board[currentFlipped[0]];
+                                const pairIdx = board.findIndex(c => c.matchId === firstCard.matchId && c.id !== firstCard.id);
+                                if (pairIdx !== -1) {
+                                    board = board.map((c, idx) => (idx === currentFlipped[0] || idx === pairIdx) ? { ...c, status: 'matched' } : c);
+                                    players = addScore(players, myTeam, 10);
+                                }
+                                switchTurn = true;
+                                nextCombo = 0;
+                            }
+                        }
+
+                        if (switchTurn) {
+                            const advanced = advanceTurn(turnOrder, currentTeamIndex, players);
+                            currentTeamIndex = advanced.currentTeamIndex;
+                            players = advanced.players;
+                        }
+                        const nextTeamName = turnOrder[currentTeamIndex] || turnOrder[0] || myTeam;
+                        tx.update(roomRef, {
+                            board, players, currentTeamIndex,
+                            currentTeam: nextTeamName,
+                            turnState: { flippedIndices: [], comboCount: nextCombo, isAnimating: false },
+                            activeEffect: null
+                        });
+                    });
+                } catch (e) { console.error('閃電卡交易失敗', e); }
+                processingRef.current = false;
+                setTimeout(() => setEffectSplash(null), 1500);
+                return;
+            }
+
             processingRef.current = false;
             setTimeout(() => {
                 setEffectSplash(null);
@@ -325,7 +426,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
             return;
         }
 
-        // 普通卡
+        // 普通字卡
         const flippedLen = roomData.turnState.flippedIndices.length;
 
         if (flippedLen === 0) {
@@ -341,9 +442,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                     if (cardNow.lockedBy && cardNow.lockedBy !== myTeam) return;
                     tx.update(roomRef, { "turnState.flippedIndices": [index] });
                 });
-            } catch (e) {
-                console.error("第一張翻牌交易失敗", e);
-            }
+            } catch (e) { console.error("第一張翻牌交易失敗", e); }
             processingRef.current = false;
             return;
         }
@@ -369,9 +468,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                     });
                     success = true;
                 });
-            } catch (e) {
-                console.error("第二張翻牌交易失敗", e);
-            }
+            } catch (e) { console.error("第二張翻牌交易失敗", e); }
             processingRef.current = false;
 
             if (success) {
@@ -412,7 +509,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                                 nextCombo = 0;
                             }
 
-                            // 第二次機會結束規則：若 comboCount 原本已是 1，無論成敗皆換隊
                             if (data.turnState.comboCount === 1) {
                                 const advanced = advanceTurn(turnOrder, currentTeamIndex, players);
                                 currentTeamIndex = advanced.currentTeamIndex;
@@ -459,8 +555,10 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         try {
             if (['peek', 'lock'].includes(card.power)) {
                 await roomRef.update({ "activeEffect.step": 'selecting_target' });
-            } else if (['bonus', 'radar', 'lightning', 'coin'].includes(card.power)) {
+            } else if (['bonus', 'radar', 'coin'].includes(card.power)) {
                 executeEffect(card.power);
+            } else if (card.power === 'lightning') {
+                // handled
             } else {
                 await roomRef.update({ "activeEffect.step": 'choosing_team' });
             }
@@ -505,18 +603,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                         if (nextPlayers[uid].team === myTeam) nextPlayers[uid].winWinWith = targetTeam;
                     });
                     tx.update(roomRef, { players: nextPlayers, activeEffect: null });
-                } else if (power === 'lightning') {
-                    const hiddenPairs = board.filter(c => c.status === 'hidden' && !c.isPowerUp);
-                    if (hiddenPairs.length === 0) {
-                        tx.update(roomRef, { activeEffect: null });
-                    } else {
-                        const pick = hiddenPairs[Math.floor(Math.random() * hiddenPairs.length)];
-                        const pairIdx = board.findIndex(c => c.matchId === pick.matchId && c.id !== pick.id);
-                        const selfIdx = board.findIndex(c => c.id === pick.id);
-                        board = board.map((c, idx) => (idx === selfIdx || idx === pairIdx) ? { ...c, status: 'matched' } : c);
-                        players = addScore(players, myTeam, 10);
-                        tx.update(roomRef, { board, players, activeEffect: null });
-                    }
                 }
             });
         } catch (e) { 
@@ -562,7 +648,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         }, 1800);
     };
 
-    // ========== UI 元件 ==========
     const TopHeader = () => (
         <header className="h-14 sm:h-16 flex justify-between items-center bg-slate-900 px-4 border-b border-slate-700 shrink-0 z-30 shadow-md">
             <button onClick={onBack} className="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors border border-slate-600">
@@ -696,6 +781,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
 
     const teamScores = {};
     Object.values(roomData.players).forEach(p => { teamScores[p.team] = (teamScores[p.team] || 0) + p.score; });
+    const orderedTeams = useMemo(() => teamNames.filter(t => teamScores[t] !== undefined), [teamScores]);
 
     return (
         <div className="fixed inset-0 flex flex-col bg-slate-950 text-white overflow-hidden">
@@ -709,7 +795,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                     </div>
                 </div>
                 <div className="flex gap-1.5">
-                    {Object.keys(teamScores).map(teamName => (
+                    {orderedTeams.map(teamName => (
                         <div key={teamName} className={`px-2 py-1 rounded-md text-xs sm:text-sm font-black border border-white/20 shadow-sm flex flex-col items-center leading-tight ${teamColors[teamName]}`}>
                             <span>{teamName}</span>
                             <span>{teamScores[teamName]}</span>
