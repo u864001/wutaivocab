@@ -1,5 +1,10 @@
 // ===================================================================
-// MemoryGameMulti.js - 強化穩定版
+// MemoryGameMulti.js - 強化穩定版 (v2)
+// 修正重點：
+// 1. 加入本地處理鎖 (processingRef) 防止快速連點
+// 2. 第一張與第二張翻牌改用 Firestore Transaction 確保原子性
+// 3. 結算交易內增加強制解鎖，避免狀態不符時卡死
+// 4. 保留房主 5 次點擊強制重置功能
 // ===================================================================
 
 function addScore(players, scoringTeam, points) {
@@ -123,7 +128,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
     const [roomCodeInput, setRoomCodeInput] = useState('');
     const [roomData, setRoomData] = useState(null);
     const [errorMsg, setErrorMsg] = useState('');
-    const [debugClickCount, setDebugClickCount] = useState(0); // 🛠️ 用於強制解除卡死
+    const [debugClickCount, setDebugClickCount] = useState(0);
 
     const [miniGameItems, setMiniGameItems] = useState([]);
     const [miniGameActive, setMiniGameActive] = useState(false);
@@ -132,6 +137,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
     const [miniGameSettlement, setMiniGameSettlement] = useState(null);
     const [effectSplash, setEffectSplash] = useState(null);
     const miniGameScoreRef = useRef(0);
+    const processingRef = useRef(false); // 防止本地重複點擊
 
     const teamNames = ['紅隊', '藍隊', '綠隊', '黃隊'];
     const teamColors = {
@@ -252,22 +258,26 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         });
     };
 
-    // 🛠️ 強化 1：handleCardClick 的錯誤攔截與強制解鎖
+    // ========== 核心翻牌邏輯 (含交易保護) ==========
     const handleCardClick = async (index) => {
-        if (!roomData || !isMyTurn() || roomData.turnState.isAnimating || view !== 'playing') return;
+        // 基本防衛
+        if (!roomData || !isMyTurn() || view !== 'playing') return;
+        if (processingRef.current) return; // 防止連點
         const roomRef = dbRef.collection('rooms').doc(roomData.id);
         const card = roomData.board[index];
         if (!card) return;
 
+        // 處理 activeEffect 目標選取 (保持原邏輯，用 update)
         if (roomData.activeEffect?.step === 'selecting_target') {
             if (card.status !== 'hidden' || card.isPowerUp) return;
+            processingRef.current = true;
             try {
                 if (roomData.activeEffect.power === 'lock') {
                     const newBoard = roomData.board.map((c, i) => i === index ? { ...c, lockedBy: myTeam } : c);
                     await roomRef.update({ board: newBoard, activeEffect: null });
                 } else if (roomData.activeEffect.power === 'peek') {
                     const existing = roomData.activeEffect.peekIndices || [];
-                    if (existing.includes(index)) return;
+                    if (existing.includes(index)) { processingRef.current = false; return; }
                     const next = [...existing, index];
                     if (next.length < 2) {
                         await roomRef.update({ "activeEffect.peekIndices": next });
@@ -277,20 +287,28 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                     }
                 }
             } catch(e) { console.error("Target Selection Error", e); }
+            processingRef.current = false;
             return;
         }
 
+        // 卡片狀態過濾
         if (card.status === 'matched' || roomData.turnState.flippedIndices.includes(index)) return;
         if (card.lockedBy && card.lockedBy !== myTeam) return;
 
+        // 翻到功能卡
         if (card.isPowerUp) {
+            if (roomData.turnState.flippedIndices.length > 0) return; // 功能卡只能在第一張時翻
+            processingRef.current = true;
             playSfx('powerup');
             setEffectSplash(card);
             const newBoard = roomData.board.map((c, i) => i === index ? { ...c, status: 'matched' } : c);
-            await roomRef.update({
-                board: newBoard,
-                activeEffect: { power: card.power, icon: card.icon, text: card.text, triggerTeam: myTeam, step: 'announcing', startedAt: Date.now() }
-            });
+            try {
+                await roomRef.update({
+                    board: newBoard,
+                    activeEffect: { power: card.power, icon: card.icon, text: card.text, triggerTeam: myTeam, step: 'announcing', startedAt: Date.now() }
+                });
+            } catch(e) { console.error(e); }
+            processingRef.current = false;
             setTimeout(() => {
                 setEffectSplash(null);
                 processEffectAuto(card);
@@ -298,69 +316,132 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
             return;
         }
 
-        const newFlipped = [...roomData.turnState.flippedIndices, index];
-        if (newFlipped.length === 1) {
-            await roomRef.update({ "turnState.flippedIndices": newFlipped });
-        } else {
-            // 翻開第二張，開始結算
-            await roomRef.update({ "turnState.flippedIndices": newFlipped, "turnState.isAnimating": true });
-            
-            setTimeout(async () => {
-                try {
-                    await dbRef.runTransaction(async (tx) => {
-                        const snap = await tx.get(roomRef);
-                        const data = snap.data();
-                        if (!data || data.status !== 'playing') return;
+        // ---- 普通翻牌 (使用 Transaction 防止競爭) ----
+        const flippedLen = roomData.turnState.flippedIndices.length;
 
-                        let board = data.board;
-                        let players = data.players;
-                        const turnOrder = data.turnOrder;
-                        let currentTeamIndex = data.currentTeamIndex;
-                        let nextCombo = data.turnState.comboCount || 0;
-
-                        // 在 Transaction 內重新確認配對邏輯
-                        const [i1, i2] = newFlipped;
-                        const isMatch = board[i1].matchId === board[i2].matchId && board[i1].type !== board[i2].type;
-
-                        if (isMatch) {
-                            playSfx('correct');
-                            board = board.map((c, idx) => (idx === i1 || idx === i2) ? { ...c, status: 'matched' } : c);
-                            players = addScore(players, myTeam, 10);
-                            nextCombo += 1;
-                        } else {
-                            playSfx('wrong');
-                            const advanced = advanceTurn(turnOrder, currentTeamIndex, players);
-                            currentTeamIndex = advanced.currentTeamIndex;
-                            players = advanced.players;
-                            nextCombo = 0;
-                        }
-
-                        // 安全檢查：確保隊伍名稱存在
-                        const nextTeamName = turnOrder[currentTeamIndex] || turnOrder[0] || myTeam;
-
-                        tx.update(roomRef, {
-                            board, players, currentTeamIndex, 
-                            currentTeam: nextTeamName,
-                            turnState: { flippedIndices: [], comboCount: nextCombo, isAnimating: false }
-                        });
-                    });
-                } catch (e) { 
-                    console.error('回合結算崩潰，強制解鎖', e);
-                    // 🚨 發生錯誤時強制解鎖動畫，讓玩家能繼續點擊
-                    roomRef.update({ 
-                        "turnState.isAnimating": false, 
-                        "turnState.flippedIndices": [] 
-                    }).catch(()=>{});
-                }
-            }, 1200);
+        if (flippedLen === 0) {
+            // 翻第一張牌
+            processingRef.current = true;
+            try {
+                await dbRef.runTransaction(async (tx) => {
+                    const snap = await tx.get(roomRef);
+                    const data = snap.data();
+                    if (!data || data.status !== 'playing') return;
+                    // 再次檢查狀態
+                    if (data.turnState.flippedIndices.length !== 0 || data.turnState.isAnimating) return;
+                    const cardNow = data.board[index];
+                    if (!cardNow || cardNow.status !== 'hidden' || cardNow.isPowerUp) return;
+                    if (cardNow.lockedBy && cardNow.lockedBy !== myTeam) return;
+                    tx.update(roomRef, { "turnState.flippedIndices": [index] });
+                });
+            } catch (e) {
+                console.error("第一張翻牌交易失敗", e);
+            }
+            processingRef.current = false;
+            return;
         }
+
+        if (flippedLen === 1) {
+            // 翻第二張牌，同時鎖定動畫
+            if (roomData.turnState.isAnimating) return; // 多一層保護
+            processingRef.current = true;
+            let success = false;
+            try {
+                await dbRef.runTransaction(async (tx) => {
+                    const snap = await tx.get(roomRef);
+                    const data = snap.data();
+                    if (!data || data.status !== 'playing') return;
+                    if (data.turnState.flippedIndices.length !== 1 || data.turnState.isAnimating) return;
+                    const cardNow = data.board[index];
+                    if (!cardNow || cardNow.status !== 'hidden' || cardNow.isPowerUp) return;
+                    if (cardNow.lockedBy && cardNow.lockedBy !== myTeam) return;
+                    if (data.turnState.flippedIndices[0] === index) return; // 同一張牌
+                    const newFlipped = [...data.turnState.flippedIndices, index];
+                    tx.update(roomRef, { 
+                        "turnState.flippedIndices": newFlipped, 
+                        "turnState.isAnimating": true 
+                    });
+                    success = true;
+                });
+            } catch (e) {
+                console.error("第二張翻牌交易失敗", e);
+            }
+            processingRef.current = false; // 釋放本地鎖，後續由 isAnimating 控制
+
+            if (success) {
+                // 啟動結算計時器
+                const [i1, i2] = [roomData.turnState.flippedIndices[0], index];
+                setTimeout(async () => {
+                    try {
+                        await dbRef.runTransaction(async (tx) => {
+                            const snap = await tx.get(roomRef);
+                            const data = snap.data();
+                            if (!data || data.status !== 'playing') {
+                                // 強制解鎖，避免卡死
+                                tx.update(roomRef, { 
+                                    "turnState.isAnimating": false, 
+                                    "turnState.flippedIndices": [] 
+                                });
+                                return;
+                            }
+
+                            let board = data.board;
+                            let players = data.players;
+                            const turnOrder = data.turnOrder;
+                            let currentTeamIndex = data.currentTeamIndex;
+                            let nextCombo = data.turnState.comboCount || 0;
+
+                            const currentFlipped = data.turnState.flippedIndices;
+                            if (currentFlipped.length !== 2) {
+                                // 異常狀態，解鎖
+                                tx.update(roomRef, { "turnState.isAnimating": false, "turnState.flippedIndices": [] });
+                                return;
+                            }
+                            const [idx1, idx2] = currentFlipped;
+                            const isMatch = board[idx1].matchId === board[idx2].matchId && board[idx1].type !== board[idx2].type;
+
+                            if (isMatch) {
+                                playSfx('correct');
+                                board = board.map((c, idx) => (idx === idx1 || idx === idx2) ? { ...c, status: 'matched' } : c);
+                                players = addScore(players, myTeam, 10);
+                                nextCombo += 1;
+                            } else {
+                                playSfx('wrong');
+                                const advanced = advanceTurn(turnOrder, currentTeamIndex, players);
+                                currentTeamIndex = advanced.currentTeamIndex;
+                                players = advanced.players;
+                                nextCombo = 0;
+                            }
+
+                            const nextTeamName = turnOrder[currentTeamIndex] || turnOrder[0] || myTeam;
+
+                            tx.update(roomRef, {
+                                board, players, currentTeamIndex, 
+                                currentTeam: nextTeamName,
+                                turnState: { flippedIndices: [], comboCount: nextCombo, isAnimating: false }
+                            });
+                        });
+                    } catch (e) { 
+                        console.error('回合結算崩潰，強制解鎖', e);
+                        roomRef.update({ 
+                            "turnState.isAnimating": false, 
+                            "turnState.flippedIndices": [] 
+                        }).catch(()=>{});
+                    }
+                }, 1200);
+            }
+            return;
+        }
+
+        // 若 flippedIndices >= 2 且 isAnimating 為 false（理論上不應發生），直接 return
     };
 
-    // 🛠️ 輔助功能：強制解鎖 (當房主點擊標題 5 次)
+    // ========== 輔助功能：房主強制重置 (點擊標題 5 次) ==========
     const forceResetTurn = () => {
         if (roomData?.hostId !== user.uid) return;
         const count = debugClickCount + 1;
         if (count >= 5) {
+            processingRef.current = false; // 也釋放本地鎖
             dbRef.collection('rooms').doc(roomData.id).update({
                 "turnState.isAnimating": false,
                 "turnState.flippedIndices": [],
@@ -372,6 +453,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         }
     };
 
+    // 以下道具處理邏輯保持原樣 (processEffectAuto, executeEffect, startCoinMiniGame...)
     const processEffectAuto = async (card) => {
         const roomRef = dbRef.collection('rooms').doc(roomData.id);
         try {
@@ -505,6 +587,7 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
         }, 1800);
     };
 
+    // ========== UI 元件 (無變更) ==========
     const TopHeader = () => (
         <header className="h-14 sm:h-16 flex justify-between items-center bg-slate-900 px-4 border-b border-slate-700 shrink-0 z-30 shadow-md">
             <button onClick={onBack} className="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors border border-slate-600">
@@ -646,7 +729,6 @@ function MemoryGameMulti({ onBack, settings, wordDatabase, dbRef, user, lang = '
                     <i className="fa-solid fa-arrow-left text-lg"></i>
                 </button>
                 <div className="flex-1 flex justify-center items-center">
-                    {/* 🛠️ 強化：點擊此處 5 次可強制重設卡死狀態 */}
                     <div onClick={forceResetTurn} className={`cursor-pointer select-none text-base sm:text-lg font-black px-6 py-1.5 rounded-full border-2 ${isMyTurn() ? 'text-yellow-400 border-yellow-500/50 bg-yellow-900/20 animate-pulse' : 'text-slate-400 border-slate-700 bg-slate-800/50'}`}>
                         {isMyTurn() ? t.yourTurn : `${roomData.currentTeam}${t.teamAction}`}
                     </div>
