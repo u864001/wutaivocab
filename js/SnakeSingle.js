@@ -96,7 +96,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     const canvasRef    = useRef(null);
     const containerRef = useRef(null);
     const [scale, setScale] = useState(1);
-    const scaleRef = useRef(1); // 同步更新，供點擊事件使用
+    const scaleRef = useRef(1);
     const [scoreUI, setScoreUI]           = useState(0);
     const [heartsUI, setHeartsUI]         = useState(5);
     const [timeLeftUI, setTimeLeftUI]     = useState(60);
@@ -239,24 +239,25 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     }, [uiPhase]);
 
     // ════════════════════════════════════════
-    // 動態縮放（整體框架）
+    // 動態縮放（基於視窗尺寸，確保完整顯示）
     // ════════════════════════════════════════
     useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
         const updateScale = () => {
-            const rect = container.getBoundingClientRect();
-            const wScale = rect.width / DESIGN_W;
-            const hScale = rect.height / DESIGN_H;
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const wScale = w / DESIGN_W;
+            const hScale = h / DESIGN_H;
             const newScale = Math.min(wScale, hScale, 1);
             setScale(newScale);
-            scaleRef.current = newScale; // 同步 ref
+            scaleRef.current = newScale;
         };
         updateScale();
-        const ro = new ResizeObserver(updateScale);
-        ro.observe(container);
         window.addEventListener('resize', updateScale);
-        return () => { ro.disconnect(); window.removeEventListener('resize', updateScale); };
+        window.addEventListener('orientationchange', updateScale);
+        return () => {
+            window.removeEventListener('resize', updateScale);
+            window.removeEventListener('orientationchange', updateScale);
+        };
     }, []);
 
     // ════════════════════════════════════════
@@ -272,7 +273,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     }, []);
 
     // ════════════════════════════════════════
-    // 方案 B：點擊草地導航（修正座標換算）
+    // 方案 B：點擊草地導航（座標換算基於視窗與縮放）
     // ════════════════════════════════════════
     const handleContainerTap = useCallback((e) => {
         if (uiPhaseRef.current!=='playing') return;
@@ -280,27 +281,23 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
         if (!containerEl) return;
 
         const rect = containerEl.getBoundingClientRect();
-        const currentScale = scaleRef.current; // 即時縮放值
+        const currentScale = scaleRef.current;
         // 框架在容器中的偏移（居中）
         const offsetX = (rect.width - DESIGN_W * currentScale) / 2;
         const offsetY = (rect.height - DESIGN_H * currentScale) / 2;
 
-        // 點擊位置 → 設計座標
         const designX = (e.clientX - rect.left - offsetX) / currentScale;
         const designY = (e.clientY - rect.top - offsetY) / currentScale;
 
-        // 漣漪紅點（使用設計座標）
         const id = Date.now();
         setTapDot({ x: designX, y: designY, id });
         setTimeout(() => setTapDot(p => p?.id===id ? null : p), 900);
 
-        // 判斷是否點在畫布區域（設計座標：y 110~670）
         if (designX < 0 || designX > DESIGN_W || designY < 110 || designY > 670) return;
         const tapX = Math.floor(designX / TILE_SIZE);
         const tapY = Math.floor((designY - 110) / TILE_SIZE);
         if (tapX < 0 || tapX >= GRID_W || tapY < 0 || tapY >= GRID_H) return;
 
-        // 設定目標點（BFS 用）
         const head = snakeHeadRef.current;
         if (tapX === head.x && tapY === head.y) {
             targetPosRef.current = null;
@@ -310,7 +307,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     }, []);
 
     // ════════════════════════════════════════
-    // 主遊戲引擎（含 BFS 路徑規劃）
+    // 主遊戲引擎（含 BFS 路徑規劃 & 改良字母放置）
     // ════════════════════════════════════════
     useEffect(() => {
         if (uiPhase==='selecting'||uiPhase==='orientation') return;
@@ -420,7 +417,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             drawMeadowFlower(bgCtx,fx,fy,flowerCols[fi%flowerCols.length],3+pr(fi*13)*3);
         }
 
-        // ── 字母放置 ──
+        // ── 改良字母放置 ──
         const spawnNextWord = () => {
             let nextWord;
             if (gameModeRef.current==='survival') {
@@ -439,36 +436,57 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             currentLetterIndex=0; spelledStr=""; mapLetters=[];
             setCurrentWordObj(nextWord); setSpelledLetters(""); playVoice(nextWord.en);
 
-            for (let i=0;i<targetWordStr.length;i++) {
-                let char=targetWordStr[i],isValid=false,newX=2,newY=3,attempts=0;
-                while (!isValid&&attempts<250) {
-                    if (attempts<80) {
-                        newX=Math.floor(Math.random()*(GRID_W-4))+2;
-                        newY=Math.floor(Math.random()*(GRID_H-6))+3;
-                    } else if (attempts<160) {
-                        newX=Math.floor(Math.random()*(GRID_W-4))+2;
-                        newY=Math.floor(Math.random()*(GRID_H-5))+2;
-                    } else {
-                        newX=Math.floor(Math.random()*(GRID_W-2))+1;
-                        newY=Math.floor(Math.random()*(GRID_H-2))+1;
-                    }
-                    const onSnake=snake.some(s=>s.x===newX&&s.y===newY);
-                    const onLetter=mapLetters.some(l=>l.x===newX&&l.y===newY);
-                    if (!onSnake&&!onLetter) {
-                        isValid=true;
-                        if (attempts<160&&newX>=6&&newX<=17&&newY<=4) isValid=false;
-                        if (isValid&&attempts<80&&mapLetters.some(l=>Math.abs(l.x-newX)<=1&&Math.abs(l.y-newY)<=1)) isValid=false;
+            // 定義排除區域（格子座標）
+            const isForbidden = (x, y) => {
+                // 1. 邊界
+                if (x === 0 || x === GRID_W-1 || y === 0 || y === GRID_H-1) return true;
+                // 2. 十字控制盤區域（左下角）
+                if (x <= 4 && y >= 10) return true;
+                // 3. 頂部兩列（單字木牌下方，避免遮擋）
+                if (y < 2) return true;
+                // 4. 蛇身
+                if (snake.some(s => s.x===x && s.y===y)) return true;
+                // 5. 已放置的字母（位置）
+                if (mapLetters.some(l => l.x===x && l.y===y)) return true;
+                return false;
+            };
+
+            for (let i=0; i<targetWordStr.length; i++) {
+                const char = targetWordStr[i];
+                let placed = false;
+                let attempts = 0;
+                let newX, newY;
+                while (!placed && attempts < 300) {
+                    // 隨機生成位置，但逐步放寬限制
+                    let range = (attempts < 100) ? 3 : (attempts < 200 ? 2 : 1);
+                    newX = Math.floor(Math.random() * (GRID_W - 2*range)) + range;
+                    newY = Math.floor(Math.random() * (GRID_H - 2*range)) + range;
+                    // 嚴格相鄰檢查（距離 ≥ 2）
+                    const tooClose = mapLetters.some(l => Math.abs(l.x - newX) + Math.abs(l.y - newY) <= 1);
+                    if (!tooClose && !isForbidden(newX, newY)) {
+                        placed = true;
                     }
                     attempts++;
                 }
-                if (!isValid) {
-                    outer: for (let gy=2;gy<GRID_H-1;gy++) for (let gx=1;gx<GRID_W-1;gx++) {
-                        if (!snake.some(s=>s.x===gx&&s.y===gy)&&!mapLetters.some(l=>l.x===gx&&l.y===gy)) {
-                            newX=gx; newY=gy; isValid=true; break outer;
+                // 若仍未找到，使用掃描法
+                if (!placed) {
+                    for (let gy=1; gy<GRID_H-1; gy++) {
+                        for (let gx=1; gx<GRID_W-1; gx++) {
+                            if (!isForbidden(gx, gy) && !mapLetters.some(l => Math.abs(l.x-gx)+Math.abs(l.y-gy) <= 1)) {
+                                newX = gx; newY = gy; placed = true; break;
+                            }
                         }
+                        if (placed) break;
                     }
                 }
-                mapLetters.push({char,x:newX,y:newY,id:i});
+                // 若仍無法放置（理論上不可能，因為有空格），則放在隨機位置（最壞情況）
+                if (!placed) {
+                    do {
+                        newX = Math.floor(Math.random() * (GRID_W-2)) + 1;
+                        newY = Math.floor(Math.random() * (GRID_H-2)) + 1;
+                    } while (snake.some(s => s.x===newX && s.y===newY) || mapLetters.some(l => l.x===newX && l.y===newY));
+                }
+                mapLetters.push({char, x:newX, y:newY, id:i});
             }
         };
 
@@ -575,7 +593,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                 if (timestamp-lastTime>tickRate) {
                     lastTime=timestamp;
 
-                    // ── BFS 路徑規劃 ──
+                    // BFS 路徑規劃
                     if (targetPosRef.current) {
                         const target = targetPosRef.current;
                         if (target.x === snake[0].x && target.y === snake[0].y) {
@@ -738,7 +756,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
 
     return (
         <div ref={containerRef} onPointerDown={handleContainerTap} onContextMenu={e=>e.preventDefault()}
-            style={{ width:'100%', height:'100svh', position:'relative', touchAction:'none', overscrollBehavior:'none', overflow:'hidden', background:'#052e16', userSelect:'none' }}>
+            style={{ position:'fixed', inset:0, width:'100vw', height:'100vh', touchAction:'none', overscrollBehavior:'none', overflow:'hidden', background:'#052e16', userSelect:'none' }}>
             <style dangerouslySetInnerHTML={{ __html: SNAKE_CSS }}/>
 
             {/* ── 整體框架 ── */}
@@ -901,7 +919,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                     </div>
                 )}
 
-                {/* 漣漪紅點（設計座標） */}
+                {/* 漣漪紅點 */}
                 {tapDot && (
                     <div key={tapDot.id} style={{ position:'absolute', left:tapDot.x, top:tapDot.y, pointerEvents:'none', zIndex:12 }}>
                         <div className="tap-ripple" style={{ position:'absolute', width:20, height:20, borderRadius:'50%', border:'2px solid rgba(220,38,38,0.65)' }}/>
