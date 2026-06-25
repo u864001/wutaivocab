@@ -1,15 +1,41 @@
 function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCachedAt, onRefresh }) {
-    // 確保 Hook 可以正常使用
-    const { useState, useRef } = React; 
+    const { useState, useRef, useEffect } = React; 
 
     const availableBooks = Object.keys(groupedUnits).sort((a,b)=>a-b);
     const [selectedBook, setSelectedBook] = useState('ABC'); 
     
-    // 安全取得週次，避免 getWeekNumber 找不到時報錯
     const getWeekSafe = typeof window.getWeekNumber === 'function' ? window.getWeekNumber() : 1;
     const [viewWeek, setViewWeek] = useState(getWeekSafe);
 
-    // 🌟 新增：連點 5 下進後台的密碼鎖機制
+    // 🌟 新增：歷史快照狀態
+    const [snapshotData, setSnapshotData] = useState(null);
+    const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+
+    // 🌟 核心修復：自動去倉庫找打包好的 JSON 快照並解壓縮
+    useEffect(() => {
+        let isMounted = true;
+        const fetchHistory = async () => {
+            setIsLoadingHistory(true);
+            setSnapshotData(null); // 先清空，準備讀取
+            try {
+                const db = window.firebase.firestore();
+                const doc = await db.collection('history').doc(`week_${viewWeek}`).get();
+                if (doc.exists && isMounted) {
+                    const parsed = JSON.parse(doc.data().data);
+                    let flatData = [];
+                    // 將打包的物件陣列全部攤平，恢復成排行榜看得懂的格式
+                    Object.values(parsed).forEach(arr => { flatData = flatData.concat(arr); });
+                    setSnapshotData(flatData);
+                }
+            } catch(e) {
+                console.log("No snapshot found for week", viewWeek);
+            }
+            if (isMounted) setIsLoadingHistory(false);
+        };
+        fetchHistory();
+        return () => { isMounted = false; };
+    }, [viewWeek]);
+
     const clickCount = useRef(0);
     const clickTimer = useRef(null);
     const handleTitleClick = () => {
@@ -23,7 +49,10 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
     };
 
     const renderModeTable = (modeKey, modeName, icon, colorClass, bgClass) => {
-        const ranks = (leaderboards || [])
+        // 🌟 智慧判斷：如果該週有快照就用快照，沒有才用外面的實時資料
+        const activeData = snapshotData ? snapshotData : (leaderboards || []);
+        
+        const ranks = activeData
             .filter(l => l?.book == selectedBook && l?.week === viewWeek && l?.mode === modeKey)
             .sort((a, b) => {
                 if ((b?.score || 0) !== (a?.score || 0)) return (b?.score || 0) - (a?.score || 0);
@@ -55,7 +84,7 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
                                         </td>
                                         <td className="py-2 font-bold truncate max-w-[100px]">{r?.name || 'Player'}</td>
                                         <td className="py-2 text-emerald-600 font-bold text-center">{r?.score} 分</td>
-                                        <td className="py-2 pr-2 text-right text-slate-400 font-mono text-xs">{r?.time ? `${r.time}秒` : ''}</td>
+                                        <td className="py-2 pr-2 text-right text-slate-400 font-mono text-xs">{r?.time ? (r.mode.includes('survival') ? `${Math.floor(r.time/60)}分${r.time%60}秒` : `${r.time}秒`) : ''}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -73,9 +102,10 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
                     <i className="fa-solid fa-chevron-left"></i> 返回大廳
                 </button>
                 <div className="flex items-center gap-3 text-sm text-slate-400">
-                    {leaderboardCachedAt > 0 && (
+                    {leaderboardCachedAt > 0 && !snapshotData && (
                         <span>上次更新：{Math.round((Date.now() - leaderboardCachedAt) / 60000)} 分鐘前</span>
                     )}
+                    {snapshotData && <span className="text-indigo-500 font-bold"><i className="fa-solid fa-box-archive"></i> 讀取歷史快照中</span>}
                     <button onClick={onRefresh}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 rounded-full font-bold transition-colors border border-slate-200">
                         <i className="fa-solid fa-rotate-right text-xs"></i> 重新整理
@@ -109,7 +139,12 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
                     ))}
                 </div>
 
-                {selectedBook === 'ABC' ? (
+                {isLoadingHistory ? (
+                    <div className="flex flex-col items-center justify-center p-12 text-indigo-400">
+                        <i className="fa-solid fa-circle-notch fa-spin text-4xl mb-4"></i>
+                        <p className="font-bold tracking-widest">解壓縮快照檔案中...</p>
+                    </div>
+                ) : selectedBook === 'ABC' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-center max-w-md mx-auto">
                         {renderModeTable('meteor-abc', '大小寫防衛戰', 'fa-solid fa-font', 'text-amber-600', 'bg-amber-50')}
                     </div>
@@ -118,8 +153,11 @@ function LeaderboardView({ onBack, leaderboards, groupedUnits, leaderboardCached
                         {renderModeTable('meteor-zh-en', '隕石戰(中選英)', 'fa-solid fa-meteor', 'text-indigo-600', 'bg-indigo-50')}
                         {renderModeTable('meteor-en-zh', '隕石戰(英選中)', 'fa-solid fa-meteor', 'text-emerald-600', 'bg-emerald-50')}
                         {renderModeTable('memory_single', '記憶翻牌', 'fa-solid fa-clone', 'text-cyan-600', 'bg-cyan-50')}
-                        {/* 🌟 新增貪食蛇模式 */}
-                        {renderModeTable('snake_single', '貪食蛇大冒險', 'fa-solid fa-staff-snake', 'text-green-600', 'bg-green-50')}
+                        
+                        {/* 🌟 貪食蛇：一般與生存雙模式掛載 */}
+                        {renderModeTable('snake_normal', '貪食蛇(一般)', 'fa-solid fa-staff-snake', 'text-green-600', 'bg-green-50')}
+                        {renderModeTable('snake_survival', '貪食蛇(生存)', 'fa-solid fa-fire', 'text-red-600', 'bg-red-50')}
+                        
                         {renderModeTable('spelling', '拖曳拼字', 'fa-solid fa-puzzle-piece', 'text-pink-600', 'bg-pink-50')}
                         {renderModeTable('zh-en', '中翻英打字', 'fa-solid fa-keyboard', 'text-blue-600', 'bg-blue-50')}
                         {renderModeTable('en-zh', '英翻中打字', 'fa-solid fa-language', 'text-teal-600', 'bg-teal-50')}
