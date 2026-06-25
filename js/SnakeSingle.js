@@ -78,7 +78,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
 
     // ── 固定設計尺寸（整體框架） ──
     const DESIGN_W = 960;
-    const DESIGN_H = 670; // 標題50 + 單字卡60 + 畫布560
+    const DESIGN_H = 670;
     const GRID_W = 24;
     const GRID_H = 14;
     const TILE_SIZE = 40;
@@ -96,6 +96,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     const canvasRef    = useRef(null);
     const containerRef = useRef(null);
     const [scale, setScale] = useState(1);
+    const scaleRef = useRef(1); // 同步更新，供點擊事件使用
     const [scoreUI, setScoreUI]           = useState(0);
     const [heartsUI, setHeartsUI]         = useState(5);
     const [timeLeftUI, setTimeLeftUI]     = useState(60);
@@ -109,6 +110,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     const nextDirRef    = useRef('RIGHT');
     const currentDirRef = useRef('RIGHT');
     const snakeHeadRef  = useRef({ x: 12, y: 7 });
+    const targetPosRef = useRef(null);
 
     // ── 視覺裝飾 State ──
     const [animalPeek, setAnimalPeek] = useState(null);
@@ -246,7 +248,9 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             const rect = container.getBoundingClientRect();
             const wScale = rect.width / DESIGN_W;
             const hScale = rect.height / DESIGN_H;
-            setScale(Math.min(wScale, hScale, 1)); // 不放大超過 1 倍，避免模糊
+            const newScale = Math.min(wScale, hScale, 1);
+            setScale(newScale);
+            scaleRef.current = newScale; // 同步 ref
         };
         updateScale();
         const ro = new ResizeObserver(updateScale);
@@ -261,11 +265,14 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     const handleDPad = useCallback((dir) => {
         if (uiPhaseRef.current!=='playing') return;
         const opp={UP:'DOWN',DOWN:'UP',LEFT:'RIGHT',RIGHT:'LEFT'};
-        if (dir!==opp[currentDirRef.current]) nextDirRef.current=dir;
+        if (dir!==opp[currentDirRef.current]) {
+            nextDirRef.current=dir;
+            targetPosRef.current = null;
+        }
     }, []);
 
     // ════════════════════════════════════════
-    // 方案 B：點擊草地導航（整體框架座標換算）
+    // 方案 B：點擊草地導航（修正座標換算）
     // ════════════════════════════════════════
     const handleContainerTap = useCallback((e) => {
         if (uiPhaseRef.current!=='playing') return;
@@ -273,40 +280,37 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
         if (!containerEl) return;
 
         const rect = containerEl.getBoundingClientRect();
-        const scaleFactor = rect.width / DESIGN_W;
-        const designX = (e.clientX - rect.left) / scaleFactor;
-        const designY = (e.clientY - rect.top) / scaleFactor;
+        const currentScale = scaleRef.current; // 即時縮放值
+        // 框架在容器中的偏移（居中）
+        const offsetX = (rect.width - DESIGN_W * currentScale) / 2;
+        const offsetY = (rect.height - DESIGN_H * currentScale) / 2;
 
-        // 漣漪紅點（直接使用設計座標）
+        // 點擊位置 → 設計座標
+        const designX = (e.clientX - rect.left - offsetX) / currentScale;
+        const designY = (e.clientY - rect.top - offsetY) / currentScale;
+
+        // 漣漪紅點（使用設計座標）
         const id = Date.now();
         setTapDot({ x: designX, y: designY, id });
         setTimeout(() => setTapDot(p => p?.id===id ? null : p), 900);
 
-        // 判斷是否點在畫布區域（y: 110 ~ 670）
+        // 判斷是否點在畫布區域（設計座標：y 110~670）
         if (designX < 0 || designX > DESIGN_W || designY < 110 || designY > 670) return;
         const tapX = Math.floor(designX / TILE_SIZE);
         const tapY = Math.floor((designY - 110) / TILE_SIZE);
         if (tapX < 0 || tapX >= GRID_W || tapY < 0 || tapY >= GRID_H) return;
 
-        const {x:hx,y:hy} = snakeHeadRef.current;
-        const dx = tapX - hx, dy = tapY - hy;
-        if (dx===0 && dy===0) return;
-
-        const opp={UP:'DOWN',DOWN:'UP',LEFT:'RIGHT',RIGHT:'LEFT'};
-        let primaryDir=null, secondaryDir=null;
-        if (Math.abs(dx)>=Math.abs(dy)) {
-            primaryDir   = dx>0?'RIGHT':(dx<0?'LEFT':null);
-            secondaryDir = dy>0?'DOWN':(dy<0?'UP':null);
-        } else {
-            primaryDir   = dy>0?'DOWN':(dy<0?'UP':null);
-            secondaryDir = dx>0?'RIGHT':(dx<0?'LEFT':null);
+        // 設定目標點（BFS 用）
+        const head = snakeHeadRef.current;
+        if (tapX === head.x && tapY === head.y) {
+            targetPosRef.current = null;
+            return;
         }
-        if (primaryDir   && primaryDir   !== opp[currentDirRef.current]) { nextDirRef.current=primaryDir;   return; }
-        if (secondaryDir && secondaryDir !== opp[currentDirRef.current]) { nextDirRef.current=secondaryDir; }
+        targetPosRef.current = { x: tapX, y: tapY };
     }, []);
 
     // ════════════════════════════════════════
-    // 主遊戲引擎
+    // 主遊戲引擎（含 BFS 路徑規劃）
     // ════════════════════════════════════════
     useEffect(() => {
         if (uiPhase==='selecting'||uiPhase==='orientation') return;
@@ -317,6 +321,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
         nextDirRef.current='RIGHT'; currentDirRef.current='RIGHT';
         snakeHeadRef.current={x:12,y:7};
         gameEndReasonRef.current='';
+        targetPosRef.current = null;
 
         let engineHearts=5, engineScore=0, engineTime=60;
         let isInvincible=false, isEngineActive=true, hasStarted=false;
@@ -335,6 +340,42 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
 
         if (gameModeRef.current==='survival') setTimeLeftUI(0);
         else setTimeLeftUI(60);
+
+        // ── BFS 路徑規劃函數 ──
+        const bfsPath = (start, target, snakeBody) => {
+            if (!target) return null;
+            if (start.x === target.x && start.y === target.y) return null;
+
+            const dirs = [{dx:0,dy:-1,dir:'UP'},{dx:0,dy:1,dir:'DOWN'},{dx:-1,dy:0,dir:'LEFT'},{dx:1,dy:0,dir:'RIGHT'}];
+            const queue = [{x:start.x, y:start.y, path:[]}];
+            const visited = new Set();
+            visited.add(`${start.x},${start.y}`);
+
+            const obstacleSet = new Set();
+            for (let i = 0; i < snakeBody.length - 1; i++) {
+                obstacleSet.add(`${snakeBody[i].x},${snakeBody[i].y}`);
+            }
+
+            while (queue.length > 0) {
+                const cur = queue.shift();
+                for (const d of dirs) {
+                    const nx = cur.x + d.dx;
+                    const ny = cur.y + d.dy;
+                    const key = `${nx},${ny}`;
+                    if (nx < 0 || nx >= GRID_W || ny < 0 || ny >= GRID_H) continue;
+                    if (visited.has(key)) continue;
+                    if (obstacleSet.has(key)) continue;
+
+                    const newPath = [...cur.path, d.dir];
+                    if (nx === target.x && ny === target.y) {
+                        return newPath;
+                    }
+                    visited.add(key);
+                    queue.push({x:nx, y:ny, path:newPath});
+                }
+            }
+            return null;
+        };
 
         // ── 靜態草原背景 ──
         const bgCanvas=document.createElement('canvas');
@@ -533,8 +574,30 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
 
                 if (timestamp-lastTime>tickRate) {
                     lastTime=timestamp;
-                    currentDirRef.current=nextDirRef.current;
-                    const dir=currentDirRef.current;
+
+                    // ── BFS 路徑規劃 ──
+                    if (targetPosRef.current) {
+                        const target = targetPosRef.current;
+                        if (target.x === snake[0].x && target.y === snake[0].y) {
+                            targetPosRef.current = null;
+                        } else {
+                            const path = bfsPath(snake[0], target, snake);
+                            if (path && path.length > 0) {
+                                const dir = path[0];
+                                const opp={UP:'DOWN',DOWN:'UP',LEFT:'RIGHT',RIGHT:'LEFT'};
+                                if (dir !== opp[currentDirRef.current]) {
+                                    nextDirRef.current = dir;
+                                } else {
+                                    targetPosRef.current = null;
+                                }
+                            } else {
+                                targetPosRef.current = null;
+                            }
+                        }
+                    }
+
+                    currentDirRef.current = nextDirRef.current;
+                    const dir = currentDirRef.current;
                     let head={...snake[0]};
                     if(dir==='UP')head.y--;if(dir==='DOWN')head.y++;
                     if(dir==='LEFT')head.x--;if(dir==='RIGHT')head.x++;
@@ -561,6 +624,10 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                             }
                         } else { triggerDamage(); snake.pop(); }
                     } else { snake.pop(); }
+
+                    if (targetPosRef.current && snake[0].x === targetPosRef.current.x && snake[0].y === targetPosRef.current.y) {
+                        targetPosRef.current = null;
+                    }
                 }
             }
             drawGame();
@@ -572,10 +639,10 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
         const handleKeyDown=(e)=>{
             if(uiPhaseRef.current!=='playing')return;
             if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))e.preventDefault();
-            if(e.key==='ArrowUp'   &&currentDirRef.current!=='DOWN') nextDirRef.current='UP';
-            if(e.key==='ArrowDown' &&currentDirRef.current!=='UP')   nextDirRef.current='DOWN';
-            if(e.key==='ArrowLeft' &&currentDirRef.current!=='RIGHT')nextDirRef.current='LEFT';
-            if(e.key==='ArrowRight'&&currentDirRef.current!=='LEFT') nextDirRef.current='RIGHT';
+            if(e.key==='ArrowUp'   &&currentDirRef.current!=='DOWN') { nextDirRef.current='UP'; targetPosRef.current=null; }
+            if(e.key==='ArrowDown' &&currentDirRef.current!=='UP')   { nextDirRef.current='DOWN'; targetPosRef.current=null; }
+            if(e.key==='ArrowLeft' &&currentDirRef.current!=='RIGHT'){ nextDirRef.current='LEFT'; targetPosRef.current=null; }
+            if(e.key==='ArrowRight'&&currentDirRef.current!=='LEFT') { nextDirRef.current='RIGHT'; targetPosRef.current=null; }
         };
         const preventScroll=(e)=>e.preventDefault();
         const preventContext=(e)=>e.preventDefault();
@@ -592,6 +659,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             window.removeEventListener('touchmove',preventScroll);
             document.removeEventListener('contextmenu',preventContext);
             document.body.style.overscrollBehavior=savedOverscroll;
+            targetPosRef.current = null;
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [uiPhase==='selecting'||uiPhase==='orientation']);
@@ -659,7 +727,6 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
 
     /* ══════════════════════════════════════
        畫面 3,4,5：Ready / Playing / Gameover
-       （使用整體框架縮放）
     ══════════════════════════════════════ */
     const resultTitle = () => {
         const r=gameEndReasonRef.current;
@@ -674,7 +741,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             style={{ width:'100%', height:'100svh', position:'relative', touchAction:'none', overscrollBehavior:'none', overflow:'hidden', background:'#052e16', userSelect:'none' }}>
             <style dangerouslySetInnerHTML={{ __html: SNAKE_CSS }}/>
 
-            {/* ── 整體框架（固定設計尺寸，等比例縮放） ── */}
+            {/* ── 整體框架 ── */}
             <div style={{
                 position: 'absolute',
                 left: '50%',
@@ -684,9 +751,9 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                 transform: `translate(-50%, -50%) scale(${scale})`,
                 transformOrigin: 'center center',
                 background: 'transparent',
-                pointerEvents: 'none', // 讓子元素可以接收事件
+                pointerEvents: 'none',
             }}>
-                {/* 木質標題列（設計 y:0~50） */}
+                {/* 木質標題列 */}
                 <div style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: 50,
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -711,7 +778,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                     </div>
                 </div>
 
-                {/* 單字木牌（設計 y:50~110） */}
+                {/* 單字木牌 */}
                 {uiPhase==='playing' && currentWordObj && (
                     <div style={{
                         position: 'absolute', top: 50, left: '50%', transform: 'translateX(-50%)',
@@ -734,7 +801,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                     </div>
                 )}
 
-                {/* Canvas 區域（設計 y:110~670，高 560） */}
+                {/* Canvas 區域 */}
                 <div style={{
                     position: 'absolute', top: 110, left: 0, width: DESIGN_W, height: GRID_H * TILE_SIZE,
                     pointerEvents: 'auto',
@@ -746,7 +813,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                     />
                 </div>
 
-                {/* ── Ready 按鈕覆蓋層（置中於畫布） ── */}
+                {/* Ready 按鈕 */}
                 {uiPhase==='ready' && (
                     <div style={{
                         position: 'absolute', top: 110, left: 0, width: DESIGN_W, height: GRID_H * TILE_SIZE,
@@ -764,7 +831,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                     </div>
                 )}
 
-                {/* ── 結算畫面（置中於畫布） ── */}
+                {/* 結算畫面 */}
                 {uiPhase==='gameover' && (
                     <div style={{
                         position: 'absolute', top: 110, left: 0, width: DESIGN_W, height: GRID_H * TILE_SIZE,
@@ -810,7 +877,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                     </div>
                 )}
 
-                {/* ── 方案 A：D-pad（設計座標，置於畫布左下） ── */}
+                {/* D-pad */}
                 {uiPhase==='playing' && (
                     <div style={{
                         position: 'absolute', bottom: 20, left: 20,
@@ -834,7 +901,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                     </div>
                 )}
 
-                {/* ── 方案 B 視覺：漣漪紅點（使用設計座標） ── */}
+                {/* 漣漪紅點（設計座標） */}
                 {tapDot && (
                     <div key={tapDot.id} style={{ position:'absolute', left:tapDot.x, top:tapDot.y, pointerEvents:'none', zIndex:12 }}>
                         <div className="tap-ripple" style={{ position:'absolute', width:20, height:20, borderRadius:'50%', border:'2px solid rgba(220,38,38,0.65)' }}/>
@@ -842,7 +909,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                     </div>
                 )}
 
-                {/* ── 蝴蝶（相對於整體框架） ── */}
+                {/* 蝴蝶 */}
                 {bfVisible && (
                     <div style={{
                         position: 'absolute',
@@ -862,7 +929,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                     </div>
                 )}
 
-                {/* ── 動物探頭（相對於整體框架） ── */}
+                {/* 動物探頭 */}
                 {animalPeek && (
                     <div key={animalPeek.key} style={{ position:'absolute', bottom:0, left:`${animalPeek.pos}%`, pointerEvents:'none', zIndex:6 }}>
                         <div style={{ transform:'translateX(-50%)', animation:'snkPeekUp 3.4s ease-in-out forwards' }}>
