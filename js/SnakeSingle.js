@@ -76,9 +76,16 @@ const SNAKE_CSS = `
 function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveScore }) {
     const { useState, useEffect, useRef, useCallback } = React;
 
+    // ── 固定設計尺寸（整體框架） ──
+    const DESIGN_W = 960;
+    const DESIGN_H = 670; // 標題50 + 單字卡60 + 畫布560
+    const GRID_W = 24;
+    const GRID_H = 14;
+    const TILE_SIZE = 40;
+
     // ── 流程狀態 ──
-    const [uiPhase, setUiPhase]   = useState('selecting'); // selecting|orientation|ready|playing|gameover
-    const [gameMode, setGameMode] = useState('normal');    // easy|normal|survival
+    const [uiPhase, setUiPhase]   = useState('selecting');
+    const [gameMode, setGameMode] = useState('normal');
     const [lang, setLang]         = useState('zh-TW');
     const uiPhaseRef  = useRef(uiPhase);
     const gameModeRef = useRef(gameMode);
@@ -88,16 +95,17 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     // ── UI 顯示狀態 ──
     const canvasRef    = useRef(null);
     const containerRef = useRef(null);
+    const [scale, setScale] = useState(1);
     const [scoreUI, setScoreUI]           = useState(0);
     const [heartsUI, setHeartsUI]         = useState(5);
-    const [timeLeftUI, setTimeLeftUI]     = useState(60); // 倒數 or 計時（生存）
+    const [timeLeftUI, setTimeLeftUI]     = useState(60);
     const [currentWordObj, setCurrentWordObj] = useState(null);
     const [spelledLetters, setSpelledLetters] = useState("");
     const [finalScoreUI, setFinalScoreUI] = useState(0);
-    const [tapDot, setTapDot]             = useState(null); // { x, y, id }
-    const gameEndReasonRef = useRef('');   // 'hearts'|'time'|'board'（顯示對應結果標題）
+    const [tapDot, setTapDot]             = useState(null);
+    const gameEndReasonRef = useRef('');
 
-    // ── 方向控制 Ref（component 層，D-pad / 點擊 / 鍵盤 共用）──
+    // ── 方向控制 Ref ──
     const nextDirRef    = useRef('RIGHT');
     const currentDirRef = useRef('RIGHT');
     const snakeHeadRef  = useRef({ x: 12, y: 7 });
@@ -154,7 +162,6 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     };
     const t = DICT[lang];
 
-    // 時間格式化（生存模式 MM:SS，其他 Xs）
     const fmtTime = (mode, sec) => {
         if (mode === 'survival') {
             const m = Math.floor(sec/60), s = sec%60;
@@ -230,6 +237,25 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     }, [uiPhase]);
 
     // ════════════════════════════════════════
+    // 動態縮放（整體框架）
+    // ════════════════════════════════════════
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+        const updateScale = () => {
+            const rect = container.getBoundingClientRect();
+            const wScale = rect.width / DESIGN_W;
+            const hScale = rect.height / DESIGN_H;
+            setScale(Math.min(wScale, hScale, 1)); // 不放大超過 1 倍，避免模糊
+        };
+        updateScale();
+        const ro = new ResizeObserver(updateScale);
+        ro.observe(container);
+        window.addEventListener('resize', updateScale);
+        return () => { ro.disconnect(); window.removeEventListener('resize', updateScale); };
+    }, []);
+
+    // ════════════════════════════════════════
     // 方案 A：D-pad 控制
     // ════════════════════════════════════════
     const handleDPad = useCallback((dir) => {
@@ -239,38 +265,34 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     }, []);
 
     // ════════════════════════════════════════
-    // 方案 B：點擊草地導航
-    // 修正：主方向（較長軸）優先，若被 180° 擋住才用次方向（較短軸）
+    // 方案 B：點擊草地導航（整體框架座標換算）
     // ════════════════════════════════════════
     const handleContainerTap = useCallback((e) => {
         if (uiPhaseRef.current!=='playing') return;
-        const containerEl=containerRef.current, canvasEl=canvasRef.current;
-        if (!containerEl||!canvasEl) return;
+        const containerEl = containerRef.current;
+        if (!containerEl) return;
 
-        // 漣漪紅點
-        const cr=containerEl.getBoundingClientRect();
-        const id=Date.now();
-        setTapDot({ x:e.clientX-cr.left, y:e.clientY-cr.top, id });
+        const rect = containerEl.getBoundingClientRect();
+        const scaleFactor = rect.width / DESIGN_W;
+        const designX = (e.clientX - rect.left) / scaleFactor;
+        const designY = (e.clientY - rect.top) / scaleFactor;
+
+        // 漣漪紅點（直接使用設計座標）
+        const id = Date.now();
+        setTapDot({ x: designX, y: designY, id });
         setTimeout(() => setTapDot(p => p?.id===id ? null : p), 900);
 
-        // DOM → canvas grid 座標轉換（含 objectFit:contain 偏移計算）
-        const GRID_W=24,GRID_H=14,TILE_SIZE=40;
-        const canvasW=GRID_W*TILE_SIZE, canvasH=GRID_H*TILE_SIZE;
-        const cv=canvasEl.getBoundingClientRect();
-        const scale=Math.min(cv.width/canvasW, cv.height/canvasH);
-        const rendW=canvasW*scale, rendH=canvasH*scale;
-        const offX=cv.left+(cv.width-rendW)/2;
-        const offY=cv.top+(cv.height-rendH)/2;
-        const cpx=(e.clientX-offX)/scale, cpy=(e.clientY-offY)/scale;
-        if (cpx<0||cpx>canvasW||cpy<0||cpy>canvasH) return;
+        // 判斷是否點在畫布區域（y: 110 ~ 670）
+        if (designX < 0 || designX > DESIGN_W || designY < 110 || designY > 670) return;
+        const tapX = Math.floor(designX / TILE_SIZE);
+        const tapY = Math.floor((designY - 110) / TILE_SIZE);
+        if (tapX < 0 || tapX >= GRID_W || tapY < 0 || tapY >= GRID_H) return;
 
-        const tapX=Math.floor(cpx/TILE_SIZE), tapY=Math.floor(cpy/TILE_SIZE);
-        const {x:hx,y:hy}=snakeHeadRef.current;
-        const dx=tapX-hx, dy=tapY-hy;
-        if (dx===0&&dy===0) return;
+        const {x:hx,y:hy} = snakeHeadRef.current;
+        const dx = tapX - hx, dy = tapY - hy;
+        if (dx===0 && dy===0) return;
 
         const opp={UP:'DOWN',DOWN:'UP',LEFT:'RIGHT',RIGHT:'LEFT'};
-        // 主方向 = 較長軸方向；次方向 = 較短軸（備援，主方向被 180° 擋時用）
         let primaryDir=null, secondaryDir=null;
         if (Math.abs(dx)>=Math.abs(dy)) {
             primaryDir   = dx>0?'RIGHT':(dx<0?'LEFT':null);
@@ -292,7 +314,6 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
         const canvas=canvasRef.current, ctx=canvas.getContext('2d');
         if (!canvas||!ctx||filteredWords.length===0) return;
 
-        // 初始化方向 Ref
         nextDirRef.current='RIGHT'; currentDirRef.current='RIGHT';
         snakeHeadRef.current={x:12,y:7};
         gameEndReasonRef.current='';
@@ -302,20 +323,16 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
         let damageFlashStart=0, wordsCompleted=0;
         let wordQueue=[];
 
-        // Easy 模式速度分階（tickRate ms，越大越慢）
-        // 初速 0.6x(333ms)→0.7x(286ms)→0.8x(250ms)→0.9x(222ms)→1.0x(200ms)
         const EASY_RATES=[333,286,250,222,200];
 
-        const GRID_W=24,GRID_H=14,TILE_SIZE=40;
-        canvas.width=GRID_W*TILE_SIZE; canvas.height=GRID_H*TILE_SIZE;
+        canvas.width = GRID_W * TILE_SIZE;
+        canvas.height = GRID_H * TILE_SIZE;
 
         let snake=[{x:12,y:7},{x:11,y:7},{x:10,y:7}];
         let targetWordStr="",currentLetterIndex=0,spelledStr="",mapLetters=[];
 
-        // 生存模式計時（計時器累加，存到 ref 以便 endGame 讀取）
         let elapsedSeconds=0;
 
-        // 初始化 UI 時間顯示
         if (gameModeRef.current==='survival') setTimeLeftUI(0);
         else setTimeLeftUI(60);
 
@@ -362,7 +379,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             drawMeadowFlower(bgCtx,fx,fy,flowerCols[fi%flowerCols.length],3+pr(fi*13)*3);
         }
 
-        // ── 字母放置（三階段 + 板滿防護）──
+        // ── 字母放置 ──
         const spawnNextWord = () => {
             let nextWord;
             if (gameModeRef.current==='survival') {
@@ -373,7 +390,6 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             }
             targetWordStr=nextWord.en.replace(/\s+/g,'').toUpperCase();
 
-            // 生存模式：板子空格不足就結束
             if (gameModeRef.current==='survival') {
                 const available=(GRID_W-2)*(GRID_H-2)-snake.length;
                 if (available<targetWordStr.length) { endGame('board'); return; }
@@ -387,10 +403,10 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                 while (!isValid&&attempts<250) {
                     if (attempts<80) {
                         newX=Math.floor(Math.random()*(GRID_W-4))+2;
-                        newY=Math.floor(Math.random()*(GRID_H-6))+3; // 嚴格：Y≥3
+                        newY=Math.floor(Math.random()*(GRID_H-6))+3;
                     } else if (attempts<160) {
                         newX=Math.floor(Math.random()*(GRID_W-4))+2;
-                        newY=Math.floor(Math.random()*(GRID_H-5))+2; // Y≥2
+                        newY=Math.floor(Math.random()*(GRID_H-5))+2;
                     } else {
                         newX=Math.floor(Math.random()*(GRID_W-2))+1;
                         newY=Math.floor(Math.random()*(GRID_H-2))+1;
@@ -399,12 +415,12 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
                     const onLetter=mapLetters.some(l=>l.x===newX&&l.y===newY);
                     if (!onSnake&&!onLetter) {
                         isValid=true;
-                        if (attempts<160&&newX>=6&&newX<=17&&newY<=4) isValid=false; // 避開木牌
-                        if (isValid&&attempts<80&&mapLetters.some(l=>Math.abs(l.x-newX)<=1&&Math.abs(l.y-newY)<=1)) isValid=false; // 嚴格不相鄰
+                        if (attempts<160&&newX>=6&&newX<=17&&newY<=4) isValid=false;
+                        if (isValid&&attempts<80&&mapLetters.some(l=>Math.abs(l.x-newX)<=1&&Math.abs(l.y-newY)<=1)) isValid=false;
                     }
                     attempts++;
                 }
-                if (!isValid) { // 掃描應急
+                if (!isValid) {
                     outer: for (let gy=2;gy<GRID_H-1;gy++) for (let gx=1;gx<GRID_W-1;gx++) {
                         if (!snake.some(s=>s.x===gx&&s.y===gy)&&!mapLetters.some(l=>l.x===gx&&l.y===gy)) {
                             newX=gx; newY=gy; isValid=true; break outer;
@@ -445,7 +461,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             }
         },1000);
 
-        // ── 草原主題 drawGame ──
+        // ── drawGame ──
         const drawGame = () => {
             ctx.drawImage(bgCanvas,0,0);
             const expectedChar=targetWordStr[currentLetterIndex];
@@ -504,7 +520,6 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
         const update=(timestamp)=>{
             if (!isEngineActive) return;
 
-            // Ready → Playing 時才生第一個單字
             if (uiPhaseRef.current==='playing'&&!hasStarted) {
                 hasStarted=true;
                 if (gameModeRef.current==='survival') wordQueue=[...filteredWords].sort(()=>Math.random()-0.5);
@@ -512,7 +527,6 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
             }
 
             if (uiPhaseRef.current==='playing') {
-                // 簡易模式速度分階
                 const tickRate=gameModeRef.current==='easy'
                     ? EASY_RATES[Math.min(wordsCompleted,EASY_RATES.length-1)]
                     : 200;
@@ -554,7 +568,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
         };
         animationFrameId=requestAnimationFrame(update);
 
-        // 鍵盤控制（使用 currentDirRef 做 180° 防呆）
+        // 鍵盤控制
         const handleKeyDown=(e)=>{
             if(uiPhaseRef.current!=='playing')return;
             if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))e.preventDefault();
@@ -600,7 +614,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
     };
 
     /* ══════════════════════════════════════
-       畫面 1：選擇難度（3 個模式）
+       畫面 1：選擇難度
     ══════════════════════════════════════ */
     if (uiPhase==='selecting') return (
         <div style={forestBg}>
@@ -645,7 +659,7 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
 
     /* ══════════════════════════════════════
        畫面 3,4,5：Ready / Playing / Gameover
-       （共用同一容器，canvas 保持存活）
+       （使用整體框架縮放）
     ══════════════════════════════════════ */
     const resultTitle = () => {
         const r=gameEndReasonRef.current;
@@ -657,155 +671,207 @@ function SnakeSingle({ onBack, settings, wordDatabase, qualifyingBook, onSaveSco
 
     return (
         <div ref={containerRef} onPointerDown={handleContainerTap} onContextMenu={e=>e.preventDefault()}
-            style={{ width:'100%', height:'100svh', display:'flex', flexDirection:'column', position:'relative', touchAction:'none', overscrollBehavior:'none', overflow:'hidden', background:'#052e16', userSelect:'none' }}>
+            style={{ width:'100%', height:'100svh', position:'relative', touchAction:'none', overscrollBehavior:'none', overflow:'hidden', background:'#052e16', userSelect:'none' }}>
             <style dangerouslySetInnerHTML={{ __html: SNAKE_CSS }}/>
 
-            {/* ── 木質標題列：左(退出+分數) 中(愛心) 右(計時+語言) ── */}
-            <div style={{ position:'absolute', top:0, width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 14px', zIndex:20, background:'linear-gradient(90deg,#3a1a00,#713f12 50%,#3a1a00)', borderBottom:'2px solid #92400e', boxShadow:'0 2px 16px rgba(0,0,0,.55)', boxSizing:'border-box' }}>
-                <div style={{ display:'flex', gap:8, alignItems:'center', flex:1 }}>
-                    <button onClick={onBack} className="sna-wood-btn" style={{ padding:'7px 12px', borderRadius:10, fontSize:13 }} onPointerDown={e=>e.stopPropagation()}>{t.quit}</button>
-                    <div className="sna-wood" style={{ borderRadius:10, padding:'6px 13px', fontWeight:800, color:'#fef3c7', fontSize:15 }}>🌿 {scoreUI}</div>
-                </div>
-                <div style={{ display:'flex', gap:2, justifyContent:'center', flex:1 }}>
-                    {[...Array(5)].map((_,i)=><span key={i} style={{ opacity:i<heartsUI?1:0.22, transition:'opacity .3s', fontSize:16 }}>{i<heartsUI?'❤️':'🤍'}</span>)}
-                </div>
-                <div style={{ display:'flex', gap:8, alignItems:'center', justifyContent:'flex-end', flex:1 }}>
-                    <div style={{ background:'rgba(220,38,38,.88)', padding:'6px 11px', borderRadius:10, fontWeight:800, color:'#fef2f2', fontSize:13, border:'1px solid #dc2626' }}>
-                        {gameMode==='survival'?'⏱':' ⏱'} {fmtTime(gameMode,timeLeftUI)}
+            {/* ── 整體框架（固定設計尺寸，等比例縮放） ── */}
+            <div style={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                width: DESIGN_W,
+                height: DESIGN_H,
+                transform: `translate(-50%, -50%) scale(${scale})`,
+                transformOrigin: 'center center',
+                background: 'transparent',
+                pointerEvents: 'none', // 讓子元素可以接收事件
+            }}>
+                {/* 木質標題列（設計 y:0~50） */}
+                <div style={{
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: 50,
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '0 14px', boxSizing: 'border-box',
+                    background: 'linear-gradient(90deg,#3a1a00,#713f12 50%,#3a1a00)',
+                    borderBottom: '2px solid #92400e',
+                    boxShadow: '0 2px 16px rgba(0,0,0,.55)',
+                    pointerEvents: 'auto',
+                }}>
+                    <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+                        <button onClick={onBack} className="sna-wood-btn" style={{ padding:'4px 10px', borderRadius:8, fontSize:13, border:'1px solid #92400e' }} onPointerDown={e=>e.stopPropagation()}>{t.quit}</button>
+                        <div className="sna-wood" style={{ borderRadius:8, padding:'4px 12px', fontWeight:800, color:'#fef3c7', fontSize:15 }}>🌿 {scoreUI}</div>
                     </div>
-                    <LangBtn/>
+                    <div style={{ display:'flex', gap:2 }}>
+                        {[...Array(5)].map((_,i)=><span key={i} style={{ opacity:i<heartsUI?1:0.22, fontSize:16 }}>{i<heartsUI?'❤️':'🤍'}</span>)}
+                    </div>
+                    <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+                        <div style={{ background:'rgba(220,38,38,.88)', padding:'4px 10px', borderRadius:8, fontWeight:800, color:'#fef2f2', fontSize:13, border:'1px solid #dc2626' }}>
+                            {gameMode==='survival'?'⏱':' ⏱'} {fmtTime(gameMode,timeLeftUI)}
+                        </div>
+                        <LangBtn style={{ padding:'4px 10px', borderRadius:8, fontSize:13 }}/>
+                    </div>
                 </div>
+
+                {/* 單字木牌（設計 y:50~110） */}
+                {uiPhase==='playing' && currentWordObj && (
+                    <div style={{
+                        position: 'absolute', top: 50, left: '50%', transform: 'translateX(-50%)',
+                        pointerEvents: 'none', zIndex: 10,
+                    }}>
+                        <div className="sna-wood" style={{ borderRadius:12, padding:'6px 16px', textAlign:'center', whiteSpace:'nowrap' }}>
+                            <p style={{ color:'#fde68a', fontSize:12, fontWeight:600, marginBottom:2, opacity:.88 }}>{currentWordObj.zh}</p>
+                            <div style={{ display:'flex', alignItems:'center', gap:8, justifyContent:'center' }}>
+                                <span style={{ fontSize:22, fontWeight:900, letterSpacing:3, fontFamily:'"Courier New",monospace' }}>
+                                    <span style={{ color:'#86efac' }}>{spelledLetters}</span>
+                                    <span style={{ color:'#a16207' }}>{currentWordObj.en.replace(/\s+/g,'').toUpperCase().substring(spelledLetters.length)}</span>
+                                </span>
+                                <button onClick={e=>{e.stopPropagation();playVoice(currentWordObj.en);}}
+                                    style={{ pointerEvents:'auto', background:'#166534', border:'1px solid #4ade80', color:'#86efac', width:28, height:28, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', fontSize:12 }}
+                                    onPointerDown={e=>e.stopPropagation()}>
+                                    <i className="fa-solid fa-volume-high"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Canvas 區域（設計 y:110~670，高 560） */}
+                <div style={{
+                    position: 'absolute', top: 110, left: 0, width: DESIGN_W, height: GRID_H * TILE_SIZE,
+                    pointerEvents: 'auto',
+                }}>
+                    <canvas ref={canvasRef}
+                        width={GRID_W * TILE_SIZE}
+                        height={GRID_H * TILE_SIZE}
+                        style={{ width: '100%', height: '100%', display: 'block', background: '#052e16' }}
+                    />
+                </div>
+
+                {/* ── Ready 按鈕覆蓋層（置中於畫布） ── */}
+                {uiPhase==='ready' && (
+                    <div style={{
+                        position: 'absolute', top: 110, left: 0, width: DESIGN_W, height: GRID_H * TILE_SIZE,
+                        background: 'rgba(5,46,22,0.65)', zIndex: 20,
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12,
+                        pointerEvents: 'auto',
+                    }} onPointerDown={e=>e.stopPropagation()}>
+                        <div style={{ color:'#fde68a', fontWeight:700, fontSize:15, opacity:.85, background:'rgba(0,0,0,.25)', padding:'4px 14px', borderRadius:8 }}>
+                            {gameMode==='easy'?t.easy:gameMode==='normal'?t.normal:t.survival}
+                        </div>
+                        <button onClick={()=>setUiPhase('playing')} className="sna-wood-btn"
+                            style={{ padding:'16px 40px', borderRadius:18, fontSize:26, fontWeight:900, animation:'pulseSoft 1.5s infinite' }}>
+                            {t.readyBtn}
+                        </button>
+                    </div>
+                )}
+
+                {/* ── 結算畫面（置中於畫布） ── */}
+                {uiPhase==='gameover' && (
+                    <div style={{
+                        position: 'absolute', top: 110, left: 0, width: DESIGN_W, height: GRID_H * TILE_SIZE,
+                        background: 'rgba(5,46,22,0.97)', zIndex: 50,
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20,
+                        animation: 'snkFadeIn .5s ease-out', pointerEvents: 'auto',
+                    }} onPointerDown={e=>e.stopPropagation()}>
+                        <div style={{ position:'absolute', top:12, right:12 }}><LangBtn/></div>
+                        <div style={{ fontSize:50, marginBottom:8 }}>
+                            {gameEndReasonRef.current==='time'?'🏆':gameEndReasonRef.current==='board'?'🌿':'💀'}
+                        </div>
+                        <h2 style={{ fontSize:22, fontWeight:900, color:'#fef3c7', marginBottom:14 }}>{resultTitle()}</h2>
+
+                        {gameMode==='survival' && (
+                            <div style={{ color:'#86efac', fontSize:20, fontWeight:900, marginBottom:12, background:'rgba(0,0,0,.2)', padding:'6px 20px', borderRadius:10 }}>
+                                ⏱ {fmtTime('survival',timeLeftUI)}
+                            </div>
+                        )}
+
+                        <div className="sna-wood" style={{ borderRadius:18, padding:18, marginBottom:14, width:'100%', maxWidth:340 }}>
+                            <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8, fontWeight:700, color:'#fde68a' }}>
+                                <span>{t.gameScore}</span><span>{scoreUI}</span>
+                            </div>
+                            <div style={{ display:'flex', justifyContent:'space-between', paddingBottom:10, marginBottom:10, borderBottom:'1px solid rgba(255,255,255,.15)', fontWeight:700, color:'#fda4af' }}>
+                                <span>{t.heartBonus} ({heartsUI}×10)</span><span>+{heartsUI*10}</span>
+                            </div>
+                            <div style={{ display:'flex', justifyContent:'space-between', fontWeight:900, fontSize:20, color:'#86efac' }}>
+                                <span>{t.totalResult}</span><span>{finalScoreUI}</span>
+                            </div>
+                        </div>
+
+                        {gameMode==='easy' ? (
+                            <p style={{ color:'#a16207', fontSize:12, marginBottom:14, fontWeight:600 }}>{t.practiceNote}</p>
+                        ) : gameMode==='survival' ? (
+                            <p style={{ color:'#86efac', fontWeight:700, marginBottom:14, padding:'6px 14px', borderRadius:10, background:'rgba(134,239,172,.1)', border:'1px solid rgba(134,239,172,.3)', fontSize:12 }}>{t.survivalNote}</p>
+                        ) : qualifyingBook ? (
+                            <p style={{ color:'#86efac', fontWeight:700, marginBottom:14, padding:'6px 14px', borderRadius:10, background:'rgba(134,239,172,.1)', border:'1px solid rgba(134,239,172,.3)', fontSize:12 }}>{t.saved}</p>
+                        ) : (
+                            <p style={{ color:'#a16207', fontSize:12, marginBottom:14, fontWeight:600 }}>{t.practiceNote}</p>
+                        )}
+
+                        <button onClick={onBack} className="sna-wood-btn" style={{ padding:'10px 32px', borderRadius:12, fontWeight:900, fontSize:16 }}>{t.backBtn}</button>
+                    </div>
+                )}
+
+                {/* ── 方案 A：D-pad（設計座標，置於畫布左下） ── */}
+                {uiPhase==='playing' && (
+                    <div style={{
+                        position: 'absolute', bottom: 20, left: 20,
+                        display:'grid', gridTemplateColumns:'repeat(3,50px)', gridTemplateRows:'repeat(3,50px)', gap:3,
+                        filter:'drop-shadow(0 3px 10px rgba(0,0,0,0.55))', pointerEvents: 'auto',
+                        opacity: 0.70,
+                    }}>
+                        <div/>
+                        <button className="dpad-btn" onPointerDown={e=>{e.stopPropagation();handleDPad('UP');}}
+                            style={{ background:'rgba(5,46,22,0.82)', border:'2px solid rgba(74,222,128,0.5)', borderRadius:'12px 12px 4px 4px', color:'#86efac', fontSize:20, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>▲</button>
+                        <div/>
+                        <button className="dpad-btn" onPointerDown={e=>{e.stopPropagation();handleDPad('LEFT');}}
+                            style={{ background:'rgba(5,46,22,0.82)', border:'2px solid rgba(74,222,128,0.5)', borderRadius:'12px 4px 4px 12px', color:'#86efac', fontSize:20, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>◀</button>
+                        <div style={{ background:'rgba(5,46,22,0.55)', borderRadius:6, border:'1px solid rgba(74,222,128,0.2)' }}/>
+                        <button className="dpad-btn" onPointerDown={e=>{e.stopPropagation();handleDPad('RIGHT');}}
+                            style={{ background:'rgba(5,46,22,0.82)', border:'2px solid rgba(74,222,128,0.5)', borderRadius:'4px 12px 12px 4px', color:'#86efac', fontSize:20, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>▶</button>
+                        <div/>
+                        <button className="dpad-btn" onPointerDown={e=>{e.stopPropagation();handleDPad('DOWN');}}
+                            style={{ background:'rgba(5,46,22,0.82)', border:'2px solid rgba(74,222,128,0.5)', borderRadius:'4px 4px 12px 12px', color:'#86efac', fontSize:20, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>▼</button>
+                        <div/>
+                    </div>
+                )}
+
+                {/* ── 方案 B 視覺：漣漪紅點（使用設計座標） ── */}
+                {tapDot && (
+                    <div key={tapDot.id} style={{ position:'absolute', left:tapDot.x, top:tapDot.y, pointerEvents:'none', zIndex:12 }}>
+                        <div className="tap-ripple" style={{ position:'absolute', width:20, height:20, borderRadius:'50%', border:'2px solid rgba(220,38,38,0.65)' }}/>
+                        <div className="tap-center" style={{ position:'absolute', width:12, height:12, borderRadius:'50%', background:'rgba(220,38,38,0.92)', boxShadow:'0 0 6px rgba(220,38,38,0.6)' }}/>
+                    </div>
+                )}
+
+                {/* ── 蝴蝶（相對於整體框架） ── */}
+                {bfVisible && (
+                    <div style={{
+                        position: 'absolute',
+                        left: `${bfPos.x}%`,
+                        top: `${bfPos.y}%`,
+                        transform: `translate(-50%,-50%) scaleX(${bfFlip?-1:1})`,
+                        pointerEvents:'none', zIndex:5,
+                        animation:'bfFloat 1.9s ease-in-out infinite',
+                    }}>
+                        <svg viewBox="0 0 62 44" width="46" height="34">
+                            <g className="bf-wing-l"><ellipse cx="22" cy="17" rx="20" ry="14" fill="#fb923c" opacity="0.76"/><ellipse cx="17" cy="31" rx="14" ry="9" fill="#fed7aa" opacity="0.70"/></g>
+                            <g className="bf-wing-r"><ellipse cx="40" cy="17" rx="20" ry="14" fill="#fb923c" opacity="0.76"/><ellipse cx="45" cy="31" rx="14" ry="9" fill="#fed7aa" opacity="0.70"/></g>
+                            <ellipse cx="31" cy="22" rx="2.8" ry="13" fill="#1c1917"/>
+                            <line x1="31" y1="9" x2="23" y2="2" stroke="#1c1917" strokeWidth="1.5"/><circle cx="22" cy="1.5" r="2.2" fill="#1c1917"/>
+                            <line x1="31" y1="9" x2="39" y2="2" stroke="#1c1917" strokeWidth="1.5"/><circle cx="40" cy="1.5" r="2.2" fill="#1c1917"/>
+                        </svg>
+                    </div>
+                )}
+
+                {/* ── 動物探頭（相對於整體框架） ── */}
+                {animalPeek && (
+                    <div key={animalPeek.key} style={{ position:'absolute', bottom:0, left:`${animalPeek.pos}%`, pointerEvents:'none', zIndex:6 }}>
+                        <div style={{ transform:'translateX(-50%)', animation:'snkPeekUp 3.4s ease-in-out forwards' }}>
+                            {PEEK_ANIMALS[animalPeek.animalIdx].jsx}
+                        </div>
+                    </div>
+                )}
+
             </div>
-
-            {/* ── Ready 按鈕覆蓋層 ── */}
-            {uiPhase==='ready' && (
-                <div style={{ position:'absolute', inset:0, background:'rgba(5,46,22,0.65)', zIndex:20, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:12 }}
-                    onPointerDown={e=>e.stopPropagation()}>
-                    <div style={{ color:'#fde68a', fontWeight:700, fontSize:15, opacity:.85, background:'rgba(0,0,0,.25)', padding:'6px 16px', borderRadius:10 }}>
-                        {gameMode==='easy'?t.easy:gameMode==='normal'?t.normal:t.survival}
-                    </div>
-                    <button onClick={()=>setUiPhase('playing')} className="sna-wood-btn"
-                        style={{ padding:'20px 44px', borderRadius:20, fontSize:28, fontWeight:900, animation:'pulseSoft 1.5s infinite' }}>
-                        {t.readyBtn}
-                    </button>
-                </div>
-            )}
-
-            {/* ── 單字木牌（遊戲中）── */}
-            {uiPhase==='playing' && currentWordObj && (
-                <div style={{ position:'absolute', top:60, left:'50%', transform:'translateX(-50%)', zIndex:10, pointerEvents:'none' }}>
-                    <div className="sna-wood" style={{ borderRadius:14, padding:'9px 18px', textAlign:'center', whiteSpace:'nowrap' }}>
-                        <p style={{ color:'#fde68a', fontSize:12, fontWeight:600, marginBottom:3, opacity:.88 }}>{currentWordObj.zh}</p>
-                        <div style={{ display:'flex', alignItems:'center', gap:10, justifyContent:'center' }}>
-                            <span style={{ fontSize:24, fontWeight:900, letterSpacing:4, fontFamily:'"Courier New",monospace' }}>
-                                <span style={{ color:'#86efac' }}>{spelledLetters}</span>
-                                <span style={{ color:'#a16207' }}>{currentWordObj.en.replace(/\s+/g,'').toUpperCase().substring(spelledLetters.length)}</span>
-                            </span>
-                            <button onClick={e=>{e.stopPropagation();playVoice(currentWordObj.en);}}
-                                style={{ pointerEvents:'auto', background:'#166534', border:'1px solid #4ade80', color:'#86efac', width:32, height:32, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', fontSize:13 }}
-                                onPointerDown={e=>e.stopPropagation()}>
-                                <i className="fa-solid fa-volume-high"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* ── 結算畫面 ── */}
-            {uiPhase==='gameover' && (
-                <div style={{ position:'absolute', inset:0, zIndex:50, background:'rgba(5,46,22,0.97)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:24, animation:'snkFadeIn .5s ease-out' }}
-                    onPointerDown={e=>e.stopPropagation()}>
-                    <div style={{ position:'absolute', top:16, right:16 }}><LangBtn/></div>
-                    <div style={{ fontSize:58, marginBottom:12 }}>
-                        {gameEndReasonRef.current==='time'?'🏆':gameEndReasonRef.current==='board'?'🌿':'💀'}
-                    </div>
-                    <h2 style={{ fontSize:24, fontWeight:900, color:'#fef3c7', marginBottom:18 }}>{resultTitle()}</h2>
-
-                    {/* 生存模式顯示生存時間 */}
-                    {gameMode==='survival' && (
-                        <div style={{ color:'#86efac', fontSize:22, fontWeight:900, marginBottom:14, background:'rgba(0,0,0,.2)', padding:'8px 24px', borderRadius:12 }}>
-                            ⏱ {fmtTime('survival',timeLeftUI)}
-                        </div>
-                    )}
-
-                    <div className="sna-wood" style={{ borderRadius:20, padding:22, marginBottom:16, width:'100%', maxWidth:340 }}>
-                        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10, fontWeight:700, color:'#fde68a' }}>
-                            <span>{t.gameScore}</span><span>{scoreUI}</span>
-                        </div>
-                        <div style={{ display:'flex', justifyContent:'space-between', paddingBottom:12, marginBottom:12, borderBottom:'1px solid rgba(255,255,255,.15)', fontWeight:700, color:'#fda4af' }}>
-                            <span>{t.heartBonus} ({heartsUI}×10)</span><span>+{heartsUI*10}</span>
-                        </div>
-                        <div style={{ display:'flex', justifyContent:'space-between', fontWeight:900, fontSize:22, color:'#86efac' }}>
-                            <span>{t.totalResult}</span><span>{finalScoreUI}</span>
-                        </div>
-                    </div>
-
-                    {gameMode==='easy' ? (
-                        <p style={{ color:'#a16207', fontSize:12, marginBottom:16, fontWeight:600 }}>{t.practiceNote}</p>
-                    ) : gameMode==='survival' ? (
-                        <p style={{ color:'#86efac', fontWeight:700, marginBottom:16, padding:'9px 16px', borderRadius:12, background:'rgba(134,239,172,.1)', border:'1px solid rgba(134,239,172,.3)', fontSize:13 }}>{t.survivalNote}</p>
-                    ) : qualifyingBook ? (
-                        <p style={{ color:'#86efac', fontWeight:700, marginBottom:16, padding:'9px 16px', borderRadius:12, background:'rgba(134,239,172,.1)', border:'1px solid rgba(134,239,172,.3)', fontSize:13 }}>{t.saved}</p>
-                    ) : (
-                        <p style={{ color:'#a16207', fontSize:12, marginBottom:16, fontWeight:600 }}>{t.practiceNote}</p>
-                    )}
-
-                    <button onClick={onBack} className="sna-wood-btn" style={{ padding:'13px 36px', borderRadius:14, fontWeight:900, fontSize:17 }}>{t.backBtn}</button>
-                </div>
-            )}
-
-            <canvas ref={canvasRef} style={{ width:'100%', height:'100%', objectFit:'contain', display:'block', background:'#052e16' }}/>
-
-            {/* ── 方案 A：D-pad（遊戲中，左下角）── */}
-            {uiPhase==='playing' && (
-                <div style={{ position:'absolute', bottom:18, left:14, zIndex:15, opacity:0.70, touchAction:'none',
-                    display:'grid', gridTemplateColumns:'repeat(3,52px)', gridTemplateRows:'repeat(3,52px)', gap:3,
-                    filter:'drop-shadow(0 3px 10px rgba(0,0,0,0.55))' }}>
-                    <div/>
-                    <button className="dpad-btn" onPointerDown={e=>{e.stopPropagation();handleDPad('UP');}}
-                        style={{ background:'rgba(5,46,22,0.82)', border:'2px solid rgba(74,222,128,0.5)', borderRadius:'14px 14px 4px 4px', color:'#86efac', fontSize:22, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>▲</button>
-                    <div/>
-                    <button className="dpad-btn" onPointerDown={e=>{e.stopPropagation();handleDPad('LEFT');}}
-                        style={{ background:'rgba(5,46,22,0.82)', border:'2px solid rgba(74,222,128,0.5)', borderRadius:'14px 4px 4px 14px', color:'#86efac', fontSize:22, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>◀</button>
-                    <div style={{ background:'rgba(5,46,22,0.55)', borderRadius:8, border:'1px solid rgba(74,222,128,0.2)' }}/>
-                    <button className="dpad-btn" onPointerDown={e=>{e.stopPropagation();handleDPad('RIGHT');}}
-                        style={{ background:'rgba(5,46,22,0.82)', border:'2px solid rgba(74,222,128,0.5)', borderRadius:'4px 14px 14px 4px', color:'#86efac', fontSize:22, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>▶</button>
-                    <div/>
-                    <button className="dpad-btn" onPointerDown={e=>{e.stopPropagation();handleDPad('DOWN');}}
-                        style={{ background:'rgba(5,46,22,0.82)', border:'2px solid rgba(74,222,128,0.5)', borderRadius:'4px 4px 14px 14px', color:'#86efac', fontSize:22, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>▼</button>
-                    <div/>
-                </div>
-            )}
-
-            {/* ── 方案 B 視覺：漣漪紅點（中心保留，外圈擴散淡化）── */}
-            {tapDot && (
-                <div key={tapDot.id} style={{ position:'absolute', left:tapDot.x, top:tapDot.y, pointerEvents:'none', zIndex:12 }}>
-                    <div className="tap-ripple" style={{ position:'absolute', width:20, height:20, borderRadius:'50%', border:'2px solid rgba(220,38,38,0.65)' }}/>
-                    <div className="tap-center" style={{ position:'absolute', width:12, height:12, borderRadius:'50%', background:'rgba(220,38,38,0.92)', boxShadow:'0 0 6px rgba(220,38,38,0.6)' }}/>
-                </div>
-            )}
-
-            {/* ── 蝴蝶 ── */}
-            {bfVisible && (
-                <div style={{ position:'absolute', left:`${bfPos.x}%`, top:`${bfPos.y}%`, transform:`translate(-50%,-50%) scaleX(${bfFlip?-1:1})`, pointerEvents:'none', zIndex:5, animation:'bfFloat 1.9s ease-in-out infinite' }}>
-                    <svg viewBox="0 0 62 44" width="46" height="34">
-                        <g className="bf-wing-l"><ellipse cx="22" cy="17" rx="20" ry="14" fill="#fb923c" opacity="0.76"/><ellipse cx="17" cy="31" rx="14" ry="9" fill="#fed7aa" opacity="0.70"/></g>
-                        <g className="bf-wing-r"><ellipse cx="40" cy="17" rx="20" ry="14" fill="#fb923c" opacity="0.76"/><ellipse cx="45" cy="31" rx="14" ry="9" fill="#fed7aa" opacity="0.70"/></g>
-                        <ellipse cx="31" cy="22" rx="2.8" ry="13" fill="#1c1917"/>
-                        <line x1="31" y1="9" x2="23" y2="2" stroke="#1c1917" strokeWidth="1.5"/><circle cx="22" cy="1.5" r="2.2" fill="#1c1917"/>
-                        <line x1="31" y1="9" x2="39" y2="2" stroke="#1c1917" strokeWidth="1.5"/><circle cx="40" cy="1.5" r="2.2" fill="#1c1917"/>
-                    </svg>
-                </div>
-            )}
-
-            {/* ── 動物探頭 ── */}
-            {animalPeek && (
-                <div key={animalPeek.key} style={{ position:'absolute', bottom:0, left:`${animalPeek.pos}%`, pointerEvents:'none', zIndex:6 }}>
-                    <div style={{ transform:'translateX(-50%)', animation:'snkPeekUp 3.4s ease-in-out forwards' }}>
-                        {PEEK_ANIMALS[animalPeek.animalIdx].jsx}
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
