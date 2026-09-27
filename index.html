@@ -1,59 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-TW" class="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>霧臺國小 英文學習平台</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = { darkMode: 'class', theme: { extend: {} } }
-    </script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
-    
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <script src="https://unpkg.com/@babel/standalone@7.23.8/babel.min.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.css">
-    <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
-    
-    <style>
-        .no-select { user-select: none; -webkit-user-select: none; }
-        .touch-none { touch-action: none; -webkit-touch-callout: none; }
-        .stars-bg { background-image: radial-gradient(circle at 50% 50%, #1e293b 1%, #0f172a 100%); position: relative; overflow: hidden; }
-        .stars-bg::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.3; pointer-events: none; }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-800 transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100 font-sans touch-manipulation">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>霧臺國小 英文學習宇宙 | Wutai English Adventure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  </head>
+  <body class="min-h-screen touch-manipulation select-none overflow-x-hidden antialiased transition-colors duration-300">
     <div id="root"></div>
-
-    <script type="text/babel">
-        window.addEventListener('touchmove', function(e) { if(e.target.closest('[draggable]')) { e.preventDefault(); } }, {passive: false});
-        MobileDragDrop.polyfill({ holdToDrag: 0 });
-    </script>
-
-    <script type="text/babel" src="js/audio.js"></script>
-    <script type="text/babel" src="js/helpers.js"></script>    
-    <script type="text/babel" src="js/Leaderboard.js"></script>
-    <script type="text/babel" src="js/AdminDashboard.js"></script>
-    <script type="text/babel" src="js/MeteorGame.js"></script>
-    <script type="text/babel" src="js/SpellingGame.js"></script>
-    <script type="text/babel" src="js/StandardQuiz.js"></script>
-    <script type="text/babel" src="js/BattleGame.js"></script>
-    <script src="js/MemoryLobby.js" type="text/babel"></script>
-    <script src="js/MemoryGameSingle.js" type="text/babel"></script>
-    <script src="js/MemoryGameMulti.js" type="text/babel"></script>
-    <script src="./js/SnakeSingle.js" type="text/babel"></script>
-    <script type="text/babel" src="js/App.js"></script>
-
-</body>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
