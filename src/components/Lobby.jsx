@@ -5,8 +5,9 @@ import { useI18n } from '../context/I18nContext';
 import {
   Trophy, Settings2, Swords, Rocket, Puzzle,
   Volume2, Keyboard, ChevronDown, ChevronUp, Check,
-  QrCode, Sparkles, BookOpen, UserCheck
+  QrCode, Sparkles, BookOpen, UserCheck, Megaphone
 } from 'lucide-react';
+import { useEasterEgg } from '../hooks/useEasterEgg';
 
 export const Lobby = ({
   words = [],
@@ -14,11 +15,23 @@ export const Lobby = ({
   setSettings,
   onNavigate,
   onOpenLeaderboard,
+  onOpenTeacherHub,
   qualifyingBook
 }) => {
   const { t, lang } = useI18n();
   const [activeTab, setActiveTab] = useState('official'); // 'official' or 'teacher'
   const [expandedBooks, setExpandedBooks] = useState(['1', 'Mario專區']);
+
+  const handleAdminTrigger = useEasterEgg(onOpenTeacherHub, 5, 2000);
+
+  const [announcement] = useState(() => {
+    try {
+      const saved = localStorage.getItem('wutai_announcement');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
 
   // 分組整理題庫單元
   const groupedData = useMemo(() => {
@@ -75,14 +88,30 @@ export const Lobby = ({
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-4 sm:py-6 space-y-6 animate-fadeIn pb-16">
-      {/* ── 英雄榜橫幅便當塊 ── */}
+      {/* ── 全校即時跑馬燈公告 (由管理員後台設定) ── */}
+      {announcement?.active && announcement?.text && (
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border-2 border-amber-300 dark:border-amber-600 flex items-center gap-3 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-black shadow-sm animate-fadeIn">
+          <span className="p-2 rounded-xl bg-amber-500 text-white shadow-sm shrink-0">
+            <Megaphone className="w-4 h-4 animate-bounce" />
+          </span>
+          <span className="flex-1 tracking-wide leading-relaxed">
+            {announcement.text}
+          </span>
+        </div>
+      )}
+
+      {/* ── 英雄榜橫幅便當塊 (標題連續點擊 5 次直通後台) ── */}
       <GlassCard className="bg-gradient-to-r from-amber-400/90 via-yellow-400/90 to-amber-500/90 dark:from-indigo-900/90 dark:via-purple-900/90 dark:to-indigo-900/90 border-amber-300 dark:border-indigo-700/60 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-center sm:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/30 dark:bg-white/10 text-amber-950 dark:text-amber-200 text-xs font-black mb-2">
             <Sparkles className="w-3.5 h-3.5" />
             每週熱門挑戰進行中
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-white font-heading">
+          <h2
+            onClick={handleAdminTrigger}
+            className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-white font-heading cursor-pointer select-none active:scale-95 transition-transform"
+            title={t.appName}
+          >
             {t.appName}
           </h2>
           <p className="text-xs sm:text-sm font-bold text-amber-900/80 dark:text-indigo-200 mt-1">
@@ -538,7 +567,11 @@ export const Lobby = ({
               : 'wutaivocab.vercel.app'}
           </span>
         </GlassCard>
-        <p className="text-xs font-bold text-slate-400 mt-4">
+        <p
+          onClick={handleAdminTrigger}
+          className="text-xs font-bold text-slate-400 mt-4 cursor-pointer select-none active:scale-95 transition-transform"
+          title={t.appName}
+        >
           {t.developer}
         </p>
       </footer>

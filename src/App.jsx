@@ -16,6 +16,8 @@ class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
+    this.clickCount = 0;
+    this.clickTimer = null;
   }
   static getDerivedStateFromError() {
     return { hasError: true };
@@ -23,12 +25,26 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     console.error("ErrorBoundary caught:", error, errorInfo);
   }
+  handleIconClick = () => {
+    this.clickCount += 1;
+    if (this.clickTimer) clearTimeout(this.clickTimer);
+    this.clickTimer = setTimeout(() => { this.clickCount = 0; }, 2000);
+    if (this.clickCount >= 5) {
+      this.clickCount = 0;
+      this.setState({ hasError: false });
+      if (this.props.onOpenTeacherHub) this.props.onOpenTeacherHub();
+    }
+  };
   render() {
     if (this.state.hasError) {
       return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center animate-fadeIn">
           <div className="max-w-md w-full p-6 bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700">
-            <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-amber-100 dark:bg-amber-950/50 flex items-center justify-center text-amber-600 dark:text-amber-400 text-2xl font-black">
+            <div
+              onClick={this.handleIconClick}
+              className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-amber-100 dark:bg-amber-950/50 flex items-center justify-center text-amber-600 dark:text-amber-400 text-2xl font-black cursor-pointer select-none active:scale-95 transition-transform"
+              title="點擊 5 次啟動後台備援"
+            >
               ⚠️
             </div>
             <h2 className="text-xl font-heading font-black text-slate-800 dark:text-slate-100 mb-2">
@@ -108,6 +124,25 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // ── 全域管理者快捷鍵 (Ctrl+Shift+A 或 Ctrl+Alt+T) 與 Console 備援通道 ──
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const isModifier = e.ctrlKey || e.metaKey;
+      if (isModifier && ((e.shiftKey && (e.key === 'A' || e.key === 'a')) || (e.altKey && (e.key === 't' || e.key === 'T')))) {
+        e.preventDefault();
+        handleNavigate('teacher-hub');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.openAdminHub = () => handleNavigate('teacher-hub');
+    window.__openTeacherHub = () => handleNavigate('teacher-hub');
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      delete window.openAdminHub;
+      delete window.__openTeacherHub;
+    };
+  }, []);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
@@ -133,7 +168,10 @@ export function App() {
 
       {/* 畫面路由視圖切換 (含全域安全防護熔斷) */}
       <main className="flex-1 flex flex-col">
-        <ErrorBoundary onReset={() => handleNavigate('lobby')}>
+        <ErrorBoundary
+          onReset={() => handleNavigate('lobby')}
+          onOpenTeacherHub={() => handleNavigate('teacher-hub')}
+        >
           {currentView === 'lobby' && (
             <Lobby
               words={words}
@@ -141,6 +179,7 @@ export function App() {
               setSettings={setSettings}
               onNavigate={handleNavigate}
               onOpenLeaderboard={() => handleNavigate('leaderboard')}
+              onOpenTeacherHub={() => handleNavigate('teacher-hub')}
               qualifyingBook={qualifyingBook}
             />
           )}

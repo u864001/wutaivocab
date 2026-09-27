@@ -4,6 +4,7 @@ import { Button3D } from './ui/Button3D';
 import { useI18n } from '../context/I18nContext';
 import { fetchLeaderboard, getWeekNumber } from '../services/supabase';
 import { soundEngine } from '../services/audio';
+import { useEasterEgg } from '../hooks/useEasterEgg';
 import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
@@ -89,23 +90,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   // ── 隱藏後台彩蛋：連續點擊「全校英雄榜」標題 5 下進入教師工作台 ──
-  const [titleClickCount, setTitleClickCount] = useState(0);
-  const clickTimerRef = useRef(null);
-
-  const handleTitleClick = () => {
-    setTitleClickCount((prev) => {
-      const next = prev + 1;
-      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
-      clickTimerRef.current = setTimeout(() => setTitleClickCount(0), 3000);
-
-      if (next >= 5) {
-        setTitleClickCount(0);
-        soundEngine.correct();
-        if (onOpenTeacherHub) onOpenTeacherHub();
-      }
-      return next;
-    });
-  };
+  const handleTitleClick = useEasterEgg(onOpenTeacherHub, 5, 2000);
 
   // 各卡片當前選取的子模式 Key
   const [activeSubKeys, setActiveSubKeys] = useState({

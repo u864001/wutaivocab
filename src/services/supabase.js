@@ -323,3 +323,104 @@ export const fetchLeaderboard = async (week, mode, book, limit = 50) => {
     return [];
   }
 };
+
+// ============================================================
+// ── 最高系統管理者 (Super Admin) 專屬服務函式 ──
+// ============================================================
+
+/**
+ * 管理者查詢歷史成績列表 (支援多維度篩選)
+ */
+export const adminFetchLeaderboard = async ({ week, mode, limit = 100 } = {}) => {
+  try {
+    let query = supabase.from('leaderboard').select('*');
+    if (week !== undefined && week !== 'all') {
+      query = query.eq('week', parseInt(week, 10));
+    }
+    if (mode && mode !== 'all') {
+      query = query.eq('mode', mode);
+    }
+    query = query.order('created_at', { ascending: false }).limit(limit);
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  } catch (err) {
+    console.error('後台讀取成績失敗:', err);
+    return [];
+  }
+};
+
+/**
+ * 管理者個別刪除指定成績
+ */
+export const adminDeleteLeaderboardEntry = async (id) => {
+  const { error } = await supabase.from('leaderboard').delete().eq('id', id);
+  if (error) throw error;
+  return true;
+};
+
+/**
+ * 管理者一鍵清理異常成績 (分數極端破表者)
+ */
+export const adminClearAbnormalScores = async () => {
+  try {
+    const { error } = await supabase
+      .from('leaderboard')
+      .delete()
+      .or('score.gt.100000,score.lt.0');
+    if (error) throw error;
+    return true;
+  } catch (err) {
+    console.error('清理異常分數失敗:', err);
+    throw err;
+  }
+};
+
+/**
+ * 管理者清空指定週次成績
+ */
+export const adminResetWeekScores = async (week) => {
+  const { error } = await supabase
+    .from('leaderboard')
+    .delete()
+    .eq('week', parseInt(week, 10));
+  if (error) throw error;
+  return true;
+};
+
+/**
+ * 管理者取得全系統即時診斷資訊 (Latency, 筆數, 容量佔比)
+ */
+export const adminGetSystemStats = async () => {
+  const tStart = performance.now();
+  try {
+    const [wordsRes, leaderboardRes] = await Promise.all([
+      supabase.from('words').select('id', { count: 'exact', head: true }),
+      supabase.from('leaderboard').select('id', { count: 'exact', head: true })
+    ]);
+    const latency = Math.round(performance.now() - tStart);
+    const wordsCount = wordsRes.count || 0;
+    const leaderboardCount = leaderboardRes.count || 0;
+    // 預估 Postgres 資料庫空間 (單字~200B + 排行榜~150B + 基礎系統表約 1.5MB)
+    const estimatedBytes = (wordsCount * 200) + (leaderboardCount * 150) + 1500000;
+    const estimatedMB = (estimatedBytes / (1024 * 1024)).toFixed(2);
+    return {
+      isOnline: true,
+      latencyMs: latency,
+      wordsCount,
+      leaderboardCount,
+      estimatedMB,
+      quotaPercent: ((parseFloat(estimatedMB) / 500) * 100).toFixed(2)
+    };
+  } catch (err) {
+    return {
+      isOnline: false,
+      latencyMs: -1,
+      wordsCount: 0,
+      leaderboardCount: 0,
+      estimatedMB: '0.00',
+      quotaPercent: '0.00'
+    };
+  }
+};
+

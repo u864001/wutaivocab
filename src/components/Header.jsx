@@ -3,11 +3,14 @@ import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
 import { soundEngine } from '../services/audio';
 import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles } from 'lucide-react';
+import { useEasterEgg } from '../hooks/useEasterEgg';
 
 export const Header = ({ onOpenTeacherHub, onOpenLeaderboard, isOnline = true }) => {
   const { isDark, toggleTheme } = useTheme();
   const { lang, toggleLang, t } = useI18n();
   const [isMuted, setIsMuted] = React.useState(soundEngine.isMuted);
+
+  const handleAdminTrigger = useEasterEgg(onOpenTeacherHub, 5, 2000);
 
   const handleToggleSound = () => {
     const muted = soundEngine.toggleMute();
@@ -16,10 +19,14 @@ export const Header = ({ onOpenTeacherHub, onOpenLeaderboard, isOnline = true })
 
   return (
     <header className="w-full max-w-6xl mx-auto px-4 py-3 sm:py-5 flex items-center justify-between gap-3">
-      {/* 學校標題與連線狀態 */}
+      {/* 學校標題與連線狀態 (左側星光圖示連續點擊 5 次直通後台) */}
       <div className="flex items-center gap-2.5 sm:gap-3">
-        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-lime-400 dark:from-indigo-600 dark:to-cyan-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 dark:shadow-indigo-500/30">
-          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
+        <div
+          onClick={handleAdminTrigger}
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-lime-400 dark:from-indigo-600 dark:to-cyan-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 dark:shadow-indigo-500/30 cursor-pointer select-none active:scale-95 transition-transform"
+          title={t.appName}
+        >
+          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 pointer-events-none" />
         </div>
         <div>
           <div className="flex items-center gap-2">

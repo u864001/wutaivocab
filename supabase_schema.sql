@@ -84,6 +84,9 @@ CREATE POLICY "Allow public insert leaderboard" ON public.leaderboard FOR INSERT
 DROP POLICY IF EXISTS "Allow public update leaderboard" ON public.leaderboard;
 CREATE POLICY "Allow public update leaderboard" ON public.leaderboard FOR UPDATE USING (true);
 
+DROP POLICY IF EXISTS "Allow public delete leaderboard" ON public.leaderboard;
+CREATE POLICY "Allow public delete leaderboard" ON public.leaderboard FOR DELETE USING (true);
+
 -- ============================================================
 -- 4. 預載種子題庫 (包含官方基礎教材 + 教師專屬自建範例)
 -- ============================================================
