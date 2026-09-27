@@ -12,6 +12,48 @@ import { BattleGame } from './games/battle/BattleGame';
 import { fetchWordsFromDb } from './services/supabase';
 import { soundEngine } from './services/audio';
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("ErrorBoundary caught:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center animate-fadeIn">
+          <div className="max-w-md w-full p-6 bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700">
+            <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-amber-100 dark:bg-amber-950/50 flex items-center justify-center text-amber-600 dark:text-amber-400 text-2xl font-black">
+              ⚠️
+            </div>
+            <h2 className="text-xl font-heading font-black text-slate-800 dark:text-slate-100 mb-2">
+              畫面載入遇到小插曲
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 font-bold">
+              請點擊下方按鈕，系統將自動為您重整並返回大廳首頁
+            </p>
+            <button
+              onClick={() => {
+                this.setState({ hasError: false });
+                if (this.props.onReset) this.props.onReset();
+              }}
+              className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all shadow-md active:scale-95 cursor-pointer"
+            >
+              🔄 返回大廳首頁
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export function App() {
   const [currentView, setCurrentView] = useState('lobby');
   const [words, setWords] = useState([]);
@@ -89,87 +131,89 @@ export function App() {
         isOnline={isOnline}
       />
 
-      {/* 畫面路由視圖切換 */}
+      {/* 畫面路由視圖切換 (含全域安全防護熔斷) */}
       <main className="flex-1 flex flex-col">
-        {currentView === 'lobby' && (
-          <Lobby
-            words={words}
-            settings={settings}
-            setSettings={setSettings}
-            onNavigate={handleNavigate}
-            onOpenLeaderboard={() => handleNavigate('leaderboard')}
-            qualifyingBook={qualifyingBook}
-          />
-        )}
+        <ErrorBoundary onReset={() => handleNavigate('lobby')}>
+          {currentView === 'lobby' && (
+            <Lobby
+              words={words}
+              settings={settings}
+              setSettings={setSettings}
+              onNavigate={handleNavigate}
+              onOpenLeaderboard={() => handleNavigate('leaderboard')}
+              qualifyingBook={qualifyingBook}
+            />
+          )}
 
-        {currentView === 'teacher-hub' && (
-          <TeacherHub
-            words={words}
-            onBack={() => handleNavigate('lobby')}
-            onRefreshWords={loadWords}
-          />
-        )}
+          {currentView === 'teacher-hub' && (
+            <TeacherHub
+              words={words}
+              onBack={() => handleNavigate('lobby')}
+              onRefreshWords={loadWords}
+            />
+          )}
 
-        {currentView === 'leaderboard' && (
-          <LeaderboardView
-            words={words}
-            onBack={() => handleNavigate('lobby')}
-          />
-        )}
+          {currentView === 'leaderboard' && (
+            <LeaderboardView
+              words={words}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
 
-        {currentView.startsWith('quiz-') && (
-          <StandardQuiz
-            mode={currentView}
-            settings={settings}
-            words={words}
-            qualifyingBook={qualifyingBook}
-            onBack={() => handleNavigate('lobby')}
-          />
-        )}
+          {currentView.startsWith('quiz-') && (
+            <StandardQuiz
+              mode={currentView}
+              settings={settings}
+              words={words}
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
 
-        {currentView === 'spelling' && (
-          <SpellingGame
-            settings={settings}
-            words={words}
-            qualifyingBook={qualifyingBook}
-            onBack={() => handleNavigate('lobby')}
-          />
-        )}
+          {currentView === 'spelling' && (
+            <SpellingGame
+              settings={settings}
+              words={words}
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
 
-        {currentView === 'meteor' && (
-          <MeteorGame
-            settings={settings}
-            words={words}
-            qualifyingBook={qualifyingBook}
-            onBack={() => handleNavigate('lobby')}
-          />
-        )}
+          {currentView === 'meteor' && (
+            <MeteorGame
+              settings={settings}
+              words={words}
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
 
-        {currentView === 'snake' && (
-          <SnakeGame
-            settings={settings}
-            words={words}
-            qualifyingBook={qualifyingBook}
-            onBack={() => handleNavigate('lobby')}
-          />
-        )}
+          {currentView === 'snake' && (
+            <SnakeGame
+              settings={settings}
+              words={words}
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
 
-        {currentView === 'memory' && (
-          <MemoryGameSingle
-            settings={settings}
-            words={words}
-            qualifyingBook={qualifyingBook}
-            onBack={() => handleNavigate('lobby')}
-          />
-        )}
+          {currentView === 'memory' && (
+            <MemoryGameSingle
+              settings={settings}
+              words={words}
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
 
-        {currentView === 'battle' && (
-          <BattleGame
-            settings={settings}
-            words={words}
-            onBack={() => handleNavigate('lobby')}
-          />
-        )}
+          {currentView === 'battle' && (
+            <BattleGame
+              settings={settings}
+              words={words}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
+        </ErrorBoundary>
       </main>
     </div>
   );

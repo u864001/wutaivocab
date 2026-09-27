@@ -100,14 +100,18 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
   // 彈窗顯示前 50 名的模式 Key (null 表示關閉)
   const [modalModeKey, setModalModeKey] = useState(null);
 
-  // 取得現有所有冊別 (數字優先排序)
-  const availableBooks = Array.from(new Set(words.map(w => w.book))).sort((a, b) => {
+  // 取得現有所有冊別 (數字優先排序，若題庫尚未就緒則安全回退)
+  const rawBooks = words && words.length > 0
+    ? Array.from(new Set(words.map(w => w.book)))
+    : ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+  const availableBooks = (rawBooks.length > 0 ? rawBooks : ['1', '2', '3', '4', '5', '6', '7', '8']).sort((a, b) => {
     const numA = parseInt(a);
     const numB = parseInt(b);
     if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
     if (!isNaN(numA)) return -1;
     if (!isNaN(numB)) return 1;
-    return a.localeCompare(b);
+    return String(a || '').localeCompare(String(b || ''));
   });
 
   const loadAllBoards = async (force = false) => {
@@ -189,19 +193,19 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
       {/* 頂部導覽列 */}
       <div className="flex items-center justify-between mb-6">
         <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
-          {t.backLobby}
+          {t.backLobby || '回大廳'}
         </Button3D>
 
         <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 font-heading flex items-center gap-2">
           <Trophy className="w-8 h-8 text-amber-500 animate-bounce" />
-          {t.heroHallTitle}
+          {t.heroHallTitle || '全校英雄榜'}
         </h2>
 
         <button
           onClick={() => loadAllBoards(true)}
           disabled={isLoading}
           className="p-2.5 rounded-2xl bg-white/80 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:scale-105 active:scale-95 transition-transform"
-          title={t.refresh}
+          title={t.refresh || '重新整理'}
         >
           <RotateCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
         </button>
@@ -214,7 +218,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <span className="text-xs font-black text-slate-700 dark:text-slate-200">
-              {t.selectBookLabel}
+              {t.selectBookLabel || '選擇競賽冊別：'}
             </span>
             <select
               value={selectedBook}
@@ -223,7 +227,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
             >
               {availableBooks.map((b) => (
                 <option key={b} value={b}>
-                  {isNaN(b) ? b : t.bookN.replace('{b}', b)}
+                  {isNaN(b) ? b : (t.bookN ? t.bookN.replace('{b}', b) : `第 ${b} 冊`)}
                 </option>
               ))}
             </select>
@@ -233,7 +237,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <span className="text-xs font-black text-slate-700 dark:text-slate-200">
-              {t.compWeekLabel}
+              {t.compWeekLabel || '競賽週次：'}
             </span>
             <select
               value={selectedWeek}
@@ -245,7 +249,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
                 if (w < 1) return null;
                 return (
                   <option key={w} value={w}>
-                    {t.weekN.replace('{w}', w)} {w === currentWeek ? t.currentWeekTag : ''}
+                    {(t.weekN ? t.weekN.replace('{w}', w) : `第 ${w} 週`)} {w === currentWeek ? (t.currentWeekTag || '(本週)') : ''}
                   </option>
                 );
               })}
@@ -363,7 +367,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
               <div className="flex items-center gap-2">
                 <Medal className="w-6 h-6 text-amber-500" />
                 <h3 className="text-xl font-black font-heading text-slate-800 dark:text-slate-100">
-                  {t.top50ModalTitle.replace('{title}', modalInfo.title)}
+                  {t.top50ModalTitle ? t.top50ModalTitle.replace('{title}', modalInfo.title) : `${modalInfo.title} 前 50 名`}
                 </h3>
               </div>
               <button
@@ -375,14 +379,16 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
             </div>
 
             <p className="text-xs font-bold text-slate-400 my-2">
-              {t.top50ModalSubtitle.replace('{book}', selectedBook).replace('{week}', selectedWeek)}
+              {t.top50ModalSubtitle
+                ? t.top50ModalSubtitle.replace('{book}', selectedBook).replace('{week}', selectedWeek)
+                : `第 ${selectedBook} 冊 • 第 ${selectedWeek} 週 • 每位同學僅取最佳成績`}
             </p>
 
             {/* 滾動榜單 */}
             <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 pr-1 my-2">
               {activeModalRanks.length === 0 ? (
                 <div className="py-12 text-center text-slate-400 font-bold text-sm">
-                  {t.noContenders}
+                  {t.noContenders || '尚無挑戰者登錄'}
                 </div>
               ) : (
                 activeModalRanks.map((r, idx) => (
@@ -408,7 +414,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
                         </span>
                         {r.time > 0 && (
                           <span className="text-[10px] text-slate-400 block">
-                            {t.timeSpentSec.replace('{time}', r.time)}
+                            {t.timeSpentSec ? t.timeSpentSec.replace('{time}', r.time) : `耗時：${r.time} 秒`}
                           </span>
                         )}
                       </div>
@@ -419,7 +425,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
                         {r.score}
                       </span>
                       <span className="text-xs text-slate-400 ml-1">
-                        {modalInfo.unit === '勝' ? t.unitWins : t.unitPoints}
+                        {modalInfo.unit === '勝' ? (t.unitWins || '勝') : (t.unitPoints || '分')}
                       </span>
                     </div>
                   </div>
