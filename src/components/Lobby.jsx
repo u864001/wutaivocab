@@ -519,15 +519,24 @@ export const Lobby = ({
         <GlassCard className="p-4 flex flex-col items-center max-w-xs w-full">
           <div className="p-2 bg-white rounded-2xl shadow-sm border border-slate-200 mb-2">
             <img
-              src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://u864001.github.io/wutaivocab/"
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
+                typeof window !== 'undefined' && window.location.origin && !window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1')
+                  ? window.location.origin
+                  : 'https://wutaivocab.vercel.app'
+              )}`}
               alt="QR Code"
-              className="w-24 h-24"
+              className="w-24 h-24 object-contain"
             />
           </div>
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
             <QrCode className="w-3.5 h-3.5" />
             {t.scanToJoin}
           </p>
+          <span className="text-[11px] font-mono text-slate-400 mt-1">
+            {typeof window !== 'undefined' && window.location.host && !window.location.host.includes('localhost')
+              ? window.location.host
+              : 'wutaivocab.vercel.app'}
+          </span>
         </GlassCard>
         <p className="text-xs font-bold text-slate-400 mt-4">
           {t.developer}
