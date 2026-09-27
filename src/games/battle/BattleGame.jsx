@@ -58,6 +58,9 @@ export const BattleGame = ({
     'arena-2': { count: 0, isBattling: false, hostName: '', playerNames: [] },
     'arena-3': { count: 0, isBattling: false, hostName: '', playerNames: [] }
   });
+  const [isConnecting, setIsConnecting] = useState(null); // 當前正在連線檢查的 arena.id
+  const [isProbing, setIsProbing] = useState(false);
+  const [probeCounter, setProbeCounter] = useState(0);
 
   // 戰鬥狀態
   const [currentQuestion, setCurrentQuestion] = useState(null);
@@ -67,23 +70,23 @@ export const BattleGame = ({
   const [winnerName, setWinnerName] = useState('');
 
   const channelRef = useRef(null);
-  const monitorChannelsRef = useRef([]);
   const myDeviceIdRef = useRef(getDeviceId());
   const battleUnitsRef = useRef(settings?.selectedUnits || []);
   const lastAttackTimeRef = useRef(0);
   const hostDisconnectTimerRef = useRef(null);
 
-  // ── 在擂台大廳即時監控 3 大擂台的佔用狀況 ──
+  // ── 大廳零長連線架構：1-Shot 快照探測 (取得狀態 1.5 秒後立即斷開銷毀，絕不長期佔用連線) ──
   useEffect(() => {
     if (view !== 'menu') return;
 
-    // 分別監聽 3 個擂台的 Presence，取得房間人數與是否對戰中
-    const monitors = FIXED_ARENAS.map(arena => {
-      const ch = supabase.channel(`monitor-${arena.id}`, {
-        config: { presence: { key: myDeviceIdRef.current } }
-      });
+    let isCancelled = false;
+    setIsProbing(true);
 
+    // 建立 3 擂台輕量探測頻道 (不調用 track，不計入玩家名單)
+    const probeChannels = FIXED_ARENAS.map(arena => {
+      const ch = supabase.channel(`battle-${arena.id}`);
       ch.on('presence', { event: 'sync' }, () => {
+        if (isCancelled) return;
         const state = ch.presenceState();
         const list = Object.values(state).flat();
         const host = list.find(p => p.isHost);
@@ -99,18 +102,25 @@ export const BattleGame = ({
           }
         }));
       });
-
       ch.subscribe();
       return ch;
     });
 
-    monitorChannelsRef.current = monitors;
+    // 1.5 秒後準時銷毀所有探測頻道，大廳保持 0 條持續 WebSocket 連線！
+    const timer = setTimeout(() => {
+      if (!isCancelled) {
+        probeChannels.forEach(ch => supabase.removeChannel(ch));
+        setIsProbing(false);
+      }
+    }, 1500);
 
     return () => {
-      monitors.forEach(ch => supabase.removeChannel(ch));
-      monitorChannelsRef.current = [];
+      isCancelled = true;
+      clearTimeout(timer);
+      probeChannels.forEach(ch => supabase.removeChannel(ch));
+      setIsProbing(false);
     };
-  }, [view]);
+  }, [view, probeCounter]);
 
   // 退出對戰清理
   const handleLeaveRoom = () => {
@@ -133,6 +143,7 @@ export const BattleGame = ({
       channelRef.current = null;
     }
     setIsHost(false);
+    setIsConnecting(null);
     setPlayers([]);
     setView('menu');
   };
@@ -186,18 +197,17 @@ export const BattleGame = ({
     connectToArenaChannel(arena, false);
   };
 
-  // 連接至特定擂台頻道
+  // 連接至特定擂台頻道 (按需即時連線，含滿員防爆與雙房主確定性仲裁)
   const connectToArenaChannel = (arena, hostFlag) => {
     setErrorMsg('');
-
-    // 先清理監控頻道以節省連線
-    monitorChannelsRef.current.forEach(ch => supabase.removeChannel(ch));
-    monitorChannelsRef.current = [];
+    setIsConnecting(arena.id);
 
     const channelName = `battle-${arena.id}`;
     const channel = supabase.channel(channelName, {
       config: { presence: { key: myDeviceIdRef.current } }
     });
+
+    const myJoinTimestamp = Date.now();
 
     channel
       .on('presence', { event: 'sync' }, () => {
@@ -205,17 +215,43 @@ export const BattleGame = ({
         const activeList = Object.values(state).flat();
         setPlayers(activeList);
 
-        // 房主衝突驗證：若點開立但頻道內已有其他更早的房主，防止雙房主衝突
-        if (hostFlag) {
-          const otherHosts = activeList.filter(p => p.isHost && p.deviceId !== myDeviceIdRef.current);
-          if (otherHosts.length > 0) {
-            setErrorMsg(`【${arena.name}】已被同學 ${otherHosts[0].name} 搶先開立！`);
-            handleLeaveRoom();
-            return;
+        // 1. 激戰中防插隊判定
+        const isBattlingNow = activeList.some(p => p.status === 'battling' && p.deviceId !== myDeviceIdRef.current);
+        if (isBattlingNow) {
+          setErrorMsg(`【${arena.name}】正在激烈決戰中 (已鎖定)，請選擇其他擂台或稍後再戰！`);
+          handleLeaveRoom();
+          return;
+        }
+
+        // 2. 超員即時退出判定 (全校每房最多 4 人)
+        if (activeList.length > 4) {
+          setErrorMsg(`【${arena.name}】已滿員 (4/4 人)！請選擇其他擂台或先挑戰單人模式。`);
+          handleLeaveRoom();
+          return;
+        }
+
+        // 3. 雙房主競態仲裁 (Deterministic Tie-Breaker)
+        const hosts = activeList.filter(p => p.isHost);
+        if (hosts.length > 1) {
+          // 依 joinedAt 時間戳排序；若毫秒完全相同，則以 deviceId 字典順序仲裁
+          hosts.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0) || a.deviceId.localeCompare(b.deviceId));
+          const trueHost = hosts[0];
+          if (myDeviceIdRef.current !== trueHost.deviceId) {
+            // 本人非最早開立者，自動降級為挑戰者成員，避免房間分裂
+            setIsHost(false);
+            channel.track({
+              deviceId: myDeviceIdRef.current,
+              name: playerName.trim(),
+              isHost: false,
+              status: 'waiting',
+              isDead: false,
+              joinedAt: myJoinTimestamp
+            });
+            setErrorMsg(`同學 ${trueHost.name} 搶先開立，已為您自動轉為加入挑戰！`);
           }
         }
 
-        // 房主斷線寬限判定 (寬限 3 秒，防止短暫網路抖動誤退)
+        // 4. 房主斷線寬限判定 (寬限 3 秒，防止短暫網路抖動誤退)
         if (!hostFlag) {
           const hasHost = activeList.some(p => p.isHost);
           if (!hasHost && activeList.length > 0) {
@@ -265,9 +301,14 @@ export const BattleGame = ({
             name: playerName.trim(),
             isHost: hostFlag,
             status: 'waiting',
-            isDead: false
+            isDead: false,
+            joinedAt: myJoinTimestamp
           });
+          setIsConnecting(null);
           setView('lobby');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          setIsConnecting(null);
+          setErrorMsg('連線異常，請檢查網路或稍後重試。');
         }
       });
 
@@ -406,9 +447,20 @@ export const BattleGame = ({
           <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
             {t.backLobby}
           </Button3D>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-black">
-            <Swords className="w-4 h-4" />
-            全校限定三大即時對戰擂台
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setProbeCounter(c => c + 1)}
+              disabled={isProbing}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-black transition-all cursor-pointer shadow-sm active:scale-95"
+              title="重新檢查三大擂台即時狀態"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isProbing ? 'animate-spin text-rose-500' : ''}`} />
+              <span>{isProbing ? '探測中...' : '探測擂台'}</span>
+            </button>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-black">
+              <Swords className="w-4 h-4" />
+              全校限定三大即時對戰擂台
+            </div>
           </div>
         </div>
 
@@ -516,7 +568,12 @@ export const BattleGame = ({
 
                 {/* 底部操作按鈕 */}
                 <div className="mt-3">
-                  {isEmpty && (
+                  {isConnecting === arena.id ? (
+                    <Button3D variant="slate" size="md" disabled className="w-full">
+                      <RefreshCw className="w-4 h-4 animate-spin inline mr-1" />
+                      連線確認中...
+                    </Button3D>
+                  ) : isEmpty ? (
                     <Button3D
                       variant={arena.color === 'rose' ? 'rose' : arena.color === 'emerald' ? 'emerald' : 'blue'}
                       size="md"
@@ -525,9 +582,7 @@ export const BattleGame = ({
                     >
                       開立此擂台
                     </Button3D>
-                  )}
-
-                  {isWaiting && (
+                  ) : isWaiting ? (
                     <Button3D
                       variant="amber"
                       size="md"
@@ -536,9 +591,7 @@ export const BattleGame = ({
                     >
                       立即加入 ({state.count}/4)
                     </Button3D>
-                  )}
-
-                  {isFullOrBattling && (
+                  ) : (
                     <Button3D
                       variant="slate"
                       size="md"
@@ -553,6 +606,18 @@ export const BattleGame = ({
             );
           })}
         </div>
+
+        {/* 滿員友善分流引導 */}
+        {Object.values(arenaStates).every(s => s.isBattling || s.count >= 4) && (
+          <div className="mt-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700 text-center animate-fadeIn">
+            <p className="text-sm font-black text-amber-800 dark:text-amber-200 mb-1">
+              ⚔️ 全校三大擂台目前全數客滿激戰中 (12/12 滿員)！
+            </p>
+            <p className="text-xs font-bold text-amber-600 dark:text-amber-400">
+              建議同學先前往【星空防衛戰】或【單字貪食蛇】暖身練習，稍後點擊右上角「探測擂台」搶進！
+            </p>
+          </div>
+        )}
       </div>
     );
   }
