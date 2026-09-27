@@ -118,6 +118,9 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
     setIsLoading(true);
     const results = { ...boardData };
 
+    const isPastWeek = selectedWeek < currentWeek;
+    const cacheTtl = isPastWeek ? 7 * 24 * 60 * 60 * 1000 : 60 * 1000; // 歷史週次成績已凍結，快取 7 天；本週快取 60 秒
+
     await Promise.all(
       BOARD_MODES.map(async (m) => {
         const activeKey = activeSubKeys[m.id] || m.defaultKey;
@@ -129,7 +132,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
           if (cached) {
             try {
               const { data, time } = JSON.parse(cached);
-              if (now - time < 60 * 1000) {
+              if (now - time < cacheTtl) {
                 results[activeKey] = data;
                 return;
               }
@@ -153,12 +156,14 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
 
   const handleSubModeChange = async (cardId, newKey) => {
     setActiveSubKeys(prev => ({ ...prev, [cardId]: newKey }));
+    const isPastWeek = selectedWeek < currentWeek;
+    const cacheTtl = isPastWeek ? 7 * 24 * 60 * 60 * 1000 : 60 * 1000;
     const CACHE_KEY = `lb_v2_${selectedWeek}_${newKey}_${selectedBook}`;
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
       try {
         const { data, time } = JSON.parse(cached);
-        if (Date.now() - time < 60 * 1000) {
+        if (Date.now() - time < cacheTtl) {
           setBoardData(prev => ({ ...prev, [newKey]: data }));
           return;
         }
