@@ -4,6 +4,7 @@ import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { uploadScore } from '../../services/supabase';
+import { generateSmartOptions } from '../../services/distractorHelper';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Rocket, Heart, Trophy, Flame } from 'lucide-react';
 
@@ -33,38 +34,34 @@ export const MeteorGame = ({
   const meteorRef = useRef(null);
   const animFrameRef = useRef(null);
 
-  useEffect(() => {
-    let db = [];
+  // 取得當前模式的「選取範圍單字庫」
+  const getSelectedPool = () => {
     if (subMode === 'abc') {
-      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-      db = letters.map((l, i) => ({
+      return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((l, i) => ({
         id: `abc-${i}`,
         book: 'ABC',
         lesson: '1',
         en: l,
         zh: l.toLowerCase()
       }));
-    } else {
-      db = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
     }
-    const shuffled = [...db].sort(() => 0.5 - Math.random());
+    const filtered = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
+    return filtered;
+  };
+
+  useEffect(() => {
+    const pool = getSelectedPool();
+    const shuffled = [...pool].sort(() => 0.5 - Math.random());
     setQueue(shuffled);
   }, [settings, words, subMode]);
 
-  const generateOptions = (targetWord, fullPool) => {
-    const ansKey = subMode === 'en-zh' ? 'zh' : subMode === 'abc' ? 'zh' : 'en';
-    const correctAns = targetWord[ansKey];
+  const updateOptionsFor = (targetWord) => {
+    const ansKey = subMode === 'en-zh' ? 'zh' : (subMode === 'abc' ? 'zh' : 'en');
+    const selectedPool = getSelectedPool();
+    const fullPool = subMode === 'abc' ? selectedPool : words;
 
-    let pool = fullPool.map(w => w[ansKey]).filter(a => a !== correctAns);
-    pool = [...new Set(pool)].sort(() => 0.5 - Math.random()).slice(0, 3);
-
-    const finalOpts = [...pool, correctAns].map(text => ({
-      text,
-      isCorrect: text === correctAns,
-      id: Math.random().toString()
-    })).sort(() => 0.5 - Math.random());
-
-    setOptions(finalOpts);
+    const opts = generateSmartOptions(targetWord, selectedPool, fullPool, ansKey);
+    setOptions(opts);
   };
 
   const spawnMeteor = (wordObj) => {
@@ -92,14 +89,28 @@ export const MeteorGame = ({
     setScore(0);
     setGameStartTime(Date.now());
 
-    let pool = words;
+    let pool = [];
     if (mode === 'abc') {
-      pool = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(l => ({ zh: l.toLowerCase(), en: l }));
+      pool = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((l, i) => ({
+        id: `abc-${i}`,
+        book: 'ABC',
+        lesson: '1',
+        en: l,
+        zh: l.toLowerCase()
+      }));
+    } else {
+      pool = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
     }
 
-    if (queue.length === 0) return onBack();
-    const first = queue[0];
-    generateOptions(first, pool);
+    if (pool.length === 0) {
+      alert('請先在主畫面勾選複習範圍！');
+      return onBack();
+    }
+
+    const shuffled = [...pool].sort(() => 0.5 - Math.random());
+    setQueue(shuffled);
+    const first = shuffled[0];
+    updateOptionsFor(first);
     spawnMeteor(first);
   };
 
@@ -186,12 +197,16 @@ export const MeteorGame = ({
   const nextTurn = () => {
     const newQueue = [...queue];
     newQueue.shift();
+
+    // 隊列耗盡時，只從「選取範圍」重新洗牌，絕不洩漏到未選單字！
     if (newQueue.length === 0) {
-      newQueue.push(...words.sort(() => 0.5 - Math.random()));
+      newQueue.push(...getSelectedPool().sort(() => 0.5 - Math.random()));
     }
+
     setQueue(newQueue);
-    generateOptions(newQueue[0], subMode === 'abc' ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(l => ({ zh: l.toLowerCase() })) : words);
-    spawnMeteor(newQueue[0]);
+    const nextWord = newQueue[0];
+    updateOptionsFor(nextWord);
+    spawnMeteor(nextWord);
   };
 
   const handleSubmitScore = async () => {

@@ -50,7 +50,8 @@ export const SnakeGame = ({
 
   const loadNextWord = () => {
     if (wordQueueRef.current.length === 0) {
-      wordQueueRef.current = [...words].sort(() => 0.5 - Math.random());
+      const filtered = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
+      wordQueueRef.current = [...filtered].sort(() => 0.5 - Math.random());
     }
     const next = wordQueueRef.current.shift();
     setCurrentWord(next);
@@ -86,6 +87,12 @@ export const SnakeGame = ({
   };
 
   const handleStart = (mode) => {
+    const filtered = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
+    if (filtered.length === 0) {
+      alert('請先在主畫面勾選複習範圍！');
+      return onBack();
+    }
+    wordQueueRef.current = [...filtered].sort(() => 0.5 - Math.random());
     setGameMode(mode);
     setHasStarted(true);
     setScore(0);

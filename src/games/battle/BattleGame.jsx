@@ -4,6 +4,7 @@ import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { supabase, getDeviceId } from '../../services/supabase';
+import { generateSmartOptions } from '../../services/distractorHelper';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Swords, Users, Shield, Heart, Zap, Trophy, Play } from 'lucide-react';
 
@@ -30,15 +31,21 @@ export const BattleGame = ({
 
   const channelRef = useRef(null);
   const myDeviceIdRef = useRef(getDeviceId());
+  const battleUnitsRef = useRef(settings?.selectedUnits || []);
 
   const handleCreateRoom = () => {
     if (!playerName.trim()) {
       setErrorMsg('請先輸入玩家暱稱！');
       return;
     }
+    if (!settings.selectedUnits || settings.selectedUnits.length === 0) {
+      setErrorMsg('房主請先回到主畫面勾選對戰複習範圍！');
+      return;
+    }
     const code = Math.floor(1000 + Math.random() * 9000).toString();
     setRoomCode(code);
     setIsHost(true);
+    battleUnitsRef.current = settings.selectedUnits;
     joinRoomChannel(code, true);
   };
 
@@ -69,7 +76,11 @@ export const BattleGame = ({
         const activeList = Object.values(state).flat();
         setPlayers(activeList);
       })
-      .on('broadcast', { event: 'game-start' }, () => {
+      .on('broadcast', { event: 'game-start' }, ({ payload }) => {
+        // 全體玩家皆以房主設定的範圍為準！
+        if (payload?.selectedUnits && payload.selectedUnits.length > 0) {
+          battleUnitsRef.current = payload.selectedUnits;
+        }
         startGame();
       })
       .on('broadcast', { event: 'player-attack' }, ({ payload }) => {
@@ -109,7 +120,7 @@ export const BattleGame = ({
       channelRef.current.send({
         type: 'broadcast',
         event: 'game-start',
-        payload: {}
+        payload: { selectedUnits: battleUnitsRef.current }
       });
       startGame();
     }
@@ -123,22 +134,22 @@ export const BattleGame = ({
   };
 
   const nextQuestion = () => {
-    let pool = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
+    const units = battleUnitsRef.current;
+    let pool = words.filter(w => units.includes(`${w.book}-${w.lesson}`));
     if (pool.length < 4) pool = words;
+
     const target = pool[Math.floor(Math.random() * pool.length)];
     setCurrentQuestion(target);
 
-    // 4 個選項
-    let wrongPool = pool.filter(w => w.en !== target.en).map(w => w.en);
-    wrongPool = [...new Set(wrongPool)].sort(() => 0.5 - Math.random()).slice(0, 3);
-    const opts = [...wrongPool, target.en].sort(() => 0.5 - Math.random());
+    // 採用智慧誘答演算法生成 4 個選項
+    const opts = generateSmartOptions(target, pool, words, 'en');
     setOptions(opts);
   };
 
-  const handleAnswer = (chosen) => {
+  const handleAnswer = (opt) => {
     if (!currentQuestion || isDead) return;
 
-    if (chosen === currentQuestion.en) {
+    if (opt.isCorrect) {
       soundEngine.correct();
 
       // 隨機選一位其他存活玩家發動攻擊
@@ -207,7 +218,7 @@ export const BattleGame = ({
             {t.battleTitle}
           </h2>
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-6">
-            2~4 人區網對戰，答對單字發動隕石突擊對手防線！
+            2~4 人區網對戰，全員採用房主設定的單字範圍！
           </p>
 
           <div className="space-y-4 mb-6">
@@ -259,7 +270,7 @@ export const BattleGame = ({
             {roomCode}
           </h2>
           <p className="text-xs font-bold text-slate-500 mb-6">
-            請其他同學輸入此 4 位數房號加入
+            請其他同學輸入此 4 位數房號加入 (題目將自動同步房主範圍)
           </p>
 
           <div className="space-y-2 mb-6">
@@ -359,15 +370,15 @@ export const BattleGame = ({
             </h2>
 
             <div className="grid grid-cols-2 gap-4">
-              {options.map((opt, i) => (
+              {options.map((opt) => (
                 <Button3D
-                  key={i}
+                  key={opt.id}
                   variant="rose"
                   size="lg"
                   onClick={() => handleAnswer(opt)}
                   className="py-4 text-lg"
                 >
-                  {opt}
+                  {opt.text}
                 </Button3D>
               ))}
             </div>

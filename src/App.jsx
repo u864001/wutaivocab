@@ -20,7 +20,7 @@ export function App() {
 
   // 測驗出題設定
   const [settings, setSettings] = useState({
-    selectedUnits: ['1-1', '1-2'],
+    selectedUnits: [],
     count: '20'
   });
 
