@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
@@ -44,8 +44,13 @@ export const SpellingGame = ({
   }, [settings, words]);
 
   const loadWord = (wordObj) => {
+    if (!wordObj || !wordObj.en) return;
     setCurrentWord(wordObj);
-    const wordStr = wordObj.en.toLowerCase();
+    const wordStr = (wordObj.en || '').toLowerCase().replace(/[^a-z]/g, '');
+    if (!wordStr) {
+      moveToNext(true);
+      return;
+    }
     setSlots(new Array(wordStr.length).fill(null));
 
     const chars = wordStr.split('').map((char, index) => ({
@@ -61,7 +66,10 @@ export const SpellingGame = ({
   };
 
   const handleStart = () => {
-    if (queue.length === 0) return onBack();
+    if (!queue || queue.length === 0) {
+      alert('選取範圍內沒有單字，請回大廳重新勾選！');
+      return onBack();
+    }
     setHasStarted(true);
     setStartTime(Date.now());
     loadWord(queue[0]);

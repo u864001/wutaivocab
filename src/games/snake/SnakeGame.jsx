@@ -128,7 +128,13 @@ export const SnakeGame = ({
   useEffect(() => {
     if (!hasStarted || isFinished) return;
 
-    const speed = gameMode === 'easy' ? 220 : 160;
+    // 依模式微調小蛇移動速度 (ms/格)，符合國小學生視力辨識與觸控轉向節奏
+    const speedMap = {
+      easy: 360,      // 慢速悠閒 (~2.8 格/秒，適合初學與低年級)
+      normal: 270,    // 標準適中 (~3.7 格/秒，原 160ms 太快如飆車)
+      survival: 230   // 生存挑戰 (~4.3 格/秒，適度刺激)
+    };
+    const speed = speedMap[gameMode] || 270;
     const interval = setInterval(() => {
       // 1. 移動蛇頭
       const head = { ...snakeRef.current[0] };

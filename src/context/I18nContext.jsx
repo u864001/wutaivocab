@@ -141,9 +141,9 @@ const DICTIONARY = {
 
     // 叢林貪食蛇 (SnakeGame)
     snakeHelp: '控制小蛇在草地上移動，按照單字順序吃下字母完成拼字！',
-    snakeEasy: '🌟 簡易模式 (下個字母發光引導)',
-    snakeNormal: '🔥 一般模式 (60 秒競速挑戰)',
-    snakeSurvival: '🌿 生存模式 (5 條生命無限闖關)',
+    snakeEasy: '🌟 簡易模式 (慢速悠閒 • 下個字母發光引導)',
+    snakeNormal: '🔥 一般模式 (舒適節奏 • 60 秒競速挑戰)',
+    snakeSurvival: '🌿 生存模式 (速度適中 • 5 條生命極限闖關)',
     snakeResults: '貪食蛇冒險結算',
     adventureScore: '冒險積分',
 
@@ -311,9 +311,9 @@ const DICTIONARY = {
 
     // SnakeGame
     snakeHelp: 'Guide the snake to eat letters in spelling order!',
-    snakeEasy: '🌟 Easy Mode (Glowing letters)',
-    snakeNormal: '🔥 Normal Mode (60s speed challenge)',
-    snakeSurvival: '🌿 Survival Mode (5 lives endless)',
+    snakeEasy: '🌟 Easy Mode (Relaxed speed & glowing guide)',
+    snakeNormal: '🔥 Normal Mode (Comfortable pace & 60s challenge)',
+    snakeSurvival: '🌿 Survival Mode (Balanced speed & 5 lives)',
     snakeResults: 'Snake Adventure Summary',
     adventureScore: 'Adventure Score',
 
