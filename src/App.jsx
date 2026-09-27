@@ -157,6 +157,7 @@ export function App() {
             <LeaderboardView
               words={words}
               onBack={() => handleNavigate('lobby')}
+              onOpenTeacherHub={() => handleNavigate('teacher-hub')}
             />
           )}
 

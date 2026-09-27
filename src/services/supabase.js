@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { containsProfanity } from './profanityFilter';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://fqkdkmcqjswufzbvkram.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_M9phUn6LH1yeVA9NbIXesg_tVABCW5z';
@@ -179,8 +180,13 @@ export const deleteWordById = async (id) => {
 export const uploadScore = async ({ mode, book, name, score, time }) => {
   const deviceId = getDeviceId();
   const currentWeek = getWeekNumber();
-  const cleanName = (name || '').trim();
+  let cleanName = (name || '').trim();
   if (!cleanName) return false;
+
+  // 拒絕不雅名稱寫入資料庫
+  if (containsProfanity(cleanName)) {
+    cleanName = '文明好學生';
+  }
 
   try {
     // 檢查本週同裝置且同姓名的紀錄 (同台 iPad 不同學生戰績完全獨立)
@@ -251,8 +257,12 @@ export const recordBattleWin = async ({ book, name }) => {
   const deviceId = getDeviceId();
   const currentWeek = getWeekNumber();
   const mode = 'battle-wins';
-  const cleanName = (name || '').trim();
+  let cleanName = (name || '').trim();
   if (!cleanName) return false;
+
+  if (containsProfanity(cleanName)) {
+    cleanName = '文明好學生';
+  }
 
   try {
     const { data: existing } = await supabase

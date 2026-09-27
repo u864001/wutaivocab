@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GlassCard } from './ui/GlassCard';
 import { Button3D } from './ui/Button3D';
 import { useI18n } from '../context/I18nContext';
 import { fetchLeaderboard, getWeekNumber } from '../services/supabase';
+import { soundEngine } from '../services/audio';
 import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
@@ -79,13 +80,32 @@ const BOARD_MODES = [
   }
 ];
 
-export const LeaderboardView = ({ onBack, words = [] }) => {
+export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
   const { t } = useI18n();
   const currentWeek = getWeekNumber();
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const [selectedBook, setSelectedBook] = useState('1');
   const [boardData, setBoardData] = useState({}); // { [modeKey]: items[] }
   const [isLoading, setIsLoading] = useState(false);
+
+  // ── 隱藏後台彩蛋：連續點擊「全校英雄榜」標題 5 下進入教師工作台 ──
+  const [titleClickCount, setTitleClickCount] = useState(0);
+  const clickTimerRef = useRef(null);
+
+  const handleTitleClick = () => {
+    setTitleClickCount((prev) => {
+      const next = prev + 1;
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = setTimeout(() => setTitleClickCount(0), 3000);
+
+      if (next >= 5) {
+        setTitleClickCount(0);
+        soundEngine.correct();
+        if (onOpenTeacherHub) onOpenTeacherHub();
+      }
+      return next;
+    });
+  };
 
   // 各卡片當前選取的子模式 Key
   const [activeSubKeys, setActiveSubKeys] = useState({
@@ -201,7 +221,11 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
           {t.backLobby || '回大廳'}
         </Button3D>
 
-        <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 font-heading flex items-center gap-2">
+        <h2
+          onClick={handleTitleClick}
+          className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 font-heading flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform"
+          title={t.heroHallTitle || '全校英雄榜'}
+        >
           <Trophy className="w-8 h-8 text-amber-500 animate-bounce" />
           {t.heroHallTitle || '全校英雄榜'}
         </h2>

@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
 import { soundEngine } from '../services/audio';
-import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles, GraduationCap } from 'lucide-react';
+import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles } from 'lucide-react';
 
 export const Header = ({ onOpenTeacherHub, onOpenLeaderboard, isOnline = true }) => {
   const { isDark, toggleTheme } = useTheme();
@@ -41,17 +41,8 @@ export const Header = ({ onOpenTeacherHub, onOpenLeaderboard, isOnline = true })
         </div>
       </div>
 
-      {/* 功能控制區：音效、雙語、主題、教師後台 */}
+      {/* 功能控制區：音效、雙語、主題 */}
       <div className="flex items-center gap-2 sm:gap-2.5">
-        {/* 教師後台快捷鈕 */}
-        <button
-          onClick={onOpenTeacherHub}
-          title={t.teacherHub}
-          className="p-2 sm:px-3 sm:py-2 rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center gap-1.5 text-xs font-black shadow-sm transition-all active:scale-95"
-        >
-          <GraduationCap className="w-4 h-4 text-emerald-600 dark:text-cyan-400" />
-          <span className="hidden md:inline">{t.teacherHub}</span>
-        </button>
 
         {/* 音效開關 */}
         <button

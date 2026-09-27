@@ -5,6 +5,7 @@ import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { supabase, getDeviceId, recordBattleWin } from '../../services/supabase';
 import { generateSmartOptions } from '../../services/distractorHelper';
+import { getProfanityError } from '../../services/profanityFilter';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Swords, Users, Shield, Heart, Zap,
@@ -150,8 +151,14 @@ export const BattleGame = ({
 
   // 開立指定擂台 (房主)
   const handleHostArena = (arena) => {
-    if (!playerName.trim()) {
+    const cleanName = playerName.trim();
+    if (!cleanName) {
       setErrorMsg(t.enterNicknameError);
+      return;
+    }
+    const badWordError = getProfanityError(cleanName);
+    if (badWordError) {
+      setErrorMsg(badWordError);
       return;
     }
     if (!settings.selectedUnits || settings.selectedUnits.length === 0) {
@@ -166,7 +173,7 @@ export const BattleGame = ({
       return;
     }
 
-    localStorage.setItem('wutai_player_name', playerName.trim());
+    localStorage.setItem('wutai_player_name', cleanName);
     setSelectedArena(arena);
     setIsHost(true);
     battleUnitsRef.current = settings.selectedUnits;
@@ -175,8 +182,14 @@ export const BattleGame = ({
 
   // 加入指定擂台 (成員)
   const handleJoinArena = (arena) => {
-    if (!playerName.trim()) {
+    const cleanName = playerName.trim();
+    if (!cleanName) {
       setErrorMsg(t.enterNicknameError);
+      return;
+    }
+    const badWordError = getProfanityError(cleanName);
+    if (badWordError) {
+      setErrorMsg(badWordError);
       return;
     }
 
@@ -191,7 +204,7 @@ export const BattleGame = ({
       return;
     }
 
-    localStorage.setItem('wutai_player_name', playerName.trim());
+    localStorage.setItem('wutai_player_name', cleanName);
     setSelectedArena(arena);
     setIsHost(false);
     connectToArenaChannel(arena, false);

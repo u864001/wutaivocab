@@ -4,8 +4,9 @@ import { useI18n } from '../context/I18nContext';
 import { checkIfQualifiesForTop50, uploadScore } from '../services/supabase';
 import { CertificateModal } from './CertificateModal';
 import { getAccuracyLevel } from '../services/certificateGenerator';
+import { getProfanityError } from '../services/profanityFilter';
 import confetti from 'canvas-confetti';
-import { Trophy, CheckCircle2, Sparkles, Send, Loader2, Award, UserCheck, RefreshCw } from 'lucide-react';
+import { Trophy, CheckCircle2, Sparkles, Send, Loader2, Award, UserCheck, RefreshCw, AlertCircle } from 'lucide-react';
 
 export const HonorSubmissionCard = ({
   mode,
@@ -22,6 +23,7 @@ export const HonorSubmissionCard = ({
   const [playerName, setPlayerName] = useState(() => {
     return localStorage.getItem('wutai_player_name') || '';
   });
+  const [validationError, setValidationError] = useState('');
   const [isCertOpen, setIsCertOpen] = useState(false);
   const hasSubmittedRef = useRef(false);
 
@@ -69,11 +71,18 @@ export const HonorSubmissionCard = ({
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
-    if (!playerName.trim() || status === 'submitting' || hasSubmittedRef.current) return;
+    const trimmedName = playerName.trim();
+    if (!trimmedName || status === 'submitting' || hasSubmittedRef.current) return;
+
+    // ── 不雅文字檢驗攔截 ──
+    const badWordError = getProfanityError(trimmedName);
+    if (badWordError) {
+      setValidationError(badWordError);
+      return;
+    }
 
     hasSubmittedRef.current = true;
     setStatus('submitting');
-    const trimmedName = playerName.trim();
     localStorage.setItem('wutai_player_name', trimmedName);
 
     const success = await uploadScore({
@@ -205,10 +214,15 @@ export const HonorSubmissionCard = ({
               <input
                 type="text"
                 value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
+                onChange={(e) => {
+                  setPlayerName(e.target.value);
+                  setValidationError('');
+                }}
                 placeholder={t.namePlaceholder}
                 maxLength={15}
-                className="w-full p-3 rounded-xl border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-800 text-center font-black text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-amber-400 text-sm shadow-inner pr-20"
+                className={`w-full p-3 rounded-xl border ${
+                  validationError ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-950/20' : 'border-amber-300 dark:border-amber-700'
+                } bg-white dark:bg-slate-800 text-center font-black text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-amber-400 text-sm shadow-inner pr-20`}
               />
               {playerName && (
                 <button
@@ -221,6 +235,13 @@ export const HonorSubmissionCard = ({
                 </button>
               )}
             </div>
+
+            {validationError && (
+              <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs font-black text-rose-600 dark:text-rose-400 flex items-center justify-center gap-1.5 animate-fadeIn">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{validationError}</span>
+              </div>
+            )}
 
             <Button3D
               variant="amber"

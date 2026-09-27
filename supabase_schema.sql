@@ -38,6 +38,23 @@ CREATE TABLE IF NOT EXISTS public.leaderboard (
 CREATE INDEX IF NOT EXISTS idx_leaderboard_week_mode ON public.leaderboard(week, mode, book);
 CREATE INDEX IF NOT EXISTS idx_leaderboard_device ON public.leaderboard(device_id);
 
+-- 防護約束條件 (防止惡意腳本塞爆資料庫或寫入荒謬分數)
+DO $$ 
+BEGIN 
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_leaderboard_score') THEN
+        ALTER TABLE public.leaderboard ADD CONSTRAINT chk_leaderboard_score CHECK (score >= 0 AND score <= 100000);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_leaderboard_time') THEN
+        ALTER TABLE public.leaderboard ADD CONSTRAINT chk_leaderboard_time CHECK (time >= 0 AND time <= 7200);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_leaderboard_name') THEN
+        ALTER TABLE public.leaderboard ADD CONSTRAINT chk_leaderboard_name CHECK (char_length(name) >= 1 AND char_length(name) <= 20);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'chk_leaderboard_week') THEN
+        ALTER TABLE public.leaderboard ADD CONSTRAINT chk_leaderboard_week CHECK (week >= 1 AND week <= 53);
+    END IF;
+END $$;
+
 -- 3. 開啟 Row Level Security (RLS) 安全防護
 ALTER TABLE public.words ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.leaderboard ENABLE ROW LEVEL SECURITY;
