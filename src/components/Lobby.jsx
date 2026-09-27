@@ -218,9 +218,12 @@ export const Lobby = ({
                       .sort((a, b) => {
                         const getWeight = (l) => {
                           const s = String(l).toLowerCase();
-                          if (s.includes('starter')) return -1;
-                          if (s.includes('review')) return 99;
-                          if (s.includes('festival')) return 100;
+                          if (s.includes('starter')) return -10; // Starter 最前
+                          if (s.includes('festival') || s.includes('culture')) return 999; // Festival 最後
+                          if (s.includes('review')) {
+                            const r = parseInt(s.replace(/\D/g, ''));
+                            return 80 + (isNaN(r) ? 0 : r);
+                          }
                           const n = parseInt(s.replace(/\D/g, ''));
                           return isNaN(n) ? 50 : n;
                         };

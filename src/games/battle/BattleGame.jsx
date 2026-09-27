@@ -6,7 +6,38 @@ import { soundEngine, speakEnglish } from '../../services/audio';
 import { supabase, getDeviceId, recordBattleWin } from '../../services/supabase';
 import { generateSmartOptions } from '../../services/distractorHelper';
 import confetti from 'canvas-confetti';
-import { ArrowLeft, Swords, Users, Shield, Heart, Zap, Trophy, Play, RefreshCw } from 'lucide-react';
+import {
+  ArrowLeft, Swords, Users, Shield, Heart, Zap,
+  Trophy, Play, RefreshCw, QrCode, Lock, CheckCircle2, AlertCircle
+} from 'lucide-react';
+
+// ── 全校固定三大限定擂台 (嚴格限制全校同時最多 3 場對戰，徹底防護連線數與廣播配額) ──
+const FIXED_ARENAS = [
+  {
+    id: 'arena-1',
+    code: '1001',
+    name: '🔴 烈焰擂台',
+    color: 'rose',
+    bgGradient: 'from-rose-500/20 via-orange-500/20 to-rose-600/20',
+    border: 'border-rose-400 dark:border-rose-700'
+  },
+  {
+    id: 'arena-2',
+    code: '1002',
+    name: '🟢 翡翠擂台',
+    color: 'emerald',
+    bgGradient: 'from-emerald-500/20 via-teal-500/20 to-emerald-600/20',
+    border: 'border-emerald-400 dark:border-emerald-700'
+  },
+  {
+    id: 'arena-3',
+    code: '1003',
+    name: '🔵 星空擂台',
+    color: 'blue',
+    bgGradient: 'from-blue-500/20 via-indigo-500/20 to-blue-600/20',
+    border: 'border-blue-400 dark:border-blue-700'
+  }
+];
 
 export const BattleGame = ({
   settings,
@@ -15,26 +46,79 @@ export const BattleGame = ({
 }) => {
   const { t } = useI18n();
   const [view, setView] = useState('menu'); // 'menu' | 'lobby' | 'playing' | 'result'
-  const [roomCode, setRoomCode] = useState('');
-  const [joinCodeInput, setJoinCodeInput] = useState('');
+  const [selectedArena, setSelectedArena] = useState(FIXED_ARENAS[0]);
   const [playerName, setPlayerName] = useState(() => localStorage.getItem('wutai_player_name') || '');
   const [isHost, setIsHost] = useState(false);
   const [players, setPlayers] = useState([]);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // 三大擂台全域狀態監控 ({ 'arena-1': { count, isBattling, hostName, playerNames } })
+  const [arenaStates, setArenaStates] = useState({
+    'arena-1': { count: 0, isBattling: false, hostName: '', playerNames: [] },
+    'arena-2': { count: 0, isBattling: false, hostName: '', playerNames: [] },
+    'arena-3': { count: 0, isBattling: false, hostName: '', playerNames: [] }
+  });
+
   // 戰鬥狀態
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [options, setOptions] = useState([]);
-  const [myHealth, setMyHealth] = useState(100); // 100% 防線
+  const [myHealth, setMyHealth] = useState(100);
   const [isDead, setIsDead] = useState(false);
   const [winnerName, setWinnerName] = useState('');
 
   const channelRef = useRef(null);
+  const monitorChannelsRef = useRef([]);
   const myDeviceIdRef = useRef(getDeviceId());
   const battleUnitsRef = useRef(settings?.selectedUnits || []);
   const lastAttackTimeRef = useRef(0);
+  const hostDisconnectTimerRef = useRef(null);
 
+  // ── 在擂台大廳即時監控 3 大擂台的佔用狀況 ──
+  useEffect(() => {
+    if (view !== 'menu') return;
+
+    // 分別監聽 3 個擂台的 Presence，取得房間人數與是否對戰中
+    const monitors = FIXED_ARENAS.map(arena => {
+      const ch = supabase.channel(`monitor-${arena.id}`, {
+        config: { presence: { key: myDeviceIdRef.current } }
+      });
+
+      ch.on('presence', { event: 'sync' }, () => {
+        const state = ch.presenceState();
+        const list = Object.values(state).flat();
+        const host = list.find(p => p.isHost);
+        const isBattling = list.some(p => p.status === 'battling');
+
+        setArenaStates(prev => ({
+          ...prev,
+          [arena.id]: {
+            count: list.length,
+            isBattling,
+            hostName: host ? host.name : '',
+            playerNames: list.map(p => p.name)
+          }
+        }));
+      });
+
+      ch.subscribe();
+      return ch;
+    });
+
+    monitorChannelsRef.current = monitors;
+
+    return () => {
+      monitors.forEach(ch => supabase.removeChannel(ch));
+      monitorChannelsRef.current = [];
+    };
+  }, [view]);
+
+  // 退出對戰清理
   const handleLeaveRoom = () => {
+    if (hostDisconnectTimerRef.current) {
+      clearTimeout(hostDisconnectTimerRef.current);
+      hostDisconnectTimerRef.current = null;
+    }
+
     if (channelRef.current) {
       if (isHost) {
         try {
@@ -48,10 +132,13 @@ export const BattleGame = ({
       supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }
+    setIsHost(false);
+    setPlayers([]);
     setView('menu');
   };
 
-  const handleCreateRoom = () => {
+  // 開立指定擂台 (房主)
+  const handleHostArena = (arena) => {
     if (!playerName.trim()) {
       setErrorMsg(t.enterNicknameError);
       return;
@@ -60,32 +147,54 @@ export const BattleGame = ({
       setErrorMsg(t.selectScopeError);
       return;
     }
+
+    // 檢查該擂台是否已被佔用
+    const cur = arenaStates[arena.id];
+    if (cur && (cur.count > 0 || cur.isBattling)) {
+      setErrorMsg(`【${arena.name}】剛已被搶先開立或正在對戰中，請選擇其他空房！`);
+      return;
+    }
+
     localStorage.setItem('wutai_player_name', playerName.trim());
-    const code = Math.floor(1000 + Math.random() * 9000).toString();
-    setRoomCode(code);
+    setSelectedArena(arena);
     setIsHost(true);
     battleUnitsRef.current = settings.selectedUnits;
-    joinRoomChannel(code, true);
+    connectToArenaChannel(arena, true);
   };
 
-  const handleJoinRoom = () => {
+  // 加入指定擂台 (成員)
+  const handleJoinArena = (arena) => {
     if (!playerName.trim()) {
       setErrorMsg(t.enterNicknameError);
       return;
     }
-    if (joinCodeInput.trim().length !== 4) {
-      setErrorMsg(t.enter4DigitCodeError);
+
+    // 檢查該擂台是否正在對戰中或已滿 4 人
+    const cur = arenaStates[arena.id];
+    if (cur && cur.isBattling) {
+      setErrorMsg(`【${arena.name}】正在激烈激戰中，已被鎖定！請選擇其他擂台。`);
       return;
     }
+    if (cur && cur.count >= 4) {
+      setErrorMsg(`【${arena.name}】已滿員 (4/4 人)！請選擇其他擂台。`);
+      return;
+    }
+
     localStorage.setItem('wutai_player_name', playerName.trim());
-    setRoomCode(joinCodeInput.trim());
+    setSelectedArena(arena);
     setIsHost(false);
-    joinRoomChannel(joinCodeInput.trim(), false);
+    connectToArenaChannel(arena, false);
   };
 
-  const joinRoomChannel = (code, hostFlag) => {
+  // 連接至特定擂台頻道
+  const connectToArenaChannel = (arena, hostFlag) => {
     setErrorMsg('');
-    const channelName = `battle-room-${code}`;
+
+    // 先清理監控頻道以節省連線
+    monitorChannelsRef.current.forEach(ch => supabase.removeChannel(ch));
+    monitorChannelsRef.current = [];
+
+    const channelName = `battle-${arena.id}`;
     const channel = supabase.channel(channelName, {
       config: { presence: { key: myDeviceIdRef.current } }
     });
@@ -96,31 +205,39 @@ export const BattleGame = ({
         const activeList = Object.values(state).flat();
         setPlayers(activeList);
 
-        // 房主斷線守護：若身為成員且房主離線，安全撤出
+        // 房主衝突驗證：若點開立但頻道內已有其他更早的房主，防止雙房主衝突
+        if (hostFlag) {
+          const otherHosts = activeList.filter(p => p.isHost && p.deviceId !== myDeviceIdRef.current);
+          if (otherHosts.length > 0) {
+            setErrorMsg(`【${arena.name}】已被同學 ${otherHosts[0].name} 搶先開立！`);
+            handleLeaveRoom();
+            return;
+          }
+        }
+
+        // 房主斷線寬限判定 (寬限 3 秒，防止短暫網路抖動誤退)
         if (!hostFlag) {
           const hasHost = activeList.some(p => p.isHost);
           if (!hasHost && activeList.length > 0) {
-            setErrorMsg(t.hostDisconnected);
-            if (channelRef.current) {
-              supabase.removeChannel(channelRef.current);
-              channelRef.current = null;
+            if (!hostDisconnectTimerRef.current) {
+              hostDisconnectTimerRef.current = setTimeout(() => {
+                setErrorMsg('房主已離開房間，對戰結束。');
+                handleLeaveRoom();
+              }, 3000);
             }
-            setView('menu');
+          } else if (hasHost && hostDisconnectTimerRef.current) {
+            clearTimeout(hostDisconnectTimerRef.current);
+            hostDisconnectTimerRef.current = null;
           }
         }
       })
       .on('broadcast', { event: 'host-left' }, () => {
         if (!hostFlag) {
-          setErrorMsg(t.hostDisconnected);
-          if (channelRef.current) {
-            supabase.removeChannel(channelRef.current);
-            channelRef.current = null;
-          }
-          setView('menu');
+          setErrorMsg('房主已退出房間，對戰結束。');
+          handleLeaveRoom();
         }
       })
       .on('broadcast', { event: 'game-start' }, ({ payload }) => {
-        // 全體玩家皆以房主設定的範圍為準！
         if (payload?.selectedUnits && payload.selectedUnits.length > 0) {
           battleUnitsRef.current = payload.selectedUnits;
         }
@@ -131,9 +248,7 @@ export const BattleGame = ({
           soundEngine.wrong();
           setMyHealth(h => {
             const next = Math.max(0, h - 25);
-            if (next <= 0) {
-              handlePlayerDead();
-            }
+            if (next <= 0) handlePlayerDead();
             return next;
           });
         }
@@ -149,6 +264,7 @@ export const BattleGame = ({
             deviceId: myDeviceIdRef.current,
             name: playerName.trim(),
             isHost: hostFlag,
+            status: 'waiting',
             isDead: false
           });
           setView('lobby');
@@ -158,8 +274,18 @@ export const BattleGame = ({
     channelRef.current = channel;
   };
 
-  const handleStartGameBroadcast = () => {
+  // 房主啟動遊戲並廣播 (鎖定房間)
+  const handleStartGameBroadcast = async () => {
     if (channelRef.current) {
+      // 標註為對戰中，鎖定該擂台不接受新成員
+      await channelRef.current.track({
+        deviceId: myDeviceIdRef.current,
+        name: playerName.trim(),
+        isHost: true,
+        status: 'battling',
+        isDead: false
+      });
+
       channelRef.current.send({
         type: 'broadcast',
         event: 'game-start',
@@ -179,7 +305,7 @@ export const BattleGame = ({
   const nextQuestion = () => {
     const units = battleUnitsRef.current;
     let pool = words.filter(w => units.includes(`${w.book}-${w.lesson}`));
-    if (pool.length < 4) pool = words;
+    if (pool.length === 0) pool = words;
 
     const target = pool[Math.floor(Math.random() * pool.length)];
     setCurrentQuestion(target);
@@ -201,11 +327,11 @@ export const BattleGame = ({
     if (opt.isCorrect) {
       soundEngine.correct();
 
-      // 防刷廣播節流保護：限制至少間隔 1.2 秒才送出 1 次突襲，嚴防 Supabase 廣播額度濫用
-      const now = Date.now();
+      // 防刷廣播節流保護：發送前立即更新 performance.now() 時間戳，杜絕連續誤按
+      const now = performance.now();
       const otherPlayers = players.filter(p => p.deviceId !== myDeviceIdRef.current && !p.isDead);
       if (otherPlayers.length > 0 && channelRef.current && now - lastAttackTimeRef.current > 1200) {
-        lastAttackTimeRef.current = now;
+        lastAttackTimeRef.current = now; // 發送前鎖定
         const target = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
         channelRef.current.send({
           type: 'broadcast',
@@ -236,7 +362,7 @@ export const BattleGame = ({
     }
   };
 
-  // 監聽是否只剩最後一人
+  // 監聽是否只剩最後一名生還者
   useEffect(() => {
     if (view === 'playing') {
       const alivePlayers = players.filter(p => !p.isDead);
@@ -247,7 +373,6 @@ export const BattleGame = ({
         soundEngine.win();
         confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
 
-        // 若獲勝者為此裝置，累計勝場至 Supabase (共用 iPad 獨立記錄)
         if (winner.deviceId === myDeviceIdRef.current) {
           const book = battleUnitsRef.current[0]?.split('-')[0] || '1';
           recordBattleWin({ book, name: playerName.trim() });
@@ -272,102 +397,212 @@ export const BattleGame = ({
     };
   }, []);
 
+  // ── 畫面 1：全校三大限定擂台大廳 (Arena Selection) ──
   if (view === 'menu') {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4">
-        <GlassCard className="max-w-md w-full text-center p-8">
-          <div className="w-20 h-20 rounded-3xl bg-rose-500/20 text-rose-500 flex items-center justify-center mx-auto mb-4">
-            <Swords className="w-10 h-10" />
-          </div>
-          <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-2 font-heading">
-            {t.battleTitle}
-          </h2>
-          <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-6">
-            {t.battleDetailNotice}
-          </p>
-
-          <div className="space-y-4 mb-6">
-            <div className="relative">
-              <input
-                type="text"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                placeholder={t.enterNicknamePrompt}
-                className="w-full p-3.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800 text-center font-bold text-slate-800 dark:text-slate-100 outline-none focus:border-rose-500 pr-20"
-              />
-              {playerName && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    localStorage.removeItem('wutai_player_name');
-                    setPlayerName('');
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 rounded-lg text-xs font-black bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-400"
-                  title="切換其他同學"
-                >
-                  換人
-                </button>
-              )}
-            </div>
-
-            {errorMsg && (
-              <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-black text-rose-600 dark:text-rose-400 animate-fadeIn">
-                {errorMsg}
-              </div>
-            )}
-
-            <Button3D variant="rose" size="lg" onClick={handleCreateRoom} className="w-full">
-              {t.createRoomBtn}
-            </Button3D>
-
-            <div className="flex gap-2">
-              <input
-                type="text"
-                maxLength={4}
-                value={joinCodeInput}
-                onChange={(e) => setJoinCodeInput(e.target.value)}
-                placeholder={t.inputRoomCodePlaceholder}
-                className="w-36 p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800 text-center font-black text-lg text-slate-800 dark:text-slate-100 outline-none"
-              />
-              <Button3D variant="blue" size="md" onClick={handleJoinRoom} className="flex-1">
-                {t.joinRoomBtn}
-              </Button3D>
-            </div>
-          </div>
-
-          <Button3D variant="slate" size="sm" onClick={onBack} className="w-full">
+      <div className="w-full max-w-4xl mx-auto px-4 py-4 animate-fadeIn pb-12">
+        {/* 頂部說明卡 */}
+        <div className="flex items-center justify-between mb-4">
+          <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
             {t.backLobby}
           </Button3D>
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-black">
+            <Swords className="w-4 h-4" />
+            全校限定三大即時對戰擂台
+          </div>
+        </div>
+
+        <GlassCard className="p-6 mb-6 text-center">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-2">
+            ⚔️ 星際連線死鬥競技場
+          </h2>
+          <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 max-w-xl mx-auto mb-4">
+            全校最多同時開放 3 組擂台（每組 2~4 人），題目自動同步房主所選範圍！請選擇有空位的擂台開立或加入。
+          </p>
+
+          {/* 學生暱稱輸入列 */}
+          <div className="max-w-md mx-auto relative mb-2">
+            <input
+              type="text"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              placeholder="請輸入你的戰鬥暱稱（例：501小明）"
+              className="w-full p-3.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800 text-center font-black text-slate-800 dark:text-slate-100 outline-none focus:border-rose-500 pr-20 shadow-inner"
+            />
+            {playerName && (
+              <button
+                type="button"
+                onClick={() => {
+                  localStorage.removeItem('wutai_player_name');
+                  setPlayerName('');
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg text-xs font-black bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-300"
+                title="切換其他同學"
+              >
+                換人
+              </button>
+            )}
+          </div>
+
+          {errorMsg && (
+            <div className="max-w-md mx-auto mt-2 p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-black text-rose-600 dark:text-rose-400 flex items-center justify-center gap-1.5 animate-fadeIn">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+          )}
         </GlassCard>
+
+        {/* ── 三大固定擂台狀態卡 ── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {FIXED_ARENAS.map((arena) => {
+            const state = arenaStates[arena.id] || { count: 0, isBattling: false, hostName: '', playerNames: [] };
+            const isEmpty = state.count === 0 && !state.isBattling;
+            const isWaiting = state.count > 0 && state.count < 4 && !state.isBattling;
+            const isFullOrBattling = state.isBattling || state.count >= 4;
+
+            return (
+              <GlassCard
+                key={arena.id}
+                className={`p-5 flex flex-col justify-between border-2 transition-all relative overflow-hidden ${arena.border} ${
+                  isFullOrBattling ? 'opacity-85' : 'hover:scale-[1.02]'
+                }`}
+              >
+                {/* 頂部標籤與房號 */}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-heading font-black text-base text-slate-800 dark:text-slate-100">
+                    {arena.name}
+                  </span>
+                  <span className="font-mono text-xs font-black px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300">
+                    PIN: {arena.code}
+                  </span>
+                </div>
+
+                {/* 狀態卡內容 */}
+                <div className="my-3 min-h-[90px] flex flex-col justify-center">
+                  {isEmpty && (
+                    <div className="text-center">
+                      <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-xs font-black mb-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> 空房可開立
+                      </div>
+                      <p className="text-xs font-bold text-slate-400">目前尚無同學使用，點下方開立擂台</p>
+                    </div>
+                  )}
+
+                  {isWaiting && (
+                    <div className="text-center">
+                      <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 text-xs font-black mb-1">
+                        <Users className="w-3.5 h-3.5" /> 等待加入中 ({state.count}/4 人)
+                      </div>
+                      <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">
+                        房主：<strong className="text-amber-600 dark:text-amber-400">{state.hostName}</strong>
+                      </p>
+                      <p className="text-[11px] text-slate-400 truncate">
+                        成員：{state.playerNames.join(', ')}
+                      </p>
+                    </div>
+                  )}
+
+                  {isFullOrBattling && (
+                    <div className="text-center">
+                      <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 text-xs font-black mb-1">
+                        <Lock className="w-3.5 h-3.5" /> 激戰進行中 (已鎖定)
+                      </div>
+                      <p className="text-[11px] font-bold text-slate-500 mt-1">
+                        對戰中：{state.playerNames.slice(0, 4).join('、')}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* 底部操作按鈕 */}
+                <div className="mt-3">
+                  {isEmpty && (
+                    <Button3D
+                      variant={arena.color === 'rose' ? 'rose' : arena.color === 'emerald' ? 'emerald' : 'blue'}
+                      size="md"
+                      onClick={() => handleHostArena(arena)}
+                      className="w-full"
+                    >
+                      開立此擂台
+                    </Button3D>
+                  )}
+
+                  {isWaiting && (
+                    <Button3D
+                      variant="amber"
+                      size="md"
+                      onClick={() => handleJoinArena(arena)}
+                      className="w-full"
+                    >
+                      立即加入 ({state.count}/4)
+                    </Button3D>
+                  )}
+
+                  {isFullOrBattling && (
+                    <Button3D
+                      variant="slate"
+                      size="md"
+                      disabled
+                      className="w-full cursor-not-allowed opacity-60"
+                    >
+                      對戰中請稍候
+                    </Button3D>
+                  )}
+                </div>
+              </GlassCard>
+            );
+          })}
+        </div>
       </div>
     );
   }
 
+  // ── 畫面 2：擂台等待備戰室 (Waiting Room) ──
   if (view === 'lobby') {
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
+      window.location.origin + '?join=' + selectedArena.code
+    )}`;
+
     return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4">
-        <GlassCard className="max-w-md w-full text-center p-8">
-          <span className="text-xs font-black px-3 py-1 rounded-full bg-rose-100 text-rose-700">
-            {t.battleWaitingRoom}
-          </span>
-          <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 font-mono tracking-widest my-3">
-            {roomCode}
+      <div className="min-h-[75vh] flex items-center justify-center p-4">
+        <GlassCard className="max-w-md w-full text-center p-6 sm:p-8">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-black px-3 py-1 rounded-full bg-rose-100 text-rose-700">
+              {selectedArena.name} 備戰中
+            </span>
+            <span className="font-mono text-xs font-black text-slate-400">
+              {players.length}/4 人
+            </span>
+          </div>
+
+          <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 font-mono tracking-widest my-2">
+            {selectedArena.code}
           </h2>
-          <p className="text-xs font-bold text-slate-500 mb-6">
-            {t.roomCodeHint}
+          <p className="text-xs font-bold text-slate-500 mb-4">
+            請同學選擇「{selectedArena.name}」或輸入 PIN 碼進入
           </p>
 
+          {/* QR Code 掃碼加入區 */}
+          <div className="flex justify-center mb-4">
+            <div className="p-3 bg-white rounded-2xl shadow-md border border-slate-200">
+              <img
+                src={qrUrl}
+                alt="掃描加入房間"
+                className="w-32 h-32 object-contain mx-auto"
+              />
+              <span className="text-[10px] font-bold text-slate-400 block mt-1">iPad 相機掃碼直接加入</span>
+            </div>
+          </div>
+
+          {/* 已加入成員名單 */}
           <div className="space-y-2 mb-6">
-            <p className="text-xs font-black text-slate-400 text-left">
-              {t.connectedPlayers.replace('{count}', players.length)}
-            </p>
             {players.map((p, idx) => (
               <div
                 key={idx}
                 className="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between font-black text-sm text-slate-800 dark:text-slate-100"
               >
-                <span>{p.name} {p.deviceId === myDeviceIdRef.current ? t.youTag : ''}</span>
-                {p.isHost && <span className="text-xs text-amber-500 font-bold">{t.hostTag}</span>}
+                <span>{p.name} {p.deviceId === myDeviceIdRef.current ? '(你)' : ''}</span>
+                {p.isHost && <span className="text-xs text-amber-500 font-bold">房主 👑</span>}
               </div>
             ))}
           </div>
@@ -376,47 +611,49 @@ export const BattleGame = ({
             <Button3D
               variant="rose"
               size="lg"
-              disabled={players.length < 1}
+              disabled={players.length < 2}
               onClick={handleStartGameBroadcast}
               className="w-full mb-3"
               icon={Play}
             >
-              {t.startBattleBtn}
+              {players.length < 2 ? '等待至少 2 人加入...' : '開戰！(鎖定擂台)'}
             </Button3D>
           ) : (
-            <p className="text-xs font-black text-slate-500 animate-pulse mb-3">
-              {t.waitingHostStart}
+            <p className="text-xs font-black text-slate-500 animate-pulse mb-4">
+              等待房主按下開戰...
             </p>
           )}
 
           <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} className="w-full">
-            {t.leaveRoomBtn}
+            退出擂台
           </Button3D>
         </GlassCard>
       </div>
     );
   }
 
+  // ── 畫面 3：對戰勝利結算 (Result) ──
   if (view === 'result') {
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-4 animate-fadeIn">
         <GlassCard className="max-w-md w-full text-center p-8">
           <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-3 animate-bounce" />
           <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
-            {t.battleChampion}
+            死鬥大贏家！
           </h2>
           <p className="text-xl font-black text-amber-500 my-4">
-            {t.championSurvived.replace('{winner}', winnerName)}
+            👑 {winnerName} 活到了最後！
           </p>
 
           <Button3D variant="slate" size="lg" onClick={handleLeaveRoom} className="w-full">
-            {t.backLobby}
+            返回擂台大廳
           </Button3D>
         </GlassCard>
       </div>
     );
   }
 
+  // ── 畫面 4：即時對戰進行中 (Playing) ──
   return (
     <div className="w-full max-w-3xl mx-auto px-4 py-4 flex flex-col items-center">
       {/* 頂部血條與防線 */}
@@ -424,11 +661,11 @@ export const BattleGame = ({
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
             <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} icon={ArrowLeft}>
-              {t.leaveRoomBtn}
+              退出擂台
             </Button3D>
             <span className="font-heading font-black text-sm flex items-center gap-1.5 text-slate-800 dark:text-slate-100">
               <Shield className="w-4 h-4 text-blue-500" />
-              {t.shieldIntegrity}
+              防衛線安全度 ({selectedArena.name})
             </span>
           </div>
           <span className={`font-black text-sm ${myHealth < 30 ? 'text-rose-500 animate-pulse' : 'text-emerald-500'}`}>
@@ -447,16 +684,16 @@ export const BattleGame = ({
 
       {isDead ? (
         <GlassCard className="w-full text-center p-8 bg-rose-950/80 text-white">
-          <h3 className="text-3xl font-black font-heading mb-2">{t.shieldBreached}</h3>
+          <h3 className="text-3xl font-black font-heading mb-2">防線已失守！</h3>
           <p className="text-sm font-bold opacity-80">
-            {t.spectating}
+            你已戰敗，觀戰中...
           </p>
         </GlassCard>
       ) : (
         currentQuestion && (
           <GlassCard className="w-full text-center p-8">
             <span className="text-xs font-bold text-slate-400 mb-2 block">
-              {t.attackInstruction}
+              快速看中文選出正確英文發動突襲：
             </span>
             <h2 className="text-4xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 font-heading mb-8">
               {currentQuestion.zh}

@@ -1,6 +1,6 @@
-// ── 霧臺國小 官方榮譽獎狀高解析度 Canvas 繪製與匯出引擎 ──
+// ── 霧臺國小 官方榮譽獎狀高解析度 Canvas 繪製與匯出引擎 (300 DPI 印刷級) ──
 
-// 計算民國年日期字串
+// 計算民國年日期字串 (依據當前系統年份動態計算)
 export const getROCDateString = (date = new Date()) => {
   const rocYear = date.getFullYear() - 1911;
   const month = date.getMonth() + 1;
@@ -8,13 +8,13 @@ export const getROCDateString = (date = new Date()) => {
   return `中華民國 ${rocYear} 年 ${month} 月 ${day} 日`;
 };
 
-// 依據答對率給予評語與勳章等級
+// 依據答對率給予客觀、精確之評語與勳章等級
 export const getAccuracyLevel = (accuracyRate) => {
   const acc = Math.round(accuracyRate);
   if (acc >= 100) {
     return {
-      title: '登峰造極・雙語小博士',
-      subtitle: 'Flawless Master • 完美無瑕全對',
+      title: '本次全對・單字挑戰達人',
+      subtitle: 'Flawless Performance • 完美全對通關',
       color: '#d97706', // amber-600
       badge: '👑'
     };
@@ -27,8 +27,8 @@ export const getAccuracyLevel = (accuracyRate) => {
     };
   } else if (acc >= 80) {
     return {
-      title: '勇往直前・學習進步王',
-      subtitle: 'Great Effort & Focus • 積極專注挑戰',
+      title: '認真練習・穩健達標',
+      subtitle: 'Great Focus • 穩定發揮實力',
       color: '#2563eb', // blue-600
       badge: '🚀'
     };
@@ -49,7 +49,7 @@ export const getAccuracyLevel = (accuracyRate) => {
   }
 };
 
-// 產生高解析度獎狀圖片 Data URL (1600 x 1131, 接近 A4 比例 1.414:1)
+// 產生 300 DPI 印刷級超高解析度獎狀圖片 Data URL (2480 x 1754 px，標準 A4 橫向)
 export const generateCertificateDataUrl = async ({
   studentName = '優秀學生',
   rangeText = '全冊精選單元',
@@ -57,8 +57,8 @@ export const generateCertificateDataUrl = async ({
   correctCount = 18,
   accuracy = 90
 }) => {
-  const width = 1600;
-  const height = 1131;
+  const width = 2480;
+  const height = 1754;
 
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -66,64 +66,62 @@ export const generateCertificateDataUrl = async ({
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
 
-  // 1. 底色：雅緻象牙金米白漸層
+  // 1. 底色：雅緻象牙金米白細緻漸層
   const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-  bgGrad.addColorStop(0, '#fefdf9');
-  bgGrad.addColorStop(0.5, '#fcfaf2');
-  bgGrad.addColorStop(1, '#fbf8eb');
+  bgGrad.addColorStop(0, '#fefefe');
+  bgGrad.addColorStop(0.5, '#faf8f2');
+  bgGrad.addColorStop(1, '#f7f4ea');
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, width, height);
 
-  // 2. 燙金多重飾紋邊框
+  // 2. 燙金多重飾紋邊框 (300 DPI 精準比例)
   ctx.save();
   // 外框金色粗線
   ctx.strokeStyle = '#b48a3c';
-  ctx.lineWidth = 14;
-  ctx.strokeRect(36, 36, width - 72, height - 72);
+  ctx.lineWidth = 18;
+  ctx.strokeRect(55, 55, width - 110, height - 110);
 
   // 中間細線
   ctx.strokeStyle = '#dfc378';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(52, 52, width - 104, height - 104);
+  ctx.lineWidth = 5;
+  ctx.strokeRect(80, 80, width - 160, height - 160);
 
   // 內框古典細線
   ctx.strokeStyle = '#b48a3c';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(60, 60, width - 120, height - 120);
+  ctx.lineWidth = 3;
+  ctx.strokeRect(92, 92, width - 184, height - 184);
 
-  // 四個角落古典花角裝飾
-  const cornerSize = 40;
+  // 四個角落幾何花角裝飾
   const corners = [
-    [64, 64],
-    [width - 64, 64],
-    [64, height - 64],
-    [width - 64, height - 64]
+    [100, 100],
+    [width - 100, 100],
+    [100, height - 100],
+    [width - 100, height - 100]
   ];
   ctx.fillStyle = '#b48a3c';
   corners.forEach(([cx, cy]) => {
     ctx.beginPath();
-    ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+    ctx.arc(cx, cy, 12, 0, Math.PI * 2);
     ctx.fill();
   });
   ctx.restore();
 
   // 3. 載入校徽 (public/logo.jpg)
   try {
-    const logoImg = await new Promise((resolve, reject) => {
+    const logoImg = await new Promise((resolve) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => resolve(img);
-      img.onerror = () => resolve(null); // 若找不到圖片安全回退
+      img.onerror = () => resolve(null);
       img.src = '/logo.jpg';
     });
 
     if (logoImg) {
-      const logoW = 100;
-      const logoH = 100;
+      const logoW = 150;
+      const logoH = 150;
       const logoX = width / 2 - logoW / 2;
-      const logoY = 90;
+      const logoY = 140;
 
-      // 圓形裁切校徽並帶柔和金框
       ctx.save();
       ctx.beginPath();
       ctx.arc(width / 2, logoY + logoH / 2, logoW / 2, 0, Math.PI * 2);
@@ -133,126 +131,123 @@ export const generateCertificateDataUrl = async ({
 
       ctx.save();
       ctx.beginPath();
-      ctx.arc(width / 2, logoY + logoH / 2, logoW / 2 + 3, 0, Math.PI * 2);
+      ctx.arc(width / 2, logoY + logoH / 2, logoW / 2 + 5, 0, Math.PI * 2);
       ctx.strokeStyle = '#b48a3c';
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 6;
       ctx.stroke();
       ctx.restore();
     }
-  } catch (e) {
-    // 忽略校徽載入錯誤
-  }
+  } catch (e) {}
 
   // 4. 學校抬頭
   ctx.textAlign = 'center';
   ctx.fillStyle = '#451a03'; // amber-950
-  ctx.font = 'bold 36px "PingFang TC", "Microsoft JhengHei", sans-serif';
-  ctx.fillText('屏東縣霧臺鄉霧臺國民小學', width / 2, 230);
+  ctx.font = 'bold 54px "PingFang TC", "Microsoft JhengHei", sans-serif';
+  ctx.fillText('屏東縣霧臺鄉霧臺國民小學', width / 2, 350);
 
   ctx.fillStyle = '#78350f';
-  ctx.font = '600 20px "PingFang TC", sans-serif';
-  ctx.fillText('Pingtung County Wutai Elementary School', width / 2, 260);
+  ctx.font = '600 30px "PingFang TC", sans-serif';
+  ctx.fillText('Pingtung County Wutai Elementary School', width / 2, 400);
 
-  // 5. 獎狀大大字主標題 (附燙金立體陰影)
+  // 5. 獎狀主標題
   ctx.save();
   ctx.shadowColor = 'rgba(180, 138, 60, 0.4)';
-  ctx.shadowBlur = 12;
-  ctx.shadowOffsetX = 2;
-  ctx.shadowOffsetY = 3;
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetX = 3;
+  ctx.shadowOffsetY = 4;
   ctx.fillStyle = '#854d0e'; // dark gold
-  ctx.font = '900 76px "Songti TC", "Biaukai", "PingFang TC", serif';
-  ctx.fillText('榮  譽  獎  狀', width / 2, 360);
+  ctx.font = '900 115px "Songti TC", "Biaukai", "PingFang TC", serif';
+  ctx.fillText('榮  譽  獎  狀', width / 2, 550);
   ctx.restore();
 
   ctx.fillStyle = '#a16207';
-  ctx.font = 'bold 22px "PingFang TC", sans-serif';
-  ctx.fillText('— CERTIFICATE OF ACHIEVEMENT —', width / 2, 396);
+  ctx.font = 'bold 34px "PingFang TC", sans-serif';
+  ctx.fillText('— CERTIFICATE OF ACHIEVEMENT —', width / 2, 605);
 
   // 6. 受獎人抬頭
   ctx.fillStyle = '#1e293b';
-  ctx.font = 'bold 44px "PingFang TC", "Microsoft JhengHei", sans-serif';
-  ctx.fillText(`恭 喜   ${studentName || '優秀'}   同 學`, width / 2, 480);
+  ctx.font = 'bold 66px "PingFang TC", "Microsoft JhengHei", sans-serif';
+  ctx.fillText(`恭 喜   ${studentName || '優秀'}   同 學`, width / 2, 730);
 
   // 7. 內文表揚語句
   ctx.fillStyle = '#475569';
-  ctx.font = 'normal 26px "PingFang TC", "Microsoft JhengHei", sans-serif';
-  ctx.fillText('參加校園英語星際學習宇宙自主挑戰，表現優異，特頒此狀以資表揚。', width / 2, 535);
+  ctx.font = 'normal 38px "PingFang TC", "Microsoft JhengHei", sans-serif';
+  ctx.fillText('參加校園英語星際學習宇宙自主挑戰，表現優異，特頒此狀以資表揚。', width / 2, 815);
 
   // 8. 成果評估便當框
-  const cardX = 260;
-  const cardY = 575;
-  const cardW = width - 520;
-  const cardH = 260;
+  const cardX = 380;
+  const cardY = 880;
+  const cardW = width - 760;
+  const cardH = 390;
 
   ctx.save();
   ctx.fillStyle = '#ffffff';
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.06)';
-  ctx.shadowBlur = 16;
-  ctx.shadowOffsetY = 6;
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.05)';
+  ctx.shadowBlur = 24;
+  ctx.shadowOffsetY = 8;
   ctx.fillRect(cardX, cardY, cardW, cardH);
 
   ctx.strokeStyle = '#e2e8f0';
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.strokeRect(cardX, cardY, cardW, cardH);
   ctx.restore();
 
   // 成果細節項目文字
   ctx.textAlign = 'left';
   ctx.fillStyle = '#334155';
-  ctx.font = 'bold 28px "PingFang TC", sans-serif';
-  ctx.fillText(`📘 練習範圍：`, cardX + 45, cardY + 65);
+  ctx.font = 'bold 42px "PingFang TC", sans-serif';
+  ctx.fillText(`📘 練習範圍：`, cardX + 70, cardY + 95);
 
   ctx.fillStyle = '#0f172a';
-  ctx.font = 'bold 28px "PingFang TC", sans-serif';
-  // 範圍名稱若過長則截斷
+  ctx.font = 'bold 42px "PingFang TC", sans-serif';
   const trimmedRange = rangeText.length > 25 ? rangeText.substring(0, 24) + '...' : rangeText;
-  ctx.fillText(trimmedRange, cardX + 215, cardY + 65);
+  ctx.fillText(trimmedRange, cardX + 325, cardY + 95);
 
   ctx.fillStyle = '#334155';
-  ctx.fillText(`🎯 挑戰成果：`, cardX + 45, cardY + 130);
+  ctx.fillText(`🎯 挑戰成果：`, cardX + 70, cardY + 195);
 
   ctx.fillStyle = '#0f172a';
-  ctx.fillText(`共作答 ${totalCount} 題，答對 ${correctCount} 題`, cardX + 215, cardY + 130);
+  ctx.fillText(`共作答 ${totalCount} 題，答對 ${correctCount} 題`, cardX + 325, cardY + 195);
 
   ctx.fillStyle = '#334155';
-  ctx.fillText(`📈 整體答對率：`, cardX + 45, cardY + 195);
+  ctx.fillText(`📈 整體表現：`, cardX + 70, cardY + 295);
 
   const level = getAccuracyLevel(accuracy);
   ctx.fillStyle = level.color;
-  ctx.font = '900 36px "PingFang TC", sans-serif';
-  ctx.fillText(`${Math.round(accuracy)}%  ${level.badge} ${level.title}`, cardX + 250, cardY + 197);
+  ctx.font = '900 52px "PingFang TC", sans-serif';
+  ctx.fillText(`${Math.round(accuracy)}%  ${level.badge} ${level.title}`, cardX + 375, cardY + 298);
 
   // 9. 頒獎印鑑戳記與中華民國官方日期
   ctx.textAlign = 'right';
   ctx.fillStyle = '#334155';
-  ctx.font = 'bold 26px "Songti TC", "PingFang TC", serif';
-  ctx.fillText(getROCDateString(), width - 260, 940);
+  ctx.font = 'bold 38px "Songti TC", "PingFang TC", serif';
+  ctx.fillText(getROCDateString(), width - 380, 1460);
 
-  ctx.font = 'bold 28px "PingFang TC", serif';
-  ctx.fillText('屏東縣霧臺國民小學 教務處', width - 260, 990);
+  ctx.font = 'bold 42px "PingFang TC", serif';
+  ctx.fillText('屏東縣霧臺國民小學 教務處', width - 380, 1530);
 
-  // 10. 紅色官方認證印鑑戳記章
-  const sealX = width - 220;
-  const sealY = 960;
+  // 10. 紅色官方認證印鑑戳記章 (文字調整為學習紀念章)
+  const sealX = width - 310;
+  const sealY = 1490;
   ctx.save();
   ctx.translate(sealX, sealY);
-  ctx.rotate(-0.06); // 微微傾斜模擬蓋章真實質感
+  ctx.rotate(-0.06);
 
-  ctx.strokeStyle = '#dc2626'; // 印泥紅
-  ctx.lineWidth = 5;
-  ctx.strokeRect(-60, -60, 120, 120);
+  ctx.strokeStyle = '#dc2626';
+  ctx.lineWidth = 7;
+  ctx.strokeRect(-90, -90, 180, 180);
 
   ctx.strokeStyle = '#ef4444';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(-52, -52, 104, 104);
+  ctx.lineWidth = 3;
+  ctx.strokeRect(-78, -78, 156, 156);
 
   ctx.textAlign = 'center';
   ctx.fillStyle = '#dc2626';
-  ctx.font = '900 24px "Songti TC", "Biaukai", serif';
-  ctx.fillText('霧臺國小', 0, -15);
-  ctx.fillText('學習認證', 0, 18);
-  ctx.font = 'bold 15px sans-serif';
-  ctx.fillText('VERIFIED', 0, 42);
+  ctx.font = '900 36px "Songti TC", "Biaukai", serif';
+  ctx.fillText('霧臺國小', 0, -22);
+  ctx.fillText('學習紀念', 0, 26);
+  ctx.font = 'bold 22px sans-serif';
+  ctx.fillText('ENGLISH', 0, 62);
   ctx.restore();
 
   return canvas.toDataURL('image/png');
