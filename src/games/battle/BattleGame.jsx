@@ -33,13 +33,21 @@ export const BattleGame = ({
   const myDeviceIdRef = useRef(getDeviceId());
   const battleUnitsRef = useRef(settings?.selectedUnits || []);
 
+  const handleLeaveRoom = () => {
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
+    setView('menu');
+  };
+
   const handleCreateRoom = () => {
     if (!playerName.trim()) {
-      setErrorMsg('請先輸入玩家暱稱！');
+      setErrorMsg(t.enterNicknameError);
       return;
     }
     if (!settings.selectedUnits || settings.selectedUnits.length === 0) {
-      setErrorMsg('房主請先回到主畫面勾選對戰複習範圍！');
+      setErrorMsg(t.selectScopeError);
       return;
     }
     localStorage.setItem('wutai_player_name', playerName.trim());
@@ -52,11 +60,11 @@ export const BattleGame = ({
 
   const handleJoinRoom = () => {
     if (!playerName.trim()) {
-      setErrorMsg('請先輸入玩家暱稱！');
+      setErrorMsg(t.enterNicknameError);
       return;
     }
     if (joinCodeInput.trim().length !== 4) {
-      setErrorMsg('請輸入 4 位數房號！');
+      setErrorMsg(t.enter4DigitCodeError);
       return;
     }
     localStorage.setItem('wutai_player_name', playerName.trim());
@@ -227,7 +235,7 @@ export const BattleGame = ({
             {t.battleTitle}
           </h2>
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-6">
-            2~4 人區網對戰，全員採用房主設定的單字範圍！
+            {t.battleDetailNotice}
           </p>
 
           <div className="space-y-4 mb-6">
@@ -235,14 +243,14 @@ export const BattleGame = ({
               type="text"
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="請輸入你的戰鬥暱稱"
+              placeholder={t.enterNicknamePrompt}
               className="w-full p-3.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800 text-center font-bold text-slate-800 dark:text-slate-100 outline-none focus:border-rose-500"
             />
 
             {errorMsg && <p className="text-xs font-black text-rose-500">{errorMsg}</p>}
 
             <Button3D variant="rose" size="lg" onClick={handleCreateRoom} className="w-full">
-              建立新房間 (成為房主)
+              {t.createRoomBtn}
             </Button3D>
 
             <div className="flex gap-2">
@@ -251,11 +259,11 @@ export const BattleGame = ({
                 maxLength={4}
                 value={joinCodeInput}
                 onChange={(e) => setJoinCodeInput(e.target.value)}
-                placeholder="4 位數房號"
+                placeholder={t.inputRoomCodePlaceholder}
                 className="w-36 p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800 text-center font-black text-lg text-slate-800 dark:text-slate-100 outline-none"
               />
               <Button3D variant="blue" size="md" onClick={handleJoinRoom} className="flex-1">
-                加入房間
+                {t.joinRoomBtn}
               </Button3D>
             </div>
           </div>
@@ -273,26 +281,26 @@ export const BattleGame = ({
       <div className="min-h-[70vh] flex items-center justify-center p-4">
         <GlassCard className="max-w-md w-full text-center p-8">
           <span className="text-xs font-black px-3 py-1 rounded-full bg-rose-100 text-rose-700">
-            戰備等待室
+            {t.battleWaitingRoom}
           </span>
           <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 font-mono tracking-widest my-3">
             {roomCode}
           </h2>
           <p className="text-xs font-bold text-slate-500 mb-6">
-            請其他同學輸入此 4 位數房號加入 (題目將自動同步房主範圍)
+            {t.roomCodeHint}
           </p>
 
           <div className="space-y-2 mb-6">
             <p className="text-xs font-black text-slate-400 text-left">
-              已連線玩家 ({players.length}/4)：
+              {t.connectedPlayers.replace('{count}', players.length)}
             </p>
             {players.map((p, idx) => (
               <div
                 key={idx}
                 className="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between font-black text-sm text-slate-800 dark:text-slate-100"
               >
-                <span>{p.name} {p.deviceId === myDeviceIdRef.current ? '(你)' : ''}</span>
-                {p.isHost && <span className="text-xs text-amber-500 font-bold">房主 👑</span>}
+                <span>{p.name} {p.deviceId === myDeviceIdRef.current ? t.youTag : ''}</span>
+                {p.isHost && <span className="text-xs text-amber-500 font-bold">{t.hostTag}</span>}
               </div>
             ))}
           </div>
@@ -303,16 +311,20 @@ export const BattleGame = ({
               size="lg"
               disabled={players.length < 1}
               onClick={handleStartGameBroadcast}
-              className="w-full"
+              className="w-full mb-3"
               icon={Play}
             >
-              開戰！
+              {t.startBattleBtn}
             </Button3D>
           ) : (
-            <p className="text-xs font-black text-slate-500 animate-pulse">
-              等待房主按下開始...
+            <p className="text-xs font-black text-slate-500 animate-pulse mb-3">
+              {t.waitingHostStart}
             </p>
           )}
+
+          <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} className="w-full">
+            {t.leaveRoomBtn}
+          </Button3D>
         </GlassCard>
       </div>
     );
@@ -324,13 +336,13 @@ export const BattleGame = ({
         <GlassCard className="max-w-md w-full text-center p-8">
           <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-3 animate-bounce" />
           <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
-            死鬥大贏家！
+            {t.battleChampion}
           </h2>
           <p className="text-xl font-black text-amber-500 my-4">
-            👑 {winnerName} 活到了最後！
+            {t.championSurvived.replace('{winner}', winnerName)}
           </p>
 
-          <Button3D variant="slate" size="lg" onClick={onBack} className="w-full">
+          <Button3D variant="slate" size="lg" onClick={handleLeaveRoom} className="w-full">
             {t.backLobby}
           </Button3D>
         </GlassCard>
@@ -341,12 +353,17 @@ export const BattleGame = ({
   return (
     <div className="w-full max-w-3xl mx-auto px-4 py-4 flex flex-col items-center">
       {/* 頂部血條與防線 */}
-      <div className="w-full mb-6 p-4 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+      <div className="w-full mb-4 p-4 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
         <div className="flex justify-between items-center mb-2">
-          <span className="font-heading font-black text-sm flex items-center gap-1.5 text-slate-800 dark:text-slate-100">
-            <Shield className="w-4 h-4 text-blue-500" />
-            我的防衛線安全度
-          </span>
+          <div className="flex items-center gap-2">
+            <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} icon={ArrowLeft}>
+              {t.leaveRoomBtn}
+            </Button3D>
+            <span className="font-heading font-black text-sm flex items-center gap-1.5 text-slate-800 dark:text-slate-100">
+              <Shield className="w-4 h-4 text-blue-500" />
+              {t.shieldIntegrity}
+            </span>
+          </div>
           <span className={`font-black text-sm ${myHealth < 30 ? 'text-rose-500 animate-pulse' : 'text-emerald-500'}`}>
             {myHealth}%
           </span>
@@ -363,16 +380,16 @@ export const BattleGame = ({
 
       {isDead ? (
         <GlassCard className="w-full text-center p-8 bg-rose-950/80 text-white">
-          <h3 className="text-3xl font-black font-heading mb-2">防線已失守！</h3>
+          <h3 className="text-3xl font-black font-heading mb-2">{t.shieldBreached}</h3>
           <p className="text-sm font-bold opacity-80">
-            你已戰敗，觀戰中...
+            {t.spectating}
           </p>
         </GlassCard>
       ) : (
         currentQuestion && (
           <GlassCard className="w-full text-center p-8">
             <span className="text-xs font-bold text-slate-400 mb-2 block">
-              快速看中文選出正確英文發動突襲：
+              {t.attackInstruction}
             </span>
             <h2 className="text-4xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 font-heading mb-8">
               {currentQuestion.zh}

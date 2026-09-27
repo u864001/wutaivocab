@@ -194,14 +194,14 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
 
         <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 font-heading flex items-center gap-2">
           <Trophy className="w-8 h-8 text-amber-500 animate-bounce" />
-          全校英雄榮譽榜
+          {t.heroHallTitle}
         </h2>
 
         <button
           onClick={() => loadAllBoards(true)}
           disabled={isLoading}
           className="p-2.5 rounded-2xl bg-white/80 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:scale-105 active:scale-95 transition-transform"
-          title="重新整理"
+          title={t.refresh}
         >
           <RotateCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
         </button>
@@ -214,7 +214,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <span className="text-xs font-black text-slate-700 dark:text-slate-200">
-              選擇競賽冊別：
+              {t.selectBookLabel}
             </span>
             <select
               value={selectedBook}
@@ -223,7 +223,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
             >
               {availableBooks.map((b) => (
                 <option key={b} value={b}>
-                  {isNaN(b) ? b : `第 ${b} 冊`}
+                  {isNaN(b) ? b : t.bookN.replace('{b}', b)}
                 </option>
               ))}
             </select>
@@ -233,7 +233,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <span className="text-xs font-black text-slate-700 dark:text-slate-200">
-              競賽週次：
+              {t.compWeekLabel}
             </span>
             <select
               value={selectedWeek}
@@ -245,7 +245,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
                 if (w < 1) return null;
                 return (
                   <option key={w} value={w}>
-                    第 {w} 週 {w === currentWeek ? '(本週進行中)' : ''}
+                    {t.weekN.replace('{w}', w)} {w === currentWeek ? t.currentWeekTag : ''}
                   </option>
                 );
               })}
@@ -275,7 +275,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
                         {mode.label}
                       </h3>
                       <span className="text-[10px] font-bold text-slate-400">
-                        Top 5 本週風雲榜
+                        {t.top5WeeklyBadge}
                       </span>
                     </div>
                   </div>
@@ -298,11 +298,11 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
                 <div className="space-y-2 mb-4">
                   {isLoading && !boardData[activeKey] ? (
                     <div className="py-8 text-center text-xs font-bold text-slate-400">
-                      載入中...
+                      ...
                     </div>
                   ) : ranks.length === 0 ? (
                     <div className="py-8 text-center text-xs font-bold text-slate-400">
-                      尚無挑戰者登錄
+                      {t.noContenders}
                     </div>
                   ) : (
                     ranks.map((r, idx) => (
@@ -332,7 +332,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
                             {r.score}
                           </span>
                           <span className="text-[10px] text-slate-400 ml-1">
-                            {mode.unit}
+                            {mode.unit === '勝' ? t.unitWins : t.unitPoints}
                           </span>
                         </div>
                       </div>
@@ -346,7 +346,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
                 onClick={() => setModalModeKey(activeKey)}
                 className="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-700/70 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-black flex items-center justify-center gap-1 transition-colors"
               >
-                <span>查看完整前 50 名</span>
+                <span>{t.viewTop50Btn}</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </GlassCard>
@@ -363,7 +363,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
               <div className="flex items-center gap-2">
                 <Medal className="w-6 h-6 text-amber-500" />
                 <h3 className="text-xl font-black font-heading text-slate-800 dark:text-slate-100">
-                  {modalInfo.title} 前 50 名
+                  {t.top50ModalTitle.replace('{title}', modalInfo.title)}
                 </h3>
               </div>
               <button
@@ -375,14 +375,14 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
             </div>
 
             <p className="text-xs font-bold text-slate-400 my-2">
-              第 {selectedBook} 冊 • 第 {selectedWeek} 週 • 每位同學僅取最佳成績
+              {t.top50ModalSubtitle.replace('{book}', selectedBook).replace('{week}', selectedWeek)}
             </p>
 
             {/* 滾動榜單 */}
             <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 pr-1 my-2">
               {activeModalRanks.length === 0 ? (
                 <div className="py-12 text-center text-slate-400 font-bold text-sm">
-                  尚無挑戰者，快來搶第一！
+                  {t.noContenders}
                 </div>
               ) : (
                 activeModalRanks.map((r, idx) => (
@@ -408,7 +408,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
                         </span>
                         {r.time > 0 && (
                           <span className="text-[10px] text-slate-400 block">
-                            耗時：{r.time} 秒
+                            {t.timeSpentSec.replace('{time}', r.time)}
                           </span>
                         )}
                       </div>
@@ -419,7 +419,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
                         {r.score}
                       </span>
                       <span className="text-xs text-slate-400 ml-1">
-                        {modalInfo.unit}
+                        {modalInfo.unit === '勝' ? t.unitWins : t.unitPoints}
                       </span>
                     </div>
                   </div>
@@ -434,7 +434,7 @@ export const LeaderboardView = ({ onBack, words = [] }) => {
               onClick={() => setModalModeKey(null)}
               className="w-full mt-2"
             >
-              關閉榜單
+              {t.closeBoardBtn}
             </Button3D>
           </GlassCard>
         </div>

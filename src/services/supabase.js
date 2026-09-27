@@ -67,9 +67,32 @@ export const getWeekNumber = () => {
   return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 };
 
-// ── 載入所有單字 ──
-export const fetchWordsFromDb = async () => {
+// ── 題庫快取機制 (大幅節省 Supabase 免費額度與連線次數) ──
+const WORDS_CACHE_KEY = 'wutai_words_cache_v3';
+const WORDS_CACHE_TIME_KEY = 'wutai_words_cache_time_v3';
+const WORDS_CACHE_TTL = 30 * 60 * 1000; // 30 分鐘快取
+
+export const invalidateWordsCache = () => {
   try {
+    localStorage.removeItem(WORDS_CACHE_KEY);
+    localStorage.removeItem(WORDS_CACHE_TIME_KEY);
+  } catch (e) {}
+};
+
+// ── 載入所有單字 (優先讀取本機快取，過期或強制才連線 Supabase) ──
+export const fetchWordsFromDb = async (force = false) => {
+  try {
+    if (!force) {
+      const cached = localStorage.getItem(WORDS_CACHE_KEY);
+      const cachedTime = localStorage.getItem(WORDS_CACHE_TIME_KEY);
+      if (cached && cachedTime && (Date.now() - parseInt(cachedTime, 10) < WORDS_CACHE_TTL)) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    }
+
     const { data, error } = await supabase
       .from('words')
       .select('*')
@@ -79,11 +102,27 @@ export const fetchWordsFromDb = async () => {
 
     if (error || !data || data.length === 0) {
       console.warn('Supabase 題庫讀取回退至備用題庫:', error?.message);
+      // 若連線失敗但本機有歷史快取，優先使用歷史快取
+      const cached = localStorage.getItem(WORDS_CACHE_KEY);
+      if (cached) {
+        try { return JSON.parse(cached); } catch (e) {}
+      }
       return FALLBACK_WORDS;
     }
+
+    // 成功取得資料，寫入本機快取
+    try {
+      localStorage.setItem(WORDS_CACHE_KEY, JSON.stringify(data));
+      localStorage.setItem(WORDS_CACHE_TIME_KEY, Date.now().toString());
+    } catch (e) {}
+
     return data;
   } catch (err) {
     console.warn('題庫連線異常，啟用備用題庫:', err);
+    const cached = localStorage.getItem(WORDS_CACHE_KEY);
+    if (cached) {
+      try { return JSON.parse(cached); } catch (e) {}
+    }
     return FALLBACK_WORDS;
   }
 };
@@ -92,6 +131,7 @@ export const fetchWordsFromDb = async () => {
 export const insertWordsBatch = async (wordsList) => {
   const { data, error } = await supabase.from('words').insert(wordsList).select();
   if (error) throw error;
+  invalidateWordsCache(); // 清除快取以強制讀取最新單字
   return data;
 };
 
@@ -99,6 +139,7 @@ export const insertWordsBatch = async (wordsList) => {
 export const deleteWordById = async (id) => {
   const { error } = await supabase.from('words').delete().eq('id', id);
   if (error) throw error;
+  invalidateWordsCache(); // 清除快取以強制讀取最新單字
 };
 
 // ── 上傳遊戲成績 (Upsert 最佳紀錄) ──

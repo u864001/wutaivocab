@@ -217,18 +217,18 @@ export const MeteorGame = ({
             {t.meteorTitle}
           </h2>
           <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-6">
-            請選擇您要挑戰的防衛模式：
+            {t.selectDefenseMode}
           </p>
 
           <div className="space-y-3">
             <Button3D variant="blue" size="lg" onClick={() => handleStart('zh-en')} className="w-full">
-              看中文選英文 (ZH ➔ EN)
+              {t.meteorZhEn}
             </Button3D>
             <Button3D variant="emerald" size="lg" onClick={() => handleStart('en-zh')} className="w-full">
-              看英文選中文 (EN ➔ ZH)
+              {t.meteorEnZh}
             </Button3D>
             <Button3D variant="amber" size="lg" onClick={() => handleStart('abc')} className="w-full">
-              ABC 大小寫防衛 (低年級專屬)
+              {t.meteorAbc}
             </Button3D>
             <Button3D variant="slate" size="md" onClick={onBack} className="w-full mt-2">
               {t.backLobby}
@@ -245,17 +245,17 @@ export const MeteorGame = ({
         <GlassCard className="max-w-md w-full text-center p-8">
           <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-3 animate-bounce" />
           <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
-            防衛戰結束！
+            {t.defenseOver}
           </h2>
           <p className="text-xs font-bold text-slate-500 mb-6">
-            存活時間：<span className="text-indigo-600 font-black text-lg">{survivalTime} 秒</span>
+            {t.survivalTime}<span className="text-indigo-600 font-black text-lg">{survivalTime} 秒</span>
           </p>
 
           <div className="p-5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 mb-6">
             <span className="text-4xl font-black text-indigo-600 dark:text-indigo-400">
               {score}
             </span>
-            <p className="text-xs font-bold text-slate-500 mt-1">擊落隕石總數</p>
+            <p className="text-xs font-bold text-slate-500 mt-1">{t.meteorsDestroyed}</p>
           </div>
 
           {/* 榮譽榜破紀錄留名判定卡 */}

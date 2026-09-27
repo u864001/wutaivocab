@@ -239,15 +239,15 @@ export const MemoryGameSingle = ({
         <GlassCard className="max-w-md w-full text-center p-8">
           <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-3 animate-bounce" />
           <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
-            記憶翻牌挑戰成功！
+            {t.memoryComplete}
           </h2>
           <p className="text-xs font-bold text-slate-500 mb-6">
-            總花費時間：<span className="text-cyan-600 font-black text-lg">{elapsedTime} 秒</span> • 翻牌次數：{moves} 次
+            {t.spentTime}：<span className="text-cyan-600 font-black text-lg">{elapsedTime} 秒</span> • {t.flipsCount}{moves}
           </p>
 
           {bonusScore > 0 && (
             <div className="p-3 mb-4 rounded-xl bg-amber-100 text-amber-900 font-black text-xs flex items-center justify-center gap-1">
-              <Coins className="w-4 h-4 text-amber-500" /> 金幣雨紅利加成：+{bonusScore * 5} 分！
+              <Coins className="w-4 h-4 text-amber-500" /> {t.coinRainBonus}+{bonusScore * 5} {t.unitPoints}！
             </div>
           )}
 
@@ -279,23 +279,23 @@ export const MemoryGameSingle = ({
       )}
 
       {/* 頂部資訊列 */}
-      <div className="w-full flex items-center justify-between mb-4">
+      <div className="w-full flex items-center justify-between mb-3">
         <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
           {t.backLobby}
         </Button3D>
 
         <div className="flex items-center gap-3">
           <span className="text-xs font-black px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
-            翻牌: {moves}
+            {t.flipsCount}{moves}
           </span>
           <span className="text-xs font-black px-3 py-1.5 rounded-xl bg-emerald-500 text-white shadow-sm">
-            已配對: {matched.length / 2} / 10
+            {t.pairsMatched}{matched.length / 2} / 10
           </span>
         </div>
       </div>
 
-      {/* 4x5 翻牌網格 */}
-      <div className="w-full grid grid-cols-4 sm:grid-cols-5 gap-2.5 sm:gap-3.5">
+      {/* 4x5 翻牌網格 (高度約束確保 iPad 零滾動) */}
+      <div className="w-full grid grid-cols-4 sm:grid-cols-5 gap-2.5 sm:gap-3 max-h-[60vh]">
         {cards.map((card, idx) => {
           const isCardFlipped = flipped.includes(idx) || matched.includes(card.id);
           const isCardMatched = matched.includes(card.id);
@@ -306,7 +306,7 @@ export const MemoryGameSingle = ({
               disabled={isCardMatched}
               onClick={() => handleCardClick(idx)}
               className={`
-                aspect-[4/3] sm:aspect-square rounded-2xl sm:rounded-3xl p-2 sm:p-3 font-heading font-black text-sm sm:text-base flex items-center justify-center text-center transition-all cursor-pointer shadow-md
+                aspect-[4/3] rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 font-heading font-black text-sm sm:text-base flex items-center justify-center text-center transition-all cursor-pointer shadow-md max-h-[96px]
                 ${isCardMatched
                   ? 'bg-emerald-500 text-white opacity-40 border-2 border-emerald-600 scale-95 pointer-events-none'
                   : isCardFlipped

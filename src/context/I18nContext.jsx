@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const DICTIONARY = {
   'zh-TW': {
+    // 頂部導覽列
     appName: '霧臺國小 英文學習宇宙',
     subtitle: 'Wutai English Adventure World',
     connected: '雲端同步',
@@ -12,7 +13,7 @@ const DICTIONARY = {
     themeNight: '極光星空',
     teacherHub: '教師工作台',
     leaderboard: '全校英雄榜',
-    
+
     // 大廳區塊
     rangeTitle: '1. 設定複習範圍',
     officialBooks: '教育部教材',
@@ -27,13 +28,11 @@ const DICTIONARY = {
     qAll: '範圍內全部',
     rankQualified: '🎯 範圍達標！挑戰榮譽榜',
     rankHint: '需選滿單冊 2 個單元（或 20 字），且選擇 20 題或全部即可登錄榜單。',
-    
-    // 遊戲類別
     secSolo: '🚀 單人冒險挑戰',
     secMulti: '⚔️ 多人連線競技',
     secClassic: '📝 經典學習測驗',
-    
-    // 遊戲名稱與描述
+
+    // 遊戲標題與描述
     meteorTitle: '隕石防衛戰',
     meteorDesc: '射擊墜落的單字隕石，守護地球防線！',
     snakeTitle: '叢林貪食蛇',
@@ -48,8 +47,8 @@ const DICTIONARY = {
     quizEnZh: '英翻中打字',
     quizListening: '英語聽力測驗',
     quizHard: '魔王綜合考驗',
-    
-    // 遊戲中互動反饋
+
+    // 通用遊戲反饋
     backLobby: '回大廳',
     quitGame: '放棄挑戰',
     startChallenge: '開始挑戰',
@@ -62,17 +61,107 @@ const DICTIONARY = {
     finalScore: '挑戰結算',
     spentTime: '耗費時間',
     totalCorrect: '答對題數',
-    submitHonor: '留名榮譽榜',
-    enterName: '輸入英雄暱稱 (1~6字)',
-    submitting: '上傳中...',
-    submitted: '已登錄榮譽榜！',
     playAgain: '再玩一次',
-    
-    // 掃描加入
+    remaining: '剩餘：',
+
+    // 榮譽榜門檻留名判定卡 (HonorSubmissionCard)
+    checkingTop50: '正在比對本週全校 Top 50 門檻...',
+    qualifyTop50Title: '👑 恭喜登上全校 Top 50 榮譽榜！',
+    breakTop50Prompt: '你的成績已突破進入本週全校前 50 名，請留下暱稱登錄榮譽殿堂：',
+    notTop50Title: '👏 挑戰完成！表現很棒！',
+    notTop50Encourage: '本次成績尚未進入本週全校前 50 名，再多練習幾次一定能打破紀錄上榜！',
+    submittedTitle: '榮譽紀錄登錄成功！',
+    submittedSubtitle: '已成功名列全校英雄榜，快去排行榜看看自己的名次吧！',
+    scopeHintTitle: '想要角逐全校榮譽榜？',
+    scopeHintText: '在大廳勾選「單一冊別（全冊或至少2個單元）」且設定題目為「20題或全部」，結算成績就能自動角逐 Top 50 英雄榜喔！',
+    namePlaceholder: '請輸入班級與姓名（例：501小明）',
+    submitHonorBtn: '送出榮譽榜 👑',
+    submittingBtn: '正在登錄榮譽榜...',
+
+    // 全校英雄榜 (LeaderboardView)
+    heroHallTitle: '全校英雄榮譽榜',
+    refresh: '重新整理',
+    selectBookLabel: '選擇競賽冊別：',
+    compWeekLabel: '競賽週次：',
+    weekN: '第 {w} 週',
+    currentWeekTag: '(本週進行中)',
+    top5WeeklyBadge: 'Top 5 本週風雲榜',
+    viewTop50Btn: '查看完整前 50 名',
+    noContenders: '尚無挑戰者登錄',
+    top50ModalTitle: '{title} 前 50 名',
+    top50ModalSubtitle: '第 {book} 冊 • 第 {week} 週 • 每位同學僅取最佳成績',
+    closeBoardBtn: '關閉榜單',
+    timeSpentSec: '耗時：{time} 秒',
+    unitPoints: '分',
+    unitWins: '勝',
+
+    // 多人連線戰鬥 (BattleGame)
+    battleWaitingRoom: '戰備等待室',
+    roomCodeHint: '請其他同學輸入此 4 位數房號加入 (題目將自動同步房主範圍)',
+    connectedPlayers: '已連線玩家 ({count}/4)：',
+    hostTag: '房主 👑',
+    youTag: '(你)',
+    startBattleBtn: '開戰！',
+    waitingHostStart: '等待房主按下開始...',
+    battleChampion: '死鬥大贏家！',
+    championSurvived: '👑 {winner} 活到了最後！',
+    shieldIntegrity: '我的防衛線安全度',
+    shieldBreached: '防線已失守！',
+    spectating: '你已戰敗，觀戰中...',
+    attackInstruction: '快速看中文選出正確英文發動突襲：',
+    leaveRoomBtn: '取消返回',
+    enterNicknamePrompt: '請輸入你的戰鬥暱稱',
+    enterNicknameError: '請先輸入玩家暱稱！',
+    selectScopeError: '房主請先回到主畫面勾選對戰複習範圍！',
+    enter4DigitCodeError: '請輸入 4 位數房號！',
+    battleDetailNotice: '2~4 人區網對戰，全員採用房主設定的單字範圍！',
+    createRoomBtn: '建立新房間',
+    joinRoomBtn: '輸入房號加入',
+    inputRoomCodePlaceholder: '輸入 4 位數房號',
+
+    // 隕石防衛戰 (MeteorGame)
+    selectDefenseMode: '請選擇您要挑戰的防衛模式：',
+    meteorZhEn: '看中文選英文 (ZH ➔ EN)',
+    meteorEnZh: '看英文選中文 (EN ➔ ZH)',
+    meteorAbc: 'ABC 大小寫防衛 (低年級專屬)',
+    defenseOver: '防衛戰結束！',
+    survivalTime: '存活時間：',
+    meteorsDestroyed: '擊落隕石總數',
+
+    // 叢林貪食蛇 (SnakeGame)
+    snakeHelp: '控制小蛇在草地上移動，按照單字順序吃下字母完成拼字！',
+    snakeEasy: '🌟 簡易模式 (下個字母發光引導)',
+    snakeNormal: '🔥 一般模式 (60 秒競速挑戰)',
+    snakeSurvival: '🌿 生存模式 (5 條生命無限闖關)',
+    snakeResults: '貪食蛇冒險結算',
+    adventureScore: '冒險積分',
+
+    // 星際記憶翻牌 (MemoryGameSingle)
+    memoryHelp: '共 20 張卡片（10 組中英單字），翻開成對單字即可消除，偶爾會掉落驚喜金幣雨！',
+    memoryComplete: '記憶翻牌挑戰成功！',
+    flipsCount: '翻牌次數：',
+    pairsMatched: '已配對：',
+    coinRainBonus: '金幣雨紅利加成：',
+
+    // 拖曳拼字大師 (SpellingGame)
+    spellingHelp: '聽語音、看中文，點擊字母按順序拼出完整單字！',
+    heartGraceInfo: '每題擁有 5 次容錯愛心',
+    spellingComplete: '拼字闖關完成！',
+    perfectSpelled: '完美拼出',
+    retriedCount: '扣盡重測',
+    tapLettersHint: '點擊下方字母填入槽位：',
+
+    // 傳統測驗 (StandardQuiz)
+    quizQuestionCountHint: '本輪共收錄 {count} 道題目，錯題將循環重測至熟練！',
+    correctAnswers: '答對次數',
+    retryMistakes: '重答次數',
+
+    // 頁尾
     scanToJoin: '掃描 QR Code 隨時加入冒險',
     developer: '霧臺國小 教師研發團隊製作'
   },
   'en': {
+    // Header
     appName: 'Wutai English Adventure',
     subtitle: 'Wutai English Adventure World',
     connected: 'Cloud Synced',
@@ -83,8 +172,8 @@ const DICTIONARY = {
     themeNight: 'Cosmic Aurora',
     teacherHub: 'Teacher Hub',
     leaderboard: 'Hall of Fame',
-    
-    // Lobby sections
+
+    // Lobby
     rangeTitle: '1. Select Review Range',
     officialBooks: 'Official Curriculum',
     teacherSections: 'Teacher Wordbanks',
@@ -98,12 +187,10 @@ const DICTIONARY = {
     qAll: 'All in Range',
     rankQualified: '🎯 Qualified for Leaderboard!',
     rankHint: 'Select at least 2 units (or 20 words) from a single book and pick 20 or All questions to qualify.',
-    
-    // Game categories
     secSolo: '🚀 Solo Adventures',
     secMulti: '⚔️ Multiplayer Arena',
     secClassic: '📝 Classic Practice',
-    
+
     // Game titles & descriptions
     meteorTitle: 'Meteor Defense',
     meteorDesc: 'Shoot down falling vocabulary meteors to defend base!',
@@ -119,7 +206,7 @@ const DICTIONARY = {
     quizEnZh: 'EN to ZH Typing',
     quizListening: 'Listening Quiz',
     quizHard: 'Hardcore Master Quiz',
-    
+
     // In-game feedbacks
     backLobby: 'Back to Lobby',
     quitGame: 'Quit Game',
@@ -133,12 +220,101 @@ const DICTIONARY = {
     finalScore: 'Challenge Results',
     spentTime: 'Time Elapsed',
     totalCorrect: 'Correct Answers',
-    submitHonor: 'Submit to Leaderboard',
-    enterName: 'Enter Hero Name (1-6 chars)',
-    submitting: 'Submitting...',
-    submitted: 'Saved to Hall of Fame!',
     playAgain: 'Play Again',
-    
+    remaining: 'Remaining: ',
+
+    // HonorSubmissionCard
+    checkingTop50: 'Verifying Top 50 tournament threshold...',
+    qualifyTop50Title: '👑 Qualified for School Top 50!',
+    breakTop50Prompt: 'Your score broke into this week’s Top 50! Enter your nickname to register:',
+    notTop50Title: '👏 Great job completing the challenge!',
+    notTop50Encourage: 'Score just missed this week’s Top 50. Practice again to break the record!',
+    submittedTitle: 'Honor Roll Registered!',
+    submittedSubtitle: 'Successfully published to Hall of Fame. Check your rank now!',
+    scopeHintTitle: 'Want to compete in the Hall of Fame?',
+    scopeHintText: 'Select a single book (all or at least 2 units) and 20+ questions in the lobby to qualify for the Top 50 leaderboard!',
+    namePlaceholder: 'Enter class & name (e.g., 501 Alex)',
+    submitHonorBtn: 'Submit to Hall of Fame 👑',
+    submittingBtn: 'Registering score...',
+
+    // LeaderboardView
+    heroHallTitle: 'School Heroes Hall of Fame',
+    refresh: 'Refresh',
+    selectBookLabel: 'Select Curriculum Book:',
+    compWeekLabel: 'Tournament Week:',
+    weekN: 'Week {w}',
+    currentWeekTag: '(Current Week)',
+    top5WeeklyBadge: 'Top 5 Weekly Roll',
+    viewTop50Btn: 'View Full Top 50',
+    noContenders: 'No contenders yet',
+    top50ModalTitle: '{title} Top 50',
+    top50ModalSubtitle: 'Book {book} • Week {week} • Best score per student',
+    closeBoardBtn: 'Close Leaderboard',
+    timeSpentSec: 'Time: {time}s',
+    unitPoints: 'pts',
+    unitWins: 'wins',
+
+    // BattleGame
+    battleWaitingRoom: 'Battle Waiting Room',
+    roomCodeHint: 'Ask other players to enter this 4-digit code (word scope is synced to host)',
+    connectedPlayers: 'Connected Players ({count}/4):',
+    hostTag: 'Host 👑',
+    youTag: '(You)',
+    startBattleBtn: 'Start Battle!',
+    waitingHostStart: 'Waiting for host to start...',
+    battleChampion: 'Victory Champion!',
+    championSurvived: '👑 {winner} survived till the end!',
+    shieldIntegrity: 'Base Shield Integrity',
+    shieldBreached: 'Shield Breached!',
+    spectating: 'Eliminated. Spectating...',
+    attackInstruction: 'Quickly pick the correct English translation to assault:',
+    leaveRoomBtn: 'Leave Room',
+    enterNicknamePrompt: 'Enter your battle nickname',
+    enterNicknameError: 'Please enter a nickname first!',
+    selectScopeError: 'Host must select review range first in the lobby!',
+    enter4DigitCodeError: 'Please enter a 4-digit room code!',
+    battleDetailNotice: '2-4 players live battle! All players follow host scope.',
+    createRoomBtn: 'Create Room',
+    joinRoomBtn: 'Join Room',
+    inputRoomCodePlaceholder: 'Enter 4-digit code',
+
+    // MeteorGame
+    selectDefenseMode: 'Select your defense mode:',
+    meteorZhEn: 'ZH ➔ EN Mode',
+    meteorEnZh: 'EN ➔ ZH Mode',
+    meteorAbc: 'ABC Match (Beginner)',
+    defenseOver: 'Defense Terminated!',
+    survivalTime: 'Survival Time: ',
+    meteorsDestroyed: 'Meteors Destroyed',
+
+    // SnakeGame
+    snakeHelp: 'Guide the snake to eat letters in spelling order!',
+    snakeEasy: '🌟 Easy Mode (Glowing letters)',
+    snakeNormal: '🔥 Normal Mode (60s speed challenge)',
+    snakeSurvival: '🌿 Survival Mode (5 lives endless)',
+    snakeResults: 'Snake Adventure Summary',
+    adventureScore: 'Adventure Score',
+
+    // MemoryGameSingle
+    memoryHelp: '20 cards (10 pairs). Match English & Chinese pairs, catch surprise Coin Rains!',
+    memoryComplete: 'Memory Match Completed!',
+    flipsCount: 'Flips: ',
+    pairsMatched: 'Matched: ',
+    coinRainBonus: 'Coin Rain Bonus: ',
+
+    // SpellingGame
+    spellingHelp: 'Listen to audio, check Chinese, and tap letters in order to spell!',
+    heartGraceInfo: '5 Heart retries per word',
+    spellingComplete: 'Spelling Quest Complete!',
+    perfectSpelled: 'Perfect Words',
+    retriedCount: 'Retried Words',
+    tapLettersHint: 'Tap letters below to fill the slots:',
+
+    // StandardQuiz
+    quizQuestionCountHint: 'Total {count} questions this round. Mistakes repeat until mastered!',
+    correctAnswers: 'Correct Answers',
+    retryMistakes: 'Retry Mistakes',
+
     // Footer
     scanToJoin: 'Scan QR Code to join on tablet/mobile',
     developer: 'Crafted by Wutai Elementary School Teachers'

@@ -121,7 +121,7 @@ export const StandardQuiz = ({
             {mode === 'quiz-zh-en' ? t.quizZhEn : mode === 'quiz-en-zh' ? t.quizEnZh : mode === 'quiz-listening' ? t.quizListening : t.quizHard}
           </h2>
           <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-6">
-            本輪共收錄 {queue.length} 道題目，錯題將循環重測至熟練！
+            {t.quizQuestionCountHint.replace('{count}', queue.length)}
           </p>
           <div className="space-y-3">
             <Button3D variant="blue" size="lg" onClick={handleStart} className="w-full">
@@ -154,13 +154,13 @@ export const StandardQuiz = ({
               <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
                 {stats.correct}
               </span>
-              <p className="text-xs font-bold text-slate-500 mt-1">答對次數</p>
+              <p className="text-xs font-bold text-slate-500 mt-1">{t.correctAnswers}</p>
             </div>
             <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800">
               <span className="text-3xl font-black text-rose-500">
                 {stats.wrong}
               </span>
-              <p className="text-xs font-bold text-slate-500 mt-1">重答次數</p>
+              <p className="text-xs font-bold text-slate-500 mt-1">{t.retryMistakes}</p>
             </div>
           </div>
 
@@ -189,7 +189,7 @@ export const StandardQuiz = ({
           {t.backLobby}
         </Button3D>
         <span className="text-xs font-black text-slate-500 dark:text-slate-400">
-          剩餘題目：{queue.length}
+          {t.remaining}{queue.length}
         </span>
       </div>
 

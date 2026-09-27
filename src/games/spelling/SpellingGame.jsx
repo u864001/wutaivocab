@@ -144,11 +144,11 @@ export const SpellingGame = ({
             {t.spellingTitle}
           </h2>
           <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-4">
-            聽語音、看中文，點擊字母按順序拼出完整單字！
+            {t.spellingHelp}
           </p>
           <div className="flex items-center justify-center gap-1.5 text-rose-500 text-xs font-black mb-6">
             <Heart className="w-4 h-4 fill-rose-500" />
-            每題擁有 5 次容錯愛心
+            {t.heartGraceInfo}
           </div>
           <div className="space-y-3">
             <Button3D variant="rose" size="lg" onClick={handleStart} className="w-full">
@@ -169,10 +169,10 @@ export const SpellingGame = ({
         <GlassCard className="max-w-md w-full text-center p-8">
           <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-3 animate-bounce" />
           <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
-            拼字闖關完成！
+            {t.spellingComplete}
           </h2>
           <p className="text-xs font-bold text-slate-500 mb-6">
-            總花費時間：<span className="text-rose-500 font-black text-lg">{elapsedTime} 秒</span>
+            {t.spentTime}：<span className="text-rose-500 font-black text-lg">{elapsedTime} 秒</span>
           </p>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
@@ -180,13 +180,13 @@ export const SpellingGame = ({
               <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
                 {stats.correct}
               </span>
-              <p className="text-xs font-bold text-slate-500 mt-1">完美拼出</p>
+              <p className="text-xs font-bold text-slate-500 mt-1">{t.perfectSpelled}</p>
             </div>
             <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800">
               <span className="text-3xl font-black text-rose-500">
                 {stats.wrong}
               </span>
-              <p className="text-xs font-bold text-slate-500 mt-1">扣盡重測</p>
+              <p className="text-xs font-bold text-slate-500 mt-1">{t.retriedCount}</p>
             </div>
           </div>
 
@@ -269,7 +269,7 @@ export const SpellingGame = ({
           {/* 打散的字母卡片區 */}
           <div className="p-4 sm:p-6 rounded-3xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
             <p className="text-xs font-bold text-slate-400 mb-3">
-              點擊下方字母填入槽位：
+              {t.tapLettersHint}
             </p>
             <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3.5">
               {letters.map((letter) => (

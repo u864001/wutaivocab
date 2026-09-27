@@ -282,6 +282,35 @@ export const SnakeGame = ({
     });
   };
 
+  const touchStartRef = useRef(null);
+
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.cancelable) e.preventDefault();
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchStartRef.current) return;
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (Math.max(absX, absY) > 20) {
+      if (absX > absY) {
+        handleDpad(dx > 0 ? 'RIGHT' : 'LEFT');
+      } else {
+        handleDpad(dy > 0 ? 'DOWN' : 'UP');
+      }
+    }
+    touchStartRef.current = null;
+  };
+
   const handleDpad = (newDir) => {
     const cur = dirRef.current;
     if (newDir === 'UP' && cur !== 'DOWN') dirRef.current = 'UP';
@@ -289,7 +318,6 @@ export const SnakeGame = ({
     if (newDir === 'LEFT' && cur !== 'RIGHT') dirRef.current = 'LEFT';
     if (newDir === 'RIGHT' && cur !== 'LEFT') dirRef.current = 'RIGHT';
   };
-
 
   if (!hasStarted) {
     return (
@@ -302,18 +330,18 @@ export const SnakeGame = ({
             {t.snakeTitle}
           </h2>
           <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-6">
-            控制小蛇在草地上移動，按照單字順序吃下字母完成拼字！
+            {t.snakeHelp}
           </p>
 
           <div className="space-y-3">
             <Button3D variant="emerald" size="lg" onClick={() => handleStart('easy')} className="w-full">
-              🌟 簡易模式 (下個字母發光引導)
+              {t.snakeEasy}
             </Button3D>
             <Button3D variant="amber" size="lg" onClick={() => handleStart('normal')} className="w-full">
-              🔥 一般模式 (60 秒競速挑戰)
+              {t.snakeNormal}
             </Button3D>
             <Button3D variant="blue" size="lg" onClick={() => handleStart('survival')} className="w-full">
-              🌿 生存模式 (5 條生命無限闖關)
+              {t.snakeSurvival}
             </Button3D>
             <Button3D variant="slate" size="md" onClick={onBack} className="w-full mt-2">
               {t.backLobby}
@@ -330,17 +358,17 @@ export const SnakeGame = ({
         <GlassCard className="max-w-md w-full text-center p-8">
           <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-3 animate-bounce" />
           <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
-            貪食蛇冒險結算
+            {t.snakeResults}
           </h2>
           <p className="text-xs font-bold text-slate-500 mb-6">
-            存活時間：<span className="text-emerald-600 font-black text-lg">{survivalTime} 秒</span>
+            {t.survivalTime}<span className="text-emerald-600 font-black text-lg">{survivalTime} 秒</span>
           </p>
 
           <div className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 mb-6">
             <span className="text-4xl font-black text-emerald-600 dark:text-emerald-400">
-              {score} 分
+              {score} {t.unitPoints}
             </span>
-            <p className="text-xs font-bold text-slate-500 mt-1">冒險積分</p>
+            <p className="text-xs font-bold text-slate-500 mt-1">{t.adventureScore}</p>
           </div>
 
           {/* 榮譽榜破紀錄留名判定卡 */}
@@ -412,30 +440,33 @@ export const SnakeGame = ({
         </div>
       )}
 
-      {/* HTML5 Canvas 遊戲區 */}
-      <div className="w-full flex justify-center mb-4">
+      {/* HTML5 Canvas 遊戲區 (支援觸控滑動手勢) */}
+      <div className="w-full flex justify-center mb-3">
         <canvas
           ref={canvasRef}
           width={800}
           height={480}
-          className="w-full max-w-3xl h-auto rounded-3xl shadow-xl border-4 border-emerald-600 bg-emerald-600 aspect-[5/3]"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className="w-full max-w-3xl h-auto rounded-3xl shadow-xl border-4 border-emerald-600 bg-emerald-600 aspect-[5/3] touch-none cursor-pointer"
         />
       </div>
 
-      {/* 虛擬十字鍵 (平板與手機操控) */}
-      <div className="flex flex-col items-center gap-1 sm:hidden">
-        <Button3D variant="slate" size="sm" onClick={() => handleDpad('UP')} className="w-16 h-12">
-          <ArrowUp className="w-6 h-6" />
+      {/* 虛擬十字鍵 (平板 iPad、觸控大屏與手機皆可操控) */}
+      <div className="flex flex-col items-center gap-1">
+        <Button3D variant="slate" size="sm" onClick={() => handleDpad('UP')} className="w-16 h-10">
+          <ArrowUp className="w-5 h-5" />
         </Button3D>
         <div className="flex gap-4">
-          <Button3D variant="slate" size="sm" onClick={() => handleDpad('LEFT')} className="w-16 h-12">
-            <DpadLeft className="w-6 h-6" />
+          <Button3D variant="slate" size="sm" onClick={() => handleDpad('LEFT')} className="w-16 h-10">
+            <DpadLeft className="w-5 h-5" />
           </Button3D>
-          <Button3D variant="slate" size="sm" onClick={() => handleDpad('DOWN')} className="w-16 h-12">
-            <ArrowDown className="w-6 h-6" />
+          <Button3D variant="slate" size="sm" onClick={() => handleDpad('DOWN')} className="w-16 h-10">
+            <ArrowDown className="w-5 h-5" />
           </Button3D>
-          <Button3D variant="slate" size="sm" onClick={() => handleDpad('RIGHT')} className="w-16 h-12">
-            <DpadRight className="w-6 h-6" />
+          <Button3D variant="slate" size="sm" onClick={() => handleDpad('RIGHT')} className="w-16 h-10">
+            <DpadRight className="w-5 h-5" />
           </Button3D>
         </div>
       </div>

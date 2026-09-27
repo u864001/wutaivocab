@@ -90,8 +90,8 @@ export const HonorSubmissionCard = ({
         <p className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-start gap-2">
           <span className="text-base leading-none">💡</span>
           <span>
-            <strong className="text-slate-700 dark:text-slate-200 block mb-0.5">想要角逐全校榮譽榜？</strong>
-            在大廳勾選「單一冊別（全冊或至少2個單元）」且設定題目為「20題或全部」，結算成績就能自動角逐 Top 50 英雄榜喔！
+            <strong className="text-slate-700 dark:text-slate-200 block mb-0.5">{t.scopeHintTitle}</strong>
+            {t.scopeHintText}
           </span>
         </p>
       </div>
@@ -104,7 +104,7 @@ export const HonorSubmissionCard = ({
       <div className="mb-6 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-center flex items-center justify-center gap-2">
         <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
         <span className="text-xs font-black text-blue-700 dark:text-blue-300">
-          正在比對本週全校 Top 50 門檻...
+          {t.checkingTop50}
         </span>
       </div>
     );
@@ -115,10 +115,10 @@ export const HonorSubmissionCard = ({
     return (
       <div className="mb-6 p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-center">
         <p className="text-xs font-black text-amber-800 dark:text-amber-300 mb-1">
-          👏 挑戰完成！表現很棒！
+          {t.notTop50Title}
         </p>
         <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-          本次成績尚未進入本週全校前 50 名，再多練習幾次一定能打破紀錄上榜！
+          {t.notTop50Encourage}
         </p>
       </div>
     );
@@ -130,10 +130,10 @@ export const HonorSubmissionCard = ({
       <div className="mb-6 p-4 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-center animate-fadeIn">
         <div className="flex items-center justify-center gap-1.5 text-emerald-800 dark:text-emerald-200 font-black text-sm mb-1">
           <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-          榮譽紀錄登錄成功！
+          {t.submittedTitle}
         </div>
         <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-          已成功名列全校英雄榜，快去排行榜看看自己的名次吧！
+          {t.submittedSubtitle}
         </p>
       </div>
     );
@@ -145,11 +145,11 @@ export const HonorSubmissionCard = ({
       <div className="flex items-center justify-center gap-1.5 mb-1">
         <Trophy className="w-5 h-5 text-amber-500 animate-bounce" />
         <span className="text-sm font-black text-amber-900 dark:text-amber-200 font-heading">
-          👑 恭喜登上全校 Top 50 榮譽榜！
+          {t.qualifyTop50Title}
         </span>
       </div>
       <p className="text-xs font-bold text-amber-800/80 dark:text-amber-300/80 mb-3">
-        你的成績已突破進入本週全校前 50 名，請留下暱稱登錄榮譽殿堂：
+        {t.breakTop50Prompt}
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-2">
@@ -157,7 +157,7 @@ export const HonorSubmissionCard = ({
           type="text"
           value={playerName}
           onChange={(e) => setPlayerName(e.target.value)}
-          placeholder="請輸入班級與姓名（例：501小明）"
+          placeholder={t.namePlaceholder}
           maxLength={15}
           className="w-full p-3 rounded-xl border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-800 text-center font-black text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-amber-400 text-sm shadow-inner"
         />
@@ -169,7 +169,7 @@ export const HonorSubmissionCard = ({
           className="w-full"
           icon={Send}
         >
-          {status === 'submitting' ? '正在登錄榮譽榜...' : '送出榮譽榜 👑'}
+          {status === 'submitting' ? t.submittingBtn : t.submitHonorBtn}
         </Button3D>
       </form>
     </div>
