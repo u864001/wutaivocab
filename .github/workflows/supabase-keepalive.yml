@@ -1,0 +1,39 @@
+name: 🔄 Supabase Keep-Alive & Health Check
+
+on:
+  schedule:
+    # 台灣時間 (UTC+8) 每週一與週四凌晨 00:00 自動執行 (即 UTC 週日與週三 16:00)
+    # 每 3~4 天自動發起一次極輕量健康打卡，徹底防範寒暑假或長假期間 Supabase 7 天未活動而被官方休眠 (Pause)
+    - cron: '0 16 * * 0,3'
+  workflow_dispatch: # 支援在 GitHub Actions 後台隨時手動點擊「Run workflow」打卡測試
+
+jobs:
+  keepalive:
+    name: 🩺 守護打卡與健康探測
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 發送極輕量保活探針 (Keep-Alive Ping)
+        run: |
+          echo "======================================================="
+          echo "🏫 霧臺國小 英文學習宇宙 - Supabase 自動保活與健康巡檢"
+          echo "======================================================="
+          
+          SUPABASE_URL="https://fqkdkmcqjswufzbvkram.supabase.co"
+          SUPABASE_KEY="sb_publishable_M9phUn6LH1yeVA9NbIXesg_tVABCW5z"
+          
+          # 發起極輕量 REST 探測 (僅查詢 1 筆單字 id，消耗頻寬 < 100 bytes)
+          HTTP_STATUS=$(curl -s -o /tmp/resp.json -w "%{http_code}" \
+            "${SUPABASE_URL}/rest/v1/words?select=id&limit=1" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}")
+            
+          echo "HTTP 狀態碼: $HTTP_STATUS"
+          
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "✅ 成功打卡！Supabase 運作健康，7 天無活動休眠計時器已成功重置！"
+            echo "📊 探測回應: $(cat /tmp/resp.json)"
+          else
+            echo "❌ 連線異常 (狀態碼: $HTTP_STATUS)"
+            cat /tmp/resp.json
+            exit 1
+          fi
