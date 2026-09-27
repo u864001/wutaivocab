@@ -161,7 +161,16 @@ export const Lobby = ({
 
         {/* 單元清單折疊選單 */}
         <div className="space-y-3">
-          {Object.entries(activeTab === 'official' ? groupedData.official : groupedData.teachers).map(([book, data]) => {
+          {Object.entries(activeTab === 'official' ? groupedData.official : groupedData.teachers)
+            .sort(([a], [b]) => {
+              const numA = parseInt(a);
+              const numB = parseInt(b);
+              if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+              if (!isNaN(numA)) return -1;
+              if (!isNaN(numB)) return 1;
+              return a.localeCompare(b);
+            })
+            .map(([book, data]) => {
             const allUnits = Array.from(data.lessons).map(l => `${book}-${l}`);
             const isFull = allUnits.length > 0 && allUnits.every(u => settings.selectedUnits.includes(u));
             const isPart = allUnits.some(u => settings.selectedUnits.includes(u)) && !isFull;
@@ -205,7 +214,19 @@ export const Lobby = ({
 
                 {isExp && (
                   <div className="p-3.5 pt-1 border-t border-slate-100 dark:border-slate-700/60 flex flex-wrap gap-2">
-                    {Array.from(data.lessons).map((lesson) => {
+                    {Array.from(data.lessons)
+                      .sort((a, b) => {
+                        const getWeight = (l) => {
+                          const s = String(l).toLowerCase();
+                          if (s.includes('starter')) return -1;
+                          if (s.includes('review')) return 99;
+                          if (s.includes('festival')) return 100;
+                          const n = parseInt(s.replace(/\D/g, ''));
+                          return isNaN(n) ? 50 : n;
+                        };
+                        return getWeight(a) - getWeight(b);
+                      })
+                      .map((lesson) => {
                       const isSelected = settings.selectedUnits.includes(`${book}-${lesson}`);
                       return (
                         <button
