@@ -6,7 +6,7 @@ import { soundEngine, speakEnglish } from '../../services/audio';
 import { supabase, getDeviceId, recordBattleWin } from '../../services/supabase';
 import { generateSmartOptions } from '../../services/distractorHelper';
 import confetti from 'canvas-confetti';
-import { ArrowLeft, Swords, Users, Shield, Heart, Zap, Trophy, Play } from 'lucide-react';
+import { ArrowLeft, Swords, Users, Shield, Heart, Zap, Trophy, Play, RefreshCw } from 'lucide-react';
 
 export const BattleGame = ({
   settings,
@@ -32,9 +32,19 @@ export const BattleGame = ({
   const channelRef = useRef(null);
   const myDeviceIdRef = useRef(getDeviceId());
   const battleUnitsRef = useRef(settings?.selectedUnits || []);
+  const lastAttackTimeRef = useRef(0);
 
   const handleLeaveRoom = () => {
     if (channelRef.current) {
+      if (isHost) {
+        try {
+          channelRef.current.send({
+            type: 'broadcast',
+            event: 'host-left',
+            payload: {}
+          });
+        } catch (e) {}
+      }
       supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }
@@ -85,6 +95,29 @@ export const BattleGame = ({
         const state = channel.presenceState();
         const activeList = Object.values(state).flat();
         setPlayers(activeList);
+
+        // 房主斷線守護：若身為成員且房主離線，安全撤出
+        if (!hostFlag) {
+          const hasHost = activeList.some(p => p.isHost);
+          if (!hasHost && activeList.length > 0) {
+            setErrorMsg(t.hostDisconnected);
+            if (channelRef.current) {
+              supabase.removeChannel(channelRef.current);
+              channelRef.current = null;
+            }
+            setView('menu');
+          }
+        }
+      })
+      .on('broadcast', { event: 'host-left' }, () => {
+        if (!hostFlag) {
+          setErrorMsg(t.hostDisconnected);
+          if (channelRef.current) {
+            supabase.removeChannel(channelRef.current);
+            channelRef.current = null;
+          }
+          setView('menu');
+        }
       })
       .on('broadcast', { event: 'game-start' }, ({ payload }) => {
         // 全體玩家皆以房主設定的範圍為準！
@@ -151,8 +184,14 @@ export const BattleGame = ({
     const target = pool[Math.floor(Math.random() * pool.length)];
     setCurrentQuestion(target);
 
-    // 採用智慧誘答演算法生成 4 個選項
-    const opts = generateSmartOptions(target, pool, words, 'en');
+    // 依據誘答模式產生選項 (預設為同選定範圍 strict)
+    const opts = generateSmartOptions(
+      target,
+      pool,
+      words,
+      'en',
+      settings.distractorMode || 'strict'
+    );
     setOptions(opts);
   };
 
@@ -162,9 +201,11 @@ export const BattleGame = ({
     if (opt.isCorrect) {
       soundEngine.correct();
 
-      // 隨機選一位其他存活玩家發動攻擊
+      // 防刷廣播節流保護：限制至少間隔 1.2 秒才送出 1 次突襲，嚴防 Supabase 廣播額度濫用
+      const now = Date.now();
       const otherPlayers = players.filter(p => p.deviceId !== myDeviceIdRef.current && !p.isDead);
-      if (otherPlayers.length > 0 && channelRef.current) {
+      if (otherPlayers.length > 0 && channelRef.current && now - lastAttackTimeRef.current > 1200) {
+        lastAttackTimeRef.current = now;
         const target = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
         channelRef.current.send({
           type: 'broadcast',
@@ -206,7 +247,7 @@ export const BattleGame = ({
         soundEngine.win();
         confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
 
-        // 若獲勝者為此裝置，累計勝場至 Supabase (同時刷新最新暱稱)
+        // 若獲勝者為此裝置，累計勝場至 Supabase (共用 iPad 獨立記錄)
         if (winner.deviceId === myDeviceIdRef.current) {
           const book = battleUnitsRef.current[0]?.split('-')[0] || '1';
           recordBattleWin({ book, name: playerName.trim() });
@@ -215,9 +256,16 @@ export const BattleGame = ({
     }
   }, [players, view]);
 
-  // 離開清理
+  // 離線清理 (iPad 關閉分頁、背景睡眠防幽靈連線)
   useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
       }
@@ -239,15 +287,34 @@ export const BattleGame = ({
           </p>
 
           <div className="space-y-4 mb-6">
-            <input
-              type="text"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              placeholder={t.enterNicknamePrompt}
-              className="w-full p-3.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800 text-center font-bold text-slate-800 dark:text-slate-100 outline-none focus:border-rose-500"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                placeholder={t.enterNicknamePrompt}
+                className="w-full p-3.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800 text-center font-bold text-slate-800 dark:text-slate-100 outline-none focus:border-rose-500 pr-20"
+              />
+              {playerName && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem('wutai_player_name');
+                    setPlayerName('');
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 rounded-lg text-xs font-black bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-400"
+                  title="切換其他同學"
+                >
+                  換人
+                </button>
+              )}
+            </div>
 
-            {errorMsg && <p className="text-xs font-black text-rose-500">{errorMsg}</p>}
+            {errorMsg && (
+              <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-black text-rose-600 dark:text-rose-400 animate-fadeIn">
+                {errorMsg}
+              </div>
+            )}
 
             <Button3D variant="rose" size="lg" onClick={handleCreateRoom} className="w-full">
               {t.createRoomBtn}

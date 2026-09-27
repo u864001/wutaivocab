@@ -1,10 +1,10 @@
 // ── 智慧教學誘答選項演算法 ──
 // 規則：
-// 1. 正確選項 (1個)
+// 1. 正確選項 (1個)：100% 嚴格取自使用者所選取的範圍！
 // 2. 誘答選項 (3個)：
-//    - 高機率 (75%) 出現 1 個同屬於「當前選取範圍」的單字 (提升鑑別度)
-//    - 其餘選項從「已學過單元」（該範圍之前的所有單元）中隨機抽取 (複習舊單元)
-//    - 若前置單元數量不足，則平滑回退至目前範圍或全題庫
+//    - 預設模式 'strict' (同選定範圍)：誘答選項全數來自當前選定範圍單字。
+//      若選定範圍總單字數小於 4，則平滑回退至題庫補齊，防止重複選項或當機。
+//    - 螺旋模式 'spiral' (螺旋挑戰複習)：高機率 (75%) 出現 1 個同單元單字，其餘自已學過單元（前置單元）抽取。
 
 const getUnitWeight = (book, lesson) => {
   const bNum = parseInt(book);
@@ -49,41 +49,66 @@ export const getLearnedPool = (allWords, selectedUnits) => {
   return selectedWords.length >= 4 ? selectedWords : allWords;
 };
 
-export const generateSmartOptions = (targetWord, selectedWords, allWords, key = 'en') => {
+export const generateSmartOptions = (
+  targetWord,
+  selectedWords = [],
+  allWords = [],
+  key = 'en',
+  mode = 'strict' // 預設為 'strict' (同選定範圍)
+) => {
   const correctVal = targetWord[key];
   const chosenDistractors = [];
 
-  // 1. 高機率 (75%) 從「同選取範圍」挑選 1 個干擾選項
+  // 候選過濾：同選定範圍內的非正確答案候選字
   const sameRangePool = selectedWords
     .map(w => w[key])
-    .filter(val => val && val.toLowerCase() !== correctVal.toLowerCase());
+    .filter(val => val && String(val).toLowerCase() !== String(correctVal).toLowerCase());
+  const uniqueSameRange = [...new Set(sameRangePool)].sort(() => 0.5 - Math.random());
 
-  if (Math.random() < 0.75 && sameRangePool.length > 0) {
-    const picked = sameRangePool[Math.floor(Math.random() * sameRangePool.length)];
-    chosenDistractors.push(picked);
-  }
+  if (mode === 'strict') {
+    // ── 模式 A：純選定範圍 (預設) ──
+    // 盡可能全部由選定範圍挑選 3 個干擾字
+    while (chosenDistractors.length < 3 && uniqueSameRange.length > 0) {
+      chosenDistractors.push(uniqueSameRange.pop());
+    }
 
-  // 2. 從「已學過單字池」挑選剩餘選項 (補滿 3 個干擾項)
-  const learnedPool = getLearnedPool(allWords, selectedWords.map(w => `${w.book}-${w.lesson}`));
-  const availableLearned = learnedPool
-    .map(w => w[key])
-    .filter(val => val && val.toLowerCase() !== correctVal.toLowerCase() && !chosenDistractors.includes(val));
+    // 防呆護航：若選定範圍題目太少（例如選的單元只有 2~3 個字），才從全庫補充，防重複
+    if (chosenDistractors.length < 3) {
+      const fallbackPool = allWords
+        .map(w => w[key])
+        .filter(val => val && String(val).toLowerCase() !== String(correctVal).toLowerCase() && !chosenDistractors.includes(val));
+      const shuffledFallback = [...new Set(fallbackPool)].sort(() => 0.5 - Math.random());
+      while (chosenDistractors.length < 3 && shuffledFallback.length > 0) {
+        chosenDistractors.push(shuffledFallback.pop());
+      }
+    }
+  } else {
+    // ── 模式 B：螺旋複習 ──
+    // 1. 高機率 (75%) 從「同選取範圍」挑選 1 個干擾選項 (提升鑑別度)
+    if (Math.random() < 0.75 && uniqueSameRange.length > 0) {
+      chosenDistractors.push(uniqueSameRange.pop());
+    }
 
-  // 隨機打散候選池
-  const shuffledLearned = [...new Set(availableLearned)].sort(() => 0.5 - Math.random());
-
-  while (chosenDistractors.length < 3 && shuffledLearned.length > 0) {
-    chosenDistractors.push(shuffledLearned.pop());
-  }
-
-  // 3. 防呆護航：若前置池依然湊不滿 3 個，從全庫候選
-  if (chosenDistractors.length < 3) {
-    const fallbackPool = allWords
+    // 2. 從「已學過單字池」挑選剩餘選項 (補滿 3 個干擾項)
+    const learnedPool = getLearnedPool(allWords, selectedWords.map(w => `${w.book}-${w.lesson}`));
+    const availableLearned = learnedPool
       .map(w => w[key])
-      .filter(val => val && val.toLowerCase() !== correctVal.toLowerCase() && !chosenDistractors.includes(val));
-    const shuffledFallback = [...new Set(fallbackPool)].sort(() => 0.5 - Math.random());
-    while (chosenDistractors.length < 3 && shuffledFallback.length > 0) {
-      chosenDistractors.push(shuffledFallback.pop());
+      .filter(val => val && String(val).toLowerCase() !== String(correctVal).toLowerCase() && !chosenDistractors.includes(val));
+
+    const shuffledLearned = [...new Set(availableLearned)].sort(() => 0.5 - Math.random());
+    while (chosenDistractors.length < 3 && shuffledLearned.length > 0) {
+      chosenDistractors.push(shuffledLearned.pop());
+    }
+
+    // 3. 防呆平滑回退
+    if (chosenDistractors.length < 3) {
+      const fallbackPool = allWords
+        .map(w => w[key])
+        .filter(val => val && String(val).toLowerCase() !== String(correctVal).toLowerCase() && !chosenDistractors.includes(val));
+      const shuffledFallback = [...new Set(fallbackPool)].sort(() => 0.5 - Math.random());
+      while (chosenDistractors.length < 3 && shuffledFallback.length > 0) {
+        chosenDistractors.push(shuffledFallback.pop());
+      }
     }
   }
 
@@ -91,7 +116,7 @@ export const generateSmartOptions = (targetWord, selectedWords, allWords, key = 
   const all4 = [correctVal, ...chosenDistractors.slice(0, 3)];
   return all4.sort(() => 0.5 - Math.random()).map(text => ({
     text,
-    isCorrect: text.toLowerCase() === correctVal.toLowerCase(),
+    isCorrect: String(text).toLowerCase() === String(correctVal).toLowerCase(),
     id: Math.random().toString(36).substring(2, 9)
   }));
 };

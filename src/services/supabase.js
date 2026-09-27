@@ -47,7 +47,7 @@ export const FALLBACK_WORDS = [
   { id: 'f-k4', author: 'Mark', book: 'Mark專區', lesson: 'Unit 1 運動休閒', en: 'running', zh: '跑步' }
 ];
 
-// ── 裝置專屬 UUID 生成與獲取 (防止同名學生覆蓋成績) ──
+// ── 裝置專屬 UUID 生成與獲取 ──
 export const getDeviceId = () => {
   const KEY = 'wutai_device_id_v2';
   let deviceId = localStorage.getItem(KEY);
@@ -67,32 +67,64 @@ export const getWeekNumber = () => {
   return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 };
 
-// ── 題庫快取機制 (大幅節省 Supabase 免費額度與連線次數) ──
+// ── 題庫快取機制 (輕量中繼探針：自動偵測題庫更新，杜絕跨裝置快取滯後) ──
 const WORDS_CACHE_KEY = 'wutai_words_cache_v3';
 const WORDS_CACHE_TIME_KEY = 'wutai_words_cache_time_v3';
-const WORDS_CACHE_TTL = 30 * 60 * 1000; // 30 分鐘快取
+const WORDS_CACHE_META_KEY = 'wutai_words_meta_v3';
+const WORDS_CACHE_TTL = 30 * 60 * 1000; // 30 分鐘整體 TTL
+const REMOTE_PROBE_INTERVAL = 60 * 1000; // 每 60 秒透過極輕量 HEAD 查詢探測遠端是否有異動
 
 export const invalidateWordsCache = () => {
   try {
     localStorage.removeItem(WORDS_CACHE_KEY);
     localStorage.removeItem(WORDS_CACHE_TIME_KEY);
+    localStorage.removeItem(WORDS_CACHE_META_KEY);
   } catch (e) {}
 };
 
-// ── 載入所有單字 (優先讀取本機快取，過期或強制才連線 Supabase) ──
+// ── 載入所有單字 (含跨裝置即時同步探針) ──
 export const fetchWordsFromDb = async (force = false) => {
   try {
-    if (!force) {
-      const cached = localStorage.getItem(WORDS_CACHE_KEY);
-      const cachedTime = localStorage.getItem(WORDS_CACHE_TIME_KEY);
-      if (cached && cachedTime && (Date.now() - parseInt(cachedTime, 10) < WORDS_CACHE_TTL)) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+    const cached = localStorage.getItem(WORDS_CACHE_KEY);
+    const cachedTime = localStorage.getItem(WORDS_CACHE_TIME_KEY);
+    const cachedMeta = localStorage.getItem(WORDS_CACHE_META_KEY);
+
+    if (!force && cached && cachedTime) {
+      const timeElapsed = Date.now() - parseInt(cachedTime, 10);
+
+      // 若在探測週期內 (小於 60 秒)，直接返回本機快取以節省頻寬
+      if (timeElapsed < REMOTE_PROBE_INTERVAL) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {}
+      } else if (timeElapsed < WORDS_CACHE_TTL) {
+        // 已過 60 秒：發起極輕量探針 (只查 count 與最新 created_at，不載入表格內容，消耗 <100 bytes)
+        try {
+          const [{ count }, { data: latestRow }] = await Promise.all([
+            supabase.from('words').select('id', { count: 'exact', head: true }).eq('is_active', true),
+            supabase.from('words').select('created_at').order('created_at', { ascending: false }).limit(1)
+          ]);
+
+          const remoteVersion = `${count || 0}_${latestRow?.[0]?.created_at || ''}`;
+          if (cachedMeta === remoteVersion) {
+            // 遠端資料完全未變更！刷新探測時間戳並繼續使用快取
+            localStorage.setItem(WORDS_CACHE_TIME_KEY, Date.now().toString());
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          }
+          // 若 remoteVersion 不同，說明老師在後台新增或異動了單字，自動穿透快取重新抓取！
+        } catch (probeErr) {
+          // 網路探測異常時，平滑使用既有快取護航
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          } catch (e) {}
         }
       }
     }
 
+    // 重新自 Supabase 取得完整題庫
     const { data, error } = await supabase
       .from('words')
       .select('*')
@@ -102,18 +134,19 @@ export const fetchWordsFromDb = async (force = false) => {
 
     if (error || !data || data.length === 0) {
       console.warn('Supabase 題庫讀取回退至備用題庫:', error?.message);
-      // 若連線失敗但本機有歷史快取，優先使用歷史快取
-      const cached = localStorage.getItem(WORDS_CACHE_KEY);
       if (cached) {
         try { return JSON.parse(cached); } catch (e) {}
       }
       return FALLBACK_WORDS;
     }
 
-    // 成功取得資料，寫入本機快取
+    // 成功取得資料，寫入本機快取與最新版本號
     try {
+      const latestTime = data.reduce((max, w) => (w.created_at > max ? w.created_at : max), '');
+      const metaVersion = `${data.length}_${latestTime}`;
       localStorage.setItem(WORDS_CACHE_KEY, JSON.stringify(data));
       localStorage.setItem(WORDS_CACHE_TIME_KEY, Date.now().toString());
+      localStorage.setItem(WORDS_CACHE_META_KEY, metaVersion);
     } catch (e) {}
 
     return data;
@@ -131,7 +164,7 @@ export const fetchWordsFromDb = async (force = false) => {
 export const insertWordsBatch = async (wordsList) => {
   const { data, error } = await supabase.from('words').insert(wordsList).select();
   if (error) throw error;
-  invalidateWordsCache(); // 清除快取以強制讀取最新單字
+  invalidateWordsCache(); // 清除本機快取
   return data;
 };
 
@@ -139,20 +172,23 @@ export const insertWordsBatch = async (wordsList) => {
 export const deleteWordById = async (id) => {
   const { error } = await supabase.from('words').delete().eq('id', id);
   if (error) throw error;
-  invalidateWordsCache(); // 清除快取以強制讀取最新單字
+  invalidateWordsCache(); // 清除本機快取
 };
 
-// ── 上傳遊戲成績 (Upsert 最佳紀錄) ──
+// ── 上傳遊戲成績 (共用 iPad 防覆蓋：以 device_id + name 雙鍵隔離不同學生) ──
 export const uploadScore = async ({ mode, book, name, score, time }) => {
   const deviceId = getDeviceId();
   const currentWeek = getWeekNumber();
+  const cleanName = (name || '').trim();
+  if (!cleanName) return false;
 
   try {
-    // 檢查本週同裝置、同模式、同冊別是否已有紀錄
+    // 檢查本週同裝置且同姓名的紀錄 (同台 iPad 不同學生戰績完全獨立)
     const { data: existing } = await supabase
       .from('leaderboard')
       .select('id, score, time')
       .eq('device_id', deviceId)
+      .eq('name', cleanName)
       .eq('week', currentWeek)
       .eq('mode', mode)
       .eq('book', String(book))
@@ -163,13 +199,13 @@ export const uploadScore = async ({ mode, book, name, score, time }) => {
       if (isBetter) {
         await supabase
           .from('leaderboard')
-          .update({ name: name.trim(), score, time, created_at: new Date().toISOString() })
+          .update({ score, time, created_at: new Date().toISOString() })
           .eq('id', existing.id);
       }
     } else {
       await supabase.from('leaderboard').insert([{
         device_id: deviceId,
-        name: name.trim(),
+        name: cleanName,
         mode,
         book: String(book),
         score,
@@ -210,17 +246,20 @@ export const checkIfQualifiesForTop50 = async ({ mode, book, score, time }) => {
   }
 };
 
-// ── 連線對戰勝場紀錄 (累計該 iPad 本週勝場，並更新為最新暱稱) ──
+// ── 連線對戰勝場紀錄 (共用 iPad 身分隔離：以 device_id + name 獨立累加，不繼承他人勝場) ──
 export const recordBattleWin = async ({ book, name }) => {
   const deviceId = getDeviceId();
   const currentWeek = getWeekNumber();
   const mode = 'battle-wins';
+  const cleanName = (name || '').trim();
+  if (!cleanName) return false;
 
   try {
     const { data: existing } = await supabase
       .from('leaderboard')
       .select('id, score')
       .eq('device_id', deviceId)
+      .eq('name', cleanName)
       .eq('week', currentWeek)
       .eq('mode', mode)
       .eq('book', String(book))
@@ -230,7 +269,6 @@ export const recordBattleWin = async ({ book, name }) => {
       await supabase
         .from('leaderboard')
         .update({
-          name: name.trim(),
           score: (existing.score || 0) + 1,
           created_at: new Date().toISOString()
         })
@@ -240,7 +278,7 @@ export const recordBattleWin = async ({ book, name }) => {
         .from('leaderboard')
         .insert([{
           device_id: deviceId,
-          name: name.trim(),
+          name: cleanName,
           mode,
           book: String(book),
           score: 1,

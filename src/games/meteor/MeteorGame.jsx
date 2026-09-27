@@ -30,6 +30,8 @@ export const MeteorGame = ({
   const containerRef = useRef(null);
   const meteorRef = useRef(null);
   const animFrameRef = useRef(null);
+  const encounteredWordsRef = useRef(new Map());
+  const mistakeIdsRef = useRef(new Set());
 
   // 取得當前模式的「選取範圍單字庫」
   const getSelectedPool = () => {
@@ -57,11 +59,20 @@ export const MeteorGame = ({
     const selectedPool = getSelectedPool();
     const fullPool = subMode === 'abc' ? selectedPool : words;
 
-    const opts = generateSmartOptions(targetWord, selectedPool, fullPool, ansKey);
+    const opts = generateSmartOptions(
+      targetWord,
+      selectedPool,
+      fullPool,
+      ansKey,
+      settings?.distractorMode || 'strict'
+    );
     setOptions(opts);
   };
 
   const spawnMeteor = (wordObj) => {
+    if (wordObj && wordObj.id) {
+      encounteredWordsRef.current.set(wordObj.id, { id: wordObj.id, en: wordObj.en, zh: wordObj.zh });
+    }
     // 隕石落下總時長隨擊落數遞減 (難度平滑提升)
     const duration = Math.max(2.6, (5.2 - score * 0.12) * 1.5);
     const xPos = 15 + Math.random() * 70;
@@ -85,6 +96,8 @@ export const MeteorGame = ({
     setLives(3);
     setScore(0);
     setGameStartTime(Date.now());
+    encounteredWordsRef.current.clear();
+    mistakeIdsRef.current.clear();
 
     let pool = [];
     if (mode === 'abc') {
@@ -150,6 +163,9 @@ export const MeteorGame = ({
   const handleMiss = () => {
     soundEngine.wrong();
     setIsExploding(true);
+    if (currentMeteor?.word?.id) {
+      mistakeIdsRef.current.add(currentMeteor.word.id);
+    }
 
     setLives(prev => {
       const next = prev - 1;
@@ -258,12 +274,18 @@ export const MeteorGame = ({
             <p className="text-xs font-bold text-slate-500 mt-1">{t.meteorsDestroyed}</p>
           </div>
 
-          {/* 榮譽榜破紀錄留名判定卡 */}
+          {/* 榮譽榜破紀錄留名判定卡與獎狀領取 */}
           <HonorSubmissionCard
             mode={`meteor-${subMode}`}
             book={qualifyingBook}
             score={score}
             time={survivalTime}
+            totalCount={Math.max(score + (3 - lives), encounteredWordsRef.current.size, 1)}
+            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : (subMode === 'abc' ? '英文字母 ABC' : settings.selectedUnits.slice(0, 3).join(', '))}
+            reviewWords={Array.from(encounteredWordsRef.current.values()).map(w => ({
+              ...w,
+              isMistake: mistakeIdsRef.current.has(w.id)
+            }))}
           />
 
           <Button3D variant="slate" size="lg" onClick={onBack} className="w-full">

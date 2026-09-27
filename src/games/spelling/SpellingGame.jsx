@@ -26,6 +26,9 @@ export const SpellingGame = ({
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [stats, setStats] = useState({ correct: 0, wrong: 0 });
+  const initialCountRef = useRef(0);
+  const historyWordsRef = useRef(new Map());
+  const mistakeIdsRef = useRef(new Set());
 
   useEffect(() => {
     let filtered = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
@@ -34,6 +37,10 @@ export const SpellingGame = ({
       shuffled = shuffled.slice(0, parseInt(settings.count, 10));
     }
     setQueue(shuffled);
+    initialCountRef.current = shuffled.length;
+    historyWordsRef.current.clear();
+    mistakeIdsRef.current.clear();
+    shuffled.forEach(w => historyWordsRef.current.set(w.id, { id: w.id, en: w.en, zh: w.zh }));
   }, [settings, words]);
 
   const loadWord = (wordObj) => {
@@ -98,6 +105,9 @@ export const SpellingGame = ({
   // 處理放置錯誤
   const processWrong = (slotIndex) => {
     soundEngine.wrong();
+    if (currentWord?.id) {
+      mistakeIdsRef.current.add(currentWord.id);
+    }
     setShakingSlot(slotIndex);
     setTimeout(() => setShakingSlot(null), 500);
 
@@ -190,12 +200,18 @@ export const SpellingGame = ({
             </div>
           </div>
 
-          {/* 榮譽榜破紀錄留名判定卡 */}
+          {/* 榮譽榜破紀錄留名判定卡與獎狀領取 */}
           <HonorSubmissionCard
             mode="spelling"
             book={qualifyingBook}
             score={stats.correct}
             time={elapsedTime}
+            totalCount={initialCountRef.current || (stats.correct + stats.wrong)}
+            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', ')}
+            reviewWords={Array.from(historyWordsRef.current.values()).map(w => ({
+              ...w,
+              isMistake: mistakeIdsRef.current.has(w.id)
+            }))}
           />
 
           <Button3D variant="slate" size="lg" onClick={onBack} className="w-full">

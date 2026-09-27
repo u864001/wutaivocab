@@ -25,6 +25,9 @@ export const StandardQuiz = ({
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const inputRef = useRef(null);
+  const initialCountRef = useRef(0);
+  const historyWordsRef = useRef(new Map());
+  const mistakeIdsRef = useRef(new Set());
 
   // 初始化題庫隊列
   useEffect(() => {
@@ -34,6 +37,10 @@ export const StandardQuiz = ({
       shuffled = shuffled.slice(0, parseInt(settings.count, 10));
     }
     setQueue(shuffled);
+    initialCountRef.current = shuffled.length;
+    historyWordsRef.current.clear();
+    mistakeIdsRef.current.clear();
+    shuffled.forEach(w => historyWordsRef.current.set(w.id, { id: w.id, en: w.en, zh: w.zh }));
     setCurrentQuestion(shuffled[0] || null);
   }, [settings, words, mode]);
 
@@ -77,6 +84,7 @@ export const StandardQuiz = ({
       setTimeout(() => moveToNext(true), 900);
     } else {
       setFeedback('wrong');
+      mistakeIdsRef.current.add(currentQuestion.id);
       setStats(s => ({ ...s, wrong: s.wrong + 1, streak: 0 }));
       soundEngine.wrong();
 
@@ -164,12 +172,18 @@ export const StandardQuiz = ({
             </div>
           </div>
 
-          {/* 榮譽榜破紀錄留名判定卡 */}
+          {/* 榮譽榜破紀錄留名判定卡與獎狀領取 */}
           <HonorSubmissionCard
             mode={mode}
             book={qualifyingBook}
             score={stats.correct}
             time={elapsedTime}
+            totalCount={initialCountRef.current || (stats.correct + stats.wrong)}
+            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', ')}
+            reviewWords={Array.from(historyWordsRef.current.values()).map(w => ({
+              ...w,
+              isMistake: mistakeIdsRef.current.has(w.id)
+            }))}
           />
 
           <Button3D variant="slate" size="lg" onClick={onBack} className="w-full">

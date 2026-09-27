@@ -249,22 +249,56 @@ export const Lobby = ({
           })}
         </div>
 
-        {/* 出題數與上榜門檻指示 */}
-        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <label className="text-xs font-black text-slate-500 dark:text-slate-400">
-              {t.unitCount}：
-            </label>
-            <select
-              value={settings.count}
-              onChange={(e) => setSettings(s => ({ ...s, count: e.target.value }))}
-              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-black text-xs sm:text-sm text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-600 outline-none"
-            >
-              <option value="5">{t.q5}</option>
-              <option value="10">{t.q10}</option>
-              <option value="20">{t.q20}</option>
-              <option value="all">{t.qAll}</option>
-            </select>
+        {/* 出題數、誘答模式與上榜門檻指示 */}
+        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-700/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-4">
+            {/* 每次出題數 */}
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-black text-slate-500 dark:text-slate-400">
+                {t.unitCount}：
+              </label>
+              <select
+                value={settings.count}
+                onChange={(e) => setSettings(s => ({ ...s, count: e.target.value }))}
+                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-black text-xs sm:text-sm text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-600 outline-none"
+              >
+                <option value="5">{t.q5}</option>
+                <option value="10">{t.q10}</option>
+                <option value="20">{t.q20}</option>
+                <option value="all">{t.qAll}</option>
+              </select>
+            </div>
+
+            {/* 誘答模式膠囊切換器 (Apple Capsule Segmented Pill) */}
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-black text-slate-500 dark:text-slate-400">
+                {t.distractorMode}：
+              </label>
+              <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => setSettings(s => ({ ...s, distractorMode: 'strict' }))}
+                  className={`px-3 py-1 rounded-lg text-xs font-black transition-all ${
+                    (settings.distractorMode || 'strict') === 'strict'
+                      ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                  }`}
+                >
+                  {t.distractorStrict}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSettings(s => ({ ...s, distractorMode: 'spiral' }))}
+                  className={`px-3 py-1 rounded-lg text-xs font-black transition-all ${
+                    settings.distractorMode === 'spiral'
+                      ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                  }`}
+                >
+                  {t.distractorSpiral}
+                </button>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -279,6 +313,13 @@ export const Lobby = ({
               </span>
             )}
           </div>
+        </div>
+
+        {/* 誘答模式備註提示 */}
+        <div className="mt-2 text-left">
+          <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">
+            💡 {settings.distractorMode === 'spiral' ? t.distractorSpiralHint : t.distractorStrictHint}
+          </span>
         </div>
       </GlassCard>
 

@@ -37,6 +37,8 @@ export const SnakeGame = ({
   const lettersRef = useRef([]); // [{ char, x, y, id }]
   const wordQueueRef = useRef([]);
   const startTimeRef = useRef(0);
+  const completedWordsRef = useRef(new Map());
+  const mistakeIdsRef = useRef(new Set());
 
   // 初始化題庫
   useEffect(() => {
@@ -50,6 +52,9 @@ export const SnakeGame = ({
       wordQueueRef.current = [...filtered].sort(() => 0.5 - Math.random());
     }
     const next = wordQueueRef.current.shift();
+    if (next && next.id) {
+      completedWordsRef.current.set(next.id, { id: next.id, en: next.en, zh: next.zh });
+    }
     setCurrentWord(next);
     setSpelledChars('');
     speakEnglish(next.en);
@@ -89,6 +94,8 @@ export const SnakeGame = ({
       return onBack();
     }
     wordQueueRef.current = [...filtered].sort(() => 0.5 - Math.random());
+    completedWordsRef.current.clear();
+    mistakeIdsRef.current.clear();
     setGameMode(mode);
     setHasStarted(true);
     setScore(0);
@@ -141,6 +148,7 @@ export const SnakeGame = ({
       const hitSelf = snakeRef.current.slice(1).some(segment => segment.x === head.x && segment.y === head.y);
       if (hitSelf) {
         soundEngine.wrong();
+        if (currentWord?.id) mistakeIdsRef.current.add(currentWord.id);
         setHearts(h => {
           if (h <= 1) finishGame();
           return h - 1;
@@ -170,6 +178,7 @@ export const SnakeGame = ({
         } else {
           // 吃錯字母
           soundEngine.wrong();
+          if (currentWord?.id) mistakeIdsRef.current.add(currentWord.id);
           setHearts(h => {
             if (h <= 1) finishGame();
             return h - 1;
@@ -371,12 +380,18 @@ export const SnakeGame = ({
             <p className="text-xs font-bold text-slate-500 mt-1">{t.adventureScore}</p>
           </div>
 
-          {/* 榮譽榜破紀錄留名判定卡 */}
+          {/* 榮譽榜破紀錄留名判定卡與獎狀領取 */}
           <HonorSubmissionCard
             mode={`snake-${gameMode}`}
             book={qualifyingBook}
             score={score}
             time={survivalTime}
+            totalCount={Math.max(Math.floor(score / 10), completedWordsRef.current.size, 1)}
+            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', ')}
+            reviewWords={Array.from(completedWordsRef.current.values()).map(w => ({
+              ...w,
+              isMistake: mistakeIdsRef.current.has(w.id)
+            }))}
           />
 
           <Button3D variant="slate" size="lg" onClick={onBack} className="w-full">

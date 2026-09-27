@@ -18,10 +18,11 @@ export function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
 
-  // 測驗出題設定
+  // 測驗出題設定 (預設純選定範圍誘答)
   const [settings, setSettings] = useState({
     selectedUnits: [],
-    count: '20'
+    count: '20',
+    distractorMode: 'strict'
   });
 
   const loadWords = async () => {

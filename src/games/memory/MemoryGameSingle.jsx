@@ -126,11 +126,13 @@ export const MemoryGameSingle = ({
   const [isFinished, setIsFinished] = useState(false);
   const [startTime, setStartTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const selectedWordsRef = useRef([]);
 
   const handleStart = () => {
     let pool = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
     if (pool.length < 10) pool = words; // fallback
     const selected = [...pool].sort(() => 0.5 - Math.random()).slice(0, 10);
+    selectedWordsRef.current = selected;
 
     const cardList = [];
     selected.forEach((w, idx) => {
@@ -251,12 +253,20 @@ export const MemoryGameSingle = ({
             </div>
           )}
 
-          {/* 榮譽榜破紀錄留名判定卡 */}
+          {/* 榮譽榜破紀錄留名判定卡與獎狀領取 */}
           <HonorSubmissionCard
             mode="memory-single"
             book={qualifyingBook}
             score={Math.max(10, 100 - moves * 2 + bonusScore * 5)}
             time={elapsedTime}
+            totalCount={selectedWordsRef.current.length || 10}
+            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', ')}
+            reviewWords={selectedWordsRef.current.map(w => ({
+              id: w.id,
+              en: w.en,
+              zh: w.zh,
+              isMistake: false
+            }))}
           />
 
           <Button3D variant="slate" size="lg" onClick={onBack} className="w-full">

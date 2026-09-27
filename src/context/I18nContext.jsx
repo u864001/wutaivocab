@@ -64,6 +64,13 @@ const DICTIONARY = {
     playAgain: '再玩一次',
     remaining: '剩餘：',
 
+    // 出題與誘答模式
+    distractorMode: '選項干擾模式',
+    distractorStrict: '同選定範圍 (預設)',
+    distractorSpiral: '螺旋挑戰複習',
+    distractorStrictHint: '題目選項均嚴格出自當前選取的單元單字',
+    distractorSpiralHint: '高機率同單元 + 混入已學過單元複習',
+
     // 榮譽榜門檻留名判定卡 (HonorSubmissionCard)
     checkingTop50: '正在比對本週全校 Top 50 門檻...',
     qualifyTop50Title: '👑 恭喜登上全校 Top 50 榮譽榜！',
@@ -77,6 +84,9 @@ const DICTIONARY = {
     namePlaceholder: '請輸入班級與姓名（例：501小明）',
     submitHonorBtn: '送出榮譽榜 👑',
     submittingBtn: '正在登錄榮譽榜...',
+    viewCertificateBtn: '📜 領取榮譽獎狀',
+    switchPlayer: '換人登錄',
+    hostDisconnected: '房主已離開房間，對戰結束。',
 
     // 全校英雄榜 (LeaderboardView)
     heroHallTitle: '全校英雄榮譽榜',
@@ -223,6 +233,13 @@ const DICTIONARY = {
     playAgain: 'Play Again',
     remaining: 'Remaining: ',
 
+    // Distractor & Game Modes
+    distractorMode: 'Distractor Option Mode',
+    distractorStrict: 'Strict Scope (Default)',
+    distractorSpiral: 'Spiral Review',
+    distractorStrictHint: 'All options strictly from selected units',
+    distractorSpiralHint: 'High chance of same unit + mixes in learned units',
+
     // HonorSubmissionCard
     checkingTop50: 'Verifying Top 50 tournament threshold...',
     qualifyTop50Title: '👑 Qualified for School Top 50!',
@@ -236,6 +253,9 @@ const DICTIONARY = {
     namePlaceholder: 'Enter class & name (e.g., 501 Alex)',
     submitHonorBtn: 'Submit to Hall of Fame 👑',
     submittingBtn: 'Registering score...',
+    viewCertificateBtn: '📜 View My Certificate',
+    switchPlayer: 'Switch Student',
+    hostDisconnected: 'Host left the room. Battle ended.',
 
     // LeaderboardView
     heroHallTitle: 'School Heroes Hall of Fame',
