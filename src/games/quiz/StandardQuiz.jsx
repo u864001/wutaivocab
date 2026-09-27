@@ -3,7 +3,7 @@ import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
-import { uploadScore } from '../../services/supabase';
+import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Volume2, Send, CheckCircle2, XCircle, Trophy, RotateCcw } from 'lucide-react';
 
@@ -24,9 +24,6 @@ export const StandardQuiz = ({
   const [stats, setStats] = useState({ correct: 0, wrong: 0, streak: 0 });
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [playerName, setPlayerName] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isScoreSaved, setIsScoreSaved] = useState(false);
   const inputRef = useRef(null);
 
   // 初始化題庫隊列
@@ -112,24 +109,6 @@ export const StandardQuiz = ({
     }
   };
 
-  const handleSubmitScore = async () => {
-    if (!playerName.trim() || isSubmitting) return;
-    setIsSubmitting(true);
-
-    const success = await uploadScore({
-      mode,
-      book: qualifyingBook || 'Custom',
-      name: playerName.trim(),
-      score: stats.correct,
-      time: elapsedTime
-    });
-
-    if (success) {
-      setIsScoreSaved(true);
-    }
-    setIsSubmitting(false);
-  };
-
   // 尚未開始畫面
   if (!hasStarted) {
     return (
@@ -185,34 +164,13 @@ export const StandardQuiz = ({
             </div>
           </div>
 
-          {/* 榜單上傳區塊 */}
-          {qualifyingBook !== null && !isScoreSaved ? (
-            <div className="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800">
-              <p className="text-xs font-black text-amber-800 dark:text-amber-200 mb-2">
-                👑 符合榮譽榜上榜資格！
-              </p>
-              <input
-                type="text"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                placeholder={t.enterName}
-                className="w-full p-3 rounded-xl border border-amber-300 bg-white dark:bg-slate-800 text-center font-bold text-slate-800 dark:text-slate-100 mb-2 outline-none focus:border-amber-500"
-              />
-              <Button3D
-                variant="amber"
-                size="md"
-                onClick={handleSubmitScore}
-                disabled={!playerName.trim() || isSubmitting}
-                className="w-full"
-              >
-                {isSubmitting ? t.submitting : t.submitHonor}
-              </Button3D>
-            </div>
-          ) : isScoreSaved ? (
-            <div className="mb-6 p-3 rounded-xl bg-emerald-100 text-emerald-800 font-black text-xs">
-              ✓ {t.submitted}
-            </div>
-          ) : null}
+          {/* 榮譽榜破紀錄留名判定卡 */}
+          <HonorSubmissionCard
+            mode={mode}
+            book={qualifyingBook}
+            score={stats.correct}
+            time={elapsedTime}
+          />
 
           <Button3D variant="slate" size="lg" onClick={onBack} className="w-full">
             {t.backLobby}

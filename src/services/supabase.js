@@ -143,8 +143,79 @@ export const uploadScore = async ({ mode, book, name, score, time }) => {
   }
 };
 
-// ── 讀取排行榜 (只取前 10 名) ──
-export const fetchLeaderboard = async (week, mode, book) => {
+// ── 檢查是否達到進入前 50 名的門檻 ──
+export const checkIfQualifiesForTop50 = async ({ mode, book, score, time }) => {
+  if (!score || score <= 0) return false;
+  const currentWeek = getWeekNumber();
+  try {
+    const { data, error } = await supabase
+      .from('leaderboard')
+      .select('score, time')
+      .eq('week', currentWeek)
+      .eq('mode', mode)
+      .eq('book', String(book))
+      .order('score', { ascending: false })
+      .order('time', { ascending: true })
+      .limit(50);
+
+    if (error) return true; // 若連線異常，直接允許留名鼓勵學生
+    if (!data || data.length < 50) return true; // 未滿 50 人，任何正分皆可上榜！
+
+    // 已滿 50 人：分數必須超越第 50 名，或同分但時間更短
+    const last50th = data[data.length - 1];
+    return score > last50th.score || (score === last50th.score && time < last50th.time);
+  } catch (e) {
+    return true;
+  }
+};
+
+// ── 連線對戰勝場紀錄 (累計該 iPad 本週勝場，並更新為最新暱稱) ──
+export const recordBattleWin = async ({ book, name }) => {
+  const deviceId = getDeviceId();
+  const currentWeek = getWeekNumber();
+  const mode = 'battle-wins';
+
+  try {
+    const { data: existing } = await supabase
+      .from('leaderboard')
+      .select('id, score')
+      .eq('device_id', deviceId)
+      .eq('week', currentWeek)
+      .eq('mode', mode)
+      .eq('book', String(book))
+      .maybeSingle();
+
+    if (existing) {
+      await supabase
+        .from('leaderboard')
+        .update({
+          name: name.trim(),
+          score: (existing.score || 0) + 1,
+          created_at: new Date().toISOString()
+        })
+        .eq('id', existing.id);
+    } else {
+      await supabase
+        .from('leaderboard')
+        .insert([{
+          device_id: deviceId,
+          name: name.trim(),
+          mode,
+          book: String(book),
+          score: 1,
+          time: 0,
+          week: currentWeek
+        }]);
+    }
+    return true;
+  } catch (err) {
+    console.error('連線勝場紀錄失敗:', err);
+    return false;
+  }
+};
+
+// ── 讀取排行榜 (支援至前 50 名) ──
+export const fetchLeaderboard = async (week, mode, book, limit = 50) => {
   try {
     const { data, error } = await supabase
       .from('leaderboard')
@@ -154,7 +225,7 @@ export const fetchLeaderboard = async (week, mode, book) => {
       .eq('book', String(book))
       .order('score', { ascending: false })
       .order('time', { ascending: true })
-      .limit(10);
+      .limit(limit);
 
     if (error) throw error;
     return data || [];

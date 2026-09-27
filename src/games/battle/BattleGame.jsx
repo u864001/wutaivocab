@@ -3,7 +3,7 @@ import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
-import { supabase, getDeviceId } from '../../services/supabase';
+import { supabase, getDeviceId, recordBattleWin } from '../../services/supabase';
 import { generateSmartOptions } from '../../services/distractorHelper';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Swords, Users, Shield, Heart, Zap, Trophy, Play } from 'lucide-react';
@@ -17,7 +17,7 @@ export const BattleGame = ({
   const [view, setView] = useState('menu'); // 'menu' | 'lobby' | 'playing' | 'result'
   const [roomCode, setRoomCode] = useState('');
   const [joinCodeInput, setJoinCodeInput] = useState('');
-  const [playerName, setPlayerName] = useState('');
+  const [playerName, setPlayerName] = useState(() => localStorage.getItem('wutai_player_name') || '');
   const [isHost, setIsHost] = useState(false);
   const [players, setPlayers] = useState([]);
   const [errorMsg, setErrorMsg] = useState('');
@@ -42,6 +42,7 @@ export const BattleGame = ({
       setErrorMsg('房主請先回到主畫面勾選對戰複習範圍！');
       return;
     }
+    localStorage.setItem('wutai_player_name', playerName.trim());
     const code = Math.floor(1000 + Math.random() * 9000).toString();
     setRoomCode(code);
     setIsHost(true);
@@ -58,6 +59,7 @@ export const BattleGame = ({
       setErrorMsg('請輸入 4 位數房號！');
       return;
     }
+    localStorage.setItem('wutai_player_name', playerName.trim());
     setRoomCode(joinCodeInput.trim());
     setIsHost(false);
     joinRoomChannel(joinCodeInput.trim(), false);
@@ -190,10 +192,17 @@ export const BattleGame = ({
     if (view === 'playing') {
       const alivePlayers = players.filter(p => !p.isDead);
       if (alivePlayers.length === 1 && players.length > 1) {
-        setWinnerName(alivePlayers[0].name);
+        const winner = alivePlayers[0];
+        setWinnerName(winner.name);
         setView('result');
         soundEngine.win();
         confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+
+        // 若獲勝者為此裝置，累計勝場至 Supabase (同時刷新最新暱稱)
+        if (winner.deviceId === myDeviceIdRef.current) {
+          const book = battleUnitsRef.current[0]?.split('-')[0] || '1';
+          recordBattleWin({ book, name: playerName.trim() });
+        }
       }
     }
   }, [players, view]);
