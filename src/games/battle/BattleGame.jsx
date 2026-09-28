@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
@@ -9,8 +9,14 @@ import { getProfanityError } from '../../services/profanityFilter';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Swords, Users, Shield, Heart, Zap,
-  Trophy, Play, RefreshCw, QrCode, Lock, CheckCircle2, AlertCircle
+  Trophy, Play, RefreshCw, Lock, CheckCircle2, AlertCircle,
+  Eye, Maximize2, Minimize2, Sparkles, Flame, Skull, Crown, AlertTriangle
 } from 'lucide-react';
+import { MeteorCanvas3D } from '../meteor/MeteorCanvas3D';
+import { MeteorEasterEggs2D } from '../meteor/MeteorEasterEggs2D';
+import { RightComboDisplay } from '../meteor/RightComboDisplay';
+import { EmergencyRaidMeteor } from './EmergencyRaidMeteor';
+import { calculateMeteorDuration, calculateMeteorMotionProgress } from '../meteor/meteorPhysics';
 
 // ── 全校固定三大限定擂台 (嚴格限制全校同時最多 3 場對戰，徹底防護連線數與廣播配額) ──
 const FIXED_ARENAS = [
@@ -53,37 +59,109 @@ export const BattleGame = ({
   const [players, setPlayers] = useState([]);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // 三大擂台全域狀態監控 ({ 'arena-1': { count, isBattling, hostName, playerNames } })
+  // 三大擂台全域狀態監控
   const [arenaStates, setArenaStates] = useState({
     'arena-1': { count: 0, isBattling: false, hostName: '', playerNames: [] },
     'arena-2': { count: 0, isBattling: false, hostName: '', playerNames: [] },
     'arena-3': { count: 0, isBattling: false, hostName: '', playerNames: [] }
   });
-  const [isConnecting, setIsConnecting] = useState(null); // 當前正在連線檢查的 arena.id
+  const [isConnecting, setIsConnecting] = useState(null);
   const [isProbing, setIsProbing] = useState(false);
   const [probeCounter, setProbeCounter] = useState(0);
 
-  // 戰鬥狀態
-  const [currentQuestion, setCurrentQuestion] = useState(null);
-  const [options, setOptions] = useState([]);
-  const [myHealth, setMyHealth] = useState(100);
+  // ── 隕石戰鬥狀態 ──
+  const [renderMode, setRenderMode] = useState('3d');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [myLives, setMyLives] = useState(3);
+  const [myScore, setMyScore] = useState(0);
+  const [myMeteorsDestroyed, setMyMeteorsDestroyed] = useState(0);
+  const [myCombo, setMyCombo] = useState(0);
+  const [horizonOffset, setHorizonOffset] = useState(0); // 地平線位移 (-30% ~ +30%)
   const [isDead, setIsDead] = useState(false);
+  const [hideDeadModal, setHideDeadModal] = useState(false); // 陣亡後允許隱藏彈窗觀戰
+
+  const [currentMeteor, setCurrentMeteor] = useState(null);
+  const [options, setOptions] = useState([]);
+  const [isExploding, setIsExploding] = useState(false);
+  const [laserTrigger, setLaserTrigger] = useState(null);
+  const [wordQueue, setWordQueue] = useState([]);
+
+  // 突襲隕石 (Emergency Raid Meteor) 佇列
+  const [activeRaid, setActiveRaid] = useState(null);
+  const raidQueueRef = useRef([]);
+  const isProcessingRaidRef = useRef(false);
+
+  // 飄浮動態通知
+  const [noticeBanner, setNoticeBanner] = useState(null);
+
+  // 結算數據
+  const [finalLeaderboard, setFinalLeaderboard] = useState([]);
   const [winnerName, setWinnerName] = useState('');
 
+  // 內部同步 Ref (防止非同步閉包取得過期資料)
   const channelRef = useRef(null);
   const myDeviceIdRef = useRef(getDeviceId());
   const battleUnitsRef = useRef(settings?.selectedUnits || []);
-  const lastAttackTimeRef = useRef(0);
-  const hostDisconnectTimerRef = useRef(null);
+  const myJoinTimestampRef = useRef(Date.now());
+  const gameStartTimeRef = useRef(0);
 
-  // ── 大廳零長連線架構：1-Shot 快照探測 (取得狀態 1.5 秒後立即斷開銷毀，絕不長期佔用連線) ──
+  const livesRef = useRef(3);
+  const scoreRef = useRef(0);
+  const comboRef = useRef(0);
+  const horizonRef = useRef(0);
+  const destroyedRef = useRef(0);
+  const isDeadRef = useRef(false);
+  const playersRef = useRef([]);
+
+  const containerRef = useRef(null);
+  const meteor2DRef = useRef(null);
+  const animFrameRef = useRef(null);
+
+  // 同步 Refs
+  useEffect(() => { livesRef.current = myLives; }, [myLives]);
+  useEffect(() => { scoreRef.current = myScore; }, [myScore]);
+  useEffect(() => { comboRef.current = myCombo; }, [myCombo]);
+  useEffect(() => { horizonRef.current = horizonOffset; }, [horizonOffset]);
+  useEffect(() => { destroyedRef.current = myMeteorsDestroyed; }, [myMeteorsDestroyed]);
+  useEffect(() => { isDeadRef.current = isDead; }, [isDead]);
+  useEffect(() => { playersRef.current = players; }, [players]);
+
+  // 監聽全螢幕
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+  };
+
+  // 飄浮通知封裝
+  const showNotice = useCallback((text, type = 'info') => {
+    setNoticeBanner({ text, type });
+    setTimeout(() => {
+      setNoticeBanner(prev => (prev?.text === text ? null : prev));
+    }, 2500);
+  }, []);
+
+  // ── 大廳零長連線架構：1-Shot 快照探測 ──
   useEffect(() => {
     if (view !== 'menu') return;
 
     let isCancelled = false;
     setIsProbing(true);
 
-    // 建立 3 擂台輕量探測頻道 (不調用 track，不計入玩家名單)
     const probeChannels = FIXED_ARENAS.map(arena => {
       const ch = supabase.channel(`battle-${arena.id}`);
       ch.on('presence', { event: 'sync' }, () => {
@@ -107,7 +185,6 @@ export const BattleGame = ({
       return ch;
     });
 
-    // 1.5 秒後準時銷毀所有探測頻道，大廳保持 0 條持續 WebSocket 連線！
     const timer = setTimeout(() => {
       if (!isCancelled) {
         probeChannels.forEach(ch => supabase.removeChannel(ch));
@@ -125,27 +202,21 @@ export const BattleGame = ({
 
   // 退出對戰清理
   const handleLeaveRoom = () => {
-    if (hostDisconnectTimerRef.current) {
-      clearTimeout(hostDisconnectTimerRef.current);
-      hostDisconnectTimerRef.current = null;
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
     }
 
     if (channelRef.current) {
-      if (isHost) {
-        try {
-          channelRef.current.send({
-            type: 'broadcast',
-            event: 'host-left',
-            payload: {}
-          });
-        } catch (e) {}
-      }
-      supabase.removeChannel(channelRef.current);
+      try {
+        supabase.removeChannel(channelRef.current);
+      } catch (e) {}
       channelRef.current = null;
     }
     setIsHost(false);
     setIsConnecting(null);
     setPlayers([]);
+    setActiveRaid(null);
+    raidQueueRef.current = [];
     setView('menu');
   };
 
@@ -166,7 +237,6 @@ export const BattleGame = ({
       return;
     }
 
-    // 檢查該擂台是否已被佔用
     const cur = arenaStates[arena.id];
     if (cur && (cur.count > 0 || cur.isBattling)) {
       setErrorMsg(`【${arena.name}】剛已被搶先開立或正在對戰中，請選擇其他空房！`);
@@ -193,7 +263,6 @@ export const BattleGame = ({
       return;
     }
 
-    // 檢查該擂台是否正在對戰中或已滿 4 人
     const cur = arenaStates[arena.id];
     if (cur && cur.isBattling) {
       setErrorMsg(`【${arena.name}】正在激烈激戰中，已被鎖定！請選擇其他擂台。`);
@@ -210,7 +279,181 @@ export const BattleGame = ({
     connectToArenaChannel(arena, false);
   };
 
-  // 連接至特定擂台頻道 (按需即時連線，含滿員防爆與雙房主確定性仲裁)
+  // 廣播個人實時數據 (血量、愛心、得分、連擊、地平線)
+  const broadcastMyStats = useCallback((override = {}) => {
+    if (!channelRef.current) return;
+    const payload = {
+      deviceId: myDeviceIdRef.current,
+      name: playerName.trim(),
+      score: override.score !== undefined ? override.score : scoreRef.current,
+      lives: override.lives !== undefined ? override.lives : livesRef.current,
+      combo: override.combo !== undefined ? override.combo : comboRef.current,
+      horizonOffset: override.horizonOffset !== undefined ? override.horizonOffset : horizonRef.current,
+      meteorsDestroyed: override.meteorsDestroyed !== undefined ? override.meteorsDestroyed : destroyedRef.current,
+      isDead: override.isDead !== undefined ? override.isDead : isDeadRef.current,
+      survivalTime: Math.floor((Date.now() - (gameStartTimeRef.current || Date.now())) / 1000)
+    };
+
+    channelRef.current.send({
+      type: 'broadcast',
+      event: 'player-stats',
+      payload
+    });
+  }, [playerName]);
+
+  // 處理突襲隕石佇列 (Sequential Queue Processor)
+  const processNextRaid = useCallback(() => {
+    if (isProcessingRaidRef.current) return;
+    if (raidQueueRef.current.length === 0) {
+      setActiveRaid(null);
+      return;
+    }
+
+    isProcessingRaidRef.current = true;
+    const nextRaid = raidQueueRef.current.shift();
+    setActiveRaid(nextRaid);
+  }, []);
+
+  // 突襲隕石成功攔截
+  const handleRaidDefended = useCallback(() => {
+    soundEngine.correct();
+    setMyScore(s => {
+      const next = s + 10;
+      broadcastMyStats({ score: next });
+      return next;
+    });
+    showNotice('⚡ 成功攔截敵方突襲隕石！防禦加成 +10 分！', 'success');
+
+    setActiveRaid(null);
+    isProcessingRaidRef.current = false;
+    setTimeout(() => {
+      processNextRaid();
+    }, 500);
+  }, [broadcastMyStats, showNotice, processNextRaid]);
+
+  // 突襲隕石撞地逾時扣心
+  const handleRaidImpact = useCallback(() => {
+    soundEngine.wrong();
+    showNotice('💥 突襲隕石撞擊地面！扣除 1 顆愛心！', 'danger');
+
+    setMyLives(prev => {
+      const next = Math.max(0, prev - 1);
+      broadcastMyStats({ lives: next });
+      if (next <= 0) {
+        handlePlayerDead();
+      }
+      return next;
+    });
+
+    setActiveRaid(null);
+    isProcessingRaidRef.current = false;
+    setTimeout(() => {
+      processNextRaid();
+    }, 500);
+  }, [broadcastMyStats, showNotice, processNextRaid]);
+
+  // 自身陣亡處理
+  const handlePlayerDead = useCallback(() => {
+    if (isDeadRef.current) return;
+    setIsDead(true);
+    setMyLives(0);
+    soundEngine.wrong();
+
+    const deadPayload = {
+      deviceId: myDeviceIdRef.current,
+      name: playerName.trim(),
+      score: scoreRef.current,
+      lives: 0,
+      isDead: true,
+      meteorsDestroyed: destroyedRef.current,
+      survivalTime: Math.floor((Date.now() - (gameStartTimeRef.current || Date.now())) / 1000)
+    };
+
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: 'broadcast',
+        event: 'player-dead',
+        payload: deadPayload
+      });
+
+      // 更新 presence
+      channelRef.current.track({
+        deviceId: myDeviceIdRef.current,
+        name: playerName.trim(),
+        isHost: isHost,
+        status: 'battling',
+        isDead: true,
+        lives: 0,
+        score: scoreRef.current,
+        joinedAt: myJoinTimestampRef.current
+      });
+    }
+
+    showNotice('🛡️ 防衛線已失守！你目前處於觀戰模式。', 'danger');
+  }, [playerName, isHost, showNotice]);
+
+  // 計算結算排名榜單 (按規則：1.剩餘愛心降冪 2.總分含愛心加成降冪 3.擊落題數降冪 4.存活時間降冪)
+  const calculateLeaderboard = useCallback((activePlayers) => {
+    return [...activePlayers].map(p => {
+      const remainingLives = p.lives !== undefined ? p.lives : (p.isDead ? 0 : 3);
+      const rawScore = p.score || 0;
+      const heartBonus = remainingLives > 0 ? remainingLives * 50 : 0;
+      const finalScore = rawScore + heartBonus;
+      return {
+        ...p,
+        lives: remainingLives,
+        rawScore,
+        heartBonus,
+        finalScore,
+        meteorsDestroyed: p.meteorsDestroyed || 0,
+        survivalTime: p.survivalTime || 0
+      };
+    }).sort((a, b) => {
+      // 1. 剩餘愛心數降冪 (存活者在前)
+      if (b.lives !== a.lives) return b.lives - a.lives;
+      // 2. 最終得分降冪
+      if (b.finalScore !== a.finalScore) return b.finalScore - a.finalScore;
+      // 3. 擊落單字數降冪
+      if (b.meteorsDestroyed !== a.meteorsDestroyed) return b.meteorsDestroyed - a.meteorsDestroyed;
+      // 4. 存活時間降冪
+      return b.survivalTime - a.survivalTime;
+    });
+  }, []);
+
+  // 觸發結算 (當存活玩家 <= 1 時權威發起)
+  const triggerGameOver = useCallback((currentActivePlayers) => {
+    const sorted = calculateLeaderboard(currentActivePlayers);
+    const champion = sorted[0];
+
+    setFinalLeaderboard(sorted);
+    setWinnerName(champion?.name || '無人生還');
+    setView('result');
+
+    soundEngine.win();
+    try {
+      confetti({ particleCount: 120, spread: 90, origin: { y: 0.5 } });
+    } catch (e) {}
+
+    // 若本人是冠軍，記錄勝場
+    if (champion && champion.deviceId === myDeviceIdRef.current) {
+      const book = battleUnitsRef.current[0]?.split('-')[0] || '1';
+      recordBattleWin({ book, name: playerName.trim() });
+    }
+
+    // 向全房廣播 game-over 同步切換結算畫面
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: 'broadcast',
+        event: 'game-over',
+        payload: {
+          leaderboard: sorted,
+          winnerName: champion?.name || ''
+        }
+      });
+    }
+  }, [calculateLeaderboard, playerName]);
+
+  // 連接至特定擂台頻道 (即時連線、滿員防爆、房主繼承與競態仲裁)
   const connectToArenaChannel = (arena, hostFlag) => {
     setErrorMsg('');
     setIsConnecting(arena.id);
@@ -221,12 +464,20 @@ export const BattleGame = ({
     });
 
     const myJoinTimestamp = Date.now();
+    myJoinTimestampRef.current = myJoinTimestamp;
 
     channel
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
         const activeList = Object.values(state).flat();
-        setPlayers(activeList);
+        setPlayers(prev => {
+          // 合併既有戰鬥數據，保留實時分數與血量
+          const merged = activeList.map(item => {
+            const existing = prev.find(p => p.deviceId === item.deviceId);
+            return existing ? { ...item, ...existing, name: item.name, isHost: item.isHost } : item;
+          });
+          return merged;
+        });
 
         // 1. 激戰中防插隊判定
         const isBattlingNow = activeList.some(p => p.status === 'battling' && p.deviceId !== myDeviceIdRef.current);
@@ -246,11 +497,9 @@ export const BattleGame = ({
         // 3. 雙房主競態仲裁 (Deterministic Tie-Breaker)
         const hosts = activeList.filter(p => p.isHost);
         if (hosts.length > 1) {
-          // 依 joinedAt 時間戳排序；若毫秒完全相同，則以 deviceId 字典順序仲裁
           hosts.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0) || a.deviceId.localeCompare(b.deviceId));
           const trueHost = hosts[0];
           if (myDeviceIdRef.current !== trueHost.deviceId) {
-            // 本人非最早開立者，自動降級為挑戰者成員，避免房間分裂
             setIsHost(false);
             channel.track({
               deviceId: myDeviceIdRef.current,
@@ -258,32 +507,32 @@ export const BattleGame = ({
               isHost: false,
               status: 'waiting',
               isDead: false,
+              lives: 3,
+              score: 0,
               joinedAt: myJoinTimestamp
             });
             setErrorMsg(`同學 ${trueHost.name} 搶先開立，已為您自動轉為加入挑戰！`);
           }
         }
 
-        // 4. 房主斷線寬限判定 (寬限 3 秒，防止短暫網路抖動誤退)
-        if (!hostFlag) {
-          const hasHost = activeList.some(p => p.isHost);
-          if (!hasHost && activeList.length > 0) {
-            if (!hostDisconnectTimerRef.current) {
-              hostDisconnectTimerRef.current = setTimeout(() => {
-                setErrorMsg('房主已離開房間，對戰結束。');
-                handleLeaveRoom();
-              }, 3000);
-            }
-          } else if (hasHost && hostDisconnectTimerRef.current) {
-            clearTimeout(hostDisconnectTimerRef.current);
-            hostDisconnectTimerRef.current = null;
+        // 4. 房主繼承機制 (Host Migration)：若房主離開，最早加入之存活成員接管
+        const hasHost = activeList.some(p => p.isHost);
+        if (!hasHost && activeList.length > 0) {
+          const aliveCandidates = activeList.filter(p => !p.isDead);
+          const pool = aliveCandidates.length > 0 ? aliveCandidates : activeList;
+          pool.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0) || a.deviceId.localeCompare(b.deviceId));
+          const successor = pool[0];
+
+          if (successor && successor.deviceId === myDeviceIdRef.current) {
+            setIsHost(true);
+            channel.track({
+              ...successor,
+              deviceId: myDeviceIdRef.current,
+              name: playerName.trim(),
+              isHost: true
+            });
+            showNotice('👑 原房主已離線，你已自動接任為新房主！', 'warning');
           }
-        }
-      })
-      .on('broadcast', { event: 'host-left' }, () => {
-        if (!hostFlag) {
-          setErrorMsg('房主已退出房間，對戰結束。');
-          handleLeaveRoom();
         }
       })
       .on('broadcast', { event: 'game-start' }, ({ payload }) => {
@@ -292,20 +541,62 @@ export const BattleGame = ({
         }
         startGame();
       })
-      .on('broadcast', { event: 'player-attack' }, ({ payload }) => {
-        if (payload.targetId === myDeviceIdRef.current) {
+      .on('broadcast', { event: 'meteor-raid' }, ({ payload }) => {
+        // 收到來自對手的突襲赤紅隕石
+        if (payload.attackerId !== myDeviceIdRef.current && !isDeadRef.current) {
           soundEngine.wrong();
-          setMyHealth(h => {
-            const next = Math.max(0, h - 25);
-            if (next <= 0) handlePlayerDead();
-            return next;
+          showNotice(`⚠️ 來自【${payload.attackerName}】的突襲空襲！速點 5 下！`, 'danger');
+          raidQueueRef.current.push({
+            id: payload.raidId || Math.random(),
+            attackerName: payload.attackerName
           });
+          processNextRaid();
         }
       })
-      .on('broadcast', { event: 'player-dead' }, ({ payload }) => {
+      .on('broadcast', { event: 'gravity-shift' }, ({ payload }) => {
+        // 受到敵方 5 連擊重力壓制：地平線防線上升 2%
+        if (payload.attackerId !== myDeviceIdRef.current && !isDeadRef.current) {
+          soundEngine.wrong();
+          setHorizonOffset(h => {
+            const next = Math.min(30, h + 2);
+            broadcastMyStats({ horizonOffset: next });
+            return next;
+          });
+          showNotice(`🌌 受到【${payload.attackerName}】重力壓制！防線上升 2%！`, 'warning');
+        }
+      })
+      .on('broadcast', { event: 'player-stats' }, ({ payload }) => {
+        // 更新其他玩家即時戰況
         setPlayers(prev =>
-          prev.map(p => (p.deviceId === payload.deviceId ? { ...p, isDead: true } : p))
+          prev.map(p => (p.deviceId === payload.deviceId ? { ...p, ...payload } : p))
         );
+      })
+      .on('broadcast', { event: 'player-dead' }, ({ payload }) => {
+        // 標記該玩家陣亡
+        setPlayers(prev => {
+          const updated = prev.map(p =>
+            p.deviceId === payload.deviceId ? { ...p, ...payload, isDead: true, lives: 0 } : p
+          );
+
+          // 檢查是否只剩 <= 1 位存活者 (提早結束結算判定)
+          const alive = updated.filter(p => !p.isDead);
+          if (updated.length >= 2 && alive.length <= 1) {
+            setTimeout(() => {
+              triggerGameOver(updated);
+            }, 600);
+          }
+
+          return updated;
+        });
+      })
+      .on('broadcast', { event: 'game-over' }, ({ payload }) => {
+        // 收到全房結束結算指令
+        if (payload?.leaderboard) {
+          setFinalLeaderboard(payload.leaderboard);
+          setWinnerName(payload.winnerName || '比賽結束');
+          setView('result');
+          soundEngine.win();
+        }
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
@@ -315,6 +606,8 @@ export const BattleGame = ({
             isHost: hostFlag,
             status: 'waiting',
             isDead: false,
+            lives: 3,
+            score: 0,
             joinedAt: myJoinTimestamp
           });
           setIsConnecting(null);
@@ -331,13 +624,15 @@ export const BattleGame = ({
   // 房主啟動遊戲並廣播 (鎖定房間)
   const handleStartGameBroadcast = async () => {
     if (channelRef.current) {
-      // 標註為對戰中，鎖定該擂台不接受新成員
       await channelRef.current.track({
         deviceId: myDeviceIdRef.current,
         name: playerName.trim(),
         isHost: true,
         status: 'battling',
-        isDead: false
+        isDead: false,
+        lives: 3,
+        score: 0,
+        joinedAt: myJoinTimestampRef.current
       });
 
       channelRef.current.send({
@@ -349,93 +644,255 @@ export const BattleGame = ({
     }
   };
 
+  // ── 開始戰鬥 (Playing Mode Initialization) ──
   const startGame = () => {
     setView('playing');
-    setMyHealth(100);
+    setMyLives(3);
+    setMyScore(0);
+    setMyMeteorsDestroyed(0);
+    setMyCombo(0);
+    setHorizonOffset(0);
     setIsDead(false);
-    nextQuestion();
-  };
+    setHideDeadModal(false);
+    setActiveRaid(null);
+    raidQueueRef.current = [];
+    isProcessingRaidRef.current = false;
+    gameStartTimeRef.current = Date.now();
 
-  const nextQuestion = () => {
+    // 請求全螢幕沉浸體驗
+    if (document.fullscreenEnabled && !document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.().catch(() => {});
+    }
+
+    // 準備單字題庫
     const units = battleUnitsRef.current;
     let pool = words.filter(w => units.includes(`${w.book}-${w.lesson}`));
     if (pool.length === 0) pool = words;
 
-    const target = pool[Math.floor(Math.random() * pool.length)];
-    setCurrentQuestion(target);
+    const shuffled = [...pool].sort(() => 0.5 - Math.random());
+    setWordQueue(shuffled);
+    const firstWord = shuffled[0];
+    updateOptionsFor(firstWord, pool);
+    spawnMeteor(firstWord, 0);
+  };
 
-    // 依據誘答模式產生選項 (預設為同選定範圍 strict)
+  // 產生 4 誘答選項
+  const updateOptionsFor = (targetWord, pool) => {
     const opts = generateSmartOptions(
-      target,
+      targetWord,
       pool,
       words,
       'en',
-      settings.distractorMode || 'strict'
+      settings?.distractorMode || 'strict'
     );
     setOptions(opts);
   };
 
-  const handleAnswer = (opt) => {
-    if (!currentQuestion || isDead) return;
+  // 召喚單字隕石
+  const spawnMeteor = (wordObj, questionIndex) => {
+    const duration = calculateMeteorDuration(questionIndex);
+    const xPos = 20 + Math.random() * 60;
+
+    setCurrentMeteor({
+      word: wordObj,
+      x: xPos,
+      duration,
+      startTime: performance.now(),
+      questionIndex
+    });
+
+    setIsExploding(false);
+  };
+
+  // 2D 物理落下循環
+  useEffect(() => {
+    if (view !== 'playing' || !currentMeteor || isExploding || isDead || renderMode !== '2d') return;
+
+    const tick = (now) => {
+      const elapsed = (now - currentMeteor.startTime) / 1000;
+      const motionProgress = calculateMeteorMotionProgress(
+        elapsed,
+        currentMeteor.duration,
+        currentMeteor.questionIndex
+      );
+
+      const y = -10 + motionProgress * 100;
+      if (meteor2DRef.current) {
+        meteor2DRef.current.style.top = `${y}%`;
+      }
+
+      if (elapsed >= currentMeteor.duration) {
+        handleMiss();
+      } else {
+        animFrameRef.current = requestAnimationFrame(tick);
+      }
+    };
+
+    animFrameRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animFrameRef.current);
+  }, [currentMeteor, view, isExploding, isDead, renderMode]);
+
+  // 3D 模式超時碰撞檢查
+  useEffect(() => {
+    if (view !== 'playing' || !currentMeteor || isExploding || isDead || renderMode !== '3d') return;
+
+    const timeoutMs = currentMeteor.duration * 1000;
+    const timer = setTimeout(() => {
+      handleMiss();
+    }, timeoutMs);
+
+    return () => clearTimeout(timer);
+  }, [currentMeteor, view, isExploding, isDead, renderMode]);
+
+  // 單字答錯或逾時撞擊地表扣心
+  const handleMiss = () => {
+    if (isDeadRef.current) return;
+    soundEngine.wrong();
+    setIsExploding(true);
+    setMyCombo(0);
+
+    setMyLives(prev => {
+      const next = Math.max(0, prev - 1);
+      broadcastMyStats({ lives: next, combo: 0 });
+      if (next <= 0) {
+        handlePlayerDead();
+      } else {
+        setTimeout(() => nextTurn(destroyedRef.current), 800);
+      }
+      return next;
+    });
+  };
+
+  // 點擊選項答題
+  const handleOptionClick = (opt) => {
+    if (!currentMeteor || isExploding || isDead) return;
+    soundEngine.laser();
+
+    setLaserTrigger({ isCorrect: opt.isCorrect, timestamp: Date.now() });
 
     if (opt.isCorrect) {
-      soundEngine.correct();
+      soundEngine.explosion();
 
-      // 防刷廣播節流保護：發送前立即更新 performance.now() 時間戳，杜絕連續誤按
-      const now = performance.now();
-      const otherPlayers = players.filter(p => p.deviceId !== myDeviceIdRef.current && !p.isDead);
-      if (otherPlayers.length > 0 && channelRef.current && now - lastAttackTimeRef.current > 1200) {
-        lastAttackTimeRef.current = now; // 發送前鎖定
-        const target = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
-        channelRef.current.send({
-          type: 'broadcast',
-          event: 'player-attack',
-          payload: { targetId: target.deviceId, attackerName: playerName }
-        });
-      }
+      // 連擊獎勵計算：
+      // 第 1 題 10 分 (bonus 0)
+      // 第 2 題 10+1 分 (bonus 1)
+      // 第 3 題 10+2 分 (bonus 2) ...
+      const streakBonus = comboRef.current;
+      const earned = 10 + streakBonus;
+      const nextScore = scoreRef.current + earned;
+      const nextDestroyed = destroyedRef.current + 1;
+      const nextCombo = comboRef.current + 1;
 
-      nextQuestion();
-    } else {
-      soundEngine.wrong();
-      setMyHealth(h => {
-        const next = Math.max(0, h - 15);
-        if (next <= 0) handlePlayerDead();
-        return next;
-      });
-    }
-  };
+      setMyScore(nextScore);
+      setMyMeteorsDestroyed(nextDestroyed);
+      setMyCombo(nextCombo);
 
-  const handlePlayerDead = () => {
-    setIsDead(true);
-    if (channelRef.current) {
-      channelRef.current.send({
-        type: 'broadcast',
-        event: 'player-dead',
-        payload: { deviceId: myDeviceIdRef.current }
-      });
-    }
-  };
+      if (nextCombo >= 2) soundEngine.combo(nextCombo);
 
-  // 監聽是否只剩最後一名生還者
-  useEffect(() => {
-    if (view === 'playing') {
-      const alivePlayers = players.filter(p => !p.isDead);
-      if (alivePlayers.length === 1 && players.length > 1) {
-        const winner = alivePlayers[0];
-        setWinnerName(winner.name);
-        setView('result');
-        soundEngine.win();
-        confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
-
-        if (winner.deviceId === myDeviceIdRef.current) {
-          const book = battleUnitsRef.current[0]?.split('-')[0] || '1';
-          recordBattleWin({ book, name: playerName.trim() });
+      // ── 互動機制 1：連對 3 題 (Combo 3) 突襲赤紅隕石 ──
+      if (nextCombo % 3 === 0) {
+        soundEngine.combo(4);
+        showNotice('🔥 3連擊！發動突襲赤紅隕石轟炸所有對手！', 'success');
+        if (channelRef.current) {
+          channelRef.current.send({
+            type: 'broadcast',
+            event: 'meteor-raid',
+            payload: {
+              attackerId: myDeviceIdRef.current,
+              attackerName: playerName.trim(),
+              raidId: `${myDeviceIdRef.current}-${Date.now()}-${nextCombo}`
+            }
+          });
         }
       }
-    }
-  }, [players, view]);
 
-  // 離線清理 (iPad 關閉分頁、背景睡眠防幽靈連線)
+      // ── 互動機制 2：連對 5 題 (Combo 5) 重力壓制 ──
+      let updatedHorizon = horizonRef.current;
+      if (nextCombo % 5 === 0) {
+        soundEngine.combo(5);
+        // 降低自身地平線 10% (爭取更多緩衝時間)
+        updatedHorizon = Math.max(-30, horizonRef.current - 10);
+        setHorizonOffset(updatedHorizon);
+
+        showNotice('🌌 5連擊重力壓制！自身防線下調10%，對手防線上升2%！', 'success');
+
+        if (channelRef.current) {
+          channelRef.current.send({
+            type: 'broadcast',
+            event: 'gravity-shift',
+            payload: {
+              attackerId: myDeviceIdRef.current,
+              attackerName: playerName.trim()
+            }
+          });
+        }
+      }
+
+      // 同步最新戰況至房間成員
+      broadcastMyStats({
+        score: nextScore,
+        meteorsDestroyed: nextDestroyed,
+        combo: nextCombo,
+        horizonOffset: updatedHorizon
+      });
+
+      setIsExploding(true);
+
+      if (renderMode === '2d' && meteor2DRef.current) {
+        const rect = meteor2DRef.current.getBoundingClientRect();
+        try {
+          confetti({
+            particleCount: 25,
+            spread: 60,
+            origin: {
+              x: (rect.left + rect.width / 2) / window.innerWidth,
+              y: (rect.top + rect.height / 2) / window.innerHeight
+            }
+          });
+        } catch (e) {}
+      }
+
+      setTimeout(() => nextTurn(nextDestroyed), renderMode === '3d' ? 650 : 600);
+    } else {
+      handleMiss();
+    }
+  };
+
+  // 下一顆題目單字
+  const nextTurn = (currentCount) => {
+    const units = battleUnitsRef.current;
+    let pool = words.filter(w => units.includes(`${w.book}-${w.lesson}`));
+    if (pool.length === 0) pool = words;
+
+    const newQueue = [...wordQueue];
+    newQueue.shift();
+
+    if (newQueue.length === 0) {
+      newQueue.push(...[...pool].sort(() => 0.5 - Math.random()));
+    }
+
+    setWordQueue(newQueue);
+    const nextWord = newQueue[0];
+    updateOptionsFor(nextWord, pool);
+    spawnMeteor(nextWord, currentCount);
+  };
+
+  // 攔截 UFO 彩蛋處理 (+5分 + 當前連擊加成)
+  const handleUfoSuccess = () => {
+    soundEngine.combo(3);
+    const ufoBonus = Math.max(0, comboRef.current - 1);
+    const total = 5 + ufoBonus;
+
+    setMyScore(s => {
+      const next = s + total;
+      broadcastMyStats({ score: next });
+      return next;
+    });
+
+    showNotice(`🛸 攔截外星幽浮！+5 ${ufoBonus > 0 ? `(+${ufoBonus} 連擊加成)` : ''}`, 'success');
+  };
+
+  // 離線清理 (iPad 關閉分頁、背景防幽靈連線)
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (channelRef.current) {
@@ -455,7 +912,6 @@ export const BattleGame = ({
   if (view === 'menu') {
     return (
       <div className="w-full max-w-4xl mx-auto px-4 py-4 animate-fadeIn pb-12">
-        {/* 頂部說明卡 */}
         <div className="flex items-center justify-between mb-4">
           <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
             {t.backLobby}
@@ -482,10 +938,9 @@ export const BattleGame = ({
             ⚔️ 星際連線死鬥競技場
           </h2>
           <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 max-w-xl mx-auto mb-4">
-            全校最多同時開放 3 組擂台（每組 2~4 人），題目自動同步房主所選範圍！請選擇有空位的擂台開立或加入。
+            全校最多同時開放 3 組擂台（每組 2~4 人），搭載 3D 地球防衛引擎！連對 3 題發動突襲赤紅隕石，連對 5 題施加重力壓制！
           </p>
 
-          {/* 學生暱稱輸入列 */}
           <div className="max-w-md mx-auto relative mb-2">
             <input
               type="text"
@@ -517,7 +972,7 @@ export const BattleGame = ({
           )}
         </GlassCard>
 
-        {/* ── 三大固定擂台狀態卡 ── */}
+        {/* 三大擂台狀態卡 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {FIXED_ARENAS.map((arena) => {
             const state = arenaStates[arena.id] || { count: 0, isBattling: false, hostName: '', playerNames: [] };
@@ -532,7 +987,6 @@ export const BattleGame = ({
                   isFullOrBattling ? 'opacity-85' : 'hover:scale-[1.02]'
                 }`}
               >
-                {/* 頂部標籤與房號 */}
                 <div className="flex items-center justify-between mb-3">
                   <span className="font-heading font-black text-base text-slate-800 dark:text-slate-100">
                     {arena.name}
@@ -542,7 +996,6 @@ export const BattleGame = ({
                   </span>
                 </div>
 
-                {/* 狀態卡內容 */}
                 <div className="my-3 min-h-[90px] flex flex-col justify-center">
                   {isEmpty && (
                     <div className="text-center">
@@ -579,7 +1032,6 @@ export const BattleGame = ({
                   )}
                 </div>
 
-                {/* 底部操作按鈕 */}
                 <div className="mt-3">
                   {isConnecting === arena.id ? (
                     <Button3D variant="slate" size="md" disabled className="w-full">
@@ -620,14 +1072,13 @@ export const BattleGame = ({
           })}
         </div>
 
-        {/* 滿員友善分流引導 */}
         {Object.values(arenaStates).every(s => s.isBattling || s.count >= 4) && (
           <div className="mt-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700 text-center animate-fadeIn">
             <p className="text-sm font-black text-amber-800 dark:text-amber-200 mb-1">
               ⚔️ 全校三大擂台目前全數客滿激戰中 (12/12 滿員)！
             </p>
             <p className="text-xs font-bold text-amber-600 dark:text-amber-400">
-              建議同學先前往【星空防衛戰】或【單字貪食蛇】暖身練習，稍後點擊右上角「探測擂台」搶進！
+              建議同學先前往【星空防衛戰】單人模式熱身，稍後點擊右上角「探測擂台」搶進！
             </p>
           </div>
         )}
@@ -645,7 +1096,7 @@ export const BattleGame = ({
       <div className="min-h-[75vh] flex items-center justify-center p-4">
         <GlassCard className="max-w-md w-full text-center p-6 sm:p-8">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-black px-3 py-1 rounded-full bg-rose-100 text-rose-700">
+            <span className="text-xs font-black px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300">
               {selectedArena.name} 備戰中
             </span>
             <span className="font-mono text-xs font-black text-slate-400">
@@ -660,7 +1111,6 @@ export const BattleGame = ({
             請同學選擇「{selectedArena.name}」或輸入 PIN 碼進入
           </p>
 
-          {/* QR Code 掃碼加入區 */}
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-white rounded-2xl shadow-md border border-slate-200">
               <img
@@ -672,7 +1122,6 @@ export const BattleGame = ({
             </div>
           </div>
 
-          {/* 已加入成員名單 */}
           <div className="space-y-2 mb-6">
             {players.map((p, idx) => (
               <div
@@ -710,20 +1159,107 @@ export const BattleGame = ({
     );
   }
 
-  // ── 畫面 3：對戰勝利結算 (Result) ──
+  // ── 畫面 3：多人星際大對決終局榮譽榜 (Podium Settlement) ──
   if (view === 'result') {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4 animate-fadeIn">
-        <GlassCard className="max-w-md w-full text-center p-8">
-          <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-3 animate-bounce" />
-          <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
-            死鬥大贏家！
+      <div className="min-h-[85vh] flex items-center justify-center p-4 animate-fadeIn">
+        <GlassCard className="max-w-xl w-full text-center p-6 sm:p-8">
+          <Trophy className="w-16 h-16 text-amber-400 mx-auto mb-2 animate-bounce drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]" />
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
+            星際死鬥結算榮譽榜
           </h2>
-          <p className="text-xl font-black text-amber-500 my-4">
-            👑 {winnerName} 活到了最後！
+          <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 mb-6">
+            生還者殘存愛心每顆重賞 <strong className="text-emerald-500">+50 分</strong>！
           </p>
 
-          <Button3D variant="slate" size="lg" onClick={handleLeaveRoom} className="w-full">
+          {/* 榮譽排列表 */}
+          <div className="space-y-3 mb-8">
+            {finalLeaderboard.map((item, idx) => {
+              const isFirst = idx === 0;
+              const isSecond = idx === 1;
+              const isThird = idx === 2;
+              const isMe = item.deviceId === myDeviceIdRef.current;
+
+              let rankBadge = (
+                <span className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-black text-xs flex items-center justify-center">
+                  #{idx + 1}
+                </span>
+              );
+
+              if (isFirst) {
+                rankBadge = (
+                  <span className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 text-slate-900 font-black text-sm flex items-center justify-center shadow-lg border border-yellow-200">
+                    🥇
+                  </span>
+                );
+              } else if (isSecond) {
+                rankBadge = (
+                  <span className="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-300 to-slate-100 text-slate-800 font-black text-sm flex items-center justify-center shadow-md border border-slate-300">
+                    🥈
+                  </span>
+                );
+              } else if (isThird) {
+                rankBadge = (
+                  <span className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-700 to-amber-500 text-white font-black text-sm flex items-center justify-center shadow-md border border-amber-600">
+                    🥉
+                  </span>
+                );
+              }
+
+              return (
+                <div
+                  key={idx}
+                  className={`p-3.5 rounded-2xl flex items-center justify-between border-2 transition-all ${
+                    isFirst
+                      ? 'bg-amber-500/15 border-amber-400/80 shadow-[0_0_20px_rgba(251,191,36,0.3)]'
+                      : isMe
+                      ? 'bg-cyan-500/10 border-cyan-400/70'
+                      : 'bg-white/80 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    {rankBadge}
+                    <div className="text-left">
+                      <div className="font-black text-sm sm:text-base text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                        <span>{item.name}</span>
+                        {isMe && (
+                          <span className="px-1.5 py-0.2 rounded bg-cyan-500 text-white text-[10px] font-black">
+                            你
+                          </span>
+                        )}
+                        {isFirst && (
+                          <Crown className="w-4 h-4 text-amber-500 inline animate-bounce" />
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400 mt-0.5">
+                        {item.lives > 0 ? (
+                          <span className="text-rose-500 font-black flex items-center">
+                            {'❤️'.repeat(item.lives)} ({item.lives}心生還 +{item.heartBonus})
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 font-bold flex items-center gap-0.5">
+                            <Skull className="w-3 h-3 text-slate-400" /> 中途陣亡
+                          </span>
+                        )}
+                        <span>• 擊落 {item.meteorsDestroyed} 題</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="font-mono font-black text-lg sm:text-xl text-slate-800 dark:text-slate-100">
+                      {item.finalScore}
+                    </span>
+                    <span className="text-xs font-bold text-slate-400 block">
+                      (基礎 {item.rawScore})
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <Button3D variant="rose" size="lg" onClick={handleLeaveRoom} className="w-full">
             返回擂台大廳
           </Button3D>
         </GlassCard>
@@ -731,68 +1267,265 @@ export const BattleGame = ({
     );
   }
 
-  // ── 畫面 4：即時對戰進行中 (Playing) ──
+  // ── 畫面 4：3D 地球防衛多人激戰中 (Playing) ──
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 py-4 flex flex-col items-center">
-      {/* 頂部血條與防線 */}
-      <div className="w-full mb-4 p-4 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-        <div className="flex justify-between items-center mb-2">
-          <div className="flex items-center gap-2">
-            <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} icon={ArrowLeft}>
-              退出擂台
-            </Button3D>
-            <span className="font-heading font-black text-sm flex items-center gap-1.5 text-slate-800 dark:text-slate-100">
-              <Shield className="w-4 h-4 text-blue-500" />
-              防衛線安全度 ({selectedArena.name})
-            </span>
+    <div className="fixed inset-0 z-50 bg-[#060814] flex flex-col justify-between p-2 sm:p-4 select-none overflow-hidden touch-none font-sans">
+      {/* ── 頂部 HUD：本人數據 + 對手微型戰況卡 + 控制開關 ── */}
+      <div className="w-full max-w-5xl mx-auto flex items-center justify-between gap-2 flex-shrink-0 z-30">
+        {/* 左側：退出按鈕與愛心 */}
+        <div className="flex items-center gap-2">
+          <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} icon={ArrowLeft} className="!p-1.5 sm:!p-2">
+            <span className="hidden sm:inline">退出</span>
+          </Button3D>
+
+          {/* 本人愛心條 */}
+          <div className="flex items-center gap-0.5 px-2 py-1 rounded-xl bg-slate-900/80 border border-slate-700 shadow-md">
+            {[1, 2, 3].map((heartIndex) => (
+              <Heart
+                key={heartIndex}
+                className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${
+                  heartIndex <= myLives
+                    ? 'text-rose-500 fill-rose-500 animate-pulse'
+                    : 'text-slate-600'
+                }`}
+              />
+            ))}
           </div>
-          <span className={`font-black text-sm ${myHealth < 30 ? 'text-rose-500 animate-pulse' : 'text-emerald-500'}`}>
-            {myHealth}%
-          </span>
+
+          {/* 本人防線位移指標 */}
+          <div className={`px-2 py-1 rounded-xl text-xs font-black font-mono border ${
+            horizonOffset > 0
+              ? 'bg-rose-950/80 border-rose-500 text-rose-300 animate-pulse'
+              : horizonOffset < 0
+              ? 'bg-emerald-950/80 border-emerald-500 text-emerald-300'
+              : 'bg-slate-900/80 border-slate-700 text-slate-300'
+          }`}>
+            防線 {horizonOffset > 0 ? `+${horizonOffset}%` : `${horizonOffset}%`}
+          </div>
         </div>
-        <div className="w-full h-3 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-          <div
-            className={`h-full transition-all duration-300 ${
-              myHealth < 30 ? 'bg-rose-500' : 'bg-emerald-500'
-            }`}
-            style={{ width: `${myHealth}%` }}
-          />
+
+        {/* 中央：對手微型狀態列 (即時戰況雷達) */}
+        <div className="hidden md:flex items-center gap-1.5 max-w-md overflow-x-auto py-1 scrollbar-none">
+          {players.filter(p => p.deviceId !== myDeviceIdRef.current).map((opp, idx) => (
+            <div
+              key={idx}
+              className={`px-2 py-1 rounded-xl text-[11px] font-black border flex items-center gap-1.5 transition-all ${
+                opp.isDead
+                  ? 'bg-slate-900/60 border-slate-800 text-slate-500 opacity-60'
+                  : 'bg-slate-900/90 border-slate-700 text-slate-200'
+              }`}
+            >
+              <span className="truncate max-w-[65px]">{opp.name}</span>
+              <span>
+                {opp.isDead ? '💀' : '❤️'.repeat(opp.lives !== undefined ? opp.lives : 3)}
+              </span>
+              <span className="text-cyan-400 font-mono">{opp.score || 0}分</span>
+            </div>
+          ))}
+        </div>
+
+        {/* 右側：分數、2D/3D、全螢幕 */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {myCombo >= 1 && myCombo < 3 && (
+            <div className="px-2 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs shadow-md animate-bounce flex items-center gap-1">
+              <span>{myCombo}x 🔥</span>
+            </div>
+          )}
+
+          <div className="px-2.5 sm:px-3.5 py-1 rounded-xl bg-cyan-600 text-white font-black text-xs sm:text-sm font-mono shadow-md">
+            {myScore}分
+          </div>
+
+          <button
+            onClick={() => setRenderMode(m => m === '3d' ? '2d' : '3d')}
+            className="p-1 sm:p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-black flex items-center gap-1"
+            title="切換 3D / 2D"
+          >
+            <Eye className="w-3.5 h-3.5 text-cyan-400" />
+            <span>{renderMode === '3d' ? '3D' : '2D'}</span>
+          </button>
+
+          <button
+            onClick={toggleFullscreen}
+            className="p-1 sm:p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-black"
+            title={isFullscreen ? '結束全螢幕' : '全螢幕體驗'}
+          >
+            {isFullscreen ? (
+              <Minimize2 className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
+            )}
+          </button>
         </div>
       </div>
 
-      {isDead ? (
-        <GlassCard className="w-full text-center p-8 bg-rose-950/80 text-white">
-          <h3 className="text-3xl font-black font-heading mb-2">防線已失守！</h3>
-          <p className="text-sm font-bold opacity-80">
-            你已戰敗，觀戰中...
-          </p>
-        </GlassCard>
-      ) : (
-        currentQuestion && (
-          <GlassCard className="w-full text-center p-8">
-            <span className="text-xs font-bold text-slate-400 mb-2 block">
-              快速看中文選出正確英文發動突襲：
-            </span>
-            <h2 className="text-4xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 font-heading mb-8">
-              {currentQuestion.zh}
-            </h2>
-
-            <div className="grid grid-cols-2 gap-4">
-              {options.map((opt) => (
-                <Button3D
-                  key={opt.id}
-                  variant="rose"
-                  size="lg"
-                  onClick={() => handleAnswer(opt)}
-                  className="py-4 text-lg"
-                >
-                  {opt.text}
-                </Button3D>
-              ))}
-            </div>
-          </GlassCard>
-        )
+      {/* ── 飄浮通知橫幅 (受到壓制、發動空襲等提示) ── */}
+      {noticeBanner && (
+        <div className="fixed top-14 inset-x-0 mx-auto w-fit max-w-[90vw] z-50 animate-fadeIn pointer-events-none">
+          <div className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-black shadow-2xl flex items-center gap-2 border ${
+            noticeBanner.type === 'danger'
+              ? 'bg-rose-900/95 border-rose-500 text-rose-200 shadow-[0_0_20px_rgba(244,63,94,0.8)]'
+              : noticeBanner.type === 'success'
+              ? 'bg-emerald-900/95 border-emerald-500 text-emerald-200 shadow-[0_0_20px_rgba(16,185,129,0.8)]'
+              : 'bg-amber-900/95 border-amber-500 text-amber-200 shadow-[0_0_20px_rgba(245,158,11,0.8)]'
+          }`}>
+            <Sparkles className="w-4 h-4 animate-spin-slow" />
+            <span>{noticeBanner.text}</span>
+          </div>
+        </div>
       )}
+
+      {/* ── 目標單字科幻 HUD 鎖定儀 ── */}
+      {currentMeteor && !isDead && (
+        <div className="w-full max-w-md mx-auto flex items-center justify-center gap-2 px-3 py-1 my-1 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-xs font-black flex-shrink-0 z-20">
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+          <span>鎖定目標：</span>
+          <span className="text-white text-sm font-black tracking-wide">
+            {currentMeteor.word.zh}
+          </span>
+          {myMeteorsDestroyed >= 30 && (
+            <span className="ml-1 px-1.5 py-0.5 rounded bg-rose-500/80 text-[10px] text-white font-black animate-pulse">
+              超頻極速
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* ── 隕石戰鬥核心畫布區域 (flex-1 min-h-0) ── */}
+      <div className="flex-1 min-h-0 w-full max-w-4xl mx-auto relative mb-2 flex items-center justify-center">
+        {/* 右側氣球灌氣連擊階梯顯示 (3連對以上展開) */}
+        <RightComboDisplay combo={myCombo} />
+
+        {/* 突襲赤紅隕石 mini-game (3秒速點5下) */}
+        {activeRaid && (
+          <EmergencyRaidMeteor
+            raidData={activeRaid}
+            onDefended={handleRaidDefended}
+            onImpact={handleRaidImpact}
+          />
+        )}
+
+        {/* 陣亡觀戰彈窗 (可選擇留在房間觀戰或提早退出) */}
+        {isDead && !hideDeadModal && (
+          <div className="absolute inset-0 z-40 bg-slate-950/85 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center p-6 text-center animate-fadeIn border-2 border-rose-600/50">
+            <Skull className="w-16 h-16 text-rose-500 mb-2 animate-bounce" />
+            <h3 className="text-3xl font-black text-white font-heading mb-1">防衛線已失守！</h3>
+            <p className="text-sm font-bold text-slate-300 mb-4 max-w-md">
+              你的 3 顆愛心已耗盡，目前處於【觀戰模式】。同房同學分出勝負後將自動為全房進行頒獎結算！
+            </p>
+
+            <div className="p-3 mb-6 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-200 text-xs font-black flex items-center gap-4">
+              <span>得分：<strong className="text-cyan-400 font-mono text-base">{myScore}</strong> 分</span>
+              <span>擊落：<strong className="text-amber-400 font-mono text-base">{myMeteorsDestroyed}</strong> 題</span>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setHideDeadModal(true)}
+                className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-black text-sm shadow-lg transition-transform active:scale-95 cursor-pointer"
+              >
+                觀看星際戰場
+              </button>
+              <button
+                onClick={handleLeaveRoom}
+                className="px-5 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 font-black text-sm transition-transform active:scale-95 cursor-pointer"
+              >
+                提早退出大廳
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 觀戰標籤 (已收合陣亡彈窗時常駐角落) */}
+        {isDead && hideDeadModal && (
+          <div className="absolute top-2 left-2 z-40 px-3 py-1 rounded-full bg-rose-950/90 border border-rose-500 text-rose-300 text-xs font-black flex items-center gap-1.5 shadow-lg">
+            <Skull className="w-3.5 h-3.5 text-rose-400" />
+            <span>觀戰中 (得分: {myScore}分)</span>
+            <button
+              onClick={() => setHideDeadModal(false)}
+              className="ml-1 text-[10px] text-cyan-300 underline cursor-pointer"
+            >
+              選單
+            </button>
+          </div>
+        )}
+
+        {/* 3D WebGL 隕石畫布 */}
+        {renderMode === '3d' ? (
+          <div className="w-full h-full relative">
+            <MeteorCanvas3D
+              currentMeteor={isDead ? null : currentMeteor}
+              subMode="zh-en"
+              isExploding={isExploding}
+              laserTrigger={laserTrigger}
+              questionIndex={myMeteorsDestroyed}
+              onUfoSuccess={handleUfoSuccess}
+              horizonOffset={horizonOffset}
+            />
+          </div>
+        ) : (
+          /* 2D 簡約備援畫布 */
+          <div
+            ref={containerRef}
+            className="w-full h-full rounded-2xl sm:rounded-3xl bg-slate-900 border-2 border-indigo-500/40 relative overflow-hidden shadow-2xl"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 50% 30%, #1e1b4b 0%, #090d16 80%)'
+            }}
+          >
+            <MeteorEasterEggs2D onUfoSuccess={handleUfoSuccess} />
+
+            {/* 墜落隕石 */}
+            {currentMeteor && !isDead && (
+              <div
+                ref={meteor2DRef}
+                className="absolute -translate-x-1/2 flex flex-col items-center z-10 pointer-events-none"
+                style={{ left: `${currentMeteor.x}%`, top: '-10%' }}
+              >
+                {isExploding ? (
+                  <div className="text-5xl animate-bounce">💥</div>
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <Flame className="w-8 h-8 text-amber-500 -mb-2 animate-pulse" />
+                    <div className="px-5 py-2.5 rounded-2xl bg-gradient-to-b from-amber-400 to-rose-600 text-white font-black text-lg sm:text-2xl shadow-xl border-2 border-yellow-200">
+                      {currentMeteor.word.zh}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 地表防禦警戒線 (隨 horizonOffset 微調) */}
+            <div
+              className="absolute inset-x-0 h-4 bg-gradient-to-t from-indigo-500/30 to-transparent border-t border-indigo-400/40 transition-all duration-300"
+              style={{ bottom: `${Math.max(0, horizonOffset * 0.5)}%` }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* ── 下方 4 個全息能量戰術選項按鈕 ── */}
+      <div className="w-full max-w-4xl mx-auto grid grid-cols-2 gap-2 sm:gap-3 flex-shrink-0 z-20">
+        {options.map((opt) => (
+          <button
+            key={opt.id}
+            disabled={isDead}
+            onClick={() => handleOptionClick(opt)}
+            className={`group relative p-3 sm:p-4 rounded-xl sm:rounded-2xl font-black text-base sm:text-xl transition-all duration-150 active:scale-95 text-center cursor-pointer select-none overflow-hidden ${
+              isDead
+                ? 'bg-slate-900/40 text-slate-600 border border-slate-800 cursor-not-allowed'
+                : 'bg-slate-900/90 text-cyan-100 hover:text-white border-2 border-cyan-500/50 hover:border-cyan-400 shadow-[0_4px_20px_rgba(6,182,212,0.15)] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)]'
+            }`}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+            <div className="relative z-10 flex items-center justify-center gap-2">
+              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 opacity-60 group-hover:opacity-100 group-hover:scale-125 transition-all" />
+              <span className="font-heading tracking-wide drop-shadow-md">
+                {opt.text}
+              </span>
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

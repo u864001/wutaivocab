@@ -27,3 +27,4 @@ dist-ssr
 .env
 .env.production
 legacy-v1/
+scratch/

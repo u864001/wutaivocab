@@ -15,13 +15,16 @@ export const MeteorCanvas3D = ({
   laserTrigger,
   onExplosionFinish,
   questionIndex = 0,
-  onUfoSuccess
+  onUfoSuccess,
+  horizonOffset = 0
 }) => {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const rendererRef = useRef(null);
   const cameraRef = useRef(null);
   const asteroidObjRef = useRef(null);
+  const earthMeshRef = useRef(null);
+  const atmoMeshRef = useRef(null);
   const animIdRef = useRef(null);
   const laserBeamRef = useRef(null);
   const debrisRef = useRef([]);
@@ -168,6 +171,7 @@ export const MeteorCanvas3D = ({
     const earthMesh = new THREE.Mesh(earthGeo, earthMat);
     earthMesh.position.set(0, -78, 5);
     scene.add(earthMesh);
+    earthMeshRef.current = earthMesh;
 
     // 地球大氣發光環
     const atmoGeo = new THREE.RingGeometry(74.5, 76.5, 64);
@@ -182,6 +186,7 @@ export const MeteorCanvas3D = ({
     atmoMesh.rotation.x = Math.PI / 2.2;
     atmoMesh.position.set(0, -74, 5);
     scene.add(atmoMesh);
+    atmoMeshRef.current = atmoMesh;
 
     // 6. 光源系統
     const sunLight = new THREE.DirectionalLight(0xfff7ed, 2.5);
@@ -429,6 +434,15 @@ export const MeteorCanvas3D = ({
     wordSpriteRef.current = { sprite, texture, spriteMat };
 
   }, [currentMeteor, subMode, isExploding]);
+
+  // ── 響應重力壓制：平滑升降地球大氣防衛圈 ──
+  useEffect(() => {
+    if (earthMeshRef.current && atmoMeshRef.current) {
+      const shift = (horizonOffset || 0) * 0.28;
+      earthMeshRef.current.position.y = -78 + shift;
+      atmoMeshRef.current.position.y = -74 + shift;
+    }
+  }, [horizonOffset]);
 
   // ── 隕石 3D 下墜即時軌跡計算 (套用兩段式與動態重力加速度物理引擎) ──
   useEffect(() => {
