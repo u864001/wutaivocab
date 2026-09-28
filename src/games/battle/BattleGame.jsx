@@ -63,6 +63,7 @@ export const BattleGame = ({
   const [errorMsg, setErrorMsg] = useState('');
   const [pinInput, setPinInput] = useState('');
   const [gameMode, setGameMode] = useState('meteor'); // 'meteor' | 'memory'
+  const hasSelectedUnits = Boolean(settings?.selectedUnits && settings.selectedUnits.length > 0);
 
   // 三大擂台全域狀態監控
   const [arenaStates, setArenaStates] = useState({
@@ -253,6 +254,12 @@ export const BattleGame = ({
       return;
     }
 
+    // 嚴格判定：開立新房間者必須在首頁已選取單元範圍
+    if (!settings?.selectedUnits || settings.selectedUnits.length === 0) {
+      setErrorMsg('您尚未在首頁選擇單元題庫！請先點擊左上方返回首頁勾選單元，方可開立新擂台。');
+      return;
+    }
+
     const cur = arenaStates[arena.id];
     if (cur && (cur.count > 0 || cur.isBattling)) {
       setErrorMsg(`【${arena.name}】剛已被搶先開立或正在對戰中，請選擇其他空房！`);
@@ -262,17 +269,7 @@ export const BattleGame = ({
     localStorage.setItem('wutai_player_name', cleanName);
     setSelectedArena(arena);
     setIsHost(true);
-
-    // 題庫範圍智慧判定：若大廳已預選單元則沿用；若尚未選取則預設全題庫或第一冊單元
-    let effectiveUnits = settings?.selectedUnits || [];
-    if (!effectiveUnits || effectiveUnits.length === 0) {
-      if (words && words.length > 0) {
-        effectiveUnits = [...new Set(words.map(w => `${w.book}-${w.lesson}`))];
-      } else {
-        effectiveUnits = ['1-1'];
-      }
-    }
-    battleUnitsRef.current = effectiveUnits;
+    battleUnitsRef.current = settings.selectedUnits;
     connectToArenaChannel(arena, true);
   };
 
@@ -579,6 +576,22 @@ export const BattleGame = ({
   const connectToArenaChannel = (arena, hostFlag) => {
     setErrorMsg('');
     setIsConnecting(arena.id);
+
+    // 強制重置個人對戰資料與佇列 (徹底清除上一場歷史殘餘數據)
+    setPlayers([]);
+    setFinalLeaderboard([]);
+    setWinnerName('');
+    setActiveRaid(null);
+    raidQueueRef.current = [];
+    isProcessingRaidRef.current = false;
+    setRaidMissStreak(0);
+    raidMissStreakRef.current = 0;
+    setMyScore(0);
+    setMyLives(3);
+    setMyCombo(0);
+    setHorizonOffset(0);
+    setIsDead(false);
+    setHideDeadModal(false);
 
     const channelName = `battle-${arena.id}`;
     const channel = supabase.channel(channelName, {
@@ -1169,6 +1182,18 @@ export const BattleGame = ({
           )}
         </GlassCard>
 
+        {/* 未選取範圍提示橫幅 */}
+        {!hasSelectedUnits && (
+          <div className="mb-4 p-3.5 rounded-2xl bg-amber-500/10 border-2 border-amber-400/30 text-amber-800 dark:text-amber-200 text-xs font-bold flex items-center gap-2.5 animate-fadeIn">
+            <span className="p-1.5 rounded-xl bg-amber-500 text-white shrink-0">
+              💡
+            </span>
+            <span>
+              <strong>貼心提醒：</strong>您目前尚未在首頁勾選單元範圍，因此<strong>無法開立新空房</strong>（空房呈灰色鎖定）。您可以<strong>直接加入已有人開立的房間</strong>（正常色）、<strong>輸入 4 碼 PIN</strong> 或<strong>掃描 QR Code</strong> 加入，遊戲時將直接聽從房主指定之範圍！
+            </span>
+          </div>
+        )}
+
         {/* 三大擂台狀態卡 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {FIXED_ARENAS.map((arena) => {
@@ -1177,15 +1202,24 @@ export const BattleGame = ({
             const isWaiting = state.count > 0 && state.count < 4 && !state.isBattling;
             const isFullOrBattling = state.isBattling || state.count >= 4;
 
+            // 未選取範圍者，空房顯示為灰色且無法進入；若已選取範圍則正常亮起可開立
+            const isEmptyDisabled = isEmpty && !hasSelectedUnits;
+
             return (
               <GlassCard
                 key={arena.id}
-                className={`p-5 flex flex-col justify-between border-2 transition-all relative overflow-hidden ${arena.border} ${
-                  isFullOrBattling ? 'opacity-85' : 'hover:scale-[1.02]'
+                className={`p-5 flex flex-col justify-between border-2 transition-all relative overflow-hidden ${
+                  isEmptyDisabled
+                    ? 'border-slate-300 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/40 opacity-60 grayscale-[50%]'
+                    : isFullOrBattling
+                      ? 'opacity-85 ' + arena.border
+                      : arena.border + ' hover:scale-[1.02]'
                 }`}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-heading font-black text-base text-slate-800 dark:text-slate-100">
+                  <span className={`font-heading font-black text-base ${
+                    isEmptyDisabled ? 'text-slate-500 dark:text-slate-400' : 'text-slate-800 dark:text-slate-100'
+                  }`}>
                     {arena.name}
                   </span>
                   <span className="font-mono text-xs font-black px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300">
@@ -1195,12 +1229,23 @@ export const BattleGame = ({
 
                 <div className="my-3 min-h-[90px] flex flex-col justify-center">
                   {isEmpty && (
-                    <div className="text-center">
-                      <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-xs font-black mb-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> 空房可開立
+                    isEmptyDisabled ? (
+                      <div className="text-center">
+                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-xs font-black mb-1">
+                          <Lock className="w-3.5 h-3.5" /> 需選單元方可開房
+                        </div>
+                        <p className="text-[11px] font-bold text-slate-400 mt-1">
+                          未在首頁勾選單元，無法建立新房間。請加入已建立之房間或回首頁勾選。
+                        </p>
                       </div>
-                      <p className="text-xs font-bold text-slate-400">目前尚無同學使用，點下方開立擂台</p>
-                    </div>
+                    ) : (
+                      <div className="text-center">
+                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-xs font-black mb-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> 空房可開立
+                        </div>
+                        <p className="text-xs font-bold text-slate-400">目前尚無同學使用，點下方開立擂台</p>
+                      </div>
+                    )
                   )}
 
                   {isWaiting && (
@@ -1236,14 +1281,25 @@ export const BattleGame = ({
                       連線確認中...
                     </Button3D>
                   ) : isEmpty ? (
-                    <Button3D
-                      variant={arena.color === 'rose' ? 'rose' : arena.color === 'emerald' ? 'emerald' : 'blue'}
-                      size="md"
-                      onClick={() => handleHostArena(arena)}
-                      className="w-full"
-                    >
-                      開立此擂台
-                    </Button3D>
+                    isEmptyDisabled ? (
+                      <Button3D
+                        variant="slate"
+                        size="md"
+                        disabled
+                        className="w-full cursor-not-allowed opacity-50"
+                      >
+                        🔒 未選單元無法開立
+                      </Button3D>
+                    ) : (
+                      <Button3D
+                        variant={arena.color === 'rose' ? 'rose' : arena.color === 'emerald' ? 'emerald' : 'blue'}
+                        size="md"
+                        onClick={() => handleHostArena(arena)}
+                        className="w-full"
+                      >
+                        開立此擂台
+                      </Button3D>
+                    )
                   ) : isWaiting ? (
                     <Button3D
                       variant="amber"
