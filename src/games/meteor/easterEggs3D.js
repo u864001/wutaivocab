@@ -1,57 +1,71 @@
 import * as THREE from 'three';
 
 /**
- * 3D 地球守衛戰：專屬 3D 彩蛋系統 (流星、人造衛星、UFO 飛碟)
+ * 3D 地球守衛戰：專屬 3D 彩蛋系統 (飛機雲流星、人造衛星、UFO 飛碟)
  * 完美融入 Three.js 空間透視與深空光影，保留真實 3D 質感
  */
 
-// ── 1. 3D 背景微光流星 (純背景氛圍，柔和不搶眼) ──
+// ── 1. 3D 背景飛機雲微光流星 (純背景氛圍，定點拖曳消散，柔和不搶眼) ──
 export const createShootingStarSystem = (scene) => {
-  const lineGeo = new THREE.BufferGeometry();
-  const maxPoints = 20;
-  const positions = new Float32Array(maxPoints * 3);
-  const colors = new Float32Array(maxPoints * 3);
+  const maxTrail = 40;
+  const trailGeo = new THREE.BufferGeometry();
+  const trailPositions = new Float32Array(maxTrail * 3);
+  const trailColors = new Float32Array(maxTrail * 3);
+  const trailSizes = new Float32Array(maxTrail);
 
-  lineGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  lineGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
+  trailGeo.setAttribute('color', new THREE.BufferAttribute(trailColors, 3));
+  trailGeo.setAttribute('size', new THREE.BufferAttribute(trailSizes, 1));
 
-  const lineMat = new THREE.LineBasicMaterial({
+  const trailMat = new THREE.PointsMaterial({
+    size: 2.2,
     vertexColors: true,
     transparent: true,
-    opacity: 0.6,
-    blending: THREE.AdditiveBlending,
-    linewidth: 2
+    opacity: 0.75,
+    blending: THREE.AdditiveBlending
   });
 
-  const lineMesh = new THREE.Line(lineGeo, lineMat);
-  lineMesh.visible = false;
-  scene.add(lineMesh);
+  const trailPoints = new THREE.Points(trailGeo, trailMat);
+  trailPoints.visible = false;
+  scene.add(trailPoints);
+
+  // 流星頭部亮白光核
+  const headGeo = new THREE.SphereGeometry(0.25, 8, 8);
+  const headMat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0
+  });
+  const headMesh = new THREE.Mesh(headGeo, headMat);
+  headMesh.visible = false;
+  scene.add(headMesh);
 
   let active = false;
-  let progress = 0;
+  let history = []; // [{x, y, z, alpha, size}]
   let startX = 0, startY = 0, startZ = 0;
   let dirX = 0, dirY = 0, dirZ = 0;
   let speed = 0;
-  let length = 0;
-  let nextSpawnTime = performance.now() + 6000 + Math.random() * 8000;
+  let elapsed = 0;
+  let duration = 0;
+  let nextSpawnTime = performance.now() + 5000 + Math.random() * 6000;
 
   const spawn = (now) => {
     active = true;
-    progress = 0;
-    // 左上空域深處生成
-    startX = -35 + (Math.random() - 0.5) * 15;
-    startY = 20 + Math.random() * 10;
-    startZ = -60 - Math.random() * 40;
+    elapsed = 0;
+    duration = 0.9 + Math.random() * 0.45;
+    startX = -35 + (Math.random() - 0.5) * 12;
+    startY = 20 + Math.random() * 8;
+    startZ = -60 - Math.random() * 30;
 
-    // 朝右下方劃過
-    dirX = 0.85 + Math.random() * 0.2;
-    dirY = -0.55 - Math.random() * 0.2;
-    dirZ = 0.2 + Math.random() * 0.2;
-    speed = 45 + Math.random() * 25;
-    length = 7 + Math.random() * 6;
+    dirX = 0.88 + Math.random() * 0.15;
+    dirY = -0.52 - Math.random() * 0.15;
+    dirZ = 0.18 + Math.random() * 0.15;
+    speed = 42 + Math.random() * 20;
 
-    lineMesh.visible = true;
-    nextSpawnTime = now + 9000 + Math.random() * 12000;
+    history = [];
+    trailPoints.visible = true;
+    headMesh.visible = true;
+    nextSpawnTime = now + 9000 + Math.random() * 10000;
   };
 
   const update = (delta, now) => {
@@ -60,45 +74,78 @@ export const createShootingStarSystem = (scene) => {
     }
 
     if (active) {
-      progress += delta * (speed / 30);
-      const headX = startX + dirX * progress * 30;
-      const headY = startY + dirY * progress * 30;
-      const headZ = startZ + dirZ * progress * 30;
+      elapsed += delta;
 
-      // 柔和淡入與淡出
-      const alpha = Math.sin(Math.min(progress, 1.0) * Math.PI) * 0.55;
-      lineMat.opacity = alpha;
+      if (elapsed < duration) {
+        const headX = startX + dirX * speed * elapsed;
+        const headY = startY + dirY * speed * elapsed;
+        const headZ = startZ + dirZ * speed * elapsed;
+        headMesh.position.set(headX, headY, headZ);
 
-      for (let i = 0; i < maxPoints; i++) {
-        const ratio = i / (maxPoints - 1);
-        const px = headX - dirX * ratio * length;
-        const py = headY - dirY * ratio * length;
-        const pz = headZ - dirZ * ratio * length;
+        // 頭部光亮：前 15% 迅速變明，後 85% 逐漸轉暗
+        let headAlpha = 0;
+        const p = elapsed / duration;
+        if (p < 0.15) {
+          headAlpha = p / 0.15;
+        } else {
+          headAlpha = Math.max(0, 1.0 - (p - 0.15) / 0.85);
+        }
+        headMat.opacity = headAlpha;
 
-        positions[i * 3] = px;
-        positions[i * 3 + 1] = py;
-        positions[i * 3 + 2] = pz;
-
-        // 白藍微光漸變
-        colors[i * 3] = 0.85 * (1.0 - ratio);
-        colors[i * 3 + 1] = 0.95 * (1.0 - ratio);
-        colors[i * 3 + 2] = 1.0 * (1.0 - ratio);
+        // 在走過位置留下定點發光痕跡 (像飛機雲一樣留在原地不隨流星位移)
+        if (headAlpha > 0.05) {
+          history.push({
+            x: headX,
+            y: headY,
+            z: headZ,
+            alpha: headAlpha * 0.65,
+            size: 2.2 * headAlpha
+          });
+          if (history.length > maxTrail) history.shift();
+        }
+      } else {
+        headMesh.visible = false;
       }
 
-      lineGeo.attributes.position.needsUpdate = true;
-      lineGeo.attributes.color.needsUpdate = true;
+      // 留在空中的飛機雲痕跡在原地衰減變淡消散
+      let count = 0;
+      for (let i = history.length - 1; i >= 0; i--) {
+        const pt = history[i];
+        pt.alpha *= Math.pow(0.5, delta * 1.5);
+        if (pt.alpha <= 0.02) {
+          history.splice(i, 1);
+          continue;
+        }
+        trailPositions[count * 3] = pt.x;
+        trailPositions[count * 3 + 1] = pt.y;
+        trailPositions[count * 3 + 2] = pt.z;
 
-      if (progress >= 1.2) {
+        trailColors[count * 3] = 0.8 * pt.alpha;
+        trailColors[count * 3 + 1] = 0.95 * pt.alpha;
+        trailColors[count * 3 + 2] = 1.0 * pt.alpha;
+        trailSizes[count] = pt.size * (pt.alpha / 0.65);
+        count++;
+      }
+
+      trailGeo.attributes.position.needsUpdate = true;
+      trailGeo.attributes.color.needsUpdate = true;
+      trailGeo.attributes.size.needsUpdate = true;
+      trailGeo.setDrawRange(0, count);
+
+      if (elapsed >= duration && history.length === 0) {
         active = false;
-        lineMesh.visible = false;
+        trailPoints.visible = false;
       }
     }
   };
 
   const dispose = () => {
-    scene.remove(lineMesh);
-    lineGeo.dispose();
-    lineMat.dispose();
+    scene.remove(trailPoints);
+    scene.remove(headMesh);
+    trailGeo.dispose();
+    trailMat.dispose();
+    headGeo.dispose();
+    headMat.dispose();
   };
 
   return { update, dispose };
@@ -264,7 +311,6 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
 
   const updateBadgeText = (clicks, remainingSec) => {
     badgeCtx.clearRect(0, 0, 256, 100);
-    // 圓角半透明膠囊背景
     badgeCtx.fillStyle = 'rgba(15, 23, 42, 0.85)';
     badgeCtx.strokeStyle = clicks >= 5 ? '#10b981' : '#38bdf8';
     badgeCtx.lineWidth = 4;
@@ -277,7 +323,7 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
     badgeCtx.textAlign = 'center';
     badgeCtx.textBaseline = 'middle';
     badgeCtx.fillStyle = clicks >= 5 ? '#34d399' : '#ffffff';
-    badgeCtx.fillText(clicks >= 5 ? '🛸 +5 分！' : `🛸 ${clicks}/5 (${remainingSec.toFixed(1)}s)`, 128, 50);
+    badgeCtx.fillText(clicks >= 5 ? '🛸 攔截成功！' : `🛸 ${clicks}/5 (${remainingSec.toFixed(1)}s)`, 128, 50);
     badgeTexture.needsUpdate = true;
     badgeSprite.visible = true;
   };
@@ -293,7 +339,6 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
   let cruiseStartTime = 0;
   let spawnFromLeft = true;
   let nextUfoSpawn = performance.now() + 15000 + Math.random() * 12000;
-  let spinAngle = 0;
   let escapeDir = new THREE.Vector3();
 
   const raycaster = new THREE.Raycaster();
@@ -314,11 +359,10 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
     ufoGroup.rotation.set(0.1, 0, 0);
     ufoGroup.visible = true;
 
-    // 重新調整外觀顏色
     domeMat.emissive.setHex(0x0891b2);
   };
 
-  // 觸控 / 點擊事件監聽
+  // 觸控 / 點擊事件監聽 (原處急煞自轉)
   const handlePointerDown = (e) => {
     if (state !== 'CRUISING' && state !== 'CLICKED') return;
 
@@ -337,7 +381,7 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
       const now = performance.now();
 
       if (state === 'CRUISING') {
-        // 第一次點擊：進入急煞定格狀態並開啟 3 秒倒數計時
+        // 第一次點擊：原地急煞定格！開啟 3 秒倒數計時
         state = 'CLICKED';
         clickStartTime = now;
         clickCount = 1;
@@ -345,23 +389,19 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
         clickCount++;
       }
 
-      // 順逆時針交替急煞轉動特效
-      spinAngle += clickCount % 2 === 0 ? 1.8 : -1.8;
-
       const remaining = Math.max(0, 3.0 - (now - clickStartTime) / 1000);
       updateBadgeText(clickCount, remaining);
 
       // 檢查是否達成 5 次點擊加分條件
       if (clickCount >= 5) {
         state = 'WARP_OUT';
-        domeMat.emissive.setHex(0x10b981); // 成功綠光
+        domeMat.emissive.setHex(0x10b981);
         updateBadgeText(5, 0);
 
         if (onUfoSuccess) {
-          onUfoSuccess(5); // 折半分數：5 分
+          onUfoSuccess(5); // 觸發成功回調
         }
 
-        // 0.4 秒後超光速跳躍逃逸
         setTimeout(() => {
           escapeDir.set((Math.random() - 0.5) * 10, 15, -60).normalize();
         }, 300);
@@ -372,8 +412,7 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
   domElement.addEventListener('pointerdown', handlePointerDown);
 
   const update = (delta, now) => {
-    // 閃爍邊緣彩燈
-    rimLights.forEach((rl, i) => {
+    rimLights.forEach((rl) => {
       const on = Math.sin(now * 0.008 + rl.baseAng * 2) > 0;
       rl.mat.color.setHex(on ? 0x00f5ff : 0xf43f5e);
     });
@@ -386,9 +425,8 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
     }
 
     if (state === 'CRUISING') {
-      // 忽快忽慢的 S 型航線橫越空域
       const elapsed = (now - cruiseStartTime) / 1000;
-      const speed = 3.6 + Math.sin(elapsed * 1.5) * 1.8; // 忽快忽慢
+      const speed = 3.6 + Math.sin(elapsed * 1.5) * 1.8;
       const dir = spawnFromLeft ? 1 : -1;
       
       ufoGroup.position.x += dir * speed * delta;
@@ -396,14 +434,13 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
       ufoGroup.rotation.z = -dir * 0.15 + Math.sin(elapsed * 3) * 0.05;
       ufoGroup.rotation.y += delta * 1.2;
 
-      // 飛出螢幕外且未被點擊
       if ((spawnFromLeft && ufoGroup.position.x > 24) || (!spawnFromLeft && ufoGroup.position.x < -24)) {
         state = 'IDLE';
         ufoGroup.visible = false;
         nextUfoSpawn = now + 20000 + Math.random() * 15000;
       }
     } else if (state === 'CLICKED') {
-      // 原地急煞定格旋轉
+      // 原地急煞定格旋轉 (鎖死原本位置，僅自身自轉)
       ufoGroup.rotation.y += delta * 14.0;
       ufoGroup.rotation.z = Math.sin(now * 0.02) * 0.25;
 
@@ -411,16 +448,13 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
       const remaining = Math.max(0, 3.0 - elapsed);
       updateBadgeText(clickCount, remaining);
 
-      // 3 秒倒數超時判定
       if (remaining <= 0) {
         state = 'ESCAPE';
-        domeMat.emissive.setHex(0xef4444); // 警示紅光
-        // 朝最近的螢幕邊界加速逃跑
-        const escapeX = ufoGroup.position.x > 0 ? 40 : -40;
+        domeMat.emissive.setHex(0xef4444);
+        const escapeX = ufoGroup.position.x >= 0 ? 40 : -40;
         escapeDir.set(escapeX, 10, -10).normalize();
       }
     } else if (state === 'ESCAPE') {
-      // 未集滿 5 次：急遽加速逃離
       ufoGroup.position.addScaledVector(escapeDir, delta * 35);
       ufoGroup.rotation.y += delta * 20;
 
@@ -431,7 +465,6 @@ export const createUfoSystem = (scene, camera, domElement, onUfoSuccess) => {
         nextUfoSpawn = now + 18000 + Math.random() * 15000;
       }
     } else if (state === 'WARP_OUT') {
-      // 集滿 5 次：超光速跳躍逃逸
       ufoGroup.position.addScaledVector(escapeDir, delta * 50);
       ufoGroup.scale.multiplyScalar(0.94);
       ufoGroup.rotation.y += delta * 25;

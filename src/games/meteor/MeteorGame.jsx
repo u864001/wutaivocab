@@ -11,7 +11,7 @@ import { MeteorEasterEggs2D } from './MeteorEasterEggs2D';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Rocket, Trophy, Flame,
-  Shield, Zap, Target, Eye, Maximize2, Minimize2
+  Shield, Zap, Target, Eye, Maximize2, Minimize2, Sparkles
 } from 'lucide-react';
 
 const PTS_PER_METEOR = 10;
@@ -25,17 +25,18 @@ export const MeteorGame = ({
 }) => {
   const { t } = useI18n();
   const [subMode, setSubMode] = useState('zh-en'); // 'zh-en' | 'en-zh' | 'abc'
-  const [renderMode, setRenderMode] = useState('3d'); // '3d' | '2d' (可隨時一鍵切換)
+  const [renderMode, setRenderMode] = useState('3d'); // '3d' | '2d'
   const [queue, setQueue] = useState([]);
   const [currentMeteor, setCurrentMeteor] = useState(null);
   const [options, setOptions] = useState([]);
   const [lives, setLives] = useState(3);
-  const [score, setScore] = useState(0); // 總得分 (隕石10分 + UFO 5分)
-  const [meteorsDestroyed, setMeteorsDestroyed] = useState(0); // 擊落隕石計數
-  const [ufoCount, setUfoCount] = useState(0); // 攔截 UFO 彩蛋計數
-  const [ufoBonusNotice, setUfoBonusNotice] = useState(false);
-  const [combo, setCombo] = useState(0);
+  const [score, setScore] = useState(0); // 總得分
+  const [meteorsDestroyed, setMeteorsDestroyed] = useState(0); // 擊落隕石數
+  const [ufoCount, setUfoCount] = useState(0); // 攔截 UFO 彩蛋數
+  const [totalStreakBonus, setTotalStreakBonus] = useState(0); // 累計連擊加成總分
+  const [combo, setCombo] = useState(0); // 連續答對次數
   const [maxCombo, setMaxCombo] = useState(0);
+  const [lastGainNotice, setLastGainNotice] = useState(null); // 動態加分懸浮提示
   const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [isExploding, setIsExploding] = useState(false);
@@ -123,7 +124,7 @@ export const MeteorGame = ({
       encounteredWordsRef.current.set(wordObj.id, { id: wordObj.id, en: wordObj.en, zh: wordObj.zh });
     }
 
-    // 套用兩段式物理引擎：隨題數縮短巡航時間、提高末段速度
+    // 依據題數計算該顆隕石的掉落時長 (31題以上急速縮短)
     const questionIndex = currentDestroyedCount !== undefined ? currentDestroyedCount : meteorsDestroyed;
     const duration = calculateMeteorDuration(questionIndex);
     const xPos = 18 + Math.random() * 64;
@@ -149,13 +150,14 @@ export const MeteorGame = ({
     setScore(0);
     setMeteorsDestroyed(0);
     setUfoCount(0);
+    setTotalStreakBonus(0);
     setCombo(0);
     setMaxCombo(0);
     setGameStartTime(Date.now());
     encounteredWordsRef.current.clear();
     mistakeIdsRef.current.clear();
 
-    // 點擊開始為合法使用者手勢，自動請求全螢幕
+    // 點擊開始為合法使用者手勢，自動請求全螢幕體驗
     if (document.fullscreenEnabled && !document.fullscreenElement) {
       document.documentElement.requestFullscreen?.().catch(() => {});
     }
@@ -230,7 +232,7 @@ export const MeteorGame = ({
   const handleMiss = () => {
     soundEngine.wrong();
     setIsExploding(true);
-    setCombo(0);
+    setCombo(0); // 答錯或逾時，連擊與 bonus 歸零
     if (currentMeteor?.word?.id) {
       mistakeIdsRef.current.add(currentMeteor.word.id);
     }
@@ -239,7 +241,6 @@ export const MeteorGame = ({
       const next = prev - 1;
       if (next <= 0) {
         setSurvivalTime(Math.floor((Date.now() - gameStartTime) / 1000));
-        // 遊戲結束自動解除全螢幕
         if (document.fullscreenElement && document.exitFullscreen) {
           document.exitFullscreen().catch(() => {});
         }
@@ -251,13 +252,22 @@ export const MeteorGame = ({
     });
   };
 
-  // 成功攔截 UFO 彩蛋處理 (+5 分)
-  const handleUfoSuccess = (points = PTS_PER_UFO) => {
+  // 成功攔截 UFO 彩蛋處理：5分 + 同享當前連對 bonus 加成
+  const handleUfoSuccess = (basePoints = PTS_PER_UFO) => {
     soundEngine.combo(3);
-    setScore(s => s + points);
+    // UFO 同享目前連擊之加成 (第4與第5題間點擊，享受第4題連擊加成)
+    const ufoBonus = Math.max(0, combo - 1);
+    const totalGained = basePoints + ufoBonus;
+
+    setScore(s => s + totalGained);
     setUfoCount(c => c + 1);
-    setUfoBonusNotice(true);
-    setTimeout(() => setUfoBonusNotice(false), 2200);
+    setTotalStreakBonus(b => b + ufoBonus);
+
+    setLastGainNotice({
+      text: ufoBonus > 0 ? `🛸 UFO 攔截！+${basePoints} (+${ufoBonus} 連擊加成)` : `🛸 UFO 攔截！+${basePoints} 分`,
+      type: 'ufo'
+    });
+    setTimeout(() => setLastGainNotice(null), 2200);
   };
 
   const handleOptionClick = (opt) => {
@@ -269,7 +279,19 @@ export const MeteorGame = ({
 
     if (opt.isCorrect) {
       soundEngine.explosion();
-      setScore(s => s + PTS_PER_METEOR);
+
+      // 連續答對 bonus 累加機制：
+      // 第 1 題得 10 分 (bonus=0)
+      // 第 2 題得 10+1 分 (bonus=1)
+      // 第 3 題得 10+2 分 (bonus=2)
+      // 第 4 題得 10+3 分 (bonus=3)
+      // 第 5 題得 10+4 分 (bonus=4) ...以此類推
+      const streakBonus = combo;
+      const earnedPoints = PTS_PER_METEOR + streakBonus;
+
+      setScore(s => s + earnedPoints);
+      setTotalStreakBonus(b => b + streakBonus);
+
       const nextDestroyed = meteorsDestroyed + 1;
       setMeteorsDestroyed(nextDestroyed);
 
@@ -279,6 +301,14 @@ export const MeteorGame = ({
         if (nextC >= 2) soundEngine.combo(nextC);
         return nextC;
       });
+
+      // 飄浮得分提示
+      setLastGainNotice({
+        text: streakBonus > 0 ? `+${PTS_PER_METEOR} (+${streakBonus} 連擊)` : `+${PTS_PER_METEOR}`,
+        type: 'meteor'
+      });
+      setTimeout(() => setLastGainNotice(null), 1500);
+
       setIsExploding(true);
 
       // 2D 備援模式下的碎屑紙花
@@ -305,7 +335,6 @@ export const MeteorGame = ({
     const newQueue = [...queue];
     newQueue.shift();
 
-    // 隊列耗盡時，只從「選取範圍」重新洗牌，絕不洩漏到未選單字！
     if (newQueue.length === 0) {
       newQueue.push(...getSelectedPool().sort(() => 0.5 - Math.random()));
     }
@@ -355,7 +384,11 @@ export const MeteorGame = ({
 
   // 結算畫面
   if (isFinished) {
-    const totalPossiblePoints = Math.max((meteorsDestroyed + (3 - lives)) * PTS_PER_METEOR, 10);
+    // 依實際題目答對率計算精準的 totalCount，不受額外 bonus 影響證書答對率
+    const totalCountForAccuracy = Math.round(
+      (score * (meteorsDestroyed + (3 - lives))) / Math.max(1, meteorsDestroyed)
+    );
+
     return (
       <div className="min-h-[75vh] flex items-center justify-center p-4 animate-fadeIn">
         <GlassCard className="max-w-md w-full text-center p-8">
@@ -367,7 +400,7 @@ export const MeteorGame = ({
             {t.survivalTime}<span className="text-indigo-600 font-black text-lg">{survivalTime} 秒</span>
           </p>
 
-          <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="grid grid-cols-2 gap-3 mb-3">
             <div className="p-3.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800">
               <span className="text-3xl font-black text-indigo-600 dark:text-indigo-400">
                 {score}
@@ -384,16 +417,16 @@ export const MeteorGame = ({
 
           <div className="grid grid-cols-2 gap-3 mb-6">
             <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
-              <span className="text-2xl font-black text-amber-600 dark:text-amber-400">
-                {maxCombo}x
+              <span className="text-xl font-black text-amber-600 dark:text-amber-400">
+                +{totalStreakBonus} 分
               </span>
-              <p className="text-[10px] font-bold text-slate-500 mt-0.5">最高連續連擊</p>
+              <p className="text-[10px] font-bold text-slate-500 mt-0.5">連擊加成總分 (最高 {maxCombo}x)</p>
             </div>
             <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
-              <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+              <span className="text-xl font-black text-emerald-600 dark:text-emerald-400">
                 {ufoCount} 架
               </span>
-              <p className="text-[10px] font-bold text-slate-500 mt-0.5">UFO 彩蛋 (+{ufoCount * PTS_PER_UFO}分)</p>
+              <p className="text-[10px] font-bold text-slate-500 mt-0.5">UFO 攔截彩蛋</p>
             </div>
           </div>
 
@@ -403,7 +436,7 @@ export const MeteorGame = ({
             book={qualifyingBook}
             score={score}
             time={survivalTime}
-            totalCount={totalPossiblePoints}
+            totalCount={totalCountForAccuracy}
             rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : (subMode === 'abc' ? '英文字母 ABC' : settings.selectedUnits.slice(0, 3).join(', '))}
             reviewWords={Array.from(encounteredWordsRef.current.values()).map(w => ({
               ...w,
@@ -419,7 +452,7 @@ export const MeteorGame = ({
     );
   }
 
-  // 遊戲進行主畫面 (iPad 滿版零捲動架構: 100dvh + 彈性伸縮畫布)
+  // 遊戲進行主畫面 (iPad 滿版零捲動: 100dvh + 彈性畫布)
   return (
     <div className="fixed inset-0 z-40 bg-slate-950 flex flex-col justify-between p-2 sm:p-4 overscroll-none touch-manipulation max-h-[100dvh] h-[100dvh] overflow-hidden select-none animate-fadeIn">
       {/* ── 頂部科幻戰術資訊列 ── */}
@@ -447,9 +480,10 @@ export const MeteorGame = ({
 
         {/* 連擊、得分與控制按鈕 */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {combo >= 2 && (
-            <div className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs shadow-md animate-bounce">
-              {combo}x 🔥
+          {combo >= 1 && (
+            <div className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs shadow-md animate-bounce flex items-center gap-1">
+              <span>{combo}x 🔥</span>
+              <span className="text-[10px] text-amber-200">(+{combo}加成)</span>
             </div>
           )}
           
@@ -468,7 +502,7 @@ export const MeteorGame = ({
             <span>{renderMode === '3d' ? '3D' : '2D'}</span>
           </button>
 
-          {/* 全螢幕切換按鈕 (方便 iPad 與桌機隨時手動開關) */}
+          {/* 全螢幕切換按鈕 */}
           <button
             onClick={toggleFullscreen}
             className="p-1.5 px-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-black flex items-center transition-all"
@@ -491,14 +525,25 @@ export const MeteorGame = ({
           <span className="text-white text-sm font-black tracking-wide">
             {subMode === 'zh-en' ? currentMeteor.word.zh : currentMeteor.word.en}
           </span>
+          {meteorsDestroyed >= 30 && (
+            <span className="ml-1 px-1.5 py-0.5 rounded bg-rose-500/80 text-[10px] text-white font-black animate-pulse">
+              超頻極速
+            </span>
+          )}
         </div>
       )}
 
-      {/* UFO 加分提示漂浮徽章 */}
-      {ufoBonusNotice && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-1.5 rounded-full bg-emerald-500 text-white font-black text-sm shadow-[0_0_20px_rgba(16,185,129,0.8)] animate-bounce flex items-center gap-1.5">
-          <span>🛸</span>
-          <span>UFO 攔截成功！+{PTS_PER_UFO} 分</span>
+      {/* 動態得分/加成漂浮通知 */}
+      {lastGainNotice && (
+        <div
+          className={`fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-1.5 rounded-full font-black text-sm shadow-xl animate-bounce flex items-center gap-1.5 ${
+            lastGainNotice.type === 'ufo'
+              ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.8)]'
+              : 'bg-cyan-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.8)]'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-amber-200" />
+          <span>{lastGainNotice.text}</span>
         </div>
       )}
 
@@ -524,7 +569,7 @@ export const MeteorGame = ({
               backgroundImage: 'radial-gradient(circle at 50% 30%, #1e1b4b 0%, #090d16 80%)'
             }}
           >
-            {/* 2D 彩蛋系統 (流星、人造衛星、點擊 UFO) */}
+            {/* 2D 彩蛋系統 (飛機雲拖曳流星、人造衛星、原地旋轉 UFO) */}
             <MeteorEasterEggs2D onUfoSuccess={handleUfoSuccess} />
 
             {/* 墜落隕石 */}
@@ -561,7 +606,6 @@ export const MeteorGame = ({
             onClick={() => handleOptionClick(opt)}
             className="group relative p-3 sm:p-4 rounded-xl sm:rounded-2xl font-black text-base sm:text-xl transition-all duration-150 active:scale-95 text-center cursor-pointer select-none overflow-hidden bg-slate-900/90 text-cyan-100 hover:text-white border-2 border-cyan-500/50 hover:border-cyan-400 shadow-[0_4px_20px_rgba(6,182,212,0.15)] hover:shadow-[0_0_25px_rgba(6,182,212,0.4)]"
           >
-            {/* 全息掃描光暈線 */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             
             <div className="relative z-10 flex items-center justify-center gap-2">

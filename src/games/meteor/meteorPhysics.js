@@ -5,26 +5,34 @@
 
 /**
  * 依據目前累計題數計算該顆隕石的基礎掉落時長 (秒)
- * 隨題數增加，基礎時間由 5.6 秒平滑收斂至 1.8 秒
+ * - 0 ~ 30 題：由 5.4 秒平滑收斂至 1.8 秒
+ * - 31 題以上：進入極速超頻模式，由 1.8 秒持續陡降至 0.85 秒！
  */
 export const calculateMeteorDuration = (questionIndex) => {
   const q = Math.max(0, questionIndex || 0);
-  // 基礎公式：5.6 / (1 + q * 0.035)，下限 1.75 秒
-  const base = 5.6 / (1 + q * 0.035);
-  return Math.max(1.75, base);
+
+  if (q <= 30) {
+    // 0 ~ 30 題：給予足夠反應學習期，每題遞減約 0.12 秒，下限 1.8 秒
+    return Math.max(1.8, 5.4 - q * 0.12);
+  } else {
+    // 31 題以上：大幅縮短留空時間，每題縮短 0.055 秒，極限逼近 0.85 秒
+    const over = q - 30;
+    return Math.max(0.85, 1.8 - over * 0.055);
+  }
 };
 
 /**
  * 計算兩段式位移進度 (0.0 ~ 1.0)
  * 
- * 1. 平滑巡航段 (L_smooth)：
- *    前期的題目給予平滑等速滑行，讓學生有充足時間看字認題。
- *    平滑距離比例隨題數減少：L_smooth = max(0, 0.60 - q * 0.03)
- *    當 q >= 20 時，平滑段歸零，一出現立即進入自由落體！
+ * 1. 平滑巡航段 (0 ~ 20 題)：
+ *    L_smooth = max(0, 0.60 - q * 0.03)，前段等速、後段加速。
  * 
- * 2. 自由落體加速段 (Free Fall)：
- *    在平滑段結束後，套用重力加速度 (y = v0*t + 0.5*g*t^2)。
- *    當平滑段已歸零 (q > 20)，額外增加重力加速度乘數，隕石如砲彈暴扣而下。
+ * 2. 純自由落體段 (21 ~ 30 題)：
+ *    平滑段歸零，一出現就開始重力自由加速。
+ * 
+ * 3. 初速度灌注 + 末段暴扣段 (31 題以上)：
+ *    隕石不再從 0 速度開始下落，而是帶有極高的初始垂直初速度 (v0)，
+ *    一進場就像被軌道砲直射一樣全速衝撞，保證 35~45 題內必定自然完結！
  * 
  * @param {number} elapsed 經過時間 (秒)
  * @param {number} duration 總時長 (秒)
@@ -36,28 +44,37 @@ export const calculateMeteorMotionProgress = (elapsed, duration, questionIndex) 
   const t = Math.min(Math.max(elapsed / duration, 0), 1.0);
   const q = Math.max(0, questionIndex || 0);
 
-  // 1. 平滑巡航距離比例 (0 ~ 0.60)
-  const lSmooth = Math.max(0, 0.60 - q * 0.03);
+  // 1. 前 20 題：平滑等速巡航縮減階段
+  if (q <= 20) {
+    const lSmooth = Math.max(0, 0.60 - q * 0.03);
+    const tSmoothEnd = lSmooth;
 
-  // 2. 超過 20 題後的額外重力加成乘數 (1.0 ~ 2.2)
-  const accelBoost = 1.0 + Math.max(0, (q - 20) * 0.06);
-
-  if (lSmooth >= 0.05) {
-    // 兩段式混合模式
-    const tSmoothEnd = lSmooth; // 時間分配比例對應距離
-    if (t <= tSmoothEnd) {
-      // 第一段：等速平滑滑行 (0 -> lSmooth)
+    if (t <= tSmoothEnd && tSmoothEnd > 0) {
+      // 等速巡航
       return (t / tSmoothEnd) * lSmooth;
     } else {
-      // 第二段：自由落體加速逼近 (lSmooth -> 1.0)
+      // 自由加速
       const p = (t - tSmoothEnd) / (1.0 - tSmoothEnd);
-      // 結合線性與二次加速曲線
-      const ease = Math.pow(p, 1.8 * Math.min(accelBoost, 1.5));
+      const ease = Math.pow(p, 1.8);
       return lSmooth + ease * (1.0 - lSmooth);
     }
-  } else {
-    // 平滑段已歸零：純自由落體全速加速模式
+  }
+
+  // 2. 21 ~ 30 題：無巡航，純自由落體加速度遞增
+  if (q <= 30) {
+    const accelBoost = 1.0 + (q - 20) * 0.08;
     const exponent = 1.5 * accelBoost;
     return Math.pow(t, exponent);
   }
+
+  // 3. 31 題以上：逐題注入極高「下落初速度 (v0)」
+  // 讓隕石在畫面最頂端就已經是高速衝刺狀態，大幅削減頂部反應時間
+  const over = q - 30;
+  const initialV = Math.min(0.85, over * 0.055); // 0.055 ~ 0.85 初速度權重
+  const exponent = 2.2 + over * 0.05; // 隨題數加速度持續變陡
+
+  // 結合初速度位移與二次暴扣重力
+  const linearPortion = initialV * t;
+  const accelPortion = (1.0 - initialV) * Math.pow(t, exponent);
+  return Math.min(1.0, linearPortion + accelPortion);
 };
