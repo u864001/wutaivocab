@@ -128,6 +128,8 @@ export const BattleGame = ({
   useEffect(() => { isDeadRef.current = isDead; }, [isDead]);
   useEffect(() => { playersRef.current = players; }, [players]);
   useEffect(() => { raidMissStreakRef.current = raidMissStreak; }, [raidMissStreak]);
+  const viewRef = useRef(view);
+  useEffect(() => { viewRef.current = view; }, [view]);
 
   // 監聽全螢幕
   useEffect(() => {
@@ -517,12 +519,14 @@ export const BattleGame = ({
           return merged;
         });
 
-        // 1. 激戰中防插隊判定
-        const isBattlingNow = activeList.some(p => p.status === 'battling' && p.deviceId !== myDeviceIdRef.current);
-        if (isBattlingNow) {
-          setErrorMsg(`【${arena.name}】正在激烈決戰中 (已鎖定)，請選擇其他擂台或稍後再戰！`);
-          handleLeaveRoom();
-          return;
+        // 1. 激戰中防插隊判定 (僅防範外部中途插隊，絕不踢除本房成員)
+        if (viewRef.current === 'menu') {
+          const isBattlingNow = activeList.some(p => p.status === 'battling' && p.deviceId !== myDeviceIdRef.current);
+          if (isBattlingNow) {
+            setErrorMsg(`【${arena.name}】正在激烈決戰中 (已鎖定)，請選擇其他擂台或稍後再戰！`);
+            handleLeaveRoom();
+            return;
+          }
         }
 
         // 2. 超員即時退出判定 (全校每房最多 4 人)
@@ -570,6 +574,16 @@ export const BattleGame = ({
               isHost: true
             });
             showNotice('👑 原房主已離線，你已自動接任為新房主！', 'warning');
+          }
+        }
+
+        // 5. 存活人數即時判定 (支援 2 人、3 人、4 人對決結算與中途離線處理)
+        if (viewRef.current === 'playing') {
+          const alive = activeList.filter(p => !p.isDead);
+          if (activeList.length >= 1 && alive.length <= 1) {
+            setTimeout(() => {
+              triggerGameOver(activeList);
+            }, 600);
           }
         }
       })
