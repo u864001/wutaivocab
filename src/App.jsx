@@ -10,6 +10,9 @@ import { SnakeGame } from './games/snake/SnakeGame';
 import { MemoryGameSingle } from './games/memory/MemoryGameSingle';
 import { BattleGame } from './games/battle/BattleGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
+import { Portal } from './components/Portal';
+import { useI18n } from './context/I18nContext';
+import { useTheme } from './context/ThemeContext';
 import { fetchWordsFromDb } from './services/supabase';
 import { soundEngine } from './services/audio';
 
@@ -72,7 +75,26 @@ class ErrorBoundary extends React.Component {
 }
 
 export function App() {
-  const [currentView, setCurrentView] = useState('lobby');
+  const { lang, setLang } = useI18n();
+  const { isDark, toggleTheme } = useTheme();
+
+  const [currentView, setCurrentView] = useState(() => {
+    try {
+      const path = window.location.pathname.toLowerCase();
+      const urlParams = new URLSearchParams(window.location.search);
+      if (path === '/phonics' || path.endsWith('/phonics') || urlParams.get('view') === 'phonics') {
+        return 'phonics';
+      }
+      if (path === '/vocab' || path === '/lobby' || urlParams.get('view') === 'lobby' || urlParams.get('view') === 'vocab') {
+        return 'lobby';
+      }
+      if (urlParams.get('join')) {
+        return 'battle';
+      }
+    } catch (e) {}
+    return 'portal';
+  });
+
   const [words, setWords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
@@ -102,18 +124,12 @@ export function App() {
   useEffect(() => {
     loadWords();
 
-    // 支援 /phonics 路由、?view=phonics 與 iPad 掃描 QR Code (?join=1001) 即刻導向
     try {
-      const path = window.location.pathname.toLowerCase();
       const urlParams = new URLSearchParams(window.location.search);
-      if (path === '/phonics' || path.endsWith('/phonics') || urlParams.get('view') === 'phonics') {
-        setCurrentView('phonics');
-      } else {
-        const joinParam = urlParams.get('join');
-        if (joinParam) {
-          setAutoJoinCode(joinParam);
-          setCurrentView('battle');
-        }
+      const joinParam = urlParams.get('join');
+      if (joinParam) {
+        setAutoJoinCode(joinParam);
+        setCurrentView('battle');
       }
     } catch (e) {}
   }, []);
@@ -125,8 +141,10 @@ export function App() {
         const path = window.location.pathname.toLowerCase();
         if (path === '/phonics' || path.endsWith('/phonics')) {
           setCurrentView('phonics');
-        } else {
+        } else if (path === '/vocab' || path === '/lobby') {
           setCurrentView('lobby');
+        } else {
+          setCurrentView('portal');
         }
       } catch (e) {}
     };
@@ -162,9 +180,13 @@ export function App() {
         if (window.location.pathname !== '/phonics') {
           window.history.pushState({ view: 'phonics' }, '', '/phonics');
         }
-      } else {
-        if (window.location.pathname === '/phonics') {
-          window.history.pushState({ view }, '', '/');
+      } else if (view === 'lobby') {
+        if (window.location.pathname !== '/vocab') {
+          window.history.pushState({ view: 'lobby' }, '', '/vocab');
+        }
+      } else if (view === 'portal') {
+        if (window.location.pathname !== '/') {
+          window.history.pushState({ view: 'portal' }, '', '/');
         }
       }
     } catch (e) {}
@@ -189,7 +211,8 @@ export function App() {
     };
   }, []);
 
-  if (isLoading) {
+  // 當處於單字學習遊戲或大廳且單字尚未同步完成時顯示輕量載入動畫
+  if (isLoading && words.length === 0 && currentView !== 'portal' && currentView !== 'phonics') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
         <div className="w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin mb-4" />
@@ -211,6 +234,8 @@ export function App() {
           onOpenTeacherHub={() => handleNavigate('teacher-hub')}
           onOpenLeaderboard={() => handleNavigate('leaderboard')}
           onOpenPhonics={() => handleNavigate('phonics')}
+          onGoHome={() => handleNavigate('portal')}
+          currentView={currentView}
           isOnline={isOnline}
         />
       )}
@@ -218,9 +243,18 @@ export function App() {
       {/* 畫面路由視圖切換 (含全域安全防護熔斷) */}
       <main className="flex-1 flex flex-col">
         <ErrorBoundary
-          onReset={() => handleNavigate('lobby')}
+          onReset={() => handleNavigate('portal')}
           onOpenTeacherHub={() => handleNavigate('teacher-hub')}
         >
+          {currentView === 'portal' && (
+            <Portal
+              onNavigate={handleNavigate}
+              onOpenLeaderboard={() => handleNavigate('leaderboard')}
+              onOpenTeacherHub={() => handleNavigate('teacher-hub')}
+              wordsCount={words.length}
+            />
+          )}
+
           {currentView === 'lobby' && (
             <Lobby
               words={words}
@@ -309,7 +343,17 @@ export function App() {
 
           {currentView === 'phonics' && (
             <PhonicsBoard
-              onBackToLobby={() => handleNavigate('lobby')}
+              onBackToLobby={() => handleNavigate('portal')}
+              initialLang={lang === 'en' ? 'en' : 'zh'}
+              initialTheme={isDark ? 'dark' : 'light'}
+              onLangChangeGlobal={(newPhonicsLang) => {
+                setLang(newPhonicsLang === 'en' ? 'en' : 'zh-TW');
+              }}
+              onThemeChangeGlobal={(newPhonicsTheme) => {
+                if ((newPhonicsTheme === 'dark') !== isDark) {
+                  toggleTheme();
+                }
+              }}
             />
           )}
         </ErrorBoundary>

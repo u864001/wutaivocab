@@ -12,9 +12,19 @@ export function getAudioContext(): AudioContext | null {
     }
   }
   if (audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume();
+    audioCtx.resume().catch(() => {});
   }
   return audioCtx;
+}
+
+export async function ensureAudioContext(): Promise<AudioContext | null> {
+  const ctx = getAudioContext();
+  if (ctx && ctx.state === 'suspended') {
+    try {
+      await ctx.resume();
+    } catch (e) {}
+  }
+  return ctx;
 }
 
 // UI Sound Effects
@@ -179,16 +189,37 @@ export function playVowelFormant(vowel: 'a' | 'e' | 'i' | 'o' | 'u'): Promise<vo
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.42, ctx.currentTime);
+    const now = ctx.currentTime;
+    gain.gain.setValueAtTime(0.65, now);
     source.connect(gain);
     gain.connect(ctx.destination);
-    source.onended = () => resolve();
-    source.start();
+
+    let finished = false;
+    const done = () => {
+      if (!finished) {
+        finished = true;
+        resolve();
+      }
+    };
+    source.onended = done;
+    setTimeout(done, Math.ceil(duration * 1000) + 100);
+    try {
+      source.start(now);
+    } catch (e) {
+      done();
+    }
   });
 }
 
 // Phoneme pronunciation hint mapping for Web Speech API (using words that don't spell abbreviations)
 const PHONEME_SPEECH_MAP: Record<string, string> = {
+  // 5 Short Vowels (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/)
+  'a': 'ah',
+  'e': 'eh',
+  'i': 'ih',
+  'o': 'ah',
+  'u': 'uh',
+
   // Silent e / Split digraphs
   'a_e': 'ay',
   'e_e': 'ee',
@@ -336,10 +367,45 @@ export async function speakPhoneme(card: PhonicsCard, mode: PronunciationMode = 
     if (mode === 'word') {
       const anchor = VOWEL_ANCHORS[g] || card.sampleWord || g;
       await speakWord(anchor, 0.85);
-    } else {
-      await playVowelFormant(g as 'a' | 'e' | 'i' | 'o' | 'u');
+      return;
     }
-    return;
+
+    // In 'phoneme' mode:
+    // 1. Trigger acoustic formant synthesis (non-blocking)
+    playVowelFormant(g as 'a' | 'e' | 'i' | 'o' | 'u').catch(() => {});
+
+    // 2. Pronounce natural human phoneme sound via Web Speech API
+    return new Promise((resolve) => {
+      if (typeof window === 'undefined' || !window.speechSynthesis) {
+        resolve();
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const utteranceText = PHONEME_SPEECH_MAP[g] || g;
+      const utterance = new SpeechSynthesisUtterance(utteranceText);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.82;
+      utterance.pitch = 1.05;
+
+      const voice = getEnglishVoice();
+      if (voice) utterance.voice = voice;
+
+      let settled = false;
+      const finish = () => {
+        if (!settled) {
+          settled = true;
+          resolve();
+        }
+      };
+
+      utterance.onend = finish;
+      utterance.onerror = finish;
+      setTimeout(finish, 1000); // Safety timeout so blending never blocks
+
+      window.speechSynthesis.speak(utterance);
+    });
   }
 
   // Other phonemes via Web Speech API
@@ -360,8 +426,17 @@ export async function speakPhoneme(card: PhonicsCard, mode: PronunciationMode = 
     const voice = getEnglishVoice();
     if (voice) utterance.voice = voice;
 
-    utterance.onend = () => resolve();
-    utterance.onerror = () => resolve();
+    let settled = false;
+    const finish = () => {
+      if (!settled) {
+        settled = true;
+        resolve();
+      }
+    };
+
+    utterance.onend = finish;
+    utterance.onerror = finish;
+    setTimeout(finish, 1000); // Safety timeout
 
     window.speechSynthesis.speak(utterance);
   });
@@ -385,8 +460,17 @@ export function speakWord(word: string, rate: number = 0.85): Promise<void> {
     const voice = getEnglishVoice();
     if (voice) utterance.voice = voice;
 
-    utterance.onend = () => resolve();
-    utterance.onerror = () => resolve();
+    let settled = false;
+    const finish = () => {
+      if (!settled) {
+        settled = true;
+        resolve();
+      }
+    };
+
+    utterance.onend = finish;
+    utterance.onerror = finish;
+    setTimeout(finish, 1500); // Safety timeout
 
     window.speechSynthesis.speak(utterance);
   });

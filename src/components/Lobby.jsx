@@ -5,7 +5,7 @@ import { useI18n } from '../context/I18nContext';
 import {
   Trophy, Settings2, Swords, Rocket, Puzzle,
   Volume2, Keyboard, ChevronDown, ChevronUp, Check,
-  QrCode, Sparkles, BookOpen, UserCheck, Megaphone
+  QrCode, Sparkles, BookOpen, UserCheck, Megaphone, Home
 } from 'lucide-react';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 
@@ -88,6 +88,24 @@ export const Lobby = ({
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-4 sm:py-6 space-y-6 animate-fadeIn pb-16">
+      {/* ── 宇宙導航麵包屑 / 回首頁按鈕 ── */}
+      <div className="flex items-center justify-between gap-3">
+        <button
+          onClick={() => onNavigate('portal')}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-black shadow-sm transition-all active:scale-95 cursor-pointer"
+        >
+          <Home className="w-4 h-4 text-emerald-500" />
+          <span>{t.backToPortal || '回學習宇宙首頁'}</span>
+        </button>
+
+        <button
+          onClick={() => onNavigate('phonics')}
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm font-black shadow-sm transition-all active:scale-95 cursor-pointer"
+        >
+          <BookOpen className="w-4 h-4 text-indigo-500" />
+          <span>{lang === 'zh-TW' ? '切換至自然發音板' : 'Phonics Board'}</span>
+        </button>
+      </div>
       {/* ── 全校即時跑馬燈公告 (由管理員後台設定) ── */}
       {announcement?.active && announcement?.text && (
         <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border-2 border-amber-300 dark:border-amber-600 flex items-center gap-3 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-black shadow-sm animate-fadeIn">

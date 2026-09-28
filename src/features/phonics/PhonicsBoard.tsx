@@ -13,12 +13,16 @@ interface PhonicsBoardProps {
   onBackToLobby?: () => void;
   initialTheme?: ThemeMode;
   initialLang?: Language;
+  onLangChangeGlobal?: (lang: Language) => void;
+  onThemeChangeGlobal?: (theme: ThemeMode) => void;
 }
 
 export function PhonicsBoard({
   onBackToLobby,
   initialTheme,
   initialLang,
+  onLangChangeGlobal,
+  onThemeChangeGlobal,
 }: PhonicsBoardProps = {}) {
   // Theme state: light or dark
   const [theme, setTheme] = useState<ThemeMode>(() => {
@@ -34,6 +38,35 @@ export function PhonicsBoard({
     const saved = localStorage.getItem('phonics_lang');
     return saved === 'en' ? 'en' : 'zh';
   });
+
+  useEffect(() => {
+    if (initialLang && initialLang !== lang) {
+      setLang(initialLang);
+    }
+  }, [initialLang]);
+
+  useEffect(() => {
+    if (initialTheme && initialTheme !== theme) {
+      setTheme(initialTheme);
+    }
+  }, [initialTheme]);
+
+  const handleLangChange = (newLang: Language) => {
+    setLang(newLang);
+    localStorage.setItem('phonics_lang', newLang);
+    localStorage.setItem('wutai_lang', newLang === 'en' ? 'en' : 'zh-TW');
+    if (onLangChangeGlobal) {
+      onLangChangeGlobal(newLang);
+    }
+  };
+
+  const handleThemeChange = (newTheme: ThemeMode) => {
+    setTheme(newTheme);
+    localStorage.setItem('phonics_theme', newTheme);
+    if (onThemeChangeGlobal) {
+      onThemeChangeGlobal(newTheme);
+    }
+  };
 
   // Pronunciation mode: 'phoneme' (pure sound / formant) vs 'word' (anchor word like apple)
   const [pronunciationMode, setPronunciationMode] = useState<PronunciationMode>('phoneme');
@@ -211,9 +244,9 @@ export function PhonicsBoard({
         mode={mode}
         onModeChange={setMode}
         lang={lang}
-        onLangChange={setLang}
+        onLangChange={handleLangChange}
         theme={theme}
-        onThemeChange={setTheme}
+        onThemeChange={handleThemeChange}
         isFullscreen={isFullscreen}
         onToggleFullscreen={toggleFullscreen}
         onOpenBank={() => setIsBankModalOpen(true)}

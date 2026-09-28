@@ -344,8 +344,8 @@ export const SoundBankModal: React.FC<SoundBankModalProps> = ({
                               <CheckCircle2 className="w-4 h-4 stroke-[3]" />
                             </div>
                           )}
-                          <span className="text-[11px] font-sans font-medium text-slate-400 mt-1 truncate max-w-full">
-                            {card.sampleWord}
+                          <span className="text-[11px] font-sans font-medium text-slate-500 dark:text-slate-400 mt-1 truncate max-w-full">
+                            {card.sampleWord}{lang === 'zh' && card.sampleWordZh ? ` (${card.sampleWordZh})` : ''}
                           </span>
                         </div>
                       );
