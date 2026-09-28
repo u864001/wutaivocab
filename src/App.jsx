@@ -228,17 +228,15 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-300">
-      {/* 全域導覽列 (自然發音板具有獨立專屬頂部導覽列，進入時隱藏主導覽列以避免雙重 Header) */}
-      {currentView !== 'phonics' && (
-        <Header
-          onOpenTeacherHub={() => handleNavigate('teacher-hub')}
-          onOpenLeaderboard={() => handleNavigate('leaderboard')}
-          onOpenPhonics={() => handleNavigate('phonics')}
-          onGoHome={() => handleNavigate('portal')}
-          currentView={currentView}
-          isOnline={isOnline}
-        />
-      )}
+      {/* 全域統一導覽列 (全頁面維持一致的學校標誌、回首頁、語言與主題開關) */}
+      <Header
+        onOpenTeacherHub={() => handleNavigate('teacher-hub')}
+        onOpenLeaderboard={() => handleNavigate('leaderboard')}
+        onOpenPhonics={() => handleNavigate('phonics')}
+        onGoHome={() => handleNavigate('portal')}
+        currentView={currentView}
+        isOnline={isOnline}
+      />
 
       {/* 畫面路由視圖切換 (含全域安全防護熔斷) */}
       <main className="flex-1 flex flex-col">

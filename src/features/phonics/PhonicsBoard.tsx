@@ -238,19 +238,19 @@ export function PhonicsBoard({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between selection:bg-indigo-500/20 font-ui transition-colors duration-200">
-      {/* Top Navigation Bar */}
+    <div className="flex-1 flex flex-col justify-between selection:bg-indigo-500/20 font-ui transition-colors duration-200">
+      {/* Phonics Module Contextual Sub-Bar */}
       <Header
         mode={mode}
         onModeChange={setMode}
         lang={lang}
-        onLangChange={handleLangChange}
-        theme={theme}
-        onThemeChange={handleThemeChange}
         isFullscreen={isFullscreen}
         onToggleFullscreen={toggleFullscreen}
         onOpenBank={() => setIsBankModalOpen(true)}
-        onBackToLobby={onBackToLobby}
+        pronunciationMode={pronunciationMode}
+        onTogglePronunciationMode={() =>
+          setPronunciationMode((prev) => (prev === 'phoneme' ? 'word' : 'phoneme'))
+        }
       />
 
       {/* Main View Area: Teaching Mode OR Quiz Mode */}

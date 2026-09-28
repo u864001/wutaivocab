@@ -22,7 +22,7 @@ export async function ensureAudioContext(): Promise<AudioContext | null> {
   if (ctx && ctx.state === 'suspended') {
     try {
       await ctx.resume();
-    } catch (e) {}
+    } catch {}
   }
   return ctx;
 }
@@ -37,7 +37,7 @@ export function playCardSnapSound() {
   osc.frequency.setValueAtTime(440, ctx.currentTime);
   osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.08);
 
-  gain.gain.setValueAtTime(0.12, ctx.currentTime);
+  gain.gain.setValueAtTime(0.10, ctx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
 
   osc.connect(gain);
@@ -106,9 +106,148 @@ export function playErrorBonk() {
 }
 
 /**
+ * Standard Acoustic Formant Model for American English Short Vowels:
+ * /æ/ (ă - butterfly a, cat, apple)
+ * /ɛ/ (ĕ - bed, egg)
+ * /ɪ/ (ĭ - igloo, in, it)
+ * /ɒ/ (ŏ - octopus, on, top)
+ * /ʌ/ (ŭ - umbrella, up, cup)
+ */
+interface FormantSpec {
+  f1: number;
+  f2: number;
+  f3: number;
+  f4: number;
+  bw1: number;
+  bw2: number;
+  bw3: number;
+  bw4: number;
+  g1: number;
+  g2: number;
+  g3: number;
+  g4: number;
+}
+
+const SHORT_VOWEL_FORMANTS: Record<'a' | 'e' | 'i' | 'o' | 'u', FormantSpec> = {
+  // /æ/ Butterfly A (apple, cat, bat): High F1 (open jaw), high F2 (fronted tongue)
+  'a': {
+    f1: 850, f2: 1720, f3: 2650, f4: 3500,
+    bw1: 80, bw2: 110, bw3: 140, bw4: 200,
+    g1: 1.0, g2: 0.60, g3: 0.28, g4: 0.10,
+  },
+  // /ɛ/ Short E (egg, bed, red): Mid F1, front high F2
+  'e': {
+    f1: 540, f2: 1850, f3: 2600, f4: 3600,
+    bw1: 70, bw2: 90,  bw3: 130, bw4: 200,
+    g1: 1.0, g2: 0.50, g3: 0.22, g4: 0.08,
+  },
+  // /ɪ/ Short I (igloo, in, fish): Low F1, high front F2 (lax front vowel, never spelled "ih")
+  'i': {
+    f1: 390, f2: 2150, f3: 2750, f4: 3650,
+    bw1: 60, bw2: 85,  bw3: 125, bw4: 200,
+    g1: 1.0, g2: 0.45, g3: 0.20, g4: 0.08,
+  },
+  // /ɒ/ Short O (octopus, pot, top): Open back vowel
+  'o': {
+    f1: 600, f2: 960,  f3: 2450, f4: 3400,
+    bw1: 70, bw2: 90,  bw3: 140, bw4: 200,
+    g1: 1.0, g2: 0.65, g3: 0.18, g4: 0.06,
+  },
+  // /ʌ/ Short U (umbrella, cup, bus): Open-mid central vowel
+  'u': {
+    f1: 650, f2: 1220, f3: 2550, f4: 3500,
+    bw1: 70, bw2: 90,  bw3: 130, bw4: 200,
+    g1: 1.0, g2: 0.55, g3: 0.20, g4: 0.06,
+  },
+};
+
+// In-memory pre-rendered AudioBuffer cache for 0ms latency playback
+const vowelBufferCache: Partial<Record<'a' | 'e' | 'i' | 'o' | 'u', AudioBuffer>> = {};
+
+function createVowelBuffer(ctx: AudioContext, vowel: 'a' | 'e' | 'i' | 'o' | 'u'): AudioBuffer {
+  const spec = SHORT_VOWEL_FORMANTS[vowel];
+  const sampleRate = ctx.sampleRate || 44100;
+  const duration = 0.36; // 360ms optimal human speech modeling duration
+  const numSamples = Math.floor(sampleRate * duration);
+  const buffer = ctx.createBuffer(1, numSamples, sampleRate);
+  const channelData = buffer.getChannelData(0);
+
+  function makeResonator(f: number, bw: number) {
+    const r = Math.exp((-Math.PI * bw) / sampleRate);
+    const theta = (2 * Math.PI * f) / sampleRate;
+    const a1 = 2 * r * Math.cos(theta);
+    const a2 = -r * r;
+    const b0 = (1 - r) * Math.sin(theta);
+    let y1 = 0;
+    let y2 = 0;
+    return (x: number) => {
+      const y = b0 * x + a1 * y1 + a2 * y2;
+      y2 = y1;
+      y1 = y;
+      return y;
+    };
+  }
+
+  const r1 = makeResonator(spec.f1, spec.bw1);
+  const r2 = makeResonator(spec.f2, spec.bw2);
+  const r3 = makeResonator(spec.f3, spec.bw3);
+  const r4 = makeResonator(spec.f4, spec.bw4);
+
+  let phase = 0;
+  let maxAbs = 0;
+  const rawSignal = new Float32Array(numSamples);
+
+  for (let n = 0; n < numSamples; n++) {
+    const t = n / sampleRate;
+    // Human inflection: subtle downward pitch contour from 208Hz to 182Hz
+    const f0 = 208 - 26 * (t / duration) + 1.8 * Math.sin(2 * Math.PI * 5 * t);
+    phase += f0 / sampleRate;
+    if (phase >= 1.0) phase -= 1.0;
+
+    // Liljencrants-Fant glottal flow model
+    let glottal = 0;
+    if (phase < 0.68) {
+      glottal = Math.sin((Math.PI * phase) / 0.68);
+    } else {
+      glottal = -Math.exp(-12 * (phase - 0.68)) * 0.35;
+    }
+
+    // Envelope: 20ms soft attack, steady body, 70ms natural exponential release
+    let env = 1.0;
+    if (t < 0.02) {
+      env = t / 0.02;
+    } else if (t > duration - 0.07) {
+      const rel = (duration - t) / 0.07;
+      env = Math.max(0, rel * rel);
+    }
+
+    // Subtle breathiness / vocal cord shimmer
+    const noise = (Math.random() * 2 - 1) * 0.012;
+    const excitation = (glottal + noise) * env;
+
+    const out =
+      r1(excitation) * spec.g1 +
+      r2(excitation) * spec.g2 +
+      r3(excitation) * spec.g3 +
+      r4(excitation) * spec.g4;
+
+    rawSignal[n] = out;
+    const absVal = Math.abs(out);
+    if (absVal > maxAbs) maxAbs = absVal;
+  }
+
+  // Peak normalization to 0.85 (crystal-clear, loud, no clipping)
+  const scale = maxAbs > 0 ? 0.85 / maxAbs : 1.0;
+  for (let n = 0; n < numSamples; n++) {
+    channelData[n] = Math.max(-1, Math.min(1, rawSignal[n] * scale));
+  }
+
+  return buffer;
+}
+
+/**
  * Pure Vowel Formant Synthesizer (Acoustic Phonetics Model)
- * Generates natural isolated human vowel sounds (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/)
- * Eliminates the problem where TTS spells out abbreviations (e.g. "ih" -> "eye aitch").
+ * Generates natural isolated human vowel sounds (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/) with 0ms latency.
  */
 export function playVowelFormant(vowel: 'a' | 'e' | 'i' | 'o' | 'u'): Promise<void> {
   return new Promise((resolve) => {
@@ -118,79 +257,16 @@ export function playVowelFormant(vowel: 'a' | 'e' | 'i' | 'o' | 'u'): Promise<vo
       return;
     }
 
-    const formantMap: Record<string, { f1: number; f2: number; f3: number }> = {
-      'a': { f1: 820, f2: 1650, f3: 2500 }, // /æ/ as in cat / apple
-      'e': { f1: 530, f2: 1850, f3: 2600 }, // /ɛ/ as in egg / bed
-      'i': { f1: 390, f2: 2150, f3: 2850 }, // /ɪ/ as in in / igloo
-      'o': { f1: 580, f2: 950,  f3: 2450 }, // /ɒ/ as in octopus / on
-      'u': { f1: 640, f2: 1250, f3: 2600 }, // /ʌ/ as in cup / umbrella
-    };
-
-    const formants = formantMap[vowel];
-    if (!formants) {
-      resolve();
-      return;
+    if (!vowelBufferCache[vowel]) {
+      vowelBufferCache[vowel] = createVowelBuffer(ctx, vowel);
     }
-
-    const sampleRate = ctx.sampleRate;
-    const duration = 0.38;
-    const numSamples = Math.floor(sampleRate * duration);
-    const buffer = ctx.createBuffer(1, numSamples, sampleRate);
-    const channelData = buffer.getChannelData(0);
-
-    const f0 = 195; // Friendly vocal pitch ~195Hz
-    const period = sampleRate / f0;
-
-    // Resonator filter helper (2-pole IIR bandpass resonator)
-    function makeResonator(freq: number, bandwidth: number) {
-      const r = Math.exp((-Math.PI * bandwidth) / sampleRate);
-      const theta = (2 * Math.PI * freq) / sampleRate;
-      const a1 = 2 * r * Math.cos(theta);
-      const a2 = -r * r;
-      const b0 = 1 - a1 - a2;
-      let y1 = 0;
-      let y2 = 0;
-      return (x: number) => {
-        const y = b0 * x + a1 * y1 + a2 * y2;
-        y2 = y1;
-        y1 = y;
-        return y;
-      };
-    }
-
-    const r1 = makeResonator(formants.f1, 80);
-    const r2 = makeResonator(formants.f2, 100);
-    const r3 = makeResonator(formants.f3, 130);
-
-    for (let n = 0; n < numSamples; n++) {
-      const t = n / sampleRate;
-      // Vocal envelope with smooth attack and decay
-      let env = 1;
-      if (t < 0.04) {
-        env = t / 0.04;
-      } else if (t > duration - 0.08) {
-        env = Math.max(0, (duration - t) / 0.08);
-      }
-
-      // Glottal excitation pulse
-      const phase = (n % period) / period;
-      let glottal = 0;
-      if (phase < 0.65) {
-        glottal = Math.sin(Math.PI * (phase / 0.65));
-      } else {
-        glottal = -Math.sin(Math.PI * ((phase - 0.65) / 0.35)) * 0.18;
-      }
-
-      const excitation = glottal * env;
-      const out = r1(excitation) * 0.65 + r2(excitation) * 0.4 + r3(excitation) * 0.18;
-      channelData[n] = Math.max(-1, Math.min(1, out * 1.6));
-    }
+    const buffer = vowelBufferCache[vowel]!;
 
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     const gain = ctx.createGain();
     const now = ctx.currentTime;
-    gain.gain.setValueAtTime(0.65, now);
+    gain.gain.setValueAtTime(0.9, now);
     source.connect(gain);
     gain.connect(ctx.destination);
 
@@ -202,24 +278,18 @@ export function playVowelFormant(vowel: 'a' | 'e' | 'i' | 'o' | 'u'): Promise<vo
       }
     };
     source.onended = done;
-    setTimeout(done, Math.ceil(duration * 1000) + 100);
+    setTimeout(done, Math.ceil(buffer.duration * 1000) + 50);
+
     try {
       source.start(now);
-    } catch (e) {
+    } catch {
       done();
     }
   });
 }
 
-// Phoneme pronunciation hint mapping for Web Speech API (using words that don't spell abbreviations)
+// Phoneme pronunciation hint mapping for Web Speech API
 const PHONEME_SPEECH_MAP: Record<string, string> = {
-  // 5 Short Vowels (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/)
-  'a': 'ah',
-  'e': 'eh',
-  'i': 'ih',
-  'o': 'ah',
-  'u': 'uh',
-
   // Silent e / Split digraphs
   'a_e': 'ay',
   'e_e': 'ee',
@@ -228,83 +298,83 @@ const PHONEME_SPEECH_MAP: Record<string, string> = {
   'u_e': 'you',
 
   // Consonant Digraphs
-  'ch': 'ch',
-  'sh': 'sh',
+  'ch': 'chair',
+  'sh': 'ship',
   'th(voiced)': 'the',
-  'th(unvoiced)': 'th',
-  'wh': 'w',
-  'ph': 'f',
-  'ck': 'k',
-  'ng': 'ng',
-  'qu': 'kw',
+  'th(unvoiced)': 'thumb',
+  'wh': 'whale',
+  'ph': 'phone',
+  'ck': 'duck',
+  'ng': 'ring',
+  'qu': 'queen',
 
   // Blends
-  'bl': 'bl',
-  'cl': 'cl',
-  'fl': 'fl',
-  'gl': 'gl',
-  'pl': 'pl',
-  'sl': 'sl',
-  'br': 'br',
-  'cr': 'cr',
-  'dr': 'dr',
-  'fr': 'fr',
-  'gr': 'gr',
-  'pr': 'pr',
-  'tr': 'tr',
-  'sk': 'sk',
-  'sm': 'sm',
-  'sn': 'sn',
-  'sp': 'sp',
-  'st': 'st',
-  'sw': 'sw',
-  'nd': 'nd',
-  'nk': 'nk',
-  'nt': 'nt',
-  'mp': 'mp',
-  'ld': 'ld',
-  'lk': 'lk',
-  'ft': 'ft',
+  'bl': 'blue',
+  'cl': 'clap',
+  'fl': 'flag',
+  'gl': 'glad',
+  'pl': 'play',
+  'sl': 'slow',
+  'br': 'brown',
+  'cr': 'crab',
+  'dr': 'drum',
+  'fr': 'frog',
+  'gr': 'green',
+  'pr': 'print',
+  'tr': 'tree',
+  'sk': 'skip',
+  'sm': 'smile',
+  'sn': 'snake',
+  'sp': 'spot',
+  'st': 'stop',
+  'sw': 'swim',
+  'nd': 'hand',
+  'nk': 'pink',
+  'nt': 'tent',
+  'mp': 'lamp',
+  'ld': 'cold',
+  'lk': 'milk',
+  'ft': 'gift',
 
   // Vowel Teams
-  'ai': 'ay',
-  'ay': 'ay',
-  'ee': 'ee',
-  'ea': 'ee',
-  'igh': 'eye',
-  'oa': 'oh',
-  'ow': 'ow',
-  'oi': 'oy',
-  'oy': 'oy',
-  'ou': 'ow',
-  'oo': 'oo',
-  'au': 'aw',
-  'aw': 'aw',
-  'ew': 'you',
+  'ai': 'rain',
+  'ay': 'day',
+  'ee': 'see',
+  'ea': 'tea',
+  'igh': 'night',
+  'oa': 'boat',
+  'ow': 'snow',
+  'oi': 'coin',
+  'oy': 'boy',
+  'ou': 'cloud',
+  'oo': 'moon',
+  'au': 'autumn',
+  'aw': 'draw',
+  'ew': 'new',
 
   // Bossy R
-  'ar': 'ar',
-  'er': 'er',
-  'ir': 'er',
-  'or': 'or',
-  'ur': 'er',
-  'air': 'air',
-  'are': 'air',
-  'ear': 'ear',
-  'ore': 'or',
+  'ar': 'car',
+  'er': 'her',
+  'ir': 'bird',
+  'or': 'fork',
+  'ur': 'nurse',
+  'air': 'chair',
+  'are': 'care',
+  'ear': 'bear',
+  'ore': 'more',
 
   // Silent Letters & Rules
-  'kn': 'n',
-  'wr': 'r',
-  'gn': 'n',
-  'mb': 'm',
-  'tch': 'ch',
-  'dge': 'j',
-  'c(s)': 's',
-  'g(j)': 'j',
+  'kn': 'knee',
+  'wr': 'write',
+  'gn': 'sign',
+  'mb': 'lamb',
+  'tch': 'watch',
+  'dge': 'bridge',
+  'c(s)': 'city',
+  'g(j)': 'gem',
 };
 
-// Anchor words for short vowels so TTS can speak clear real words
+// Anchor words for short vowels so teachers/students can hear clear standard words
 const VOWEL_ANCHORS: Record<string, string> = {
   'a': 'apple',
   'e': 'egg',
@@ -354,12 +424,10 @@ export type PronunciationMode = 'phoneme' | 'word';
 /**
  * Speaks a phonics card.
  * For the 5 short vowels (a, e, i, o, u):
- * - If mode is 'phoneme': uses pure Web Audio formant model (avoiding TTS "ih", "eh" abbreviation spelling issues).
- * - If mode is 'word': speaks the anchor word (apple, egg, igloo, octopus, umbrella).
+ * - If mode is 'phoneme': uses pure Web Audio formant model with 0ms delay (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/).
+ * - If mode is 'word': speaks standard anchor word (apple, egg, igloo, octopus, umbrella).
  */
 export async function speakPhoneme(card: PhonicsCard, mode: PronunciationMode = 'phoneme'): Promise<void> {
-  playCardSnapSound();
-
   const g = card.grapheme.toLowerCase();
 
   // If it's one of the 5 basic short vowels
@@ -371,41 +439,16 @@ export async function speakPhoneme(card: PhonicsCard, mode: PronunciationMode = 
     }
 
     // In 'phoneme' mode:
-    // 1. Trigger acoustic formant synthesis (non-blocking)
-    playVowelFormant(g as 'a' | 'e' | 'i' | 'o' | 'u').catch(() => {});
+    // Pure, instantaneous 0ms acoustic formant synthesis (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/)
+    // Never calls SpeechSynthesis, completely eliminating delayed TTS and "eye-aitch" pronunciation bugs!
+    await playVowelFormant(g as 'a' | 'e' | 'i' | 'o' | 'u');
+    return;
+  }
 
-    // 2. Pronounce natural human phoneme sound via Web Speech API
-    return new Promise((resolve) => {
-      if (typeof window === 'undefined' || !window.speechSynthesis) {
-        resolve();
-        return;
-      }
-
-      window.speechSynthesis.cancel();
-
-      const utteranceText = PHONEME_SPEECH_MAP[g] || g;
-      const utterance = new SpeechSynthesisUtterance(utteranceText);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.82;
-      utterance.pitch = 1.05;
-
-      const voice = getEnglishVoice();
-      if (voice) utterance.voice = voice;
-
-      let settled = false;
-      const finish = () => {
-        if (!settled) {
-          settled = true;
-          resolve();
-        }
-      };
-
-      utterance.onend = finish;
-      utterance.onerror = finish;
-      setTimeout(finish, 1000); // Safety timeout so blending never blocks
-
-      window.speechSynthesis.speak(utterance);
-    });
+  // In word mode for other cards, speak the sample word if available
+  if (mode === 'word' && card.sampleWord) {
+    await speakWord(card.sampleWord, 0.85);
+    return;
   }
 
   // Other phonemes via Web Speech API
@@ -415,7 +458,10 @@ export async function speakPhoneme(card: PhonicsCard, mode: PronunciationMode = 
       return;
     }
 
-    window.speechSynthesis.cancel();
+    // Only cancel if speech is actively speaking to prevent resetting the browser audio pipeline
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+    }
 
     const utteranceText = PHONEME_SPEECH_MAP[card.grapheme] || card.grapheme.replace(/[^a-zA-Z]/g, '');
     const utterance = new SpeechSynthesisUtterance(utteranceText);
@@ -449,7 +495,9 @@ export function speakWord(word: string, rate: number = 0.85): Promise<void> {
       return;
     }
 
-    window.speechSynthesis.cancel();
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+    }
 
     const cleanWord = word.replace(/[^a-zA-Z]/g, '');
     const utterance = new SpeechSynthesisUtterance(cleanWord);
