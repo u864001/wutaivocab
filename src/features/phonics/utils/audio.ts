@@ -152,20 +152,23 @@ async function getOrLoadBaseBuffer(ctx: AudioContext, soundName: string): Promis
   if (phonemeAudioBufferCache[soundName] === null) {
     return null;
   }
-  try {
-    const res = await fetch(`/audio/phonics/${soundName}.mp3`);
-    if (!res.ok) {
-      phonemeAudioBufferCache[soundName] = null;
-      return null;
-    }
-    const ab = await res.arrayBuffer();
-    const buffer = await ctx.decodeAudioData(ab);
-    phonemeAudioBufferCache[soundName] = buffer;
-    return buffer;
-  } catch {
-    phonemeAudioBufferCache[soundName] = null;
-    return null;
+  
+  // Try .wav first (lossless studio recordings / blends), then .mp3
+  const extensions = ['.wav', '.mp3'];
+  for (const ext of extensions) {
+    try {
+      const res = await fetch(`/audio/phonics/${soundName}${ext}`);
+      if (res.ok) {
+        const ab = await res.arrayBuffer();
+        const buffer = await ctx.decodeAudioData(ab);
+        phonemeAudioBufferCache[soundName] = buffer;
+        return buffer;
+      }
+    } catch {}
   }
+
+  phonemeAudioBufferCache[soundName] = null;
+  return null;
 }
 
 function playBuffer(ctx: AudioContext, buffer: AudioBuffer): Promise<boolean> {
@@ -239,7 +242,8 @@ function createBlendedAudioBuffer(
 
 /**
  * Attempts to play studio-recorded native human pure audio from /audio/phonics/
- * or dynamically synthesize authentic consonant blends (e.g. bl, cl, sp, st, nd).
+ * (e.g. authentic Oxford Phonics World recordings for blends, phonemes, vowels)
+ * or dynamically synthesize consonant blends if no direct recording is found.
  * Returns true if played with 0ms latency.
  */
 export async function playPhonemeAudioFile(card: PhonicsCard): Promise<boolean> {
@@ -248,7 +252,38 @@ export async function playPhonemeAudioFile(card: PhonicsCard): Promise<boolean> 
 
   const cleanGrapheme = card.grapheme.toLowerCase().replace(/[^a-z]/g, '');
 
-  // Step 1: Check if card is a known consonant blend (Beginning or Ending Blend)
+  // Step 1: Direct static file lookup (card.id, cleanGrapheme, and categorized prefixes)
+  // Tries lossless .wav first (e.g. authentic studio blend recordings), then .mp3
+  const candidateKeys = [
+    card.id,
+    cleanGrapheme,
+    `bb_${cleanGrapheme}`,
+    `eb_${cleanGrapheme}`,
+    `cd_${cleanGrapheme}`,
+    `bc_${cleanGrapheme}`,
+    `vt_${cleanGrapheme}`,
+    `rc_${cleanGrapheme}`,
+    `sl_${cleanGrapheme}`,
+    `v_${cleanGrapheme}`,
+    `se_${cleanGrapheme}`,
+  ].filter(Boolean);
+
+  for (const key of candidateKeys) {
+    if (phonemeAudioBufferCache[key] === null) {
+      continue;
+    }
+
+    let buffer = phonemeAudioBufferCache[key];
+    if (!buffer) {
+      buffer = await getOrLoadBaseBuffer(ctx, key);
+    }
+
+    if (buffer) {
+      return playBuffer(ctx, buffer);
+    }
+  }
+
+  // Step 2: Fallback programmatic blend if no direct studio recording file was found
   const blendPair = BLEND_COMPONENTS[cleanGrapheme];
   if (blendPair) {
     const [c1, c2] = blendPair;
@@ -273,27 +308,6 @@ export async function playPhonemeAudioFile(card: PhonicsCard): Promise<boolean> 
       const blended = createBlendedAudioBuffer(ctx, buf1, buf2, firstDuration);
       phonemeAudioBufferCache[blendCacheKey] = blended;
       return playBuffer(ctx, blended);
-    }
-  }
-
-  // Step 2: Direct static file lookup (card.id or grapheme)
-  const candidateKeys = [
-    card.id,
-    cleanGrapheme,
-  ];
-
-  for (const key of candidateKeys) {
-    if (phonemeAudioBufferCache[key] === null) {
-      continue;
-    }
-
-    let buffer = phonemeAudioBufferCache[key];
-    if (!buffer) {
-      buffer = await getOrLoadBaseBuffer(ctx, key);
-    }
-
-    if (buffer) {
-      return playBuffer(ctx, buffer);
     }
   }
 
@@ -508,6 +522,36 @@ const PHONEME_SPEECH_MAP: Record<string, string> = {
   'dge': 'j',
   'c(s)': 's',
   'g(j)': 'j',
+
+  // Beginning Blends (Fallback safety - phonetic single sounds, unaspirated stop for s-clusters)
+  'bl': 'bl',
+  'cl': 'kl',
+  'fl': 'fl',
+  'gl': 'gl',
+  'pl': 'pl',
+  'sl': 'sl',
+  'br': 'br',
+  'cr': 'kr',
+  'dr': 'dr',
+  'fr': 'fr',
+  'gr': 'gr',
+  'pr': 'pr',
+  'tr': 'tr',
+  'sk': 'sk',
+  'sm': 'sm',
+  'sn': 'sn',
+  'sp': 'sb',
+  'st': 'sd',
+  'sw': 'sw',
+
+  // Ending Blends (Fallback safety)
+  'nd': 'nd',
+  'nk': 'nk',
+  'nt': 'nt',
+  'mp': 'mp',
+  'ld': 'ld',
+  'lk': 'lk',
+  'ft': 'ft',
 };
 
 // Anchor words for short vowels when explicitly in 'word' mode
