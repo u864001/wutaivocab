@@ -4,10 +4,12 @@ import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
+import { SnakeCanvas2D } from './SnakeCanvas2D';
 import confetti from 'canvas-confetti';
 import {
-  ArrowLeft, Heart, Trophy, Sparkles,
-  ArrowUp, ArrowDown, ArrowLeft as DpadLeft, ArrowRight as DpadRight
+  ArrowLeft, Heart, Trophy, Sparkles, Maximize2, Minimize2,
+  ArrowUp, ArrowDown, ArrowLeft as DpadLeft, ArrowRight as DpadRight,
+  Mountain, Trees, Award
 } from 'lucide-react';
 
 const GRID_W = 20;
@@ -21,8 +23,12 @@ export const SnakeGame = ({
 }) => {
   const { t } = useI18n();
   const [gameMode, setGameMode] = useState('normal'); // 'easy' | 'normal' | 'survival'
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('wutai_snake_theme') || 'indigenous'; // 預設霧台百步蛇神山
+  });
   const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const [currentWord, setCurrentWord] = useState(null);
   const [spelledChars, setSpelledChars] = useState('');
@@ -30,8 +36,13 @@ export const SnakeGame = ({
   const [hearts, setHearts] = useState(5);
   const [timeLeft, setTimeLeft] = useState(60);
   const [survivalTime, setSurvivalTime] = useState(0);
+  const [cheerTrigger, setCheerTrigger] = useState(0);
 
-  const canvasRef = useRef(null);
+  // 邏輯蛇與字母狀態 (驅動 Canvas)
+  const [renderSnake, setRenderSnake] = useState([{ x: 6, y: 6 }, { x: 5, y: 6 }]);
+  const [renderLetters, setRenderLetters] = useState([]);
+  const [isSnakeDead, setIsSnakeDead] = useState(false);
+
   const snakeRef = useRef([{ x: 6, y: 6 }, { x: 5, y: 6 }]);
   const dirRef = useRef('RIGHT');
   const lettersRef = useRef([]); // [{ char, x, y, id }]
@@ -39,6 +50,61 @@ export const SnakeGame = ({
   const startTimeRef = useRef(0);
   const completedWordsRef = useRef(new Map());
   const mistakeIdsRef = useRef(new Set());
+
+  // 主題切換持久化
+  const handleToggleTheme = (newTheme) => {
+    setTheme(newTheme);
+    localStorage.setItem('wutai_snake_theme', newTheme);
+    soundEngine.click();
+  };
+
+  // 智慧全螢幕管理
+  const enterFullscreen = () => {
+    const docEl = document.documentElement;
+    if (docEl.requestFullscreen) {
+      docEl.requestFullscreen().catch(() => {});
+    } else if (docEl.webkitRequestFullscreen) {
+      docEl.webkitRequestFullscreen();
+    }
+  };
+
+  const exitFullscreen = () => {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    }
+  };
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      exitFullscreen();
+    } else {
+      enterFullscreen();
+    }
+  };
+
+  // 監聽全螢幕變化以更新圖標狀態
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement || document.webkitFullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    document.addEventListener('webkitfullscreenchange', handleFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFsChange);
+      document.removeEventListener('webkitfullscreenchange', handleFsChange);
+    };
+  }, []);
+
+  // 組件卸載時確保退出全螢幕
+  useEffect(() => {
+    return () => {
+      exitFullscreen();
+    };
+  }, []);
 
   // 初始化題庫
   useEffect(() => {
@@ -57,10 +123,12 @@ export const SnakeGame = ({
     }
     setCurrentWord(next);
     setSpelledChars('');
-    speakEnglish(next.en);
+    if (next?.en) {
+      speakEnglish(next.en);
+    }
 
     // 在場上生成目標單字的所有字母與干擾字母
-    const targetLetters = next.en.toLowerCase().split('');
+    const targetLetters = (next?.en || '').toLowerCase().split('');
     const extraLetters = 'abcdefghijklmnopqrstuvwxyz'
       .split('')
       .sort(() => 0.5 - Math.random())
@@ -85,6 +153,7 @@ export const SnakeGame = ({
     });
 
     lettersRef.current = placed;
+    setRenderLetters([...placed]);
   };
 
   const handleStart = (mode) => {
@@ -98,14 +167,25 @@ export const SnakeGame = ({
     mistakeIdsRef.current.clear();
     setGameMode(mode);
     setHasStarted(true);
+    setIsFinished(false);
+    setIsSnakeDead(false);
     setScore(0);
     setHearts(5);
     setTimeLeft(60);
     startTimeRef.current = Date.now();
     snakeRef.current = [{ x: 6, y: 6 }, { x: 5, y: 6 }];
+    setRenderSnake([...snakeRef.current]);
     dirRef.current = 'RIGHT';
 
+    // 進入全螢幕沉浸體驗
+    enterFullscreen();
+
     loadNextWord();
+  };
+
+  const handleBackToLobby = () => {
+    exitFullscreen();
+    onBack();
   };
 
   // 鍵盤操作監聽
@@ -114,27 +194,27 @@ export const SnakeGame = ({
 
     const handleKeyDown = (e) => {
       const cur = dirRef.current;
-      if ((e.key === 'ArrowUp' || e.key === 'w') && cur !== 'DOWN') dirRef.current = 'UP';
-      else if ((e.key === 'ArrowDown' || e.key === 's') && cur !== 'UP') dirRef.current = 'DOWN';
-      else if ((e.key === 'ArrowLeft' || e.key === 'a') && cur !== 'RIGHT') dirRef.current = 'LEFT';
-      else if ((e.key === 'ArrowRight' || e.key === 'd') && cur !== 'LEFT') dirRef.current = 'RIGHT';
+      if ((e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') && cur !== 'DOWN') dirRef.current = 'UP';
+      else if ((e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') && cur !== 'UP') dirRef.current = 'DOWN';
+      else if ((e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') && cur !== 'RIGHT') dirRef.current = 'LEFT';
+      else if ((e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') && cur !== 'LEFT') dirRef.current = 'RIGHT';
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [hasStarted, isFinished]);
 
-  // 遊戲主迴圈
+  // 遊戲核心邏輯刻度 (Game Tick Interval)
   useEffect(() => {
     if (!hasStarted || isFinished) return;
 
-    // 依模式微調小蛇移動速度 (ms/格)，符合國小學生視力辨識與觸控轉向節奏
     const speedMap = {
-      easy: 360,      // 慢速悠閒 (~2.8 格/秒，適合初學與低年級)
-      normal: 270,    // 標準適中 (~3.7 格/秒，原 160ms 太快如飆車)
-      survival: 230   // 生存挑戰 (~4.3 格/秒，適度刺激)
+      easy: 360,      // 慢速悠閒 (~2.8 格/秒)
+      normal: 270,    // 標準適中 (~3.7 格/秒)
+      survival: 230   // 生存挑戰 (~4.3 格/秒)
     };
     const speed = speedMap[gameMode] || 270;
+
     const interval = setInterval(() => {
       // 1. 移動蛇頭
       const head = { ...snakeRef.current[0] };
@@ -156,8 +236,10 @@ export const SnakeGame = ({
         soundEngine.wrong();
         if (currentWord?.id) mistakeIdsRef.current.add(currentWord.id);
         setHearts(h => {
-          if (h <= 1) finishGame();
-          return h - 1;
+          if (h <= 1) {
+            triggerGameOver();
+          }
+          return Math.max(0, h - 1);
         });
       }
 
@@ -165,7 +247,7 @@ export const SnakeGame = ({
       const letterIndex = lettersRef.current.findIndex(l => l.x === head.x && l.y === head.y);
       if (letterIndex !== -1) {
         const eaten = lettersRef.current[letterIndex];
-        const nextChar = currentWord.en.toLowerCase()[spelledChars.length];
+        const nextChar = currentWord?.en?.toLowerCase()[spelledChars.length];
 
         if (eaten.char === nextChar) {
           // 吃到正確字母
@@ -173,21 +255,25 @@ export const SnakeGame = ({
           const newSpelled = spelledChars + eaten.char;
           setSpelledChars(newSpelled);
           lettersRef.current.splice(letterIndex, 1);
+          setRenderLetters([...lettersRef.current]);
 
           // 完成整字拼字
           if (newSpelled === currentWord.en.toLowerCase()) {
             soundEngine.combo(3);
             setScore(s => s + 10);
-            confetti({ particleCount: 30, spread: 50, origin: { y: 0.6 } });
-            setTimeout(() => loadNextWord(), 400);
+            setCheerTrigger(c => c + 1); // 觸發動物歡呼！
+            confetti({ particleCount: 36, spread: 60, origin: { y: 0.6 } });
+            setTimeout(() => loadNextWord(), 450);
           }
         } else {
           // 吃錯字母
           soundEngine.wrong();
           if (currentWord?.id) mistakeIdsRef.current.add(currentWord.id);
           setHearts(h => {
-            if (h <= 1) finishGame();
-            return h - 1;
+            if (h <= 1) {
+              triggerGameOver();
+            }
+            return Math.max(0, h - 1);
           });
         }
       } else {
@@ -195,7 +281,7 @@ export const SnakeGame = ({
       }
 
       snakeRef.current.unshift(head);
-      draw();
+      setRenderSnake([...snakeRef.current]);
     }, speed);
 
     return () => clearInterval(interval);
@@ -209,7 +295,7 @@ export const SnakeGame = ({
       setTimeLeft(t => {
         if (t <= 1) {
           clearInterval(timer);
-          finishGame();
+          triggerGameOver();
           return 0;
         }
         return t - 1;
@@ -219,84 +305,22 @@ export const SnakeGame = ({
     return () => clearInterval(timer);
   }, [hasStarted, isFinished, gameMode]);
 
+  const triggerGameOver = () => {
+    setIsSnakeDead(true);
+    setTimeout(() => {
+      finishGame();
+    }, 600);
+  };
+
   const finishGame = () => {
     setIsFinished(true);
     setSurvivalTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
     soundEngine.win();
+    // 遊戲結算後退出全螢幕
+    exitFullscreen();
   };
 
-  // Canvas 繪圖渲染
-  const draw = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const tileW = canvas.width / GRID_W;
-    const tileH = canvas.height / GRID_H;
-
-    // 清空背景 (草地綠)
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // 棋盤格紋草地
-    for (let x = 0; x < GRID_W; x++) {
-      for (let y = 0; y < GRID_H; y++) {
-        if ((x + y) % 2 === 0) {
-          ctx.fillStyle = '#059669';
-          ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
-        }
-      }
-    }
-
-    // 繪製字母水果
-    lettersRef.current.forEach(l => {
-      const isNextTarget =
-        gameMode === 'easy' &&
-        currentWord &&
-        l.char === currentWord.en.toLowerCase()[spelledChars.length];
-
-      // 字母背景圓形
-      ctx.beginPath();
-      ctx.arc(l.x * tileW + tileW / 2, l.y * tileH + tileH / 2, tileW * 0.44, 0, Math.PI * 2);
-      ctx.fillStyle = isNextTarget ? '#facc15' : '#ffffff';
-      ctx.fill();
-      ctx.strokeStyle = isNextTarget ? '#ca8a04' : '#d1d5db';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
-
-      // 字母文字
-      ctx.fillStyle = isNextTarget ? '#78350f' : '#1e293b';
-      ctx.font = 'bold 18px Fredoka, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(l.char.toUpperCase(), l.x * tileW + tileW / 2, l.y * tileH + tileH / 2);
-    });
-
-    // 繪製貪食蛇身
-    snakeRef.current.forEach((seg, idx) => {
-      ctx.beginPath();
-      ctx.arc(seg.x * tileW + tileW / 2, seg.y * tileH + tileH / 2, tileW * 0.42, 0, Math.PI * 2);
-      ctx.fillStyle = idx === 0 ? '#38bdf8' : '#60a5fa';
-      ctx.fill();
-      ctx.strokeStyle = '#0284c7';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // 蛇眼
-      if (idx === 0) {
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(seg.x * tileW + tileW / 2 - 4, seg.y * tileH + tileH / 2 - 3, 3, 0, Math.PI * 2);
-        ctx.arc(seg.x * tileW + tileW / 2 + 4, seg.y * tileH + tileH / 2 - 3, 3, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#0f172a';
-        ctx.beginPath();
-        ctx.arc(seg.x * tileW + tileW / 2 - 4, seg.y * tileH + tileH / 2 - 3, 1.5, 0, Math.PI * 2);
-        ctx.arc(seg.x * tileW + tileW / 2 + 4, seg.y * tileH + tileH / 2 - 3, 1.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    });
-  };
-
+  // 觸控手勢監聽
   const touchStartRef = useRef(null);
 
   const handleTouchStart = (e) => {
@@ -334,31 +358,100 @@ export const SnakeGame = ({
     if (newDir === 'RIGHT' && cur !== 'LEFT') dirRef.current = 'RIGHT';
   };
 
+  // 判斷某字母是否為下一個應吃標的 (簡易模式高亮提示)
+  const isNextTargetLetter = (letter) => {
+    return (
+      gameMode === 'easy' &&
+      Boolean(currentWord) &&
+      letter.char === currentWord.en.toLowerCase()[spelledChars.length]
+    );
+  };
+
+  // ─── 遊戲前大廳畫面 ───
   if (!hasStarted) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4">
-        <GlassCard className="max-w-md w-full text-center p-8">
-          <div className="w-20 h-20 rounded-3xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4 animate-bounce">
-            <Sparkles className="w-10 h-10" />
+      <div className="min-h-[75vh] flex items-center justify-center p-4">
+        <GlassCard className="max-w-lg w-full text-center p-8 backdrop-blur-xl border border-white/20 shadow-2xl">
+          {/* 主視覺裝飾圖示 */}
+          <div className={`w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-4 animate-bounce shadow-lg ${
+            theme === 'indigenous'
+              ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30'
+              : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+          }`}>
+            {theme === 'indigenous' ? (
+              <span className="text-5xl">🐍</span>
+            ) : (
+              <Sparkles className="w-12 h-12" />
+            )}
           </div>
-          <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-2 font-heading">
-            {t.snakeTitle}
+
+          <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 mb-2 font-heading tracking-tight">
+            {theme === 'indigenous' ? '⛰️ 霧台神山 • 百步蛇拼字傳奇' : '🌿 陽光熱帶雨林 • 字母貪食蛇'}
           </h2>
-          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-6">
-            {t.snakeHelp}
+
+          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+            {theme === 'indigenous'
+              ? '化身排灣與魯凱族守護神獸「百步蛇」，在隨風搖曳的百合花岩壁間遨遊，吃下正確字母累積勇士分數！'
+              : t.snakeHelp}
           </p>
 
+          {/* 雙主題風格切換器 */}
+          <div className="mb-6 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center gap-1">
+            <button
+              onClick={() => handleToggleTheme('indigenous')}
+              className={`flex-1 py-2.5 px-3 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all ${
+                theme === 'indigenous'
+                  ? 'bg-amber-500 text-stone-950 shadow-md scale-100 font-extrabold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Mountain className="w-4 h-4" />
+              <span>霧台神山百步蛇</span>
+            </button>
+            <button
+              onClick={() => handleToggleTheme('jungle')}
+              className={`flex-1 py-2.5 px-3 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all ${
+                theme === 'jungle'
+                  ? 'bg-emerald-500 text-white shadow-md scale-100 font-extrabold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Trees className="w-4 h-4" />
+              <span>陽光熱帶雨林</span>
+            </button>
+          </div>
+
           <div className="space-y-3">
-            <Button3D variant="emerald" size="lg" onClick={() => handleStart('easy')} className="w-full">
+            <Button3D
+              variant={theme === 'indigenous' ? 'amber' : 'emerald'}
+              size="lg"
+              onClick={() => handleStart('easy')}
+              className="w-full text-base"
+            >
               {t.snakeEasy}
             </Button3D>
-            <Button3D variant="amber" size="lg" onClick={() => handleStart('normal')} className="w-full">
+            <Button3D
+              variant={theme === 'indigenous' ? 'amber' : 'amber'}
+              size="lg"
+              onClick={() => handleStart('normal')}
+              className="w-full text-base"
+            >
               {t.snakeNormal}
             </Button3D>
-            <Button3D variant="blue" size="lg" onClick={() => handleStart('survival')} className="w-full">
+            <Button3D
+              variant={theme === 'indigenous' ? 'stone' : 'blue'}
+              size="lg"
+              onClick={() => handleStart('survival')}
+              className="w-full text-base"
+            >
               {t.snakeSurvival}
             </Button3D>
-            <Button3D variant="slate" size="md" onClick={onBack} className="w-full mt-2">
+            <Button3D
+              variant="slate"
+              size="md"
+              onClick={handleBackToLobby}
+              className="w-full mt-2"
+            >
               {t.backLobby}
             </Button3D>
           </div>
@@ -367,23 +460,56 @@ export const SnakeGame = ({
     );
   }
 
+  // ─── 遊戲結算畫面 (主題風格化) ───
   if (isFinished) {
+    const isIndigenous = theme === 'indigenous';
+
     return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4 animate-fadeIn">
-        <GlassCard className="max-w-md w-full text-center p-8">
-          <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-3 animate-bounce" />
-          <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
-            {t.snakeResults}
+      <div className="min-h-[75vh] flex items-center justify-center p-4 animate-fadeIn">
+        <GlassCard className={`max-w-md w-full text-center p-8 border shadow-2xl ${
+          isIndigenous
+            ? 'bg-stone-900/90 border-amber-500/40 text-stone-100'
+            : 'bg-emerald-950/20 border-emerald-500/30'
+        }`}>
+          {/* 主題冠軍標章 */}
+          <div className="relative mx-auto mb-3 flex items-center justify-center">
+            {isIndigenous ? (
+              <div className="relative">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-600 to-amber-300 flex items-center justify-center shadow-lg border-2 border-amber-200">
+                  <Award className="w-11 h-11 text-stone-950" />
+                </div>
+                <span className="absolute -bottom-1 -right-1 text-2xl">🌸</span>
+              </div>
+            ) : (
+              <Trophy className="w-16 h-16 text-amber-400 mx-auto animate-bounce" />
+            )}
+          </div>
+
+          <h2 className="text-3xl font-black font-heading mb-1 tracking-tight">
+            {isIndigenous ? '⛰️ 霧台神山勇士 • 百合桂冠加冕' : t.snakeResults}
           </h2>
-          <p className="text-xs font-bold text-slate-500 mb-6">
-            {t.survivalTime}<span className="text-emerald-600 font-black text-lg">{survivalTime} 秒</span>
+
+          <p className="text-xs font-bold text-slate-400 mb-6">
+            {isIndigenous ? '踏過板岩微風百合之境 • ' : ''}
+            {t.survivalTime}
+            <span className={isIndigenous ? 'text-amber-400 font-black text-lg ml-1' : 'text-emerald-400 font-black text-lg ml-1'}>
+              {survivalTime} 秒
+            </span>
           </p>
 
-          <div className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 mb-6">
-            <span className="text-4xl font-black text-emerald-600 dark:text-emerald-400">
-              {score} {t.unitPoints}
+          <div className={`p-5 rounded-2xl border mb-6 ${
+            isIndigenous
+              ? 'bg-stone-800/80 border-amber-500/30'
+              : 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800'
+          }`}>
+            <span className={`text-5xl font-black ${
+              isIndigenous ? 'text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
+            }`}>
+              {score} <span className="text-2xl font-bold">{t.unitPoints}</span>
             </span>
-            <p className="text-xs font-bold text-slate-500 mt-1">{t.adventureScore}</p>
+            <p className="text-xs font-bold text-slate-400 mt-1">
+              {isIndigenous ? '百步蛇神聖勇士積分' : t.adventureScore}
+            </p>
           </div>
 
           {/* 榮譽榜破紀錄留名判定卡與獎狀領取 */}
@@ -400,7 +526,12 @@ export const SnakeGame = ({
             }))}
           />
 
-          <Button3D variant="slate" size="lg" onClick={onBack} className="w-full">
+          <Button3D
+            variant={isIndigenous ? 'amber' : 'slate'}
+            size="lg"
+            onClick={handleBackToLobby}
+            className="w-full mt-4"
+          >
             {t.backLobby}
           </Button3D>
         </GlassCard>
@@ -408,49 +539,109 @@ export const SnakeGame = ({
     );
   }
 
+  // ─── 遊戲進行中畫面 ───
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-2 flex flex-col items-center">
-      {/* 頂部資訊列 */}
-      <div className="w-full flex items-center justify-between mb-2">
-        <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
+    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 flex flex-col items-center select-none">
+      {/* 頂部資訊列 (HUD) */}
+      <div className="w-full flex items-center justify-between mb-2 gap-2">
+        <Button3D variant="slate" size="sm" onClick={handleBackToLobby} icon={ArrowLeft}>
           {t.backLobby}
         </Button3D>
 
-        <div className="flex items-center gap-1.5">
+        {/* 雙主題快速切換微型開關 */}
+        <div className="flex items-center p-1 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700">
+          <button
+            onClick={() => handleToggleTheme('indigenous')}
+            title="切換為霧台百步蛇主題"
+            className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1 ${
+              theme === 'indigenous'
+                ? 'bg-amber-500 text-stone-950 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+            }`}
+          >
+            <Mountain className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">百步蛇</span>
+          </button>
+          <button
+            onClick={() => handleToggleTheme('jungle')}
+            title="切換為熱帶雨林主題"
+            className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1 ${
+              theme === 'jungle'
+                ? 'bg-emerald-500 text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+            }`}
+          >
+            <Trees className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">青蛇雨林</span>
+          </button>
+        </div>
+
+        {/* 愛心生命值 */}
+        <div className="flex items-center gap-1 sm:gap-1.5">
           {[...Array(5)].map((_, i) => (
             <Heart
               key={i}
-              className={`w-5 h-5 transition-all ${
-                i < hearts ? 'text-rose-500 fill-rose-500 animate-pulse' : 'text-slate-300 dark:text-slate-700'
+              className={`w-5 h-5 sm:w-6 sm:h-6 transition-all ${
+                i < hearts
+                  ? 'text-rose-500 fill-rose-500 animate-pulse'
+                  : 'text-slate-300 dark:text-slate-700 opacity-40'
               }`}
             />
           ))}
         </div>
 
+        {/* 限時 (一般模式) */}
         {gameMode === 'normal' && (
-          <div className="px-3.5 py-1 rounded-xl bg-amber-400 text-amber-950 font-black text-sm">
+          <div className="px-3 py-1 rounded-xl bg-amber-400 text-amber-950 font-black text-xs sm:text-sm shadow-sm">
             ⏱ {timeLeft}s
           </div>
         )}
 
-        <div className="px-3.5 py-1 rounded-xl bg-emerald-500 text-white font-black text-sm shadow-md">
+        {/* 分數 */}
+        <div className={`px-3 py-1 rounded-xl font-black text-xs sm:text-sm shadow-md ${
+          theme === 'indigenous' ? 'bg-amber-500 text-stone-950' : 'bg-emerald-500 text-white'
+        }`}>
           得分: {score}
         </div>
+
+        {/* 全螢幕切換手動按鈕 */}
+        <button
+          onClick={toggleFullscreen}
+          title={isFullscreen ? '退出全螢幕' : '全螢幕遊玩'}
+          className="p-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
+        >
+          {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+        </button>
       </div>
 
       {/* 目標單字拼字進度條 */}
       {currentWord && (
-        <div className="w-full mb-3 p-3 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-          <span className="text-xl font-heading font-black text-slate-800 dark:text-slate-100">
-            {currentWord.zh}
-          </span>
-          <div className="flex gap-2">
+        <div className={`w-full mb-3 p-3 rounded-2xl border flex items-center justify-between shadow-sm ${
+          theme === 'indigenous'
+            ? 'bg-stone-900/90 border-amber-500/30 text-stone-100'
+            : 'bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700'
+        }`}>
+          <div className="flex items-center gap-2">
+            <span className="text-lg sm:text-2xl font-heading font-black">
+              {currentWord.zh}
+            </span>
+            <button
+              onClick={() => speakEnglish(currentWord.en)}
+              className="text-xs px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-400 hover:bg-amber-400/30 transition-colors"
+            >
+              🔊 唸法
+            </button>
+          </div>
+
+          <div className="flex gap-1.5 sm:gap-2">
             {currentWord.en.split('').map((char, idx) => (
               <span
                 key={idx}
-                className={`w-8 h-9 rounded-xl flex items-center justify-center font-black text-lg ${
+                className={`w-7 h-8 sm:w-8 sm:h-9 rounded-xl flex items-center justify-center font-black text-base sm:text-lg transition-transform ${
                   idx < spelledChars.length
-                    ? 'bg-emerald-500 text-white shadow-sm'
+                    ? theme === 'indigenous'
+                      ? 'bg-amber-500 text-stone-950 shadow-sm scale-105'
+                      : 'bg-emerald-500 text-white shadow-sm scale-105'
                     : 'bg-slate-200 dark:bg-slate-700 text-slate-400'
                 }`}
               >
@@ -461,32 +652,58 @@ export const SnakeGame = ({
         </div>
       )}
 
-      {/* HTML5 Canvas 遊戲區 (支援觸控滑動手勢) */}
+      {/* 2D 骨骼動力學平滑畫布 */}
       <div className="w-full flex justify-center mb-3">
-        <canvas
-          ref={canvasRef}
-          width={800}
-          height={480}
+        <SnakeCanvas2D
+          snake={renderSnake}
+          letters={renderLetters}
+          theme={theme}
+          isDead={isSnakeDead}
+          isNextTargetFn={isNextTargetLetter}
+          cheerTrigger={cheerTrigger}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          className="w-full max-w-3xl h-auto rounded-3xl shadow-xl border-4 border-emerald-600 bg-emerald-600 aspect-[5/3] touch-none cursor-pointer"
+          gridW={GRID_W}
+          gridH={GRID_H}
+          width={800}
+          height={480}
         />
       </div>
 
-      {/* 虛擬十字鍵 (平板 iPad、觸控大屏與手機皆可操控) */}
-      <div className="flex flex-col items-center gap-1">
-        <Button3D variant="slate" size="sm" onClick={() => handleDpad('UP')} className="w-16 h-10">
+      {/* 虛擬十字鍵 (平板 iPad、觸控大屏與手機操控) */}
+      <div className="flex flex-col items-center gap-1.5 mt-1">
+        <Button3D
+          variant={theme === 'indigenous' ? 'stone' : 'slate'}
+          size="sm"
+          onClick={() => handleDpad('UP')}
+          className="w-16 h-11"
+        >
           <ArrowUp className="w-5 h-5" />
         </Button3D>
         <div className="flex gap-4">
-          <Button3D variant="slate" size="sm" onClick={() => handleDpad('LEFT')} className="w-16 h-10">
+          <Button3D
+            variant={theme === 'indigenous' ? 'stone' : 'slate'}
+            size="sm"
+            onClick={() => handleDpad('LEFT')}
+            className="w-16 h-11"
+          >
             <DpadLeft className="w-5 h-5" />
           </Button3D>
-          <Button3D variant="slate" size="sm" onClick={() => handleDpad('DOWN')} className="w-16 h-10">
+          <Button3D
+            variant={theme === 'indigenous' ? 'stone' : 'slate'}
+            size="sm"
+            onClick={() => handleDpad('DOWN')}
+            className="w-16 h-11"
+          >
             <ArrowDown className="w-5 h-5" />
           </Button3D>
-          <Button3D variant="slate" size="sm" onClick={() => handleDpad('RIGHT')} className="w-16 h-10">
+          <Button3D
+            variant={theme === 'indigenous' ? 'stone' : 'slate'}
+            size="sm"
+            onClick={() => handleDpad('RIGHT')}
+            className="w-16 h-11"
+          >
             <DpadRight className="w-5 h-5" />
           </Button3D>
         </div>
