@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
-import { soundEngine, speakEnglish } from '../../services/audio';
+import { soundEngine } from '../../services/audio';
 import { supabase, getDeviceId, recordBattleWin } from '../../services/supabase';
 import { generateSmartOptions } from '../../services/distractorHelper';
 import { getProfanityError } from '../../services/profanityFilter';
@@ -10,7 +10,7 @@ import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Swords, Users, Shield, Heart, Zap,
   Trophy, Play, RefreshCw, Lock, CheckCircle2, AlertCircle,
-  Eye, Maximize2, Minimize2, Sparkles, Flame, Skull, Crown, AlertTriangle
+  Eye, Maximize2, Minimize2, Sparkles, Flame, Skull, Crown
 } from 'lucide-react';
 import { MeteorCanvas3D } from '../meteor/MeteorCanvas3D';
 import { MeteorEasterEggs2D } from '../meteor/MeteorEasterEggs2D';
@@ -86,10 +86,12 @@ export const BattleGame = ({
   const [laserTrigger, setLaserTrigger] = useState(null);
   const [wordQueue, setWordQueue] = useState([]);
 
-  // 突襲隕石 (Emergency Raid Meteor) 佇列
+  // 突襲隕石 (Emergency Raid Meteor) 佇列與連續未防守計數
   const [activeRaid, setActiveRaid] = useState(null);
+  const [raidMissStreak, setRaidMissStreak] = useState(0); // 連續未防禦墜地計數
   const raidQueueRef = useRef([]);
   const isProcessingRaidRef = useRef(false);
+  const raidMissStreakRef = useRef(0);
 
   // 飄浮動態通知
   const [noticeBanner, setNoticeBanner] = useState(null);
@@ -125,6 +127,7 @@ export const BattleGame = ({
   useEffect(() => { destroyedRef.current = myMeteorsDestroyed; }, [myMeteorsDestroyed]);
   useEffect(() => { isDeadRef.current = isDead; }, [isDead]);
   useEffect(() => { playersRef.current = players; }, [players]);
+  useEffect(() => { raidMissStreakRef.current = raidMissStreak; }, [raidMissStreak]);
 
   // 監聽全螢幕
   useEffect(() => {
@@ -152,7 +155,7 @@ export const BattleGame = ({
     setNoticeBanner({ text, type });
     setTimeout(() => {
       setNoticeBanner(prev => (prev?.text === text ? null : prev));
-    }, 2500);
+    }, 2800);
   }, []);
 
   // ── 大廳零長連線架構：1-Shot 快照探測 ──
@@ -217,6 +220,9 @@ export const BattleGame = ({
     setPlayers([]);
     setActiveRaid(null);
     raidQueueRef.current = [];
+    isProcessingRaidRef.current = false;
+    setRaidMissStreak(0);
+    raidMissStreakRef.current = 0;
     setView('menu');
   };
 
@@ -311,46 +317,78 @@ export const BattleGame = ({
 
     isProcessingRaidRef.current = true;
     const nextRaid = raidQueueRef.current.shift();
-    setActiveRaid(nextRaid);
+    const currentStreak = raidMissStreakRef.current;
+    // 連續 5 顆未理會後，第 6 顆起為烈焰大隕石 (isMega)
+    const isMega = currentStreak >= 5;
+
+    setActiveRaid({
+      ...nextRaid,
+      isMega,
+      missStreak: currentStreak
+    });
   }, []);
 
-  // 突襲隕石成功攔截
-  const handleRaidDefended = useCallback(() => {
+  // 突襲隕石成功攔截 (手速防禦：不給予得分，扣分連鎖歸零重置)
+  const handleRaidDefended = useCallback((isMega) => {
     soundEngine.correct();
+
+    // 成功防禦解除危機，墜地扣分連鎖數歸零
+    setRaidMissStreak(0);
+    raidMissStreakRef.current = 0;
+
+    if (isMega) {
+      showNotice('🛡️ 成功擊碎毀滅級烈焰大隕石！危機解除，扣分連鎖歸零！', 'success');
+    } else {
+      showNotice('🛡️ 成功攔截敵方突襲隕石！防線完好，扣分連鎖歸零！', 'success');
+    }
+
+    setActiveRaid(null);
+    isProcessingRaidRef.current = false;
+    setTimeout(() => {
+      processNextRaid();
+    }, 500);
+  }, [showNotice, processNextRaid]);
+
+  // 突襲隕石撞地逾時懲罰 (扣分加成；連續 5 顆未理會後之第 6 顆起加扣愛心)
+  const handleRaidImpact = useCallback((isMega) => {
+    soundEngine.explosion();
+
+    const streak = raidMissStreakRef.current;
+    const penalty = 10 + streak;
+    const nextStreak = streak + 1;
+
+    setRaidMissStreak(nextStreak);
+    raidMissStreakRef.current = nextStreak;
+
+    // 扣分機制：每次扣 10 + streak，最低不低於 0 分
     setMyScore(s => {
-      const next = s + 10;
-      broadcastMyStats({ score: next });
-      return next;
+      const nextScore = Math.max(0, s - penalty);
+      broadcastMyStats({ score: nextScore });
+      return nextScore;
     });
-    showNotice('⚡ 成功攔截敵方突襲隕石！防禦加成 +10 分！', 'success');
+
+    // 致命機制：若為連續 5 顆未理會之烈焰大隕石 (isMega)，額外扣除 1 顆愛心！
+    if (isMega) {
+      soundEngine.wrong();
+      showNotice(`💥 毀滅烈焰隕石撞地！扣除 ${penalty} 分並扣除 1 顆愛心💔！`, 'danger');
+      setMyLives(prev => {
+        const nextLives = Math.max(0, prev - 1);
+        broadcastMyStats({ lives: nextLives });
+        if (nextLives <= 0) {
+          handlePlayerDead();
+        }
+        return nextLives;
+      });
+    } else {
+      showNotice(`💥 突襲隕石撞地！扣除 ${penalty} 分（連續未防禦 ${nextStreak} 顆）！`, 'danger');
+    }
 
     setActiveRaid(null);
     isProcessingRaidRef.current = false;
     setTimeout(() => {
       processNextRaid();
     }, 500);
-  }, [broadcastMyStats, showNotice, processNextRaid]);
-
-  // 突襲隕石撞地逾時扣心
-  const handleRaidImpact = useCallback(() => {
-    soundEngine.wrong();
-    showNotice('💥 突襲隕石撞擊地面！扣除 1 顆愛心！', 'danger');
-
-    setMyLives(prev => {
-      const next = Math.max(0, prev - 1);
-      broadcastMyStats({ lives: next });
-      if (next <= 0) {
-        handlePlayerDead();
-      }
-      return next;
-    });
-
-    setActiveRaid(null);
-    isProcessingRaidRef.current = false;
-    setTimeout(() => {
-      processNextRaid();
-    }, 500);
-  }, [broadcastMyStats, showNotice, processNextRaid]);
+  }, [broadcastMyStats, showNotice, processNextRaid, handlePlayerDead]);
 
   // 自身陣亡處理
   const handlePlayerDead = useCallback(() => {
@@ -545,7 +583,16 @@ export const BattleGame = ({
         // 收到來自對手的突襲赤紅隕石
         if (payload.attackerId !== myDeviceIdRef.current && !isDeadRef.current) {
           soundEngine.wrong();
-          showNotice(`⚠️ 來自【${payload.attackerName}】的突襲空襲！速點 5 下！`, 'danger');
+
+          const currentStreak = raidMissStreakRef.current;
+          const isMega = currentStreak >= 5;
+
+          if (isMega) {
+            showNotice(`🚨 致命警告！來自【${payload.attackerName}】的毀滅烈焰空襲！墜地將扣心！`, 'danger');
+          } else {
+            showNotice(`⚠️ 來自【${payload.attackerName}】的突襲空襲！速點 5 下防衛！`, 'warning');
+          }
+
           raidQueueRef.current.push({
             id: payload.raidId || Math.random(),
             attackerName: payload.attackerName
@@ -657,6 +704,8 @@ export const BattleGame = ({
     setActiveRaid(null);
     raidQueueRef.current = [];
     isProcessingRaidRef.current = false;
+    setRaidMissStreak(0);
+    raidMissStreakRef.current = 0;
     gameStartTimeRef.current = Date.now();
 
     // 請求全螢幕沉浸體驗
@@ -688,10 +737,10 @@ export const BattleGame = ({
     setOptions(opts);
   };
 
-  // 召喚單字隕石
+  // 召喚單字隕石 (鎖定中心 44%~56% 走廊，徹底與左側空襲 10%~25% 及右側連擊 74%~96% 零遮蔽隔開)
   const spawnMeteor = (wordObj, questionIndex) => {
     const duration = calculateMeteorDuration(questionIndex);
-    const xPos = 20 + Math.random() * 60;
+    const xPos = 44 + Math.random() * 12;
 
     setCurrentMeteor({
       word: wordObj,
@@ -792,7 +841,7 @@ export const BattleGame = ({
       // ── 互動機制 1：連對 3 題 (Combo 3) 突襲赤紅隕石 ──
       if (nextCombo % 3 === 0) {
         soundEngine.combo(4);
-        showNotice('🔥 3連擊！發動突襲赤紅隕石轟炸所有對手！', 'success');
+        showNotice('🔥 3連擊！已向所有對手發射突襲赤紅隕石施加干擾！', 'success');
         if (channelRef.current) {
           channelRef.current.send({
             type: 'broadcast',
@@ -1359,9 +1408,9 @@ export const BattleGame = ({
         </div>
       </div>
 
-      {/* ── 飄浮通知橫幅 (受到壓制、發動空襲等提示) ── */}
+      {/* ── 飄浮通知橫幅 (受到壓制、發動空襲等提示，置於頂部微浮層絕不覆蓋題目) ── */}
       {noticeBanner && (
-        <div className="fixed top-14 inset-x-0 mx-auto w-fit max-w-[90vw] z-50 animate-fadeIn pointer-events-none">
+        <div className="fixed top-14 sm:top-16 inset-x-0 mx-auto w-fit max-w-[90vw] z-50 animate-fadeIn pointer-events-none">
           <div className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-black shadow-2xl flex items-center gap-2 border ${
             noticeBanner.type === 'danger'
               ? 'bg-rose-900/95 border-rose-500 text-rose-200 shadow-[0_0_20px_rgba(244,63,94,0.8)]'
@@ -1377,7 +1426,7 @@ export const BattleGame = ({
 
       {/* ── 目標單字科幻 HUD 鎖定儀 ── */}
       {currentMeteor && !isDead && (
-        <div className="w-full max-w-md mx-auto flex items-center justify-center gap-2 px-3 py-1 my-1 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-xs font-black flex-shrink-0 z-20">
+        <div className="w-full max-w-sm sm:max-w-md mx-auto flex items-center justify-center gap-2 px-3 py-1 my-0.5 sm:my-1 rounded-xl bg-cyan-950/50 border border-cyan-500/40 text-cyan-300 text-xs font-black flex-shrink-0 z-20">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
           <span>鎖定目標：</span>
           <span className="text-white text-sm font-black tracking-wide">
@@ -1392,11 +1441,11 @@ export const BattleGame = ({
       )}
 
       {/* ── 隕石戰鬥核心畫布區域 (flex-1 min-h-0) ── */}
-      <div className="flex-1 min-h-0 w-full max-w-4xl mx-auto relative mb-2 flex items-center justify-center">
-        {/* 右側氣球灌氣連擊階梯顯示 (3連對以上展開) */}
+      <div className="flex-1 min-h-0 w-full max-w-4xl mx-auto relative mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+        {/* 右側氣球灌氣連擊階梯顯示 (專屬右側空域 74%~96%，3連對以上展開) */}
         <RightComboDisplay combo={myCombo} />
 
-        {/* 突襲赤紅隕石 mini-game (3秒速點5下) */}
+        {/* 突襲赤紅 / 烈焰大隕石 mini-game (專屬左側空域 10%~25%，絕不遮蔽中央單字與右側連擊！) */}
         {activeRaid && (
           <EmergencyRaidMeteor
             raidData={activeRaid}
@@ -1474,7 +1523,7 @@ export const BattleGame = ({
           >
             <MeteorEasterEggs2D onUfoSuccess={handleUfoSuccess} />
 
-            {/* 墜落隕石 */}
+            {/* 墜落隕石 (中心 44%~56% 航道) */}
             {currentMeteor && !isDead && (
               <div
                 ref={meteor2DRef}
