@@ -7,6 +7,7 @@ import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { CARD_THEMES } from './memoryThemes';
 import { POWER_UP_DEFS, AnnouncementBanner } from './PowerUpEffects';
 import { PowerUpCodexModal } from './PowerUpCodexModal';
+import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Trophy, Sparkles, HelpCircle, Coins, Bomb,
@@ -155,6 +156,18 @@ export const MemoryGameSingle = ({
   const [elapsedTime, setElapsedTime] = useState(0);
   const selectedWordsRef = useRef([]);
 
+  // 卸載時還原全螢幕
+  useEffect(() => {
+    return () => {
+      exitFullscreen();
+    };
+  }, []);
+
+  const handleBackToLobby = () => {
+    exitFullscreen();
+    onBack();
+  };
+
   // 切換卡牌主題
   const handleToggleCardTheme = (newThemeId) => {
     setCardThemeId(newThemeId);
@@ -222,6 +235,9 @@ export const MemoryGameSingle = ({
     setHasStarted(true);
     setIsFinished(false);
     setStartTime(Date.now());
+
+    // 進關時自動最大化/全螢幕以適配 iPad 零捲動
+    enterFullscreen();
   };
 
   // 點擊卡牌處理
@@ -229,8 +245,9 @@ export const MemoryGameSingle = ({
     const card = cards[index];
     if (!card) return;
 
-    // 防止點擊已配對或正翻開的牌
+    // 防止在已翻開 2 張卡比對中、已配對、或正在翻開狀態時點擊 (徹底防護連擊例外)
     if (
+      flipped.length >= 2 ||
       flipped.includes(index) ||
       matched.includes(card.id) ||
       peekIndices.includes(index)
@@ -275,7 +292,8 @@ export const MemoryGameSingle = ({
         const totalWordCards = cards.filter(c => !c.isPowerUp).length;
 
         if (newlyMatchedCount >= totalWordCards) {
-          // 全數字卡完成挑戰！
+          // 全數字卡完成挑戰！退出全螢幕回復正常視窗
+          exitFullscreen();
           const finalSec = Math.floor((Date.now() - startTime) / 1000);
           setElapsedTime(finalSec);
           setTimeout(() => {
@@ -490,7 +508,7 @@ export const MemoryGameSingle = ({
             }))}
           />
 
-          <Button3D variant="slate" size="lg" onClick={onBack} className="w-full mt-4">
+          <Button3D variant="slate" size="lg" onClick={handleBackToLobby} className="w-full mt-4">
             {t.backLobby}
           </Button3D>
         </GlassCard>
@@ -498,33 +516,34 @@ export const MemoryGameSingle = ({
     );
   }
 
-  // ─── 遊戲進行中 ───
+  // ─── 遊戲進行中 (iPad 零捲動滿版全螢幕適配) ───
   return (
-    <div className="w-full max-w-4xl mx-auto px-2 sm:px-4 py-2 flex flex-col items-center relative select-none">
-      {/* 八大卡牌精靈圖鑑彈窗 */}
-      <PowerUpCodexModal isOpen={showCodex} onClose={() => setShowCodex(false)} />
+    <div className="fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-between p-2 sm:p-4 max-h-[100dvh] h-[100dvh] overflow-hidden select-none animate-fadeIn">
+      <div className="w-full max-w-4xl mx-auto flex flex-col items-center h-full justify-between">
+        {/* 八大卡牌精靈圖鑑彈窗 */}
+        <PowerUpCodexModal isOpen={showCodex} onClose={() => setShowCodex(false)} />
 
-      {/* 翻到卡牌時上方滑入宣告橫幅 (2 秒後滑出) */}
-      <AnnouncementBanner
-        announcement={announcement}
-        onComplete={() => setAnnouncement(null)}
-      />
-
-      {/* 金幣雨小遊戲全螢幕 */}
-      {showCoinRain && (
-        <CoinRainModal
-          onComplete={(coinsCaught) => {
-            setScore(s => s + coinsCaught * 2);
-            setShowCoinRain(false);
-          }}
+        {/* 翻到卡牌時上方滑入宣告橫幅 (2 秒後滑出) */}
+        <AnnouncementBanner
+          announcement={announcement}
+          onComplete={() => setAnnouncement(null)}
         />
-      )}
 
-      {/* 頂部資訊列 (HUD) */}
-      <div className="w-full flex items-center justify-between mb-3 gap-2">
-        <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
-          {t.backLobby}
-        </Button3D>
+        {/* 金幣雨小遊戲全螢幕 */}
+        {showCoinRain && (
+          <CoinRainModal
+            onComplete={(coinsCaught) => {
+              setScore(s => s + coinsCaught * 2);
+              setShowCoinRain(false);
+            }}
+          />
+        )}
+
+        {/* 頂部資訊列 (HUD) */}
+        <div className="w-full flex items-center justify-between mb-2 sm:mb-3 gap-2 flex-shrink-0">
+          <Button3D variant="slate" size="sm" onClick={handleBackToLobby} icon={ArrowLeft}>
+            {t.backLobby}
+          </Button3D>
 
         {/* Bonus 回合與翻牌次數提示 */}
         <div className="flex items-center gap-2">
@@ -646,5 +665,6 @@ export const MemoryGameSingle = ({
         })}
       </div>
     </div>
+  </div>
   );
 };

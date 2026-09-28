@@ -4,6 +4,7 @@ import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
+import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Volume2, Heart, Trophy, CheckCircle2, HeartCrack, Sparkles } from 'lucide-react';
 
@@ -65,6 +66,18 @@ export const SpellingGame = ({
     setTimeout(() => speakEnglish(wordObj.en), 250);
   };
 
+  // 卸載時還原全螢幕
+  useEffect(() => {
+    return () => {
+      exitFullscreen();
+    };
+  }, []);
+
+  const handleBackToLobby = () => {
+    exitFullscreen();
+    onBack();
+  };
+
   const handleStart = () => {
     if (!queue || queue.length === 0) {
       alert('選取範圍內沒有單字，請回大廳重新勾選！');
@@ -72,6 +85,7 @@ export const SpellingGame = ({
     }
     setHasStarted(true);
     setStartTime(Date.now());
+    enterFullscreen();
     loadWord(queue[0]);
   };
 
@@ -143,6 +157,8 @@ export const SpellingGame = ({
       setQueue(newQueue);
       loadWord(newQueue[0]);
     } else {
+      // 挑戰完成！退出全螢幕回到正常視窗
+      exitFullscreen();
       const finalSec = Math.floor((Date.now() - startTime) / 1000);
       setElapsedTime(finalSec);
       setIsFinished(true);
@@ -172,7 +188,7 @@ export const SpellingGame = ({
             <Button3D variant="rose" size="lg" onClick={handleStart} className="w-full">
               {t.startChallenge}
             </Button3D>
-            <Button3D variant="slate" size="md" onClick={onBack} className="w-full">
+            <Button3D variant="slate" size="md" onClick={handleBackToLobby} className="w-full">
               {t.backLobby}
             </Button3D>
           </div>
@@ -222,7 +238,7 @@ export const SpellingGame = ({
             }))}
           />
 
-          <Button3D variant="slate" size="lg" onClick={onBack} className="w-full">
+          <Button3D variant="slate" size="lg" onClick={handleBackToLobby} className="w-full">
             {t.backLobby}
           </Button3D>
         </GlassCard>
@@ -230,111 +246,114 @@ export const SpellingGame = ({
     );
   }
 
+  // ─── 遊戲進行中 (iPad 零捲動滿版全螢幕適配) ───
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 py-4 flex flex-col items-center">
-      {/* 頂部資訊列 */}
-      <div className="w-full flex items-center justify-between mb-4">
-        <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
-          {t.backLobby}
-        </Button3D>
+    <div className="fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-between p-3 sm:p-5 max-h-[100dvh] h-[100dvh] overflow-hidden select-none animate-fadeIn">
+      <div className="w-full max-w-3xl mx-auto flex flex-col items-center h-full justify-between">
+        {/* 頂部資訊列 */}
+        <div className="w-full flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
+          <Button3D variant="slate" size="sm" onClick={handleBackToLobby} icon={ArrowLeft}>
+            {t.backLobby}
+          </Button3D>
 
-        {/* 愛心生命值 */}
-        <div className="flex items-center gap-1">
-          {[...Array(5)].map((_, i) => (
-            <Heart
-              key={i}
-              className={`w-6 h-6 transition-all ${
-                i < lives
-                  ? 'text-rose-500 fill-rose-500 animate-pulse'
-                  : 'text-slate-300 dark:text-slate-700'
-              }`}
-            />
-          ))}
-        </div>
-
-        <span className="text-xs font-black text-slate-500 dark:text-slate-400">
-          剩餘：{queue.length} 字
-        </span>
-      </div>
-
-      {currentWord && (
-        <GlassCard className="w-full text-center relative overflow-hidden p-6 sm:p-10">
-          {/* 中文提示與朗讀按鈕 */}
-          <div className="mb-8 flex flex-col items-center">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-800 dark:text-slate-100 font-heading mb-3">
-              {currentWord.zh}
-            </h2>
-            <button
-              onClick={() => speakEnglish(currentWord.en)}
-              className="p-3.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 hover:scale-105 active:scale-95 transition-transform"
-            >
-              <Volume2 className="w-7 h-7" />
-            </button>
-          </div>
-
-          {/* 單字目標槽位 */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10 min-h-[72px]">
-            {slots.map((slot, idx) => (
-              <div
-                key={idx}
-                className={`
-                  w-12 h-14 sm:w-16 sm:h-20 rounded-2xl border-2 sm:border-4 flex items-center justify-center text-2xl sm:text-4xl font-black uppercase transition-all
-                  ${shakingSlot === idx ? 'animate-shake border-rose-500 bg-rose-50' : ''}
-                  ${slot 
-                    ? 'bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-500/30' 
-                    : 'bg-slate-100 dark:bg-slate-800/80 border-dashed border-slate-300 dark:border-slate-600 text-transparent'}
-                `}
-              >
-                {slot ? slot.char : '?'}
-              </div>
+          {/* 愛心生命值 */}
+          <div className="flex items-center gap-1">
+            {[...Array(5)].map((_, i) => (
+              <Heart
+                key={i}
+                className={`w-5 h-5 sm:w-6 sm:h-6 transition-all ${
+                  i < lives
+                    ? 'text-rose-500 fill-rose-500 animate-pulse'
+                    : 'text-slate-300 dark:text-slate-700'
+                }`}
+              />
             ))}
           </div>
 
-          {/* 打散的字母卡片區 */}
-          <div className="p-4 sm:p-6 rounded-3xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
-            <p className="text-xs font-bold text-slate-400 mb-3">
-              {t.tapLettersHint}
-            </p>
-            <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3.5">
-              {letters.map((letter) => (
-                <button
-                  key={letter.id}
-                  disabled={letter.isPlaced || feedback !== null}
-                  onClick={() => handleLetterClick(letter)}
+          <span className="text-xs font-black text-slate-400">
+            剩餘：{queue.length} 字
+          </span>
+        </div>
+
+        {currentWord && (
+          <GlassCard className="w-full flex-1 min-h-0 flex flex-col justify-between text-center relative overflow-hidden p-4 sm:p-6 mb-1">
+            {/* 中文提示與朗讀按鈕 */}
+            <div className="mb-2 sm:mb-3 flex flex-col items-center flex-shrink-0">
+              <h2 className="text-2xl sm:text-4xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
+                {currentWord.zh}
+              </h2>
+              <button
+                onClick={() => speakEnglish(currentWord.en)}
+                className="p-2 sm:p-3 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 hover:scale-105 active:scale-95 transition-transform"
+              >
+                <Volume2 className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            </div>
+
+            {/* 單字目標槽位 */}
+            <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2.5 mb-3 sm:mb-5 min-h-[56px] sm:min-h-[64px]">
+              {slots.map((slot, idx) => (
+                <div
+                  key={idx}
                   className={`
-                    w-12 h-14 sm:w-16 sm:h-20 rounded-2xl flex items-center justify-center text-2xl sm:text-4xl font-black uppercase transition-all
-                    ${letter.isPlaced 
-                      ? 'opacity-0 scale-50 pointer-events-none' 
-                      : 'btn-3d bg-rose-500 hover:bg-rose-400 text-white border-b-4 border-rose-700 active:border-b-0 cursor-pointer shadow-md'}
+                    w-10 h-12 sm:w-14 sm:h-18 rounded-xl sm:rounded-2xl border-2 sm:border-4 flex items-center justify-center text-xl sm:text-3xl font-black uppercase transition-all
+                    ${shakingSlot === idx ? 'animate-shake border-rose-500 bg-rose-50' : ''}
+                    ${slot 
+                      ? 'bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-500/30' 
+                      : 'bg-slate-100 dark:bg-slate-800/80 border-dashed border-slate-300 dark:border-slate-600 text-transparent'}
                   `}
                 >
-                  {letter.char}
-                </button>
+                  {slot ? slot.char : '?'}
+                </div>
               ))}
             </div>
-          </div>
 
-          {/* 正確或失敗全屏回饋遮罩 */}
-          {feedback && (
-            <div className={`absolute inset-0 z-20 flex flex-col items-center justify-center backdrop-blur-md animate-fadeIn ${
-              feedback === 'correct' ? 'bg-emerald-500/90 text-white' : 'bg-rose-500/95 text-white'
-            }`}>
-              {feedback === 'correct' ? (
-                <>
-                  <CheckCircle2 className="w-16 h-16 mb-2 animate-bounce" />
-                  <span className="text-3xl font-black font-heading">{t.correct}</span>
-                </>
-              ) : (
-                <>
-                  <HeartCrack className="w-16 h-16 mb-2 animate-pulse" />
-                  <span className="text-2xl font-black font-heading mb-1">{t.heartsDepleted}</span>
-                  <p className="text-2xl font-black underline mt-2">{currentWord.en}</p>
-                </>
-              )}
+            {/* 打散的字母卡片區 */}
+            <div className="p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 flex-shrink-0">
+              <p className="text-[11px] sm:text-xs font-bold text-slate-400 mb-2">
+                {t.tapLettersHint}
+              </p>
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+                {letters.map((letter) => (
+                  <button
+                    key={letter.id}
+                    disabled={letter.isPlaced || feedback !== null}
+                    onClick={() => handleLetterClick(letter)}
+                    className={`
+                      w-10 h-12 sm:w-14 sm:h-18 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-3xl font-black uppercase transition-all
+                      ${letter.isPlaced 
+                        ? 'opacity-0 scale-50 pointer-events-none' 
+                        : 'btn-3d bg-rose-500 hover:bg-rose-400 text-white border-b-4 border-rose-700 active:border-b-0 cursor-pointer shadow-md'}
+                    `}
+                  >
+                    {letter.char}
+                  </button>
+                ))}
+              </div>
             </div>
-          )}
-        </GlassCard>
-      )}
+
+            {/* 正確或失敗全屏回饋遮罩 */}
+            {feedback && (
+              <div className={`absolute inset-0 z-20 flex flex-col items-center justify-center backdrop-blur-md animate-fadeIn ${
+                feedback === 'correct' ? 'bg-emerald-500/90 text-white' : 'bg-rose-500/95 text-white'
+              }`}>
+                {feedback === 'correct' ? (
+                  <>
+                    <CheckCircle2 className="w-14 h-14 mb-2 animate-bounce" />
+                    <span className="text-2xl sm:text-3xl font-black font-heading">{t.correct}</span>
+                  </>
+                ) : (
+                  <>
+                    <HeartCrack className="w-14 h-14 mb-2 animate-pulse" />
+                    <span className="text-xl sm:text-2xl font-black font-heading mb-1">{t.heartsDepleted}</span>
+                    <p className="text-xl sm:text-2xl font-black underline mt-2">{currentWord.en}</p>
+                  </>
+                )}
+              </div>
+            )}
+          </GlassCard>
+        )}
+      </div>
     </div>
   );
 };

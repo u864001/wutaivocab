@@ -5,6 +5,7 @@ import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { SnakeCanvas2D } from './SnakeCanvas2D';
+import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Heart, Trophy, Sparkles, Maximize2, Minimize2,
@@ -76,25 +77,6 @@ export const SnakeGame = ({
   };
 
   // 智慧全螢幕管理
-  const enterFullscreen = () => {
-    const docEl = document.documentElement;
-    if (docEl.requestFullscreen) {
-      docEl.requestFullscreen().catch(() => {});
-    } else if (docEl.webkitRequestFullscreen) {
-      docEl.webkitRequestFullscreen();
-    }
-  };
-
-  const exitFullscreen = () => {
-    if (document.fullscreenElement || document.webkitFullscreenElement) {
-      if (document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      }
-    }
-  };
-
   const toggleFullscreen = () => {
     if (document.fullscreenElement || document.webkitFullscreenElement) {
       exitFullscreen();
@@ -598,14 +580,15 @@ export const SnakeGame = ({
     );
   }
 
-  // ─── 遊戲進行中畫面 ───
+  // ─── 遊戲進行中畫面 (iPad 零捲動滿版全螢幕適配) ───
   return (
-    <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 flex flex-col items-center select-none">
-      {/* 頂部資訊列 (HUD) */}
-      <div className="w-full flex items-center justify-between mb-2 gap-2">
-        <Button3D variant="slate" size="sm" onClick={handleBackToLobby} icon={ArrowLeft}>
-          {t.backLobby}
-        </Button3D>
+    <div className="fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-between p-2 sm:p-3 max-h-[100dvh] h-[100dvh] overflow-hidden select-none animate-fadeIn">
+      <div className="w-full max-w-4xl mx-auto flex flex-col items-center h-full justify-between">
+        {/* 頂部資訊列 (HUD) */}
+        <div className="w-full flex items-center justify-between mb-1 sm:mb-2 gap-2 flex-shrink-0">
+          <Button3D variant="slate" size="sm" onClick={handleBackToLobby} icon={ArrowLeft}>
+            {t.backLobby}
+          </Button3D>
 
         {/* 雙主題快速切換微型開關 */}
         <div className="flex items-center p-1 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700">
@@ -711,8 +694,8 @@ export const SnakeGame = ({
         </div>
       )}
 
-      {/* 2D 骨骼動力學平滑畫布 (嚴格依照走過路徑補間) */}
-      <div className="w-full flex justify-center mb-3">
+      {/* 2D 骨骼動力學平滑畫布 (彈性高度適配 iPad 一頁檢視) */}
+      <div className="flex-1 min-h-0 w-full flex items-center justify-center my-1">
         <SnakeCanvas2D
           snake={renderSnake}
           nextHead={nextHead}
@@ -734,7 +717,7 @@ export const SnakeGame = ({
       </div>
 
       {/* 虛擬十字鍵 */}
-      <div className="flex flex-col items-center gap-1.5 mt-1">
+      <div className="flex flex-col items-center gap-1.5 flex-shrink-0 mb-1">
         <Button3D
           variant={theme === 'indigenous' ? 'stone' : 'slate'}
           size="sm"
@@ -771,5 +754,6 @@ export const SnakeGame = ({
         </div>
       </div>
     </div>
+  </div>
   );
 };

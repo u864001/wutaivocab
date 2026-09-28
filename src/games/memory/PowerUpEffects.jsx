@@ -3,9 +3,8 @@ import {
   Eye, Snowflake, Gem, Coins, Lock, Satellite, Zap, Handshake,
   Sparkles, CheckCircle2, AlertTriangle, Play
 } from 'lucide-react';
-
-export { POWER_UP_DEFS } from './powerUpData';
-
+import { POWER_UP_DEFS } from './powerUpData';
+export { POWER_UP_DEFS };
 /**
  * 頂部滑入宣告橫幅 (Sliding Announcement Banner)
  * 當玩家翻到某卡時從頂部以彈力曲線滑入，2秒後自動滑出

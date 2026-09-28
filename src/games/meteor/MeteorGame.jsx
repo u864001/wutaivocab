@@ -9,6 +9,7 @@ import { calculateMeteorDuration, calculateMeteorMotionProgress } from './meteor
 import { MeteorCanvas3D } from './MeteorCanvas3D';
 import { MeteorEasterEggs2D } from './MeteorEasterEggs2D';
 import { RightComboDisplay } from './RightComboDisplay';
+import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Rocket, Trophy, Flame,
@@ -52,35 +53,38 @@ export const MeteorGame = ({
   const encounteredWordsRef = useRef(new Map());
   const mistakeIdsRef = useRef(new Set());
 
+  // 卸載時還原全螢幕
+  useEffect(() => {
+    return () => {
+      exitFullscreen();
+    };
+  }, []);
+
   // 監聽全螢幕狀態
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      setIsFullscreen(Boolean(document.fullscreenElement || document.webkitFullscreenElement));
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
     };
   }, []);
 
   // 智慧全螢幕切換
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      exitFullscreen();
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-      }
+      enterFullscreen();
     }
   };
 
   // 安全退出遊戲 (還原全螢幕)
   const handleExitGame = () => {
-    if (document.fullscreenElement && document.exitFullscreen) {
-      document.exitFullscreen().catch(() => {});
-    }
+    exitFullscreen();
     onBack();
   };
 
@@ -158,10 +162,8 @@ export const MeteorGame = ({
     encounteredWordsRef.current.clear();
     mistakeIdsRef.current.clear();
 
-    // 點擊開始為合法使用者手勢，自動請求全螢幕體驗
-    if (document.fullscreenEnabled && !document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.().catch(() => {});
-    }
+    // 點擊開始為合法使用者手勢，自動請求全螢幕體驗 (支援 iPad)
+    enterFullscreen();
 
     let pool = [];
     if (mode === 'abc') {
@@ -242,9 +244,7 @@ export const MeteorGame = ({
       const next = prev - 1;
       if (next <= 0) {
         setSurvivalTime(Math.floor((Date.now() - gameStartTime) / 1000));
-        if (document.fullscreenElement && document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
-        }
+        exitFullscreen();
         setTimeout(() => setIsFinished(true), 900);
       } else {
         setTimeout(() => nextTurn(meteorsDestroyed), 900);

@@ -270,7 +270,7 @@ export const SnakeCanvas2D = ({
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
-      className="w-full max-w-4xl h-auto rounded-3xl shadow-2xl border-4 border-emerald-900/40 dark:border-white/10 aspect-[5/3] touch-none cursor-pointer select-none transition-all duration-300"
+      className="w-auto h-full max-h-[46vh] sm:max-h-[50vh] max-w-full rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-emerald-900/40 dark:border-white/10 aspect-[5/3] touch-none cursor-pointer select-none transition-all duration-300"
     />
   );
 };

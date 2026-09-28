@@ -7,6 +7,7 @@ import { supabase, getDeviceId, recordBattleWin } from '../../services/supabase'
 import { generateSmartOptions } from '../../services/distractorHelper';
 import { getProfanityError } from '../../services/profanityFilter';
 import confetti from 'canvas-confetti';
+import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import {
   ArrowLeft, Swords, Users, Shield, Heart, Zap,
   Trophy, Play, RefreshCw, Lock, CheckCircle2, AlertCircle,
@@ -132,23 +133,30 @@ export const BattleGame = ({
   useEffect(() => { viewRef.current = view; }, [view]);
 
   // 監聽全螢幕
+  // 卸載時還原全螢幕
+  useEffect(() => {
+    return () => {
+      exitFullscreen();
+    };
+  }, []);
+
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      setIsFullscreen(Boolean(document.fullscreenElement || document.webkitFullscreenElement));
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
   }, []);
 
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      exitFullscreen();
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-      }
+      enterFullscreen();
     }
   };
 
@@ -722,10 +730,8 @@ export const BattleGame = ({
     raidMissStreakRef.current = 0;
     gameStartTimeRef.current = Date.now();
 
-    // 請求全螢幕沉浸體驗
-    if (document.fullscreenEnabled && !document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.().catch(() => {});
-    }
+    // 請求全螢幕沉浸體驗 (支援 iPad)
+    enterFullscreen();
 
     // 準備單字題庫
     const units = battleUnitsRef.current;
