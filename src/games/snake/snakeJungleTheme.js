@@ -1,11 +1,11 @@
 /**
  * 字母貪食蛇 2D 向量程序化主題繪製器 (Procedural Vector Canvas Engine)
  * 包含兩大風格：
- * 1. 🌿 陽光熱帶雨林 (Jungle Theme)：萌趣小青蛇、龜背芋棕櫚灌木、小猴子、藍閃蝶、熱帶果實
- * 2. ⛰️ 霧台原民神山 (Indigenous Theme)：神獸百步蛇、微風搖曳白色百合花、石板岩矮牆、台灣黑熊、台灣雲豹
+ * 1. ⛰️ 霧台原民神山 (Indigenous Theme)：神獸百步蛇、茂密高山灌木穿插盛開純白百合花、台灣黑熊、台灣雲豹
+ * 2. 🌿 陽光熱帶雨林 (Jungle Theme)：萌趣小青蛇、繁茂闊葉龜背芋灌木圍欄、小猴子、藍閃蝶、熱帶果實
  */
 
-// ── 輔助函數：角度內插 ──
+// ── 輔助函數：數值與角度內插 ──
 export const lerp = (a, b, t) => a + (b - a) * t;
 
 export const lerpAngle = (a, b, t) => {
@@ -15,259 +15,254 @@ export const lerpAngle = (a, b, t) => {
   return a + diff * t;
 };
 
-// ── 1. 繪製微風吹拂海浪擺動的「魯凱純白百合花」與石板草叢 ──
-export const drawLilyBushBorder = (ctx, w, h, time, cheerProgress = 0) => {
+// ── 1. 繪製四周立體多層重疊的茂密綠色灌木叢 (Lush Overlapping Bush Border) ──
+// 中間蛇移動的場域被厚實的綠色灌木緊緊包覆，重點純白百合花自然穿插生長在灌木葉隙之間！
+export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerTimer = 0) => {
   ctx.save();
 
-  // 頂部與底部石板矮牆基底
-  ctx.fillStyle = '#292524'; // 深板岩色
-  ctx.fillRect(0, 0, w, 24);
-  ctx.fillRect(0, h - 24, w, 24);
-  ctx.fillRect(0, 0, 22, h);
-  ctx.fillRect(w - 22, 0, 22, h);
+  const isIndigenous = theme === 'indigenous';
 
-  // 石板紋理裂痕線條
-  ctx.strokeStyle = '#44403c';
-  ctx.lineWidth = 1.5;
-  for (let x = 40; x < w; x += 60) {
+  // 1) 最外層天然邊界底色（深森林暗綠）
+  ctx.fillStyle = '#062d20';
+  ctx.fillRect(0, 0, w, 32);
+  ctx.fillRect(0, h - 32, w, 32);
+  ctx.fillRect(0, 0, 30, h);
+  ctx.fillRect(w - 30, 0, 30, h);
+
+  // 2) 頂部與底部：厚實重疊灌木葉球 (Layer 1 深色底葉 + Layer 2 翠綠主葉 + Layer 3 亮綠嫩葉)
+  const stepX = 26;
+  const countX = Math.ceil(w / stepX) + 1;
+
+  for (let i = 0; i < countX; i++) {
+    const x = i * stepX;
+    const wave = Math.sin(time * 2.2 - x * 0.02) * 2;
+
+    // ── 頂部灌木球重疊堆疊 ──
+    // 底層深翠綠
+    ctx.fillStyle = i % 2 === 0 ? '#065f46' : '#047857';
     ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x + 10, 24);
-    ctx.moveTo(x + 20, h - 24);
-    ctx.lineTo(x + 30, h);
-    ctx.stroke();
+    ctx.arc(x, 14 + wave, 22, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 中層鮮綠葉團
+    ctx.fillStyle = i % 3 === 0 ? '#10b981' : '#059669';
+    ctx.beginPath();
+    ctx.arc(x + 10, 20 - wave, 18, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 表層嫩綠點綴葉
+    ctx.fillStyle = i % 2 === 0 ? '#34d399' : '#6ee7b7';
+    ctx.beginPath();
+    ctx.ellipse(x + 5, 26 + wave * 0.5, 10, 6, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ── 底部灌木球重疊堆疊 ──
+    ctx.fillStyle = i % 2 === 0 ? '#065f46' : '#047857';
+    ctx.beginPath();
+    ctx.arc(x, h - 14 - wave, 22, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = i % 3 === 0 ? '#10b981' : '#059669';
+    ctx.beginPath();
+    ctx.arc(x - 8, h - 20 + wave, 18, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = i % 2 === 0 ? '#34d399' : '#6ee7b7';
+    ctx.beginPath();
+    ctx.ellipse(x - 5, h - 26 - wave * 0.5, 10, 6, -0.3, 0, Math.PI * 2);
+    ctx.fill();
   }
 
-  // 頂部石板上的盛開白色百合花群與高山蕨類（微風如波浪般依序搖曳）
-  const lilyCount = Math.floor(w / 70);
-  for (let i = 0; i < lilyCount; i++) {
-    const lx = 45 + i * 70;
-    // 空間前進波：每朵百合與草葉依 X 座標相位延遲，呈現「風吹草偃」如波浪滾動效果！
-    const wavePhase = time * 2.2 - lx * 0.015;
-    const sway = Math.sin(wavePhase) * 0.18 + (cheerProgress > 0 ? Math.sin(time * 8) * 0.25 : 0);
+  // 3) 左側與右側：厚實垂直灌木重疊
+  const stepY = 28;
+  const countY = Math.ceil(h / stepY) + 1;
+  for (let j = 0; j < countY; j++) {
+    const y = j * stepY;
+    const waveY = Math.cos(time * 2.0 + y * 0.03) * 2;
 
-    // 1) 繪製百合花朵 (頂部)
-    drawSingleLily(ctx, lx, 22, sway, -1);
+    // 左側重疊葉球
+    ctx.fillStyle = j % 2 === 0 ? '#065f46' : '#059669';
+    ctx.beginPath();
+    ctx.arc(14 + waveY, y, 20, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(22 - waveY * 0.5, y + 6, 14, 0, Math.PI * 2);
+    ctx.fill();
 
-    // 2) 繪製底部的百合花朵 (底部)
-    if (i % 2 === 0) {
-      const bSway = Math.sin(wavePhase + 1.2) * 0.18;
-      drawSingleLily(ctx, lx + 20, h - 22, bSway, 1);
+    // 右側重疊葉球
+    ctx.fillStyle = j % 2 === 0 ? '#065f46' : '#059669';
+    ctx.beginPath();
+    ctx.arc(w - 14 - waveY, y, 20, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(w - 22 + waveY * 0.5, y + 6, 14, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 4) 若為百步蛇神山主題，純白百合花「穿插生長在茂密灌木葉隙之中」！
+  if (isIndigenous) {
+    const lilySpacing = 72;
+    const lilyCount = Math.floor(w / lilySpacing);
+
+    for (let i = 0; i < lilyCount; i++) {
+      const lx = 48 + i * lilySpacing;
+      // 空間行進波：微風吹拂草偃花動波浪
+      const wavePhase = time * 2.4 - lx * 0.016;
+      const sway = Math.sin(wavePhase) * 0.16 + (cheerTimer > 0 ? Math.sin(time * 9) * 0.28 : 0);
+
+      // 頂部穿插百合花 (自然開在灌木枝葉交界 32px 處)
+      drawSingleLilyInBush(ctx, lx, 32, sway, -1);
+
+      // 底部穿插百合花 (錯開位置)
+      if (i % 2 === 0) {
+        const bSway = Math.sin(wavePhase + 1.4) * 0.16;
+        drawSingleLilyInBush(ctx, lx + 36, h - 32, bSway, 1);
+      }
     }
   }
 
   ctx.restore();
 };
 
-// 繪製單朵生動盛開的白色百合花
-const drawSingleLily = (ctx, x, y, sway, dirY = -1) => {
+// ── 繪製穿插生長在灌木叢深處的單朵盛開魯凱白百合花 ──
+const drawSingleLilyInBush = (ctx, x, y, sway, dirY = -1) => {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(sway);
 
-  // 鮮綠花莖
+  // 1) 鮮綠長花莖（從灌木深處探出）
   ctx.strokeStyle = '#15803d';
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 3.2;
   ctx.beginPath();
   ctx.moveTo(0, 0);
-  ctx.quadraticCurveTo(dirY * 4, dirY * 12, dirY * 2, dirY * 22);
+  ctx.quadraticCurveTo(dirY * 5, dirY * 12, dirY * 2, dirY * 24);
   ctx.stroke();
 
-  // 兩側長條披針形綠葉
+  // 2) 長條百合披針綠葉
   ctx.fillStyle = '#16a34a';
   ctx.beginPath();
-  ctx.ellipse(-8, dirY * 10, 10, 3, dirY * -0.5, 0, Math.PI * 2);
-  ctx.ellipse(8, dirY * 12, 10, 3, dirY * 0.5, 0, Math.PI * 2);
+  ctx.ellipse(-9, dirY * 11, 11, 3.5, dirY * -0.5, 0, Math.PI * 2);
+  ctx.ellipse(9, dirY * 13, 11, 3.5, dirY * 0.5, 0, Math.PI * 2);
   ctx.fill();
 
-  // 花朵基底平移至花頸
-  ctx.translate(dirY * 2, dirY * 22);
+  // 3) 平移至花頸綻放處
+  ctx.translate(dirY * 2, dirY * 24);
 
-  // 盛開號角型純白花瓣（外層花瓣 3 片，內層花瓣 3 片）
+  // 4) 盛開純白長筒喇叭百合花瓣（6瓣：外層3瓣展開、內層3瓣反捲）
   ctx.fillStyle = '#ffffff';
-  ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
-  ctx.shadowBlur = 6;
-
-  // 花托微青綠
-  ctx.strokeStyle = '#86efac';
+  ctx.shadowColor = 'rgba(255, 255, 255, 0.85)';
+  ctx.shadowBlur = 8;
+  ctx.strokeStyle = '#bbf7d0'; // 花瓣邊緣微青
   ctx.lineWidth = 1;
 
-  // 6 片修長百合花瓣
   for (let p = 0; p < 6; p++) {
     const angle = (p * Math.PI) / 3 - Math.PI / 2;
     ctx.save();
     ctx.rotate(angle);
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.quadraticCurveTo(-4, -10, 0, -18); // 花瓣尖端向外微翻卷
-    ctx.quadraticCurveTo(4, -10, 0, 0);
+    ctx.quadraticCurveTo(-4.5, -11, 0, -20); // 長筒尖端翻捲
+    ctx.quadraticCurveTo(4.5, -11, 0, 0);
     ctx.fill();
     ctx.stroke();
     ctx.restore();
   }
 
-  // 金黃色百合花蕊 (花絲與金黃花藥)
+  // 5) 金黃百合花蕊 (5 枚長花絲 + 金黃花藥)
   ctx.shadowBlur = 0;
   for (let a = 0; a < 5; a++) {
     const antherAngle = (a * (Math.PI * 2)) / 5;
     ctx.save();
     ctx.rotate(antherAngle);
-    // 花絲
     ctx.strokeStyle = '#fef08a';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.3;
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.lineTo(0, -9);
+    ctx.lineTo(0, -10);
     ctx.stroke();
-    // 金黃花藥
+
     ctx.fillStyle = '#eab308';
     ctx.beginPath();
-    ctx.ellipse(0, -10, 2.5, 1.2, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, -11, 2.6, 1.3, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
 
-  // 花心嫩綠小點
+  // 6) 花心翠綠基座
   ctx.fillStyle = '#22c55e';
   ctx.beginPath();
-  ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+  ctx.arc(0, 0, 2.6, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.restore();
 };
 
-// ── 2. 繪製熱帶雨林茂密灌木圍欄 (Jungle Bush Border) ──
-export const drawJungleBushBorder = (ctx, w, h, time) => {
-  ctx.save();
-
-  // 頂部與底部深綠雨林暗帶
-  ctx.fillStyle = '#064e3b';
-  ctx.fillRect(0, 0, w, 22);
-  ctx.fillRect(0, h - 22, w, 22);
-  ctx.fillRect(0, 0, 20, h);
-  ctx.fillRect(w - 20, 0, 20, h);
-
-  // 龜背芋與棕櫚葉叢（微風連續波浪）
-  const bushCount = Math.floor(w / 45);
-  for (let i = 0; i < bushCount; i++) {
-    const bx = 30 + i * 45;
-    const wave = Math.sin(time * 2.0 - bx * 0.02) * 0.15;
-
-    // 上方灌木葉
-    ctx.save();
-    ctx.translate(bx, 14);
-    ctx.rotate(wave);
-    ctx.fillStyle = i % 2 === 0 ? '#059669' : '#10b981';
-    ctx.beginPath();
-    ctx.arc(0, 0, 18, 0, Math.PI);
-    ctx.fill();
-    // 葉脈
-    ctx.strokeStyle = '#047857';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(-12, 0);
-    ctx.lineTo(12, 0);
-    ctx.stroke();
-    ctx.restore();
-
-    // 下方灌木葉
-    ctx.save();
-    ctx.translate(bx + 15, h - 14);
-    ctx.rotate(-wave);
-    ctx.fillStyle = i % 2 === 0 ? '#10b981' : '#34d399';
-    ctx.beginPath();
-    ctx.arc(0, 0, 16, Math.PI, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  ctx.restore();
-};
-
-// ── 3. 繪製林間地表光斑 (Dappled Sunlight) ──
-export const drawDappledSunlight = (ctx, w, h, time) => {
-  ctx.save();
-  ctx.globalAlpha = 0.14;
-  ctx.fillStyle = '#fef08a'; // 陽光暖金
-
-  const spots = [
-    { x: 0.25, y: 0.35, r: 65, speed: 0.4 },
-    { x: 0.65, y: 0.25, r: 85, speed: 0.3 },
-    { x: 0.45, y: 0.70, r: 75, speed: 0.5 },
-    { x: 0.80, y: 0.60, r: 60, speed: 0.35 }
-  ];
-
-  spots.forEach((sp, idx) => {
-    const ox = Math.sin(time * sp.speed + idx) * 16;
-    const oy = Math.cos(time * sp.speed + idx * 2) * 12;
-    ctx.beginPath();
-    ctx.arc(w * sp.x + ox, h * sp.y + oy, sp.r, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
-  ctx.restore();
-};
-
-// ── 4. 繪製神獸百步蛇身軀與頭部 (Sacred Hundred-Pace Snake) ──
+// ── 2. 繪製神獸百步蛇 (清晰亮眼高對比、經典赤褐暖木身軀與幾何菱形幾何紋) ──
 export const drawHundredPaceSnake = (ctx, spine, time, bulges = [], isDead = false) => {
   if (!spine || spine.length < 2) return;
   ctx.save();
 
   const totalSegs = spine.length;
 
-  // 1) 繪製蛇身與經典黑白黃三角菱形紋 (由尾至頭畫，保證頭部壓在最上層)
+  // 1) 繪製蛇身與經典幾何菱形三角紋 (由尾至頭畫，頭部覆蓋最上層)
   for (let i = totalSegs - 1; i >= 1; i--) {
     const curr = spine[i];
     const prev = spine[i - 1];
-    const next = spine[i + 1] || curr;
 
-    // 粗細漸變（前粗後細）
-    const taper = 1.0 - (i / totalSegs) * 0.45;
-    let radius = 17 * taper;
+    const taper = 1.0 - (i / totalSegs) * 0.42;
+    let radius = 17.5 * taper;
 
-    // 檢查是否有吞嚥字母的波浪隆起 (Belly Bulge)
+    // 吞嚥字母波浪隆起 (Belly Bulge)
     bulges.forEach(b => {
       const frac = i / totalSegs;
       const dist = Math.abs(frac - b.progress);
       if (dist < 0.16) {
-        const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.5;
+        const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.52;
         radius *= 1.0 + bulgeFactor;
       }
     });
 
     const angle = Math.atan2(curr.y - prev.y, curr.x - prev.x);
 
-    // 蛇身底色：深板岩暗褐
-    ctx.fillStyle = '#292524';
-    ctx.strokeStyle = '#1c1917';
-    ctx.lineWidth = 1.5;
+    // 蛇身底色：升級為亮眼高質感的「赤栗暖褐」(#7c2d12)，明亮清晰、不沉悶！
+    ctx.fillStyle = '#7c2d12';
+    ctx.strokeStyle = '#431407';
+    ctx.lineWidth = 1.8;
     ctx.beginPath();
     ctx.arc(curr.x, curr.y, radius, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
-    // 經典百步蛇背脊「祖靈幾何三角菱形紋」
+    // 蛇腹淺色鱗片底邊
+    ctx.fillStyle = '#fed7aa';
+    ctx.beginPath();
+    ctx.arc(curr.x, curr.y, radius * 0.45, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 經典百步蛇背脊「祖靈黑白金幾何三角菱形紋」
     ctx.save();
     ctx.translate(curr.x, curr.y);
     ctx.rotate(angle);
 
-    // 白色外三角
-    ctx.fillStyle = '#f5f5f4';
+    // 高純度雪白幾何外三角（高對比亮眼）
+    ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.moveTo(-radius * 0.7, 0);
-    ctx.lineTo(0, -radius * 0.85);
-    ctx.lineTo(radius * 0.7, 0);
-    ctx.lineTo(0, radius * 0.85);
+    ctx.moveTo(-radius * 0.72, 0);
+    ctx.lineTo(0, -radius * 0.88);
+    ctx.lineTo(radius * 0.72, 0);
+    ctx.lineTo(0, radius * 0.88);
     ctx.closePath();
     ctx.fill();
 
-    // 金黃/琥珀色內三角菱形
-    ctx.fillStyle = i % 2 === 0 ? '#eab308' : '#d97706';
+    // 耀眼金黃/琥珀色內幾何菱形
+    ctx.fillStyle = i % 2 === 0 ? '#facc15' : '#fbbf24';
     ctx.beginPath();
     ctx.moveTo(-radius * 0.45, 0);
-    ctx.lineTo(0, -radius * 0.55);
+    ctx.lineTo(0, -radius * 0.56);
     ctx.lineTo(radius * 0.45, 0);
-    ctx.lineTo(0, radius * 0.55);
+    ctx.lineTo(0, radius * 0.56);
     ctx.closePath();
     ctx.fill();
 
@@ -283,85 +278,80 @@ export const drawHundredPaceSnake = (ctx, spine, time, bulges = [], isDead = fal
   ctx.translate(head.x, head.y);
   ctx.rotate(headAngle);
 
-  // 吐信：百步蛇深暗赤紅分叉舌
+  // 吐信：分叉蛇舌
   const tongueTimer = (time * 3) % 2.5;
-  if (tongueTimer < 0.6 && !isDead) {
-    const tLen = 14 + Math.sin(time * 25) * 4;
-    ctx.strokeStyle = '#b91c1c';
-    ctx.lineWidth = 2.5;
+  if (tongueTimer < 0.65 && !isDead) {
+    const tLen = 15 + Math.sin(time * 26) * 4;
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 2.6;
     ctx.beginPath();
     ctx.moveTo(18, 0);
     ctx.lineTo(18 + tLen, 0);
-    // 分叉
-    ctx.lineTo(18 + tLen + 5, -3.5);
+    ctx.lineTo(18 + tLen + 5, -3.8);
     ctx.moveTo(18 + tLen, 0);
-    ctx.lineTo(18 + tLen + 5, 3.5);
+    ctx.lineTo(18 + tLen + 5, 3.8);
     ctx.stroke();
   }
 
-  // 百步蛇經典頭型：微翹尖吻三角形
-  ctx.fillStyle = '#44403c';
-  ctx.strokeStyle = '#1c1917';
+  // 百步蛇經典頭型：立體翹吻三角形，色調鮮明赤栗褐
+  ctx.fillStyle = '#9a3412';
+  ctx.strokeStyle = '#431407';
   ctx.lineWidth = 2.5;
   ctx.beginPath();
-  ctx.moveTo(24, 0); // 尖翹鼻尖！
-  ctx.lineTo(10, -15);
-  ctx.lineTo(-12, -14);
-  ctx.lineTo(-14, 0);
-  ctx.lineTo(-12, 14);
-  ctx.lineTo(10, 15);
+  ctx.moveTo(25, 0); // 向上翹起尖吻鼻尖！
+  ctx.lineTo(11, -16);
+  ctx.lineTo(-12, -15);
+  ctx.lineTo(-15, 0);
+  ctx.lineTo(-12, 15);
+  ctx.lineTo(11, 16);
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
 
-  // 鼻尖上的微翹隆起特徵（百步蛇標誌）
-  ctx.fillStyle = '#78716c';
+  // 鼻尖翹起之肉質小突起（百步蛇標誌性神聖特徵）
+  ctx.fillStyle = '#ea580c';
   ctx.beginPath();
-  ctx.arc(22, 0, 3.5, 0, Math.PI * 2);
+  ctx.arc(23, 0, 3.8, 0, Math.PI * 2);
   ctx.fill();
 
-  // 頭頂祖靈菱形王冠圖騰
-  ctx.fillStyle = '#facc15';
+  // 頭頂祖靈王冠金黃幾何紋
+  ctx.fillStyle = '#fde047';
   ctx.beginPath();
-  ctx.moveTo(6, 0);
-  ctx.lineTo(-2, -6);
+  ctx.moveTo(8, 0);
+  ctx.lineTo(-1, -7);
   ctx.lineTo(-8, 0);
-  ctx.lineTo(-2, 6);
+  ctx.lineTo(-1, 7);
   ctx.closePath();
   ctx.fill();
 
-  // 眼睛（失誤變 >_< 蚊香眼，正常時為有神琥珀金眼）
+  // 眼睛（失誤變 >_< 蚊香眼，正常時為銳利有神的琥珀金雙眼）
   if (isDead) {
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
-    // 左眼 >
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.moveTo(4, -8); ctx.lineTo(8, -6); ctx.lineTo(4, -4);
-    ctx.stroke();
-    // 右眼 >
-    ctx.beginPath();
-    ctx.moveTo(4, 4); ctx.lineTo(8, 6); ctx.lineTo(4, 8);
+    ctx.moveTo(4, -8); ctx.lineTo(9, -5); ctx.lineTo(4, -2);
+    ctx.moveTo(4, 2); ctx.lineTo(9, 5); ctx.lineTo(4, 8);
     ctx.stroke();
   } else {
-    // 琥珀金眼球
-    ctx.fillStyle = '#fbbf24';
+    // 亮琥珀金色眼球
+    ctx.fillStyle = '#fef08a';
     ctx.beginPath();
-    ctx.arc(6, -8, 4.5, 0, Math.PI * 2);
-    ctx.arc(6, 8, 4.5, 0, Math.PI * 2);
+    ctx.arc(7, -8, 5, 0, Math.PI * 2);
+    ctx.arc(7, 8, 5, 0, Math.PI * 2);
     ctx.fill();
 
-    // 銳利豎瞳
+    // 黑瞳孔
     ctx.fillStyle = '#0f172a';
     ctx.beginPath();
-    ctx.ellipse(6.5, -8, 1.2, 3.5, 0, 0, Math.PI * 2);
-    ctx.ellipse(6.5, 8, 1.2, 3.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(7.5, -8, 1.4, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(7.5, 8, 1.4, 4, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 眼神光
+    // 眼神高光
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(5.5, -9, 1.2, 0, Math.PI * 2);
-    ctx.arc(5.5, 7, 1.2, 0, Math.PI * 2);
+    ctx.arc(6.5, -9, 1.5, 0, Math.PI * 2);
+    ctx.arc(6.5, 7, 1.5, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -369,7 +359,7 @@ export const drawHundredPaceSnake = (ctx, spine, time, bulges = [], isDead = fal
   ctx.restore();
 };
 
-// ── 5. 繪製萌趣小青蛇身軀與頭部 (Emerald Jungle Snake) ──
+// ── 3. 繪製萌趣小青蛇身軀與頭部 (Emerald Jungle Snake) ──
 export const drawGreenSnake = (ctx, spine, time, bulges = [], isDead = false) => {
   if (!spine || spine.length < 2) return;
   ctx.save();
@@ -379,14 +369,14 @@ export const drawGreenSnake = (ctx, spine, time, bulges = [], isDead = false) =>
   for (let i = totalSegs - 1; i >= 1; i--) {
     const curr = spine[i];
     const prev = spine[i - 1];
-    const taper = 1.0 - (i / totalSegs) * 0.45;
-    let radius = 17 * taper;
+    const taper = 1.0 - (i / totalSegs) * 0.42;
+    let radius = 17.5 * taper;
 
     bulges.forEach(b => {
       const frac = i / totalSegs;
       const dist = Math.abs(frac - b.progress);
       if (dist < 0.16) {
-        const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.5;
+        const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.52;
         radius *= 1.0 + bulgeFactor;
       }
     });
@@ -418,10 +408,10 @@ export const drawGreenSnake = (ctx, spine, time, bulges = [], isDead = false) =>
 
   // 吐信：可愛粉紅舌
   const tongueTimer = (time * 3) % 2.5;
-  if (tongueTimer < 0.6 && !isDead) {
-    const tLen = 14 + Math.sin(time * 25) * 4;
+  if (tongueTimer < 0.65 && !isDead) {
+    const tLen = 15 + Math.sin(time * 26) * 4;
     ctx.strokeStyle = '#f43f5e';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2.6;
     ctx.beginPath();
     ctx.moveTo(16, 0);
     ctx.lineTo(16 + tLen, 0);
@@ -441,7 +431,7 @@ export const drawGreenSnake = (ctx, spine, time, bulges = [], isDead = false) =>
   ctx.stroke();
 
   // 腮紅
-  ctx.fillStyle = 'rgba(251, 113, 133, 0.4)';
+  ctx.fillStyle = 'rgba(251, 113, 133, 0.45)';
   ctx.beginPath();
   ctx.arc(-2, -10, 4, 0, Math.PI * 2);
   ctx.arc(-2, 10, 4, 0, Math.PI * 2);
@@ -479,50 +469,47 @@ export const drawGreenSnake = (ctx, spine, time, bulges = [], isDead = false) =>
   ctx.restore();
 };
 
-// ── 6. 繪製字母水果 / 石板雕刻 (Letter Pods) ──
+// ── 4. 繪製字母標的 (Letter Pods: 石板浮雕 / 熱帶果實) ──
 export const drawLetterPod = (ctx, letter, theme, isNextTarget, time) => {
   ctx.save();
   ctx.translate(letter.renderX, letter.renderY);
 
-  const bounce = isNextTarget ? Math.sin(time * 6) * 2.5 : 0;
+  const bounce = isNextTarget ? Math.sin(time * 6) * 3 : 0;
   ctx.translate(0, bounce);
 
   if (theme === 'indigenous') {
-    // 霧台石板雕刻浮雕 (原民風)
+    // 霧台石板雕刻浮雕 (清爽板岩金黃刻字)
     if (isNextTarget) {
-      // 祖靈神聖光環
       ctx.shadowColor = '#facc15';
-      ctx.shadowBlur = 16;
+      ctx.shadowBlur = 18;
     }
 
-    // 板岩石牌外形
-    ctx.fillStyle = isNextTarget ? '#44403c' : '#292524';
-    ctx.strokeStyle = isNextTarget ? '#facc15' : '#78716c';
+    ctx.fillStyle = isNextTarget ? '#292524' : '#1e293b';
+    ctx.strokeStyle = isNextTarget ? '#facc15' : '#64748b';
     ctx.lineWidth = isNextTarget ? 3 : 2;
     ctx.beginPath();
     ctx.roundRect(-18, -18, 36, 36, 10);
     ctx.fill();
     ctx.stroke();
 
-    // 刻紋裝飾角
-    ctx.strokeStyle = isNextTarget ? '#fde047' : '#a8a29e';
+    // 刻紋框角
+    ctx.strokeStyle = isNextTarget ? '#fde047' : '#94a3b8';
     ctx.lineWidth = 1.2;
     ctx.strokeRect(-14, -14, 28, 28);
 
     // 金黃/純白字母雕刻
-    ctx.fillStyle = isNextTarget ? '#fef08a' : '#f5f5f4';
+    ctx.fillStyle = isNextTarget ? '#fef08a' : '#ffffff';
     ctx.font = 'bold 20px Fredoka, Nunito, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(letter.char.toUpperCase(), 0, 1);
   } else {
-    // 熱帶水果莢 (雨林風)
+    // 熱帶水果莢
     if (isNextTarget) {
       ctx.shadowColor = '#a3e635';
       ctx.shadowBlur = 18;
     }
 
-    // 果實底圓
     ctx.fillStyle = isNextTarget ? '#facc15' : '#ffffff';
     ctx.strokeStyle = isNextTarget ? '#eab308' : '#10b981';
     ctx.lineWidth = 3;
@@ -548,7 +535,7 @@ export const drawLetterPod = (ctx, letter, theme, isNextTarget, time) => {
   ctx.restore();
 };
 
-// ── 7. 繪製彩蛋：台灣黑熊 (Formosan Black Bear) ──
+// ── 5. 繪製彩蛋：台灣黑熊 (Formosan Black Bear) ──
 export const drawBlackBear = (ctx, x, y, time, isCheering) => {
   ctx.save();
   ctx.translate(x, y);
@@ -556,25 +543,24 @@ export const drawBlackBear = (ctx, x, y, time, isCheering) => {
   const bob = isCheering ? Math.sin(time * 10) * 6 : Math.sin(time * 1.5) * 1.5;
   ctx.translate(0, bob);
 
-  // 熊頭圓體 (深黑)
+  // 熊頭圓體
   ctx.fillStyle = '#1c1917';
   ctx.beginPath();
   ctx.ellipse(0, 0, 20, 18, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // 圓耳朵 (兩側)
+  // 圓耳朵
   ctx.beginPath();
   ctx.arc(-16, -14, 7, 0, Math.PI * 2);
   ctx.arc(16, -14, 7, 0, Math.PI * 2);
   ctx.fill();
-  // 耳內暖粉
   ctx.fillStyle = '#78716c';
   ctx.beginPath();
   ctx.arc(-16, -14, 3.5, 0, Math.PI * 2);
   ctx.arc(16, -14, 3.5, 0, Math.PI * 2);
   ctx.fill();
 
-  // 經典標誌性「白色 V 字紋胸徽」！
+  // 標誌性「白色 V 字紋胸徽」
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 4;
   ctx.lineCap = 'round';
@@ -584,12 +570,11 @@ export const drawBlackBear = (ctx, x, y, time, isCheering) => {
   ctx.lineTo(11, 8);
   ctx.stroke();
 
-  // 鼻吻 (淺褐)
+  // 鼻吻
   ctx.fillStyle = '#a8a29e';
   ctx.beginPath();
   ctx.ellipse(0, 2, 8, 6, 0, 0, Math.PI * 2);
   ctx.fill();
-  // 黑鼻子
   ctx.fillStyle = '#0c0a09';
   ctx.beginPath();
   ctx.ellipse(0, 0, 3.5, 2.5, 0, 0, Math.PI * 2);
@@ -607,7 +592,7 @@ export const drawBlackBear = (ctx, x, y, time, isCheering) => {
   ctx.arc(6.5, -4, 1.5, 0, Math.PI * 2);
   ctx.fill();
 
-  // 答對時高舉熊掌喝采！
+  // 答對時高舉熊掌喝采
   if (isCheering) {
     ctx.fillStyle = '#1c1917';
     ctx.beginPath();
@@ -619,7 +604,7 @@ export const drawBlackBear = (ctx, x, y, time, isCheering) => {
   ctx.restore();
 };
 
-// ── 8. 繪製彩蛋：台灣雲豹 (Taiwan Clouded Leopard) ──
+// ── 6. 繪製彩蛋：台灣雲豹 (Taiwan Clouded Leopard) ──
 export const drawCloudedLeopard = (ctx, x, y, time) => {
   ctx.save();
   ctx.translate(x, y);
@@ -627,20 +612,18 @@ export const drawCloudedLeopard = (ctx, x, y, time) => {
   const breathe = Math.sin(time * 2) * 1.5;
   ctx.translate(0, breathe);
 
-  // 豹頭底色 (黃褐)
   ctx.fillStyle = '#d97706';
   ctx.beginPath();
   ctx.ellipse(0, 0, 17, 14, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // 貓科耳朵
   ctx.fillStyle = '#b45309';
   ctx.beginPath();
   ctx.moveTo(-14, -6); ctx.lineTo(-12, -18); ctx.lineTo(-4, -12); ctx.closePath();
   ctx.moveTo(14, -6); ctx.lineTo(12, -18); ctx.lineTo(4, -12); ctx.closePath();
   ctx.fill();
 
-  // 美麗的黑邊「雲狀斑紋（Cloud Rosettes）」
+  // 雲狀斑紋
   ctx.strokeStyle = '#1c1917';
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -658,21 +641,19 @@ export const drawCloudedLeopard = (ctx, x, y, time) => {
   ctx.arc(0, 3, 2, 0, Math.PI * 2);
   ctx.fill();
 
-  // 神秘琥珀眼球
+  // 琥珀豎瞳
   ctx.fillStyle = '#fef08a';
   ctx.beginPath();
   ctx.ellipse(-6, -3, 3, 4, 0, 0, Math.PI * 2);
   ctx.ellipse(6, -3, 3, 4, 0, 0, Math.PI * 2);
   ctx.fill();
-
-  // 豎瞳
   ctx.fillStyle = '#0f172a';
   ctx.beginPath();
   ctx.ellipse(-6, -3, 1, 3.5, 0, 0, Math.PI * 2);
   ctx.ellipse(6, -3, 1, 3.5, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // 輕擺的豹尾巴
+  // 輕擺尾巴
   const tailWave = Math.sin(time * 3) * 6;
   ctx.strokeStyle = '#d97706';
   ctx.lineWidth = 4;
@@ -685,7 +666,7 @@ export const drawCloudedLeopard = (ctx, x, y, time) => {
   ctx.restore();
 };
 
-// ── 9. 繪製彩蛋：熱帶小猴子 (Jungle Monkey) ──
+// ── 7. 繪製彩蛋：熱帶小猴子 (Jungle Monkey) ──
 export const drawJungleMonkey = (ctx, x, y, time, isCheering) => {
   ctx.save();
   ctx.translate(x, y);
@@ -693,13 +674,11 @@ export const drawJungleMonkey = (ctx, x, y, time, isCheering) => {
   const bob = isCheering ? Math.sin(time * 12) * 5 : Math.sin(time * 1.8) * 1.5;
   ctx.translate(0, bob);
 
-  // 棕色猴頭
   ctx.fillStyle = '#78350f';
   ctx.beginPath();
   ctx.arc(0, 0, 18, 0, Math.PI * 2);
   ctx.fill();
 
-  // 圓耳朵
   ctx.beginPath();
   ctx.arc(-18, 0, 7, 0, Math.PI * 2);
   ctx.arc(18, 0, 7, 0, Math.PI * 2);
@@ -710,27 +689,24 @@ export const drawJungleMonkey = (ctx, x, y, time, isCheering) => {
   ctx.arc(18, 0, 4, 0, Math.PI * 2);
   ctx.fill();
 
-  // 桃心臉龐
   ctx.fillStyle = '#fed7aa';
   ctx.beginPath();
   ctx.ellipse(0, 3, 13, 10, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // 小黑眼
   ctx.fillStyle = '#0f172a';
   ctx.beginPath();
   ctx.arc(-5, 0, 2.5, 0, Math.PI * 2);
   ctx.arc(5, 0, 2.5, 0, Math.PI * 2);
   ctx.fill();
 
-  // 微笑
   ctx.strokeStyle = '#78350f';
   ctx.lineWidth = 1.8;
   ctx.beginPath();
   ctx.arc(0, 5, 4, 0.2, Math.PI - 0.2);
   ctx.stroke();
 
-  // 慶祝時拿著金黃香蕉！
+  // 慶祝時高舉金黃香蕉
   if (isCheering) {
     ctx.strokeStyle = '#facc15';
     ctx.lineWidth = 5;
@@ -742,22 +718,19 @@ export const drawJungleMonkey = (ctx, x, y, time, isCheering) => {
   ctx.restore();
 };
 
-// ── 10. 繪製彩蛋：藍色閃蝶 (Blue Morpho Butterfly) ──
+// ── 8. 繪製彩蛋：藍色閃蝶 (Blue Morpho Butterfly) ──
 export const drawButterfly = (ctx, x, y, angle, time) => {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(angle);
 
-  // 快速拍翅物理
   const flap = Math.sin(time * 16);
   ctx.scale(flap, 1);
 
-  // 耀眼電光藍翅膀
   ctx.fillStyle = '#0284c7';
   ctx.strokeStyle = '#0f172a';
   ctx.lineWidth = 1.5;
 
-  // 上翅
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.bezierCurveTo(-14, -14, -18, -6, 0, -2);
@@ -767,7 +740,6 @@ export const drawButterfly = (ctx, x, y, angle, time) => {
   ctx.bezierCurveTo(14, -14, 18, -6, 0, -2);
   ctx.fill(); ctx.stroke();
 
-  // 下翅
   ctx.fillStyle = '#38bdf8';
   ctx.beginPath();
   ctx.moveTo(0, 0);
@@ -778,7 +750,6 @@ export const drawButterfly = (ctx, x, y, angle, time) => {
   ctx.bezierCurveTo(10, 4, 12, 12, 0, 4);
   ctx.fill(); ctx.stroke();
 
-  // 細長黑軀幹
   ctx.fillStyle = '#0f172a';
   ctx.beginPath();
   ctx.ellipse(0, 0, 1.5, 7, 0, 0, Math.PI * 2);

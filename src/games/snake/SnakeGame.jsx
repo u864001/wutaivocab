@@ -38,18 +38,33 @@ export const SnakeGame = ({
   const [survivalTime, setSurvivalTime] = useState(0);
   const [cheerTrigger, setCheerTrigger] = useState(0);
 
-  // 邏輯蛇與字母狀態 (驅動 Canvas)
+  // 60 FPS 平滑軌跡狀態
   const [renderSnake, setRenderSnake] = useState([{ x: 6, y: 6 }, { x: 5, y: 6 }]);
+  const [nextHead, setNextHead] = useState({ x: 7, y: 6 });
+  const [stepProgress, setStepProgress] = useState(0);
   const [renderLetters, setRenderLetters] = useState([]);
   const [isSnakeDead, setIsSnakeDead] = useState(false);
 
+  // Refs 避免閉包舊值
   const snakeRef = useRef([{ x: 6, y: 6 }, { x: 5, y: 6 }]);
+  const nextHeadRef = useRef({ x: 7, y: 6 });
   const dirRef = useRef('RIGHT');
   const lettersRef = useRef([]); // [{ char, x, y, id }]
   const wordQueueRef = useRef([]);
   const startTimeRef = useRef(0);
   const completedWordsRef = useRef(new Map());
   const mistakeIdsRef = useRef(new Set());
+
+  const currentWordRef = useRef(null);
+  const spelledCharsRef = useRef('');
+
+  useEffect(() => {
+    currentWordRef.current = currentWord;
+  }, [currentWord]);
+
+  useEffect(() => {
+    spelledCharsRef.current = spelledChars;
+  }, [spelledChars]);
 
   // 主題切換持久化
   const handleToggleTheme = (newTheme) => {
@@ -86,7 +101,6 @@ export const SnakeGame = ({
     }
   };
 
-  // 監聽全螢幕變化以更新圖標狀態
   useEffect(() => {
     const handleFsChange = () => {
       setIsFullscreen(Boolean(document.fullscreenElement || document.webkitFullscreenElement));
@@ -99,7 +113,6 @@ export const SnakeGame = ({
     };
   }, []);
 
-  // 組件卸載時確保退出全螢幕
   useEffect(() => {
     return () => {
       exitFullscreen();
@@ -123,6 +136,7 @@ export const SnakeGame = ({
     }
     setCurrentWord(next);
     setSpelledChars('');
+    spelledCharsRef.current = '';
     if (next?.en) {
       speakEnglish(next.en);
     }
@@ -146,7 +160,8 @@ export const SnakeGame = ({
       } while (
         tries < 50 &&
         (placed.some(p => p.x === x && p.y === y) ||
-          snakeRef.current.some(s => s.x === x && s.y === y))
+          snakeRef.current.some(s => s.x === x && s.y === y) ||
+          (nextHeadRef.current.x === x && nextHeadRef.current.y === y))
       );
 
       placed.push({ char: ch, x, y, id: `${ch}-${idx}-${Date.now()}` });
@@ -172,14 +187,17 @@ export const SnakeGame = ({
     setScore(0);
     setHearts(5);
     setTimeLeft(60);
+    setStepProgress(0);
     startTimeRef.current = Date.now();
+
     snakeRef.current = [{ x: 6, y: 6 }, { x: 5, y: 6 }];
-    setRenderSnake([...snakeRef.current]);
     dirRef.current = 'RIGHT';
+    nextHeadRef.current = { x: 7, y: 6 };
 
-    // 進入全螢幕沉浸體驗
+    setRenderSnake([...snakeRef.current]);
+    setNextHead({ ...nextHeadRef.current });
+
     enterFullscreen();
-
     loadNextWord();
   };
 
@@ -188,7 +206,7 @@ export const SnakeGame = ({
     onBack();
   };
 
-  // 鍵盤操作監聽
+  // 鍵盤操作監聽 (防反向撞自己)
   useEffect(() => {
     if (!hasStarted || isFinished) return;
 
@@ -204,88 +222,118 @@ export const SnakeGame = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [hasStarted, isFinished]);
 
-  // 遊戲核心邏輯刻度 (Game Tick Interval)
+  // ─── 核心 60 FPS 游動與網格前進步進循環 ───
   useEffect(() => {
     if (!hasStarted || isFinished) return;
 
     const speedMap = {
-      easy: 360,      // 慢速悠閒 (~2.8 格/秒)
-      normal: 270,    // 標準適中 (~3.7 格/秒)
-      survival: 230   // 生存挑戰 (~4.3 格/秒)
+      easy: 360,      // ms/格
+      normal: 270,    // ms/格
+      survival: 230   // ms/格
     };
-    const speed = speedMap[gameMode] || 270;
+    const stepDuration = speedMap[gameMode] || 270;
 
-    const interval = setInterval(() => {
-      // 1. 移動蛇頭
-      const head = { ...snakeRef.current[0] };
-      const dir = dirRef.current;
-      if (dir === 'UP') head.y -= 1;
-      else if (dir === 'DOWN') head.y += 1;
-      else if (dir === 'LEFT') head.x -= 1;
-      else if (dir === 'RIGHT') head.x += 1;
+    let animId;
+    let lastTime = performance.now();
+    let accumulated = 0;
 
-      // 穿牆循環 (Wrap around)
-      if (head.x < 0) head.x = GRID_W - 1;
-      if (head.x >= GRID_W) head.x = 0;
-      if (head.y < 0) head.y = GRID_H - 1;
-      if (head.y >= GRID_H) head.y = 0;
+    // 前進一格網格邏輯：蛇身 100% 沿著蛇頭經過的歷史格子走
+    const advanceOneStep = () => {
+      const currentHead = snakeRef.current[0];
+      const targetHead = { ...(nextHeadRef.current || currentHead) };
 
-      // 撞到自己
-      const hitSelf = snakeRef.current.slice(1).some(segment => segment.x === head.x && segment.y === head.y);
+      // 1. 檢測自撞
+      const hitSelf = snakeRef.current.slice(1).some(seg => seg.x === targetHead.x && seg.y === targetHead.y);
       if (hitSelf) {
         soundEngine.wrong();
-        if (currentWord?.id) mistakeIdsRef.current.add(currentWord.id);
+        if (currentWordRef.current?.id) mistakeIdsRef.current.add(currentWordRef.current.id);
         setHearts(h => {
-          if (h <= 1) {
-            triggerGameOver();
-          }
+          if (h <= 1) triggerGameOver();
           return Math.max(0, h - 1);
         });
       }
 
-      // 檢查是否吃到字母
-      const letterIndex = lettersRef.current.findIndex(l => l.x === head.x && l.y === head.y);
+      // 2. 蛇頭抵達 targetHead
+      snakeRef.current.unshift({ ...targetHead });
+
+      // 3. 檢測是否吃到字母
+      const letterIndex = lettersRef.current.findIndex(l => l.x === targetHead.x && l.y === targetHead.y);
       if (letterIndex !== -1) {
         const eaten = lettersRef.current[letterIndex];
-        const nextChar = currentWord?.en?.toLowerCase()[spelledChars.length];
+        const curW = currentWordRef.current;
+        const curSpelled = spelledCharsRef.current;
+        const nextChar = curW?.en?.toLowerCase()[curSpelled.length];
 
         if (eaten.char === nextChar) {
-          // 吃到正確字母
+          // 吃對字母
           soundEngine.correct();
-          const newSpelled = spelledChars + eaten.char;
+          const newSpelled = curSpelled + eaten.char;
+          spelledCharsRef.current = newSpelled;
           setSpelledChars(newSpelled);
+
           lettersRef.current.splice(letterIndex, 1);
           setRenderLetters([...lettersRef.current]);
 
-          // 完成整字拼字
-          if (newSpelled === currentWord.en.toLowerCase()) {
+          // 完成單字
+          if (newSpelled === curW?.en?.toLowerCase()) {
             soundEngine.combo(3);
             setScore(s => s + 10);
-            setCheerTrigger(c => c + 1); // 觸發動物歡呼！
+            setCheerTrigger(c => c + 1);
             confetti({ particleCount: 36, spread: 60, origin: { y: 0.6 } });
             setTimeout(() => loadNextWord(), 450);
           }
+          // 正確進食：不 pop 尾巴，長度自然加 1
         } else {
           // 吃錯字母
           soundEngine.wrong();
-          if (currentWord?.id) mistakeIdsRef.current.add(currentWord.id);
+          if (curW?.id) mistakeIdsRef.current.add(curW.id);
           setHearts(h => {
-            if (h <= 1) {
-              triggerGameOver();
-            }
+            if (h <= 1) triggerGameOver();
             return Math.max(0, h - 1);
           });
+          snakeRef.current.pop();
         }
       } else {
         snakeRef.current.pop();
       }
 
-      snakeRef.current.unshift(head);
-      setRenderSnake([...snakeRef.current]);
-    }, speed);
+      // 4. 計算下一個目標蛇頭 (nextHead)
+      const curDir = dirRef.current;
+      const newNext = { ...snakeRef.current[0] };
+      if (curDir === 'UP') newNext.y -= 1;
+      else if (curDir === 'DOWN') newNext.y += 1;
+      else if (curDir === 'LEFT') newNext.x -= 1;
+      else if (curDir === 'RIGHT') newNext.x += 1;
 
-    return () => clearInterval(interval);
-  }, [hasStarted, isFinished, spelledChars, currentWord, gameMode]);
+      // 穿牆 Wrap around
+      if (newNext.x < 0) newNext.x = GRID_W - 1;
+      if (newNext.x >= GRID_W) newNext.x = 0;
+      if (newNext.y < 0) newNext.y = GRID_H - 1;
+      if (newNext.y >= GRID_H) newNext.y = 0;
+
+      nextHeadRef.current = newNext;
+      setNextHead(newNext);
+      setRenderSnake([...snakeRef.current]);
+    };
+
+    const loop = (now) => {
+      const dt = Math.min(now - lastTime, 100);
+      lastTime = now;
+
+      accumulated += dt / stepDuration;
+
+      while (accumulated >= 1.0) {
+        accumulated -= 1.0;
+        advanceOneStep();
+      }
+
+      setStepProgress(accumulated);
+      animId = requestAnimationFrame(loop);
+    };
+
+    animId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animId);
+  }, [hasStarted, isFinished, gameMode]);
 
   // 計時器 (一般模式)
   useEffect(() => {
@@ -316,11 +364,10 @@ export const SnakeGame = ({
     setIsFinished(true);
     setSurvivalTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
     soundEngine.win();
-    // 遊戲結算後退出全螢幕
     exitFullscreen();
   };
 
-  // 觸控手勢監聽
+  // 觸控手勢
   const touchStartRef = useRef(null);
 
   const handleTouchStart = (e) => {
@@ -358,7 +405,6 @@ export const SnakeGame = ({
     if (newDir === 'RIGHT' && cur !== 'LEFT') dirRef.current = 'RIGHT';
   };
 
-  // 判斷某字母是否為下一個應吃標的 (簡易模式高亮提示)
   const isNextTargetLetter = (letter) => {
     return (
       gameMode === 'easy' &&
@@ -372,7 +418,6 @@ export const SnakeGame = ({
     return (
       <div className="min-h-[75vh] flex items-center justify-center p-4">
         <GlassCard className="max-w-lg w-full text-center p-8 backdrop-blur-xl border border-white/20 shadow-2xl">
-          {/* 主視覺裝飾圖示 */}
           <div className={`w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-4 animate-bounce shadow-lg ${
             theme === 'indigenous'
               ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30'
@@ -391,7 +436,7 @@ export const SnakeGame = ({
 
           <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
             {theme === 'indigenous'
-              ? '化身排灣與魯凱族守護神獸「百步蛇」，在隨風搖曳的百合花岩壁間遨遊，吃下正確字母累積勇士分數！'
+              ? '化身排灣與魯凱族守護神獸「百步蛇」，在茂密高山灌木與隨風搖曳的純白百合花間穿梭，累積勇士積分！'
               : t.snakeHelp}
           </p>
 
@@ -460,7 +505,7 @@ export const SnakeGame = ({
     );
   }
 
-  // ─── 遊戲結算畫面 (主題風格化) ───
+  // ─── 遊戲結算畫面 ───
   if (isFinished) {
     const isIndigenous = theme === 'indigenous';
 
@@ -471,7 +516,6 @@ export const SnakeGame = ({
             ? 'bg-stone-900/90 border-amber-500/40 text-stone-100'
             : 'bg-emerald-950/20 border-emerald-500/30'
         }`}>
-          {/* 主題冠軍標章 */}
           <div className="relative mx-auto mb-3 flex items-center justify-center">
             {isIndigenous ? (
               <div className="relative">
@@ -490,7 +534,7 @@ export const SnakeGame = ({
           </h2>
 
           <p className="text-xs font-bold text-slate-400 mb-6">
-            {isIndigenous ? '踏過板岩微風百合之境 • ' : ''}
+            {isIndigenous ? '漫步茂密高山灌木百合之境 • ' : ''}
             {t.survivalTime}
             <span className={isIndigenous ? 'text-amber-400 font-black text-lg ml-1' : 'text-emerald-400 font-black text-lg ml-1'}>
               {survivalTime} 秒
@@ -512,7 +556,6 @@ export const SnakeGame = ({
             </p>
           </div>
 
-          {/* 榮譽榜破紀錄留名判定卡與獎狀領取 */}
           <HonorSubmissionCard
             mode={`snake-${gameMode}`}
             book={qualifyingBook}
@@ -652,10 +695,12 @@ export const SnakeGame = ({
         </div>
       )}
 
-      {/* 2D 骨骼動力學平滑畫布 */}
+      {/* 2D 骨骼動力學平滑畫布 (嚴格依照走過路徑補間) */}
       <div className="w-full flex justify-center mb-3">
         <SnakeCanvas2D
           snake={renderSnake}
+          nextHead={nextHead}
+          stepProgress={stepProgress}
           letters={renderLetters}
           theme={theme}
           isDead={isSnakeDead}
@@ -671,7 +716,7 @@ export const SnakeGame = ({
         />
       </div>
 
-      {/* 虛擬十字鍵 (平板 iPad、觸控大屏與手機操控) */}
+      {/* 虛擬十字鍵 */}
       <div className="flex flex-col items-center gap-1.5 mt-1">
         <Button3D
           variant={theme === 'indigenous' ? 'stone' : 'slate'}

@@ -1,10 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import {
-  lerp,
-  lerpAngle,
-  drawLilyBushBorder,
-  drawJungleBushBorder,
-  drawDappledSunlight,
+  drawLushBushBorder,
   drawHundredPaceSnake,
   drawGreenSnake,
   drawLetterPod,
@@ -16,8 +12,10 @@ import {
 
 export const SnakeCanvas2D = ({
   snake = [],
+  nextHead = null,
+  stepProgress = 0, // 0.0 ~ 1.0 (當前步進平滑進度)
   letters = [],
-  theme = 'jungle', // 'jungle' | 'indigenous'
+  theme = 'indigenous', // 'indigenous' | 'jungle'
   isDead = false,
   isNextTargetFn = () => false,
   cheerTrigger = 0,
@@ -31,64 +29,40 @@ export const SnakeCanvas2D = ({
 }) => {
   const canvasRef = useRef(null);
 
-  // 物理平滑骨骼狀態 (Physical Kinematic Spine)
-  const spineRef = useRef([]);
-  const prevSnakeLenRef = useRef(snake.length);
+  // 吞嚥波浪隊列 (Belly Bulge Queue)
   const bulgesRef = useRef([]);
+  const prevSnakeLenRef = useRef(snake.length);
+
+  // 歡呼計時器
   const cheerTimerRef = useRef(0);
   const prevCheerTriggerRef = useRef(cheerTrigger);
 
-  // 彩蛋蝴蝶物理狀態 (Jungle)
+  // 彩蛋蝴蝶物理狀態 (Jungle 主題)
   const butterfliesRef = useRef([
-    { x: 180, y: 150, vx: 0.6, vy: 0.4, angle: 0, changeTimer: 0 },
-    { x: 550, y: 320, vx: -0.5, vy: 0.5, angle: 0, changeTimer: 0 }
+    { x: 220, y: 160, vx: 20, vy: 15, angle: 0, changeTimer: 0 },
+    { x: 560, y: 300, vx: -18, vy: 16, angle: 0, changeTimer: 0 }
   ]);
 
-  // 彩蛋動物位置
-  const monkeyPosRef = useRef({ x: 740, y: 40 });
-  const bearPosRef = useRef({ x: 720, y: 42 });
-  const leopardPosRef = useRef({ x: 90, y: 440 });
+  // 動物彩蛋位置 (探頭於茂密灌木叢邊緣)
+  const monkeyPosRef = useRef({ x: 730, y: 44 });
+  const bearPosRef = useRef({ x: 720, y: 46 });
+  const leopardPosRef = useRef({ x: 100, y: 436 });
 
   // 監聽歡呼觸發
   useEffect(() => {
     if (cheerTrigger > prevCheerTriggerRef.current) {
-      cheerTimerRef.current = 2.0; // 歡呼持續 2 秒
+      cheerTimerRef.current = 2.0;
       prevCheerTriggerRef.current = cheerTrigger;
     }
   }, [cheerTrigger]);
 
-  // 監聽吃到單字增加長度 -> 觸發波浪吞嚥隆起 (Belly Bulge)
+  // 監聽吃到單字增加長度 -> 觸發吞嚥隆起波浪
   useEffect(() => {
     if (snake.length > prevSnakeLenRef.current) {
-      bulgesRef.current.push({ progress: 0, speed: 1.4 });
+      bulgesRef.current.push({ progress: 0, speed: 1.5 });
     }
     prevSnakeLenRef.current = snake.length;
   }, [snake.length]);
-
-  // 初始化或同步平滑骨骼節點數
-  useEffect(() => {
-    const tileW = width / gridW;
-    const tileH = height / gridH;
-
-    if (snake.length === 0) return;
-
-    if (spineRef.current.length === 0) {
-      spineRef.current = snake.map(s => ({
-        x: s.x * tileW + tileW / 2,
-        y: s.y * tileH + tileH / 2
-      }));
-    } else {
-      // 若邏輯蛇長度增加，補足尾部節點
-      while (spineRef.current.length < snake.length) {
-        const last = spineRef.current[spineRef.current.length - 1];
-        spineRef.current.push({ ...last });
-      }
-      // 若縮減，截斷
-      if (spineRef.current.length > snake.length) {
-        spineRef.current = spineRef.current.slice(0, snake.length);
-      }
-    }
-  }, [snake, width, height, gridW, gridH]);
 
   // 主動畫渲染循環 (60 FPS requestAnimationFrame)
   useEffect(() => {
@@ -102,7 +76,7 @@ export const SnakeCanvas2D = ({
     const tileH = height / gridH;
 
     const renderLoop = (now) => {
-      const dt = Math.min((now - lastTime) / 1000, 0.1); // 秒 (防止切換分頁跳幀巨大)
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
       const time = now / 1000;
 
@@ -112,78 +86,47 @@ export const SnakeCanvas2D = ({
       }
       const isCheering = cheerTimerRef.current > 0;
 
-      // 2. 更新吞嚥波浪
+      // 2. 更新吞嚥波浪進度
       bulgesRef.current.forEach(b => {
         b.progress += dt * b.speed;
       });
       bulgesRef.current = bulgesRef.current.filter(b => b.progress <= 1.1);
 
-      // 3. 骨骼運動學 (Kinematic Spine Update)
-      const spine = spineRef.current;
-      if (snake.length > 0 && spine.length === snake.length) {
-        // 目標蛇頭位置
-        const targetHeadX = snake[0].x * tileW + tileW / 2;
-        const targetHeadY = snake[0].y * tileH + tileH / 2;
+      // 3. 嚴格依照經典貪食蛇「走過的路徑」計算身軀各節 60 FPS 平滑座標
+      // 蛇頭：snake[0] -> nextHead (依 stepProgress 插值)
+      // 第 i 節：snake[i] -> snake[i-1] (依 stepProgress 插值)
+      // 確保 100% 走過蛇頭走過的網格折線軌道，完全不發生側向漂移或切角！
+      const alpha = Math.max(0, Math.min(1, stepProgress));
+      const spine = [];
 
-        // 蛇頭平滑插值 (處理穿牆 wrap around 距離修正)
-        let dx = targetHeadX - spine[0].x;
-        let dy = targetHeadY - spine[0].y;
+      if (snake.length > 0) {
+        const headTarget = nextHead || snake[0];
 
-        // 穿牆修正：如果跨越了半個螢幕，代表是穿牆
-        if (Math.abs(dx) > width / 2) {
-          spine[0].x += dx > 0 ? width : -width;
-          dx = targetHeadX - spine[0].x;
-        }
-        if (Math.abs(dy) > height / 2) {
-          spine[0].y += dy > 0 ? height : -height;
-          dy = targetHeadY - spine[0].y;
-        }
+        for (let i = 0; i < snake.length; i++) {
+          const from = snake[i];
+          const to = i === 0 ? headTarget : snake[i - 1];
 
-        // 平滑跟隨蛇頭目標點
-        const headLerpSpeed = isDead ? 0.05 : 12.0;
-        spine[0].x += dx * Math.min(dt * headLerpSpeed, 0.9);
-        spine[0].y += dy * Math.min(dt * headLerpSpeed, 0.9);
+          // 處理穿牆 (Wrap Around) 距離修正：避免跨越畫布時直線扯斷
+          let dx = to.x - from.x;
+          let dy = to.y - from.y;
 
-        // 穿牆包裝回合法畫布區間
-        if (spine[0].x < 0) spine[0].x += width;
-        if (spine[0].x >= width) spine[0].x -= width;
-        if (spine[0].y < 0) spine[0].y += height;
-        if (spine[0].y >= height) spine[0].y -= height;
+          if (dx > gridW / 2) dx -= gridW;
+          if (dx < -gridW / 2) dx += gridW;
+          if (dy > gridH / 2) dy -= gridH;
+          if (dy < -gridH / 2) dy += gridH;
 
-        // 蛇身節點反向動力跟隨約束 (IK segment follower)
-        const SEGMENT_DIST = tileW * 0.72; // 自然節距
-        for (let i = 1; i < spine.length; i++) {
-          const leader = spine[i - 1];
-          const follower = spine[i];
+          // 平滑插值 (Unwrapped coordinate lerp)
+          const interpX = from.x + dx * alpha;
+          const interpY = from.y + dy * alpha;
 
-          let segDx = follower.x - leader.x;
-          let segDy = follower.y - leader.y;
+          // 封裝至合法畫布座標
+          const wrappedX = ((interpX % gridW) + gridW) % gridW;
+          const wrappedY = ((interpY % gridH) + gridH) % gridH;
 
-          // 穿牆修正
-          if (segDx > width / 2) segDx -= width;
-          if (segDx < -width / 2) segDx += width;
-          if (segDy > height / 2) segDy -= height;
-          if (segDy < -height / 2) segDy += height;
-
-          const currentDist = Math.hypot(segDx, segDy);
-          if (currentDist > 0.001) {
-            // 微妙的 S 型身體律動 (Slithering Wave)
-            const waveOffset = Math.sin(time * 9 - i * 0.6) * 1.8;
-            const normX = -segDy / currentDist;
-            const normY = segDx / currentDist;
-
-            // 保持固定節距
-            const targetX = leader.x + (segDx / currentDist) * SEGMENT_DIST + normX * waveOffset;
-            const targetY = leader.y + (segDy / currentDist) * SEGMENT_DIST + normY * waveOffset;
-
-            follower.x = lerp(follower.x, targetX, Math.min(dt * 18, 0.85));
-            follower.y = lerp(follower.y, targetY, Math.min(dt * 18, 0.85));
-
-            if (follower.x < 0) follower.x += width;
-            if (follower.x >= width) follower.x -= width;
-            if (follower.y < 0) follower.y += height;
-            if (follower.y >= height) follower.y -= height;
-          }
+          spine.push({
+            x: wrappedX * tileW + tileW / 2,
+            y: wrappedY * tileH + tileH / 2
+          });
         }
       }
 
@@ -194,72 +137,70 @@ export const SnakeCanvas2D = ({
           bf.changeTimer -= dt;
           if (bf.changeTimer <= 0) {
             bf.changeTimer = 1.5 + Math.random() * 2.0;
-            bf.vx = (Math.random() - 0.5) * 40;
-            bf.vy = (Math.random() - 0.5) * 40;
+            bf.vx = (Math.random() - 0.5) * 45;
+            bf.vy = (Math.random() - 0.5) * 45;
           }
 
-          // 驚嚇逃逸物理：蛇頭太近時急速拍翅飛離！
+          // 驚嚇逃逸物理：蛇頭太近時加速拍翅飛離
           const distToSnake = Math.hypot(bf.x - head.x, bf.y - head.y);
           if (distToSnake < 85) {
             const awayAngle = Math.atan2(bf.y - head.y, bf.x - head.x);
-            bf.vx = Math.cos(awayAngle) * 90;
-            bf.vy = Math.sin(awayAngle) * 90;
+            bf.vx = Math.cos(awayAngle) * 95;
+            bf.vy = Math.sin(awayAngle) * 95;
           }
 
           bf.x += bf.vx * dt;
           bf.y += bf.vy * dt;
 
-          // 保持在畫面邊界內
-          if (bf.x < 40) { bf.x = 40; bf.vx = Math.abs(bf.vx); }
-          if (bf.x > width - 40) { bf.x = width - 40; bf.vx = -Math.abs(bf.vx); }
-          if (bf.y < 40) { bf.y = 40; bf.vy = Math.abs(bf.vy); }
-          if (bf.y > height - 40) { bf.y = height - 40; bf.vy = -Math.abs(bf.vy); }
+          if (bf.x < 45) { bf.x = 45; bf.vx = Math.abs(bf.vx); }
+          if (bf.x > width - 45) { bf.x = width - 45; bf.vx = -Math.abs(bf.vx); }
+          if (bf.y < 45) { bf.y = 45; bf.vy = Math.abs(bf.vy); }
+          if (bf.y > height - 45) { bf.y = height - 45; bf.vy = -Math.abs(bf.vy); }
 
           bf.angle = Math.atan2(bf.vy, bf.vx) + Math.PI / 2;
         });
       }
 
-      // ─── 5. 開始繪製 (Canvas Rendering) ───
+      // ─── 5. 畫布繪製 (Canvas Rendering) ───
       ctx.clearRect(0, 0, width, height);
 
       if (theme === 'indigenous') {
-        // ⛰️ 霧台原民神山背景：深板岩沈穩質感底色
-        ctx.fillStyle = '#1c1917';
+        // ⛰️ 霧台神山：清晨高山草甸與溫潤板岩綠 (提升亮度，告別深黑！)
+        ctx.fillStyle = '#1e3a2f'; // 清新高山青綠底色
         ctx.fillRect(0, 0, width, height);
 
-        // 板岩棋盤格微對比
+        // 溫潤板岩青石棋盤格微對比
         for (let x = 0; x < gridW; x++) {
           for (let y = 0; y < gridH; y++) {
             if ((x + y) % 2 === 0) {
-              ctx.fillStyle = '#262220';
+              ctx.fillStyle = '#26483a';
               ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
             }
           }
         }
 
-        // 神山清晨山嵐微光
+        // 神山高山微光漸層 (清朗晨光)
         const mountainGlow = ctx.createLinearGradient(0, 0, width, height);
-        mountainGlow.addColorStop(0, 'rgba(217, 119, 6, 0.08)');
-        mountainGlow.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
-        mountainGlow.addColorStop(1, 'rgba(180, 83, 9, 0.06)');
+        mountainGlow.addColorStop(0, 'rgba(253, 230, 138, 0.08)');
+        mountainGlow.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
         ctx.fillStyle = mountainGlow;
         ctx.fillRect(0, 0, width, height);
 
-        // 繪製微風吹拂如波浪搖曳的「魯凱純白百合花群」與板岩牆
-        drawLilyBushBorder(ctx, width, height, time, cheerTimerRef.current);
+        // 繪製四周厚實重疊茂密灌木叢，純白百合花自然穿插生長在葉隙中！
+        drawLushBushBorder(ctx, width, height, time, 'indigenous', cheerTimerRef.current);
 
-        // 探頭彩蛋：台灣雲豹 (左下邊界)
+        // 探頭彩蛋：台灣雲豹 (左下邊界灌木後方)
         drawCloudedLeopard(ctx, leopardPosRef.current.x, leopardPosRef.current.y, time);
 
-        // 探頭彩蛋：台灣黑熊 (右上邊界，答對時高舉雙掌歡呼)
+        // 探頭彩蛋：台灣黑熊 (右上邊界灌木後方，答對時高舉雙掌歡呼)
         drawBlackBear(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering);
 
       } else {
-        // 🌿 陽光熱帶雨林背景：生機盎然翠綠
+        // 🌿 陽光熱帶雨林：明朗生機翠綠 (已徹底移除突兀的淡黃色大圓圈！)
         ctx.fillStyle = '#059669';
         ctx.fillRect(0, 0, width, height);
 
-        // 淺草綠棋盤
+        // 淺草綠棋盤格
         for (let x = 0; x < gridW; x++) {
           for (let y = 0; y < gridH; y++) {
             if ((x + y) % 2 === 0) {
@@ -269,11 +210,8 @@ export const SnakeCanvas2D = ({
           }
         }
 
-        // 林間穿透陽光斑駁光暈 (Dappled Sunlight)
-        drawDappledSunlight(ctx, width, height, time);
-
-        // 茂密龜背芋雨林邊界
-        drawJungleBushBorder(ctx, width, height, time);
+        // 四周茂密重疊的熱帶闊葉灌木圍欄
+        drawLushBushBorder(ctx, width, height, time, 'jungle', cheerTimerRef.current);
 
         // 探頭彩蛋：熱帶小猴子 (右上角，答對時舉香蕉歡呼)
         drawJungleMonkey(ctx, monkeyPosRef.current.x, monkeyPosRef.current.y, time, isCheering);
@@ -315,7 +253,7 @@ export const SnakeCanvas2D = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [snake, letters, theme, isDead, isNextTargetFn, width, height, gridW, gridH]);
+  }, [snake, nextHead, stepProgress, letters, theme, isDead, isNextTargetFn, width, height, gridW, gridH]);
 
   return (
     <canvas
@@ -325,7 +263,7 @@ export const SnakeCanvas2D = ({
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
-      className="w-full max-w-4xl h-auto rounded-3xl shadow-2xl border-4 border-slate-800/20 dark:border-white/10 aspect-[5/3] touch-none cursor-pointer select-none transition-all duration-300"
+      className="w-full max-w-4xl h-auto rounded-3xl shadow-2xl border-4 border-emerald-900/40 dark:border-white/10 aspect-[5/3] touch-none cursor-pointer select-none transition-all duration-300"
     />
   );
 };
