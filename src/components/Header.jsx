@@ -2,10 +2,10 @@ import React from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
 import { soundEngine } from '../services/audio';
-import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles } from 'lucide-react';
+import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles, BookOpen } from 'lucide-react';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 
-export const Header = ({ onOpenTeacherHub, onOpenLeaderboard, isOnline = true }) => {
+export const Header = ({ onOpenTeacherHub, onOpenLeaderboard, onOpenPhonics, isOnline = true }) => {
   const { isDark, toggleTheme } = useTheme();
   const { lang, toggleLang, t } = useI18n();
   const [isMuted, setIsMuted] = React.useState(soundEngine.isMuted);
@@ -48,8 +48,20 @@ export const Header = ({ onOpenTeacherHub, onOpenLeaderboard, isOnline = true })
         </div>
       </div>
 
-      {/* 功能控制區：音效、雙語、主題 */}
+      {/* 功能控制區：自然發音板切換、音效、雙語、主題 */}
       <div className="flex items-center gap-2 sm:gap-2.5">
+        {/* 自然發音板快捷切換 */}
+        {onOpenPhonics && (
+          <button
+            onClick={onOpenPhonics}
+            title={lang === 'zh-TW' ? '切換至自然發音拼音與聽力評量系統' : 'Interactive Phonics Board'}
+            className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white flex items-center gap-1.5 text-xs font-black shadow-md shadow-indigo-500/20 active:scale-95 transition-all cursor-pointer"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{lang === 'zh-TW' ? '自然發音板' : 'Phonics'}</span>
+            <span className="sm:hidden">發音板</span>
+          </button>
+        )}
 
         {/* 音效開關 */}
         <button

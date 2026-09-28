@@ -392,6 +392,44 @@ export const Lobby = ({
         </GlassCard>
       </div>
 
+      {/* ── 自然發音拼音板專區 (Phonics Board) ── */}
+      <div>
+        <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 font-heading mb-3 flex items-center gap-2">
+          <BookOpen className="w-5 h-5 text-indigo-500" />
+          自然發音與聽力評量專區
+        </h3>
+        <GlassCard
+          hoverable={true}
+          onClick={() => onNavigate('phonics')}
+          className="relative overflow-hidden group cursor-pointer border-2 border-indigo-200 dark:border-indigo-800/60 bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-pink-50/90 dark:from-indigo-950/50 dark:via-purple-950/40 dark:to-pink-950/50 p-5 sm:p-6"
+        >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all shadow-lg shadow-indigo-500/30 shrink-0">
+                <Volume2 className="w-7 h-7" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="text-xl font-black text-slate-800 dark:text-slate-100 font-heading">
+                    自然發音拼音與聽力評量系統
+                  </h4>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-sm uppercase tracking-wider animate-pulse">
+                    Phonics Board
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mt-1">
+                  8大發音庫・共振峰純發音引擎・CVC/長母音拼音積木・即時聽力評量測驗
+                </p>
+              </div>
+            </div>
+
+            <Button3D variant="purple" size="md" className="shrink-0 w-full sm:w-auto">
+              開啟發音板
+            </Button3D>
+          </div>
+        </GlassCard>
+      </div>
+
       {/* ── 單人冒險挑戰便當網格 (4 Columns) ── */}
       <div>
         <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 font-heading mb-3 flex items-center gap-2">

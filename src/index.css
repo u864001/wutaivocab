@@ -163,5 +163,58 @@ vercel-live-feedback,
   visibility: hidden !important;
 }
 
+/* ── 🔤 自然發音拼音板 (Phonics Board) 專屬識字字型與觸感擬物樣式 ── */
+.font-phonics {
+  font-family: 'Andika', 'Comic Neue', 'Fredoka', sans-serif !important;
+}
+
+.font-ui {
+  font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.85); opacity: 0; }
+  70% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(99, 102, 241, 0); }
+}
+
+@keyframes bounce-small {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-pop {
+  animation: pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+.animate-bounce-small {
+  animation: bounce-small 2s ease-in-out infinite;
+}
+
+/* 磁吸拼音卡 3D 觸感擬物陰影反饋 */
+.card-tactile {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-tactile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px -2px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.card-tactile:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
 
 

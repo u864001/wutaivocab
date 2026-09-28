@@ -9,6 +9,7 @@ import { MeteorGame } from './games/meteor/MeteorGame';
 import { SnakeGame } from './games/snake/SnakeGame';
 import { MemoryGameSingle } from './games/memory/MemoryGameSingle';
 import { BattleGame } from './games/battle/BattleGame';
+import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { fetchWordsFromDb } from './services/supabase';
 import { soundEngine } from './services/audio';
 
@@ -101,15 +102,36 @@ export function App() {
   useEffect(() => {
     loadWords();
 
-    // 支援 iPad 相機掃描 QR Code (?join=1001) 即刻自動導向擂台房間
+    // 支援 /phonics 路由、?view=phonics 與 iPad 掃描 QR Code (?join=1001) 即刻導向
     try {
+      const path = window.location.pathname.toLowerCase();
       const urlParams = new URLSearchParams(window.location.search);
-      const joinParam = urlParams.get('join');
-      if (joinParam) {
-        setAutoJoinCode(joinParam);
-        setCurrentView('battle');
+      if (path === '/phonics' || path.endsWith('/phonics') || urlParams.get('view') === 'phonics') {
+        setCurrentView('phonics');
+      } else {
+        const joinParam = urlParams.get('join');
+        if (joinParam) {
+          setAutoJoinCode(joinParam);
+          setCurrentView('battle');
+        }
       }
     } catch (e) {}
+  }, []);
+
+  // 監聽瀏覽器上一頁/下一頁返回事件 (POPSTATE)
+  useEffect(() => {
+    const handlePopState = () => {
+      try {
+        const path = window.location.pathname.toLowerCase();
+        if (path === '/phonics' || path.endsWith('/phonics')) {
+          setCurrentView('phonics');
+        } else {
+          setCurrentView('lobby');
+        }
+      } catch (e) {}
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   // 榮譽榜資格判斷：單冊選滿 2 個單元 (或 20 字)，且題數為 20 題或全部
@@ -134,6 +156,18 @@ export function App() {
     soundEngine.init();
     setCurrentView(view);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    try {
+      if (view === 'phonics') {
+        if (window.location.pathname !== '/phonics') {
+          window.history.pushState({ view: 'phonics' }, '', '/phonics');
+        }
+      } else {
+        if (window.location.pathname === '/phonics') {
+          window.history.pushState({ view }, '', '/');
+        }
+      }
+    } catch (e) {}
   };
 
   // ── 全域管理者快捷鍵 (Ctrl+Shift+A 或 Ctrl+Alt+T) 與 Console 備援通道 ──
@@ -171,12 +205,15 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-300">
-      {/* 全域導覽列 */}
-      <Header
-        onOpenTeacherHub={() => handleNavigate('teacher-hub')}
-        onOpenLeaderboard={() => handleNavigate('leaderboard')}
-        isOnline={isOnline}
-      />
+      {/* 全域導覽列 (自然發音板具有獨立專屬頂部導覽列，進入時隱藏主導覽列以避免雙重 Header) */}
+      {currentView !== 'phonics' && (
+        <Header
+          onOpenTeacherHub={() => handleNavigate('teacher-hub')}
+          onOpenLeaderboard={() => handleNavigate('leaderboard')}
+          onOpenPhonics={() => handleNavigate('phonics')}
+          isOnline={isOnline}
+        />
+      )}
 
       {/* 畫面路由視圖切換 (含全域安全防護熔斷) */}
       <main className="flex-1 flex flex-col">
@@ -267,6 +304,12 @@ export function App() {
                 setAutoJoinCode(null);
                 handleNavigate('lobby');
               }}
+            />
+          )}
+
+          {currentView === 'phonics' && (
+            <PhonicsBoard
+              onBackToLobby={() => handleNavigate('lobby')}
             />
           )}
         </ErrorBoundary>
