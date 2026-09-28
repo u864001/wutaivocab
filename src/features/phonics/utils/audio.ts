@@ -108,71 +108,192 @@ export function playErrorBonk() {
 }
 
 // ============================================================================
-// Tier 1: Real Native Human Studio IPA Audio Cache (/audio/phonics/[id].mp3)
+// Tier 1: Real Native Human Studio Audio Cache (/audio/phonics/[id].mp3) & Blends
 // ============================================================================
 const phonemeAudioBufferCache: Record<string, AudioBuffer | null> = {};
 
+// Component definitions for Consonant Blends (Beginning & Ending Blends)
+const BLEND_COMPONENTS: Record<string, [string, string]> = {
+  // Beginning Blends
+  'bl': ['b', 'l'],
+  'cl': ['ck', 'l'],
+  'fl': ['f', 'l'],
+  'gl': ['g', 'l'],
+  'pl': ['p', 'l'],
+  'sl': ['s', 'l'],
+  'br': ['b', 'r'],
+  'cr': ['ck', 'r'],
+  'dr': ['d', 'r'],
+  'fr': ['f', 'r'],
+  'gr': ['g', 'r'],
+  'pr': ['p', 'r'],
+  'tr': ['t', 'r'],
+  'sk': ['s', 'ck'],
+  'sm': ['s', 'm'],
+  'sn': ['s', 'n'],
+  'sp': ['s', 'p'],
+  'st': ['s', 't'],
+  'sw': ['s', 'w'],
+
+  // Ending Blends
+  'nd': ['n', 'd'],
+  'nk': ['ng', 'ck'],
+  'nt': ['n', 't'],
+  'mp': ['m', 'p'],
+  'ld': ['l', 'd'],
+  'lk': ['l', 'ck'],
+  'ft': ['f', 't'],
+};
+
+async function getOrLoadBaseBuffer(ctx: AudioContext, soundName: string): Promise<AudioBuffer | null> {
+  if (phonemeAudioBufferCache[soundName]) {
+    return phonemeAudioBufferCache[soundName];
+  }
+  if (phonemeAudioBufferCache[soundName] === null) {
+    return null;
+  }
+  try {
+    const res = await fetch(`/audio/phonics/${soundName}.mp3`);
+    if (!res.ok) {
+      phonemeAudioBufferCache[soundName] = null;
+      return null;
+    }
+    const ab = await res.arrayBuffer();
+    const buffer = await ctx.decodeAudioData(ab);
+    phonemeAudioBufferCache[soundName] = buffer;
+    return buffer;
+  } catch {
+    phonemeAudioBufferCache[soundName] = null;
+    return null;
+  }
+}
+
+function playBuffer(ctx: AudioContext, buffer: AudioBuffer): Promise<boolean> {
+  return new Promise((resolve) => {
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.95, ctx.currentTime);
+    source.connect(gain);
+    gain.connect(ctx.destination);
+
+    let finished = false;
+    const done = () => {
+      if (!finished) {
+        finished = true;
+        resolve(true);
+      }
+    };
+    source.onended = done;
+    setTimeout(done, Math.ceil(buffer.duration * 1000) + 60);
+    try {
+      source.start(0);
+    } catch {
+      done();
+    }
+  });
+}
+
+function createBlendedAudioBuffer(
+  ctx: AudioContext,
+  buf1: AudioBuffer,
+  buf2: AudioBuffer,
+  firstPartDurationSec: number
+): AudioBuffer {
+  const sampleRate = ctx.sampleRate;
+  const numSamples1 = Math.min(buf1.length, Math.max(1, Math.floor(sampleRate * firstPartDurationSec)));
+  const crossfadeSamples = Math.min(Math.floor(sampleRate * 0.015), Math.floor(numSamples1 / 2));
+  const numSamples2 = Math.min(buf2.length, Math.floor(sampleRate * 0.35));
+
+  const totalLength = numSamples1 - crossfadeSamples + numSamples2;
+  const blendedBuffer = ctx.createBuffer(1, Math.max(1, totalLength), sampleRate);
+  const out = blendedBuffer.getChannelData(0);
+
+  const d1 = buf1.getChannelData(0);
+  const d2 = buf2.getChannelData(0);
+
+  // 1. First sound prior to crossfade
+  for (let i = 0; i < numSamples1 - crossfadeSamples; i++) {
+    out[i] = d1[i];
+  }
+
+  // 2. Crossfade window
+  const crossfadeStart = numSamples1 - crossfadeSamples;
+  for (let i = 0; i < crossfadeSamples; i++) {
+    const ratio = i / crossfadeSamples;
+    const s1 = d1[crossfadeStart + i] || 0;
+    const s2 = d2[i] || 0;
+    out[crossfadeStart + i] = s1 * (1 - ratio) + s2 * ratio;
+  }
+
+  // 3. Second sound following crossfade
+  for (let i = crossfadeSamples; i < numSamples2; i++) {
+    const targetIdx = crossfadeStart + i;
+    if (targetIdx < totalLength) {
+      out[targetIdx] = d2[i];
+    }
+  }
+
+  return blendedBuffer;
+}
+
 /**
- * Attempts to play studio-recorded native human IPA audio from /audio/phonics/
- * Tries card.id first (e.g. "cd_ch", "v_a", "c_b"), then cleaned grapheme.
- * Returns true if the file was found, decoded, and played with 0ms latency.
+ * Attempts to play studio-recorded native human pure audio from /audio/phonics/
+ * or dynamically synthesize authentic consonant blends (e.g. bl, cl, sp, st, nd).
+ * Returns true if played with 0ms latency.
  */
 export async function playPhonemeAudioFile(card: PhonicsCard): Promise<boolean> {
   const ctx = getAudioContext();
   if (!ctx) return false;
 
+  const cleanGrapheme = card.grapheme.toLowerCase().replace(/[^a-z]/g, '');
+
+  // Step 1: Check if card is a known consonant blend (Beginning or Ending Blend)
+  const blendPair = BLEND_COMPONENTS[cleanGrapheme];
+  if (blendPair) {
+    const [c1, c2] = blendPair;
+    const blendCacheKey = `blend_${cleanGrapheme}`;
+    if (phonemeAudioBufferCache[blendCacheKey]) {
+      return playBuffer(ctx, phonemeAudioBufferCache[blendCacheKey]!);
+    }
+
+    const [buf1, buf2] = await Promise.all([
+      getOrLoadBaseBuffer(ctx, c1),
+      getOrLoadBaseBuffer(ctx, c2),
+    ]);
+
+    if (buf1 && buf2) {
+      let firstDuration = 0.08;
+      if (c1 === 's' || c1 === 'f') {
+        firstDuration = 0.12;
+      } else if (c1 === 'm' || c1 === 'n' || c1 === 'ng' || c1 === 'l') {
+        firstDuration = 0.13;
+      }
+
+      const blended = createBlendedAudioBuffer(ctx, buf1, buf2, firstDuration);
+      phonemeAudioBufferCache[blendCacheKey] = blended;
+      return playBuffer(ctx, blended);
+    }
+  }
+
+  // Step 2: Direct static file lookup (card.id or grapheme)
   const candidateKeys = [
     card.id,
-    card.grapheme.replace(/[^a-zA-Z0-9_]/g, ''),
+    cleanGrapheme,
   ];
 
   for (const key of candidateKeys) {
     if (phonemeAudioBufferCache[key] === null) {
-      continue; // previously tried and 404
+      continue;
     }
 
     let buffer = phonemeAudioBufferCache[key];
     if (!buffer) {
-      try {
-        const url = `/audio/phonics/${key}.mp3`;
-        const res = await fetch(url);
-        if (!res.ok) {
-          phonemeAudioBufferCache[key] = null;
-          continue;
-        }
-        const ab = await res.arrayBuffer();
-        buffer = await ctx.decodeAudioData(ab);
-        phonemeAudioBufferCache[key] = buffer;
-      } catch {
-        phonemeAudioBufferCache[key] = null;
-        continue;
-      }
+      buffer = await getOrLoadBaseBuffer(ctx, key);
     }
 
     if (buffer) {
-      return new Promise((resolve) => {
-        const source = ctx.createBufferSource();
-        source.buffer = buffer;
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0.95, ctx.currentTime);
-        source.connect(gain);
-        gain.connect(ctx.destination);
-
-        let finished = false;
-        const done = () => {
-          if (!finished) {
-            finished = true;
-            resolve(true);
-          }
-        };
-        source.onended = done;
-        setTimeout(done, Math.ceil(buffer.duration * 1000) + 60);
-        try {
-          source.start(0);
-        } catch {
-          done();
-        }
-      });
+      return playBuffer(ctx, buffer);
     }
   }
 
@@ -198,31 +319,26 @@ interface FormantSpec {
 }
 
 const SHORT_VOWEL_FORMANTS: Record<'a' | 'e' | 'i' | 'o' | 'u', FormantSpec> = {
-  // /æ/ Butterfly A (apple, cat, bat): High F1 (open jaw), high F2 (fronted tongue)
   'a': {
     f1: 850, f2: 1720, f3: 2650, f4: 3500,
     bw1: 80, bw2: 110, bw3: 140, bw4: 200,
     g1: 1.0, g2: 0.60, g3: 0.28, g4: 0.10,
   },
-  // /ɛ/ Short E (egg, bed, red): Mid F1, front high F2
   'e': {
     f1: 540, f2: 1850, f3: 2600, f4: 3600,
     bw1: 70, bw2: 90,  bw3: 130, bw4: 200,
     g1: 1.0, g2: 0.50, g3: 0.22, g4: 0.08,
   },
-  // /ɪ/ Short I (igloo, in, fish): Low F1, high front F2
   'i': {
     f1: 390, f2: 2150, f3: 2750, f4: 3650,
     bw1: 60, bw2: 85,  bw3: 125, bw4: 200,
     g1: 1.0, g2: 0.45, g3: 0.20, g4: 0.08,
   },
-  // /ɒ/ Short O (octopus, pot, top): Open back vowel
   'o': {
     f1: 600, f2: 960,  f3: 2450, f4: 3400,
     bw1: 70, bw2: 90,  bw3: 140, bw4: 200,
     g1: 1.0, g2: 0.65, g3: 0.18, g4: 0.06,
   },
-  // /ʌ/ Short U (umbrella, cup, bus): Open-mid central vowel
   'u': {
     f1: 650, f2: 1220, f3: 2550, f4: 3500,
     bw1: 70, bw2: 90,  bw3: 130, bw4: 200,
@@ -347,7 +463,7 @@ export function playVowelFormant(vowel: 'a' | 'e' | 'i' | 'o' | 'u'): Promise<vo
   });
 }
 
-// Phonetic symbol hints for SpeechSynthesis (NEVER use full words like 'chair' or 'blue' in phoneme mode)
+// Phonetic symbol hints for SpeechSynthesis (pure sounds only)
 const PHONEME_SPEECH_MAP: Record<string, string> = {
   // Silent e / Split digraphs (alphabet long sounds)
   'a_e': 'A',
@@ -443,11 +559,11 @@ export type PronunciationMode = 'phoneme' | 'word';
 
 /**
  * Speaks a phonics card.
- * - Mode 'word': Speaks the anchor word (e.g. apple, chair, ship).
+ * - Mode 'word': Speaks the anchor word (e.g. apple, chair, ship, blue).
  * - Mode 'phoneme':
- *   1. Plays studio-recorded native human IPA audio from /audio/phonics/ (0ms latency, pure KK sound).
+ *   1. Plays studio-recorded native human audio or blended consonant cluster from /audio/phonics/ (0ms latency, pure KK sound).
  *   2. If not found and it's a short vowel: falls back to Web Audio acoustic formant synthesis (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/).
- *   3. If other card: fallback to clean speech synthesis without speaking unrelated words.
+ *   3. If other card: fallback to clean speech synthesis without spelling letters.
  */
 export async function speakPhoneme(card: PhonicsCard, mode: PronunciationMode = 'phoneme'): Promise<void> {
   const g = card.grapheme.toLowerCase();
@@ -459,9 +575,9 @@ export async function speakPhoneme(card: PhonicsCard, mode: PronunciationMode = 
     return;
   }
 
-  // --- In 'phoneme' mode (pure KK phonetic symbol / letter sound) ---
+  // --- In 'phoneme' mode (pure KK phonetic symbol / blend / letter sound) ---
 
-  // Tier 1: Try playing authentic native speaker studio IPA recording
+  // Tier 1: Try playing authentic native speaker studio recording or blended consonant cluster
   const playedRealAudio = await playPhonemeAudioFile(card);
   if (playedRealAudio) {
     return;
