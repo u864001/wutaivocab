@@ -1,12 +1,14 @@
 import type { PhonicsCard } from '../types/phonics';
 
-// Audio Context singleton for pure Web Audio API sound synthesis
+// Audio Context singleton for pure Web Audio API sound synthesis & audio buffer playback
 let audioCtx: AudioContext | null = null;
 
 export function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
   if (!audioCtx) {
-    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (AudioContextClass) {
       audioCtx = new AudioContextClass();
     }
@@ -105,14 +107,81 @@ export function playErrorBonk() {
   osc.stop(ctx.currentTime + 0.25);
 }
 
+// ============================================================================
+// Tier 1: Real Native Human Studio IPA Audio Cache (/audio/phonics/[id].mp3)
+// ============================================================================
+const phonemeAudioBufferCache: Record<string, AudioBuffer | null> = {};
+
 /**
- * Standard Acoustic Formant Model for American English Short Vowels:
- * /æ/ (ă - butterfly a, cat, apple)
- * /ɛ/ (ĕ - bed, egg)
- * /ɪ/ (ĭ - igloo, in, it)
- * /ɒ/ (ŏ - octopus, on, top)
- * /ʌ/ (ŭ - umbrella, up, cup)
+ * Attempts to play studio-recorded native human IPA audio from /audio/phonics/
+ * Tries card.id first (e.g. "cd_ch", "v_a", "c_b"), then cleaned grapheme.
+ * Returns true if the file was found, decoded, and played with 0ms latency.
  */
+export async function playPhonemeAudioFile(card: PhonicsCard): Promise<boolean> {
+  const ctx = getAudioContext();
+  if (!ctx) return false;
+
+  const candidateKeys = [
+    card.id,
+    card.grapheme.replace(/[^a-zA-Z0-9_]/g, ''),
+  ];
+
+  for (const key of candidateKeys) {
+    if (phonemeAudioBufferCache[key] === null) {
+      continue; // previously tried and 404
+    }
+
+    let buffer = phonemeAudioBufferCache[key];
+    if (!buffer) {
+      try {
+        const url = `/audio/phonics/${key}.mp3`;
+        const res = await fetch(url);
+        if (!res.ok) {
+          phonemeAudioBufferCache[key] = null;
+          continue;
+        }
+        const ab = await res.arrayBuffer();
+        buffer = await ctx.decodeAudioData(ab);
+        phonemeAudioBufferCache[key] = buffer;
+      } catch {
+        phonemeAudioBufferCache[key] = null;
+        continue;
+      }
+    }
+
+    if (buffer) {
+      return new Promise((resolve) => {
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.95, ctx.currentTime);
+        source.connect(gain);
+        gain.connect(ctx.destination);
+
+        let finished = false;
+        const done = () => {
+          if (!finished) {
+            finished = true;
+            resolve(true);
+          }
+        };
+        source.onended = done;
+        setTimeout(done, Math.ceil(buffer.duration * 1000) + 60);
+        try {
+          source.start(0);
+        } catch {
+          done();
+        }
+      });
+    }
+  }
+
+  return false;
+}
+
+// ============================================================================
+// Tier 2: Pure Acoustic Formant Model for American Short Vowels (Fallback)
+// ============================================================================
 interface FormantSpec {
   f1: number;
   f2: number;
@@ -141,7 +210,7 @@ const SHORT_VOWEL_FORMANTS: Record<'a' | 'e' | 'i' | 'o' | 'u', FormantSpec> = {
     bw1: 70, bw2: 90,  bw3: 130, bw4: 200,
     g1: 1.0, g2: 0.50, g3: 0.22, g4: 0.08,
   },
-  // /ɪ/ Short I (igloo, in, fish): Low F1, high front F2 (lax front vowel, never spelled "ih")
+  // /ɪ/ Short I (igloo, in, fish): Low F1, high front F2
   'i': {
     f1: 390, f2: 2150, f3: 2750, f4: 3650,
     bw1: 60, bw2: 85,  bw3: 125, bw4: 200,
@@ -161,13 +230,12 @@ const SHORT_VOWEL_FORMANTS: Record<'a' | 'e' | 'i' | 'o' | 'u', FormantSpec> = {
   },
 };
 
-// In-memory pre-rendered AudioBuffer cache for 0ms latency playback
 const vowelBufferCache: Partial<Record<'a' | 'e' | 'i' | 'o' | 'u', AudioBuffer>> = {};
 
 function createVowelBuffer(ctx: AudioContext, vowel: 'a' | 'e' | 'i' | 'o' | 'u'): AudioBuffer {
   const spec = SHORT_VOWEL_FORMANTS[vowel];
   const sampleRate = ctx.sampleRate || 44100;
-  const duration = 0.36; // 360ms optimal human speech modeling duration
+  const duration = 0.36;
   const numSamples = Math.floor(sampleRate * duration);
   const buffer = ctx.createBuffer(1, numSamples, sampleRate);
   const channelData = buffer.getChannelData(0);
@@ -199,12 +267,10 @@ function createVowelBuffer(ctx: AudioContext, vowel: 'a' | 'e' | 'i' | 'o' | 'u'
 
   for (let n = 0; n < numSamples; n++) {
     const t = n / sampleRate;
-    // Human inflection: subtle downward pitch contour from 208Hz to 182Hz
     const f0 = 208 - 26 * (t / duration) + 1.8 * Math.sin(2 * Math.PI * 5 * t);
     phase += f0 / sampleRate;
     if (phase >= 1.0) phase -= 1.0;
 
-    // Liljencrants-Fant glottal flow model
     let glottal = 0;
     if (phase < 0.68) {
       glottal = Math.sin((Math.PI * phase) / 0.68);
@@ -212,7 +278,6 @@ function createVowelBuffer(ctx: AudioContext, vowel: 'a' | 'e' | 'i' | 'o' | 'u'
       glottal = -Math.exp(-12 * (phase - 0.68)) * 0.35;
     }
 
-    // Envelope: 20ms soft attack, steady body, 70ms natural exponential release
     let env = 1.0;
     if (t < 0.02) {
       env = t / 0.02;
@@ -221,7 +286,6 @@ function createVowelBuffer(ctx: AudioContext, vowel: 'a' | 'e' | 'i' | 'o' | 'u'
       env = Math.max(0, rel * rel);
     }
 
-    // Subtle breathiness / vocal cord shimmer
     const noise = (Math.random() * 2 - 1) * 0.012;
     const excitation = (glottal + noise) * env;
 
@@ -236,7 +300,6 @@ function createVowelBuffer(ctx: AudioContext, vowel: 'a' | 'e' | 'i' | 'o' | 'u'
     if (absVal > maxAbs) maxAbs = absVal;
   }
 
-  // Peak normalization to 0.85 (crystal-clear, loud, no clipping)
   const scale = maxAbs > 0 ? 0.85 / maxAbs : 1.0;
   for (let n = 0; n < numSamples; n++) {
     channelData[n] = Math.max(-1, Math.min(1, rawSignal[n] * scale));
@@ -245,10 +308,6 @@ function createVowelBuffer(ctx: AudioContext, vowel: 'a' | 'e' | 'i' | 'o' | 'u'
   return buffer;
 }
 
-/**
- * Pure Vowel Formant Synthesizer (Acoustic Phonetics Model)
- * Generates natural isolated human vowel sounds (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/) with 0ms latency.
- */
 export function playVowelFormant(vowel: 'a' | 'e' | 'i' | 'o' | 'u'): Promise<void> {
   return new Promise((resolve) => {
     const ctx = getAudioContext();
@@ -288,93 +347,54 @@ export function playVowelFormant(vowel: 'a' | 'e' | 'i' | 'o' | 'u'): Promise<vo
   });
 }
 
-// Phoneme pronunciation hint mapping for Web Speech API
+// Phonetic symbol hints for SpeechSynthesis (NEVER use full words like 'chair' or 'blue' in phoneme mode)
 const PHONEME_SPEECH_MAP: Record<string, string> = {
-  // Silent e / Split digraphs
-  'a_e': 'ay',
-  'e_e': 'ee',
-  'i_e': 'eye',
-  'o_e': 'oh',
-  'u_e': 'you',
-
-  // Consonant Digraphs
-  'ch': 'chair',
-  'sh': 'ship',
-  'th(voiced)': 'the',
-  'th(unvoiced)': 'thumb',
-  'wh': 'whale',
-  'ph': 'phone',
-  'ck': 'duck',
-  'ng': 'ring',
-  'qu': 'queen',
-
-  // Blends
-  'bl': 'blue',
-  'cl': 'clap',
-  'fl': 'flag',
-  'gl': 'glad',
-  'pl': 'play',
-  'sl': 'slow',
-  'br': 'brown',
-  'cr': 'crab',
-  'dr': 'drum',
-  'fr': 'frog',
-  'gr': 'green',
-  'pr': 'print',
-  'tr': 'tree',
-  'sk': 'skip',
-  'sm': 'smile',
-  'sn': 'snake',
-  'sp': 'spot',
-  'st': 'stop',
-  'sw': 'swim',
-  'nd': 'hand',
-  'nk': 'pink',
-  'nt': 'tent',
-  'mp': 'lamp',
-  'ld': 'cold',
-  'lk': 'milk',
-  'ft': 'gift',
+  // Silent e / Split digraphs (alphabet long sounds)
+  'a_e': 'A',
+  'e_e': 'E',
+  'i_e': 'I',
+  'o_e': 'O',
+  'u_e': 'U',
 
   // Vowel Teams
-  'ai': 'rain',
-  'ay': 'day',
-  'ee': 'see',
-  'ea': 'tea',
-  'igh': 'night',
-  'oa': 'boat',
-  'ow': 'snow',
-  'oi': 'coin',
-  'oy': 'boy',
-  'ou': 'cloud',
-  'oo': 'moon',
-  'au': 'autumn',
-  'aw': 'draw',
-  'ew': 'new',
+  'ai': 'A',
+  'ay': 'A',
+  'ee': 'E',
+  'ea': 'E',
+  'igh': 'I',
+  'oa': 'O',
+  'ow': 'ow',
+  'oi': 'oy',
+  'oy': 'oy',
+  'ou': 'ow',
+  'oo': 'oo',
+  'au': 'aw',
+  'aw': 'aw',
+  'ew': 'U',
 
   // Bossy R
-  'ar': 'car',
-  'er': 'her',
-  'ir': 'bird',
-  'or': 'fork',
-  'ur': 'nurse',
-  'air': 'chair',
-  'are': 'care',
-  'ear': 'bear',
-  'ore': 'more',
+  'ar': 'are',
+  'er': 'er',
+  'ir': 'er',
+  'or': 'or',
+  'ur': 'er',
+  'air': 'air',
+  'are': 'air',
+  'ear': 'ear',
+  'ore': 'or',
 
   // Silent Letters & Rules
-  'kn': 'knee',
-  'wr': 'write',
-  'gn': 'sign',
-  'mb': 'lamb',
-  'tch': 'watch',
-  'dge': 'bridge',
-  'c(s)': 'city',
-  'g(j)': 'gem',
+  'kn': 'n',
+  'wr': 'r',
+  'gn': 'n',
+  'mb': 'm',
+  'tch': 'ch',
+  'dge': 'j',
+  'c(s)': 's',
+  'g(j)': 'j',
 };
 
-// Anchor words for short vowels so teachers/students can hear clear standard words
+// Anchor words for short vowels when explicitly in 'word' mode
 const VOWEL_ANCHORS: Record<string, string> = {
   'a': 'apple',
   'e': 'egg',
@@ -423,47 +443,49 @@ export type PronunciationMode = 'phoneme' | 'word';
 
 /**
  * Speaks a phonics card.
- * For the 5 short vowels (a, e, i, o, u):
- * - If mode is 'phoneme': uses pure Web Audio formant model with 0ms delay (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/).
- * - If mode is 'word': speaks standard anchor word (apple, egg, igloo, octopus, umbrella).
+ * - Mode 'word': Speaks the anchor word (e.g. apple, chair, ship).
+ * - Mode 'phoneme':
+ *   1. Plays studio-recorded native human IPA audio from /audio/phonics/ (0ms latency, pure KK sound).
+ *   2. If not found and it's a short vowel: falls back to Web Audio acoustic formant synthesis (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/).
+ *   3. If other card: fallback to clean speech synthesis without speaking unrelated words.
  */
 export async function speakPhoneme(card: PhonicsCard, mode: PronunciationMode = 'phoneme'): Promise<void> {
   const g = card.grapheme.toLowerCase();
 
-  // If it's one of the 5 basic short vowels
-  if (card.category === 'short_vowels' && (g === 'a' || g === 'e' || g === 'i' || g === 'o' || g === 'u')) {
-    if (mode === 'word') {
-      const anchor = VOWEL_ANCHORS[g] || card.sampleWord || g;
-      await speakWord(anchor, 0.85);
-      return;
-    }
+  // In 'word' mode: speak standard anchor word
+  if (mode === 'word') {
+    const word = VOWEL_ANCHORS[g] || card.sampleWord || g;
+    await speakWord(word, 0.85);
+    return;
+  }
 
-    // In 'phoneme' mode:
-    // Pure, instantaneous 0ms acoustic formant synthesis (/æ/, /ɛ/, /ɪ/, /ɒ/, /ʌ/)
-    // Never calls SpeechSynthesis, completely eliminating delayed TTS and "eye-aitch" pronunciation bugs!
+  // --- In 'phoneme' mode (pure KK phonetic symbol / letter sound) ---
+
+  // Tier 1: Try playing authentic native speaker studio IPA recording
+  const playedRealAudio = await playPhonemeAudioFile(card);
+  if (playedRealAudio) {
+    return;
+  }
+
+  // Tier 2: For 5 basic short vowels, fallback to pure Web Audio acoustic formant synthesis (0ms)
+  if (card.category === 'short_vowels' && (g === 'a' || g === 'e' || g === 'i' || g === 'o' || g === 'u')) {
     await playVowelFormant(g as 'a' | 'e' | 'i' | 'o' | 'u');
     return;
   }
 
-  // In word mode for other cards, speak the sample word if available
-  if (mode === 'word' && card.sampleWord) {
-    await speakWord(card.sampleWord, 0.85);
-    return;
-  }
-
-  // Other phonemes via Web Speech API
+  // Tier 3: Other cards via Web Speech API
   return new Promise((resolve) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) {
       resolve();
       return;
     }
 
-    // Only cancel if speech is actively speaking to prevent resetting the browser audio pipeline
     if (window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
     }
 
-    const utteranceText = PHONEME_SPEECH_MAP[card.grapheme] || card.grapheme.replace(/[^a-zA-Z]/g, '');
+    const utteranceText =
+      PHONEME_SPEECH_MAP[card.grapheme] || card.grapheme.replace(/[^a-zA-Z]/g, '');
     const utterance = new SpeechSynthesisUtterance(utteranceText);
     utterance.lang = 'en-US';
     utterance.rate = 0.82;
@@ -482,7 +504,7 @@ export async function speakPhoneme(card: PhonicsCard, mode: PronunciationMode = 
 
     utterance.onend = finish;
     utterance.onerror = finish;
-    setTimeout(finish, 1000); // Safety timeout
+    setTimeout(finish, 1000);
 
     window.speechSynthesis.speak(utterance);
   });
@@ -518,7 +540,7 @@ export function speakWord(word: string, rate: number = 0.85): Promise<void> {
 
     utterance.onend = finish;
     utterance.onerror = finish;
-    setTimeout(finish, 1500); // Safety timeout
+    setTimeout(finish, 1500);
 
     window.speechSynthesis.speak(utterance);
   });
