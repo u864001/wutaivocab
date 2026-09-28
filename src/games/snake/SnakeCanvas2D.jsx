@@ -7,7 +7,8 @@ import {
   drawBlackBear,
   drawCloudedLeopard,
   drawJungleMonkey,
-  drawButterfly
+  drawButterfly,
+  drawMountainButterfly
 } from './snakeJungleTheme';
 
 export const SnakeCanvas2D = ({
@@ -131,8 +132,8 @@ export const SnakeCanvas2D = ({
         }
       }
 
-      // 4. 更新蝴蝶物理 (Jungle 主題)
-      if (theme === 'jungle' && spine.length > 0) {
+      // 4. 更新蝴蝶物理 (兩個主題皆有在地特色蝴蝶飛舞)
+      if (spine.length > 0) {
         const head = spine[0];
         butterfliesRef.current.forEach(bf => {
           bf.changeTimer -= dt;
@@ -195,6 +196,11 @@ export const SnakeCanvas2D = ({
 
         // 探頭彩蛋：台灣黑熊 (右上邊界灌木後方，答對時高舉雙掌歡呼)
         drawBlackBear(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering);
+
+        // 台灣國寶神山鳳蝶飛舞彩蛋 (燕尾黑天鵝絨紅寶石斑)
+        butterfliesRef.current.forEach(bf => {
+          drawMountainButterfly(ctx, bf.x, bf.y, bf.angle, time);
+        });
 
       } else {
         // 🌿 陽光熱帶雨林：明朗生機翠綠 (已徹底移除突兀的淡黃色大圓圈！)

@@ -257,12 +257,12 @@ export const drawHundredPaceSnake = (
       const nx = -ty / len;
       const ny = tx / len;
 
-      // 半徑：從頭部腰身到尾端平滑漸變收尖 (流線型真實身軀)
+      // 半徑：從頭部腰身到尾端平滑漸變收尖 (精緻修長流線身軀，原寬度 80%)
       const t = gIdx / Math.max(1, totalSegs - 1);
-      let r = 17.5;
+      let r = 14.0;
       if (t > 0.65) {
         const tailFrac = (t - 0.65) / 0.35;
-        r = 17.5 * (1.0 - tailFrac * 0.82); // 尾尖平滑收細至約 3px！
+        r = 14.0 * (1.0 - tailFrac * 0.82); // 尾尖平滑收細至約 2.5px
       }
 
       // 吞嚥字母波浪隆起 (Belly Bulge)
@@ -295,10 +295,10 @@ export const drawHundredPaceSnake = (
 
     // 外輪廓深褐細描邊
     ctx.strokeStyle = '#431407';
-    ctx.lineWidth = 2.2;
+    ctx.lineWidth = 1.8;
     ctx.stroke();
 
-    // 2) 沿著連貫中心線，在各骨骼節點處繪製經典祖靈黑白金幾何三角菱形紋
+    // 2) 沿著連貫中心線，在各骨骼節點處繪製經典祖靈黑白金幾何三角菱形紋 (等比 80%)
     for (let k = chain.length - 1; k >= 1; k--) {
       const item = chain[k];
       const pt = item.pt;
@@ -309,10 +309,10 @@ export const drawHundredPaceSnake = (
       const angle = Math.atan2(pt.y - prevPt.y, pt.x - prevPt.x);
 
       const t = gIdx / Math.max(1, totalSegs - 1);
-      let r = 16.5;
+      let r = 13.2;
       if (t > 0.65) {
         const tailFrac = (t - 0.65) / 0.35;
-        r = 16.5 * (1.0 - tailFrac * 0.82);
+        r = 13.2 * (1.0 - tailFrac * 0.82);
       }
 
       ctx.save();
@@ -343,7 +343,7 @@ export const drawHundredPaceSnake = (
     }
   });
 
-  // 3) 繪製百步蛇頭部 (無縫契合在頸部頂端)
+  // 3) 繪製百步蛇頭部 (等比縮放為 80%，秀氣立體)
   const head = spine[0];
   const neck = spine[1] || head;
   const headAngle = Math.atan2(head.y - neck.y, head.x - neck.x);
@@ -355,29 +355,29 @@ export const drawHundredPaceSnake = (
   // 吐信：分叉蛇舌
   const tongueTimer = (time * 3) % 2.5;
   if (tongueTimer < 0.65 && !isDead) {
-    const tLen = 15 + Math.sin(time * 26) * 4;
+    const tLen = 12 + Math.sin(time * 26) * 3;
     ctx.strokeStyle = '#dc2626';
-    ctx.lineWidth = 2.6;
+    ctx.lineWidth = 2.2;
     ctx.beginPath();
-    ctx.moveTo(18, 0);
-    ctx.lineTo(18 + tLen, 0);
-    ctx.lineTo(18 + tLen + 5, -3.8);
-    ctx.moveTo(18 + tLen, 0);
-    ctx.lineTo(18 + tLen + 5, 3.8);
+    ctx.moveTo(14, 0);
+    ctx.lineTo(14 + tLen, 0);
+    ctx.lineTo(14 + tLen + 4, -3);
+    ctx.moveTo(14 + tLen, 0);
+    ctx.lineTo(14 + tLen + 4, 3);
     ctx.stroke();
   }
 
-  // 經典尖吻翹鼻頭型
+  // 經典尖吻翹鼻頭型 (原比例 80%)
   ctx.fillStyle = '#9a3412';
   ctx.strokeStyle = '#431407';
-  ctx.lineWidth = 2.5;
+  ctx.lineWidth = 2.2;
   ctx.beginPath();
-  ctx.moveTo(25, 0);
-  ctx.lineTo(11, -16);
-  ctx.lineTo(-12, -15);
-  ctx.lineTo(-15, 0);
-  ctx.lineTo(-12, 15);
-  ctx.lineTo(11, 16);
+  ctx.moveTo(20, 0);
+  ctx.lineTo(9, -13);
+  ctx.lineTo(-10, -12);
+  ctx.lineTo(-12, 0);
+  ctx.lineTo(-10, 12);
+  ctx.lineTo(9, 13);
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
@@ -385,47 +385,47 @@ export const drawHundredPaceSnake = (
   // 鼻尖肉質微翹小特徵
   ctx.fillStyle = '#ea580c';
   ctx.beginPath();
-  ctx.arc(23, 0, 3.8, 0, Math.PI * 2);
+  ctx.arc(18.5, 0, 3.0, 0, Math.PI * 2);
   ctx.fill();
 
   // 頭頂祖靈王冠金黃紋
   ctx.fillStyle = '#fde047';
   ctx.beginPath();
-  ctx.moveTo(8, 0);
-  ctx.lineTo(-1, -7);
-  ctx.lineTo(-8, 0);
-  ctx.lineTo(-1, 7);
+  ctx.moveTo(6.5, 0);
+  ctx.lineTo(-1, -5.5);
+  ctx.lineTo(-6.5, 0);
+  ctx.lineTo(-1, 5.5);
   ctx.closePath();
   ctx.fill();
 
   // 眼睛
   if (isDead) {
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2.0;
     ctx.beginPath();
-    ctx.moveTo(4, -8); ctx.lineTo(9, -5); ctx.lineTo(4, -2);
-    ctx.moveTo(4, 2); ctx.lineTo(9, 5); ctx.lineTo(4, 8);
+    ctx.moveTo(3, -6.5); ctx.lineTo(7, -4); ctx.lineTo(3, -1.5);
+    ctx.moveTo(3, 1.5); ctx.lineTo(7, 4); ctx.lineTo(3, 6.5);
     ctx.stroke();
   } else {
     // 亮琥珀金色眼球
     ctx.fillStyle = '#fef08a';
     ctx.beginPath();
-    ctx.arc(7, -8, 5, 0, Math.PI * 2);
-    ctx.arc(7, 8, 5, 0, Math.PI * 2);
+    ctx.arc(5.5, -6.5, 4.0, 0, Math.PI * 2);
+    ctx.arc(5.5, 6.5, 4.0, 0, Math.PI * 2);
     ctx.fill();
 
     // 黑垂直瞳孔
     ctx.fillStyle = '#0f172a';
     ctx.beginPath();
-    ctx.ellipse(7.5, -8, 1.4, 4, 0, 0, Math.PI * 2);
-    ctx.ellipse(7.5, 8, 1.4, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(6, -6.5, 1.1, 3.2, 0, 0, Math.PI * 2);
+    ctx.ellipse(6, 6.5, 1.1, 3.2, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // 眼神高光
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(6.5, -9, 1.5, 0, Math.PI * 2);
-    ctx.arc(6.5, 7, 1.5, 0, Math.PI * 2);
+    ctx.arc(5, -7.5, 1.2, 0, Math.PI * 2);
+    ctx.arc(5, 5.5, 1.2, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -480,10 +480,10 @@ export const drawGreenSnake = (
       const ny = tx / len;
 
       const t = gIdx / Math.max(1, totalSegs - 1);
-      let r = 17.5;
+      let r = 14.0;
       if (t > 0.65) {
         const tailFrac = (t - 0.65) / 0.35;
-        r = 17.5 * (1.0 - tailFrac * 0.82);
+        r = 14.0 * (1.0 - tailFrac * 0.82); // 尾尖收細至約 2.5px
       }
 
       bulges.forEach(b => {
@@ -512,16 +512,16 @@ export const drawGreenSnake = (
     ctx.fill();
 
     ctx.strokeStyle = '#059669';
-    ctx.lineWidth = 2.2;
+    ctx.lineWidth = 1.8;
     ctx.stroke();
 
-    // 背部點綴金黃圓斑
+    // 背部點綴金黃圓斑 (等比 80%)
     for (let k = 1; k < chain.length; k++) {
       const item = chain[k];
       const pt = item.pt;
       const gIdx = item.globalIndex;
       const t = gIdx / Math.max(1, totalSegs - 1);
-      const spotR = Math.max(2, 6 * (1 - t * 0.6));
+      const spotR = Math.max(1.6, 4.8 * (1 - t * 0.6));
 
       ctx.fillStyle = '#fef08a';
       ctx.beginPath();
@@ -530,7 +530,7 @@ export const drawGreenSnake = (
     }
   });
 
-  // 2) 圓萌小青蛇頭部
+  // 2) 圓萌小青蛇頭部 (等比縮放為 80%)
   const head = spine[0];
   const neck = spine[1] || head;
   const headAngle = Math.atan2(head.y - neck.y, head.x - neck.x);
@@ -542,59 +542,59 @@ export const drawGreenSnake = (
   // 吐信：可愛粉紅舌
   const tongueTimer = (time * 3) % 2.5;
   if (tongueTimer < 0.65 && !isDead) {
-    const tLen = 15 + Math.sin(time * 26) * 4;
+    const tLen = 12 + Math.sin(time * 26) * 3;
     ctx.strokeStyle = '#f43f5e';
-    ctx.lineWidth = 2.6;
+    ctx.lineWidth = 2.2;
     ctx.beginPath();
-    ctx.moveTo(16, 0);
-    ctx.lineTo(16 + tLen, 0);
-    ctx.lineTo(16 + tLen + 4, -3);
-    ctx.moveTo(16 + tLen, 0);
-    ctx.lineTo(16 + tLen + 4, 3);
+    ctx.moveTo(13, 0);
+    ctx.lineTo(13 + tLen, 0);
+    ctx.lineTo(13 + tLen + 3.5, -2.5);
+    ctx.moveTo(13 + tLen, 0);
+    ctx.lineTo(13 + tLen + 3.5, 2.5);
     ctx.stroke();
   }
 
-  // 圓萌頭形
+  // 圓萌頭形 (80%)
   ctx.fillStyle = '#10b981';
   ctx.strokeStyle = '#047857';
-  ctx.lineWidth = 2.5;
+  ctx.lineWidth = 2.2;
   ctx.beginPath();
-  ctx.ellipse(3, 0, 18, 15, 0, 0, Math.PI * 2);
+  ctx.ellipse(2.5, 0, 14.5, 12, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.stroke();
 
   // 腮紅
   ctx.fillStyle = 'rgba(251, 113, 133, 0.45)';
   ctx.beginPath();
-  ctx.arc(-2, -10, 4, 0, Math.PI * 2);
-  ctx.arc(-2, 10, 4, 0, Math.PI * 2);
+  ctx.arc(-1.5, -8, 3.2, 0, Math.PI * 2);
+  ctx.arc(-1.5, 8, 3.2, 0, Math.PI * 2);
   ctx.fill();
 
-  // 大眼睛
+  // 大眼睛 (80%)
   if (isDead) {
     ctx.strokeStyle = '#064e3b';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2.0;
     ctx.beginPath();
-    ctx.moveTo(4, -8); ctx.lineTo(10, -5); ctx.lineTo(4, -2);
-    ctx.moveTo(4, 2); ctx.lineTo(10, 5); ctx.lineTo(4, 8);
+    ctx.moveTo(3, -6.5); ctx.lineTo(8, -4); ctx.lineTo(3, -1.5);
+    ctx.moveTo(3, 1.5); ctx.lineTo(8, 4); ctx.lineTo(3, 6.5);
     ctx.stroke();
   } else {
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(6, -7, 5, 0, Math.PI * 2);
-    ctx.arc(6, 7, 5, 0, Math.PI * 2);
+    ctx.arc(5, -5.5, 4.0, 0, Math.PI * 2);
+    ctx.arc(5, 5.5, 4.0, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = '#0f172a';
     ctx.beginPath();
-    ctx.arc(7.5, -7, 3, 0, Math.PI * 2);
-    ctx.arc(7.5, 7, 3, 0, Math.PI * 2);
+    ctx.arc(6, -5.5, 2.4, 0, Math.PI * 2);
+    ctx.arc(6, 5.5, 2.4, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(6.5, -8, 1.4, 0, Math.PI * 2);
-    ctx.arc(6.5, 6, 1.4, 0, Math.PI * 2);
+    ctx.arc(5.2, -6.5, 1.1, 0, Math.PI * 2);
+    ctx.arc(5.2, 4.8, 1.1, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -869,6 +869,69 @@ export const drawButterfly = (ctx, x, y, angle, time) => {
   ctx.fillStyle = '#0f172a';
   ctx.beginPath();
   ctx.ellipse(0, 0, 1.5, 7, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+};
+
+// ── 9. 繪製神山彩蛋：台灣國寶神山鳳蝶 (Taiwan Mountain Swallowtail Butterfly) ──
+export const drawMountainButterfly = (ctx, x, y, angle, time) => {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+
+  const flap = Math.sin(time * 15);
+  ctx.scale(flap, 1);
+
+  // 黑天鵝絨底翅
+  ctx.fillStyle = '#1c1917';
+  ctx.strokeStyle = '#0c0a09';
+  ctx.lineWidth = 1.4;
+
+  // 上翅 (修長鳳蝶前翅)
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(-15, -16, -20, -7, 0, -2);
+  ctx.fill(); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(15, -16, 20, -7, 0, -2);
+  ctx.fill(); ctx.stroke();
+
+  // 上翅金黃斑紋
+  ctx.fillStyle = '#fde047';
+  ctx.beginPath();
+  ctx.ellipse(-9, -8, 4, 1.8, -0.6, 0, Math.PI * 2);
+  ctx.ellipse(9, -8, 4, 1.8, 0.6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 下翅 (帶有優雅燕尾 Swallowtail 突起)
+  ctx.fillStyle = '#1c1917';
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(-11, 4, -13, 14, -7, 18);
+  ctx.lineTo(-5, 12);
+  ctx.lineTo(0, 4);
+  ctx.fill(); ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(11, 4, 13, 14, 7, 18);
+  ctx.lineTo(5, 12);
+  ctx.lineTo(0, 4);
+  ctx.fill(); ctx.stroke();
+
+  // 下翅鮮紅寶石斑紋 (經典國寶鳳蝶特徵)
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath();
+  ctx.arc(-6, 9, 2.5, 0, Math.PI * 2);
+  ctx.arc(6, 9, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 細長黑軀幹
+  ctx.fillStyle = '#09090b';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 1.4, 7.5, 0, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.restore();
