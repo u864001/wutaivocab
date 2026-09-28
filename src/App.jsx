@@ -83,6 +83,8 @@ export function App() {
     distractorMode: 'strict'
   });
 
+  const [autoJoinCode, setAutoJoinCode] = useState(null);
+
   const loadWords = async () => {
     setIsLoading(true);
     try {
@@ -98,6 +100,16 @@ export function App() {
 
   useEffect(() => {
     loadWords();
+
+    // 支援 iPad 相機掃描 QR Code (?join=1001) 即刻自動導向擂台房間
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const joinParam = urlParams.get('join');
+      if (joinParam) {
+        setAutoJoinCode(joinParam);
+        setCurrentView('battle');
+      }
+    } catch (e) {}
   }, []);
 
   // 榮譽榜資格判斷：單冊選滿 2 個單元 (或 20 字)，且題數為 20 題或全部
@@ -250,7 +262,11 @@ export function App() {
             <BattleGame
               settings={settings}
               words={words}
-              onBack={() => handleNavigate('lobby')}
+              autoJoinCode={autoJoinCode}
+              onBack={() => {
+                setAutoJoinCode(null);
+                handleNavigate('lobby');
+              }}
             />
           )}
         </ErrorBoundary>

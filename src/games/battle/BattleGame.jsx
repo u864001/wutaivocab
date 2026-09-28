@@ -9,9 +9,10 @@ import { getProfanityError } from '../../services/profanityFilter';
 import confetti from 'canvas-confetti';
 import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import {
-  ArrowLeft, Swords, Users, Shield, Heart, Zap,
+  ArrowLeft, Swords, Users, Heart, Zap,
   Trophy, Play, RefreshCw, Lock, CheckCircle2, AlertCircle,
-  Eye, Maximize2, Minimize2, Sparkles, Flame, Skull, Crown
+  Eye, Maximize2, Minimize2, Sparkles, Flame, Skull, Crown,
+  UserX, Gamepad2
 } from 'lucide-react';
 import { MeteorCanvas3D } from '../meteor/MeteorCanvas3D';
 import { MeteorEasterEggs2D } from '../meteor/MeteorEasterEggs2D';
@@ -50,7 +51,8 @@ const FIXED_ARENAS = [
 export const BattleGame = ({
   settings,
   words = [],
-  onBack
+  onBack,
+  autoJoinCode = null
 }) => {
   const { t } = useI18n();
   const [view, setView] = useState('menu'); // 'menu' | 'lobby' | 'playing' | 'result'
@@ -59,6 +61,8 @@ export const BattleGame = ({
   const [isHost, setIsHost] = useState(false);
   const [players, setPlayers] = useState([]);
   const [errorMsg, setErrorMsg] = useState('');
+  const [pinInput, setPinInput] = useState('');
+  const [gameMode, setGameMode] = useState('meteor'); // 'meteor' | 'memory'
 
   // 三大擂台全域狀態監控
   const [arenaStates, setArenaStates] = useState({
@@ -248,10 +252,6 @@ export const BattleGame = ({
       setErrorMsg(badWordError);
       return;
     }
-    if (!settings.selectedUnits || settings.selectedUnits.length === 0) {
-      setErrorMsg(t.selectScopeError);
-      return;
-    }
 
     const cur = arenaStates[arena.id];
     if (cur && (cur.count > 0 || cur.isBattling)) {
@@ -262,11 +262,21 @@ export const BattleGame = ({
     localStorage.setItem('wutai_player_name', cleanName);
     setSelectedArena(arena);
     setIsHost(true);
-    battleUnitsRef.current = settings.selectedUnits;
+
+    // 題庫範圍智慧判定：若大廳已預選單元則沿用；若尚未選取則預設全題庫或第一冊單元
+    let effectiveUnits = settings?.selectedUnits || [];
+    if (!effectiveUnits || effectiveUnits.length === 0) {
+      if (words && words.length > 0) {
+        effectiveUnits = [...new Set(words.map(w => `${w.book}-${w.lesson}`))];
+      } else {
+        effectiveUnits = ['1-1'];
+      }
+    }
+    battleUnitsRef.current = effectiveUnits;
     connectToArenaChannel(arena, true);
   };
 
-  // 加入指定擂台 (成員)
+  // 加入指定擂台 (成員：無須選取範圍或模式，依先後順序加入，額滿 4 人防護)
   const handleJoinArena = (arena) => {
     const cleanName = playerName.trim();
     if (!cleanName) {
@@ -293,6 +303,70 @@ export const BattleGame = ({
     setSelectedArena(arena);
     setIsHost(false);
     connectToArenaChannel(arena, false);
+  };
+
+  // 透過 4 碼 PIN 快速加入房間
+  const handleQuickJoinByPin = (codeToJoin = pinInput) => {
+    const cleanPin = (codeToJoin || '').trim();
+    if (!cleanPin) {
+      setErrorMsg('請輸入 4 位數擂台 PIN 碼 (例: 1001, 1002, 1003)');
+      return;
+    }
+    const match = FIXED_ARENAS.find(a => a.code === cleanPin);
+    if (!match) {
+      setErrorMsg(`找不到 PIN 碼為【${cleanPin}】的擂台房間，全校三大擂台固定為 1001、1002、1003！`);
+      return;
+    }
+    handleJoinArena(match);
+  };
+
+  // 支援 iPad 相機掃描 QR Code (?join=1001) 即刻鎖定並加入
+  useEffect(() => {
+    const code = (autoJoinCode || (typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('join') : '') || '').trim();
+    if (code && view === 'menu') {
+      const match = FIXED_ARENAS.find(a => a.code === code);
+      if (match) {
+        setPinInput(code);
+        const savedName = localStorage.getItem('wutai_player_name');
+        if (savedName && savedName.trim()) {
+          handleJoinArena(match);
+        } else {
+          showNotice(`已鎖定【${match.name} (PIN: ${match.code})】，請輸入戰鬥暱稱後即可加入！`, 'info');
+        }
+      }
+    }
+  }, [autoJoinCode, view]);
+
+  // 房主剔除成員 (廣播通知對方退出)
+  const handleKickPlayer = (targetDeviceId, targetName) => {
+    if (!isHost || !channelRef.current) return;
+    if (targetDeviceId === myDeviceIdRef.current) return;
+
+    channelRef.current.send({
+      type: 'broadcast',
+      event: 'kick-player',
+      payload: {
+        targetDeviceId,
+        targetName
+      }
+    });
+
+    setPlayers(prev => prev.filter(p => p.deviceId !== targetDeviceId));
+    showNotice(`已將【${targetName}】移出房間`, 'info');
+  };
+
+  // 房主切換對抗模式 (即時廣播同步至全房)
+  const handleSelectGameMode = (newMode) => {
+    if (!isHost) return;
+    setGameMode(newMode);
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: 'broadcast',
+        event: 'mode-change',
+        payload: { gameMode: newMode }
+      });
+    }
+    showNotice(`對決模式已切換為：${newMode === 'meteor' ? '☄️ 星空防衛戰' : '🃏 星際記憶翻牌'}`, 'info');
   };
 
   // 廣播個人實時數據 (血量、愛心、得分、連擊、地平線)
@@ -359,6 +433,46 @@ export const BattleGame = ({
     }, 500);
   }, [showNotice, processNextRaid]);
 
+  // 自身陣亡處理
+  const handlePlayerDead = useCallback(() => {
+    if (isDeadRef.current) return;
+    setIsDead(true);
+    setMyLives(0);
+    soundEngine.wrong();
+
+    const deadPayload = {
+      deviceId: myDeviceIdRef.current,
+      name: playerName.trim(),
+      score: scoreRef.current,
+      lives: 0,
+      isDead: true,
+      meteorsDestroyed: destroyedRef.current,
+      survivalTime: Math.floor((Date.now() - (gameStartTimeRef.current || Date.now())) / 1000)
+    };
+
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: 'broadcast',
+        event: 'player-dead',
+        payload: deadPayload
+      });
+
+      // 更新 presence
+      channelRef.current.track({
+        deviceId: myDeviceIdRef.current,
+        name: playerName.trim(),
+        isHost: isHost,
+        status: 'battling',
+        isDead: true,
+        lives: 0,
+        score: scoreRef.current,
+        joinedAt: myJoinTimestampRef.current
+      });
+    }
+
+    showNotice('🛡️ 防衛線已失守！你目前處於觀戰模式。', 'danger');
+  }, [playerName, isHost, showNotice]);
+
   // 突襲隕石撞地逾時懲罰 (扣分加成；連續 5 顆未理會後之第 6 顆起加扣愛心)
   const handleRaidImpact = useCallback((isMega) => {
     soundEngine.explosion();
@@ -399,46 +513,6 @@ export const BattleGame = ({
       processNextRaid();
     }, 500);
   }, [broadcastMyStats, showNotice, processNextRaid, handlePlayerDead]);
-
-  // 自身陣亡處理
-  const handlePlayerDead = useCallback(() => {
-    if (isDeadRef.current) return;
-    setIsDead(true);
-    setMyLives(0);
-    soundEngine.wrong();
-
-    const deadPayload = {
-      deviceId: myDeviceIdRef.current,
-      name: playerName.trim(),
-      score: scoreRef.current,
-      lives: 0,
-      isDead: true,
-      meteorsDestroyed: destroyedRef.current,
-      survivalTime: Math.floor((Date.now() - (gameStartTimeRef.current || Date.now())) / 1000)
-    };
-
-    if (channelRef.current) {
-      channelRef.current.send({
-        type: 'broadcast',
-        event: 'player-dead',
-        payload: deadPayload
-      });
-
-      // 更新 presence
-      channelRef.current.track({
-        deviceId: myDeviceIdRef.current,
-        name: playerName.trim(),
-        isHost: isHost,
-        status: 'battling',
-        isDead: true,
-        lives: 0,
-        score: scoreRef.current,
-        joinedAt: myJoinTimestampRef.current
-      });
-    }
-
-    showNotice('🛡️ 防衛線已失守！你目前處於觀戰模式。', 'danger');
-  }, [playerName, isHost, showNotice]);
 
   // 計算結算排名榜單 (按規則：1.剩餘愛心降冪 2.總分含愛心加成降冪 3.擊落題數降冪 4.存活時間降冪)
   const calculateLeaderboard = useCallback((activePlayers) => {
@@ -595,9 +669,27 @@ export const BattleGame = ({
           }
         }
       })
+      .on('broadcast', { event: 'kick-player' }, ({ payload }) => {
+        if (payload?.targetDeviceId === myDeviceIdRef.current) {
+          soundEngine.wrong();
+          handleLeaveRoom();
+          setErrorMsg('您已被房主移出該擂台房間。');
+        } else if (payload?.targetDeviceId) {
+          setPlayers(prev => prev.filter(p => p.deviceId !== payload.targetDeviceId));
+        }
+      })
+      .on('broadcast', { event: 'mode-change' }, ({ payload }) => {
+        if (payload?.gameMode) {
+          setGameMode(payload.gameMode);
+          showNotice(`房主已切換對決模式為：${payload.gameMode === 'meteor' ? '☄️ 星空防衛戰' : '🃏 星際記憶翻牌'}`, 'info');
+        }
+      })
       .on('broadcast', { event: 'game-start' }, ({ payload }) => {
         if (payload?.selectedUnits && payload.selectedUnits.length > 0) {
           battleUnitsRef.current = payload.selectedUnits;
+        }
+        if (payload?.gameMode) {
+          setGameMode(payload.gameMode);
         }
         startGame();
       })
@@ -692,6 +784,11 @@ export const BattleGame = ({
 
   // 房主啟動遊戲並廣播 (鎖定房間)
   const handleStartGameBroadcast = async () => {
+    if (gameMode === 'memory') {
+      showNotice('🃏 星際記憶翻牌多人連線對決現正緊鑼密鼓建置中，敬請期待！請先切換為【☄️ 星空防衛戰】進行開戰！', 'warning');
+      return;
+    }
+
     if (channelRef.current) {
       await channelRef.current.track({
         deviceId: myDeviceIdRef.current,
@@ -707,7 +804,10 @@ export const BattleGame = ({
       channelRef.current.send({
         type: 'broadcast',
         event: 'game-start',
-        payload: { selectedUnits: battleUnitsRef.current }
+        payload: {
+          selectedUnits: battleUnitsRef.current,
+          gameMode: gameMode
+        }
       });
       startGame();
     }
@@ -1033,6 +1133,34 @@ export const BattleGame = ({
             )}
           </div>
 
+          {/* 4 碼 PIN 快速輸入加入區 (掃碼或輸入房號即時加入) */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleQuickJoinByPin();
+            }}
+            className="max-w-md mx-auto mt-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center gap-2 shadow-inner"
+          >
+            <div className="flex-1 w-full relative">
+              <input
+                type="text"
+                maxLength={4}
+                value={pinInput}
+                onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))}
+                placeholder="輸入房主 4 碼 PIN (例: 1001)"
+                className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-mono font-black text-sm tracking-widest text-slate-800 dark:text-slate-100 outline-none focus:border-rose-500"
+              />
+            </div>
+            <Button3D
+              type="submit"
+              variant="rose"
+              size="sm"
+              className="w-full sm:w-auto shrink-0 whitespace-nowrap"
+            >
+              🚀 快速加入房間
+            </Button3D>
+          </form>
+
           {errorMsg && (
             <div className="max-w-md mx-auto mt-2 p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-black text-rose-600 dark:text-rose-400 flex items-center justify-center gap-1.5 animate-fadeIn">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -1173,11 +1301,11 @@ export const BattleGame = ({
             </span>
           </div>
 
-          <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 font-mono tracking-widest my-2">
+          <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 font-mono tracking-widest my-1">
             {selectedArena.code}
           </h2>
-          <p className="text-xs font-bold text-slate-500 mb-4">
-            請同學選擇「{selectedArena.name}」或輸入 PIN 碼進入
+          <p className="text-xs font-bold text-slate-500 mb-3">
+            iPad 相機掃描 QR 碼或於大廳輸入 PIN 碼 <span className="font-mono font-bold text-rose-500">{selectedArena.code}</span> 直接加入
           </p>
 
           <div className="flex justify-center mb-4">
@@ -1191,32 +1319,125 @@ export const BattleGame = ({
             </div>
           </div>
 
+          {/* 對決模式選擇 (由房主指定，即時同步給全員) */}
+          <div className="mb-4 text-left">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs font-black text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                <Gamepad2 className="w-3.5 h-3.5 text-rose-500" /> 對決遊戲模式：
+              </span>
+              <span className="text-[10px] font-bold text-slate-400">
+                {isHost ? '房主可點擊切換' : '同步房主指定模式'}
+              </span>
+            </div>
+
+            {isHost ? (
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSelectGameMode('meteor')}
+                  className={`p-2.5 rounded-xl border-2 font-black text-xs flex flex-col items-center gap-1 transition-all cursor-pointer ${
+                    gameMode === 'meteor'
+                      ? 'border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400 shadow-sm'
+                      : 'border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 text-slate-500 hover:border-slate-300'
+                  }`}
+                >
+                  <span className="text-base">☄️</span>
+                  <span>星空防衛戰</span>
+                  <span className="text-[10px] font-normal text-slate-400">3D/2D 搶答突襲</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectGameMode('memory')}
+                  className={`p-2.5 rounded-xl border-2 font-black text-xs flex flex-col items-center gap-1 transition-all cursor-pointer ${
+                    gameMode === 'memory'
+                      ? 'border-purple-500 bg-purple-500/10 text-purple-600 dark:text-purple-400 shadow-sm'
+                      : 'border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 text-slate-500 hover:border-slate-300'
+                  }`}
+                >
+                  <span className="text-base">🃏</span>
+                  <span>星際記憶翻牌</span>
+                  <span className="text-[10px] font-normal text-slate-400">八大功能牌對決</span>
+                </button>
+              </div>
+            ) : (
+              <div className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 flex items-center justify-between">
+                <span className="text-xs font-black text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                  {gameMode === 'meteor' ? '☄️ 星空防衛戰 (3D/2D 搶答突襲)' : '🃏 星際記憶翻牌 (八大功能牌對決)'}
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+                  同步房主中
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* 出題單元範圍指示 (加入者自動同步，無須自行選取) */}
+          <div className="mb-4 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-left">
+            <span className="text-xs font-black text-slate-600 dark:text-slate-300">
+              📚 出題單元範圍：
+            </span>
+            <span className="text-xs font-bold text-rose-600 dark:text-rose-400 truncate max-w-[200px]">
+              {battleUnitsRef.current && battleUnitsRef.current.length > 0
+                ? `${battleUnitsRef.current.slice(0, 3).join(', ')}${battleUnitsRef.current.length > 3 ? ` 等共 ${battleUnitsRef.current.length} 單元` : ''}`
+                : '全部單元題庫'}
+            </span>
+          </div>
+
+          {/* 參賽成員清單 (依先後順序加入，支援房主剔除) */}
           <div className="space-y-2 mb-6">
+            <div className="flex items-center justify-between text-xs font-black text-slate-500 px-1">
+              <span>參賽成員 ({players.length}/4)</span>
+              <span>加入順序</span>
+            </div>
             {players.map((p, idx) => (
               <div
-                key={idx}
+                key={p.deviceId || idx}
                 className="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between font-black text-sm text-slate-800 dark:text-slate-100"
               >
-                <span>{p.name} {p.deviceId === myDeviceIdRef.current ? '(你)' : ''}</span>
-                {p.isHost && <span className="text-xs text-amber-500 font-bold">房主 👑</span>}
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 text-[11px] flex items-center justify-center font-mono">
+                    {idx + 1}
+                  </span>
+                  <span>{p.name} {p.deviceId === myDeviceIdRef.current ? '(你)' : ''}</span>
+                  {p.isHost && <span className="text-xs text-amber-500 font-bold ml-1">👑 房主</span>}
+                </div>
+
+                {isHost && p.deviceId !== myDeviceIdRef.current && (
+                  <button
+                    type="button"
+                    onClick={() => handleKickPlayer(p.deviceId, p.name)}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-300 transition-all cursor-pointer active:scale-95 border border-rose-200 dark:border-rose-800"
+                    title={`剔除 ${p.name}`}
+                  >
+                    <UserX className="w-3.5 h-3.5" />
+                    <span>剔除</span>
+                  </button>
+                )}
               </div>
             ))}
           </div>
 
+          {/* 開戰按鈕：支援 2 人、3 人不滿員開始，或 4 人滿員開戰 */}
           {isHost ? (
             <Button3D
-              variant="rose"
+              variant={players.length >= 2 ? "rose" : "slate"}
               size="lg"
               disabled={players.length < 2}
               onClick={handleStartGameBroadcast}
               className="w-full mb-3"
               icon={Play}
             >
-              {players.length < 2 ? '等待至少 2 人加入...' : '開戰！(鎖定擂台)'}
+              {players.length < 2
+                ? '等待同學加入 (至少 2 人)...'
+                : players.length === 4
+                  ? '開戰！(4 人滿員決戰)'
+                  : `開戰！(${players.length} 人即刻開局)`
+              }
             </Button3D>
           ) : (
             <p className="text-xs font-black text-slate-500 animate-pulse mb-4">
-              等待房主按下開戰...
+              ⏳ 等待房主按下開戰 (目前 {players.length} 人)...
             </p>
           )}
 

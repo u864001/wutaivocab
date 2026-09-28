@@ -361,11 +361,9 @@ export const Lobby = ({
           {t.secMulti}
         </h3>
         <GlassCard
-          hoverable={!isSelectionEmpty}
-          onClick={() => !isSelectionEmpty && onNavigate('battle')}
-          className={`relative overflow-hidden ${
-            isSelectionEmpty ? 'opacity-50 cursor-not-allowed' : 'group'
-          }`}
+          hoverable={true}
+          onClick={() => onNavigate('battle')}
+          className="relative overflow-hidden group cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -387,8 +385,8 @@ export const Lobby = ({
               </div>
             </div>
 
-            <Button3D variant="rose" size="md" disabled={isSelectionEmpty} className="hidden sm:inline-flex">
-              立即迎戰
+            <Button3D variant="rose" size="md" className="hidden sm:inline-flex">
+              進入大廳
             </Button3D>
           </div>
         </GlassCard>
