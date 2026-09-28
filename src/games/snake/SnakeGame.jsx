@@ -44,8 +44,10 @@ export const SnakeGame = ({
   const [stepProgress, setStepProgress] = useState(0);
   const [renderLetters, setRenderLetters] = useState([]);
   const [isSnakeDead, setIsSnakeDead] = useState(false);
+  const [invulnerableTime, setInvulnerableTime] = useState(0); // 3 秒受傷無敵倒數
 
   // Refs 避免閉包舊值
+  const invulnerableTimerRef = useRef(0);
   const snakeRef = useRef([{ x: 6, y: 6 }, { x: 5, y: 6 }]);
   const nextHeadRef = useRef({ x: 7, y: 6 });
   const dirRef = useRef('RIGHT');
@@ -188,6 +190,8 @@ export const SnakeGame = ({
     setHearts(5);
     setTimeLeft(60);
     setStepProgress(0);
+    setInvulnerableTime(0);
+    invulnerableTimerRef.current = 0;
     startTimeRef.current = Date.now();
 
     snakeRef.current = [{ x: 6, y: 6 }, { x: 5, y: 6 }];
@@ -237,20 +241,31 @@ export const SnakeGame = ({
     let lastTime = performance.now();
     let accumulated = 0;
 
+    // 扣心與 3 秒受傷無敵觸發 (防連續撞死)
+    const handleDeductHeart = () => {
+      if (invulnerableTimerRef.current > 0) return; // 免疫重複扣心！
+
+      soundEngine.wrong();
+      if (currentWordRef.current?.id) mistakeIdsRef.current.add(currentWordRef.current.id);
+
+      invulnerableTimerRef.current = 3.0; // 開啟 3 秒無敵
+      setInvulnerableTime(3.0);
+
+      setHearts(h => {
+        if (h <= 1) triggerGameOver();
+        return Math.max(0, h - 1);
+      });
+    };
+
     // 前進一格網格邏輯：蛇身 100% 沿著蛇頭經過的歷史格子走
     const advanceOneStep = () => {
       const currentHead = snakeRef.current[0];
       const targetHead = { ...(nextHeadRef.current || currentHead) };
 
-      // 1. 檢測自撞
+      // 1. 檢測自撞 (無敵期間不扣心)
       const hitSelf = snakeRef.current.slice(1).some(seg => seg.x === targetHead.x && seg.y === targetHead.y);
       if (hitSelf) {
-        soundEngine.wrong();
-        if (currentWordRef.current?.id) mistakeIdsRef.current.add(currentWordRef.current.id);
-        setHearts(h => {
-          if (h <= 1) triggerGameOver();
-          return Math.max(0, h - 1);
-        });
+        handleDeductHeart();
       }
 
       // 2. 蛇頭抵達 targetHead
@@ -285,12 +300,7 @@ export const SnakeGame = ({
           // 正確進食：不 pop 尾巴，長度自然加 1
         } else {
           // 吃錯字母
-          soundEngine.wrong();
-          if (curW?.id) mistakeIdsRef.current.add(curW.id);
-          setHearts(h => {
-            if (h <= 1) triggerGameOver();
-            return Math.max(0, h - 1);
-          });
+          handleDeductHeart();
           snakeRef.current.pop();
         }
       } else {
@@ -319,6 +329,12 @@ export const SnakeGame = ({
     const loop = (now) => {
       const dt = Math.min(now - lastTime, 100);
       lastTime = now;
+
+      // 受傷無敵 3 秒倒數計時
+      if (invulnerableTimerRef.current > 0) {
+        invulnerableTimerRef.current = Math.max(0, invulnerableTimerRef.current - dt / 1000);
+        setInvulnerableTime(invulnerableTimerRef.current);
+      }
 
       accumulated += dt / stepDuration;
 
@@ -704,6 +720,7 @@ export const SnakeGame = ({
           letters={renderLetters}
           theme={theme}
           isDead={isSnakeDead}
+          isInvulnerable={invulnerableTime > 0}
           isNextTargetFn={isNextTargetLetter}
           cheerTrigger={cheerTrigger}
           onTouchStart={handleTouchStart}

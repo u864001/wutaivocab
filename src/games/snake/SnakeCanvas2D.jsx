@@ -17,6 +17,7 @@ export const SnakeCanvas2D = ({
   letters = [],
   theme = 'indigenous', // 'indigenous' | 'jungle'
   isDead = false,
+  isInvulnerable = false,
   isNextTargetFn = () => false,
   cheerTrigger = 0,
   onTouchStart,
@@ -239,9 +240,9 @@ export const SnakeCanvas2D = ({
       // ─── 7. 繪製平滑蛇身 (Snake Body & Head) ───
       if (spine.length >= 2) {
         if (theme === 'indigenous') {
-          drawHundredPaceSnake(ctx, spine, time, bulgesRef.current, isDead);
+          drawHundredPaceSnake(ctx, spine, time, bulgesRef.current, isDead, isInvulnerable);
         } else {
-          drawGreenSnake(ctx, spine, time, bulgesRef.current, isDead);
+          drawGreenSnake(ctx, spine, time, bulgesRef.current, isDead, isInvulnerable);
         }
       }
 
@@ -253,7 +254,7 @@ export const SnakeCanvas2D = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [snake, nextHead, stepProgress, letters, theme, isDead, isNextTargetFn, width, height, gridW, gridH]);
+  }, [snake, nextHead, stepProgress, letters, theme, isDead, isInvulnerable, isNextTargetFn, width, height, gridW, gridH]);
 
   return (
     <canvas
