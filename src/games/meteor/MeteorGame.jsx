@@ -8,6 +8,7 @@ import { generateSmartOptions } from '../../services/distractorHelper';
 import { calculateMeteorDuration, calculateMeteorMotionProgress } from './meteorPhysics';
 import { MeteorCanvas3D } from './MeteorCanvas3D';
 import { MeteorEasterEggs2D } from './MeteorEasterEggs2D';
+import { RightComboDisplay } from './RightComboDisplay';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Rocket, Trophy, Flame,
@@ -480,16 +481,32 @@ export const MeteorGame = ({
 
         {/* 連擊、得分與控制按鈕 */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {combo >= 1 && (
+          {combo >= 1 && combo < 3 && (
             <div className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs shadow-md animate-bounce flex items-center gap-1">
               <span>{combo}x 🔥</span>
               <span className="text-[10px] text-amber-200">(+{combo}加成)</span>
             </div>
           )}
           
-          <div className="px-3 sm:px-4 py-1.5 rounded-2xl bg-cyan-600 text-white font-black text-xs sm:text-sm shadow-md font-mono flex items-center gap-1.5">
-            <Target className="w-4 h-4 text-cyan-200" />
-            <span>{score}分</span>
+          <div className="relative">
+            <div className="px-3 sm:px-4 py-1.5 rounded-2xl bg-cyan-600 text-white font-black text-xs sm:text-sm shadow-md font-mono flex items-center gap-1.5">
+              <Target className="w-4 h-4 text-cyan-200" />
+              <span>{score}分</span>
+            </div>
+
+            {/* 動態得分/加成漂浮通知 (置於右上方計分區下方，絕不遮蔽中央單字與隕石) */}
+            {lastGainNotice && (
+              <div
+                className={`absolute right-0 top-10 z-50 px-3 py-1 rounded-xl font-black text-xs sm:text-sm shadow-xl animate-float-up-fade flex items-center gap-1.5 whitespace-nowrap pointer-events-none ${
+                  lastGainNotice.type === 'ufo'
+                    ? 'bg-emerald-500 text-white border border-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.8)]'
+                    : 'bg-cyan-500 text-white border border-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.8)]'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+                <span>{lastGainNotice.text}</span>
+              </div>
+            )}
           </div>
 
           {/* 2D / 3D 切換開關 */}
@@ -533,22 +550,11 @@ export const MeteorGame = ({
         </div>
       )}
 
-      {/* 動態得分/加成漂浮通知 */}
-      {lastGainNotice && (
-        <div
-          className={`fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-1.5 rounded-full font-black text-sm shadow-xl animate-bounce flex items-center gap-1.5 ${
-            lastGainNotice.type === 'ufo'
-              ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.8)]'
-              : 'bg-cyan-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.8)]'
-          }`}
-        >
-          <Sparkles className="w-4 h-4 text-amber-200" />
-          <span>{lastGainNotice.text}</span>
-        </div>
-      )}
-
       {/* ── 隕石戰場區域 (彈性自適應高度 flex-1 min-h-0) ── */}
       <div className="flex-1 min-h-0 w-full max-w-4xl mx-auto relative mb-2 sm:mb-3 flex items-center justify-center">
+        {/* 右側深空空白區：階梯式氣球灌氣連擊正增強顯示 (3連對以上展開，不干擾中央隕石通道) */}
+        <RightComboDisplay combo={combo} />
+
         {renderMode === '3d' ? (
           <div className="w-full h-full relative">
             <MeteorCanvas3D
