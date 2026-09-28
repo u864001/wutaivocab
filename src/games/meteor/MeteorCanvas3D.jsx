@@ -1,17 +1,21 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { createProceduralAsteroid } from './proceduralAsteroid';
+import { calculateMeteorMotionProgress } from './meteorPhysics';
+import { createShootingStarSystem, createSatelliteSystem, createUfoSystem } from './easterEggs3D';
 
 /**
  * 隕石地球守衛戰 3D 核心渲染畫布 (Three.js WebGL Engine)
+ * 包含：平滑有機隕石、深空星系、大氣防禦層、賽博雷射砲、3D 衝擊波與 3D 彩蛋系統 (流星、衛星、UFO)
  */
 export const MeteorCanvas3D = ({
   currentMeteor,
   subMode,
   isExploding,
-  onImpactComplete,
   laserTrigger,
-  onExplosionFinish
+  onExplosionFinish,
+  questionIndex = 0,
+  onUfoSuccess
 }) => {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
@@ -20,11 +24,15 @@ export const MeteorCanvas3D = ({
   const asteroidObjRef = useRef(null);
   const animIdRef = useRef(null);
   const laserBeamRef = useRef(null);
-  const particlesRef = useRef([]);
   const debrisRef = useRef([]);
   const shockwavesRef = useRef([]);
   const wordSpriteRef = useRef(null);
   const shakeRef = useRef({ time: 0, intensity: 0 });
+
+  // 彩蛋系統參照
+  const shootingStarRef = useRef(null);
+  const satelliteRef = useRef(null);
+  const ufoRef = useRef(null);
 
   // ── 建立單字 3D 全息名牌 (CanvasTexture Sprite，隨 3D 透視縮放) ──
   const createWordSprite = (text) => {
@@ -85,8 +93,8 @@ export const MeteorCanvas3D = ({
     const container = mountRef.current;
     if (!container) return;
 
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const width = container.clientWidth || 800;
+    const height = container.clientHeight || 450;
 
     // 1. 場景 (Scene)
     const scene = new THREE.Scene();
@@ -175,7 +183,7 @@ export const MeteorCanvas3D = ({
     atmoMesh.position.set(0, -74, 5);
     scene.add(atmoMesh);
 
-    // 6. 光源系統 (Directional Sun + Ambient + Defense Beam Light)
+    // 6. 光源系統
     const sunLight = new THREE.DirectionalLight(0xfff7ed, 2.5);
     sunLight.position.set(25, 30, 20);
     scene.add(sunLight);
@@ -183,7 +191,17 @@ export const MeteorCanvas3D = ({
     const ambientLight = new THREE.AmbientLight(0x182442, 1.4);
     scene.add(ambientLight);
 
-    // 7. 火焰尾跡粒子系統 (Trail Particles)
+    // 7. 3D 彩蛋系統實例化 (流星、人造衛星、UFO)
+    const shootingStar = createShootingStarSystem(scene);
+    shootingStarRef.current = shootingStar;
+
+    const satellite = createSatelliteSystem(scene);
+    satelliteRef.current = satellite;
+
+    const ufo = createUfoSystem(scene, camera, renderer.domElement, onUfoSuccess);
+    ufoRef.current = ufo;
+
+    // 8. 火焰尾跡粒子系統 (Trail Particles)
     const maxTrail = 80;
     const trailGeo = new THREE.BufferGeometry();
     const trailPositions = new Float32Array(maxTrail * 3);
@@ -209,18 +227,22 @@ export const MeteorCanvas3D = ({
       trailData.push({ active: false, life: 0, maxLife: 1, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0 });
     }
 
-    // 8. 視窗尺寸監聽
+    // 9. 視窗尺寸監聽 (支援 iPad 旋轉與全螢幕變更)
     const handleResize = () => {
       if (!container || !rendererRef.current || !cameraRef.current) return;
       const w = container.clientWidth;
       const h = container.clientHeight;
+      if (w === 0 || h === 0) return;
       cameraRef.current.aspect = w / h;
       cameraRef.current.updateProjectionMatrix();
       rendererRef.current.setSize(w, h);
     };
-    window.addEventListener('resize', handleResize);
 
-    // 9. 動畫主循環
+    window.addEventListener('resize', handleResize);
+    const resizeObserver = new ResizeObserver(() => handleResize());
+    resizeObserver.observe(container);
+
+    // 10. 動畫主循環
     let lastTime = performance.now();
     const animate = (now) => {
       const delta = Math.min((now - lastTime) / 1000, 0.1);
@@ -228,6 +250,11 @@ export const MeteorCanvas3D = ({
 
       // 緩慢自轉星空
       starField.rotation.y += 0.0003;
+
+      // 更新 3D 彩蛋 (流星、衛星、UFO)
+      if (shootingStarRef.current) shootingStarRef.current.update(delta, now);
+      if (satelliteRef.current) satelliteRef.current.update(delta, now);
+      if (ufoRef.current) ufoRef.current.update(delta, now);
 
       // 鏡頭微震效果 (Camera Shake)
       if (shakeRef.current.time > 0) {
@@ -240,7 +267,7 @@ export const MeteorCanvas3D = ({
         camera.position.y = 1.5;
       }
 
-      // 更新隕石本體動畫
+      // 更新隕石本體動畫與尾跡
       if (asteroidObjRef.current && asteroidObjRef.current.group.visible) {
         asteroidObjRef.current.update(now * 0.001, 0.5);
 
@@ -347,7 +374,11 @@ export const MeteorCanvas3D = ({
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       if (animIdRef.current) cancelAnimationFrame(animIdRef.current);
+      if (shootingStarRef.current) shootingStarRef.current.dispose();
+      if (satelliteRef.current) satelliteRef.current.dispose();
+      if (ufoRef.current) ufoRef.current.dispose();
       if (rendererRef.current && rendererRef.current.domElement) {
         rendererRef.current.dispose();
         if (container.contains(rendererRef.current.domElement)) {
@@ -375,7 +406,6 @@ export const MeteorCanvas3D = ({
       return;
     }
 
-    // 若尚未建立 3D 隕石物件，進行程序化建構
     if (!asteroidObjRef.current) {
       const asteroid = createProceduralAsteroid(2.8);
       scene.add(asteroid.group);
@@ -400,11 +430,10 @@ export const MeteorCanvas3D = ({
 
   }, [currentMeteor, subMode, isExploding]);
 
-  // ── 隕石 3D 下墜即時軌跡計算 ──
+  // ── 隕石 3D 下墜即時軌跡計算 (套用兩段式與動態重力加速度物理引擎) ──
   useEffect(() => {
     if (!currentMeteor || isExploding) return;
 
-    // 將 x: 15%~85% 映射至 3D 空間 X 座標 (-14 ~ +14)
     const targetX = ((currentMeteor.x - 50) / 35) * 11;
     const spawnZ = -55;
     const targetZ = 12;
@@ -417,30 +446,28 @@ export const MeteorCanvas3D = ({
     let frameId;
     const updateMotion = (now) => {
       const elapsed = (now - currentMeteor.startTime) / 1000;
-      const progress = Math.min(elapsed / currentMeteor.duration, 1);
-
-      // 非線性下墜插值 (前段緩衝、後段加速逼近)
-      const easeProgress = Math.pow(progress, 1.4);
+      // 使用統一物理運動進度計算
+      const motionProgress = calculateMeteorMotionProgress(elapsed, currentMeteor.duration, questionIndex);
 
       if (asteroidObjRef.current && asteroidObjRef.current.group.visible) {
-        const curPos = new THREE.Vector3().lerpVectors(startPos, endPos, easeProgress);
+        const curPos = new THREE.Vector3().lerpVectors(startPos, endPos, motionProgress);
         asteroidObjRef.current.group.position.copy(curPos);
 
-        // 讓全息單字牌浮在隕石上方
+        // 全息單字名牌浮在隕石上方
         if (wordSpriteRef.current && wordSpriteRef.current.sprite) {
           wordSpriteRef.current.sprite.position.set(curPos.x, curPos.y + 3.8, curPos.z);
           wordSpriteRef.current.sprite.visible = true;
         }
       }
 
-      if (progress < 1) {
+      if (elapsed < currentMeteor.duration) {
         frameId = requestAnimationFrame(updateMotion);
       }
     };
 
     frameId = requestAnimationFrame(updateMotion);
     return () => cancelAnimationFrame(frameId);
-  }, [currentMeteor, isExploding]);
+  }, [currentMeteor, isExploding, questionIndex]);
 
   // ── 雷射射擊與攔截動畫 ──
   useEffect(() => {
@@ -450,7 +477,7 @@ export const MeteorCanvas3D = ({
     const meteorPos = asteroidObjRef.current.group.position.clone();
     const cannonPos = new THREE.Vector3(0, -6, 18);
 
-    // 建立高能雷射光柱 (Cyber Cyan Core + Glowing Aura)
+    // 建立高能雷射光柱 (Cyber Cyan Core)
     const beamGeo = new THREE.CylinderGeometry(0.35, 0.35, 6, 8);
     beamGeo.rotateX(Math.PI / 2);
     const beamMat = new THREE.MeshBasicMaterial({
@@ -469,13 +496,12 @@ export const MeteorCanvas3D = ({
       start: cannonPos,
       target: meteorPos,
       progress: 0,
-      duration: 0.15, // 0.15秒極速直擊
+      duration: 0.15,
       active: true,
       onHit: () => {
         if (laserTrigger.isCorrect) {
           triggerExplosion(meteorPos);
         } else {
-          // 答錯輕微震動
           shakeRef.current = { time: 0.25, intensity: 0.6 };
         }
       }
@@ -495,7 +521,7 @@ export const MeteorCanvas3D = ({
     if (asteroidObjRef.current) asteroidObjRef.current.group.visible = false;
     if (wordSpriteRef.current) wordSpriteRef.current.sprite.visible = false;
 
-    // 3. 生成 30 塊拋射燃燒岩石碎片 (Debris)
+    // 3. 生成 28 塊拋射燃燒岩石碎片
     for (let i = 0; i < 28; i++) {
       const sz = 0.4 + Math.random() * 0.9;
       const debGeo = new THREE.DodecahedronGeometry(sz, 0);
@@ -549,7 +575,7 @@ export const MeteorCanvas3D = ({
   return (
     <div
       ref={mountRef}
-      className="w-full h-[360px] sm:h-[460px] rounded-3xl overflow-hidden relative shadow-2xl border-2 border-cyan-500/40"
+      className="w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden relative shadow-2xl border-2 border-cyan-500/40"
       style={{ background: 'radial-gradient(circle at 50% 40%, #0c142b 0%, #04060d 90%)' }}
     />
   );
