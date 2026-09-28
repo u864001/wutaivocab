@@ -153,4 +153,15 @@ html.dark body {
   animation: floatUpFade 1.6s ease-out forwards;
 }
 
+/* ── 隱藏 Vercel 預覽環境注入之 Toolbar 工具列與 Slack 提示浮層 ── */
+vercel-live-feedback,
+[data-vercel-toolbar],
+#__vercel-toolbar {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+
 
