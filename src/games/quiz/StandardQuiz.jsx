@@ -22,12 +22,15 @@ export const StandardQuiz = ({
   const [isFinished, setIsFinished] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [stats, setStats] = useState({ correct: 0, wrong: 0, streak: 0 });
+  const [firstAttemptCorrect, setFirstAttemptCorrect] = useState(0);
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const inputRef = useRef(null);
   const initialCountRef = useRef(0);
   const historyWordsRef = useRef(new Map());
   const mistakeIdsRef = useRef(new Set());
+  const firstAttemptDoneRef = useRef(new Set());
+  const repeatFailCountRef = useRef(new Map());
 
   // 初始化題庫隊列
   useEffect(() => {
@@ -40,6 +43,9 @@ export const StandardQuiz = ({
     initialCountRef.current = shuffled.length;
     historyWordsRef.current.clear();
     mistakeIdsRef.current.clear();
+    firstAttemptDoneRef.current.clear();
+    repeatFailCountRef.current.clear();
+    setFirstAttemptCorrect(0);
     shuffled.forEach(w => historyWordsRef.current.set(w.id, { id: w.id, en: w.en, zh: w.zh }));
     setCurrentQuestion(shuffled[0] || null);
   }, [settings, words, mode]);
@@ -74,6 +80,15 @@ export const StandardQuiz = ({
       isCorrect = inputTargets.some(u => correctTargets.includes(u));
     }
 
+    const qId = currentQuestion.id;
+    const isFirstAttempt = !firstAttemptDoneRef.current.has(qId);
+    if (isFirstAttempt) {
+      firstAttemptDoneRef.current.add(qId);
+      if (isCorrect) {
+        setFirstAttemptCorrect(prev => prev + 1);
+      }
+    }
+
     if (isCorrect) {
       setFeedback('correct');
       const newStreak = stats.streak + 1;
@@ -100,9 +115,13 @@ export const StandardQuiz = ({
     const newQ = [...queue];
     const curr = newQ.shift();
 
-    // 答錯沉底：錯題循環重測機制
+    // 答錯沉底：錯題循環重測機制 (單題上限3次重試，防無限迴圈卡死)
     if (!wasCorrect) {
-      newQ.push(curr);
+      const failCount = (repeatFailCountRef.current.get(curr.id) || 0) + 1;
+      repeatFailCountRef.current.set(curr.id, failCount);
+      if (failCount < 3) {
+        newQ.push(curr);
+      }
     }
 
     if (newQ.length > 0) {
@@ -160,15 +179,17 @@ export const StandardQuiz = ({
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
               <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
-                {stats.correct}
+                {firstAttemptCorrect} / {initialCountRef.current || stats.correct}
               </span>
-              <p className="text-xs font-bold text-slate-500 mt-1">{t.correctAnswers}</p>
+              <p className="text-xs font-bold text-slate-500 mt-1">首次答對 ({Math.round((firstAttemptCorrect / (initialCountRef.current || 1)) * 100)}%)</p>
             </div>
-            <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800">
-              <span className="text-3xl font-black text-rose-500">
-                {stats.wrong}
+            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+              <span className="text-3xl font-black text-amber-600 dark:text-amber-400">
+                {mistakeIdsRef.current.size > 0 ? `+${mistakeIdsRef.current.size}` : '0'}
               </span>
-              <p className="text-xs font-bold text-slate-500 mt-1">{t.retryMistakes}</p>
+              <p className="text-xs font-bold text-slate-500 mt-1">
+                {mistakeIdsRef.current.size > 0 ? '完成錯題訂正' : '一次零失誤'}
+              </p>
             </div>
           </div>
 
@@ -176,9 +197,9 @@ export const StandardQuiz = ({
           <HonorSubmissionCard
             mode={mode}
             book={qualifyingBook}
-            score={stats.correct}
+            score={firstAttemptCorrect}
             time={elapsedTime}
-            totalCount={initialCountRef.current || (stats.correct + stats.wrong)}
+            totalCount={initialCountRef.current || 20}
             rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', ')}
             reviewWords={Array.from(historyWordsRef.current.values()).map(w => ({
               ...w,

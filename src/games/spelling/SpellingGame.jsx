@@ -256,6 +256,7 @@ export const SpellingGame = ({
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!hasStartedRef.current || isFinishedRef.current || feedbackRef.current) return;
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
       if (e.ctrlKey || e.altKey || e.metaKey) return;
       if (e.key.length !== 1) return;
 
@@ -339,6 +340,10 @@ export const SpellingGame = ({
   }
 
   if (isFinished) {
+    const totalWords = initialCountRef.current || stats.correct;
+    const mistakesCount = mistakeIdsRef.current.size;
+    const firstAttemptPerfect = Math.max(0, totalWords - mistakesCount);
+
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-4 animate-fadeIn">
         <GlassCard className="max-w-md w-full text-center p-8">
@@ -353,15 +358,15 @@ export const SpellingGame = ({
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
               <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
-                {stats.correct}
+                {firstAttemptPerfect} / {totalWords}
               </span>
-              <p className="text-xs font-bold text-slate-500 mt-1">{t.perfectSpelled}</p>
+              <p className="text-xs font-bold text-slate-500 mt-1">首次完美拼出 ({Math.round((firstAttemptPerfect / Math.max(1, totalWords)) * 100)}%)</p>
             </div>
-            <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800">
-              <span className="text-3xl font-black text-rose-500">
-                {stats.wrong}
+            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+              <span className="text-3xl font-black text-amber-600 dark:text-amber-400">
+                {mistakesCount > 0 ? `+${mistakesCount}` : '0'}
               </span>
-              <p className="text-xs font-bold text-slate-500 mt-1">{t.retriedCount}</p>
+              <p className="text-xs font-bold text-slate-500 mt-1">{mistakesCount > 0 ? '完成重測訂正' : '一次零失誤'}</p>
             </div>
           </div>
 
@@ -369,9 +374,9 @@ export const SpellingGame = ({
           <HonorSubmissionCard
             mode="spelling"
             book={qualifyingBook}
-            score={stats.correct}
+            score={firstAttemptPerfect}
             time={elapsedTime}
-            totalCount={initialCountRef.current || (stats.correct + stats.wrong)}
+            totalCount={totalWords}
             rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', ')}
             reviewWords={Array.from(historyWordsRef.current.values()).map(w => ({
               ...w,

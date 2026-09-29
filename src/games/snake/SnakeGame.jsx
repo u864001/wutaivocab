@@ -197,6 +197,7 @@ export const SnakeGame = ({
     if (!hasStarted || isFinished) return;
 
     const handleKeyDown = (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
       const cur = dirRef.current;
       if ((e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') && cur !== 'DOWN') dirRef.current = 'UP';
       else if ((e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') && cur !== 'UP') dirRef.current = 'DOWN';
