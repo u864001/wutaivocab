@@ -88,9 +88,14 @@ export const MeteorGame = ({
     onBack();
   };
 
+  const subModeRef = useRef(subMode);
+  useEffect(() => {
+    subModeRef.current = subMode;
+  }, [subMode]);
+
   // 取得當前模式的「選取範圍單字庫」
-  const getSelectedPool = () => {
-    if (subMode === 'abc') {
+  const getSelectedPool = (targetSubMode = subModeRef.current) => {
+    if (targetSubMode === 'abc') {
       return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((l, i) => ({
         id: `abc-${i}`,
         book: 'ABC',
@@ -104,15 +109,16 @@ export const MeteorGame = ({
   };
 
   useEffect(() => {
+    if (hasStarted) return;
     const pool = getSelectedPool();
     const shuffled = [...pool].sort(() => 0.5 - Math.random());
     setQueue(shuffled);
-  }, [settings, words, subMode]);
+  }, [settings, words, subMode, hasStarted]);
 
-  const updateOptionsFor = (targetWord) => {
-    const ansKey = subMode === 'en-zh' ? 'zh' : (subMode === 'abc' ? 'zh' : 'en');
-    const selectedPool = getSelectedPool();
-    const fullPool = subMode === 'abc' ? selectedPool : words;
+  const updateOptionsFor = (targetWord, targetSubMode = subModeRef.current) => {
+    const ansKey = targetSubMode === 'en-zh' ? 'zh' : (targetSubMode === 'abc' ? 'zh' : 'en');
+    const selectedPool = getSelectedPool(targetSubMode);
+    const fullPool = targetSubMode === 'abc' ? selectedPool : words;
 
     const opts = generateSmartOptions(
       targetWord,
@@ -124,7 +130,7 @@ export const MeteorGame = ({
     setOptions(opts);
   };
 
-  const spawnMeteor = (wordObj, currentDestroyedCount) => {
+  const spawnMeteor = (wordObj, currentDestroyedCount, targetSubMode = subModeRef.current) => {
     if (wordObj && wordObj.id) {
       encounteredWordsRef.current.set(wordObj.id, { id: wordObj.id, en: wordObj.en, zh: wordObj.zh });
     }
@@ -143,12 +149,13 @@ export const MeteorGame = ({
     });
 
     setIsExploding(false);
-    if (subMode !== 'zh-en' && subMode !== 'abc') {
+    if (targetSubMode !== 'zh-en' && targetSubMode !== 'abc') {
       speakEnglish(wordObj.en);
     }
   };
 
   const handleStart = (mode) => {
+    subModeRef.current = mode;
     setSubMode(mode);
     setHasStarted(true);
     setLives(3);
@@ -165,18 +172,7 @@ export const MeteorGame = ({
     // 點擊開始為合法使用者手勢，自動請求全螢幕體驗 (支援 iPad)
     enterFullscreen();
 
-    let pool = [];
-    if (mode === 'abc') {
-      pool = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((l, i) => ({
-        id: `abc-${i}`,
-        book: 'ABC',
-        lesson: '1',
-        en: l,
-        zh: l.toLowerCase()
-      }));
-    } else {
-      pool = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
-    }
+    const pool = getSelectedPool(mode);
 
     if (pool.length === 0) {
       alert('請先在主畫面勾選複習範圍！');
@@ -186,8 +182,8 @@ export const MeteorGame = ({
     const shuffled = [...pool].sort(() => 0.5 - Math.random());
     setQueue(shuffled);
     const first = shuffled[0];
-    updateOptionsFor(first);
-    spawnMeteor(first, 0);
+    updateOptionsFor(first, mode);
+    spawnMeteor(first, 0, mode);
   };
 
   // 2D 備援模式下的物理落下循環 (與 3D 物理引擎 100% 同步)
@@ -337,13 +333,13 @@ export const MeteorGame = ({
     newQueue.shift();
 
     if (newQueue.length === 0) {
-      newQueue.push(...getSelectedPool().sort(() => 0.5 - Math.random()));
+      newQueue.push(...getSelectedPool(subModeRef.current).sort(() => 0.5 - Math.random()));
     }
 
     setQueue(newQueue);
     const nextWord = newQueue[0];
-    updateOptionsFor(nextWord);
-    spawnMeteor(nextWord, currentDestroyedCount);
+    updateOptionsFor(nextWord, subModeRef.current);
+    spawnMeteor(nextWord, currentDestroyedCount, subModeRef.current);
   };
 
   // 模式選擇前導頁

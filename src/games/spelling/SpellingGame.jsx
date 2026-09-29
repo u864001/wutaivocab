@@ -17,6 +17,8 @@ export const SpellingGame = ({
   const { t } = useI18n();
   const [queue, setQueue] = useState([]);
   const [currentWord, setCurrentWord] = useState(null);
+  const [wordGroups, setWordGroups] = useState([]);
+  const [cleanTarget, setCleanTarget] = useState('');
   const [slots, setSlots] = useState([]);
   const [letters, setLetters] = useState([]);
   const [lives, setLives] = useState(5);
@@ -31,6 +33,59 @@ export const SpellingGame = ({
   const historyWordsRef = useRef(new Map());
   const mistakeIdsRef = useRef(new Set());
 
+  // 同步 Refs 供鍵盤、拖曳與異步回呼使用，杜絕 stale closure
+  const cleanTargetRef = useRef('');
+  cleanTargetRef.current = cleanTarget;
+  const slotsRef = useRef(slots);
+  slotsRef.current = slots;
+  const lettersRef = useRef(letters);
+  lettersRef.current = letters;
+  const feedbackRef = useRef(feedback);
+  feedbackRef.current = feedback;
+  const hasStartedRef = useRef(hasStarted);
+  hasStartedRef.current = hasStarted;
+  const isFinishedRef = useRef(isFinished);
+  isFinishedRef.current = isFinished;
+  const currentWordRef = useRef(currentWord);
+  currentWordRef.current = currentWord;
+  const queueRef = useRef(queue);
+  queueRef.current = queue;
+  const startTimeRef = useRef(startTime);
+  startTimeRef.current = startTime;
+
+  // 解析題目：支援片語分組 (如 "by bike" -> [by(2), bike(4)])
+  const parsePhrase = (rawEn = '') => {
+    const words = rawEn.trim().split(/\s+/).filter(Boolean);
+    let globalSlotIndex = 0;
+    const groups = [];
+    const allCleanChars = [];
+
+    for (const w of words) {
+      const chars = w.toLowerCase().replace(/[^a-z]/g, '').split('');
+      const group = {
+        word: w,
+        slots: []
+      };
+      for (const ch of chars) {
+        group.slots.push({
+          char: ch,
+          slotIndex: globalSlotIndex
+        });
+        allCleanChars.push(ch);
+        globalSlotIndex++;
+      }
+      if (group.slots.length > 0) {
+        groups.push(group);
+      }
+    }
+
+    return {
+      wordGroups: groups,
+      cleanTarget: allCleanChars.join(''),
+      totalSlots: globalSlotIndex
+    };
+  };
+
   useEffect(() => {
     let filtered = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
     let shuffled = [...filtered].sort(() => 0.5 - Math.random());
@@ -38,6 +93,7 @@ export const SpellingGame = ({
       shuffled = shuffled.slice(0, parseInt(settings.count, 10));
     }
     setQueue(shuffled);
+    queueRef.current = shuffled;
     initialCountRef.current = shuffled.length;
     historyWordsRef.current.clear();
     mistakeIdsRef.current.clear();
@@ -47,22 +103,35 @@ export const SpellingGame = ({
   const loadWord = (wordObj) => {
     if (!wordObj || !wordObj.en) return;
     setCurrentWord(wordObj);
-    const wordStr = (wordObj.en || '').toLowerCase().replace(/[^a-z]/g, '');
-    if (!wordStr) {
+    currentWordRef.current = wordObj;
+
+    const { wordGroups: groups, cleanTarget: target, totalSlots } = parsePhrase(wordObj.en);
+    if (totalSlots === 0) {
       moveToNext(true);
       return;
     }
-    setSlots(new Array(wordStr.length).fill(null));
 
-    const chars = wordStr.split('').map((char, index) => ({
+    setWordGroups(groups);
+    setCleanTarget(target);
+    cleanTargetRef.current = target;
+
+    const initialSlots = new Array(totalSlots).fill(null);
+    setSlots(initialSlots);
+    slotsRef.current = initialSlots;
+
+    const chars = target.split('').map((char, index) => ({
       id: `letter-${index}-${Date.now()}-${Math.random()}`,
       char,
       isPlaced: false
     }));
 
-    setLetters([...chars].sort(() => 0.5 - Math.random()));
+    const shuffledLetters = [...chars].sort(() => 0.5 - Math.random());
+    setLetters(shuffledLetters);
+    lettersRef.current = shuffledLetters;
+
     setLives(5);
     setFeedback(null);
+    feedbackRef.current = null;
     setTimeout(() => speakEnglish(wordObj.en), 250);
   };
 
@@ -84,19 +153,22 @@ export const SpellingGame = ({
       return onBack();
     }
     setHasStarted(true);
-    setStartTime(Date.now());
+    hasStartedRef.current = true;
+    const now = Date.now();
+    setStartTime(now);
+    startTimeRef.current = now;
     enterFullscreen();
     loadWord(queue[0]);
   };
 
   // 點擊字母自動填入第一個空格 (平板友善)
   const handleLetterClick = (letter) => {
-    if (feedback || letter.isPlaced) return;
+    if (feedbackRef.current || letter.isPlaced) return;
 
-    const nextEmptyIndex = slots.findIndex(s => s === null);
+    const nextEmptyIndex = slotsRef.current.findIndex(s => s === null);
     if (nextEmptyIndex === -1) return;
 
-    const targetChar = currentWord.en.toLowerCase()[nextEmptyIndex];
+    const targetChar = cleanTargetRef.current[nextEmptyIndex];
 
     if (letter.char === targetChar) {
       processCorrect(letter, nextEmptyIndex);
@@ -105,19 +177,54 @@ export const SpellingGame = ({
     }
   };
 
+  // 拖曳起始處理
+  const handleDragStart = (e, letter) => {
+    if (feedbackRef.current || letter.isPlaced) {
+      e.preventDefault();
+      return;
+    }
+    e.dataTransfer.setData('text/plain', letter.id);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  // 拖曳置入槽位處理
+  const handleDropOnSlot = (e, targetSlotIndex) => {
+    e.preventDefault();
+    if (feedbackRef.current) return;
+    const letterId = e.dataTransfer.getData('text/plain');
+    if (!letterId) return;
+
+    const letterObj = lettersRef.current.find(l => l.id === letterId);
+    if (!letterObj || letterObj.isPlaced) return;
+
+    // 該槽位若已填入，不予重複覆蓋
+    if (slotsRef.current[targetSlotIndex] !== null) return;
+
+    const expectedChar = cleanTargetRef.current[targetSlotIndex];
+    if (letterObj.char === expectedChar) {
+      processCorrect(letterObj, targetSlotIndex);
+    } else {
+      processWrong(targetSlotIndex);
+    }
+  };
+
   // 處理放置正確
   const processCorrect = (letterObj, slotIndex) => {
     soundEngine.correct();
 
-    const newSlots = [...slots];
+    const newSlots = [...slotsRef.current];
     newSlots[slotIndex] = letterObj;
+    slotsRef.current = newSlots;
     setSlots(newSlots);
 
-    setLetters(prev => prev.map(l => (l.id === letterObj.id ? { ...l, isPlaced: true } : l)));
+    const newLetters = lettersRef.current.map(l => (l.id === letterObj.id ? { ...l, isPlaced: true } : l));
+    lettersRef.current = newLetters;
+    setLetters(newLetters);
 
     // 全部填滿
     if (newSlots.every(slot => slot !== null)) {
       setFeedback('correct');
+      feedbackRef.current = 'correct';
       setStats(s => ({ ...s, correct: s.correct + 1 }));
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
       setTimeout(() => moveToNext(true), 1300);
@@ -127,8 +234,8 @@ export const SpellingGame = ({
   // 處理放置錯誤
   const processWrong = (slotIndex) => {
     soundEngine.wrong();
-    if (currentWord?.id) {
-      mistakeIdsRef.current.add(currentWord.id);
+    if (currentWordRef.current?.id) {
+      mistakeIdsRef.current.add(currentWordRef.current.id);
     }
     setShakingSlot(slotIndex);
     setTimeout(() => setShakingSlot(null), 500);
@@ -137,6 +244,7 @@ export const SpellingGame = ({
       const next = prev - 1;
       if (next <= 0) {
         setFeedback('wrong');
+        feedbackRef.current = 'wrong';
         setStats(s => ({ ...s, wrong: s.wrong + 1 }));
         setTimeout(() => moveToNext(false), 2200);
       }
@@ -144,9 +252,40 @@ export const SpellingGame = ({
     });
   };
 
+  // 支援鍵盤直接打字輸入 (Chromebook / 電腦無縫體驗)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!hasStartedRef.current || isFinishedRef.current || feedbackRef.current) return;
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (e.key.length !== 1) return;
+
+      const pressedKey = e.key.toLowerCase();
+      if (!/[a-z]/.test(pressedKey)) return;
+
+      const currentSlots = slotsRef.current;
+      const nextEmptyIndex = currentSlots.findIndex(s => s === null);
+      if (nextEmptyIndex === -1) return;
+
+      const targetChar = cleanTargetRef.current[nextEmptyIndex];
+
+      if (pressedKey === targetChar) {
+        const availableLetter = lettersRef.current.find(l => !l.isPlaced && l.char === pressedKey);
+        if (availableLetter) {
+          processCorrect(availableLetter, nextEmptyIndex);
+        }
+      } else {
+        processWrong(nextEmptyIndex);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const moveToNext = (wasCorrect) => {
     setFeedback(null);
-    const newQueue = [...queue];
+    feedbackRef.current = null;
+    const newQueue = [...queueRef.current];
     const curr = newQueue.shift();
 
     if (!wasCorrect) {
@@ -155,13 +294,15 @@ export const SpellingGame = ({
 
     if (newQueue.length > 0) {
       setQueue(newQueue);
+      queueRef.current = newQueue;
       loadWord(newQueue[0]);
     } else {
       // 挑戰完成！退出全螢幕回到正常視窗
       exitFullscreen();
-      const finalSec = Math.floor((Date.now() - startTime) / 1000);
+      const finalSec = Math.floor((Date.now() - (startTimeRef.current || Date.now())) / 1000);
       setElapsedTime(finalSec);
       setIsFinished(true);
+      isFinishedRef.current = true;
       soundEngine.win();
       confetti({ particleCount: 100, spread: 100, origin: { y: 0.5 } });
     }
@@ -290,25 +431,38 @@ export const SpellingGame = ({
               </button>
             </div>
 
-            {/* 單字目標槽位 */}
-            <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2.5 mb-3 sm:mb-5 min-h-[56px] sm:min-h-[64px]">
-              {slots.map((slot, idx) => (
-                <div
-                  key={idx}
-                  className={`
-                    w-10 h-12 sm:w-14 sm:h-18 rounded-xl sm:rounded-2xl border-2 sm:border-4 flex items-center justify-center text-xl sm:text-3xl font-black uppercase transition-all
-                    ${shakingSlot === idx ? 'animate-shake border-rose-500 bg-rose-50' : ''}
-                    ${slot 
-                      ? 'bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-500/30' 
-                      : 'bg-slate-100 dark:bg-slate-800/80 border-dashed border-slate-300 dark:border-slate-600 text-transparent'}
-                  `}
-                >
-                  {slot ? slot.char : '?'}
+            {/* 單字目標槽位 (支援片語單詞分組 _ _   _ _ _ _) */}
+            <div className="flex flex-wrap justify-center items-center gap-x-5 sm:gap-x-8 gap-y-3 mb-3 sm:mb-5 min-h-[56px] sm:min-h-[64px]">
+              {wordGroups.map((group, gIdx) => (
+                <div key={gIdx} className="flex items-center gap-1.5 sm:gap-2.5">
+                  {group.slots.map(({ slotIndex }) => {
+                    const slot = slots[slotIndex];
+                    const isShaking = shakingSlot === slotIndex;
+                    return (
+                      <div
+                        key={slotIndex}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.dataTransfer.dropEffect = 'move';
+                        }}
+                        onDrop={(e) => handleDropOnSlot(e, slotIndex)}
+                        className={`
+                          w-10 h-12 sm:w-14 sm:h-18 rounded-xl sm:rounded-2xl border-2 sm:border-4 flex items-center justify-center text-xl sm:text-3xl font-black uppercase transition-all select-none
+                          ${isShaking ? 'animate-shake border-rose-500 bg-rose-50 dark:bg-rose-950/50' : ''}
+                          ${slot 
+                            ? 'bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-500/30' 
+                            : 'bg-slate-100 dark:bg-slate-800/80 border-dashed border-slate-300 dark:border-slate-600 text-transparent'}
+                        `}
+                      >
+                        {slot ? slot.char : '?'}
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
             </div>
 
-            {/* 打散的字母卡片區 */}
+            {/* 打散的字母卡片區 (支援點擊、拖曳與鍵盤打字) */}
             <div className="p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 flex-shrink-0">
               <p className="text-[11px] sm:text-xs font-bold text-slate-400 mb-2">
                 {t.tapLettersHint}
@@ -317,13 +471,15 @@ export const SpellingGame = ({
                 {letters.map((letter) => (
                   <button
                     key={letter.id}
+                    draggable={!letter.isPlaced && feedback === null}
+                    onDragStart={(e) => handleDragStart(e, letter)}
                     disabled={letter.isPlaced || feedback !== null}
                     onClick={() => handleLetterClick(letter)}
                     className={`
-                      w-10 h-12 sm:w-14 sm:h-18 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-3xl font-black uppercase transition-all
+                      w-10 h-12 sm:w-14 sm:h-18 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-3xl font-black uppercase transition-all select-none
                       ${letter.isPlaced 
                         ? 'opacity-0 scale-50 pointer-events-none' 
-                        : 'btn-3d bg-rose-500 hover:bg-rose-400 text-white border-b-4 border-rose-700 active:border-b-0 cursor-pointer shadow-md'}
+                        : 'btn-3d bg-rose-500 hover:bg-rose-400 text-white border-b-4 border-rose-700 active:border-b-0 cursor-grab active:cursor-grabbing shadow-md'}
                     `}
                   >
                     {letter.char}

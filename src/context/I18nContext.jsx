@@ -173,7 +173,7 @@ const DICTIONARY = {
     spellingComplete: '拼字闖關完成！',
     perfectSpelled: '完美拼出',
     retriedCount: '扣盡重測',
-    tapLettersHint: '點擊下方字母填入槽位：',
+    tapLettersHint: '點擊、拖曳或鍵盤輸入字母填入槽位：',
 
     // 傳統測驗 (StandardQuiz)
     quizQuestionCountHint: '本輪共收錄 {count} 道題目，錯題將循環重測至熟練！',
@@ -356,7 +356,7 @@ const DICTIONARY = {
     spellingComplete: 'Spelling Quest Complete!',
     perfectSpelled: 'Perfect Words',
     retriedCount: 'Retried Words',
-    tapLettersHint: 'Tap letters below to fill the slots:',
+    tapLettersHint: 'Tap, drag, or type letters to fill the slots:',
 
     // StandardQuiz
     quizQuestionCountHint: 'Total {count} questions this round. Mistakes repeat until mastered!',
