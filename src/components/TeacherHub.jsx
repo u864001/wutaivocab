@@ -36,7 +36,9 @@ const GAME_MODES = [
 ];
 
 export const TeacherHub = ({ onBack, words = [], onRefreshWords }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('wutai_teacher_authed') === 'true';
+  });
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [activeTab, setActiveTab] = useState('words'); // words | scores | arenas | system | announcement
@@ -93,12 +95,13 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords }) => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (password === 'wt7902230' || password === 'wutai') {
+    if (password === 'wt7902230') {
       setIsAuthenticated(true);
+      sessionStorage.setItem('wutai_teacher_authed', 'true');
       setAuthError('');
       showToast('最高系統管理者身分驗證成功！');
     } else {
-      setAuthError('密碼錯誤，請重新輸入 (預設 wt7902230)');
+      setAuthError('密碼錯誤，請重新輸入');
     }
   };
 

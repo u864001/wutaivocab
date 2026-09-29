@@ -132,7 +132,7 @@ export const HonorSubmissionCard = ({
               </span>
             </div>
             <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mt-1">
-              完成 {totalCount} 題，答對 {score} 題！可生成官方認證獎狀
+              完成 {totalCount} 題，答對 {score} 題！可領取自主學習紀念獎狀
             </p>
           </div>
         </div>

@@ -11,6 +11,7 @@ import { MemoryGameSingle } from './games/memory/MemoryGameSingle';
 import { BattleGame } from './games/battle/BattleGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
+import { TeacherAuthModal } from './components/TeacherAuthModal';
 import { useI18n } from './context/I18nContext';
 import { useTheme } from './context/ThemeContext';
 import { fetchWordsFromDb } from './services/supabase';
@@ -152,7 +153,7 @@ export function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // 榮譽榜資格判斷：單冊選滿 2 個單元 (或 20 字)，且題數為 20 題或全部
+  // 榮譽榜資格判斷：單冊選滿 2 個單元，總字數與出題數均必須達到至少 20 題
   const qualifyingBook = useMemo(() => {
     const selectedBooks = [...new Set(settings.selectedUnits.map(u => u.split('-')[0]))];
     if (selectedBooks.length !== 1) return null;
@@ -163,12 +164,24 @@ export function App() {
       settings.selectedUnits.includes(`${w.book}-${w.lesson}`)
     ).length;
 
-    if (selectedWordsCount < 20 && selectedUnitsCount < 2) return null;
+    // 嚴格規定：單冊至少 2 單元、題庫至少 20 字
+    if (selectedWordsCount < 20 || selectedUnitsCount < 2) return null;
     const playCount = settings.count === 'all' ? selectedWordsCount : parseInt(settings.count, 10);
-    if (playCount < 20 && settings.count !== 'all') return null;
+    // 嚴格規定：實際出題數必須 >= 20 題
+    if (playCount < 20) return null;
 
     return book;
   }, [settings.selectedUnits, settings.count, words]);
+
+  const [isTeacherAuthOpen, setIsTeacherAuthOpen] = useState(false);
+
+  const handleOpenTeacherHub = () => {
+    if (sessionStorage.getItem('wutai_teacher_authed') === 'true') {
+      handleNavigate('teacher-hub');
+    } else {
+      setIsTeacherAuthOpen(true);
+    }
+  };
 
   const handleNavigate = (view) => {
     soundEngine.init();
@@ -198,12 +211,12 @@ export function App() {
       const isModifier = e.ctrlKey || e.metaKey;
       if (isModifier && ((e.shiftKey && (e.key === 'A' || e.key === 'a')) || (e.altKey && (e.key === 't' || e.key === 'T')))) {
         e.preventDefault();
-        handleNavigate('teacher-hub');
+        handleOpenTeacherHub();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    window.openAdminHub = () => handleNavigate('teacher-hub');
-    window.__openTeacherHub = () => handleNavigate('teacher-hub');
+    window.openAdminHub = handleOpenTeacherHub;
+    window.__openTeacherHub = handleOpenTeacherHub;
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       delete window.openAdminHub;
@@ -230,7 +243,7 @@ export function App() {
     <div className="min-h-screen flex flex-col transition-colors duration-300">
       {/* 全域統一導覽列 (全頁面維持一致的學校標誌、回首頁、語言與主題開關) */}
       <Header
-        onOpenTeacherHub={() => handleNavigate('teacher-hub')}
+        onOpenTeacherHub={handleOpenTeacherHub}
         onOpenLeaderboard={() => handleNavigate('leaderboard')}
         onOpenPhonics={() => handleNavigate('phonics')}
         onGoHome={() => handleNavigate('portal')}
@@ -242,13 +255,13 @@ export function App() {
       <main className="flex-1 flex flex-col">
         <ErrorBoundary
           onReset={() => handleNavigate('portal')}
-          onOpenTeacherHub={() => handleNavigate('teacher-hub')}
+          onOpenTeacherHub={handleOpenTeacherHub}
         >
           {currentView === 'portal' && (
             <Portal
               onNavigate={handleNavigate}
               onOpenLeaderboard={() => handleNavigate('leaderboard')}
-              onOpenTeacherHub={() => handleNavigate('teacher-hub')}
+              onOpenTeacherHub={handleOpenTeacherHub}
               wordsCount={words.length}
             />
           )}
@@ -260,7 +273,7 @@ export function App() {
               setSettings={setSettings}
               onNavigate={handleNavigate}
               onOpenLeaderboard={() => handleNavigate('leaderboard')}
-              onOpenTeacherHub={() => handleNavigate('teacher-hub')}
+              onOpenTeacherHub={handleOpenTeacherHub}
               qualifyingBook={qualifyingBook}
             />
           )}
@@ -277,7 +290,7 @@ export function App() {
             <LeaderboardView
               words={words}
               onBack={() => handleNavigate('lobby')}
-              onOpenTeacherHub={() => handleNavigate('teacher-hub')}
+              onOpenTeacherHub={handleOpenTeacherHub}
             />
           )}
 
@@ -356,6 +369,16 @@ export function App() {
           )}
         </ErrorBoundary>
       </main>
+
+      {/* 教師工作台通行驗證彈窗 (密碼: wt7902230) */}
+      <TeacherAuthModal
+        isOpen={isTeacherAuthOpen}
+        onClose={() => setIsTeacherAuthOpen(false)}
+        onSuccess={() => {
+          setIsTeacherAuthOpen(false);
+          handleNavigate('teacher-hub');
+        }}
+      />
     </div>
   );
 }

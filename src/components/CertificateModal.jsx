@@ -108,7 +108,7 @@ export const CertificateModal = ({
               <Award className="w-6 h-6 text-amber-500 animate-bounce" />
               <div>
                 <h3 className="font-heading font-black text-slate-800 dark:text-slate-100 text-base sm:text-lg">
-                  霧臺國小 官方榮譽獎狀 (300 DPI 印刷級)
+                  霧臺國小 學習榮譽獎狀 (300 DPI 紀念款)
                 </h3>
                 <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
                   {level.badge} {level.title} • {getROCDateString()}
