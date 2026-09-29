@@ -16,6 +16,11 @@ import {
   Headphones,
   QrCode,
   Compass,
+  GraduationCap,
+  Users,
+  MessageSquare,
+  ClipboardCheck,
+  ExternalLink,
 } from 'lucide-react';
 
 export const Portal = ({
@@ -185,6 +190,64 @@ export const Portal = ({
               <div className="flex items-center gap-2">
                 <span>{t.phonicsModuleEnter}</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Button3D>
+          </div>
+        </GlassCard>
+
+        {/* ── 模組三：ClassQnA 線上互動教室與回家作業 (Virtual Classroom & Homework) ── */}
+        <GlassCard
+          hoverable={true}
+          onClick={() => window.open('https://classqna.vercel.app/', '_blank', 'noopener,noreferrer')}
+          className="relative overflow-hidden group cursor-pointer border-2 border-sky-300 dark:border-sky-700/60 bg-gradient-to-br from-sky-500/10 via-blue-500/5 to-cyan-500/10 dark:from-sky-950/40 dark:via-slate-900/50 dark:to-cyan-950/30 p-6 sm:p-8"
+        >
+          {/* 背景裝飾光暈 */}
+          <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-sky-500/10 dark:bg-sky-500/5 blur-3xl group-hover:scale-125 transition-transform duration-500 pointer-events-none" />
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
+            <div className="flex items-start sm:items-center gap-5">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-sky-500 via-blue-500 to-indigo-500 text-white flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-sky-500/30 shrink-0">
+                <GraduationCap className="w-8 h-8 sm:w-10 sm:h-10" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h3 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 font-heading">
+                    {t.classqnaModuleTitle}
+                  </h3>
+                  <span className="px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-sm">
+                    {t.classqnaModuleBadge}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                  {t.classqnaModuleDesc}
+                </p>
+
+                {/* 亮點標籤列 */}
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-sky-200 dark:border-sky-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                    <Users className="w-3.5 h-3.5 text-sky-500" />
+                    {lang === 'zh-TW' ? '線上互動虛擬教室' : 'Virtual Classroom'}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-sky-200 dark:border-sky-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                    <MessageSquare className="w-3.5 h-3.5 text-blue-500" />
+                    {lang === 'zh-TW' ? '課堂即時問答互動' : 'Live Class Q&A'}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-sky-200 dark:border-sky-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                    <ClipboardCheck className="w-3.5 h-3.5 text-teal-500" />
+                    {lang === 'zh-TW' ? '雲端回家作業指派' : 'Cloud Homework'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <Button3D
+              variant="blue"
+              size="lg"
+              className="shrink-0 w-full sm:w-auto shadow-lg group-hover:scale-105 transition-transform"
+            >
+              <div className="flex items-center gap-2">
+                <span>{t.classqnaModuleEnter}</span>
+                <ExternalLink className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
               </div>
             </Button3D>
           </div>

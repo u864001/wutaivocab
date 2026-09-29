@@ -120,9 +120,9 @@ export const Lobby = ({
           <h2
             onClick={handleAdminTrigger}
             className="text-2xl sm:text-3xl font-black text-amber-950 dark:text-white font-heading cursor-pointer select-none active:scale-95 transition-transform"
-            title={t.appName}
+            title={t.vocabLobbyTitle || t.appName}
           >
-            {t.appName}
+            {t.vocabLobbyTitle || t.appName}
           </h2>
           <p className="text-xs sm:text-sm font-bold text-amber-900/80 dark:text-indigo-200 mt-1">
             題庫已收錄 {words.length} 個單字 • 挑戰每週排行榜登頂！

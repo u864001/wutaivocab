@@ -13,12 +13,13 @@ const DICTIONARY = {
     themeNight: '極光星空',
     teacherHub: '教師工作台',
     leaderboard: '全校英雄榜',
-    backToPortal: '回學習宇宙首頁',
+    backToPortal: '回英語學習宇宙首頁',
 
     // 首頁 Portal 學習宇宙
     portalTitle: '英語學習宇宙',
     portalSubtitle: '點選進入學習宇宙，探索豐富趣味的英語世界',
-    vocabModuleTitle: '單字學習宇宙',
+    vocabModuleTitle: '英語單字學習館',
+    vocabLobbyTitle: '霧臺國小 英語單字學習館',
     vocabModuleBadge: '課本題庫・多人對戰・趣味遊戲',
     vocabModuleDesc: '收錄教育部教材與任課教師專區 600+ 單字！包含多人連線競技擂台、隕石防衛、貪食蛇、拖曳拼字、記憶翻牌與四大經典測驗。',
     vocabModuleEnter: '進入單字學習',
@@ -26,6 +27,10 @@ const DICTIONARY = {
     phonicsModuleBadge: '8大規則卡池・CVC拼讀・聽力評量',
     phonicsModuleDesc: '8 大發音規則卡池（短母音、魔術e、雙子音、混成音、母音組合等），支援 CVC 磁吸拼讀導軌、純音素發音與聽音辨字挑戰！',
     phonicsModuleEnter: '進入自然發音',
+    classqnaModuleTitle: 'ClassQnA 線上互動教室',
+    classqnaModuleBadge: '虛擬教室・課堂問答・回家作業',
+    classqnaModuleDesc: '建立線上互動虛擬教室，支援課堂即時問答互動與雲端指派回家作業，學生離開課堂後亦可隨時跨裝置登入作答！',
+    classqnaModuleEnter: '進入互動教室',
 
     // 大廳區塊
     rangeTitle: '1. 設定複習範圍',
@@ -201,14 +206,19 @@ const DICTIONARY = {
     // Portal Learning Universe
     portalTitle: 'English Learning Universe',
     portalSubtitle: 'Select a learning module below to explore the English universe',
-    vocabModuleTitle: 'Vocabulary Learning Quest',
+    vocabModuleTitle: 'Vocabulary Learning Hub',
+    vocabLobbyTitle: 'Wutai Elementary Vocabulary Hub',
     vocabModuleBadge: 'Curriculum & Live Battle',
     vocabModuleDesc: 'Explore 600+ vocabulary words across MOE & teacher decks! Play live multiplayer battle arena, meteor defense, snake spelling, memory match, and 4 quiz modes.',
-    vocabModuleEnter: 'Enter Vocab Quest',
+    vocabModuleEnter: 'Enter Vocab Hub',
     phonicsModuleTitle: 'Interactive Phonics Board',
     phonicsModuleBadge: '8 Sound Banks & Quiz',
     phonicsModuleDesc: '8 Phonics sound banks (short vowels, silent e, blends, digraphs, vowel teams), interactive CVC blending board, formant audio, and dictation quiz!',
     phonicsModuleEnter: 'Enter Phonics Board',
+    classqnaModuleTitle: 'ClassQnA Virtual Classroom',
+    classqnaModuleBadge: 'Virtual Room • Live Q&A • Homework',
+    classqnaModuleDesc: 'Create virtual interactive classrooms with real-time class Q&A and Supabase cloud homework assignments for after-school learning!',
+    classqnaModuleEnter: 'Enter Classroom',
 
     // Lobby
     rangeTitle: '1. Select Review Range',
