@@ -5,7 +5,8 @@ import { useI18n } from '../context/I18nContext';
 import {
   Trophy, Settings2, Swords, Rocket, Puzzle,
   Volume2, Keyboard, ChevronDown, ChevronUp, Check,
-  QrCode, Sparkles, BookOpen, UserCheck, Megaphone, Home
+  QrCode, Sparkles, BookOpen, UserCheck, Megaphone, Home,
+  Compass
 } from 'lucide-react';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 
@@ -408,7 +409,30 @@ export const Lobby = ({
           {t.secSolo}
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          {/* 星際字母迷宮 / 百步蛇字母巡航 (低年級專屬，免選單字即玩) */}
+          <GlassCard
+            hoverable={true}
+            onClick={() => onNavigate('maze')}
+            className="text-center flex flex-col items-center justify-between group border-2 border-amber-400/60 bg-gradient-to-b from-amber-500/10 via-orange-500/5 to-transparent relative shadow-md"
+          >
+            <div className="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-stone-950 shadow-sm flex items-center gap-0.5">
+              <span>低年級首選</span>
+            </div>
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-stone-950 transition-all shadow-md">
+              <Compass className="w-7 h-7" />
+            </div>
+            <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+              {t.mazeTitle || '字母巡航迷宮'}
+            </h4>
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+              {t.mazeDesc || '百步蛇手指巡航！A到Z字母連線與10x10挑戰！'}
+            </p>
+            <Button3D variant="amber" size="sm" className="w-full">
+              巡航探險
+            </Button3D>
+          </GlassCard>
+
           {/* 隕石防衛戰 */}
           <GlassCard
             hoverable={!isSelectionEmpty}

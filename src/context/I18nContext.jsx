@@ -59,6 +59,8 @@ const DICTIONARY = {
     spellingDesc: '聆聽發音，滑動字母填滿單字槽！',
     memoryTitle: '星際記憶翻牌',
     memoryDesc: '考驗記憶力！中英單字配對與金幣雨！',
+    mazeTitle: '字母巡航迷宮',
+    mazeDesc: '百步蛇手指巡航！A到Z字母連線與10x10挑戰！',
     battleTitle: '星際死鬥競技場',
     battleDesc: '2~4 人即時連線，答對發動隕石突襲對手！',
     quizZhEn: '中翻英打字',
@@ -123,6 +125,7 @@ const DICTIONARY = {
     timeSpentSec: '耗時：{time} 秒',
     unitPoints: '分',
     unitWins: '勝',
+    unitSeconds: '秒',
 
     // 多人連線戰鬥 (BattleGame)
     battleWaitingRoom: '戰備等待室',
@@ -247,6 +250,8 @@ const DICTIONARY = {
     spellingDesc: 'Listen, drag & place letters into the slots!',
     memoryTitle: 'Cosmic Memory Match',
     memoryDesc: 'Pair English & Chinese cards + catch Coin Rain!',
+    mazeTitle: 'Alphabet Maze Quest',
+    mazeDesc: 'Trace A to Z letter trails with the Hundred-Pace Snake!',
     battleTitle: 'Horizon Deathmatch',
     battleDesc: '2-4 players live battle! Correct answers launch assaults!',
     quizZhEn: 'ZH to EN Typing',
@@ -311,6 +316,7 @@ const DICTIONARY = {
     timeSpentSec: 'Time: {time}s',
     unitPoints: 'pts',
     unitWins: 'wins',
+    unitSeconds: 's',
 
     // BattleGame
     battleWaitingRoom: 'Battle Waiting Room',

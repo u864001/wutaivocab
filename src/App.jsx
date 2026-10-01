@@ -9,6 +9,7 @@ import { MeteorGame } from './games/meteor/MeteorGame';
 import { SnakeGame } from './games/snake/SnakeGame';
 import { MemoryGameSingle } from './games/memory/MemoryGameSingle';
 import { BattleGame } from './games/battle/BattleGame';
+import { AlphabetMazeGame } from './games/maze/AlphabetMazeGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
 import { TeacherAuthModal } from './components/TeacherAuthModal';
@@ -335,6 +336,13 @@ export function App() {
             <MemoryGameSingle
               settings={settings}
               words={words}
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
+
+          {currentView === 'maze' && (
+            <AlphabetMazeGame
               qualifyingBook={qualifyingBook}
               onBack={() => handleNavigate('lobby')}
             />

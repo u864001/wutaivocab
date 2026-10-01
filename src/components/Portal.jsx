@@ -112,7 +112,7 @@ export const Portal = ({
                   </span>
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-emerald-200 dark:border-emerald-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
                     <Gamepad2 className="w-3.5 h-3.5 text-indigo-500" />
-                    {lang === 'zh-TW' ? '4 大單人遊戲' : '4 Solo Games'}
+                    {lang === 'zh-TW' ? '5 大單人遊戲' : '5 Solo Games'}
                   </span>
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-emerald-200 dark:border-emerald-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
                     <BookOpen className="w-3.5 h-3.5 text-emerald-500" />

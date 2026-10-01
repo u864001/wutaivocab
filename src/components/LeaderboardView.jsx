@@ -8,7 +8,7 @@ import { useEasterEgg } from '../hooks/useEasterEgg';
 import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
-  Swords, X, ChevronRight
+  Swords, X, ChevronRight, Compass
 } from 'lucide-react';
 
 const BOARD_MODES = [
@@ -78,6 +78,18 @@ const BOARD_MODES = [
     unit: '勝',
     defaultKey: 'battle-wins',
     subModes: [{ key: 'battle-wins', label: '累積勝場' }]
+  },
+  {
+    id: 'maze',
+    label: '字母巡航迷宮',
+    icon: Compass,
+    color: 'text-violet-500',
+    unit: '秒',
+    defaultKey: 'maze-upper',
+    subModes: [
+      { key: 'maze-upper', label: '10x10 大寫巡航' },
+      { key: 'maze-lower', label: '10x10 小寫巡航' }
+    ]
   }
 ];
 
@@ -99,7 +111,8 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
     snake: 'snake-normal',
     quiz: 'quiz-zh-en',
     memory: 'memory-single',
-    battle: 'battle-wins'
+    battle: 'battle-wins',
+    maze: 'maze-upper'
   });
 
   // 彈窗顯示前 50 名的模式 Key (null 表示關閉)
@@ -347,10 +360,10 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
 
                         <div className="text-right font-black">
                           <span className="text-emerald-600 dark:text-emerald-400 font-heading text-sm">
-                            {r.score}
+                            {mode.unit === '秒' ? (r.time || 0) : r.score}
                           </span>
                           <span className="text-[10px] text-slate-400 ml-1">
-                            {mode.unit === '勝' ? t.unitWins : t.unitPoints}
+                            {mode.unit === '秒' ? '秒' : mode.unit === '勝' ? t.unitWins : t.unitPoints}
                           </span>
                         </div>
                       </div>
@@ -436,10 +449,10 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
 
                     <div className="text-right">
                       <span className="text-base font-black text-emerald-600 dark:text-emerald-400 font-heading">
-                        {r.score}
+                        {modalInfo.unit === '秒' ? (r.time || 0) : r.score}
                       </span>
                       <span className="text-xs text-slate-400 ml-1">
-                        {modalInfo.unit === '勝' ? (t.unitWins || '勝') : (t.unitPoints || '分')}
+                        {modalInfo.unit === '秒' ? '秒' : modalInfo.unit === '勝' ? (t.unitWins || '勝') : (t.unitPoints || '分')}
                       </span>
                     </div>
                   </div>
