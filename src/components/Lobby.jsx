@@ -6,7 +6,7 @@ import {
   Trophy, Settings2, Swords, Rocket, Puzzle,
   Volume2, Keyboard, ChevronDown, ChevronUp, Check,
   QrCode, Sparkles, BookOpen, UserCheck, Megaphone, Home,
-  Compass
+  Compass, Flame
 } from 'lucide-react';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 
@@ -409,7 +409,30 @@ export const Lobby = ({
           {t.secSolo}
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          {/* 極速是非滑牌 (30秒卡牌速辨，低年級字母 / 中高年級單字) */}
+          <GlassCard
+            hoverable={true}
+            onClick={() => onNavigate('swipe')}
+            className="text-center flex flex-col items-center justify-between group border-2 border-rose-400/60 bg-gradient-to-b from-rose-500/10 via-orange-500/5 to-transparent relative shadow-md cursor-pointer"
+          >
+            <div className="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-sm flex items-center gap-0.5">
+              <span>30秒對決</span>
+            </div>
+            <div className="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-md">
+              <Flame className="w-7 h-7" />
+            </div>
+            <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+              {t.swipeTitle || '極速是非滑牌'}
+            </h4>
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+              {t.swipeDesc || '30秒極速對決！左右滑動手牌，挑戰功能彩蛋與連擊！'}
+            </p>
+            <Button3D variant="rose" size="sm" className="w-full">
+              滑牌挑戰
+            </Button3D>
+          </GlassCard>
+
           {/* 星際字母迷宮 / 百步蛇字母巡航 (低年級專屬，免選單字即玩) */}
           <GlassCard
             hoverable={true}

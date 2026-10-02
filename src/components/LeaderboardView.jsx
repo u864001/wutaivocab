@@ -8,7 +8,7 @@ import { useEasterEgg } from '../hooks/useEasterEgg';
 import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
-  Swords, X, ChevronRight, Compass
+  Swords, X, ChevronRight, Compass, Flame
 } from 'lucide-react';
 
 const BOARD_MODES = [
@@ -80,6 +80,18 @@ const BOARD_MODES = [
     subModes: [{ key: 'battle-wins', label: '累積勝場' }]
   },
   {
+    id: 'swipe',
+    label: '極速是非滑牌',
+    icon: Flame,
+    color: 'text-rose-500',
+    unit: '分',
+    defaultKey: 'swipe-vocab',
+    subModes: [
+      { key: 'swipe-vocab', label: '30秒單字辨識' },
+      { key: 'swipe-abc', label: '30秒字母大小寫' }
+    ]
+  },
+  {
     id: 'maze',
     label: '字母巡航迷宮',
     icon: Compass,
@@ -112,6 +124,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
     quiz: 'quiz-zh-en',
     memory: 'memory-single',
     battle: 'battle-wins',
+    swipe: 'swipe-vocab',
     maze: 'maze-upper'
   });
 

@@ -10,6 +10,7 @@ import { SnakeGame } from './games/snake/SnakeGame';
 import { MemoryGameSingle } from './games/memory/MemoryGameSingle';
 import { BattleGame } from './games/battle/BattleGame';
 import { AlphabetMazeGame } from './games/maze/AlphabetMazeGame';
+import { SwipeCardGame } from './games/swipe/SwipeCardGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
 import { TeacherAuthModal } from './components/TeacherAuthModal';
@@ -355,6 +356,15 @@ export function App() {
 
           {currentView === 'maze' && (
             <AlphabetMazeGame
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
+
+          {currentView === 'swipe' && (
+            <SwipeCardGame
+              settings={settings}
+              words={words}
               qualifyingBook={qualifyingBook}
               onBack={() => handleNavigate('lobby')}
             />
