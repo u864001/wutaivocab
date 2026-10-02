@@ -11,7 +11,8 @@ import {
   Compass, ArrowLeft, RotateCcw, Volume2, VolumeX,
   Sparkles, Trophy, Award, CheckCircle2, ChevronRight,
   HelpCircle, Eye, EyeOff, Maximize2, Flag, Footprints,
-  Play, Settings, Flame, ShieldAlert, Mountain, Rocket
+  Play, Settings, Flame, ShieldAlert, Mountain, Rocket,
+  Undo2
 } from 'lucide-react';
 
 const ALPHABET_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -51,6 +52,21 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const timerRef = useRef(null);
   const startTimeRef = useRef(0);
+
+  // ── 提示狀態控制 (標準級停頓 1 秒自適應提示) ──
+  const [isHintActive, setIsHintActive] = useState(false);
+  const hintTimerRef = useRef(null);
+
+  // ── 結算成績統計 (支援完美通關與走偏診斷) ──
+  const [settlementResult, setSettlementResult] = useState({
+    isPerfect: true,
+    accuracy: 100,
+    correctCount: 0,
+    totalCount: 0,
+    wrongStepsCount: 0,
+    score: 0,
+    time: 0
+  });
 
   // ── 觸控與手勢安全防護 ──
   const gridContainerRef = useRef(null);
@@ -114,16 +130,18 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
       setElapsedTime(0);
       setTimerRunning(false);
       lastTouchCellRef.current = null;
+      setIsHintActive(tier === 'beginner');
     } catch (e) {
       console.error('Maze generation error:', e);
     }
-  }, [gridRows, gridCols, sequence, isLowercase]);
+  }, [gridRows, gridCols, sequence, isLowercase, tier]);
 
   // 進入遊戲畫面
   const handleLaunchGame = (selectedTier = tier) => {
     enterFullscreen();
     soundEngine.click();
     setTier(selectedTier);
+    setIsHintActive(selectedTier === 'beginner');
     setGameState('playing');
     // 生成全新迷宮
     const alphabet = isLowercase ? ALPHABET_LOWER : ALPHABET_UPPER;
@@ -180,14 +198,55 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
     };
   }, [timerRunning]);
 
-  // ── 通關判定與勝利結算 ──
-  const handleVictory = useCallback(() => {
+  // ── 通關判定與終點結算 (支援完美通關與走偏診斷) ──
+  const handleFinishSettlement = useCallback((finalTrail) => {
+    if (!mazeData) return;
     setTimerRunning(false);
-    soundEngine.win();
-    try {
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-    } catch (e) {}
+
+    const { sequence } = mazeData;
+    const isPerfect =
+      finalTrail.length === sequence.length &&
+      finalTrail.every((step, idx) => step.char === sequence[idx]);
+
+    let correctMatches = 0;
+    finalTrail.forEach((step, idx) => {
+      if (idx < sequence.length && step.char === sequence[idx]) {
+        correctMatches++;
+      }
+    });
+
+    const accuracy = Math.max(0, Math.round((correctMatches / sequence.length) * 100));
+    const wrongStepsCount = Math.max(0, finalTrail.length - correctMatches);
+    const challengeScore = isPerfect ? Math.max(10, 1000 - elapsedTime * 5) : 0;
+
+    setSettlementResult({
+      isPerfect,
+      accuracy,
+      correctCount: correctMatches,
+      totalCount: sequence.length,
+      wrongStepsCount,
+      score: challengeScore,
+      time: elapsedTime
+    });
+
+    if (isPerfect) {
+      soundEngine.win();
+      try {
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      } catch (e) {}
+    } else {
+      soundEngine.laser();
+    }
+
     setGameState('settlement');
+  }, [mazeData, elapsedTime]);
+
+  // ── 倒退修正：從結算畫面返回迷宮繼續倒退修改 ──
+  const handleResumeAndBacktrack = useCallback(() => {
+    // 退出結算，回到遊戲畫面，並將蛇頭退回至出口的前一格，讓學生可以繼續往回倒退
+    setTrail(prev => (prev.length > 1 ? prev.slice(0, prev.length - 1) : prev));
+    setGameState('playing');
+    setTimerRunning(true);
   }, []);
 
   // ── 核心路徑推進與反悔回退判定 ──
@@ -244,33 +303,60 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
         return prevTrail;
       }
 
-      // 檢查字母是否為序列中下一個期待的字母
+      // 玩家踏出移動，若計時器尚未啟動則啟動
+      if (!timerRunning) {
+        setTimerRunning(true);
+      }
+
       const expectedChar = sequence[prevTrail.length];
-      if (targetCell.char === expectedChar) {
-        // 成功吞食推進！
-        soundEngine.correct();
+
+      // ── 分難度等級處理移動防呆與推進 ──
+      if (tier === 'beginner') {
+        // 新手級：嚴格字母防呆！只能走向下一個正確字母
+        if (targetCell.char === expectedChar) {
+          soundEngine.correct();
+          speakEnglish(targetCell.char);
+
+          const newTrail = [
+            ...prevTrail,
+            { r, c, char: targetCell.char, index: prevTrail.length }
+          ];
+
+          // 新手級走到最後一個字母直接過關
+          if (newTrail.length === sequence.length) {
+            setTimeout(() => handleFinishSettlement(newTrail), 350);
+          }
+
+          return newTrail;
+        } else {
+          // 踩到錯誤字母：擋住不前進
+          soundEngine.wrong();
+          return prevTrail;
+        }
+      } else {
+        // 標準級與挑戰級：無防呆自由滑行，走到哪唸到哪！
         speakEnglish(targetCell.char);
+
+        if (targetCell.char === expectedChar) {
+          soundEngine.correct();
+        } else {
+          soundEngine.click();
+        }
 
         const newTrail = [
           ...prevTrail,
           { r, c, char: targetCell.char, index: prevTrail.length }
         ];
 
-        // 檢查是否成功到達終點 (最後一個字母)
-        if (newTrail.length === sequence.length) {
-          setTimeout(() => handleVictory(), 300);
+        // 檢查是否抵達終點出口
+        if (targetCell.isEnd || (r === mazeData.endCell.r && c === mazeData.endCell.c)) {
+          setTimeout(() => handleFinishSettlement(newTrail), 350);
         }
 
         return newTrail;
-      } else {
-        // 踩到錯誤字母 (在新手與標準模式發出輕柔提示聲)
-        if (tier !== 'challenge') {
-          soundEngine.wrong();
-        }
-        return prevTrail;
       }
     });
-  }, [mazeData, tier, handleVictory]);
+  }, [mazeData, tier, timerRunning, handleFinishSettlement]);
 
   // ── 觸控與指標座標轉換 ──
   const getCellFromCoords = (clientX, clientY) => {
@@ -323,9 +409,49 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
     handleStepTo(r, c);
   };
 
-  // ── 計算下一格的期待提示 (僅限新手級與標準級) ──
+  // ── 檢查目前路徑是否完全在正確字母序列軌道上 ──
+  const isOnCorrectTrack = useMemo(() => {
+    if (!mazeData || trail.length === 0) return true;
+    const { sequence } = mazeData;
+    if (trail.length > sequence.length) return false;
+    return trail.every((step, idx) => step.char === sequence[idx]);
+  }, [mazeData, trail]);
+
+  // ── 停頓 1 秒自適應提示定時器 ──
+  // 新手級：永遠常駐提示
+  // 標準級：若在正確路徑上，停頓滿 1 秒（1000ms）才高亮下一步；一滑動即關閉；走偏則不提示
+  // 挑戰級：永遠不給提示
+  useEffect(() => {
+    if (hintTimerRef.current) {
+      clearTimeout(hintTimerRef.current);
+      hintTimerRef.current = null;
+    }
+
+    if (tier === 'beginner') {
+      setIsHintActive(true);
+    } else if (tier === 'standard') {
+      setIsHintActive(false);
+      // 只有在正確路徑上且尚未走滿全程時，原地停留滿 1 秒才啟用提示
+      if (isOnCorrectTrack && mazeData && trail.length < mazeData.sequence.length) {
+        hintTimerRef.current = setTimeout(() => {
+          setIsHintActive(true);
+        }, 1000);
+      }
+    } else {
+      setIsHintActive(false);
+    }
+
+    return () => {
+      if (hintTimerRef.current) {
+        clearTimeout(hintTimerRef.current);
+        hintTimerRef.current = null;
+      }
+    };
+  }, [trail, tier, isOnCorrectTrack, mazeData]);
+
+  // ── 計算下一格的期待提示 ──
   const nextTargetInfo = useMemo(() => {
-    if (!mazeData || tier === 'challenge') return null;
+    if (!mazeData || !isHintActive || tier === 'challenge') return null;
     const { sequence, grid, rows, cols } = mazeData;
     if (trail.length === 0) {
       return {
@@ -337,6 +463,7 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
 
     const expectedChar = sequence[trail.length];
     const head = trail[trail.length - 1];
+    if (!head) return null;
 
     // 尋找正交相鄰且字元相符的下一格
     const validNeighbors = [];
@@ -358,7 +485,7 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
     }
 
     return { expectedChar, nextCells: validNeighbors };
-  }, [mazeData, trail, tier]);
+  }, [mazeData, trail, tier, isHintActive]);
 
   // 退出至大廳
   const handleBackToLobby = () => {
@@ -473,7 +600,7 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
               </h3>
 
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
-                自選起訖字母區間，動態調整網格大小 (5x5 ~ 8x8)，全程發光引導，適合低年級初期練習！
+                自選起訖字母區間，動態調整網格 (5x5 ~ 8x8)。全程常駐發光提示，並具備防呆保護（走錯格擋住不前進），低年級入門最安心！
               </p>
 
               {/* 新手級自選字母區塊 */}
@@ -516,7 +643,7 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
                 </div>
 
                 <div className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 text-center pt-1 border-t border-emerald-200/60 dark:border-emerald-800/60">
-                  🎯 區間共 {sequence.length} 個字母 • 自動適配 {gridRows}x{gridCols}
+                  🎯 區間共 {sequence.length} 個字母 • 全程發光提示與防呆
                 </div>
               </div>
             </div>
@@ -548,21 +675,21 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
               </h3>
 
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
-                完整 26 個英文字母 ({isLowercase ? 'a-z' : 'A-Z'})，在 8x8 網格中依序巡航。提供即時回饋與發音引導，適合熟練全字母順序！
+                完整 26 個英文字母 ({isLowercase ? 'a-z' : 'A-Z'})，8x8 網格。無防呆自由滑行，停頓 1 秒給予提示；走偏時不提示，抵達出口結算正確率！
               </p>
 
               <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 space-y-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
                 <div className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span>從入口 {isLowercase ? 'a' : 'A'} 直通出口 {isLowercase ? 'z' : 'Z'}</span>
+                  <span>自由探索滑行（走到哪唸到哪）</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span>附帶語音發音與下一步發光引導</span>
+                  <span>停留 1 秒自適應提示（走偏自動隱藏）</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span>不計入排行榜，輕鬆練功</span>
+                  <span>到出口結算正確率，支援退回修正</span>
                 </div>
               </div>
             </div>
@@ -595,7 +722,7 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
               </h3>
 
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
-                100 格巨型迷宮！全程不提供任何提示或發光引導，純憑實力眼力巡航！通關記錄秒數角逐全校 Top 50 榮譽榜！
+                100 格巨型迷宮！全程無提示、無防呆，走到哪唸到哪！唯有 100% 完美依序通關才能記錄秒數角逐全校 Top 50 榮譽榜！
               </p>
 
               <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 space-y-1.5 text-xs font-bold text-slate-700 dark:text-slate-200">
@@ -604,12 +731,12 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
                   <span>零提示盲走挑戰（考驗空間辨識）</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Trophy className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span>通關登記秒數登頂全校排行榜</span>
+                  <Footprints className="w-4 h-4 text-amber-500 shrink-0" />
+                  <span>走到哪唸到哪（即時英文發音）</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Footprints className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span>支援反悔回退（滑回上一格即可重走）</span>
+                  <Trophy className="w-4 h-4 text-amber-500 shrink-0" />
+                  <span>需 100% 完美順序通關才可登榜</span>
                 </div>
               </div>
             </div>
@@ -709,12 +836,34 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
             <span className="text-amber-400 text-sm font-black">{currentStep}</span> / {totalSteps}
           </div>
 
-          {/* 新手與標準級：下一步提示徽章 */}
-          {!isChallenge && nextTargetInfo && (
-            <div className="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 flex items-center gap-1 animate-pulse">
+          {/* 新手級：永遠常駐目標提示 */}
+          {tier === 'beginner' && nextTargetInfo && (
+            <div className="px-2.5 py-1 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center gap-1.5 animate-pulse text-[11px]">
               <span>目標:</span>
-              <span className="text-base font-black text-amber-200 underline">{nextTargetInfo.expectedChar}</span>
+              <span className="text-base font-black text-emerald-200 underline">{nextTargetInfo.expectedChar}</span>
             </div>
+          )}
+
+          {/* 標準級：在正軌上停頓 1 秒自適應提示，走偏時警示 */}
+          {tier === 'standard' && (
+            isOnCorrectTrack ? (
+              isHintActive && nextTargetInfo ? (
+                <div className="px-2.5 py-1 rounded-xl bg-amber-500/25 border border-amber-400 text-amber-200 flex items-center gap-1.5 animate-pulse shadow-md text-[11px]">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                  <span>提示下一步:</span>
+                  <span className="text-base font-black text-amber-200 underline">{nextTargetInfo.expectedChar}</span>
+                </div>
+              ) : (
+                <div className="px-2.5 py-1 rounded-xl bg-white/10 border border-white/20 text-slate-300 flex items-center gap-1 text-[11px]">
+                  <span>停留1秒提示</span>
+                </div>
+              )
+            ) : (
+              <div className="px-2.5 py-1 rounded-xl bg-rose-500/25 border border-rose-400/50 text-rose-200 flex items-center gap-1.5 animate-pulse text-[11px]">
+                <ShieldAlert className="w-3.5 h-3.5 text-rose-300 shrink-0" />
+                <span>路線已走偏 (滑回上一格可退回修正)</span>
+              </div>
+            )
           )}
         </div>
 
@@ -951,8 +1100,8 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
                   const isStart = cell.isStart;
                   const isEnd = cell.isEnd;
 
-                  // 檢查是否為新手/標準模式下的「下一步提示候選格」
-                  const isNextHint = !isChallenge && nextTargetInfo?.nextCells.some(nc => nc.r === r && nc.c === c);
+                  // 檢查是否為提示候選格 (新手級常駐，標準級停頓 1 秒且在正軌上觸發)
+                  const isNextHint = !isChallenge && isHintActive && nextTargetInfo?.nextCells.some(nc => nc.r === r && nc.c === c);
 
                   // 檢查是否剛被吐回反悔
                   const isPopping = poppedCell && poppedCell.r === r && poppedCell.c === c;
@@ -975,7 +1124,7 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
                               ? 'bg-amber-950/70 text-amber-100 border border-amber-600/40 z-10'
                               : 'bg-indigo-950/70 text-indigo-100 border border-indigo-500/40 z-10'
                             : isNextHint
-                            ? 'bg-amber-500/25 text-amber-200 border-2 border-amber-400 animate-pulse scale-100 shadow-md'
+                            ? 'bg-amber-500/25 text-amber-200 border-2 border-amber-400 animate-pulse scale-100 shadow-md ring-2 ring-amber-400/50'
                             : isStart
                             ? 'bg-emerald-500/30 text-emerald-300 border-2 border-emerald-400 hover:scale-105'
                             : isEnd
@@ -1013,83 +1162,158 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
 
         {/* ── 底部操作導引提示 ── */}
         <div className="w-full max-w-2xl px-2 py-1 shrink-0 flex items-center justify-between text-slate-400 text-[11px] font-bold">
-          <span>💡 手指沿著字母滑動或點擊前進</span>
+          <span>💡 手指沿著字母滑動或點擊前進（走到哪唸到哪）</span>
           <span className="text-amber-400/80">滑回上一格即可反悔回退重走</span>
         </div>
       </div>
     );
   }
 
-  // ─── 畫面 3：遊戲結算畫面 (通關榮譽登榜) ───
+  // ─── 畫面 3：遊戲結算畫面 (通關榮譽登榜與路線診斷) ───
   if (gameState === 'settlement') {
     const isChallenge = tier === 'challenge';
     const isIndigenous = theme === 'snake';
-    // 挑戰級分數計算：完成獲得基底分，耗時越短分數越高 (配合 SQL order by score desc, time asc)
-    const challengeScore = Math.max(10, 1000 - elapsedTime * 5);
+    const {
+      isPerfect,
+      accuracy,
+      correctCount,
+      totalCount,
+      wrongStepsCount,
+      score,
+      time
+    } = settlementResult;
 
     return (
       <div className="min-h-[75vh] flex items-center justify-center p-4 animate-fadeIn">
         <GlassCard className="max-w-md w-full text-center p-6 sm:p-8 border shadow-2xl relative overflow-hidden">
           {/* 通關勳章 */}
-          <div className="w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center bg-gradient-to-tr from-amber-500 to-yellow-300 text-stone-950 shadow-xl shadow-amber-500/30">
-            {isIndigenous ? (
-              <span className="text-4xl">👑</span>
-            ) : (
-              <Trophy className="w-10 h-10 text-stone-950 animate-bounce" />
-            )}
-          </div>
+          {isPerfect ? (
+            <div className="w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center bg-gradient-to-tr from-amber-500 to-yellow-300 text-stone-950 shadow-xl shadow-amber-500/30">
+              {isIndigenous ? (
+                <span className="text-4xl">👑</span>
+              ) : (
+                <Trophy className="w-10 h-10 text-stone-950 animate-bounce" />
+              )}
+            </div>
+          ) : (
+            <div className="w-20 h-20 rounded-full mx-auto mb-3 flex items-center justify-center bg-gradient-to-tr from-amber-500 to-rose-400 text-white shadow-xl shadow-amber-500/20">
+              <Flag className="w-10 h-10 text-white" />
+            </div>
+          )}
 
           <h2 className="text-2xl sm:text-3xl font-black font-heading text-slate-800 dark:text-slate-100 mb-1">
-            {isIndigenous ? '⛰️ 百步蛇巡航通關！' : '🎉 字母迷宮巡航成功！'}
+            {isPerfect
+              ? isIndigenous
+                ? '⛰️ 百步蛇巡航通關！'
+                : '🎉 字母迷宮完美通關！'
+              : '⛳ 抵達迷宮出口！'}
           </h2>
 
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-5">
-            成功從入口一路連接至出口 • 耗費時間：
+            {isPerfect
+              ? '成功以 100% 正確字母順序連接至出口 • 耗費時間：'
+              : '順利抵達出口 • 耗費時間：'}
             <span className="text-amber-500 font-black text-lg ml-1 font-mono">
-              {elapsedTime} 秒
+              {time} 秒
             </span>
           </p>
 
           {/* 模式成果看板 */}
-          <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 mb-6 flex flex-col items-center">
-            <span className="text-3xl font-black text-amber-500 font-mono">
-              {isChallenge ? `${challengeScore} 分` : `${mazeData?.sequence.length} / ${mazeData?.sequence.length}`}
-            </span>
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">
-              {isChallenge ? '挑戰級巡航競技積分' : '已完成全部目標字母順序'}
-            </span>
+          <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 mb-5 flex flex-col items-center">
+            {isPerfect ? (
+              <>
+                <span className="text-3xl font-black text-amber-500 font-mono">
+                  {isChallenge ? `${score} 分` : `100% (${totalCount}/${totalCount})`}
+                </span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">
+                  {isChallenge ? '挑戰級巡航競技積分' : '已完成全部目標字母順序'}
+                </span>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-around w-full border-b border-amber-200/60 dark:border-amber-800/60 pb-3 mb-2">
+                  <div className="flex flex-col items-center">
+                    <span className="text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">
+                      {accuracy}%
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">路線正確率</span>
+                  </div>
+                  <div className="w-[1px] h-8 bg-amber-200 dark:bg-amber-800" />
+                  <div className="flex flex-col items-center">
+                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                      {correctCount}/{totalCount}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">正確字母</span>
+                  </div>
+                  <div className="w-[1px] h-8 bg-amber-200 dark:bg-amber-800" />
+                  <div className="flex flex-col items-center">
+                    <span className="text-2xl font-black text-rose-500 font-mono">
+                      {wrongStepsCount} 格
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">走偏/多踩</span>
+                  </div>
+                </div>
+                <p className="text-xs font-bold text-slate-600 dark:text-slate-300 text-center leading-relaxed">
+                  {isChallenge
+                    ? `挑戰級英雄榜需 100% 完美路線才可登錄（目前正確率 ${accuracy}%）。建議點擊下方退回修正或重新挑戰！`
+                    : `很棒的探索！抵達出口但途中包含非目標字母（正確率 ${accuracy}%）。可點選「退回修正」回迷宮繼續修改！`}
+                </p>
+              </>
+            )}
           </div>
 
-          {/* 挑戰級專屬：提報全校 Top 50 榮譽榜 */}
+          {/* 挑戰級專屬：提報全校 Top 50 榮譽榜 (僅限 100% 完美路線) */}
           {isChallenge ? (
-            <HonorSubmissionCard
-              mode={isLowercase ? 'maze-lower' : 'maze-upper'}
-              book={qualifyingBook || '1'}
-              score={challengeScore}
-              time={elapsedTime}
-              totalCount={mazeData?.sequence.length || 26}
-              rangeText={isLowercase ? '10x10 小寫字母迷宮' : '10x10 大寫字母迷宮'}
-              reviewWords={[]}
-            />
+            isPerfect ? (
+              <HonorSubmissionCard
+                mode={isLowercase ? 'maze-lower' : 'maze-upper'}
+                book={qualifyingBook || '1'}
+                score={score}
+                time={time}
+                totalCount={totalCount || 26}
+                rangeText={isLowercase ? '10x10 小寫字母迷宮' : '10x10 大寫字母迷宮'}
+                reviewWords={[]}
+              />
+            ) : (
+              <div className="p-3 rounded-2xl bg-amber-100/80 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 text-xs font-bold text-amber-800 dark:text-amber-200 mb-4">
+                ⚠️ 本局路線正確率為 {accuracy}%，尚未達到 100% 完美通關標準，因此無法提交英雄榜。再接再厲！
+              </div>
+            )
           ) : (
-            <div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800/80 text-xs font-bold text-slate-600 dark:text-slate-300 mb-4">
-              🌟 本模式為引導練習模式。若想登錄全校 Top 50 英雄榜，歡迎前往挑戰「挑戰級 10x10 網格」！
-            </div>
+            isPerfect ? (
+              <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-4 flex items-center justify-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <span>太棒了！所有字母順序完全正確。想登錄英雄榜歡迎前往「挑戰級」！</span>
+              </div>
+            ) : null
           )}
 
           {/* 按鈕群組 */}
           <div className="space-y-2 mt-4">
+            {/* 若未完全正確，提供「退回修正」回到迷宮繼續倒退修改！ */}
+            {!isPerfect && (
+              <Button3D
+                variant="amber"
+                size="lg"
+                onClick={handleResumeAndBacktrack}
+                icon={Undo2}
+                className="w-full text-base font-black shadow-lg shadow-amber-500/20"
+              >
+                ↩️ 退回修正（回到迷宮繼續修改）
+              </Button3D>
+            )}
+
             <Button3D
-              variant="amber"
-              size="lg"
+              variant={isPerfect ? 'amber' : 'blue'}
+              size={isPerfect ? 'lg' : 'md'}
               onClick={() => handleLaunchGame(tier)}
-              className="w-full text-base"
+              className="w-full"
             >
-              再玩一次
+              再玩一次（全新地圖）
             </Button3D>
 
             <Button3D
-              variant="blue"
+              variant="slate"
               size="md"
               onClick={handleBackToMenu}
               className="w-full"
