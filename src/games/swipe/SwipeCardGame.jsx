@@ -4,6 +4,7 @@ import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import { soundEngine, speakEnglish } from '../../services/audio';
+import { FALLBACK_WORDS } from '../../services/supabase';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import confetti from 'canvas-confetti';
 import {
@@ -137,30 +138,53 @@ export const SwipeCardGame = ({
   const [exitDirection, setExitDirection] = useState(null); // 'left' | 'right'
   const dragStartRef = useRef({ x: 0, y: 0 });
   const isPointerDownRef = useRef(false);
+  const dismissTimerRef = useRef(null);
 
-  // 卸載時清理全螢幕
+  // 保持即時模式參照，防止非同步 closure 滯後
+  const gameModeRef = useRef(gameMode);
+  useEffect(() => {
+    gameModeRef.current = gameMode;
+  }, [gameMode]);
+
+  // 卸載時清理全螢幕與訂正計時器
   useEffect(() => {
     return () => {
+      if (dismissTimerRef.current) {
+        clearTimeout(dismissTimerRef.current);
+      }
       exitFullscreen();
     };
   }, []);
 
-  // 篩選出的有效單字庫
+  // 篩選並標準化有效單字庫 (相容 en/zh 與 word/meaning，離線時無縫使用備用庫)
   const activeWordList = useMemo(() => {
-    if (!words || words.length === 0) return [];
-    if (!settings.selectedUnits || settings.selectedUnits.length === 0) {
-      return words;
+    const rawList = (!words || words.length === 0) ? FALLBACK_WORDS : words;
+    let filtered = rawList;
+    if (settings?.selectedUnits && settings.selectedUnits.length > 0) {
+      const subset = rawList.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
+      if (subset.length > 0) filtered = subset;
     }
-    const filtered = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
-    return filtered.length > 0 ? filtered : words;
-  }, [words, settings.selectedUnits]);
+    const normalized = filtered.map(w => ({
+      word: (w.en || w.word || '').trim(),
+      meaning: (w.zh || w.meaning || '').trim()
+    })).filter(w => w.word && w.meaning);
 
-  // ── 生成單張卡片輔助函式 ──
-  const createSingleCard = useCallback((forceMatch = false, canGenerateSpecial = true) => {
+    return normalized.length > 0
+      ? normalized
+      : [{ word: 'apple', meaning: '蘋果' }, { word: 'banana', meaning: '香蕉' }];
+  }, [words, settings?.selectedUnits]);
+
+  // ── 生成單張卡片輔助函式 (保證 O(1) 無無窮迴圈風險) ──
+  const createSingleCard = useCallback((
+    forceMatch = false,
+    canGenerateSpecial = true,
+    mode = gameModeRef.current,
+    currentDeck = cardDeck
+  ) => {
     const cardId = `c_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
-    // 檢查是否可插入功能卡 (當前無功能卡效果，且卡堆中無其他功能卡)
-    const hasSpecialInDeck = cardDeck.some(c => c.isSpecial);
+    // 檢查是否可插入功能卡 (當前無作用中效果，且卡堆中無其他功能卡)
+    const hasSpecialInDeck = currentDeck.some(c => c.isSpecial);
     const shouldSpawnSpecial = canGenerateSpecial && !activeEffect && !hasSpecialInDeck && Math.random() < 0.16;
 
     if (shouldSpawnSpecial) {
@@ -179,7 +203,7 @@ export const SwipeCardGame = ({
     }
 
     // ── 模式 1：低年級大小寫字母配對 ──
-    if (gameMode === 'letters') {
+    if (mode === 'letters') {
       const isMatch = forceMatch || Math.random() < 0.5;
       const upperChar = ALPHABET_LIST[Math.floor(Math.random() * ALPHABET_LIST.length)];
       let lowerChar = upperChar.toLowerCase();
@@ -190,12 +214,9 @@ export const SwipeCardGame = ({
         if (confusable && Math.random() < 0.6) {
           lowerChar = confusable.l;
         } else {
-          // 隨機抽換為相異字母
-          let randomOther = ALPHABET_LIST[Math.floor(Math.random() * ALPHABET_LIST.length)].toLowerCase();
-          while (randomOther === upperChar.toLowerCase()) {
-            randomOther = ALPHABET_LIST[Math.floor(Math.random() * ALPHABET_LIST.length)].toLowerCase();
-          }
-          lowerChar = randomOther;
+          // 隨機抽換為相異字母 (以 filter 篩選，杜絕 while 迴圈卡死)
+          const otherLetters = ALPHABET_LIST.filter(c => c !== upperChar);
+          lowerChar = otherLetters[Math.floor(Math.random() * otherLetters.length)].toLowerCase();
         }
       }
 
@@ -210,17 +231,21 @@ export const SwipeCardGame = ({
     }
 
     // ── 模式 2：中高年級單字詞義是非題 ──
-    const pool = activeWordList.length > 0 ? activeWordList : [{ word: 'apple', meaning: '蘋果' }];
+    const pool = activeWordList.length > 0
+      ? activeWordList
+      : [{ word: 'apple', meaning: '蘋果' }, { word: 'banana', meaning: '香蕉' }];
     const targetWord = pool[Math.floor(Math.random() * pool.length)];
     const isMatch = forceMatch || Math.random() < 0.5;
 
     let displayMeaning = targetWord.meaning;
     if (!isMatch && pool.length > 1) {
-      let distractor = pool[Math.floor(Math.random() * pool.length)];
-      while (distractor.word === targetWord.word && pool.length > 1) {
-        distractor = pool[Math.floor(Math.random() * pool.length)];
+      const otherWords = pool.filter(w => w.word.toLowerCase() !== targetWord.word.toLowerCase());
+      if (otherWords.length > 0) {
+        const distractor = otherWords[Math.floor(Math.random() * otherWords.length)];
+        displayMeaning = distractor.meaning;
+      } else {
+        displayMeaning = targetWord.meaning === '蘋果' ? '香蕉' : '蘋果';
       }
-      displayMeaning = distractor.meaning;
     }
 
     return {
@@ -231,14 +256,14 @@ export const SwipeCardGame = ({
       correctMeaning: targetWord.meaning,
       isMatch: targetWord.meaning === displayMeaning
     };
-  }, [activeWordList, gameMode, activeEffect, cardDeck]);
+  }, [activeWordList, activeEffect, cardDeck]);
 
   // ── 初始化或補充卡堆 (隨時維持 4 張卡牌) ──
-  const replenishDeck = useCallback((currentDeck, count = 4) => {
+  const replenishDeck = useCallback((currentDeck, count = 4, mode = gameModeRef.current) => {
     const newDeck = [...currentDeck];
     while (newDeck.length < count) {
       const forceMatch = Boolean(activeEffect?.type === 'always_right' || alwaysRightCount > 0);
-      newDeck.push(createSingleCard(forceMatch, newDeck.length > 0));
+      newDeck.push(createSingleCard(forceMatch, newDeck.length > 0, mode, newDeck));
     }
     return newDeck;
   }, [createSingleCard, activeEffect, alwaysRightCount]);
@@ -247,7 +272,15 @@ export const SwipeCardGame = ({
   const handleStartGame = (selectedMode = gameMode) => {
     enterFullscreen();
     soundEngine.click();
+
+    if (dismissTimerRef.current) {
+      clearTimeout(dismissTimerRef.current);
+      dismissTimerRef.current = null;
+    }
+
     setGameMode(selectedMode);
+    gameModeRef.current = selectedMode;
+
     setScore(0);
     setStreak(0);
     setMaxStreak(0);
@@ -263,10 +296,10 @@ export const SwipeCardGame = ({
     setDragOffset({ x: 0, y: 0 });
     setExitDirection(null);
 
-    // 生成前 4 張手牌
+    // 生成前 4 張手牌 (傳入 selectedMode，確保初次建立即正確套用目標模式)
     const initialDeck = [];
     for (let i = 0; i < 4; i++) {
-      initialDeck.push(createSingleCard(false, i > 0));
+      initialDeck.push(createSingleCard(false, i > 0, selectedMode, initialDeck));
     }
     setCardDeck(initialDeck);
     setGameState('playing');
@@ -410,7 +443,7 @@ export const SwipeCardGame = ({
       setTimeout(() => {
         setExitDirection(null);
         setDragOffset({ x: 0, y: 0 });
-        setCardDeck(prev => replenishDeck(prev.slice(1)));
+        setCardDeck(prev => replenishDeck(prev.slice(1), 4, gameModeRef.current));
       }, 180);
 
     } else {
@@ -424,11 +457,12 @@ export const SwipeCardGame = ({
       speakEnglish(topCard.word);
 
       // 自動停留 2.3 秒後淡出並回收回牌堆 (玩家亦可點擊卡牌立即跳過)
-      const dismissTimer = setTimeout(() => {
+      if (dismissTimerRef.current) {
+        clearTimeout(dismissTimerRef.current);
+      }
+      dismissTimerRef.current = setTimeout(() => {
         handleDismissCorrection();
       }, 2300);
-
-      topCard.dismissTimer = dismissTimer;
     }
   }, [
     isCorrecting, cardDeck, gameState, activeEffect, alwaysRightCount,
@@ -437,9 +471,9 @@ export const SwipeCardGame = ({
 
   // 關閉訂正並恢復遊戲
   const handleDismissCorrection = useCallback(() => {
-    if (!isCorrecting) return;
-    if (correctingCard?.dismissTimer) {
-      clearTimeout(correctingCard.dismissTimer);
+    if (dismissTimerRef.current) {
+      clearTimeout(dismissTimerRef.current);
+      dismissTimerRef.current = null;
     }
     setIsCorrecting(false);
     setIsTimerFrozen(false); // 恢復 30 秒倒數計時器
@@ -447,18 +481,21 @@ export const SwipeCardGame = ({
     // 將該錯題重新推入牌堆隊尾 (錯題循環回收練習)
     setCardDeck(prev => {
       const remaining = prev.slice(1);
-      const recycledCard = {
+      const recycledCard = correctingCard ? [{
         ...correctingCard,
         id: `re_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`
-      };
-      return replenishDeck([...remaining, recycledCard]);
+      }] : [];
+      return replenishDeck([...remaining, ...recycledCard], 4, gameModeRef.current);
     });
     setCorrectingCard(null);
-  }, [isCorrecting, correctingCard, replenishDeck]);
+  }, [correctingCard, replenishDeck]);
 
   // ── 觸控與滑鼠拖曳處理 ──
   const handlePointerDown = (e) => {
     if (isCorrecting || gameState !== 'playing') return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (err) {}
     isPointerDownRef.current = true;
     setIsDragging(true);
     dragStartRef.current = { x: e.clientX, y: e.clientY };
@@ -472,8 +509,13 @@ export const SwipeCardGame = ({
     setDragOffset({ x: dx, y: dy * 0.4 });
   };
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e) => {
     if (!isPointerDownRef.current) return;
+    try {
+      if (e?.currentTarget?.hasPointerCapture?.(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    } catch (err) {}
     isPointerDownRef.current = false;
     setIsDragging(false);
 
@@ -518,12 +560,20 @@ export const SwipeCardGame = ({
 
   // 退出至大廳
   const handleBackToLobby = () => {
+    if (dismissTimerRef.current) {
+      clearTimeout(dismissTimerRef.current);
+      dismissTimerRef.current = null;
+    }
     exitFullscreen();
     onBack();
   };
 
   // 退出至選單
   const handleBackToMenu = () => {
+    if (dismissTimerRef.current) {
+      clearTimeout(dismissTimerRef.current);
+      dismissTimerRef.current = null;
+    }
     setGameState('menu');
     setIsTimerRunning(false);
     setIsTimerFrozen(false);
@@ -805,33 +855,36 @@ export const SwipeCardGame = ({
           )}
 
           {/* 渲染卡片堆疊 (從底至頂，後方卡片微縮露出邊角) */}
-          {cardDeck.slice(0, 3).reverse().map((card, revIdx) => {
-            const actualIdx = 2 - revIdx; // 0 是最上方卡片，1 是次卡，2 是底卡
-            const isTop = actualIdx === 0;
+          {(() => {
+            const visibleCards = cardDeck.slice(0, 3);
+            const totalVisible = visibleCards.length;
+            return visibleCards.slice().reverse().map((card, revIdx) => {
+              const actualIdx = totalVisible - 1 - revIdx; // 0 是最上方卡片，1 是次卡，2 是底卡
+              const isTop = actualIdx === 0;
 
-            // 次卡與底卡的縮放與下移位移
-            const scale = (isShrunk ? 0.6 : 1) * (1 - actualIdx * 0.05);
-            const translateY = actualIdx * 14;
+              // 次卡與底卡的縮放與下移位移
+              const scale = (isShrunk ? 0.6 : 1) * (1 - actualIdx * 0.05);
+              const translateY = actualIdx * 14;
 
-            // 最上方卡片的拖曳位移與旋轉
-            const currentTranslateX = isTop ? dragOffset.x : 0;
-            const currentTranslateY = isTop ? translateY + dragOffset.y : translateY;
-            const currentRotation = isTop ? dragAngle : actualIdx * 1.5;
+              // 最上方卡片的拖曳位移與旋轉
+              const currentTranslateX = isTop ? dragOffset.x : 0;
+              const currentTranslateY = isTop ? translateY + dragOffset.y : translateY;
+              const currentRotation = isTop ? dragAngle : actualIdx * 1.5;
 
-            // 飛離螢幕動畫
-            const isExiting = isTop && exitDirection !== null;
-            const exitX = exitDirection === 'right' ? 500 : exitDirection === 'left' ? -500 : 0;
+              // 飛離螢幕動畫
+              const isExiting = isTop && exitDirection !== null;
+              const exitX = exitDirection === 'right' ? 500 : exitDirection === 'left' ? -500 : 0;
 
-            return (
-              <div
-                key={card.id}
-                onPointerDown={isTop ? handlePointerDown : undefined}
-                onPointerMove={isTop ? handlePointerMove : undefined}
-                onPointerUp={isTop ? handlePointerUp : undefined}
-                onPointerCancel={isTop ? handlePointerUp : undefined}
-                className={`
-                  absolute w-[280px] sm:w-[320px] h-[360px] sm:h-[400px] rounded-3xl p-6
-                  flex flex-col justify-between select-none cursor-grab active:cursor-grabbing
+              return (
+                <div
+                  key={card.id}
+                  onPointerDown={isTop ? handlePointerDown : undefined}
+                  onPointerMove={isTop ? handlePointerMove : undefined}
+                  onPointerUp={isTop ? handlePointerUp : undefined}
+                  onPointerCancel={isTop ? handlePointerUp : undefined}
+                  className={`
+                    absolute w-[280px] sm:w-[320px] h-[360px] sm:h-[400px] rounded-3xl p-6
+                    flex flex-col justify-between select-none touch-none cursor-grab active:cursor-grabbing
                   shadow-2xl transition-all
                   ${isTop ? 'z-30' : actualIdx === 1 ? 'z-20' : 'z-10'}
                   ${isExiting ? 'transition-transform duration-200 opacity-0' : isDragging && isTop ? '' : 'transition-transform duration-150'}
@@ -930,7 +983,8 @@ export const SwipeCardGame = ({
                 </div>
               </div>
             );
-          })}
+          });
+        })()}
         </div>
 
         {/* ── 浮動得分飄字 ── */}
