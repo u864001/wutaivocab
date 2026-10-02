@@ -102,7 +102,14 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
         isLowercase
       });
       setMazeData(generated);
-      setTrail([]);
+      // 百步蛇初始出生於起點 A，蛇頭與蛇尾重合於入口
+      const initTrail = [{
+        r: generated.startCell.r,
+        c: generated.startCell.c,
+        char: generated.sequence[0],
+        index: 0
+      }];
+      setTrail(initTrail);
       setPoppedCell(null);
       setElapsedTime(0);
       setTimerRunning(false);
@@ -144,7 +151,14 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
       isLowercase
     });
     setMazeData(generated);
-    setTrail([]);
+    // 百步蛇初始出生於起點 A，蛇頭與蛇尾重合於入口
+    const initTrail = [{
+      r: generated.startCell.r,
+      c: generated.startCell.c,
+      char: generated.sequence[0],
+      index: 0
+    }];
+    setTrail(initTrail);
     setPoppedCell(null);
     setElapsedTime(0);
     setTimerRunning(false);
@@ -721,55 +735,204 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
                 : '0 0 30px rgba(99, 102, 241, 0.2)'
             }}
           >
-            {/* ── 百步蛇 / 光軌 SVG 連線身體圖層 (細長身軀，約 38% 格寬) ── */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none z-10"
-              viewBox={`0 0 ${mazeData.cols * 100} ${mazeData.rows * 100}`}
-            >
-              <defs>
-                <linearGradient id="snakeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#d97706" />
-                  <stop offset="50%" stopColor="#f59e0b" />
-                  <stop offset="100%" stopColor="#fbbf24" />
-                </linearGradient>
-                <linearGradient id="cosmicGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#06b6d4" />
-                  <stop offset="50%" stopColor="#6366f1" />
-                  <stop offset="100%" stopColor="#ec4899" />
-                </linearGradient>
-              </defs>
+            {/* ── 百步蛇 / 光軌 SVG 連線身體圖層 (細長身軀，約 36% 格寬) ── */}
+            {(() => {
+              const tailPos = trail[0] || mazeData.startCell;
+              const headPos = trail[trail.length - 1] || mazeData.startCell;
 
-              {/* 繪製平滑相連的蛇身軌跡線 (寬度 36，優雅細長) */}
-              {trail.length >= 2 && (
-                <polyline
-                  points={trail
-                    .map(step => `${step.c * 100 + 50},${step.r * 100 + 50}`)
-                    .join(' ')}
-                  fill="none"
-                  stroke={isIndigenous ? 'url(#snakeGradient)' : 'url(#cosmicGradient)'}
-                  strokeWidth="36"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeOpacity="0.85"
-                />
-              )}
+              const tailAngle = trail.length >= 2
+                ? (Math.atan2(trail[0].r - trail[1].r, trail[0].c - trail[1].c) * 180) / Math.PI
+                : (mazeData.startCell.r === 0 ? -90 : mazeData.startCell.r === mazeData.rows - 1 ? 90 : mazeData.startCell.c === 0 ? 180 : 0);
 
-              {/* 百步蛇排灣幾何菱形骨節花紋 (沿著蛇身點綴) */}
-              {isIndigenous && trail.length >= 1 && trail.map((step, idx) => {
-                const cx = step.c * 100 + 50;
-                const cy = step.r * 100 + 50;
-                return (
-                  <polygon
-                    key={`diamond-${idx}`}
-                    points={`${cx},${cy - 12} ${cx + 12},${cy} ${cx},${cy + 12} ${cx - 12},${cy}`}
-                    fill="#78350f"
-                    stroke="#fef08a"
-                    strokeWidth="2"
-                    opacity="0.9"
-                  />
-                );
-              })}
-            </svg>
+              const headAngle = trail.length >= 2
+                ? (Math.atan2(headPos.r - trail[trail.length - 2].r, headPos.c - trail[trail.length - 2].c) * 180) / Math.PI
+                : (mazeData.startCell.r === 0 ? 90 : mazeData.startCell.r === mazeData.rows - 1 ? -90 : mazeData.startCell.c === 0 ? 0 : 180);
+
+              const points = trail.map(step => `${step.c * 100 + 50},${step.r * 100 + 50}`).join(' ');
+
+              return (
+                <svg
+                  className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible"
+                  viewBox={`0 0 ${mazeData.cols * 100} ${mazeData.rows * 100}`}
+                >
+                  <defs>
+                    {/* 百步蛇金褐漸層皮鱗紋理 */}
+                    <linearGradient id="snakeSkinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#78350f" />
+                      <stop offset="30%" stopColor="#b45309" />
+                      <stop offset="65%" stopColor="#d97706" />
+                      <stop offset="100%" stopColor="#f59e0b" />
+                    </linearGradient>
+
+                    {/* 星際光軌雷射漸層 */}
+                    <linearGradient id="cosmicLaserGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#06b6d4" />
+                      <stop offset="50%" stopColor="#6366f1" />
+                      <stop offset="100%" stopColor="#ec4899" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* 繪製平滑相連的蛇身軌跡線 (寬度 36，纖細靈活，不遮蔽視野) */}
+                  {trail.length >= 2 && (
+                    <>
+                      {/* 底層立體陰影 */}
+                      <polyline
+                        points={points}
+                        fill="none"
+                        stroke="rgba(0,0,0,0.5)"
+                        strokeWidth="44"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      {/* 蛇身深色外包邊 */}
+                      <polyline
+                        points={points}
+                        fill="none"
+                        stroke={isIndigenous ? '#451a03' : '#1e1b4b'}
+                        strokeWidth="40"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      {/* 蛇身主體皮鱗 (細長約 34~36% 格寬) */}
+                      <polyline
+                        points={points}
+                        fill="none"
+                        stroke={isIndigenous ? 'url(#snakeSkinGradient)' : 'url(#cosmicLaserGradient)'}
+                        strokeWidth="34"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      {/* 百步蛇神聖金色背脊線 */}
+                      <polyline
+                        points={points}
+                        fill="none"
+                        stroke={isIndigenous ? '#fde047' : '#a5f3fc'}
+                        strokeWidth="4"
+                        strokeDasharray="6 8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        opacity="0.9"
+                      />
+                    </>
+                  )}
+
+                  {/* 百步蛇骨節幾何菱形紋飾 (沿蛇身各節與轉折處點綴) */}
+                  {isIndigenous && trail.length >= 2 && trail.map((step, idx) => {
+                    if (idx === 0 || idx === trail.length - 1) return null;
+                    const cx = step.c * 100 + 50;
+                    const cy = step.r * 100 + 50;
+                    return (
+                      <g key={`diamond-node-${idx}`}>
+                        <polygon
+                          points={`${cx},${cy - 14} ${cx + 14},${cy} ${cx},${cy + 14} ${cx - 14},${cy}`}
+                          fill="#451a03"
+                          stroke="#fef08a"
+                          strokeWidth="2"
+                        />
+                        <polygon
+                          points={`${cx},${cy - 7} ${cx + 7},${cy} ${cx},${cy + 7} ${cx - 7},${cy}`}
+                          fill="#dc2626"
+                        />
+                      </g>
+                    );
+                  })}
+
+                  {/* 蛇尾 (固定留在入口起點 A 處，尾端往外延展收尖，尾端永遠錨定在起點) */}
+                  <g transform={`translate(${tailPos.c * 100 + 50}, ${tailPos.r * 100 + 50}) rotate(${tailAngle})`}>
+                    {isIndigenous ? (
+                      <>
+                        {/* 百步蛇尖錐尾 */}
+                        <path
+                          d="M 0,-14 C -14,-14 -28,-6 -42,0 C -28,6 -14,14 0,14 Z"
+                          fill="#78350f"
+                          stroke="#fef08a"
+                          strokeWidth="2.5"
+                        />
+                        {/* 尾部金色與紅色環形骨節 */}
+                        <line x1="-12" y1="-10" x2="-12" y2="10" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
+                        <line x1="-22" y1="-7" x2="-22" y2="7" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" />
+                        <line x1="-32" y1="-4" x2="-32" y2="4" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+                        <circle cx="-42" cy="0" r="3.5" fill="#f59e0b" stroke="#78350f" strokeWidth="1" />
+                      </>
+                    ) : (
+                      <>
+                        {/* 星際光軌起點基地雷達台 */}
+                        <circle cx="0" cy="0" r="18" fill="#1e1b4b" stroke="#06b6d4" strokeWidth="2.5" />
+                        <circle cx="0" cy="0" r="10" fill="#06b6d4" opacity="0.6" className="animate-ping" />
+                        <circle cx="0" cy="0" r="5" fill="#ffffff" />
+                      </>
+                    )}
+                  </g>
+
+                  {/* 蛇頭 (始終跟隨最前緣手指/最新踩到的字母，帶百步蛇王冠與紅色舌信) */}
+                  <g
+                    transform={`translate(${headPos.c * 100 + 50}, ${headPos.r * 100 + 50}) rotate(${headAngle})`}
+                    className="transition-transform duration-100"
+                  >
+                    {isIndigenous ? (
+                      <>
+                        {/* 蛇頭陰影 */}
+                        <path
+                          d="M -18,-24 C -8,-24 16,-16 32,-4 C 38,-1 40,0 40,0 C 40,0 38,1 32,4 C 16,16 -8,24 -18,24 C -26,14 -26,-14 -18,-24 Z"
+                          fill="rgba(0,0,0,0.3)"
+                          transform="translate(2, 3)"
+                        />
+                        {/* 百步蛇特有三角形立體頭部 */}
+                        <path
+                          d="M -18,-24 C -8,-24 16,-16 32,-4 C 38,-1 40,0 40,0 C 40,0 38,1 32,4 C 16,16 -8,24 -18,24 C -26,14 -26,-14 -18,-24 Z"
+                          fill="#78350f"
+                          stroke="#fef08a"
+                          strokeWidth="3"
+                        />
+                        {/* 蛇頭金黃菱形圖騰頭冠 */}
+                        <polygon points="8,0 -6,-11 -16,0 -6,11" fill="#f59e0b" stroke="#fef08a" strokeWidth="1.5" />
+                        <polygon points="5,0 -5,-7 -12,0 -5,7" fill="#dc2626" />
+                        {/* 雙眼與黑色直立瞳孔 */}
+                        <ellipse cx="6" cy="-12" rx="4.5" ry="3.5" fill="#facc15" stroke="#451a03" strokeWidth="1" />
+                        <ellipse cx="6" cy="-12" rx="1.2" ry="3" fill="#000" />
+                        <circle cx="7" cy="-13" r="1.2" fill="#fff" />
+                        <ellipse cx="6" cy="12" rx="4.5" ry="3.5" fill="#facc15" stroke="#451a03" strokeWidth="1" />
+                        <ellipse cx="6" cy="12" rx="1.2" ry="3" fill="#000" />
+                        <circle cx="7" cy="11" r="1.2" fill="#fff" />
+                        {/* 鼻部熱感應凹坑 */}
+                        <circle cx="22" cy="-4" r="1.5" fill="#451a03" />
+                        <circle cx="22" cy="4" r="1.5" fill="#451a03" />
+                        {/* 紅色分叉吐信動態 */}
+                        <path
+                          d="M 40,0 L 58,0 M 58,0 L 66,-5 M 58,0 L 66,5"
+                          stroke="#ef4444"
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                          className="animate-pulse"
+                        />
+                        {/* 霧台神山純白百合花小頭飾 🌸 */}
+                        <g transform="translate(-14, -16) scale(0.9)">
+                          <circle cx="0" cy="0" r="5" fill="#ffffff" stroke="#fde047" strokeWidth="1.5" />
+                          <circle cx="0" cy="0" r="2" fill="#f59e0b" />
+                        </g>
+                      </>
+                    ) : (
+                      <>
+                        {/* 星際光軌巡航太空船頭 */}
+                        <path
+                          d="M -20,-18 L 30,0 L -20,18 L -12,0 Z"
+                          fill="#3b82f6"
+                          stroke="#67e8f9"
+                          strokeWidth="3"
+                        />
+                        <circle cx="-5" cy="0" r="6" fill="#06b6d4" />
+                        {/* 推進火箭火焰 */}
+                        <path
+                          d="M -20,-8 L -36,0 L -20,8 Z"
+                          fill="#f97316"
+                          className="animate-pulse"
+                        />
+                      </>
+                    )}
+                  </g>
+                </svg>
+              );
+            })()}
 
             {/* ── 網格本體 (CSS Grid) ── */}
             <div
@@ -784,6 +947,7 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
                   const trailIndex = trail.findIndex(t => t.r === r && t.c === c);
                   const isVisited = trailIndex !== -1;
                   const isHead = isVisited && trailIndex === trail.length - 1;
+                  const isTail = isVisited && trailIndex === 0;
                   const isStart = cell.isStart;
                   const isEnd = cell.isEnd;
 
@@ -804,44 +968,37 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
                         ${
                           isHead
                             ? isIndigenous
-                              ? 'bg-amber-400 text-stone-950 scale-105 shadow-lg shadow-amber-400/50 z-20 border-2 border-white'
-                              : 'bg-cyan-400 text-slate-950 scale-105 shadow-lg shadow-cyan-400/50 z-20 border-2 border-white'
+                              ? 'bg-amber-500/80 text-stone-950 scale-105 shadow-xl shadow-amber-500/50 z-20 border-2 border-amber-300'
+                              : 'bg-cyan-400 text-slate-950 scale-105 shadow-xl shadow-cyan-400/50 z-20 border-2 border-white'
                             : isVisited
                             ? isIndigenous
-                              ? 'bg-amber-600/50 text-amber-100 border border-amber-400/40 z-10'
-                              : 'bg-indigo-600/50 text-indigo-100 border border-indigo-400/40 z-10'
+                              ? 'bg-amber-950/70 text-amber-100 border border-amber-600/40 z-10'
+                              : 'bg-indigo-950/70 text-indigo-100 border border-indigo-500/40 z-10'
                             : isNextHint
                             ? 'bg-amber-500/25 text-amber-200 border-2 border-amber-400 animate-pulse scale-100 shadow-md'
                             : isStart
                             ? 'bg-emerald-500/30 text-emerald-300 border-2 border-emerald-400 hover:scale-105'
                             : isEnd
                             ? 'bg-rose-500/30 text-rose-300 border-2 border-rose-400 hover:scale-105'
-                            : 'bg-white/5 text-slate-300 hover:bg-white/10 border border-white/5'
+                            : 'bg-white/5 text-slate-400 hover:bg-white/10 border border-white/5'
                         }
                         ${isPopping ? 'animate-ping' : ''}
                       `}
                     >
                       {/* 格子字母 */}
-                      <span className={`tracking-tight ${isHead ? 'scale-110 font-extrabold' : ''}`}>
+                      <span className={`tracking-tight ${isHead ? 'scale-110 font-extrabold text-stone-950 dark:text-white' : isVisited ? 'font-black text-amber-100 drop-shadow-md' : ''}`}>
                         {cell.char}
                       </span>
 
-                      {/* 蛇頭專屬圖示 (百步蛇頭 / 太空船頭) */}
-                      {isHead && (
-                        <div className="absolute -top-3.5 -right-2 text-base select-none animate-bounce pointer-events-none">
-                          {isIndigenous ? '🐍' : '🚀'}
-                        </div>
-                      )}
-
                       {/* 入口 START 標記 */}
-                      {isStart && !isVisited && (
+                      {isStart && (
                         <span className="absolute -top-1 -left-1 px-1 py-0.2 rounded-md bg-emerald-500 text-white font-mono font-black text-[8px] sm:text-[9px] shadow-sm pointer-events-none">
                           IN
                         </span>
                       )}
 
                       {/* 出口 EXIT 標記 */}
-                      {isEnd && !isVisited && (
+                      {isEnd && (
                         <span className="absolute -bottom-1 -right-1 px-1 py-0.2 rounded-md bg-rose-500 text-white font-mono font-black text-[8px] sm:text-[9px] shadow-sm pointer-events-none">
                           OUT
                         </span>

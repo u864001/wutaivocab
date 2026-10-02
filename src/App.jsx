@@ -240,13 +240,25 @@ export function App() {
     );
   }
 
+  const handleGoParent = () => {
+    // 依層級關係精確返回上一層：
+    // 若當前在單字學習館大廳 (lobby) 或自然發音 (phonics)，上一層為學習宇宙首頁 (portal)
+    if (currentView === 'lobby' || currentView === 'phonics') {
+      handleNavigate('portal');
+    } else if (currentView !== 'portal') {
+      // 若當前在任何單字遊戲、字母迷宮、排行榜或教師後台，上一層為單字學習館 (lobby)
+      handleNavigate('lobby');
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-300">
-      {/* 全域統一導覽列 (全頁面維持一致的學校標誌、回首頁、語言與主題開關) */}
+      {/* 全域統一導覽列 (全頁面維持一致的學校標誌、回上一層、語言與主題開關) */}
       <Header
         onOpenTeacherHub={handleOpenTeacherHub}
         onOpenLeaderboard={() => handleNavigate('leaderboard')}
         onOpenPhonics={() => handleNavigate('phonics')}
+        onGoParent={handleGoParent}
         onGoHome={() => handleNavigate('portal')}
         currentView={currentView}
         isOnline={isOnline}

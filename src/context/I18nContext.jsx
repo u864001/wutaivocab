@@ -69,7 +69,7 @@ const DICTIONARY = {
     quizHard: '魔王綜合考驗',
 
     // 通用遊戲反饋
-    backLobby: '回大廳',
+    backLobby: '回單字學習館',
     backToVocabLobby: '回單字學習館',
     quitGame: '放棄挑戰',
     startChallenge: '開始挑戰',
