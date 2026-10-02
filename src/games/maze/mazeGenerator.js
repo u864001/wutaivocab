@@ -186,6 +186,7 @@ export function generateAlphabetMaze({ rows, cols, sequence, isLowercase = false
   return {
     rows,
     cols,
+    sequence,
     grid,
     path: foundPath.map((pt, idx) => ({ ...pt, char: sequence[idx], index: idx })),
     startCell: foundPath[0],
@@ -197,34 +198,26 @@ export function generateAlphabetMaze({ rows, cols, sequence, isLowercase = false
  * 保底回退路徑生成 (萬無一失的安全保護機制)
  */
 function generateFallbackPath(rows, cols, length) {
-  const path = [{ r: 0, c: 0 }];
-  let curR = 0;
-  let curC = 0;
-  let dirRight = true;
+  const perimeter = [];
+  for (let c = 0; c < cols; c++) perimeter.push({ r: 0, c });
+  for (let r = 1; r < rows; r++) perimeter.push({ r, c: cols - 1 });
+  for (let c = cols - 2; c >= 0; c--) perimeter.push({ r: rows - 1, c });
+  for (let r = rows - 2; r > 0; r--) perimeter.push({ r, c: 0 });
 
-  while (path.length < length) {
-    if (dirRight) {
-      if (curC + 1 < cols) {
-        curC++;
-      } else {
-        curR = Math.min(rows - 1, curR + 1);
-        dirRight = false;
-      }
+  if (length <= perimeter.length) {
+    return perimeter.slice(0, length);
+  }
+
+  const path = [];
+  let r = 0, c = 0, dc = 1;
+  while (path.length < length && r < rows) {
+    path.push({ r, c });
+    if (c + dc >= 0 && c + dc < cols) {
+      c += dc;
     } else {
-      if (curC - 1 >= 0) {
-        curC--;
-      } else {
-        curR = Math.min(rows - 1, curR + 1);
-        dirRight = true;
-      }
+      r++;
+      dc = -dc;
     }
-    path.push({ r: curR, c: curC });
   }
-
-  // 確保終點在外圍
-  if (!isPerimeterCell(curR, curC, rows, cols)) {
-    path[path.length - 1] = { r: rows - 1, c: curC };
-  }
-
   return path;
 }

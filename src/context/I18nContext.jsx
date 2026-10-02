@@ -70,6 +70,7 @@ const DICTIONARY = {
 
     // 通用遊戲反饋
     backLobby: '回大廳',
+    backToVocabLobby: '回單字學習館',
     quitGame: '放棄挑戰',
     startChallenge: '開始挑戰',
     correct: '答對了！太棒了！',
@@ -261,6 +262,7 @@ const DICTIONARY = {
 
     // In-game feedbacks
     backLobby: 'Back to Lobby',
+    backToVocabLobby: 'Back to Vocab Hub',
     quitGame: 'Quit Game',
     startChallenge: 'Start Challenge',
     correct: 'Awesome! Correct!',

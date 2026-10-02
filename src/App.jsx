@@ -57,7 +57,7 @@ class ErrorBoundary extends React.Component {
               畫面載入遇到小插曲
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 font-bold">
-              請點擊下方按鈕，系統將自動為您重整並返回大廳首頁
+              請點擊下方按鈕，系統將自動為您重整並返回單字學習館
             </p>
             <button
               onClick={() => {
@@ -66,7 +66,7 @@ class ErrorBoundary extends React.Component {
               }}
               className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm transition-all shadow-md active:scale-95 cursor-pointer"
             >
-              🔄 返回大廳首頁
+              🔄 返回單字學習館
             </button>
           </div>
         </div>
@@ -255,7 +255,7 @@ export function App() {
       {/* 畫面路由視圖切換 (含全域安全防護熔斷) */}
       <main className="flex-1 flex flex-col">
         <ErrorBoundary
-          onReset={() => handleNavigate('portal')}
+          onReset={() => handleNavigate(currentView === 'portal' || currentView === 'phonics' ? 'portal' : 'lobby')}
           onOpenTeacherHub={handleOpenTeacherHub}
         >
           {currentView === 'portal' && (

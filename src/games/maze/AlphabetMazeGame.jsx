@@ -366,7 +366,7 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
         {/* 頂部導覽列 */}
         <div className="flex items-center justify-between">
           <Button3D variant="slate" size="sm" onClick={handleBackToLobby} icon={ArrowLeft}>
-            {t.backLobby || '回大廳'}
+            {t.backToVocabLobby || '回單字學習館'}
           </Button3D>
 
           {/* 雙主題切換鈕 */}
@@ -643,6 +643,15 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
             >
               <ArrowLeft className="w-4 h-4 text-amber-400" />
               <span className="hidden sm:inline">回選單</span>
+            </button>
+
+            {/* 快速返回單字學習館 */}
+            <button
+              onClick={handleBackToLobby}
+              className="px-3 py-2 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-slate-300 hover:text-white text-xs font-black flex items-center gap-1 border border-white/15 shadow-md transition-all cursor-pointer"
+              title="回單字學習館"
+            >
+              <span>回單字館</span>
             </button>
 
             {/* 重新生成迷宮按鈕 */}
@@ -923,12 +932,21 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
             </Button3D>
 
             <Button3D
-              variant="slate"
+              variant="blue"
               size="md"
               onClick={handleBackToMenu}
               className="w-full"
             >
               回迷宮選單
+            </Button3D>
+
+            <Button3D
+              variant="slate"
+              size="md"
+              onClick={handleBackToLobby}
+              className="w-full"
+            >
+              {t.backToVocabLobby || '回單字學習館'}
             </Button3D>
           </div>
         </GlassCard>
