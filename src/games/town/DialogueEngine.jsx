@@ -1,19 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button3D } from '../../components/ui/Button3D';
-import { DIALOGUE_TREES } from './townData';
+import { getDialogueTreeForLocation } from './townData';
 import { speakEnglish, soundEngine } from '../../services/audio';
-import { Volume2, X, MessageSquare, Sparkles, ShoppingBag, ScrollText, CheckCircle2 } from 'lucide-react';
+import { Volume2, X, MessageSquare, Sparkles, ShoppingBag, ScrollText, Gift } from 'lucide-react';
 
 export const DialogueEngine = ({
   location,
   onClose,
   onOpenShop,
   onOpenQuests,
-  onQuestProgress
+  onQuestProgress,
+  isVisitingTeacher = false,
+  visitingTeacher = null,
+  onTeacherBonusClaimed
 }) => {
-  const tree = DIALOGUE_TREES[location?.id];
-  const [currentNodeId, setCurrentNodeId] = useState(tree?.startNode || 'welcome');
+  // 智慧決定當前對話樹 (若為今日值勤外師則載入外師專屬對話樹，否則載入當日輪替對話樹)
+  const tree = useMemo(() => {
+    return getDialogueTreeForLocation(location?.id, {
+      isTeacherActive: isVisitingTeacher,
+      teacher: visitingTeacher
+    });
+  }, [location?.id, isVisitingTeacher, visitingTeacher]);
 
+  const [currentNodeId, setCurrentNodeId] = useState(tree?.startNode || 'welcome');
   const currentNode = tree?.nodes?.[currentNodeId];
 
   // 當進入新節點時播放清脆提示音，並自動朗讀英語發音
@@ -34,6 +43,15 @@ export const DialogueEngine = ({
 
   const handleSelectOption = (opt) => {
     soundEngine.click();
+
+    // 處理外師彩蛋領獎動作
+    if (opt.action === 'CLAIM_TEACHER_BONUS') {
+      if (onTeacherBonusClaimed) {
+        onTeacherBonusClaimed();
+      }
+      onClose();
+      return;
+    }
 
     // 處理特殊動作 (Action)
     if (opt.action === 'OPEN_SHOP') {
@@ -65,26 +83,50 @@ export const DialogueEngine = ({
     }
   };
 
+  // 決定頭像與角色身分
+  const displayAvatar = isVisitingTeacher ? visitingTeacher.avatar : location.npcAvatar;
+  const displayRole = isVisitingTeacher ? visitingTeacher.roleZh : location.npcRole;
+  const bgGradient = isVisitingTeacher ? visitingTeacher.bgGradient : location.bgGradient;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-fadeIn">
       <div className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-2 border-emerald-400 dark:border-emerald-600 overflow-hidden relative my-auto animate-scaleUp">
+        
+        {/* 客座外師特有閃爍光環橫幅 */}
+        {isVisitingTeacher && (
+          <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white px-4 py-2 flex items-center justify-between shadow-inner">
+            <span className="flex items-center gap-1.5 text-xs font-black">
+              <Sparkles className="w-4 h-4 animate-spin-slow" />
+              <span>{visitingTeacher.tag}</span>
+            </span>
+            <span className="text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <Gift className="w-3 h-3" />
+              <span>完成對話隨機獲得 5~10 探索積分</span>
+            </span>
+          </div>
+        )}
+
         {/* 頂部 NPC 橫幅 */}
-        <div className={`p-4 sm:p-5 bg-gradient-to-r ${location.bgGradient} text-slate-800 dark:text-white flex items-center justify-between border-b border-slate-200 dark:border-slate-800`}>
+        <div className={`p-4 sm:p-5 bg-gradient-to-r ${bgGradient} text-slate-800 dark:text-white flex items-center justify-between border-b border-slate-200 dark:border-slate-800`}>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/80 dark:bg-slate-800/80 shadow-md flex items-center justify-center text-2xl shrink-0">
-              {location.npcAvatar}
+            <div className="w-14 h-14 rounded-2xl bg-white/90 dark:bg-slate-800/90 shadow-md flex items-center justify-center text-3xl shrink-0 border border-slate-200/60 dark:border-slate-700/60">
+              {displayAvatar}
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base sm:text-lg font-heading font-black">
                   {currentNode.speaker}
                 </h3>
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500 text-white">
-                  {location.nameZh}
+                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                  isVisitingTeacher 
+                    ? 'bg-amber-500 text-white' 
+                    : 'bg-emerald-500 text-white'
+                }`}>
+                  {isVisitingTeacher ? '客座外師' : location.nameZh}
                 </span>
               </div>
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                {location.npcRole}
+              <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mt-0.5">
+                {displayRole}
               </p>
             </div>
           </div>
@@ -98,7 +140,7 @@ export const DialogueEngine = ({
           </button>
         </div>
 
-        {/* NPC 對話對白框 (Speech Bubble) */}
+        {/* NPC 對話對白框 (Speech Bubble - 預留 2D 立繪展示佈局) */}
         <div className="p-4 sm:p-6 space-y-5">
           <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 relative">
             {/* 語音重複朗讀按鈕 */}
@@ -151,8 +193,8 @@ export const DialogueEngine = ({
             ))}
           </div>
 
-          {/* 店家快捷功能列 */}
-          {location.hasShop && (
+          {/* 店家快捷功能列 (非外師對話時顯示) */}
+          {!isVisitingTeacher && location.hasShop && (
             <div className="pt-2 flex justify-end">
               <button
                 onClick={() => {
@@ -167,7 +209,7 @@ export const DialogueEngine = ({
             </div>
           )}
 
-          {location.hasQuests && (
+          {!isVisitingTeacher && location.hasQuests && (
             <div className="pt-2 flex justify-end">
               <button
                 onClick={() => {

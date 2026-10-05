@@ -185,6 +185,39 @@ export const StudentProvider = ({ children }) => {
   }, [currentStudent]);
 
   /**
+   * 領取今日客座外師彩蛋獎勵 (+5~10 探索積分)
+   */
+  const claimTeacherBonus = useCallback(async (bonusPoints, teacherName) => {
+    if (!currentStudent?.student_id || typeof bonusPoints !== 'number') return 0;
+    const today = new Date().toISOString().slice(0, 10);
+    const newPoints = (currentStudent.quest_points || 0) + bonusPoints;
+
+    const currentDailyQuest = (typeof currentStudent.daily_quest === 'object' && currentStudent.daily_quest) ? currentStudent.daily_quest : {};
+    const updatedDailyQuest = {
+      ...currentDailyQuest,
+      teacherMetDate: today,
+      lastTeacherName: teacherName,
+      lastTeacherBonus: bonusPoints
+    };
+
+    const updated = {
+      ...currentStudent,
+      quest_points: newPoints,
+      daily_quest: updatedDailyQuest
+    };
+
+    setCurrentStudent(updated);
+
+    try {
+      await apiUpdateQuestPoints(currentStudent.student_id, bonusPoints);
+      await apiUpdateDailyQuest(currentStudent.student_id, updatedDailyQuest);
+    } catch (e) {
+      console.warn('客座外師獎勵同步異常:', e);
+    }
+    return newPoints;
+  }, [currentStudent]);
+
+  /**
    * 重新拉取最新雲端學生檔案
    */
   const refreshStudentProfile = useCallback(async () => {
@@ -219,6 +252,7 @@ export const StudentProvider = ({ children }) => {
     addQuestPoints,
     updateInventory,
     updateDailyQuest,
+    claimTeacherBonus,
     refreshStudentProfile,
     isOwnGradeBook,
     studentGrade: currentStudent?.grade || '00',
