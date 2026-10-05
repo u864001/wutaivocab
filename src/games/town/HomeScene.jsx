@@ -86,7 +86,6 @@ export const HomeScene = ({ onClose }) => {
 
   const handleLeaveHome = (e) => {
     if (e) e.stopPropagation();
-    soundEngine.stopHomeBgm();
     stopSpeech();
     if (onClose) onClose();
   };

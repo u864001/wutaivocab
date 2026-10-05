@@ -34,12 +34,12 @@ export const DialogueEngine = ({
   const [bgError, setBgError] = useState(false);
   const [isDialogueReady, setIsDialogueReady] = useState(false);
 
-  // 決定當前發言人物的專屬音色設定 (性別、音調 pitch、語速 rate、腔調 accent)
-  const activeVoiceProfile = useMemo(() => {
-    if (isVisitingTeacher && visitingTeacher?.voiceProfile) {
-      return visitingTeacher.voiceProfile;
+  // 決定當前發言人物的專屬語音指紋 (Persona Key: mario, ibu, school, supermarket, etc.)
+  const activeVoicePersonaKey = useMemo(() => {
+    if (isVisitingTeacher && visitingTeacher?.id) {
+      return visitingTeacher.id;
     }
-    return location?.voiceProfile || { gender: 'male', pitch: 1.0, rate: 0.88, accent: 'en-US' };
+    return location?.id || 'mario';
   }, [isVisitingTeacher, visitingTeacher, location]);
 
   const [isBgmPlaying, setIsBgmPlaying] = useState(true);
@@ -66,13 +66,13 @@ export const DialogueEngine = ({
   useEffect(() => {
     if (currentNode?.en) {
       soundEngine.click();
-      speakEnglish(currentNode.en, activeVoiceProfile);
+      speakEnglish(currentNode.en, activeVoicePersonaKey);
       setShowChineseNpc(false); // 新句子預設隱藏中文翻譯
       if (onQuestProgress) {
         onQuestProgress('dialogue', location.id, currentNodeId);
       }
     }
-  }, [currentNodeId, currentNode, location?.id, activeVoiceProfile]);
+  }, [currentNodeId, currentNode, location?.id, activeVoicePersonaKey]);
 
   // 人物滑入就定位後延遲彈出對話框
   useEffect(() => {
@@ -148,7 +148,7 @@ export const DialogueEngine = ({
 
   const handleReplaySpeech = () => {
     if (currentNode?.en) {
-      speakEnglish(currentNode.en, activeVoiceProfile);
+      speakEnglish(currentNode.en, activeVoicePersonaKey);
     }
   };
 
