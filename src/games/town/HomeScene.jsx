@@ -3,7 +3,8 @@ import { useStudent } from '../../context/StudentContext';
 import { soundEngine, speakEnglish, stopSpeech } from '../../services/audio';
 import {
   ArrowLeft, Music, VolumeX, Sparkles, Package, Coins, Trophy,
-  Volume2, Compass, Heart, Award, Shield, CheckCircle2, ShoppingBag
+  Volume2, Compass, Heart, Award, Shield, CheckCircle2, ShoppingBag,
+  X, BookOpen, Coffee, Sun
 } from 'lucide-react';
 
 const CATEGORY_TABS = [
@@ -15,18 +16,31 @@ const CATEGORY_TABS = [
   { id: 'special', label: '部落寶物' }
 ];
 
-export const HomeScene = ({ onClose, onNavigateLocation }) => {
+export const HomeScene = ({ onClose }) => {
   const { currentStudent, coins, questPoints, inventory } = useStudent();
   const [activeCategory, setActiveCategory] = useState('all');
   const [isBgmPlaying, setIsBgmPlaying] = useState(true);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [isBackpackOpen, setIsBackpackOpen] = useState(false);
+  const [isNoticeBoardOpen, setIsNoticeBoardOpen] = useState(false);
   const [useToast, setUseToast] = useState(null);
   const [bgError, setBgError] = useState(false);
 
-  // 進入溫馨的家時，自動播放溫暖八音盒循環背景音樂；離開時立即停止
+  // 嘗試解鎖並播放溫暖音樂
+  const triggerAudio = () => {
+    soundEngine.init();
+    if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
+      soundEngine.ctx.resume().then(() => {
+        soundEngine.startHomeBgm();
+        setIsBgmPlaying(true);
+      }).catch(() => {});
+    } else {
+      soundEngine.startHomeBgm();
+      setIsBgmPlaying(true);
+    }
+  };
+
   useEffect(() => {
-    soundEngine.startHomeBgm();
-    setIsBgmPlaying(soundEngine.isHomeBgmActive());
+    triggerAudio();
 
     return () => {
       soundEngine.stopHomeBgm();
@@ -34,16 +48,51 @@ export const HomeScene = ({ onClose, onNavigateLocation }) => {
     };
   }, []);
 
-  const handleToggleBgm = () => {
+  const handleToggleBgm = (e) => {
+    if (e) e.stopPropagation();
     soundEngine.click();
     const active = soundEngine.toggleHomeBgm();
     setIsBgmPlaying(active);
   };
 
-  const handleLeaveHome = () => {
+  const handleLeaveHome = (e) => {
+    if (e) e.stopPropagation();
     soundEngine.stopHomeBgm();
     stopSpeech();
     if (onClose) onClose();
+  };
+
+  const handleOpenBackpack = (e) => {
+    if (e) e.stopPropagation();
+    triggerAudio();
+    soundEngine.click();
+    setIsBackpackOpen(true);
+    setIsNoticeBoardOpen(false);
+  };
+
+  const handleOpenNoticeBoard = (e) => {
+    if (e) e.stopPropagation();
+    triggerAudio();
+    soundEngine.click();
+    setIsNoticeBoardOpen(true);
+    setIsBackpackOpen(false);
+  };
+
+  const handleDeskClick = (e) => {
+    if (e) e.stopPropagation();
+    triggerAudio();
+    soundEngine.correct();
+    speakEnglish("Welcome home! Learning English is fun and easy!");
+    setUseToast("📖 溫馨書桌：今天也要元氣滿滿，開心大聲說英語！");
+    setTimeout(() => setUseToast(null), 3600);
+  };
+
+  const handleBedClick = (e) => {
+    if (e) e.stopPropagation();
+    triggerAudio();
+    soundEngine.click();
+    setUseToast("🛌 溫暖的陽光大床：在霧臺小鎮逛累了，隨時可以回來休息充電！");
+    setTimeout(() => setUseToast(null), 3600);
   };
 
   const handleUseItem = (item) => {
@@ -53,13 +102,13 @@ export const HomeScene = ({ onClose, onNavigateLocation }) => {
     }
 
     if (item.category === 'food') {
-      setUseToast(`😋 你在溫馨的房間裡品嘗了「${item.nameZh}」！滿滿的幸福活力！`);
+      setUseToast(`😋 你在房間裡品嘗了「${item.nameZh}」！滿滿的幸福活力！`);
     } else if (item.category === 'clothing' || item.category === 'special') {
-      setUseToast(`✨ 你在全身鏡前換上了「${item.nameZh}」！展現自信的部落風采！`);
+      setUseToast(`✨ 你在房間穿戴上了「${item.nameZh}」！展現自信的部落勇士風采！`);
     } else if (item.category === 'stationery') {
-      setUseToast(`📝 你在書桌前拿出了「${item.nameZh}」，寫下了一句很棒的英文！`);
+      setUseToast(`📝 你在書桌前拿出了「${item.nameZh}」，寫下了漂亮的英文單字！`);
     } else {
-      setUseToast(`🎫 你整理了「${item.nameZh}」，期待下一次精彩的山林冒險！`);
+      setUseToast(`🎫 你整理了「${item.nameZh}」，期待下一次山林探險！`);
     }
 
     setTimeout(() => setUseToast(null), 3600);
@@ -71,188 +120,221 @@ export const HomeScene = ({ onClose, onNavigateLocation }) => {
     : items.filter(it => it.category === activeCategory);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-slate-950 overflow-hidden select-none animate-fadeIn">
+    <div
+      onClick={triggerAudio}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950 overflow-hidden select-none animate-fadeIn"
+    >
       
-      {/* ── 1. 全螢幕 16:9 溫馨的家吉卜力原畫背景 (Cozy Home Backdrop) ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* ── 16:9 比例完整保留吉卜力房間舞臺 (Zero-crop 16:9 Scenic Stage) ── */}
+      <div className="relative w-full aspect-[16/9] max-h-screen overflow-hidden shadow-2xl bg-slate-950">
+        
+        {/* 全螢幕 16:9 原畫背景圖 (100% 完整無裁切、無任何遮擋) */}
         {!bgError ? (
           <img
             src="/assets/town/bg_home.png"
             alt="學生溫馨的家"
             onError={() => setBgError(true)}
-            className="w-full h-full object-cover object-center filter brightness-[0.92] contrast-[1.03] transition-all duration-700 scale-100"
+            className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.98] contrast-[1.02] pointer-events-none"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-amber-700/30 via-orange-800/20 to-lime-900/30" />
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-700/30 via-orange-800/20 to-lime-900/30" />
         )}
-        {/* 電影級晨光與柔和暗角 */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/45" />
-      </div>
 
-      {/* ── 2. 頂部 HUD 狀態列 (Top HUD) ── */}
-      <div className="relative z-30 px-4 sm:px-6 py-3 flex items-center justify-between gap-3 bg-slate-950/45 backdrop-blur-md border-b border-white/15 shrink-0">
-        <div className="flex items-center gap-3">
-          {/* 返回小鎮地圖快捷鈕 */}
-          <button
-            onClick={handleLeaveHome}
-            className="px-3.5 py-1.5 rounded-2xl bg-white/20 hover:bg-white/30 text-white font-black text-xs sm:text-sm backdrop-blur-md border border-white/30 flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
-            title="隨時返回霧臺小鎮全景地圖"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>返回小鎮地圖</span>
-          </button>
-
-          {/* 地標標籤 */}
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-xl bg-amber-500/20 backdrop-blur-md flex items-center justify-center text-lg shadow-sm border border-amber-400/30">
-              🏡
-            </span>
-            <span className="text-sm sm:text-base font-black text-white font-heading drop-shadow-md">
-              學生溫馨的家
-            </span>
-            <span className="text-xs font-mono font-bold text-amber-300 bg-white/10 px-2 py-0.5 rounded-full hidden sm:inline">
-              Cozy Home
-            </span>
-          </div>
-        </div>
-
-        {/* 右側：溫馨循環音樂開關 + 金幣與積分計數 */}
-        <div className="flex items-center gap-2">
-          {/* 🎵 溫馨循環背景音樂開關 */}
-          <button
-            onClick={handleToggleBgm}
-            className={`px-3 py-1.5 rounded-2xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1.5 shadow-md cursor-pointer active:scale-95 ${
-              isBgmPlaying
-                ? 'bg-amber-500/30 hover:bg-amber-500/40 text-amber-200 border-amber-400/50'
-                : 'bg-white/15 hover:bg-white/25 text-slate-300 border-white/20'
-            }`}
-            title={isBgmPlaying ? '點擊暫停背景音樂' : '點擊播放溫馨八音盒背景音樂'}
-          >
-            {isBgmPlaying ? (
-              <>
-                <Music className="w-3.5 h-3.5 animate-bounce text-amber-300" />
-                <span className="hidden sm:inline">溫馨八音盒音樂：</span>
-                <span>播放中</span>
-              </>
-            ) : (
-              <>
-                <VolumeX className="w-3.5 h-3.5 text-slate-400" />
-                <span>音樂已靜音</span>
-              </>
-            )}
-          </button>
-
-          {/* 金幣存量 */}
-          <div className="px-3 py-1.5 rounded-2xl bg-amber-500/20 border border-amber-300/40 backdrop-blur-md flex items-center gap-1.5 text-amber-200 text-xs font-black shadow-sm">
-            <Coins className="w-3.5 h-3.5 text-amber-400" />
-            <span className="font-mono text-sm">{coins}</span>
-          </div>
-
-          {/* 探索積分 */}
-          <div className="px-3 py-1.5 rounded-2xl bg-indigo-500/20 border border-indigo-300/40 backdrop-blur-md hidden sm:flex items-center gap-1.5 text-indigo-200 text-xs font-black shadow-sm">
-            <Trophy className="w-3.5 h-3.5 text-indigo-400" />
-            <span className="font-mono text-sm">{questPoints}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 道具使用回饋 Toast */}
-      {useToast && (
-        <div className="relative z-40 mx-4 sm:mx-8 mt-3 p-3 rounded-2xl bg-gradient-to-r from-amber-600 to-emerald-600 text-white font-black text-xs sm:text-sm flex items-center justify-between shadow-xl animate-fadeIn border border-white/20">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 shrink-0 animate-bounce text-yellow-200" />
-            <span>{useToast}</span>
-          </div>
-          <button
-            onClick={() => setUseToast(null)}
-            className="text-white/80 hover:text-white text-xs px-2 py-0.5 rounded-lg bg-black/20"
-          >
-            好的
-          </button>
-        </div>
-      )}
-
-      {/* ── 3. 主舞臺：左側個人天地卡片 + 右側陳列置物架與背包 ── */}
-      <div className="relative z-20 flex-1 flex flex-col lg:flex-row items-stretch justify-between p-4 sm:p-6 md:p-8 gap-5 max-w-7xl mx-auto w-full min-h-0 overflow-y-auto">
-        
-        {/* ── 左側：學生個人房間與成就書桌 (Personal Desk & Profile) ── */}
-        <div className="w-full lg:w-4/12 flex flex-col gap-4 shrink-0">
+        {/* ── 頂部懸浮超薄毛玻璃導航列 (Floating Minimal HUD) ── */}
+        <div className="absolute top-3 left-3 right-3 z-30 px-3.5 sm:px-5 py-2.5 rounded-2xl bg-slate-950/45 backdrop-blur-md border border-white/20 text-white flex items-center justify-between gap-3 shadow-lg pointer-events-auto">
           
-          {/* 歡迎回家的暖心大卡片 */}
-          <div className="p-5 sm:p-6 rounded-3xl bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-2 border-amber-300/60 dark:border-amber-500/40 shadow-2xl space-y-3.5 relative overflow-hidden">
-            <div className="flex items-center gap-3">
-              <span className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-3xl shadow-md border-2 border-white/60">
-                🏡
-              </span>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-base sm:text-lg font-black text-slate-800 dark:text-white font-heading">
-                    {currentStudent?.nickname || '好學生'} 的房間
-                  </h3>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white">
-                    學習家
-                  </span>
-                </div>
-                <p className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                  座號：{currentStudent?.student_id || '訪客'}
-                </p>
-              </div>
-            </div>
-
-            <p className="text-xs sm:text-sm font-bold text-amber-900/90 dark:text-amber-200/90 leading-relaxed bg-amber-50/80 dark:bg-amber-950/40 p-3.5 rounded-2xl border border-amber-200/60 dark:border-amber-800/60">
-              「歡迎回到溫暖的家！在山中小鎮探險之後，可以在房間裡聆聽八音盒旋律，整理你買回來的英語學習寶物、衣服與美食。」
-            </p>
-
-            {/* 榮譽與存錢筒小看板 */}
-            <div className="grid grid-cols-3 gap-2 pt-1 text-center">
-              <div className="p-2.5 rounded-2xl bg-amber-500/10 border border-amber-300/40">
-                <div className="text-xs font-bold text-amber-700 dark:text-amber-300">儲蓄金幣</div>
-                <div className="text-base sm:text-lg font-black font-mono text-amber-600 dark:text-amber-400">
-                  {coins}
-                </div>
-              </div>
-              <div className="p-2.5 rounded-2xl bg-indigo-500/10 border border-indigo-300/40">
-                <div className="text-xs font-bold text-indigo-700 dark:text-indigo-300">冒險積分</div>
-                <div className="text-base sm:text-lg font-black font-mono text-indigo-600 dark:text-indigo-400">
-                  {questPoints}
-                </div>
-              </div>
-              <div className="p-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-300/40">
-                <div className="text-xs font-bold text-emerald-700 dark:text-emerald-300">寶物件數</div>
-                <div className="text-base sm:text-lg font-black font-mono text-emerald-600 dark:text-emerald-400">
-                  {items.length}
-                </div>
-              </div>
-            </div>
-
-            {/* 外出小鎮快捷按鈕 */}
+          {/* 左側：返回小鎮按鈕 */}
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
               onClick={handleLeaveHome}
-              className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              className="px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-black text-xs sm:text-sm backdrop-blur-md border border-white/30 flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+              title="返回霧臺小鎮全景地圖"
             >
-              <Compass className="w-4 h-4" />
-              <span>走出家門 • 探索霧臺小鎮</span>
+              <ArrowLeft className="w-4 h-4" />
+              <span>返回小鎮</span>
             </button>
+
+            <div className="flex items-center gap-1.5">
+              <span className="text-base sm:text-lg">🏡</span>
+              <span className="text-sm sm:text-base font-black text-white font-heading drop-shadow">
+                {currentStudent?.nickname || '好學生'} 的溫馨房間
+              </span>
+              <span className="text-[10px] font-mono font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-400/30 hidden md:inline">
+                Cozy Home
+              </span>
+            </div>
+          </div>
+
+          {/* 中央動態操作引導 (取消遮擋，提示點擊互動目標) */}
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-xl bg-white/10 border border-white/10 text-xs font-bold text-slate-200">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin-slow" />
+            <span>點擊椅子上的「🎒 書包」或牆上的「📜 告示板」探索房間</span>
+          </div>
+
+          {/* 右側：八音盒音樂開關 + 金幣與積分計數 */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* 🎵 溫馨循環背景音樂按鈕 */}
+            <button
+              onClick={handleToggleBgm}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1.5 shadow-md cursor-pointer active:scale-95 ${
+                isBgmPlaying
+                  ? 'bg-amber-500/30 hover:bg-amber-500/40 text-amber-200 border-amber-400/50'
+                  : 'bg-white/15 hover:bg-white/25 text-slate-300 border-white/20'
+              }`}
+              title={isBgmPlaying ? '點擊暫停背景音樂' : '點擊播放八音盒背景音樂'}
+            >
+              {isBgmPlaying ? (
+                <>
+                  <Music className="w-3.5 h-3.5 animate-bounce text-amber-300" />
+                  <span className="hidden sm:inline">八音盒音樂：</span>
+                  <span>播放中</span>
+                </>
+              ) : (
+                <>
+                  <VolumeX className="w-3.5 h-3.5 text-slate-400" />
+                  <span>音樂靜音</span>
+                </>
+              )}
+            </button>
+
+            {/* 金幣 */}
+            <div className="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-300/40 backdrop-blur-md flex items-center gap-1 text-amber-200 text-xs font-black shadow-sm">
+              <Coins className="w-3.5 h-3.5 text-amber-400" />
+              <span className="font-mono text-sm">{coins}</span>
+            </div>
+
+            {/* 積分 */}
+            <div className="px-2.5 py-1 rounded-xl bg-indigo-500/20 border border-indigo-300/40 backdrop-blur-md hidden sm:flex items-center gap-1 text-indigo-200 text-xs font-black shadow-sm">
+              <Trophy className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="font-mono text-sm">{questPoints}</span>
+            </div>
           </div>
         </div>
 
-        {/* ── 右側：個人探險背包與道具陳列架 (Cozy Shelf & Backpack Storage) ── */}
-        <div className="w-full lg:w-8/12 flex flex-col p-4 sm:p-6 rounded-3xl bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-2 border-white/60 dark:border-slate-700/60 shadow-2xl min-h-[380px] overflow-hidden">
+        {/* ── 房間內互動熱區層 (Interactive Room Hotspots) ── */}
+        
+        {/* 🎯 熱區 1：椅子上的綠色探險書包 (Backpack on Wooden Chair) */}
+        <div
+          onClick={handleOpenBackpack}
+          style={{ left: '39.5%', top: '44%', width: '10.5%', height: '28%' }}
+          className="absolute z-20 cursor-pointer rounded-2xl group transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95"
+          title="點擊開啟探險書包，整理你的文具與道具"
+        >
+          {/* 呼吸微發光光圈 */}
+          <div className="absolute inset-0 rounded-2xl border-2 border-emerald-400/70 shadow-[0_0_22px_rgba(52,211,153,0.7),inset_0_0_12px_rgba(52,211,153,0.3)] animate-pulse group-hover:border-emerald-300 group-hover:shadow-[0_0_32px_rgba(52,211,153,0.95)]" />
           
-          {/* 置物架頂部與分類切換 */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-700 shrink-0">
-            <div className="flex items-center gap-2">
-              <Package className="w-5 h-5 text-amber-500" />
-              <h4 className="text-sm sm:text-base font-black text-slate-800 dark:text-white font-heading">
-                個人探險背包收納架
-              </h4>
-              <span className="text-[11px] font-bold text-slate-500">
-                (點擊道具可朗讀英語發音與使用)
-              </span>
+          {/* 懸浮引導標籤 */}
+          <div className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-emerald-400/70 text-white text-[11px] font-black flex items-center gap-1 shadow-xl whitespace-nowrap group-hover:-translate-y-1 transition-transform pointer-events-none">
+            <span className="text-xs">🎒</span>
+            <span className="text-emerald-200">點擊開啟書包</span>
+            <span className="text-[10px] text-emerald-400">({items.length})</span>
+          </div>
+        </div>
+
+        {/* 🎯 熱區 2：牆上的風景畫像與學習榮譽告示板 (Notice Board & Wall Gallery) */}
+        <div
+          onClick={handleOpenNoticeBoard}
+          style={{ left: '66.5%', top: '5.5%', width: '25%', height: '34%' }}
+          className="absolute z-20 cursor-pointer rounded-2xl group transition-all duration-300 flex items-center justify-center hover:scale-102 active:scale-98"
+          title="點擊查看學習成果告示板、金幣與冒險積分"
+        >
+          {/* 呼吸金色發光邊框 */}
+          <div className="absolute inset-0 rounded-2xl border-2 border-amber-400/70 shadow-[0_0_22px_rgba(251,191,36,0.7),inset_0_0_12px_rgba(251,191,36,0.3)] animate-pulse group-hover:border-amber-300 group-hover:shadow-[0_0_35px_rgba(251,191,36,0.95)]" />
+
+          {/* 懸浮引導標籤 */}
+          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-amber-400/70 text-white text-[11px] font-black flex items-center gap-1 shadow-xl whitespace-nowrap group-hover:translate-y-1 transition-transform pointer-events-none">
+            <span className="text-xs">📜</span>
+            <span className="text-amber-200">學習榮譽告示板</span>
+            <span className="text-[10px] text-amber-300">🪙 {coins}</span>
+          </div>
+        </div>
+
+        {/* 🎯 熱區 3：窗前原木書桌彩蛋 (Study Desk Easter Egg) */}
+        <div
+          onClick={handleDeskClick}
+          style={{ left: '16%', top: '44%', width: '23%', height: '26%' }}
+          className="absolute z-10 cursor-pointer rounded-2xl hover:border border-amber-300/40 hover:backdrop-brightness-105 transition-all group"
+          title="點擊書桌：大聲說英語，加油打氣！"
+        />
+
+        {/* 🎯 熱區 4：陽光大床彩蛋 (Cozy Bed Easter Egg) */}
+        <div
+          onClick={handleBedClick}
+          style={{ left: '74%', top: '44%', width: '23%', height: '35%' }}
+          className="absolute z-10 cursor-pointer rounded-2xl hover:border border-amber-300/40 hover:backdrop-brightness-105 transition-all group"
+          title="點擊大床：溫暖休息充電！"
+        />
+
+        {/* ── 底部超薄極簡快捷列 (Minimal Bottom Quick Bar) ── */}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 px-3 py-1.5 rounded-2xl bg-slate-950/45 backdrop-blur-md border border-white/20 text-white shadow-lg flex items-center gap-2 pointer-events-auto">
+          <button
+            onClick={handleOpenBackpack}
+            className="px-3 py-1 rounded-xl bg-emerald-500/30 hover:bg-emerald-500/50 text-emerald-200 border border-emerald-400/40 text-xs font-black transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+          >
+            <span>🎒</span>
+            <span>開啟書包 ({items.length})</span>
+          </button>
+
+          <button
+            onClick={handleOpenNoticeBoard}
+            className="px-3 py-1 rounded-xl bg-amber-500/30 hover:bg-amber-500/50 text-amber-200 border border-amber-400/40 text-xs font-black transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+          >
+            <span>📜</span>
+            <span>榮譽告示板</span>
+          </button>
+
+          <button
+            onClick={handleLeaveHome}
+            className="px-3 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-slate-200 border border-white/20 text-xs font-black transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+          >
+            <span>🚪</span>
+            <span>返回小鎮</span>
+          </button>
+        </div>
+
+        {/* ── 互動趣味 Toast 提示 ── */}
+        {useToast && (
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-2xl bg-slate-900/90 text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-2xl animate-bounce border border-amber-400/60 backdrop-blur-md">
+            <Sparkles className="w-4 h-4 text-amber-300 shrink-0" />
+            <span>{useToast}</span>
+          </div>
+        )}
+      </div>
+
+      {/* ── 🎒 模態彈窗 1：點擊書包後開啟之背包整理視窗 ── */}
+      {isBackpackOpen && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-sm animate-fadeIn"
+        >
+          <div className="w-full max-w-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-emerald-400 dark:border-emerald-600 overflow-hidden flex flex-col max-h-[85vh] animate-scaleUp">
+            
+            {/* 視窗頂部橫幅 */}
+            <div className="p-4 sm:p-5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-3">
+                <span className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shadow-sm">
+                  🎒
+                </span>
+                <div>
+                  <h3 className="text-base sm:text-lg font-heading font-black">
+                    個人探險書包 • 道具收納
+                  </h3>
+                  <p className="text-xs font-bold text-emerald-100">
+                    點擊道具可點讀英語發音，並在房間內使用品嘗
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsBackpackOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+                title="關閉書包"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            {/* 分類按鈕 */}
-            <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto scrollbar-none pb-1 sm:pb-0">
+            {/* 分類標籤切換 */}
+            <div className="p-3 bg-slate-100 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 flex items-center gap-1.5 overflow-x-auto scrollbar-none shrink-0">
               {CATEGORY_TABS.map(tab => (
                 <button
                   key={tab.id}
@@ -260,80 +342,194 @@ export const HomeScene = ({ onClose, onNavigateLocation }) => {
                     soundEngine.click();
                     setActiveCategory(tab.id);
                   }}
-                  className={`px-2.5 py-1 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer ${
+                  className={`px-3 py-1 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer ${
                     activeCategory === tab.id
-                      ? 'bg-amber-500 text-white shadow-sm scale-103'
-                      : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-white hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200'
                   }`}
                 >
                   {tab.label}
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* 道具格子列表 */}
-          <div className="flex-1 overflow-y-auto pt-3.5 pr-1 min-h-[220px]">
-            {filteredItems.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-3">
-                <span className="text-5xl opacity-80 animate-pulse">📦</span>
-                <p className="text-sm font-black text-slate-600 dark:text-slate-300">
-                  {activeCategory === 'all'
-                    ? '背包架上目前空空的喔！'
-                    : `「${CATEGORY_TABS.find(t => t.id === activeCategory)?.label}」分類中尚無物品`}
-                </p>
-                <p className="text-xs font-bold text-slate-400 max-w-sm">
-                  快出發前往小鎮上的【雲豹書局】挑選文具，或到【黑熊超市】購買美味點心，豐富你的房間收藏吧！
-                </p>
-                <button
-                  onClick={handleLeaveHome}
-                  className="mt-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5"
-                >
-                  <ShoppingBag className="w-3.5 h-3.5" />
-                  <span>去小鎮商店逛逛</span>
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {filteredItems.map((item, idx) => (
-                  <div
-                    key={`${item.id}_${idx}`}
-                    onClick={() => handleUseItem(item)}
-                    className="p-3.5 rounded-2xl bg-white/75 dark:bg-slate-800/75 hover:bg-amber-50 dark:hover:bg-amber-950/30 border-2 border-slate-200/80 hover:border-amber-400 dark:border-slate-700 dark:hover:border-amber-500 transition-all shadow-sm active:scale-97 cursor-pointer group flex items-start gap-3 relative"
-                  >
-                    <span className="w-12 h-12 rounded-xl bg-amber-500/15 group-hover:bg-amber-500/25 flex items-center justify-center text-2xl shrink-0 transition-colors border border-amber-300/30">
-                      {item.icon}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-white font-heading truncate">
-                          {item.nameEn}
-                        </span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            speakEnglish(item.nameEn);
-                          }}
-                          className="p-1 rounded-lg hover:bg-amber-200 dark:hover:bg-amber-900/50 text-amber-600 dark:text-amber-400"
-                          title="聆聽英文發音"
-                        >
-                          <Volume2 className="w-3.5 h-3.5" />
-                        </button>
+            {/* 道具格子列表 */}
+            <div className="flex-1 overflow-y-auto p-4 min-h-[220px]">
+              {filteredItems.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-3">
+                  <span className="text-5xl opacity-80 animate-pulse">📦</span>
+                  <p className="text-sm font-black text-slate-600 dark:text-slate-300">
+                    {activeCategory === 'all'
+                      ? '書包裡目前空空的喔！'
+                      : `「${CATEGORY_TABS.find(t => t.id === activeCategory)?.label}」分類中尚無物品`}
+                  </p>
+                  <p className="text-xs font-bold text-slate-400 max-w-sm">
+                    快走出家門，到小鎮上的【雲豹書局】挑選文具，或到【黑熊超市】購買美味點心充實書包吧！
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {filteredItems.map((item, idx) => (
+                    <div
+                      key={`${item.id}_${idx}`}
+                      onClick={() => handleUseItem(item)}
+                      className="p-3.5 rounded-2xl bg-white dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border-2 border-slate-200 hover:border-emerald-400 dark:border-slate-700 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-97 cursor-pointer group flex items-start gap-3 relative"
+                    >
+                      <span className="w-12 h-12 rounded-xl bg-emerald-500/15 group-hover:bg-emerald-500/25 flex items-center justify-center text-2xl shrink-0 transition-colors border border-emerald-300/30">
+                        {item.icon}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-white font-heading truncate">
+                            {item.nameEn}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              speakEnglish(item.nameEn);
+                            }}
+                            className="p-1 rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400"
+                            title="聆聽發音"
+                          >
+                            <Volume2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <div className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                          {item.nameZh}
+                        </div>
+                        <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                          {item.description}
+                        </p>
                       </div>
-                      <div className="text-xs font-bold text-amber-700 dark:text-amber-300">
-                        {item.nameZh}
-                      </div>
-                      <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
-                        {item.description}
-                      </p>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 視窗底部按鈕 */}
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex justify-end shrink-0">
+              <button
+                onClick={() => setIsBackpackOpen(false)}
+                className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-black text-xs transition-colors cursor-pointer"
+              >
+                收起書包，回到房間
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* ── 📜 模態彈窗 2：點擊告示板後開啟之學習榮譽與金幣成果榜 ── */}
+      {isNoticeBoardOpen && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/70 backdrop-blur-sm animate-fadeIn"
+        >
+          <div className="w-full max-w-lg bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-3xl shadow-2xl border-2 border-amber-400 dark:border-amber-600 overflow-hidden flex flex-col animate-scaleUp">
+            
+            {/* 視窗頂部橫幅 */}
+            <div className="p-4 sm:p-5 bg-gradient-to-r from-amber-600 to-orange-700 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-3">
+                <span className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shadow-sm">
+                  📜
+                </span>
+                <div>
+                  <h3 className="text-base sm:text-lg font-heading font-black">
+                    學習榮譽告示板 • 個人成果
+                  </h3>
+                  <p className="text-xs font-bold text-amber-100">
+                    霧臺國小自主英語探險家榮譽榜
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsNoticeBoardOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+                title="關閉告示板"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* 告示板主體內容 */}
+            <div className="p-5 sm:p-6 space-y-4 overflow-y-auto">
+              
+              {/* 學生身分資訊卡片 */}
+              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+                <span className="w-12 h-12 rounded-xl bg-amber-500 text-white font-black text-xl flex items-center justify-center shadow-md">
+                  🎓
+                </span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-base font-black text-slate-800 dark:text-white font-heading">
+                      {currentStudent?.nickname || '好學生'}
+                    </h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white">
+                      初級探險家
+                    </span>
+                  </div>
+                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                    學生座號：{currentStudent?.student_id || '訪客身分'}
+                  </p>
+                </div>
+              </div>
+
+              {/* 三大核心資產統計看板 */}
+              <div className="grid grid-cols-3 gap-2.5 text-center">
+                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-300/50">
+                  <div className="text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center justify-center gap-1">
+                    <Coins className="w-3.5 h-3.5 text-amber-500" />
+                    <span>宇宙金幣</span>
+                  </div>
+                  <div className="text-xl font-black font-mono text-amber-600 dark:text-amber-400 mt-1">
+                    {coins}
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">可用於商店採買</div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-indigo-500/10 border border-indigo-300/50">
+                  <div className="text-xs font-bold text-indigo-700 dark:text-indigo-300 flex items-center justify-center gap-1">
+                    <Trophy className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>冒險積分</span>
+                  </div>
+                  <div className="text-xl font-black font-mono text-indigo-600 dark:text-indigo-400 mt-1">
+                    {questPoints}
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">全校榮譽榜排名</div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-300/50">
+                  <div className="text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center justify-center gap-1">
+                    <Package className="w-3.5 h-3.5 text-emerald-500" />
+                    <span>書包寶物</span>
+                  </div>
+                  <div className="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400 mt-1">
+                    {items.length}
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">件收藏道具</div>
+                </div>
+              </div>
+
+              {/* 每日激勵卡片 */}
+              <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 leading-relaxed border border-slate-200 dark:border-slate-700">
+                <span className="text-amber-500 font-black">🌟 探險家評語：</span>
+                「你每一次在霧臺小鎮開口說英語，都是成為大武山英語勇士的珍貴足跡！繼續挑戰每日任務，收集更多寶物吧！」
+              </div>
+            </div>
+
+            {/* 視窗底部按鈕 */}
+            <div className="p-3.5 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex justify-end shrink-0">
+              <button
+                onClick={() => setIsNoticeBoardOpen(false)}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs transition-colors cursor-pointer shadow-sm"
+              >
+                好的，回到房間
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

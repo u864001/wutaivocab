@@ -140,6 +140,11 @@ class SoundEngine {
     if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
+
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
+    }
+
     if (this.homeBgmRunning) return;
 
     this.homeBgmRunning = true;
@@ -148,20 +153,21 @@ class SoundEngine {
     try {
       // 建立 BGM 專屬母音量與暖色低通濾波器
       this.homeBgmMasterGain = this.ctx.createGain();
-      this.homeBgmMasterGain.gain.setValueAtTime(0.001, this.ctx.currentTime);
-      // 柔和淡入 0.8 秒
-      this.homeBgmMasterGain.gain.exponentialRampToValueAtTime(0.12, this.ctx.currentTime + 0.8);
+      const now = this.ctx.currentTime;
+      this.homeBgmMasterGain.gain.setValueAtTime(0.001, now);
+      // 飽滿清晰淡入 0.5 秒 (0.42 音量，溫暖清晰)
+      this.homeBgmMasterGain.gain.exponentialRampToValueAtTime(0.42, now + 0.5);
 
-      // 溫暖低通濾波器 (去除尖銳高頻，營造日系手繪木屋的溫潤空間感)
+      // 溫暖低通濾波器 (頻率 1600Hz，保持八音盒清脆度同時濾除刺耳噪聲)
       this.homeBgmFilter = this.ctx.createBiquadFilter();
       this.homeBgmFilter.type = 'lowpass';
-      this.homeBgmFilter.frequency.setValueAtTime(1100, this.ctx.currentTime);
+      this.homeBgmFilter.frequency.setValueAtTime(1600, now);
 
       // 空間微迴音延遲 (Delay)
       this.homeBgmDelay = this.ctx.createDelay();
-      this.homeBgmDelay.delayTime.setValueAtTime(0.36, this.ctx.currentTime);
+      this.homeBgmDelay.delayTime.setValueAtTime(0.32, now);
       this.homeBgmDelayGain = this.ctx.createGain();
-      this.homeBgmDelayGain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+      this.homeBgmDelayGain.gain.setValueAtTime(0.25, now);
 
       this.homeBgmDelay.connect(this.homeBgmDelayGain);
       this.homeBgmDelayGain.connect(this.homeBgmDelay);
@@ -174,10 +180,14 @@ class SoundEngine {
       return;
     }
 
-    const stepIntervalMs = 540; // 每個步長約 0.54 秒，舒服悠閒的節奏
+    const stepIntervalMs = 520; // 每個步長約 0.52 秒，舒服悠閒的節奏
 
     const tick = () => {
       if (!this.homeBgmRunning || !this.ctx || this.isMuted) return;
+
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
+      }
 
       const idx = this.homeBgmStep % HOME_MUSIC_PATTERN.length;
       const beat = HOME_MUSIC_PATTERN[idx];
@@ -185,17 +195,17 @@ class SoundEngine {
 
       // 1. 溫暖低音 (Bass)
       if (beat.bass) {
-        this.scheduleWarmTone(beat.bass, 'triangle', now, 0.9, 0.08);
+        this.scheduleWarmTone(beat.bass, 'triangle', now, 0.9, 0.24);
       }
       // 2. 溫柔和弦伴奏 (Chords)
       if (beat.chords && beat.chords.length > 0) {
         beat.chords.forEach(freq => {
-          this.scheduleWarmTone(freq, 'sine', now + 0.02, 0.65, 0.035);
+          this.scheduleWarmTone(freq, 'sine', now + 0.02, 0.65, 0.12);
         });
       }
       // 3. 八音盒清脆主旋律 (Music Box Bell)
       if (beat.melody) {
-        this.scheduleMusicBoxNote(beat.melody, now, 0.8, 0.07);
+        this.scheduleMusicBoxNote(beat.melody, now, 0.85, 0.28);
       }
 
       this.homeBgmStep++;
@@ -205,46 +215,50 @@ class SoundEngine {
     tick();
   }
 
-  scheduleWarmTone(freq, type, startTime, duration, vol) {
+  scheduleWarmTone(freq, type, startTime, duration = 0.9, vol = 0.24) {
     if (!this.ctx || !this.homeBgmFilter) return;
     try {
+      const now = this.ctx.currentTime;
+      const start = Math.max(startTime, now + 0.01);
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
       osc.type = type;
-      osc.frequency.setValueAtTime(freq, startTime);
+      osc.frequency.setValueAtTime(freq, start);
 
-      gain.gain.setValueAtTime(0.001, startTime);
-      gain.gain.linearRampToValueAtTime(vol, startTime + 0.06);
-      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+      gain.gain.setValueAtTime(0.001, start);
+      gain.gain.linearRampToValueAtTime(vol, start + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
 
       osc.connect(gain);
       gain.connect(this.homeBgmFilter);
 
-      osc.start(startTime);
-      osc.stop(startTime + duration + 0.05);
+      osc.start(start);
+      osc.stop(start + duration + 0.05);
     } catch (e) {}
   }
 
-  scheduleMusicBoxNote(freq, startTime, duration, vol) {
+  scheduleMusicBoxNote(freq, startTime, duration = 0.85, vol = 0.28) {
     if (!this.ctx || !this.homeBgmFilter) return;
     try {
+      const now = this.ctx.currentTime;
+      const start = Math.max(startTime, now + 0.01);
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, startTime);
+      osc.frequency.setValueAtTime(freq, start);
 
       // 八音盒音色：敲擊清脆迅速，隨後緩慢長尾迴響
-      gain.gain.setValueAtTime(0.001, startTime);
-      gain.gain.linearRampToValueAtTime(vol, startTime + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+      gain.gain.setValueAtTime(0.001, start);
+      gain.gain.linearRampToValueAtTime(vol, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
 
       osc.connect(gain);
       gain.connect(this.homeBgmFilter);
 
-      osc.start(startTime);
-      osc.stop(startTime + duration + 0.05);
+      osc.start(start);
+      osc.stop(start + duration + 0.05);
     } catch (e) {}
   }
 

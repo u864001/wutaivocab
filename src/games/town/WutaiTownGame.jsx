@@ -137,6 +137,11 @@ export const WutaiTownGame = ({ onBack }) => {
     stopSpeech();
     soundEngine.click();
     if (loc.id === 'home') {
+      soundEngine.init();
+      if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
+        soundEngine.ctx.resume().catch(() => {});
+      }
+      soundEngine.startHomeBgm();
       setIsHomeOpen(true);
       return;
     }
@@ -237,6 +242,11 @@ export const WutaiTownGame = ({ onBack }) => {
             <button
               onClick={() => {
                 soundEngine.click();
+                soundEngine.init();
+                if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
+                  soundEngine.ctx.resume().catch(() => {});
+                }
+                soundEngine.startHomeBgm();
                 setIsHomeOpen(true);
               }}
               className="px-2.5 py-1 rounded-xl bg-lime-600 hover:bg-lime-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
