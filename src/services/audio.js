@@ -8,13 +8,38 @@ const NOTES = {
   C6: 1046.50
 };
 
-// ── 9 大場景專屬純程式化音律庫 (0 流量負擔，100% 本地數學合成) ──
+// ── 10 大場景專屬純程式化音律庫 (0 流量負擔，100% 本地數學合成，每場景獨特樂器音色與風格) ──
 const SCENE_BGM_CONFIGS = {
-  // 1. 學生溫馨的家 (溫暖吉卜力八音盒)
+  // 0. 霧臺小鎮全景大地圖 (山林晨光號角冒險進行曲)
+  town: {
+    stepIntervalMs: 410,
+    filterFreq: 2200,
+    instrument: 'brass_fanfare',
+    pattern: [
+      { bass: NOTES.D2, chords: [NOTES.Fs3, NOTES.A3], melody: NOTES.D4, drum: 'kick' },
+      { chords: [NOTES.A3], melody: NOTES.Fs4 },
+      { bass: NOTES.A2, chords: [NOTES.D4], melody: NOTES.A4 },
+      { chords: [NOTES.Fs3], melody: NOTES.D5 },
+      { bass: NOTES.G2, chords: [NOTES.B3, NOTES.D4], melody: NOTES.G4, drum: 'kick' },
+      { chords: [NOTES.D4], melody: NOTES.B4 },
+      { bass: NOTES.D3, chords: [NOTES.G4], melody: NOTES.D5 },
+      { chords: [NOTES.B3], melody: NOTES.G5 },
+      { bass: NOTES.A2, chords: [NOTES.Cs4, NOTES.E4], melody: NOTES.A4, drum: 'kick' },
+      { chords: [NOTES.E4], melody: NOTES.Cs5 },
+      { bass: NOTES.E2, chords: [NOTES.A4], melody: NOTES.E5 },
+      { chords: [NOTES.Cs4], melody: NOTES.A5 },
+      { bass: NOTES.D3, chords: [NOTES.Fs3, NOTES.A3], melody: NOTES.D5, drum: 'kick' },
+      { chords: [NOTES.A3], melody: NOTES.Fs4 },
+      { bass: NOTES.A2, chords: [NOTES.D4], melody: NOTES.E4 },
+      { chords: [NOTES.Fs3], melody: NOTES.D4 }
+    ]
+  },
+
+  // 1. 學生溫馨的家 (溫暖吉卜力夢幻八音盒)
   home: {
-    stepIntervalMs: 520,
-    filterFreq: 1600,
-    waveType: 'sine',
+    stepIntervalMs: 540,
+    filterFreq: 1700,
+    instrument: 'musicbox',
     pattern: [
       { bass: NOTES.C3, chords: [NOTES.E3, NOTES.G3], melody: NOTES.E4 },
       { chords: [NOTES.B3], melody: NOTES.G4 },
@@ -35,36 +60,36 @@ const SCENE_BGM_CONFIGS = {
     ]
   },
 
-  // 2. 霧臺國小校長室/活動大廳 (明亮晨會鐘聲與朝氣進行曲)
+  // 2. 霧臺國小 (英式威斯敏斯特清晨鐘聲與活力晨號)
   school: {
-    stepIntervalMs: 480,
-    filterFreq: 2200,
-    waveType: 'triangle',
+    stepIntervalMs: 460,
+    filterFreq: 2600,
+    instrument: 'bells',
     pattern: [
-      { bass: NOTES.D3, chords: [NOTES.Fs3, NOTES.A3], melody: NOTES.D5 },
-      { chords: [NOTES.A3], melody: NOTES.Fs4 },
-      { chords: [NOTES.B3], melody: NOTES.G4 },
-      { chords: [NOTES.Cs4], melody: NOTES.E5 },
-      { bass: NOTES.G2, chords: [NOTES.B3, NOTES.D4], melody: NOTES.G4 },
-      { chords: [NOTES.D4], melody: NOTES.B4 },
-      { chords: [NOTES.A3], melody: NOTES.E4 },
-      { chords: [NOTES.Fs4], melody: NOTES.D5 },
-      { bass: NOTES.A2, chords: [NOTES.Cs4, NOTES.E4], melody: NOTES.A4 },
-      { chords: [NOTES.E4], melody: NOTES.Cs5 },
+      { bass: NOTES.D3, chords: [NOTES.Fs3, NOTES.A3], melody: NOTES.E4 },
+      { chords: [NOTES.A3], melody: NOTES.G4 },
+      { bass: NOTES.A2, chords: [NOTES.Cs4], melody: NOTES.Fs4 },
+      { chords: [NOTES.Fs3], melody: NOTES.B3 },
+      { bass: NOTES.G2, chords: [NOTES.B3, NOTES.D4], melody: NOTES.E4 },
       { chords: [NOTES.D4], melody: NOTES.Fs4 },
-      { chords: [NOTES.E4], melody: NOTES.G4 },
+      { bass: NOTES.D3, chords: [NOTES.A3], melody: NOTES.G4 },
+      { chords: [NOTES.B3], melody: NOTES.E4 },
       { bass: NOTES.D3, chords: [NOTES.Fs3, NOTES.A3], melody: NOTES.D5 },
       { chords: [NOTES.A3], melody: NOTES.Fs4 },
-      { chords: [NOTES.A2], melody: NOTES.E4 },
+      { bass: NOTES.A2, chords: [NOTES.Cs4], melody: NOTES.A4 },
+      { chords: [NOTES.Fs3], melody: NOTES.D5 },
+      { bass: NOTES.D3, chords: [NOTES.Fs3, NOTES.A3], melody: NOTES.D5 },
+      { chords: [NOTES.A3], melody: NOTES.Fs4 },
+      { bass: NOTES.A2, chords: [NOTES.D3], melody: NOTES.E4 },
       { chords: [NOTES.D3], melody: NOTES.D4 }
     ]
   },
 
-  // 3. 雲豹書局 (巴洛克書香古典羽管鍵琴琶音)
+  // 3. 雲豹書局 (巴洛克古典羽管鍵琴琶音 Harpsichord)
   bookstore: {
-    stepIntervalMs: 560,
-    filterFreq: 1400,
-    waveType: 'sine',
+    stepIntervalMs: 500,
+    filterFreq: 1500,
+    instrument: 'harpsichord',
     pattern: [
       { bass: NOTES.A2, chords: [NOTES.C3, NOTES.E3], melody: NOTES.A4 },
       { chords: [NOTES.E3], melody: NOTES.C4 },
@@ -85,36 +110,36 @@ const SCENE_BGM_CONFIGS = {
     ]
   },
 
-  // 4. 黑熊超市 (輕快活潑木琴撥弦跳躍市集風)
+  // 4. 黑熊超市 (輕快俏皮木琴撥弦跳躍市集風 Marimba)
   supermarket: {
-    stepIntervalMs: 460,
-    filterFreq: 2400,
-    waveType: 'triangle',
+    stepIntervalMs: 370,
+    filterFreq: 2800,
+    instrument: 'marimba',
     pattern: [
-      { bass: NOTES.F2, chords: [NOTES.A3, NOTES.C4], melody: NOTES.C5 },
+      { bass: NOTES.F2, chords: [NOTES.A3], melody: NOTES.C5, drum: 'wood' },
       { chords: [NOTES.C3], melody: NOTES.F4 },
-      { chords: [NOTES.A3], melody: NOTES.A4 },
-      { chords: [NOTES.C4], melody: NOTES.C5 },
-      { bass: NOTES.Bb2, chords: [NOTES.D3, NOTES.F3], melody: NOTES.D5 },
-      { chords: [NOTES.D3], melody: NOTES.Bb4 },
-      { chords: [NOTES.F3], melody: NOTES.F4 },
-      { chords: [NOTES.Bb3], melody: NOTES.D5 },
-      { bass: NOTES.C3, chords: [NOTES.E3, NOTES.G3], melody: NOTES.E5 },
+      { bass: NOTES.C3, chords: [NOTES.F3], melody: NOTES.A4, drum: 'wood' },
+      { chords: [NOTES.A3], melody: NOTES.C5 },
+      { bass: NOTES.Bb2, chords: [NOTES.D3], melody: NOTES.D5, drum: 'wood' },
+      { chords: [NOTES.F3], melody: NOTES.Bb4 },
+      { bass: NOTES.F2, chords: [NOTES.Bb3], melody: NOTES.F4, drum: 'wood' },
+      { chords: [NOTES.D3], melody: NOTES.D5 },
+      { bass: NOTES.C3, chords: [NOTES.E3], melody: NOTES.E5, drum: 'wood' },
       { chords: [NOTES.G3], melody: NOTES.C5 },
-      { chords: [NOTES.E3], melody: NOTES.G4 },
-      { chords: [NOTES.G3], melody: NOTES.E5 },
-      { bass: NOTES.F2, chords: [NOTES.A3, NOTES.C4], melody: NOTES.F5 },
+      { bass: NOTES.G2, chords: [NOTES.C4], melody: NOTES.G4, drum: 'wood' },
+      { chords: [NOTES.E3], melody: NOTES.E5 },
+      { bass: NOTES.F2, chords: [NOTES.A3], melody: NOTES.F5, drum: 'wood' },
       { chords: [NOTES.C3], melody: NOTES.A4 },
-      { chords: [NOTES.A2], melody: NOTES.C5 },
+      { bass: NOTES.C3, chords: [NOTES.F3], melody: NOTES.C5, drum: 'wood' },
       { chords: [NOTES.F2], melody: NOTES.F4 }
     ]
   },
 
-  // 5. 飛鼠公園 (清涼高山森林鳥鳴與清泉微風水滴)
+  // 5. 飛鼠公園 (清晨高山水滴微風與空靈風鈴 Water Droplets & Wind Chimes)
   park: {
-    stepIntervalMs: 600,
-    filterFreq: 1900,
-    waveType: 'sine',
+    stepIntervalMs: 620,
+    filterFreq: 2000,
+    instrument: 'water_chime',
     pattern: [
       { bass: NOTES.G2, chords: [NOTES.D3, NOTES.G3], melody: NOTES.B4 },
       { chords: [NOTES.B3], melody: NOTES.G5 },
@@ -135,11 +160,11 @@ const SCENE_BGM_CONFIGS = {
     ]
   },
 
-  // 6. 貓頭鷹診所 (療癒溫柔水晶豎琴與舒緩微風)
+  // 6. 貓頭鷹診所 (身心療癒水晶豎琴與溫柔慢板 Crystal Harp Lullaby)
   clinic: {
-    stepIntervalMs: 640,
-    filterFreq: 1300,
-    waveType: 'sine',
+    stepIntervalMs: 680,
+    filterFreq: 1000,
+    instrument: 'crystal_harp',
     pattern: [
       { bass: NOTES.Eb2, chords: [NOTES.Bb2, NOTES.G3], melody: NOTES.Eb5 },
       { chords: [NOTES.G3], melody: NOTES.Bb4 },
@@ -160,77 +185,77 @@ const SCENE_BGM_CONFIGS = {
     ]
   },
 
-  // 7. 霧臺客運站 (公路旅行民謠原木吉他掃弦)
+  // 7. 霧臺客運站 (公路旅行鄉村民謠木吉他掃弦 Folk Guitar Arpeggio)
   station: {
-    stepIntervalMs: 490,
-    filterFreq: 2000,
-    waveType: 'triangle',
+    stepIntervalMs: 440,
+    filterFreq: 2100,
+    instrument: 'folk_guitar',
     pattern: [
       { bass: NOTES.E2, chords: [NOTES.B2, NOTES.E3], melody: NOTES.E4 },
       { chords: [NOTES.Ab3], melody: NOTES.B4 },
-      { chords: [NOTES.B2], melody: NOTES.Ab4 },
+      { bass: NOTES.B2, chords: [NOTES.E3], melody: NOTES.Ab4 },
       { chords: [NOTES.E3], melody: NOTES.E5 },
       { bass: NOTES.A2, chords: [NOTES.E3, NOTES.A3], melody: NOTES.Cs5 },
       { chords: [NOTES.A3], melody: NOTES.E4 },
-      { chords: [NOTES.E3], melody: NOTES.A4 },
+      { bass: NOTES.E2, chords: [NOTES.A3], melody: NOTES.A4 },
       { chords: [NOTES.A2], melody: NOTES.Cs5 },
       { bass: NOTES.B2, chords: [NOTES.Fs3, NOTES.B3], melody: NOTES.Ds5 },
       { chords: [NOTES.B3], melody: NOTES.Fs4 },
-      { chords: [NOTES.Fs3], melody: NOTES.B4 },
+      { bass: NOTES.Fs2, chords: [NOTES.B3], melody: NOTES.B4 },
       { chords: [NOTES.B2], melody: NOTES.Ds5 },
       { bass: NOTES.E2, chords: [NOTES.B2, NOTES.E3], melody: NOTES.E5 },
       { chords: [NOTES.Ab3], melody: NOTES.E4 },
-      { chords: [NOTES.B2], melody: NOTES.Ab4 },
+      { bass: NOTES.B2, chords: [NOTES.E3], melody: NOTES.Ab4 },
       { chords: [NOTES.E2], melody: NOTES.E4 }
     ]
   },
 
-  // 8. 百步蛇集會所 (原民古調五聲音階與部落竹笛木鼓心跳律動)
+  // 8. 百步蛇集會所 (原民古調五聲音階竹笛與大地木鼓心跳 Tribal Flute & Wood Drum)
   plaza: {
-    stepIntervalMs: 540,
-    filterFreq: 1500,
-    waveType: 'triangle',
+    stepIntervalMs: 520,
+    filterFreq: 1600,
+    instrument: 'tribal_flute',
     pattern: [
-      { bass: NOTES.D2, chords: [NOTES.A2, NOTES.D3], melody: NOTES.D4 },
-      { chords: [NOTES.F3], melody: NOTES.A4 },
-      { chords: [NOTES.A2], melody: NOTES.F4 },
-      { chords: [NOTES.D3], melody: NOTES.D5 },
-      { bass: NOTES.G2, chords: [NOTES.D3, NOTES.G3], melody: NOTES.G4 },
-      { chords: [NOTES.Bb3], melody: NOTES.D5 },
-      { chords: [NOTES.D3], melody: NOTES.C5 },
-      { chords: [NOTES.G2], melody: NOTES.A4 },
-      { bass: NOTES.C2, chords: [NOTES.G2, NOTES.C3], melody: NOTES.C5 },
-      { chords: [NOTES.E3], melody: NOTES.G4 },
-      { chords: [NOTES.G2], melody: NOTES.E4 },
-      { chords: [NOTES.C3], melody: NOTES.G4 },
-      { bass: NOTES.D2, chords: [NOTES.A2, NOTES.D3], melody: NOTES.A4 },
-      { chords: [NOTES.F3], melody: NOTES.D4 },
-      { chords: [NOTES.A2], melody: NOTES.F4 },
-      { chords: [NOTES.D2], melody: NOTES.D4 }
+      { bass: NOTES.D2, chords: [NOTES.A2], melody: NOTES.D4, drum: 'kick' },
+      { chords: [NOTES.F3], melody: NOTES.A4, drum: 'wood' },
+      { bass: NOTES.A2, chords: [NOTES.D3], melody: NOTES.F4 },
+      { chords: [NOTES.D3], melody: NOTES.D5, drum: 'wood' },
+      { bass: NOTES.G2, chords: [NOTES.D3], melody: NOTES.G4, drum: 'kick' },
+      { chords: [NOTES.Bb3], melody: NOTES.D5, drum: 'wood' },
+      { bass: NOTES.D2, chords: [NOTES.G3], melody: NOTES.C5 },
+      { chords: [NOTES.G2], melody: NOTES.A4, drum: 'wood' },
+      { bass: NOTES.C2, chords: [NOTES.G2], melody: NOTES.C5, drum: 'kick' },
+      { chords: [NOTES.E3], melody: NOTES.G4, drum: 'wood' },
+      { bass: NOTES.G2, chords: [NOTES.C3], melody: NOTES.E4 },
+      { chords: [NOTES.C3], melody: NOTES.G4, drum: 'wood' },
+      { bass: NOTES.D2, chords: [NOTES.A2], melody: NOTES.A4, drum: 'kick' },
+      { chords: [NOTES.F3], melody: NOTES.D4, drum: 'wood' },
+      { bass: NOTES.A2, chords: [NOTES.D3], melody: NOTES.F4 },
+      { chords: [NOTES.D2], melody: NOTES.D4, drum: 'wood' }
     ]
   },
 
-  // 9. 山豬影城 (復古爆米花微醺老爵士搖擺沙發風)
+  // 9. 山豬影城 (復古微醺爵士薩克斯風與行走低音 Vintage Swing Sax & Walking Bass)
   cinema: {
-    stepIntervalMs: 530,
-    filterFreq: 1700,
-    waveType: 'triangle',
+    stepIntervalMs: 560,
+    filterFreq: 650,
+    instrument: 'jazz_sax',
     pattern: [
       { bass: NOTES.Bb2, chords: [NOTES.D3, NOTES.F3], melody: NOTES.F4 },
       { chords: [NOTES.D3], melody: NOTES.Bb4 },
-      { chords: [NOTES.F2], melody: NOTES.D4 },
+      { bass: NOTES.D2, chords: [NOTES.F3], melody: NOTES.D4 },
       { chords: [NOTES.Bb2], melody: NOTES.F5 },
       { bass: NOTES.G2, chords: [NOTES.Bb2, NOTES.D3], melody: NOTES.D4 },
       { chords: [NOTES.Bb2], melody: NOTES.G4 },
-      { chords: [NOTES.D2], melody: NOTES.Bb4 },
+      { bass: NOTES.Bb2, chords: [NOTES.D3], melody: NOTES.Bb4 },
       { chords: [NOTES.G2], melody: NOTES.D5 },
       { bass: NOTES.C3, chords: [NOTES.Eb3, NOTES.G3], melody: NOTES.G4 },
       { chords: [NOTES.Eb3], melody: NOTES.C5 },
-      { chords: [NOTES.G2], melody: NOTES.Eb4 },
+      { bass: NOTES.Eb2, chords: [NOTES.G3], melody: NOTES.Eb4 },
       { chords: [NOTES.C3], melody: NOTES.G5 },
       { bass: NOTES.F2, chords: [NOTES.A2, NOTES.C3], melody: NOTES.F4 },
       { chords: [NOTES.C3], melody: NOTES.A4 },
-      { chords: [NOTES.A2], melody: NOTES.F4 },
+      { bass: NOTES.A2, chords: [NOTES.C3], melody: NOTES.F4 },
       { chords: [NOTES.F2], melody: NOTES.C4 }
     ]
   }
@@ -334,11 +359,44 @@ class SoundEngine {
   }
 
   // 按鈕點擊感
+  // 點擊按鈕反饋
   click() {
     this.playTone(400, 'triangle', 0.04, 0.08);
   }
 
-  // ── 9 大場景專屬背景音樂啟動 (0 頻寬負擔，純演算法合成) ──
+  // 魔法靈感卡 2160 度急速陀螺旋轉音效 (急速升頻旋轉呼嘯)
+  spinCard() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      // 模擬陀螺風嘯與星辰微粒旋轉音
+      const count = 16;
+      for (let i = 0; i < count; i++) {
+        const offset = Math.pow(i / count, 1.35) * 1.5;
+        const freq = 320 + i * 55;
+        const vol = 0.08 + (i / count) * 0.12;
+        setTimeout(() => {
+          this.playTone(freq, 'sine', 0.07, vol);
+        }, offset * 1000);
+      }
+    } catch (e) {}
+  }
+
+  // 實體卡牌釘在榮譽告示板上的清脆木質圖釘聲
+  pinCard() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      // 仿木質圖釘下壓反饋音 (低沉木塊擊打 + 亮微金屬反饋)
+      this.playTone(260, 'triangle', 0.035, 0.28);
+      setTimeout(() => this.playTone(840, 'sine', 0.06, 0.16), 25);
+    } catch (e) {}
+  }
+
+  // ── 10 大場景專屬背景音樂啟動 (0 頻寬負擔，純演算法合成) ──
   startSceneBgm(sceneId = 'home') {
     if (this.isMuted) return;
     this.init();
@@ -365,10 +423,10 @@ class SoundEngine {
       this.sceneBgmMasterGain = this.ctx.createGain();
       const now = this.ctx.currentTime;
       this.sceneBgmMasterGain.gain.setValueAtTime(0.001, now);
-      // 溫柔淡入 0.6 秒 (0.38 音量)
-      this.sceneBgmMasterGain.gain.exponentialRampToValueAtTime(0.38, now + 0.6);
+      // 溫柔淡入 0.6 秒 (0.36 音量)
+      this.sceneBgmMasterGain.gain.exponentialRampToValueAtTime(0.36, now + 0.6);
 
-      // 低通暖色濾波
+      // 低通暖色濾波 (依場景設定)
       this.sceneBgmFilter = this.ctx.createBiquadFilter();
       this.sceneBgmFilter.type = 'lowpass';
       this.sceneBgmFilter.frequency.setValueAtTime(config.filterFreq || 1600, now);
@@ -377,7 +435,7 @@ class SoundEngine {
       this.sceneBgmDelay = this.ctx.createDelay();
       this.sceneBgmDelay.delayTime.setValueAtTime(0.32, now);
       this.sceneBgmDelayGain = this.ctx.createGain();
-      this.sceneBgmDelayGain.gain.setValueAtTime(0.24, now);
+      this.sceneBgmDelayGain.gain.setValueAtTime(0.22, now);
 
       this.sceneBgmDelay.connect(this.sceneBgmDelayGain);
       this.sceneBgmDelayGain.connect(this.sceneBgmDelay);
@@ -402,20 +460,30 @@ class SoundEngine {
       const idx = this.sceneBgmStep % config.pattern.length;
       const beat = config.pattern[idx];
       const now = this.ctx.currentTime;
+      const inst = config.instrument || 'musicbox';
+
+      // 0. 特色節奏鼓點 (Drum Beat)
+      if (beat.drum) {
+        this.scheduleDrum(beat.drum, now);
+      }
 
       // 1. 低音旋律 (Bass)
       if (beat.bass) {
-        this.scheduleWarmTone(beat.bass, config.waveType || 'triangle', now, 0.9, 0.22);
+        const bassWave = inst === 'jazz_sax' ? 'sawtooth' : (inst === 'marimba' || inst === 'harpsichord' ? 'square' : 'triangle');
+        const bassDur = inst === 'marimba' ? 0.16 : (inst === 'harpsichord' ? 0.22 : 0.82);
+        this.scheduleWarmTone(beat.bass, bassWave, now, bassDur, 0.20);
       }
+
       // 2. 和弦伴奏 (Chords)
       if (beat.chords && beat.chords.length > 0) {
         beat.chords.forEach(freq => {
-          this.scheduleWarmTone(freq, 'sine', now + 0.02, 0.65, 0.10);
+          this.scheduleWarmTone(freq, inst === 'harpsichord' ? 'sawtooth' : 'sine', now + 0.02, 0.45, 0.08);
         });
       }
-      // 3. 主旋律音符 (Melody)
+
+      // 3. 專屬主奏樂器音色合成 (Melody)
       if (beat.melody) {
-        this.scheduleMusicBoxNote(beat.melody, now, 0.85, 0.26, config.waveType);
+        this.scheduleInstrumentNote(beat.melody, inst, now);
       }
 
       this.sceneBgmStep++;
@@ -423,6 +491,192 @@ class SoundEngine {
     };
 
     tick();
+  }
+
+  // 程式化特色打擊樂音 (木塊擊打、低音踩鼓)
+  scheduleDrum(type, startTime) {
+    if (!this.ctx || !this.sceneBgmFilter) return;
+    try {
+      const now = this.ctx.currentTime;
+      const start = Math.max(startTime, now + 0.005);
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      if (type === 'wood') {
+        // 清脆木塊木琴敲擊 (快速降頻三角波)
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(750, start);
+        osc.frequency.exponentialRampToValueAtTime(220, start + 0.03);
+        gain.gain.setValueAtTime(0.16, start);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.035);
+        osc.connect(gain);
+        gain.connect(this.sceneBgmFilter);
+        osc.start(start);
+        osc.stop(start + 0.04);
+      } else if (type === 'kick') {
+        // 山林大地心跳鼓動 (柔和正弦低音)
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(130, start);
+        osc.frequency.exponentialRampToValueAtTime(45, start + 0.09);
+        gain.gain.setValueAtTime(0.24, start);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.11);
+        osc.connect(gain);
+        gain.connect(this.sceneBgmFilter);
+        osc.start(start);
+        osc.stop(start + 0.12);
+      }
+    } catch (e) {}
+  }
+
+  // 各場景獨特樂器主旋律音色合成器
+  scheduleInstrumentNote(freq, instrument, startTime) {
+    if (!this.ctx || !this.sceneBgmFilter) return;
+    try {
+      const now = this.ctx.currentTime;
+      const start = Math.max(startTime, now + 0.005);
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      switch (instrument) {
+        case 'marimba': // 黑熊超市：跳躍空心木琴 (快速木板敲擊衰減)
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.22, start + 0.005);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.08);
+          osc.connect(gain);
+          gain.connect(this.sceneBgmFilter);
+          osc.start(start);
+          osc.stop(start + 0.09);
+          break;
+
+        case 'harpsichord': // 雲豹書局：巴洛克古典羽管鍵琴 (鋸齒波撥弦斷奏)
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.20, start + 0.004);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.18);
+          osc.connect(gain);
+          gain.connect(this.sceneBgmFilter);
+          osc.start(start);
+          osc.stop(start + 0.19);
+          break;
+
+        case 'bells': // 霧臺國小：威斯敏斯特清晨鐘聲 (雙音和聲敲鐘泛音)
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.22, start + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 1.1);
+          osc.connect(gain);
+          gain.connect(this.sceneBgmFilter);
+          osc.start(start);
+          osc.stop(start + 1.15);
+
+          // 泛音疊加 (2.756 倍高八度鐘聲共鳴)
+          try {
+            const bellHarmonic = this.ctx.createOscillator();
+            const bellGain = this.ctx.createGain();
+            bellHarmonic.type = 'sine';
+            bellHarmonic.frequency.setValueAtTime(freq * 2.756, start);
+            bellGain.gain.setValueAtTime(0.001, start);
+            bellGain.gain.linearRampToValueAtTime(0.07, start + 0.01);
+            bellGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.75);
+            bellHarmonic.connect(bellGain);
+            bellGain.connect(this.sceneBgmFilter);
+            bellHarmonic.start(start);
+            bellHarmonic.stop(start + 0.8);
+          } catch (e) {}
+          break;
+
+        case 'water_chime': // 飛鼠公園：高山清泉水滴滑音與風鈴 (水滴清脆滑落音)
+          osc.type = 'sine';
+          // 頻率自高滑降至基音，模擬清澈水滴墜入山泉聲
+          osc.frequency.setValueAtTime(freq * 1.14, start);
+          osc.frequency.exponentialRampToValueAtTime(freq, start + 0.045);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.23, start + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.55);
+          osc.connect(gain);
+          gain.connect(this.sceneBgmFilter);
+          osc.start(start);
+          osc.stop(start + 0.6);
+          break;
+
+        case 'crystal_harp': // 貓頭鷹診所：療癒水晶豎琴 (緩慢柔和漸強、悠遠舒緩餘韻)
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.22, start + 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 1.45);
+          osc.connect(gain);
+          gain.connect(this.sceneBgmFilter);
+          osc.start(start);
+          osc.stop(start + 1.5);
+          break;
+
+        case 'folk_guitar': // 霧臺客運站：公路民謠吉他掃弦 (清脆三角波撥弦)
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.24, start + 0.008);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.32);
+          osc.connect(gain);
+          gain.connect(this.sceneBgmFilter);
+          osc.start(start);
+          osc.stop(start + 0.35);
+          break;
+
+        case 'tribal_flute': // 百步蛇集會所：原民竹笛氣息長音
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.23, start + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.65);
+          osc.connect(gain);
+          gain.connect(this.sceneBgmFilter);
+          osc.start(start);
+          osc.stop(start + 0.7);
+          break;
+
+        case 'jazz_sax': // 山豬影城：復古微醺薩克斯風 (柔化鋸齒波長延音)
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.21, start + 0.035);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.52);
+          osc.connect(gain);
+          gain.connect(this.sceneBgmFilter);
+          osc.start(start);
+          osc.stop(start + 0.55);
+          break;
+
+        case 'brass_fanfare': // 霧臺小鎮全景：晨光登山號角進行曲
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.24, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.40);
+          osc.connect(gain);
+          gain.connect(this.sceneBgmFilter);
+          osc.start(start);
+          osc.stop(start + 0.42);
+          break;
+
+        case 'musicbox': // 學生溫馨房間：八音盒純淨晶瑩泛音
+        default:
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(0.25, start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.85);
+          osc.connect(gain);
+          gain.connect(this.sceneBgmFilter);
+          osc.start(start);
+          osc.stop(start + 0.9);
+          break;
+      }
+    } catch (e) {}
   }
 
   scheduleWarmTone(freq, type, startTime, duration = 0.9, vol = 0.22) {

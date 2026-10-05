@@ -5,7 +5,7 @@ import { WisdomCardModal } from './WisdomCardModal';
 import {
   ArrowLeft, Music, VolumeX, Sparkles, Package, Coins, Trophy,
   Volume2, Compass, Heart, Award, Shield, CheckCircle2, ShoppingBag,
-  X, BookOpen, Coffee, Sun
+  X, BookOpen, Coffee, Sun, Pin, Trash2
 } from 'lucide-react';
 
 const CATEGORY_TABS = [
@@ -24,8 +24,36 @@ export const HomeScene = ({ onClose }) => {
   const [isBackpackOpen, setIsBackpackOpen] = useState(false);
   const [isNoticeBoardOpen, setIsNoticeBoardOpen] = useState(false);
   const [isWisdomModalOpen, setIsWisdomModalOpen] = useState(false);
+  const [pinnedWisdomCard, setPinnedWisdomCard] = useState(null);
   const [useToast, setUseToast] = useState(null);
   const [bgError, setBgError] = useState(false);
+
+  // 載入釘在告示板上的英語靈感卡 (僅存最新單張)
+  const loadPinnedCard = () => {
+    try {
+      const saved = localStorage.getItem('wutai_latest_pinned_wisdom_card');
+      if (saved) {
+        setPinnedWisdomCard(JSON.parse(saved));
+      } else {
+        setPinnedWisdomCard(null);
+      }
+    } catch (e) {
+      setPinnedWisdomCard(null);
+    }
+  };
+
+  useEffect(() => {
+    loadPinnedCard();
+  }, [isNoticeBoardOpen, isWisdomModalOpen]);
+
+  const handleUnpinCard = (e) => {
+    if (e) e.stopPropagation();
+    soundEngine.click();
+    localStorage.removeItem('wutai_latest_pinned_wisdom_card');
+    setPinnedWisdomCard(null);
+    setUseToast("📌 已取下告示板上的靈感卡！");
+    setTimeout(() => setUseToast(null), 3000);
+  };
 
   // 嘗試解鎖並播放溫暖音樂
   const triggerAudio = () => {
@@ -546,6 +574,90 @@ export const HomeScene = ({ onClose }) => {
                   </div>
                   <div className="text-[10px] text-slate-400 mt-0.5">件收藏道具</div>
                 </div>
+              </div>
+
+              {/* 📌 實體榮譽告示板卡牌專區 (展示最新單張釘選之英語靈感卡) */}
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-900/10 dark:bg-amber-950/30 border-2 border-amber-400/50 relative overflow-hidden">
+                <div className="flex items-center justify-between pb-2 border-b border-amber-300/40 dark:border-amber-700/40">
+                  <div className="flex items-center gap-1.5 text-xs font-black text-amber-800 dark:text-amber-300">
+                    <Pin className="w-3.5 h-3.5 text-amber-600 fill-amber-600" />
+                    <span>今日英語靈感展示區 (書桌魔法卡)</span>
+                  </div>
+                  {pinnedWisdomCard && (
+                    <button
+                      onClick={handleUnpinCard}
+                      className="text-[10px] text-rose-500 hover:text-rose-600 font-bold flex items-center gap-0.5 cursor-pointer"
+                      title="取下此卡牌"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>取下圖釘</span>
+                    </button>
+                  )}
+                </div>
+
+                {pinnedWisdomCard ? (
+                  <div className="mt-3 p-3.5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-slate-800 dark:to-slate-850 border border-amber-300 dark:border-amber-600/60 shadow-md relative group">
+                    {/* 3D 圖釘立體效果 */}
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-gradient-to-br from-amber-300 via-amber-500 to-yellow-600 border-2 border-white shadow-md flex items-center justify-center text-xs pointer-events-none">
+                      📌
+                    </div>
+
+                    <div className="pt-1 flex items-start gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-2xl shrink-0 shadow-inner">
+                        {pinnedWisdomCard.icon || '✨'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h5 className="text-base font-black font-heading text-slate-800 dark:text-white">
+                            {pinnedWisdomCard.word}
+                          </h5>
+                          {pinnedWisdomCard.phonetic && (
+                            <span className="text-[11px] font-mono font-bold text-amber-700 dark:text-amber-400">
+                              {pinnedWisdomCard.phonetic}
+                            </span>
+                          )}
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300 font-bold">
+                            {pinnedWisdomCard.partOfSpeech}
+                          </span>
+                        </div>
+
+                        <div className="mt-1 flex items-center gap-2">
+                          <p className="text-xs sm:text-sm font-black text-slate-800 dark:text-white font-heading leading-snug">
+                            "{pinnedWisdomCard.quoteEn}"
+                          </p>
+                          <button
+                            onClick={() => {
+                              soundEngine.click();
+                              speakEnglish(pinnedWisdomCard.quoteEn);
+                            }}
+                            className="p-1 rounded-lg bg-amber-500/20 hover:bg-amber-500 text-amber-700 hover:text-white transition-colors cursor-pointer shrink-0"
+                            title="聆聽發音"
+                          >
+                            <Volume2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mt-1 line-clamp-2 leading-relaxed">
+                          {pinnedWisdomCard.quoteZh}
+                        </p>
+
+                        <div className="mt-2 text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                          <span>📍 釘選日期：{pinnedWisdomCard.pinnedDate || '今日'}</span>
+                          <span className="text-amber-600 dark:text-amber-400 font-bold">能量：{pinnedWisdomCard.energy}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-3 p-4 rounded-xl border-2 border-dashed border-amber-400/40 text-center space-y-1">
+                    <p className="text-xs font-bold text-amber-800 dark:text-amber-300">
+                      📜 告示板尚未釘上靈感卡
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      點擊書桌上的魔法書抽取每日卡牌，即可將最喜歡的英語短句釘在此處每天溫習！
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* 每日激勵卡片 */}

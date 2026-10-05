@@ -18,7 +18,7 @@ import { QuestBoardModal } from './QuestBoardModal';
 import { soundEngine, stopSpeech } from '../../services/audio';
 import {
   ArrowLeft, Coins, Trophy, Package, ScrollText, Sparkles,
-  Compass, ChevronRight, Gift
+  Compass, ChevronRight, Gift, Music, VolumeX
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -46,6 +46,7 @@ export const WutaiTownGame = ({ onBack }) => {
   const [isQuestBoardOpen, setIsQuestBoardOpen] = useState(false);
   const [teacherBonusToast, setTeacherBonusToast] = useState(null);
   const [hoveredLocation, setHoveredLocation] = useState(null);
+  const [isTownBgmActive, setIsTownBgmActive] = useState(true);
 
   // 領取外師每日彩蛋積分處理
   const handleTeacherBonusClaimed = async () => {
@@ -126,16 +127,47 @@ export const WutaiTownGame = ({ onBack }) => {
     }
   }, [currentStudent?.daily_quest, updateDailyQuest]);
 
-  // 組件卸載時立即強制中斷所有 TTS 語音
+  // ── 小鎮全景地圖專屬晨曦冒險進行曲生命週期管理 ──
+  useEffect(() => {
+    if (!isHomeOpen && !activeDialogueLocation && isTownBgmActive) {
+      soundEngine.init();
+      if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
+        soundEngine.ctx.resume().catch(() => {});
+      }
+      soundEngine.startSceneBgm('town');
+    }
+
+    return () => {
+      if (!isHomeOpen && !activeDialogueLocation) {
+        soundEngine.stopSceneBgm();
+      }
+    };
+  }, [isHomeOpen, activeDialogueLocation, isTownBgmActive]);
+
+  // 組件卸載時立即強制中斷所有 TTS 語音與音樂
   useEffect(() => {
     return () => {
       stopSpeech();
+      soundEngine.stopSceneBgm();
     };
   }, []);
+
+  const handleToggleTownBgm = (e) => {
+    if (e) e.stopPropagation();
+    soundEngine.click();
+    if (isTownBgmActive) {
+      soundEngine.stopSceneBgm();
+      setIsTownBgmActive(false);
+    } else {
+      soundEngine.startSceneBgm('town');
+      setIsTownBgmActive(true);
+    }
+  };
 
   const handleOpenLocation = (loc) => {
     stopSpeech();
     soundEngine.click();
+    soundEngine.stopSceneBgm();
     if (loc.id === 'home') {
       soundEngine.init();
       if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
@@ -150,6 +182,7 @@ export const WutaiTownGame = ({ onBack }) => {
 
   const handleBackToGalaxy = () => {
     stopSpeech();
+    soundEngine.stopSceneBgm();
     if (onBack) onBack();
   };
 
@@ -224,8 +257,31 @@ export const WutaiTownGame = ({ onBack }) => {
             )}
           </div>
 
-          {/* 右側：金幣 + 積分 + 背包 + 任務快捷 */}
+          {/* 右側：音樂切換 + 金幣 + 積分 + 背包 + 任務快捷 */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* 🎵 霧臺小鎮晨曦冒險音樂開關 */}
+            <button
+              onClick={handleToggleTownBgm}
+              className={`px-2.5 py-1 rounded-xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 ${
+                isTownBgmActive
+                  ? 'bg-emerald-500/30 hover:bg-emerald-500/40 text-emerald-200 border-emerald-400/50'
+                  : 'bg-white/15 hover:bg-white/25 text-slate-300 border-white/20'
+              }`}
+              title={isTownBgmActive ? '點擊暫停小鎮背景音樂' : '點擊播放小鎮背景音樂'}
+            >
+              {isTownBgmActive ? (
+                <>
+                  <Music className="w-3.5 h-3.5 animate-bounce text-emerald-300" />
+                  <span className="hidden lg:inline text-[11px]">小鎮音樂</span>
+                </>
+              ) : (
+                <>
+                  <VolumeX className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="hidden lg:inline text-[11px]">靜音</span>
+                </>
+              )}
+            </button>
+
             {/* 金幣計數器 */}
             <div className="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-300/40 backdrop-blur-md flex items-center gap-1 text-amber-200 text-xs font-black shadow-sm">
               <Coins className="w-3.5 h-3.5 text-amber-400" />

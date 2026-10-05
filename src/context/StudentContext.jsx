@@ -24,7 +24,7 @@ export const StudentProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 初始化：嘗試自本機記憶載入上次漫遊座號
+  // 初始化：嘗試自本機記憶載入上次漫遊座號或訪客狀態
   useEffect(() => {
     let isCancelled = false;
     const initStudent = async () => {
@@ -34,7 +34,15 @@ export const StudentProvider = ({ children }) => {
           const profile = await fetchStudentProfile(lastId);
           if (!isCancelled && profile) {
             setCurrentStudent(profile);
+            return;
           }
+        }
+        // 嘗試載入離線/訪客存檔
+        const guestSaved = localStorage.getItem('wutai_guest_student');
+        if (guestSaved && !isCancelled) {
+          try {
+            setCurrentStudent(JSON.parse(guestSaved));
+          } catch (e) {}
         }
       } catch (e) {
         console.warn('載入上次學生身分失敗:', e);
@@ -104,10 +112,27 @@ export const StudentProvider = ({ children }) => {
    * 增加金幣 (樂觀更新 + 雲端同步)
    */
   const addCoins = useCallback(async (amount) => {
-    if (!currentStudent?.student_id || typeof amount !== 'number' || amount <= 0) return 0;
-    const newCoins = (currentStudent.coins || 0) + amount;
+    if (typeof amount !== 'number' || amount <= 0) return 0;
     
-    // 立即樂觀更新 UI
+    // 若尚未登入或為訪客，在前端本地狀態依然累加金幣
+    if (!currentStudent?.student_id) {
+      const nextCoins = ((currentStudent?.coins ?? 100) + amount);
+      setCurrentStudent(prev => {
+        const updated = {
+          nickname: prev?.nickname || '好學生',
+          student_id: prev?.student_id || 'guest',
+          grade: prev?.grade || '00',
+          coins: nextCoins,
+          quest_points: prev?.quest_points || 0,
+          inventory: prev?.inventory || []
+        };
+        try { localStorage.setItem('wutai_guest_student', JSON.stringify(updated)); } catch (e) {}
+        return updated;
+      });
+      return nextCoins;
+    }
+
+    const newCoins = (currentStudent.coins || 0) + amount;
     setCurrentStudent(prev => prev ? { ...prev, coins: newCoins } : null);
 
     try {
@@ -123,18 +148,27 @@ export const StudentProvider = ({ children }) => {
    * 若餘額不足返回 false
    */
   const spendCoins = useCallback(async (amount) => {
-    if (!currentStudent?.student_id || typeof amount !== 'number' || amount <= 0) return false;
-    if ((currentStudent.coins || 0) < amount) {
+    if (typeof amount !== 'number' || amount <= 0) return false;
+    const currentCoins = currentStudent?.coins || 0;
+    if (currentCoins < amount) {
       return false; // 金幣不足
     }
 
-    const newCoins = currentStudent.coins - amount;
-    setCurrentStudent(prev => prev ? { ...prev, coins: newCoins } : null);
+    const newCoins = currentCoins - amount;
+    setCurrentStudent(prev => {
+      const updated = prev ? { ...prev, coins: newCoins } : null;
+      if (!currentStudent?.student_id) {
+        try { localStorage.setItem('wutai_guest_student', JSON.stringify(updated)); } catch (e) {}
+      }
+      return updated;
+    });
 
-    try {
-      await apiUpdateCoins(currentStudent.student_id, -amount);
-    } catch (e) {
-      console.warn('雲端金幣扣除同步異常:', e);
+    if (currentStudent?.student_id) {
+      try {
+        await apiUpdateCoins(currentStudent.student_id, -amount);
+      } catch (e) {
+        console.warn('雲端金幣扣除同步異常:', e);
+      }
     }
     return true;
   }, [currentStudent]);
@@ -143,9 +177,27 @@ export const StudentProvider = ({ children }) => {
    * 增加探索積分
    */
   const addQuestPoints = useCallback(async (amount) => {
-    if (!currentStudent?.student_id || typeof amount !== 'number' || amount <= 0) return 0;
-    const newPoints = (currentStudent.quest_points || 0) + amount;
+    if (typeof amount !== 'number' || amount <= 0) return 0;
 
+    // 若尚未登入或為訪客，在前端本地狀態依然累加積分
+    if (!currentStudent?.student_id) {
+      const nextPoints = ((currentStudent?.quest_points ?? 0) + amount);
+      setCurrentStudent(prev => {
+        const updated = {
+          nickname: prev?.nickname || '好學生',
+          student_id: prev?.student_id || 'guest',
+          grade: prev?.grade || '00',
+          coins: prev?.coins ?? 100,
+          quest_points: nextPoints,
+          inventory: prev?.inventory || []
+        };
+        try { localStorage.setItem('wutai_guest_student', JSON.stringify(updated)); } catch (e) {}
+        return updated;
+      });
+      return nextPoints;
+    }
+
+    const newPoints = (currentStudent.quest_points || 0) + amount;
     setCurrentStudent(prev => prev ? { ...prev, quest_points: newPoints } : null);
 
     try {
