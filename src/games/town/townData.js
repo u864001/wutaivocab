@@ -16,6 +16,9 @@ export const getDaySeed = (dateStr = getTodayDateStr()) => {
   return hash;
 };
 
+// ── 0.5 霧臺小鎮全景地圖常數 ──
+export const TOWN_MAP_PANORAMA_IMG = '/assets/town/town_map_panorama.png';
+
 // ── 1. 霧臺小鎮 9 大社區地標清單 ──
 export const TOWN_LOCATIONS = [
   {
@@ -34,8 +37,8 @@ export const TOWN_LOCATIONS = [
       '今日校園公告：準備探險作業本與鉛筆盒',
       '今日校園公告：大武山清新晨間活力'
     ],
-    bgImage: null, // 預留未來 2D 場景獨立全景圖
-    npcPortrait: null, // 預留未來立繪插畫
+    bgImage: '/assets/town/bg_school.png',
+    npcPortrait: '/assets/town/npc_principal.png',
     hasShop: false,
     hasQuests: true
   },
@@ -55,8 +58,8 @@ export const TOWN_LOCATIONS = [
       '今日書局特輯：大武山山豬與飛鼠冒險繪本',
       '今日彩繪特輯：美術色彩筆與彩繪筆記本'
     ],
-    bgImage: null,
-    npcPortrait: null,
+    bgImage: '/assets/town/bg_bookstore.png',
+    npcPortrait: '/assets/town/npc_bookstore.png',
     hasShop: true,
     hasQuests: false
   },
@@ -76,8 +79,8 @@ export const TOWN_LOCATIONS = [
       '今日早餐特供：純淨鮮牛奶與酸甜柳橙汁',
       '今日野餐特刊：黃金香蕉與山林探險補給'
     ],
-    bgImage: null,
-    npcPortrait: null,
+    bgImage: '/assets/town/bg_supermarket.png',
+    npcPortrait: '/assets/town/npc_supermarket.png',
     hasShop: true,
     hasQuests: false
   },
@@ -97,8 +100,8 @@ export const TOWN_LOCATIONS = [
       '今日大自然觀察：涼爽山風與草地慢跑時光',
       '今日大自然觀察：大武山四季風景與野生動物'
     ],
-    bgImage: null,
-    npcPortrait: null,
+    bgImage: '/assets/town/bg_park.png',
+    npcPortrait: '/assets/town/npc_park.png',
     hasShop: false,
     hasQuests: false
   },
@@ -106,9 +109,9 @@ export const TOWN_LOCATIONS = [
     id: 'station',
     nameZh: '霧臺客運站',
     nameEn: 'Wutai Bus Station',
-    npcName: '山豬司機 (Driver Boar)',
+    npcName: '雄鷹站長 (Station Master Eagle)',
     npcRole: '交通路線與旅行車票',
-    npcAvatar: '🐗',
+    npcAvatar: '🦅',
     bgGradient: 'from-orange-500/20 via-amber-600/20 to-rose-500/20',
     borderColor: 'border-orange-400 dark:border-orange-600',
     iconColor: 'text-orange-500',
@@ -118,8 +121,8 @@ export const TOWN_LOCATIONS = [
       '今日安全倡導：山林自行車漫遊與安全帽騎乘',
       '今日轉乘資訊：出發前往屏東與高雄城市之旅'
     ],
-    bgImage: null,
-    npcPortrait: null,
+    bgImage: '/assets/town/bg_station.png',
+    npcPortrait: '/assets/town/npc_station.png',
     hasShop: true,
     hasQuests: false
   },
@@ -139,8 +142,8 @@ export const TOWN_LOCATIONS = [
       '今日衛教專欄：多喝溫水與睡滿八小時健康法則',
       '今日衛教專欄：戶外運動防護與退熱冰冰貼'
     ],
-    bgImage: null,
-    npcPortrait: null,
+    bgImage: '/assets/town/bg_clinic.png',
+    npcPortrait: '/assets/town/npc_clinic.png',
     hasShop: true,
     hasQuests: false
   },
@@ -160,8 +163,8 @@ export const TOWN_LOCATIONS = [
       '今日工藝焦點：傳家七彩琉璃珠與陶壺故事',
       '今日服飾風尚：帥氣獵人帽與百步蛇圖騰背心'
     ],
-    bgImage: null,
-    npcPortrait: null,
+    bgImage: '/assets/town/bg_plaza.png',
+    npcPortrait: '/assets/town/npc_plaza.png',
     hasShop: true,
     hasQuests: false
   },
@@ -169,9 +172,9 @@ export const TOWN_LOCATIONS = [
     id: 'cinema',
     nameZh: '山豬影城',
     nameEn: 'Boar Cinema',
-    npcName: '售票員瑪莉歐 (Mario)',
+    npcName: '野豬售票員 (Clerk Boar)',
     npcRole: '休閒電影與熱騰騰爆米花',
-    npcAvatar: '🎬',
+    npcAvatar: '🐗',
     bgGradient: 'from-rose-500/20 via-pink-600/20 to-purple-600/20',
     borderColor: 'border-rose-400 dark:border-rose-600',
     iconColor: 'text-rose-500',
@@ -181,8 +184,8 @@ export const TOWN_LOCATIONS = [
       '今日熱映中：《百步蛇傳奇守護者》(The Hundred-Pace Guardian)',
       '今日熱映中：《飛鼠快俠與星空探險》(Flying Squirrel Speedster)'
     ],
-    bgImage: null,
-    npcPortrait: null,
+    bgImage: '/assets/town/bg_cinema.png',
+    npcPortrait: '/assets/town/npc_cinema.png',
     hasShop: true,
     hasQuests: false
   },
@@ -198,7 +201,7 @@ export const TOWN_LOCATIONS = [
     iconColor: 'text-lime-500',
     description: '回到溫暖的家，打開背包查看所有收集品，整理你的書桌。',
     dailyThemes: ['溫暖的家：檢視個人收藏道具與金幣財富'],
-    bgImage: null,
+    bgImage: '/assets/town/bg_home.png',
     npcPortrait: null,
     hasShop: false,
     hasBackpack: true
@@ -476,7 +479,7 @@ export const VISITING_TEACHERS = {
     nameEn: 'Teacher Mario',
     roleZh: '雙語活力外師 • 街頭英語互動',
     avatar: '👨‍🏫',
-    portrait: null, // 預留未來 2D 立繪展示
+    portrait: '/assets/town/teacher_mario.png',
     bgGradient: 'from-amber-500/30 via-red-500/20 to-orange-500/30',
     tag: '🌟 客座外師 Mario 現身！',
     dialogueTree: {
@@ -538,7 +541,7 @@ export const VISITING_TEACHERS = {
     nameEn: 'Teacher Ibu',
     roleZh: '親切雙語外師 • 文化發音互動',
     avatar: '👩‍🏫',
-    portrait: null, // 預留未來 2D 立繪展示
+    portrait: '/assets/town/teacher_ibu.png',
     bgGradient: 'from-pink-500/30 via-purple-500/20 to-indigo-500/30',
     tag: '🌟 客座外師 Ibu 現身！',
     dialogueTree: {
@@ -979,7 +982,7 @@ export const DIALOGUE_VARIANTS = {
     }
   ],
 
-  // ── 🚌 霧臺客運站司機 (2 種日常輪替主題) ──
+  // ── 🚌 霧臺客運站雄鷹站長 (2 種日常輪替主題) ──
   station: [
     {
       variantId: 'station_v0',
@@ -988,9 +991,9 @@ export const DIALOGUE_VARIANTS = {
       nodes: {
         welcome: {
           id: 'welcome',
-          speaker: '山豬司機 (Driver Boar)',
-          en: "Vroom vroom! Welcome to Wutai Bus Station. Where are you going today, little traveler?",
-          zh: "嗡嗡嗡！歡迎來到霧臺客運站。今天要去哪裡旅行呢，小小旅行家？",
+          speaker: '雄鷹站長 (Station Master Eagle)',
+          en: "Welcome to Wutai Bus Station! I am Station Master Eagle. Where are you traveling today, little adventurer?",
+          zh: "歡迎來到霧臺客運站！我是雄鷹站長。小小探險家，你今天要去哪裡旅行呢？",
           options: [
             { text_en: "How do you go to Pingtung?", text_zh: "請問怎麼去屏東呢？", target_id: 'pingtung' },
             { text_en: "I want to buy a bus ticket.", text_zh: "我想買一張公車票。", action: 'OPEN_SHOP' },
@@ -999,7 +1002,7 @@ export const DIALOGUE_VARIANTS = {
         },
         pingtung: {
           id: 'pingtung',
-          speaker: '山豬司機 (Driver Boar)',
+          speaker: '雄鷹站長 (Station Master Eagle)',
           en: "You can go by bus! The green bus leaves every hour. It drives through our scenic mountain valleys and Guchuan Bridge.",
           zh: "你可以搭公車去！綠色的客運巴士每小時出發一班，會穿過壯麗的山谷和谷川大橋喔。",
           options: [
@@ -1009,20 +1012,20 @@ export const DIALOGUE_VARIANTS = {
         },
         bike: {
           id: 'bike',
-          speaker: '山豬司機 (Driver Boar)',
+          speaker: '雄鷹站長 (Station Master Eagle)',
           en: "Riding a bicycle is great exercise! Remember to ring your bell around sharp corners and wear a helmet.",
           zh: "騎腳踏車是很棒的運動！過彎時記得按鈴鐺提醒，並且要戴好安全帽喔。",
           options: [
-            { text_en: "Safety first! Thank you.", text_zh: "安全第一！謝謝司機先生。", target_id: 'farewell' }
+            { text_en: "Safety first! Thank you, Station Master.", text_zh: "安全第一！謝謝雄鷹站長。", target_id: 'farewell' }
           ]
         },
         farewell: {
           id: 'farewell',
-          speaker: '山豬司機 (Driver Boar)',
+          speaker: '雄鷹站長 (Station Master Eagle)',
           en: "Have a safe and happy journey! Fasten your seatbelt!",
           zh: "祝你有一趟安全又快樂的旅程！記得繫好安全帶！",
           options: [
-            { text_en: "Goodbye, Driver Boar!", text_zh: "再見，山豬司機！", target_id: 'END' }
+            { text_en: "Goodbye, Station Master Eagle!", text_zh: "再見，雄鷹站長！", target_id: 'END' }
           ]
         }
       }
@@ -1034,7 +1037,7 @@ export const DIALOGUE_VARIANTS = {
       nodes: {
         welcome: {
           id: 'welcome',
-          speaker: '山豬司機 (Driver Boar)',
+          speaker: '雄鷹站長 (Station Master Eagle)',
           en: "All aboard! Beyond Pingtung lies the fast express train to Kaohsiung city! Are you planning a big trip?",
           zh: "各位旅客請上車！抵達屏東後，還能換乘前往高雄大城市的疾速火車喔！你正計畫一場大旅行嗎？",
           options: [
@@ -1044,7 +1047,7 @@ export const DIALOGUE_VARIANTS = {
         },
         train_speed: {
           id: 'train_speed',
-          speaker: '山豬司機 (Driver Boar)',
+          speaker: '雄鷹站長 (Station Master Eagle)',
           en: "Yes! Trains zoom on steel rails with zero traffic lights. But our mountain buses have the finest scenic views!",
           zh: "沒錯！火車在鐵軌上奔馳沒有紅綠燈。但我們山區客運沿途有全台灣最絕美的山景！",
           options: [
@@ -1226,7 +1229,7 @@ export const DIALOGUE_VARIANTS = {
     }
   ],
 
-  // ── 🎬 山豬影城售票員瑪莉歐 (3 部輪播檔期電影篇) ──
+  // ── 🎬 山豬影城野豬售票員 (3 部輪播檔期電影篇) ──
   cinema: [
     {
       variantId: 'cinema_v0',
@@ -1235,7 +1238,7 @@ export const DIALOGUE_VARIANTS = {
       nodes: {
         welcome: {
           id: 'welcome',
-          speaker: '售票員瑪莉歐 (Mario)',
+          speaker: '野豬售票員 (Clerk Boar)',
           en: "Hey there! Welcome to Boar Cinema! It is a fantastic weekend for movies. Would you like a ticket or some popcorn?",
           zh: "嗨，朋友！歡迎來到山豬影城！這真是看電影的完美週末。你想要電影票還是香濃爆米花呢？",
           options: [
@@ -1246,7 +1249,7 @@ export const DIALOGUE_VARIANTS = {
         },
         movie_info: {
           id: 'movie_info',
-          speaker: '售票員瑪莉歐 (Mario)',
+          speaker: '野豬售票員 (Clerk Boar)',
           en: "We are showing 'The Legend of Cloud Leopard 3D'! It has exciting adventures, flying squirrels, and cheerful music.",
           zh: "我們正在上映《雲豹大冒險 3D》！裡面有刺激的冒險、會飛的松鼠，還有歡樂的配樂喔。",
           options: [
@@ -1256,7 +1259,7 @@ export const DIALOGUE_VARIANTS = {
         },
         weekend_chat: {
           id: 'weekend_chat',
-          speaker: '售票員瑪莉歐 (Mario)',
+          speaker: '野豬售票員 (Clerk Boar)',
           en: "In my free time, I like playing basketball, listening to lively music, and eating sandwiches! What about you?",
           zh: "休閒時間裡，我喜歡打籃球、聽歡樂的音樂，還有大口吃三明治！你呢？",
           options: [
@@ -1265,11 +1268,11 @@ export const DIALOGUE_VARIANTS = {
         },
         farewell: {
           id: 'farewell',
-          speaker: '售票員瑪莉歐 (Mario)',
+          speaker: '野豬售票員 (Clerk Boar)',
           en: "Enjoy the show! Don't drop your popcorn on the floor!",
           zh: "好好享受這場電影！別把爆米花掉到地上喔！",
           options: [
-            { text_en: "Thank you, Mario!", text_zh: "謝謝你，瑪莉歐！", target_id: 'END' }
+            { text_en: "Thank you, Clerk Boar!", text_zh: "謝謝你，野豬售票員！", target_id: 'END' }
           ]
         }
       }
@@ -1281,7 +1284,7 @@ export const DIALOGUE_VARIANTS = {
       nodes: {
         welcome: {
           id: 'welcome',
-          speaker: '售票員瑪莉歐 (Mario)',
+          speaker: '野豬售票員 (Clerk Boar)',
           en: "Lights, camera, action! Today's feature presentation is 'The Hundred-Pace Guardian'! An epic tale of courage!",
           zh: "燈光、攝影機、開拍！今天上映的大片是《百步蛇傳奇守護者》！一場關於勇氣的史詩冒險！",
           options: [
@@ -1291,7 +1294,7 @@ export const DIALOGUE_VARIANTS = {
         },
         guardian_story: {
           id: 'guardian_story',
-          speaker: '售票員瑪莉歐 (Mario)',
+          speaker: '野豬售票員 (Clerk Boar)',
           en: "A young mountain adventurer saves the ancient forest using wisdom and kind words. It is deeply moving!",
           zh: "一位年輕的山林冒險家運用智慧與善良的話語拯救了古老森林。非常感人！",
           options: [
@@ -1307,7 +1310,7 @@ export const DIALOGUE_VARIANTS = {
       nodes: {
         welcome: {
           id: 'welcome',
-          speaker: '售票員瑪莉歐 (Mario)',
+          speaker: '野豬售票員 (Clerk Boar)',
           en: "Zoom! Our fast flying squirrel hero is flying across the starry skies in 'Flying Squirrel Speedster'! Grab your seats!",
           zh: "咻！我們疾速飛鼠英雄正在《飛鼠快俠與星空探險》中劃過星空！快入座吧！",
           options: [

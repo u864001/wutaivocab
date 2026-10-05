@@ -6,6 +6,7 @@ import { useStudent } from '../../context/StudentContext';
 import {
   TOWN_LOCATIONS,
   TOWN_ITEMS,
+  TOWN_MAP_PANORAMA_IMG,
   getTodayDateStr,
   getDailyVisitingTeacherInfo,
   getLocationDailyTheme
@@ -264,61 +265,137 @@ export const WutaiTownGame = ({ onBack }) => {
         </div>
       )}
 
+      {/* ── 霧臺小鎮 2D 全景大地圖巡禮 (Town World Map Panorama Hero) ── */}
+      <div className="relative rounded-3xl overflow-hidden border-2 border-emerald-400/60 dark:border-emerald-500/60 shadow-xl group">
+        <div className="aspect-[21/9] sm:aspect-[24/8] w-full relative bg-slate-900 overflow-hidden">
+          <img
+            src={TOWN_MAP_PANORAMA_IMG}
+            alt="霧臺小鎮全景大地圖"
+            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 filter brightness-95 contrast-105"
+            loading="lazy"
+          />
+          {/* 漸層遮罩 */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-black/40" />
+
+          {/* 懸浮資訊列 */}
+          <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-xl bg-emerald-500 text-white font-black text-xs shadow-md flex items-center gap-1.5">
+                  <Compass className="w-4 h-4 animate-spin-slow" />
+                  <span>霧臺小鎮全景地圖</span>
+                </span>
+                <span className="px-2.5 py-1 rounded-xl bg-black/50 backdrop-blur-md text-white font-bold text-xs border border-white/20 hidden sm:inline-block">
+                  吉卜力手繪風格 2D 世界觀
+                </span>
+              </div>
+
+              {/* 外師即時巡迴定位標記 */}
+              <div className="px-3 py-1 rounded-xl bg-amber-500 text-white font-black text-xs shadow-md flex items-center gap-1.5 animate-pulse">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>
+                  客座外師 {teacherInfo.teacher.nameZh} 現身於：
+                  {TOWN_LOCATIONS.find(l => l.id === teacherInfo.locationId)?.nameZh}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white font-heading drop-shadow-md">
+                漫步大武山下的雙語智慧小鎮
+              </h3>
+              <p className="text-xs sm:text-sm font-bold text-slate-200 mt-1 drop-shadow hidden sm:block">
+                探索 9 大生活地標・與部落夥伴用英語對話・收集珍貴生活道具！
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* ── 9 大社區地標視覺化全景導覽地圖 (Town Map Bento Grid) ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {TOWN_LOCATIONS.map((loc) => {
           const isTeacherVisitingHere = (loc.id === teacherInfo.locationId && !hasMetTeacherToday);
           const hasTeacherMetHere = (loc.id === teacherInfo.locationId && hasMetTeacherToday);
           const dailyTheme = getLocationDailyTheme(loc.id, todayStr);
+          const displayNpcPortrait = isTeacherVisitingHere ? teacherInfo.teacher.portrait : loc.npcPortrait;
+          const displayNpcAvatar = isTeacherVisitingHere ? teacherInfo.teacher.avatar : loc.npcAvatar;
+          const displayNpcName = isTeacherVisitingHere ? teacherInfo.teacher.nameZh : loc.npcName;
 
           return (
             <GlassCard
               key={loc.id}
               hoverable={true}
               onClick={() => handleOpenLocation(loc)}
-              className={`group cursor-pointer p-5 flex flex-col justify-between border-2 transition-all shadow-md relative overflow-hidden ${
+              className={`group cursor-pointer p-4 sm:p-5 flex flex-col justify-between border-2 transition-all shadow-md relative overflow-hidden ${
                 isTeacherVisitingHere
                   ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-400/40 shadow-amber-500/20'
                   : 'hover:border-emerald-400 dark:hover:border-emerald-500'
               }`}
             >
-              {/* 背景微光裝飾 */}
-              <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gradient-to-br ${
-                isTeacherVisitingHere ? teacherInfo.teacher.bgGradient : loc.bgGradient
-              } blur-2xl group-hover:scale-125 transition-transform pointer-events-none`} />
-
               <div>
-                <div className="flex items-start justify-between gap-3 mb-3 relative z-10">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-md group-hover:scale-110 group-hover:rotate-3 transition-transform shrink-0 border ${
-                    isTeacherVisitingHere
-                      ? 'bg-amber-100 dark:bg-amber-950/60 border-amber-300 dark:border-amber-600'
-                      : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-                  }`}>
-                    {isTeacherVisitingHere ? teacherInfo.teacher.avatar : loc.npcAvatar}
-                  </div>
+                {/* 2D 室內場景預覽縮圖 (16:9 Scene Preview Thumbnail) */}
+                <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-3.5 bg-slate-900 border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                  {loc.bgImage ? (
+                    <img
+                      src={loc.bgImage}
+                      alt={loc.nameZh}
+                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 filter brightness-95 contrast-105"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className={`w-full h-full bg-gradient-to-br ${loc.bgGradient}`} />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
 
-                  <div className="text-right flex flex-col items-end gap-1">
+                  {/* 頂部標籤 */}
+                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md text-white border border-white/20">
+                      {loc.nameEn.split(' ')[0]}
+                    </span>
+
                     {/* 今日外師現身徽章 */}
                     {isTeacherVisitingHere && (
-                      <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-black shadow-sm animate-pulse flex items-center gap-1">
+                      <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white text-[10px] font-black shadow-md animate-pulse flex items-center gap-1">
                         <Sparkles className="w-3 h-3" />
-                        <span>{teacherInfo.teacher.nameZh} 現身！</span>
+                        <span>外師現身！</span>
                       </span>
                     )}
 
                     {hasTeacherMetHere && (
-                      <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold">
-                        今日外師交談完畢 ✓
+                      <span className="px-2 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md text-emerald-300 text-[10px] font-bold border border-emerald-400/30">
+                        外師交談完畢 ✓
                       </span>
                     )}
+                  </div>
 
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
-                      {loc.nameEn.split(' ')[0]}
-                    </span>
+                  {/* 底部 NPC 立繪頭像標籤 */}
+                  <div className="absolute bottom-2 left-2 right-2 flex items-center gap-2 pointer-events-none">
+                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-950/80 backdrop-blur-md border border-white/30 shadow-md shrink-0 flex items-center justify-center">
+                      {displayNpcPortrait ? (
+                        <img
+                          src={displayNpcPortrait}
+                          alt={displayNpcName}
+                          className="w-full h-full object-contain filter contrast-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="text-xl">{displayNpcAvatar}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-xs font-black text-white font-heading truncate drop-shadow block">
+                        {displayNpcName}
+                      </span>
+                      <span className="text-[10px] font-bold text-amber-200/90 truncate block">
+                        {isTeacherVisitingHere ? teacherInfo.teacher.roleZh : loc.npcRole}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="relative z-10">
+                {/* 地標名稱與介紹 */}
+                <div>
                   <div className="flex items-center gap-1.5">
                     <h3 className="text-base sm:text-lg font-black text-slate-800 dark:text-white font-heading group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                       {loc.nameZh}
@@ -336,14 +413,9 @@ export const WutaiTownGame = ({ onBack }) => {
                     </div>
                   )}
 
-                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-xs font-bold text-slate-600 dark:text-slate-300 leading-relaxed mb-3">
-                    <div className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 mb-0.5">
-                      {isTeacherVisitingHere
-                        ? `今日店員: ${teacherInfo.teacher.nameZh}`
-                        : `NPC: ${loc.npcName}`}
-                    </div>
+                  <p className="text-xs font-bold text-slate-600 dark:text-slate-300 leading-relaxed mb-3 line-clamp-2">
                     {loc.description}
-                  </div>
+                  </p>
                 </div>
               </div>
 

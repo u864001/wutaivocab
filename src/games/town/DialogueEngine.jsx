@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Button3D } from '../../components/ui/Button3D';
 import { getDialogueTreeForLocation } from './townData';
 import { speakEnglish, soundEngine } from '../../services/audio';
-import { Volume2, X, MessageSquare, Sparkles, ShoppingBag, ScrollText, Gift } from 'lucide-react';
+import {
+  Volume2, X, MessageSquare, Sparkles, ShoppingBag,
+  ScrollText, Gift, ChevronRight, Compass
+} from 'lucide-react';
 
 export const DialogueEngine = ({
   location,
@@ -24,6 +26,8 @@ export const DialogueEngine = ({
 
   const [currentNodeId, setCurrentNodeId] = useState(tree?.startNode || 'welcome');
   const currentNode = tree?.nodes?.[currentNodeId];
+  const [portraitError, setPortraitError] = useState(false);
+  const [bgError, setBgError] = useState(false);
 
   // 當進入新節點時播放清脆提示音，並自動朗讀英語發音
   useEffect(() => {
@@ -83,146 +87,216 @@ export const DialogueEngine = ({
     }
   };
 
-  // 決定頭像與角色身分
+  // 決定頭像、立繪與身分資訊
   const displayAvatar = isVisitingTeacher ? visitingTeacher.avatar : location.npcAvatar;
+  const displayPortrait = isVisitingTeacher ? visitingTeacher.portrait : location.npcPortrait;
   const displayRole = isVisitingTeacher ? visitingTeacher.roleZh : location.npcRole;
-  const bgGradient = isVisitingTeacher ? visitingTeacher.bgGradient : location.bgGradient;
+  const displayBg = location.bgImage;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-fadeIn">
-      <div className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-2 border-emerald-400 dark:border-emerald-600 overflow-hidden relative my-auto animate-scaleUp">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/85 backdrop-blur-md animate-fadeIn">
+      <div className="w-full max-w-4xl bg-slate-950 rounded-3xl shadow-2xl border-2 border-emerald-400/80 dark:border-emerald-500/80 overflow-hidden relative my-auto flex flex-col max-h-[94vh] animate-scaleUp">
         
-        {/* 客座外師特有閃爍光環橫幅 */}
-        {isVisitingTeacher && (
-          <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white px-4 py-2 flex items-center justify-between shadow-inner">
-            <span className="flex items-center gap-1.5 text-xs font-black">
-              <Sparkles className="w-4 h-4 animate-spin-slow" />
-              <span>{visitingTeacher.tag}</span>
-            </span>
-            <span className="text-[11px] font-bold bg-white/20 px-2 py-0.5 rounded-full flex items-center gap-1">
-              <Gift className="w-3 h-3" />
-              <span>完成對話隨機獲得 5~10 探索積分</span>
-            </span>
-          </div>
-        )}
-
-        {/* 頂部 NPC 橫幅 */}
-        <div className={`p-4 sm:p-5 bg-gradient-to-r ${bgGradient} text-slate-800 dark:text-white flex items-center justify-between border-b border-slate-200 dark:border-slate-800`}>
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-white/90 dark:bg-slate-800/90 shadow-md flex items-center justify-center text-3xl shrink-0 border border-slate-200/60 dark:border-slate-700/60">
-              {displayAvatar}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-heading font-black">
-                  {currentNode.speaker}
-                </h3>
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
-                  isVisitingTeacher 
-                    ? 'bg-amber-500 text-white' 
-                    : 'bg-emerald-500 text-white'
-                }`}>
-                  {isVisitingTeacher ? '客座外師' : location.nameZh}
-                </span>
-              </div>
-              <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mt-0.5">
-                {displayRole}
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center transition-colors cursor-pointer"
-            title="關閉對話"
-          >
-            <X className="w-4 h-4" />
-          </button>
+        {/* ── 2D 沉浸式場景背景 (Ghibli 2D Scene Background Layer) ── */}
+        <div className="absolute inset-0 bg-slate-900 pointer-events-none overflow-hidden">
+          {displayBg && !bgError ? (
+            <img
+              src={displayBg}
+              alt={location.nameZh}
+              onError={() => setBgError(true)}
+              className="w-full h-full object-cover object-center filter brightness-[0.75] contrast-[1.05] transition-all duration-700 select-none scale-100 hover:scale-105"
+            />
+          ) : (
+            <div className={`w-full h-full bg-gradient-to-br ${location.bgGradient}`} />
+          )}
+          {/* 場景氛圍光影與遮罩 */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-slate-950/60" />
+          <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/70 pointer-events-none" />
         </div>
 
-        {/* NPC 對話對白框 (Speech Bubble - 預留 2D 立繪展示佈局) */}
-        <div className="p-4 sm:p-6 space-y-5">
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 relative">
-            {/* 語音重複朗讀按鈕 */}
-            <button
-              onClick={handleReplaySpeech}
-              className="absolute right-3 top-3 p-2 rounded-xl bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 transition-colors shadow-sm cursor-pointer flex items-center gap-1 text-xs font-bold"
-              title="點擊聆聽英語真人發音"
-            >
-              <Volume2 className="w-4 h-4 animate-pulse text-emerald-600 dark:text-emerald-400" />
-              <span>朗讀發音</span>
-            </button>
-
-            {/* 英文主對話 */}
-            <p className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100 leading-relaxed pr-24 font-heading">
-              "{currentNode.en}"
-            </p>
-
-            {/* 中文輔助翻譯 */}
-            <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 mt-2.5 pt-2.5 border-t border-slate-200/80 dark:border-slate-700/80">
-              「{currentNode.zh}」
-            </p>
-          </div>
-
-          {/* 學生回答選項分支 (Branch Options) */}
-          <div className="space-y-2.5">
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block px-1">
-              💬 選擇你的英語回應：
+        {/* ── 頂部 HUD 狀態導航列 (Top Bar) ── */}
+        <div className="relative z-20 px-4 py-3 bg-slate-950/80 backdrop-blur-md border-b border-white/10 flex items-center justify-between gap-2 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-lg shrink-0">
+              {displayAvatar}
             </span>
-
-            {currentNode.options?.map((opt, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleSelectOption(opt)}
-                className="w-full text-left p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border-2 border-slate-200 hover:border-emerald-400 dark:border-slate-700 dark:hover:border-emerald-500 transition-all shadow-sm active:scale-98 group cursor-pointer"
-              >
-                <div className="flex items-start gap-2.5">
-                  <span className="w-6 h-6 rounded-lg bg-emerald-500/15 group-hover:bg-emerald-500 text-emerald-600 group-hover:text-white flex items-center justify-center text-xs font-black shrink-0 transition-colors mt-0.5">
-                    {idx + 1}
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-black text-white font-heading truncate">
+                  {location.nameZh}
+                </span>
+                <span className="text-[10px] font-mono font-bold text-slate-300 bg-white/10 px-2 py-0.5 rounded-full">
+                  {location.nameEn}
+                </span>
+                {isVisitingTeacher && (
+                  <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white text-[10px] font-black flex items-center gap-1 shadow-sm animate-pulse">
+                    <Sparkles className="w-3 h-3" />
+                    <span>{visitingTeacher.tag}</span>
                   </span>
-                  <div>
-                    <div className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">
-                      {opt.text_en}
-                    </div>
-                    <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5">
-                      {opt.text_zh}
-                    </div>
-                  </div>
-                </div>
-              </button>
-            ))}
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* 店家快捷功能列 (非外師對話時顯示) */}
-          {!isVisitingTeacher && location.hasShop && (
-            <div className="pt-2 flex justify-end">
+          <div className="flex items-center gap-2 shrink-0">
+            {/* 店家快捷按鈕 */}
+            {!isVisitingTeacher && location.hasShop && (
               <button
                 onClick={() => {
                   onClose();
                   if (onOpenShop) onOpenShop(location.id);
                 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs shadow-md active:scale-95 transition-all cursor-pointer"
+                className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs shadow-md transition-all cursor-pointer"
               >
-                <ShoppingBag className="w-4 h-4" />
-                <span>直接打開商品目錄</span>
+                <ShoppingBag className="w-3.5 h-3.5" />
+                <span>商店</span>
               </button>
-            </div>
-          )}
+            )}
 
-          {!isVisitingTeacher && location.hasQuests && (
-            <div className="pt-2 flex justify-end">
+            {!isVisitingTeacher && location.hasQuests && (
               <button
                 onClick={() => {
                   onClose();
                   if (onOpenQuests) onOpenQuests();
                 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md active:scale-95 transition-all cursor-pointer"
+                className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all cursor-pointer"
               >
-                <ScrollText className="w-4 h-4" />
-                <span>查看每日任務公佈欄</span>
+                <ScrollText className="w-3.5 h-3.5" />
+                <span>公佈欄</span>
               </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors cursor-pointer border border-white/20"
+              title="關閉對話"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* ── 客座外師專屬彩蛋提示條 (若為外師模式) ── */}
+        {isVisitingTeacher && (
+          <div className="relative z-20 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white px-4 py-1.5 flex items-center justify-between text-xs font-black shadow-inner shrink-0">
+            <span className="flex items-center gap-1.5">
+              <Gift className="w-3.5 h-3.5 animate-bounce" />
+              <span>今日客座外師巡迴彩蛋：完成互動可獲 5~10 探索積分！</span>
+            </span>
+            <span className="bg-white/20 px-2 py-0.5 rounded-full text-[10px]">
+              每日限定一次
+            </span>
+          </div>
+        )}
+
+        {/* ── 2D 視覺小說立繪舞台層 (Visual Novel Actor Stage) ── */}
+        <div className="relative z-10 flex-1 flex items-end justify-center sm:justify-start px-4 sm:px-10 pt-2 min-h-[180px] sm:min-h-[260px] pointer-events-none overflow-hidden">
+          {displayPortrait && !portraitError ? (
+            <div className="relative pointer-events-auto flex flex-col items-center sm:items-start group animate-slideInLeft">
+              <img
+                src={displayPortrait}
+                alt={currentNode.speaker}
+                onError={() => setPortraitError(true)}
+                className="h-44 sm:h-64 md:h-72 object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.9)] filter contrast-[1.05] select-none transition-transform duration-300 group-hover:scale-105"
+              />
+              {/* 立繪名字光環 */}
+              <div className="absolute -bottom-2 sm:bottom-0 left-1/2 -translate-x-1/2 sm:left-4 sm:translate-x-0 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-emerald-400/50 shadow-xl flex items-center gap-1.5 text-xs font-black text-emerald-300 shrink-0 whitespace-nowrap">
+                <span>{displayAvatar}</span>
+                <span>{currentNode.speaker}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="pointer-events-auto flex items-center gap-3 p-3 rounded-2xl bg-slate-950/80 backdrop-blur-md border border-white/20 mb-3 shadow-xl">
+              <span className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-4xl shadow-inner border border-white/20">
+                {displayAvatar}
+              </span>
+              <div>
+                <h4 className="text-base font-black text-white font-heading">
+                  {currentNode.speaker}
+                </h4>
+                <p className="text-xs font-bold text-slate-300">
+                  {displayRole}
+                </p>
+              </div>
             </div>
           )}
+        </div>
+
+        {/* ── 對話框與玩家英語分支選擇區 (VN Speech Bubble & Choices) ── */}
+        <div className="relative z-20 p-4 sm:p-5 bg-slate-950/92 backdrop-blur-xl border-t-2 border-emerald-500/50 space-y-3.5 overflow-y-auto max-h-[52vh] shrink-0">
+          
+          {/* NPC 臺詞對話泡泡 */}
+          <div className="p-4 sm:p-4.5 rounded-2xl bg-white/5 border border-white/15 relative space-y-2 shadow-inner">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-lg bg-emerald-500 text-white font-black text-xs tracking-wide shadow-sm flex items-center gap-1">
+                  <span>{displayAvatar}</span>
+                  <span>{currentNode.speaker}</span>
+                </span>
+                <span className="text-[11px] font-bold text-slate-400 hidden sm:inline">
+                  {displayRole}
+                </span>
+              </div>
+
+              {/* 語音重複朗讀按鈕 */}
+              <button
+                onClick={handleReplaySpeech}
+                className="px-2.5 py-1 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-400/40 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center gap-1 active:scale-95"
+                title="點擊聆聽英語真人朗讀"
+              >
+                <Volume2 className="w-3.5 h-3.5 animate-pulse text-emerald-400" />
+                <span>朗讀發音</span>
+              </button>
+            </div>
+
+            {/* 英文主臺詞 */}
+            <p className="text-base sm:text-lg md:text-xl font-black text-white leading-relaxed font-heading tracking-wide pr-2">
+              "{currentNode.en}"
+            </p>
+
+            {/* 中文翻譯對白 */}
+            <p className="text-xs sm:text-sm font-bold text-amber-300/90 pt-1.5 border-t border-white/10">
+              「{currentNode.zh}」
+            </p>
+          </div>
+
+          {/* 學生回答選項分支 (Branch Options) */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[11px] font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1">
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>💬 選擇你的英語回應：</span>
+              </span>
+              <span className="text-[10px] font-bold text-slate-400">
+                點擊以英語互動
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-2">
+              {currentNode.options?.map((opt, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleSelectOption(opt)}
+                  className="w-full text-left p-3 sm:p-3.5 rounded-2xl bg-white/5 hover:bg-emerald-500/20 border-2 border-white/10 hover:border-emerald-400/80 transition-all shadow-md active:scale-98 group cursor-pointer"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-6 h-6 rounded-lg bg-emerald-500/20 group-hover:bg-emerald-500 text-emerald-300 group-hover:text-white flex items-center justify-center text-xs font-black shrink-0 transition-colors mt-0.5 border border-emerald-400/40">
+                      {idx + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-200 transition-colors leading-snug">
+                        {opt.text_en}
+                      </div>
+                      <div className="text-[11px] font-bold text-slate-400 group-hover:text-emerald-300/90 mt-0.5 transition-colors">
+                        {opt.text_zh}
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all shrink-0 mt-1" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

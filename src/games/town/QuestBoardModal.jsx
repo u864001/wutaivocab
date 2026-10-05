@@ -100,35 +100,40 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-fadeIn">
       <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-2 border-indigo-500 dark:border-indigo-600 overflow-hidden relative max-h-[85vh] flex flex-col animate-scaleUp">
         {/* 頂部布告欄橫幅 */}
-        <div className="p-4 sm:p-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner shrink-0">
-              📜
+        <div className="relative p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <img src="/assets/town/bg_school.png" alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
+            <div className="absolute inset-0 bg-indigo-950/70 backdrop-blur-[2px]" />
+          </div>
+
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-white/90 dark:bg-slate-800/90 shadow-md flex items-center justify-center overflow-hidden shrink-0 border border-white/20">
+              <img src="/assets/town/npc_principal.png" alt="校長" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-heading font-black">
+                <h3 className="text-base sm:text-lg font-heading font-black text-white">
                   霧臺國小 • 每日探索任務布告欄
                 </h3>
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-400 text-amber-950">
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 shadow-sm">
                   Daily Quests
                 </span>
               </div>
-              <p className="text-xs font-bold text-indigo-100">
+              <p className="text-xs font-bold text-amber-200">
                 探索小鎮、完成英語對話，爭奪全校「小鎮榮譽榜」榜首！
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md flex items-center gap-1.5 text-xs font-black">
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md flex items-center gap-1.5 text-xs font-black text-white shadow-sm border border-white/20">
               <Trophy className="w-4 h-4 text-amber-300" />
               <span>積分: {questPoints}</span>
             </div>
 
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer border border-white/20"
               title="關閉布告欄"
             >
               <X className="w-4 h-4" />

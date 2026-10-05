@@ -64,36 +64,49 @@ export const ShopModal = ({ locationId, onClose, onQuestProgress }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-fadeIn">
       <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-2 border-amber-400 dark:border-amber-600 overflow-hidden relative max-h-[85vh] flex flex-col animate-scaleUp">
         {/* 頂部商標橫幅 */}
-        <div className={`p-4 sm:p-5 bg-gradient-to-r ${location.bgGradient} flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800`}>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/80 dark:bg-slate-800/80 shadow-md flex items-center justify-center text-2xl shrink-0">
-              {location.npcAvatar}
+        <div className="relative p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800 overflow-hidden">
+          {location.bgImage ? (
+            <div className="absolute inset-0 pointer-events-none">
+              <img src={location.bgImage} alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
+              <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]" />
+            </div>
+          ) : (
+            <div className={`absolute inset-0 bg-gradient-to-r ${location.bgGradient}`} />
+          )}
+
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-white/90 dark:bg-slate-800/90 shadow-md flex items-center justify-center overflow-hidden shrink-0 border border-white/20">
+              {location.npcPortrait ? (
+                <img src={location.npcPortrait} alt="" className="w-full h-full object-contain" />
+              ) : (
+                <span className="text-2xl">{location.npcAvatar}</span>
+              )}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-heading font-black text-slate-800 dark:text-white">
+                <h3 className="text-base sm:text-lg font-heading font-black text-white">
                   {location.nameZh} • 專屬商店
                 </h3>
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500 text-white">
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500 text-white shadow-sm">
                   Shop
                 </span>
               </div>
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-bold text-amber-200">
                 店長：{location.npcName}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="relative z-10 flex items-center gap-3">
             {/* 目前金幣餘額顯示 */}
-            <div className="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/60 dark:border-amber-600/60 flex items-center gap-1.5 text-amber-700 dark:text-amber-300 text-xs font-black">
-              <Coins className="w-4 h-4 text-amber-500" />
+            <div className="px-3 py-1.5 rounded-xl bg-amber-500/30 border border-amber-400/80 backdrop-blur-md flex items-center gap-1.5 text-amber-200 text-xs font-black shadow-sm">
+              <Coins className="w-4 h-4 text-amber-400" />
               <span className="font-mono text-sm">{coins}</span>
             </div>
 
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer border border-white/20"
               title="關閉商店"
             >
               <X className="w-4 h-4" />

@@ -48,21 +48,26 @@ export const BackpackModal = ({ onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-fadeIn">
       <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-2 border-lime-400 dark:border-lime-600 overflow-hidden relative max-h-[85vh] flex flex-col animate-scaleUp">
         {/* 頂部倉庫橫幅 */}
-        <div className="p-4 sm:p-5 bg-gradient-to-r from-lime-500/20 via-emerald-500/20 to-teal-500/20 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white/80 dark:bg-slate-800/80 shadow-md flex items-center justify-center text-2xl shrink-0">
+        <div className="relative p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <img src="/assets/town/bg_home.png" alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
+            <div className="absolute inset-0 bg-emerald-950/70 backdrop-blur-[2px]" />
+          </div>
+
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-white/90 dark:bg-slate-800/90 shadow-md flex items-center justify-center text-2xl shrink-0 border border-white/20">
               🎒
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-heading font-black text-slate-800 dark:text-white">
+                <h3 className="text-base sm:text-lg font-heading font-black text-white">
                   學生溫馨的家 • 探險個人背包
                 </h3>
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-lime-600 text-white">
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-lime-500 text-white shadow-sm">
                   共 {items.length} 件寶物
                 </span>
               </div>
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-bold text-emerald-200">
                 持有者：{currentStudent?.nickname || '好學生'} ({currentStudent?.student_id || '訪客'})
               </p>
             </div>
@@ -70,7 +75,7 @@ export const BackpackModal = ({ onClose }) => {
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center transition-colors cursor-pointer"
+            className="relative z-10 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer border border-white/20"
             title="關閉背包"
           >
             <X className="w-4 h-4" />
