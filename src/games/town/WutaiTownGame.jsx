@@ -11,6 +11,7 @@ import {
   getLocationDailyTheme
 } from './townData';
 import { DialogueEngine } from './DialogueEngine';
+import { HomeScene } from './HomeScene';
 import { ShopModal } from './ShopModal';
 import { BackpackModal } from './BackpackModal';
 import { QuestBoardModal } from './QuestBoardModal';
@@ -40,6 +41,7 @@ export const WutaiTownGame = ({ onBack }) => {
   // 畫面模態與地標狀態
   const [activeDialogueLocation, setActiveDialogueLocation] = useState(null);
   const [activeShopLocationId, setActiveShopLocationId] = useState(null);
+  const [isHomeOpen, setIsHomeOpen] = useState(false);
   const [isBackpackOpen, setIsBackpackOpen] = useState(false);
   const [isQuestBoardOpen, setIsQuestBoardOpen] = useState(false);
   const [teacherBonusToast, setTeacherBonusToast] = useState(null);
@@ -134,6 +136,10 @@ export const WutaiTownGame = ({ onBack }) => {
   const handleOpenLocation = (loc) => {
     stopSpeech();
     soundEngine.click();
+    if (loc.id === 'home') {
+      setIsHomeOpen(true);
+      return;
+    }
     setActiveDialogueLocation(loc);
   };
 
@@ -227,17 +233,17 @@ export const WutaiTownGame = ({ onBack }) => {
               <span className="font-mono text-sm">{questPoints}</span>
             </div>
 
-            {/* 背包 */}
+            {/* 我的房間 / 背包 */}
             <button
               onClick={() => {
                 soundEngine.click();
-                setIsBackpackOpen(true);
+                setIsHomeOpen(true);
               }}
               className="px-2.5 py-1 rounded-xl bg-lime-600 hover:bg-lime-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
-              title="開啟個人背包"
+              title="回到溫馨的家 • 聆聽音樂並整理背包"
             >
               <Package className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">背包</span>
+              <span className="hidden md:inline">我的房間</span>
               <span>({inventory?.length || 0})</span>
             </button>
 
@@ -339,8 +345,15 @@ export const WutaiTownGame = ({ onBack }) => {
         </div>
       )}
 
+      {/* ── 🏡 學生溫馨的家 (全螢幕吉卜力房間與循環背景音樂) ── */}
+      {isHomeOpen && (
+        <HomeScene
+          onClose={() => setIsHomeOpen(false)}
+        />
+      )}
+
       {/* ── 全螢幕 2D 視覺小說冒險對話場景 (Visual Novel Scene Stage) ── */}
-      {activeDialogueLocation && (
+      {activeDialogueLocation && activeDialogueLocation.id !== 'home' && (
         <DialogueEngine
           location={activeDialogueLocation}
           onClose={() => {

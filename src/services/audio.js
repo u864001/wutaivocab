@@ -1,9 +1,50 @@
-// ── Web Audio 音效合成與語音朗讀引擎 ──
+// ── Web Audio 音效合成、語音朗讀與溫馨背景音樂引擎 ──
+
+const HOME_NOTES = {
+  C2: 65.41, F2: 87.31, G2: 98.00, A2: 110.00,
+  C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
+  C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+  C5: 523.25, D4: 293.66, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880.00
+};
+
+// 溫暖八音盒與木屋晨光 16 步拍子循環樂譜 (Cmaj7 -> Am7 -> Fmaj7 -> G7sus4)
+const HOME_MUSIC_PATTERN = [
+  // ── 小節 1: Cmaj7 (晨曦木屋) ──
+  { bass: HOME_NOTES.C3, chords: [HOME_NOTES.E3, HOME_NOTES.G3], melody: HOME_NOTES.E4 },
+  { chords: [HOME_NOTES.B3], melody: HOME_NOTES.G4 },
+  { chords: [HOME_NOTES.C4], melody: HOME_NOTES.B4 },
+  { chords: [HOME_NOTES.E4], melody: HOME_NOTES.C5 },
+
+  // ── 小節 2: Am7 (大武山微風) ──
+  { bass: HOME_NOTES.A2, chords: [HOME_NOTES.C3, HOME_NOTES.E3], melody: HOME_NOTES.A4 },
+  { chords: [HOME_NOTES.G3], melody: HOME_NOTES.E4 },
+  { chords: [HOME_NOTES.C4], melody: HOME_NOTES.G4 },
+  { chords: [HOME_NOTES.E4], melody: HOME_NOTES.A4 },
+
+  // ── 小節 3: Fmaj7 (溫暖的柴火) ──
+  { bass: HOME_NOTES.F2, chords: [HOME_NOTES.A2, HOME_NOTES.C3], melody: HOME_NOTES.F4 },
+  { chords: [HOME_NOTES.E3], melody: HOME_NOTES.A4 },
+  { chords: [HOME_NOTES.A3], melody: HOME_NOTES.C5 },
+  { chords: [HOME_NOTES.C4], melody: HOME_NOTES.E5 },
+
+  // ── 小節 4: G7sus4 -> G (安心避風港) ──
+  { bass: HOME_NOTES.G2, chords: [HOME_NOTES.D3, HOME_NOTES.G3], melody: HOME_NOTES.D5 },
+  { chords: [HOME_NOTES.B3], melody: HOME_NOTES.B4 },
+  { chords: [HOME_NOTES.D4], melody: HOME_NOTES.G4 },
+  { chords: [HOME_NOTES.G4], melody: HOME_NOTES.E4 }
+];
 
 class SoundEngine {
   constructor() {
     this.ctx = null;
     this.isMuted = false;
+    this.homeBgmRunning = false;
+    this.homeBgmTimer = null;
+    this.homeBgmMasterGain = null;
+    this.homeBgmFilter = null;
+    this.homeBgmDelay = null;
+    this.homeBgmDelayGain = null;
+    this.homeBgmStep = 0;
   }
 
   init() {
@@ -22,6 +63,7 @@ class SoundEngine {
     this.isMuted = !this.isMuted;
     if (this.isMuted) {
       stopSpeech();
+      this.stopHomeBgm();
     }
     return this.isMuted;
   }
@@ -91,6 +133,157 @@ class SoundEngine {
   // 按鈕點擊感
   click() {
     this.playTone(400, 'triangle', 0.04, 0.08);
+  }
+
+  // ── 溫馨的家：吉卜力八音盒與溫暖房間循環背景音樂 (Procedural Warm Home BGM) ──
+  startHomeBgm() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+    if (this.homeBgmRunning) return;
+
+    this.homeBgmRunning = true;
+    this.homeBgmStep = 0;
+
+    try {
+      // 建立 BGM 專屬母音量與暖色低通濾波器
+      this.homeBgmMasterGain = this.ctx.createGain();
+      this.homeBgmMasterGain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+      // 柔和淡入 0.8 秒
+      this.homeBgmMasterGain.gain.exponentialRampToValueAtTime(0.12, this.ctx.currentTime + 0.8);
+
+      // 溫暖低通濾波器 (去除尖銳高頻，營造日系手繪木屋的溫潤空間感)
+      this.homeBgmFilter = this.ctx.createBiquadFilter();
+      this.homeBgmFilter.type = 'lowpass';
+      this.homeBgmFilter.frequency.setValueAtTime(1100, this.ctx.currentTime);
+
+      // 空間微迴音延遲 (Delay)
+      this.homeBgmDelay = this.ctx.createDelay();
+      this.homeBgmDelay.delayTime.setValueAtTime(0.36, this.ctx.currentTime);
+      this.homeBgmDelayGain = this.ctx.createGain();
+      this.homeBgmDelayGain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+
+      this.homeBgmDelay.connect(this.homeBgmDelayGain);
+      this.homeBgmDelayGain.connect(this.homeBgmDelay);
+      this.homeBgmDelayGain.connect(this.homeBgmMasterGain);
+
+      this.homeBgmFilter.connect(this.homeBgmMasterGain);
+      this.homeBgmFilter.connect(this.homeBgmDelay);
+      this.homeBgmMasterGain.connect(this.ctx.destination);
+    } catch (e) {
+      return;
+    }
+
+    const stepIntervalMs = 540; // 每個步長約 0.54 秒，舒服悠閒的節奏
+
+    const tick = () => {
+      if (!this.homeBgmRunning || !this.ctx || this.isMuted) return;
+
+      const idx = this.homeBgmStep % HOME_MUSIC_PATTERN.length;
+      const beat = HOME_MUSIC_PATTERN[idx];
+      const now = this.ctx.currentTime;
+
+      // 1. 溫暖低音 (Bass)
+      if (beat.bass) {
+        this.scheduleWarmTone(beat.bass, 'triangle', now, 0.9, 0.08);
+      }
+      // 2. 溫柔和弦伴奏 (Chords)
+      if (beat.chords && beat.chords.length > 0) {
+        beat.chords.forEach(freq => {
+          this.scheduleWarmTone(freq, 'sine', now + 0.02, 0.65, 0.035);
+        });
+      }
+      // 3. 八音盒清脆主旋律 (Music Box Bell)
+      if (beat.melody) {
+        this.scheduleMusicBoxNote(beat.melody, now, 0.8, 0.07);
+      }
+
+      this.homeBgmStep++;
+      this.homeBgmTimer = setTimeout(tick, stepIntervalMs);
+    };
+
+    tick();
+  }
+
+  scheduleWarmTone(freq, type, startTime, duration, vol) {
+    if (!this.ctx || !this.homeBgmFilter) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.linearRampToValueAtTime(vol, startTime + 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+      osc.connect(gain);
+      gain.connect(this.homeBgmFilter);
+
+      osc.start(startTime);
+      osc.stop(startTime + duration + 0.05);
+    } catch (e) {}
+  }
+
+  scheduleMusicBoxNote(freq, startTime, duration, vol) {
+    if (!this.ctx || !this.homeBgmFilter) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      // 八音盒音色：敲擊清脆迅速，隨後緩慢長尾迴響
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.linearRampToValueAtTime(vol, startTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+      osc.connect(gain);
+      gain.connect(this.homeBgmFilter);
+
+      osc.start(startTime);
+      osc.stop(startTime + duration + 0.05);
+    } catch (e) {}
+  }
+
+  stopHomeBgm() {
+    this.homeBgmRunning = false;
+    if (this.homeBgmTimer) {
+      clearTimeout(this.homeBgmTimer);
+      this.homeBgmTimer = null;
+    }
+    if (this.homeBgmMasterGain && this.ctx) {
+      try {
+        // 柔和淡出 0.3 秒，避免突然截斷產生爆音
+        this.homeBgmMasterGain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+        setTimeout(() => {
+          try {
+            if (this.homeBgmMasterGain) {
+              this.homeBgmMasterGain.disconnect();
+              this.homeBgmMasterGain = null;
+            }
+          } catch (e) {}
+        }, 350);
+      } catch (e) {
+        this.homeBgmMasterGain = null;
+      }
+    }
+  }
+
+  toggleHomeBgm() {
+    if (this.homeBgmRunning) {
+      this.stopHomeBgm();
+      return false;
+    } else {
+      this.startHomeBgm();
+      return true;
+    }
+  }
+
+  isHomeBgmActive() {
+    return Boolean(this.homeBgmRunning);
   }
 }
 

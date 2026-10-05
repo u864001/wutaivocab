@@ -225,18 +225,18 @@ export const TOWN_LOCATIONS = [
     id: 'home',
     nameZh: '學生溫馨的家',
     nameEn: 'Player Home',
-    npcName: '個人背包倉庫 (Backpack)',
-    npcRole: '整理房間與道具收納',
+    npcName: '個人房間與背包 (Cozy Room)',
+    npcRole: '溫馨房間與道具收藏',
     npcAvatar: '🏡',
     mapArea: { left: 39, top: 73, width: 18, height: 21 },
     mapCoords: { x: 48, y: 83.5 },
     standeeSide: 'left',
-    voiceProfile: { gender: 'male', pitch: 1.00, rate: 0.90 },
-    bgGradient: 'from-lime-500/20 via-emerald-500/20 to-teal-500/20',
-    borderColor: 'border-lime-400 dark:border-lime-600',
-    iconColor: 'text-lime-500',
-    description: '溪畔石板小徑通往溫馨的家，打開背包查看所有收集品與書桌。',
-    dailyThemes: ['溫暖的家：檢視個人收藏道具與金幣財富'],
+    voiceProfile: null,
+    bgGradient: 'from-amber-600/20 via-orange-500/20 to-lime-500/20',
+    borderColor: 'border-amber-400 dark:border-amber-600',
+    iconColor: 'text-amber-500',
+    description: '溫暖舒服的個人房間，伴隨輕柔八音盒音樂，整理背包道具與收藏榮譽。',
+    dailyThemes: ['溫暖的家：放鬆聆聽房間八音盒音樂，整理個人探險背包'],
     bgImage: '/assets/town/bg_home.png',
     npcPortrait: null,
     hasShop: false,
@@ -1364,6 +1364,11 @@ export const DIALOGUE_VARIANTS = {
 
 // ── 7. 智慧對話樹取得函式 (支援外師巡迴與每日輪替) ──
 export const getDialogueTreeForLocation = (locationId, options = {}) => {
+  // 溫馨的家屬於個人專屬音樂休閒房間，不設 NPC 與對話樹
+  if (locationId === 'home') {
+    return null;
+  }
+
   const {
     dateStr = getTodayDateStr(),
     isTeacherActive = false,
