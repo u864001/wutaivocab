@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
 import { Button3D } from './ui/Button3D';
 import { useI18n } from '../context/I18nContext';
 import { useStudent } from '../context/StudentContext';
-import { formatStudentDisplayName } from '../utils/studentIdHelper';
+import { formatStudentDisplayName, isBookInOwnGrade } from '../utils/studentIdHelper';
 import { checkIfQualifiesForTop50, uploadScore } from '../services/supabase';
 import { CertificateModal } from './CertificateModal';
 import { getAccuracyLevel } from '../services/certificateGenerator';
 import { getProfanityError } from '../services/profanityFilter';
 import confetti from 'canvas-confetti';
-import { Trophy, CheckCircle2, Sparkles, Send, Loader2, Award, UserCheck, RefreshCw, AlertCircle } from 'lucide-react';
+import { Trophy, CheckCircle2, Sparkles, Send, Loader2, Award, UserCheck, RefreshCw, AlertCircle, Coins, ShieldCheck, User } from 'lucide-react';
 
 export const HonorSubmissionCard = ({
   mode,
@@ -21,11 +20,14 @@ export const HonorSubmissionCard = ({
   onSuccess
 }) => {
   const { t } = useI18n();
-  const { currentStudent } = useStudent();
+  const { currentStudent, isLoggedIn, addCoins, openModal, coins } = useStudent();
   const [status, setStatus] = useState('checking'); // 'checking' | 'not_qualifying_book' | 'not_top50' | 'qualified' | 'submitting' | 'submitted'
   const [playerName, setPlayerName] = useState(() => {
     return localStorage.getItem('wutai_player_name') || '';
   });
+
+  const hasAwardedCoinsRef = useRef(false);
+  const [awardedInfo, setAwardedInfo] = useState({ delta: 0, reason: '', type: 'none' });
 
   useEffect(() => {
     if (currentStudent && !playerName) {
@@ -35,6 +37,59 @@ export const HonorSubmissionCard = ({
   const [validationError, setValidationError] = useState('');
   const [isCertOpen, setIsCertOpen] = useState(false);
   const hasSubmittedRef = useRef(false);
+
+  // ── 金幣經濟結算與防刷防作弊機制 ──
+  useEffect(() => {
+    if (status === 'checking') return;
+
+    // 防刷門檻 (Anti-exploit Gate)：答題數 >= 5、總題數 >= 10，或挑戰時間 >= 20 秒
+    const isLegitimateSession = totalCount >= 10 || score >= 5 || time >= 20;
+    const isOwnGrade = isBookInOwnGrade(book, currentStudent?.grade);
+
+    if (!isLegitimateSession) {
+      setAwardedInfo({
+        delta: 0,
+        reason: '未達結算基本門檻（需答滿 10 題或生存滿 20 秒），本次不發放金幣。',
+        type: 'exploit_gate'
+      });
+      return;
+    }
+
+    if (!isOwnGrade) {
+      setAwardedInfo({
+        delta: 0,
+        reason: '跨年級自主探索（純練習無金幣），請挑戰本年級教材以累積宇宙金幣！',
+        type: 'cross_grade'
+      });
+      return;
+    }
+
+    // 達到本年級挑戰門檻：
+    const coinDelta = (status === 'qualified' || status === 'submitted') ? 10 : 1;
+    const rewardType = coinDelta === 10 ? 'top50' : 'clear';
+    const reasonText = coinDelta === 10
+      ? '👑 突破本週全校 Top 50 榮譽榜！獲得 +10 宇宙金幣！'
+      : '👏 完整挑戰本年級單元！獲得 +1 宇宙金幣！';
+
+    setAwardedInfo({
+      delta: coinDelta,
+      reason: reasonText,
+      type: rewardType
+    });
+
+    if (isLoggedIn && !hasAwardedCoinsRef.current) {
+      hasAwardedCoinsRef.current = true;
+      addCoins(coinDelta);
+    }
+  }, [status, book, totalCount, score, time, currentStudent, isLoggedIn, addCoins]);
+
+  // 當學生在結算卡片點擊「登入」後立即補發金幣
+  useEffect(() => {
+    if (isLoggedIn && awardedInfo.delta > 0 && !hasAwardedCoinsRef.current) {
+      hasAwardedCoinsRef.current = true;
+      addCoins(awardedInfo.delta);
+    }
+  }, [isLoggedIn, awardedInfo.delta, addCoins]);
 
   // 答對率計算
   const accuracy = totalCount > 0 ? Math.min(100, Math.round((score / totalCount) * 100)) : 100;
@@ -156,6 +211,62 @@ export const HonorSubmissionCard = ({
           {t.viewCertificateBtn}
         </Button3D>
       </div>
+
+      {/* ── 金幣經濟結算便當條 (Coin Reward Banner) ── */}
+      {awardedInfo.type !== 'none' && (
+        <div className={`p-4 rounded-2xl border-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left shadow-sm ${
+          awardedInfo.delta >= 10
+            ? 'bg-gradient-to-r from-amber-400/25 via-yellow-400/20 to-amber-500/25 border-amber-400 dark:border-amber-600'
+            : awardedInfo.delta > 0
+            ? 'bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border-emerald-400 dark:border-emerald-600'
+            : 'bg-slate-100/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700'
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shrink-0 shadow-sm ${
+              awardedInfo.delta >= 10
+                ? 'bg-amber-400 text-amber-950 animate-bounce'
+                : awardedInfo.delta > 0
+                ? 'bg-emerald-500 text-white'
+                : 'bg-slate-200 dark:bg-slate-700 text-slate-500'
+            }`}>
+              <Coins className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5 justify-center sm:justify-start">
+                <span className={`text-xs font-black px-2.5 py-0.5 rounded-full ${
+                  awardedInfo.delta >= 10
+                    ? 'bg-amber-500 text-white shadow-sm'
+                    : awardedInfo.delta > 0
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                }`}>
+                  {awardedInfo.delta > 0 ? `+${awardedInfo.delta} 金幣獎勵` : '探索練習'}
+                </span>
+                {isLoggedIn && awardedInfo.delta > 0 && (
+                  <span className="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    （目前金幣：{coins} 枚）
+                  </span>
+                )}
+              </div>
+              <p className="text-xs font-bold text-slate-700 dark:text-slate-200 mt-1">
+                {awardedInfo.reason}
+              </p>
+            </div>
+          </div>
+
+          {!isLoggedIn && awardedInfo.delta > 0 && (
+            <Button3D
+              variant="amber"
+              size="sm"
+              onClick={openModal}
+              icon={User}
+              className="shadow-md shrink-0 w-full sm:w-auto"
+            >
+              登入座號領金幣 🪙
+            </Button3D>
+          )}
+        </div>
+      )}
 
       {/* 狀況 1：未選取符合排行榜門檻的範圍 */}
       {status === 'not_qualifying_book' && (

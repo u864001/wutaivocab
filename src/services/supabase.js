@@ -303,21 +303,47 @@ export const recordBattleWin = async ({ book, name }) => {
   }
 };
 
-// ── 讀取排行榜 (支援至前 50 名) ──
-export const fetchLeaderboard = async (week, mode, book, limit = 50) => {
+// ── 讀取排行榜 (支援單冊/多冊與單模式/多模式合併，每位同學取最高成績) ──
+export const fetchLeaderboard = async (week, mode, bookOrBooks, limit = 50) => {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('leaderboard')
-      .select('id, name, score, time, created_at')
-      .eq('week', week)
-      .eq('mode', mode)
-      .eq('book', String(book))
+      .select('id, name, score, time, mode, book, created_at')
+      .eq('week', week);
+
+    if (Array.isArray(mode)) {
+      query = query.in('mode', mode);
+    } else if (mode && mode !== 'all') {
+      query = query.eq('mode', mode);
+    }
+
+    if (Array.isArray(bookOrBooks)) {
+      query = query.in('book', bookOrBooks.map(String));
+    } else if (bookOrBooks && bookOrBooks !== 'all') {
+      query = query.eq('book', String(bookOrBooks));
+    }
+
+    const { data, error } = await query
       .order('score', { ascending: false })
       .order('time', { ascending: true })
-      .limit(limit);
+      .limit(limit * 2); // 取稍多以利學生最佳紀錄去重
 
     if (error) throw error;
-    return data || [];
+    if (!data || data.length === 0) return [];
+
+    // 每位學生僅保留其最佳單筆成績
+    const seenNames = new Set();
+    const uniqueList = [];
+    for (const entry of data) {
+      const cleanName = (entry.name || '').trim();
+      if (!seenNames.has(cleanName)) {
+        seenNames.add(cleanName);
+        uniqueList.push(entry);
+      }
+      if (uniqueList.length >= limit) break;
+    }
+
+    return uniqueList;
   } catch (err) {
     console.error('排行榜讀取失敗:', err);
     return [];
@@ -660,41 +686,81 @@ export const updateStudentDailyQuest = async (studentId, dailyQuestData) => {
   return await upsertStudentProfile(updated);
 };
 
-/**
- * 讀取大富翁財富榜 (Monopoly Wealth Board: 依金幣降序)
- */
-export const fetchMonopolyLeaderboard = async (limit = 50) => {
+const getLocalLeaderboardProfiles = (metric = 'coins', grade = null, limit = 50) => {
   try {
-    const { data, error } = await supabase
-      .from('student_profiles')
-      .select('student_id, grade, class, seat, nickname, coins, updated_at')
-      .order('coins', { ascending: false })
-      .limit(limit);
-
-    if (error || !data) return [];
-    return data;
-  } catch (err) {
-    console.warn('大富翁財富榜讀取回退:', err);
+    const profiles = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('wutai_student_profile_')) {
+        const item = localStorage.getItem(key);
+        if (item) {
+          try {
+            const parsed = JSON.parse(item);
+            if (parsed && parsed.student_id) {
+              if (!grade || grade === '00' || grade === 'all' || parsed.grade === String(grade).padStart(2, '0')) {
+                profiles.push(parsed);
+              }
+            }
+          } catch (e) {}
+        }
+      }
+    }
+    profiles.sort((a, b) => (Number(b[metric] || 0) - Number(a[metric] || 0)));
+    return profiles.slice(0, limit);
+  } catch (e) {
     return [];
   }
 };
 
 /**
- * 讀取小鎮探索榮譽榜 (Town Quest Points Board: 依積分降序)
+ * 讀取大富翁財富榜 (Monopoly Wealth Board: 依金幣降序，可選年級)
  */
-export const fetchQuestPointsLeaderboard = async (limit = 50) => {
+export const fetchMonopolyLeaderboard = async (grade = null, limit = 50) => {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('student_profiles')
-      .select('student_id, grade, class, seat, nickname, quest_points, updated_at')
+      .select('student_id, grade, class, seat, nickname, coins, updated_at');
+
+    if (grade && grade !== '00' && grade !== 'all') {
+      query = query.eq('grade', String(grade).padStart(2, '0'));
+    }
+
+    const { data, error } = await query
+      .order('coins', { ascending: false })
+      .limit(limit);
+
+    if (error || !data || data.length === 0) {
+      return getLocalLeaderboardProfiles('coins', grade, limit);
+    }
+    return data;
+  } catch (err) {
+    return getLocalLeaderboardProfiles('coins', grade, limit);
+  }
+};
+
+/**
+ * 讀取小鎮探索榮譽榜 (Town Quest Points Board: 依積分降序，可選年級)
+ */
+export const fetchQuestPointsLeaderboard = async (grade = null, limit = 50) => {
+  try {
+    let query = supabase
+      .from('student_profiles')
+      .select('student_id, grade, class, seat, nickname, quest_points, updated_at');
+
+    if (grade && grade !== '00' && grade !== 'all') {
+      query = query.eq('grade', String(grade).padStart(2, '0'));
+    }
+
+    const { data, error } = await query
       .order('quest_points', { ascending: false })
       .limit(limit);
 
-    if (error || !data) return [];
+    if (error || !data || data.length === 0) {
+      return getLocalLeaderboardProfiles('quest_points', grade, limit);
+    }
     return data;
   } catch (err) {
-    console.warn('小鎮榮譽榜讀取回退:', err);
-    return [];
+    return getLocalLeaderboardProfiles('quest_points', grade, limit);
   }
 };
 
