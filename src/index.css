@@ -216,5 +216,45 @@ vercel-live-feedback,
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
+/* ── 2D Visual Novel 冒險對話立繪與大地圖熱點動效 ── */
+@keyframes slideInFromLeft {
+  0% { transform: translateX(-120%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInFromRight {
+  0% { transform: translateX(120%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes mapHotspotPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+  50% { transform: scale(1.08); box-shadow: 0 0 0 14px rgba(52, 211, 153, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+@keyframes teacherBeaconPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.8); }
+  50% { transform: scale(1.12); box-shadow: 0 0 0 18px rgba(245, 158, 11, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-hotspot-pulse {
+  animation: mapHotspotPulse 2.4s infinite;
+}
+
+.animate-teacher-pulse {
+  animation: teacherBeaconPulse 1.8s infinite;
+}
+
+
 
 

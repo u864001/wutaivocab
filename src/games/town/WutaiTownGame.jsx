@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { useStudent } from '../../context/StudentContext';
@@ -16,23 +15,19 @@ import { ShopModal } from './ShopModal';
 import { BackpackModal } from './BackpackModal';
 import { QuestBoardModal } from './QuestBoardModal';
 import { soundEngine } from '../../services/audio';
-import { formatStudentBadge } from '../../utils/studentIdHelper';
 import {
   ArrowLeft, Coins, Trophy, Package, ScrollText, Sparkles,
-  MapPin, ShoppingBag, MessageSquare, Home, Compass, User,
-  CheckCircle2, ChevronRight, Shield, Gift, Megaphone
+  MapPin, ShoppingBag, Compass, ChevronRight, Gift, Megaphone
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const WutaiTownGame = ({ onBack }) => {
-  const { t, lang } = useI18n();
+  const { lang } = useI18n();
   const {
     currentStudent,
     coins,
     questPoints,
     inventory,
-    isLoggedIn,
-    openModal,
     updateDailyQuest,
     claimTeacherBonus
   } = useStudent();
@@ -42,12 +37,13 @@ export const WutaiTownGame = ({ onBack }) => {
   const teacherInfo = useMemo(() => getDailyVisitingTeacherInfo(todayStr), [todayStr]);
   const hasMetTeacherToday = currentStudent?.daily_quest?.teacherMetDate === todayStr;
 
-  // 畫面模態狀態
+  // 畫面模態與地標狀態
   const [activeDialogueLocation, setActiveDialogueLocation] = useState(null);
   const [activeShopLocationId, setActiveShopLocationId] = useState(null);
   const [isBackpackOpen, setIsBackpackOpen] = useState(false);
   const [isQuestBoardOpen, setIsQuestBoardOpen] = useState(false);
   const [teacherBonusToast, setTeacherBonusToast] = useState(null);
+  const [hoveredLocationId, setHoveredLocationId] = useState(null);
 
   // 領取外師每日彩蛋積分處理
   const handleTeacherBonusClaimed = async () => {
@@ -130,21 +126,9 @@ export const WutaiTownGame = ({ onBack }) => {
 
   const handleOpenLocation = (loc) => {
     soundEngine.click();
-
-    if (loc.id === 'home') {
-      setIsBackpackOpen(true);
-      return;
-    }
-
-    if (loc.id === 'school') {
-      setIsQuestBoardOpen(true);
-      return;
-    }
-
     setActiveDialogueLocation(loc);
   };
 
-  const activeQuest = currentStudent?.daily_quest;
   const isTeacherAtActiveLocation = Boolean(
     activeDialogueLocation &&
     activeDialogueLocation.id === teacherInfo.locationId &&
@@ -152,292 +136,240 @@ export const WutaiTownGame = ({ onBack }) => {
   );
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-4 sm:py-6 animate-fadeIn pb-16 space-y-6">
-      {/* ── 頂部小鎮 HUD 導航與狀態列 ── */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white/80 dark:bg-slate-800/80 p-4 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-md">
-        <div className="flex items-center gap-3">
-          <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
-            {lang === 'zh-TW' ? '回學習宇宙' : 'Back Home'}
-          </Button3D>
-
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-white font-heading flex items-center gap-1.5">
-                <span>🏔️ 霧臺小鎮</span>
-                <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full">
-                  Wutai Town RPG
-                </span>
-              </h2>
-            </div>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 hidden sm:block">
-              社區英語探索・9大生活地標・每日輪替對話・外師巡迴彩蛋
-            </p>
-          </div>
-        </div>
-
-        {/* 學生身分晶片、金幣與背包按鈕 */}
-        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
-          {/* 金幣計數器 */}
-          <div className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-300 dark:border-amber-700 flex items-center gap-1.5 text-amber-700 dark:text-amber-300 text-xs font-black">
-            <Coins className="w-4 h-4 text-amber-500" />
-            <span className="font-mono text-sm">{coins}</span>
-          </div>
-
-          {/* 探索積分計數器 */}
-          <div className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-300 dark:border-indigo-700 flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300 text-xs font-black">
-            <Trophy className="w-4 h-4 text-indigo-500" />
-            <span className="font-mono text-sm">{questPoints}</span>
-          </div>
-
-          {/* 快捷背包按鈕 */}
-          <button
-            onClick={() => {
-              soundEngine.click();
-              setIsBackpackOpen(true);
-            }}
-            className="px-3 py-1.5 rounded-xl bg-lime-500 hover:bg-lime-600 text-white text-xs font-black flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
-            title="開啟個人背包"
-          >
-            <Package className="w-4 h-4" />
-            <span>背包 ({inventory?.length || 0})</span>
-          </button>
-
-          {/* 任務公佈欄按鈕 */}
-          <button
-            onClick={() => {
-              soundEngine.click();
-              setIsQuestBoardOpen(true);
-            }}
-            className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
-            title="查看每日任務"
-          >
-            <ScrollText className="w-4 h-4" />
-            <span>每日任務</span>
-          </button>
-        </div>
-      </div>
-
-      {/* ── 🌟 外師彩蛋獎勵提示 Toast (若剛領取) ── */}
-      {teacherBonusToast && (
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white flex items-center justify-between gap-3 shadow-lg animate-bounce">
-          <div className="flex items-center gap-3">
-            <span className="p-2.5 rounded-xl bg-white/20 text-2xl">
-              🎉
-            </span>
-            <div>
-              <h4 className="font-black text-sm sm:text-base font-heading">
-                獲得 {teacherBonusToast.teacherName} 的每日驚喜獎勵！
-              </h4>
-              <p className="text-xs font-bold text-white/90">
-                探索積分 +{teacherBonusToast.points} 點！榮譽榜同步提升！
-              </p>
-            </div>
-          </div>
-          <span className="px-3 py-1 rounded-xl bg-white text-amber-700 text-xs font-black shadow-sm">
-            +{teacherBonusToast.points} 積分
-          </span>
-        </div>
-      )}
-
-      {/* ── 進行中每日任務提示小卡 (若有) ── */}
-      {activeQuest && activeQuest.questId && !activeQuest.rewardClaimed && (
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-indigo-500/15 via-blue-500/15 to-purple-500/15 border-2 border-indigo-300 dark:border-indigo-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm animate-fadeIn">
-          <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-indigo-600 text-white shrink-0">
-              <ScrollText className="w-4 h-4" />
-            </span>
-            <div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
-                {activeQuest.completed ? '🎯 任務已達成！' : '🧭 進行中任務：'}
-              </span>
-              <p className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-100">
-                {activeQuest.completed ? '任務目標已完成！請前往霧臺國小領取探索積分獎勵！' : '請前往小鎮各商家完成英語互動！'}
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setIsQuestBoardOpen(true)}
-            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs transition-colors shrink-0 cursor-pointer"
-          >
-            {activeQuest.completed ? '領取獎勵 🏆' : '查看任務詳情 📜'}
-          </button>
-        </div>
-      )}
-
-      {/* ── 霧臺小鎮 2D 全景大地圖巡禮 (Town World Map Panorama Hero) ── */}
-      <div className="relative rounded-3xl overflow-hidden border-2 border-emerald-400/60 dark:border-emerald-500/60 shadow-xl group">
-        <div className="aspect-[21/9] sm:aspect-[24/8] w-full relative bg-slate-900 overflow-hidden">
+    <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-4 animate-fadeIn">
+      
+      {/* ── 霧臺小鎮全螢幕 2D 大地圖主要容器 (Full-Screen Town Map Stage) ── */}
+      <div className="relative w-full h-[calc(100vh-48px)] min-h-[640px] max-h-[92vh] rounded-3xl overflow-hidden shadow-2xl border-2 border-emerald-500/70 bg-slate-950 flex flex-col justify-between">
+        
+        {/* ── 1. 全景地圖底圖 (16:9 Town Map Base Layer) ── */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <img
             src={TOWN_MAP_PANORAMA_IMG}
             alt="霧臺小鎮全景大地圖"
-            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 filter brightness-95 contrast-105"
-            loading="lazy"
+            className="w-full h-full object-cover object-center filter brightness-95 contrast-105 select-none"
           />
-          {/* 漸層遮罩 */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-black/40" />
+          {/* 自然環境微光漸層 */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-slate-950/45 pointer-events-none" />
+        </div>
 
-          {/* 懸浮資訊列 */}
-          <div className="absolute inset-0 p-4 sm:p-6 flex flex-col justify-between">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-xl bg-emerald-500 text-white font-black text-xs shadow-md flex items-center gap-1.5">
-                  <Compass className="w-4 h-4 animate-spin-slow" />
-                  <span>霧臺小鎮全景地圖</span>
-                </span>
-                <span className="px-2.5 py-1 rounded-xl bg-black/50 backdrop-blur-md text-white font-bold text-xs border border-white/20 hidden sm:inline-block">
-                  吉卜力手繪風格 2D 世界觀
-                </span>
-              </div>
-
-              {/* 外師即時巡迴定位標記 */}
-              <div className="px-3 py-1 rounded-xl bg-amber-500 text-white font-black text-xs shadow-md flex items-center gap-1.5 animate-pulse">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>
-                  客座外師 {teacherInfo.teacher.nameZh} 現身於：
-                  {TOWN_LOCATIONS.find(l => l.id === teacherInfo.locationId)?.nameZh}
-                </span>
-              </div>
-            </div>
+        {/* ── 2. 頂部 HUD 狀態列 (Top Navigation & Student Stats HUD) ── */}
+        <div className="relative z-30 p-3 sm:p-4 bg-slate-950/60 backdrop-blur-md border-b border-white/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
+          <div className="flex items-center gap-3">
+            <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
+              {lang === 'zh-TW' ? '回學習宇宙' : 'Back Home'}
+            </Button3D>
 
             <div>
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white font-heading drop-shadow-md">
-                漫步大武山下的雙語智慧小鎮
-              </h3>
-              <p className="text-xs sm:text-sm font-bold text-slate-200 mt-1 drop-shadow hidden sm:block">
-                探索 9 大生活地標・與部落夥伴用英語對話・收集珍貴生活道具！
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg sm:text-xl font-black text-white font-heading flex items-center gap-1.5 drop-shadow-md">
+                  <span>🏔️ 霧臺小鎮</span>
+                  <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30">
+                    Town Map RPG
+                  </span>
+                </h2>
+              </div>
+              <p className="text-[11px] font-bold text-slate-300 hidden sm:block drop-shadow">
+                點擊地標進入 2D 室內場景・與部落夥伴與客座外師用英語對話！
               </p>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* ── 9 大社區地標視覺化全景導覽地圖 (Town Map Bento Grid) ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-        {TOWN_LOCATIONS.map((loc) => {
-          const isTeacherVisitingHere = (loc.id === teacherInfo.locationId && !hasMetTeacherToday);
-          const hasTeacherMetHere = (loc.id === teacherInfo.locationId && hasMetTeacherToday);
-          const dailyTheme = getLocationDailyTheme(loc.id, todayStr);
-          const displayNpcPortrait = isTeacherVisitingHere ? teacherInfo.teacher.portrait : loc.npcPortrait;
-          const displayNpcAvatar = isTeacherVisitingHere ? teacherInfo.teacher.avatar : loc.npcAvatar;
-          const displayNpcName = isTeacherVisitingHere ? teacherInfo.teacher.nameZh : loc.npcName;
+          {/* 外師今日出沒公告 + 金幣 + 背包 + 任務 */}
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+            {/* 今日外師巡迴提示 */}
+            <div className="px-3 py-1 rounded-xl bg-amber-500/30 border border-amber-400/70 backdrop-blur-md flex items-center gap-1.5 text-amber-200 text-xs font-black shadow-sm animate-pulse">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>
+                外師 {teacherInfo.teacher.nameZh} 現身於：
+                {TOWN_LOCATIONS.find(l => l.id === teacherInfo.locationId)?.nameZh}
+              </span>
+            </div>
 
-          return (
-            <GlassCard
-              key={loc.id}
-              hoverable={true}
-              onClick={() => handleOpenLocation(loc)}
-              className={`group cursor-pointer p-4 sm:p-5 flex flex-col justify-between border-2 transition-all shadow-md relative overflow-hidden ${
-                isTeacherVisitingHere
-                  ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-400/40 shadow-amber-500/20'
-                  : 'hover:border-emerald-400 dark:hover:border-emerald-500'
-              }`}
+            {/* 金幣計數器 */}
+            <div className="px-3 py-1 rounded-xl bg-amber-500/20 border border-amber-300/40 backdrop-blur-md flex items-center gap-1.5 text-amber-200 text-xs font-black shadow-sm">
+              <Coins className="w-3.5 h-3.5 text-amber-400" />
+              <span className="font-mono text-sm">{coins}</span>
+            </div>
+
+            {/* 探索積分 */}
+            <div className="px-3 py-1 rounded-xl bg-indigo-500/20 border border-indigo-300/40 backdrop-blur-md flex items-center gap-1.5 text-indigo-200 text-xs font-black shadow-sm">
+              <Trophy className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="font-mono text-sm">{questPoints}</span>
+            </div>
+
+            {/* 背包 */}
+            <button
+              onClick={() => {
+                soundEngine.click();
+                setIsBackpackOpen(true);
+              }}
+              className="px-3 py-1 rounded-xl bg-lime-600 hover:bg-lime-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
+              title="開啟個人背包"
             >
-              <div>
-                {/* 2D 室內場景預覽縮圖 (16:9 Scene Preview Thumbnail) */}
-                <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-3.5 bg-slate-900 border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                  {loc.bgImage ? (
-                    <img
-                      src={loc.bgImage}
-                      alt={loc.nameZh}
-                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 filter brightness-95 contrast-105"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className={`w-full h-full bg-gradient-to-br ${loc.bgGradient}`} />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+              <Package className="w-3.5 h-3.5" />
+              <span>背包 ({inventory?.length || 0})</span>
+            </button>
 
-                  {/* 頂部標籤 */}
-                  <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md text-white border border-white/20">
-                      {loc.nameEn.split(' ')[0]}
+            {/* 每日任務 */}
+            <button
+              onClick={() => {
+                soundEngine.click();
+                setIsQuestBoardOpen(true);
+              }}
+              className="px-3 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
+              title="查看每日任務"
+            >
+              <ScrollText className="w-3.5 h-3.5" />
+              <span>每日任務</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ── 3. 大地圖 9 大互動地標熱點 (Interactive Map Hotspots) ── */}
+        <div className="relative flex-1 w-full h-full">
+          {TOWN_LOCATIONS.map((loc) => {
+            const isTeacherVisitingHere = (loc.id === teacherInfo.locationId && !hasMetTeacherToday);
+            const dailyTheme = getLocationDailyTheme(loc.id, todayStr);
+            const coords = loc.mapCoords || { x: 50, y: 50 };
+            const isHovered = hoveredLocationId === loc.id;
+
+            return (
+              <div
+                key={loc.id}
+                style={{
+                  left: `${coords.x}%`,
+                  top: `${coords.y}%`
+                }}
+                className="absolute -translate-x-1/2 -translate-y-1/2 group z-20"
+                onMouseEnter={() => setHoveredLocationId(loc.id)}
+                onMouseLeave={() => setHoveredLocationId(null)}
+              >
+                {/* ── 地標按鈕主體 (Hotspot Pin Button) ── */}
+                <button
+                  onClick={() => handleOpenLocation(loc)}
+                  className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shadow-2xl transition-all duration-300 transform group-hover:scale-125 group-hover:-translate-y-2 cursor-pointer border-2 ${
+                    isTeacherVisitingHere
+                      ? 'bg-amber-100/95 dark:bg-amber-950/95 border-amber-400 ring-4 ring-amber-400/80 shadow-[0_0_30px_rgba(245,158,11,0.9)] animate-teacher-pulse'
+                      : 'bg-white/95 dark:bg-slate-900/95 border-emerald-400 ring-2 ring-emerald-400/40 shadow-emerald-500/40 group-hover:ring-4 group-hover:ring-emerald-400 group-hover:shadow-[0_0_25px_rgba(52,211,153,0.9)]'
+                  }`}
+                  title={`進入 ${loc.nameZh}`}
+                >
+                  {/* 外師現身徽章 */}
+                  {isTeacherVisitingHere && (
+                    <span className="absolute -top-2.5 -right-2 px-1.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white text-[9px] font-black shadow-md animate-bounce whitespace-nowrap">
+                      ⭐ 外師現身
                     </span>
+                  )}
 
-                    {/* 今日外師現身徽章 */}
-                    {isTeacherVisitingHere && (
-                      <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white text-[10px] font-black shadow-md animate-pulse flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" />
-                        <span>外師現身！</span>
-                      </span>
-                    )}
+                  {/* 呼吸擴散雷達光波 */}
+                  <span className={`absolute inset-0 rounded-2xl pointer-events-none ${
+                    isTeacherVisitingHere ? 'bg-amber-400/30 animate-ping' : 'bg-emerald-400/30 animate-hotspot-pulse'
+                  }`} />
 
-                    {hasTeacherMetHere && (
-                      <span className="px-2 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md text-emerald-300 text-[10px] font-bold border border-emerald-400/30">
-                        外師交談完畢 ✓
-                      </span>
-                    )}
-                  </div>
-
-                  {/* 底部 NPC 立繪頭像標籤 */}
-                  <div className="absolute bottom-2 left-2 right-2 flex items-center gap-2 pointer-events-none">
-                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-950/80 backdrop-blur-md border border-white/30 shadow-md shrink-0 flex items-center justify-center">
-                      {displayNpcPortrait ? (
-                        <img
-                          src={displayNpcPortrait}
-                          alt={displayNpcName}
-                          className="w-full h-full object-contain filter contrast-105"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <span className="text-xl">{displayNpcAvatar}</span>
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="text-xs font-black text-white font-heading truncate drop-shadow block">
-                        {displayNpcName}
-                      </span>
-                      <span className="text-[10px] font-bold text-amber-200/90 truncate block">
-                        {isTeacherVisitingHere ? teacherInfo.teacher.roleZh : loc.npcRole}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 地標名稱與介紹 */}
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-base sm:text-lg font-black text-slate-800 dark:text-white font-heading group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                      {loc.nameZh}
-                    </h3>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-slate-400 block mb-2">
-                    {loc.nameEn}
+                  {/* 地標圖示 */}
+                  <span className="relative z-10 select-none">
+                    {isTeacherVisitingHere ? teacherInfo.teacher.avatar : loc.npcAvatar}
                   </span>
+                </button>
 
-                  {/* 今日輪替主題提示 */}
+                {/* ── 地標常駐迷你名稱 (Mini Tag Below Pin) ── */}
+                <span className="absolute top-full mt-1.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-slate-950/85 backdrop-blur-md text-white font-black text-[11px] whitespace-nowrap shadow-md border border-white/20 group-hover:border-emerald-400 group-hover:text-emerald-300 transition-all pointer-events-none z-10">
+                  {loc.nameZh}
+                </span>
+
+                {/* ── 滑鼠移過時跳出的地點資訊浮動卡 (Hover Tooltip Card) ── */}
+                <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 transition-all duration-200 z-30 min-w-[210px] sm:min-w-[250px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-3.5 shadow-2xl border-2 border-emerald-400 flex flex-col gap-2 ${
+                  isHovered
+                    ? 'opacity-100 pointer-events-auto transform translate-y-0 scale-100'
+                    : 'opacity-0 pointer-events-none transform translate-y-2 scale-95'
+                }`}>
+                  <div className="flex items-center justify-between gap-1 border-b border-slate-200 dark:border-slate-800 pb-1.5">
+                    <div>
+                      <h4 className="text-sm font-black text-slate-800 dark:text-white font-heading">
+                        {loc.nameZh}
+                      </h4>
+                      <span className="text-[10px] font-mono font-bold text-slate-400">
+                        {loc.nameEn}
+                      </span>
+                    </div>
+                    <span className="text-xl">
+                      {isTeacherVisitingHere ? teacherInfo.teacher.avatar : loc.npcAvatar}
+                    </span>
+                  </div>
+
+                  {/* 今日輪替主題 */}
                   {dailyTheme && (
-                    <div className="mb-2 px-2.5 py-1 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-300/60 dark:border-emerald-700/60 text-[11px] font-black text-emerald-700 dark:text-emerald-300 flex items-center gap-1 truncate">
+                    <div className="px-2 py-1 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 text-[10px] font-black text-emerald-700 dark:text-emerald-300 flex items-center gap-1">
                       <Megaphone className="w-3 h-3 shrink-0" />
                       <span className="truncate">{dailyTheme}</span>
                     </div>
                   )}
 
-                  <p className="text-xs font-bold text-slate-600 dark:text-slate-300 leading-relaxed mb-3 line-clamp-2">
+                  <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
                     {loc.description}
                   </p>
+
+                  <div className="pt-1 flex items-center justify-between text-[10px] font-black text-emerald-600 dark:text-emerald-400">
+                    <span>
+                      {isTeacherVisitingHere ? `店員: ${teacherInfo.teacher.nameZh}` : `NPC: ${loc.npcName}`}
+                    </span>
+                    <span className="flex items-center gap-0.5">
+                      <span>點擊啟程</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </span>
+                  </div>
                 </div>
               </div>
+            );
+          })}
+        </div>
 
-              {/* 底部功能標籤與進入按鈕 */}
-              <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/80 relative z-10">
-                <div className="flex items-center gap-1 text-[11px] font-black text-slate-500">
-                  {loc.hasShop && <span className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">商店</span>}
-                  {loc.hasQuests && <span className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">任務</span>}
-                  {loc.hasBackpack && <span className="px-1.5 py-0.5 rounded bg-lime-100 dark:bg-lime-950 text-lime-700 dark:text-lime-300">背包</span>}
-                </div>
+        {/* ── 4. 底部小鎮地標快捷切換列 (Bottom Landmark Quick Jump Dock) ── */}
+        <div className="relative z-30 p-2.5 sm:p-3 bg-slate-950/70 backdrop-blur-md border-t border-white/15 flex items-center justify-between gap-2 overflow-x-auto shrink-0">
+          <div className="flex items-center gap-1.5 text-xs font-black text-slate-300 shrink-0 pl-1">
+            <Compass className="w-4 h-4 text-emerald-400 animate-spin-slow" />
+            <span className="hidden sm:inline">小鎮地標快捷：</span>
+          </div>
 
-                <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">
-                  <span>{isTeacherVisitingHere ? '拜訪外師' : '進入地標'}</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </span>
-              </div>
-            </GlassCard>
-          );
-        })}
+          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
+            {TOWN_LOCATIONS.map((loc) => {
+              const isTeacherHere = (loc.id === teacherInfo.locationId && !hasMetTeacherToday);
+
+              return (
+                <button
+                  key={loc.id}
+                  onClick={() => handleOpenLocation(loc)}
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer ${
+                    isTeacherHere
+                      ? 'bg-amber-500 text-white animate-pulse ring-2 ring-amber-300'
+                      : 'bg-white/15 hover:bg-emerald-500 hover:text-white text-slate-200 border border-white/15'
+                  }`}
+                >
+                  <span>{isTeacherHere ? teacherInfo.teacher.avatar : loc.npcAvatar}</span>
+                  <span>{loc.nameZh}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
-      {/* ── 模態彈窗 1：NPC 零延遲對話樹 (支援外師巡迴與每日輪替) ── */}
+      {/* ── 外師每日彩蛋獎勵提示 Toast ── */}
+      {teacherBonusToast && (
+        <div className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white flex items-center gap-3 shadow-2xl animate-bounce">
+          <span className="p-2 rounded-xl bg-white/20 text-2xl">🎉</span>
+          <div>
+            <h4 className="font-black text-sm font-heading">
+              獲得 {teacherBonusToast.teacherName} 的每日驚喜獎勵！
+            </h4>
+            <p className="text-xs font-bold text-white/90">
+              探索積分 +{teacherBonusToast.points} 點！榮譽榜同步提升！
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ── 全螢幕 2D 視覺小說冒險對話場景 (Visual Novel Scene Stage) ── */}
       {activeDialogueLocation && (
         <DialogueEngine
           location={activeDialogueLocation}
@@ -451,7 +383,7 @@ export const WutaiTownGame = ({ onBack }) => {
         />
       )}
 
-      {/* ── 模態彈窗 2：金幣商店 ── */}
+      {/* ── 金幣商店模態窗 ── */}
       {activeShopLocationId && (
         <ShopModal
           locationId={activeShopLocationId}
@@ -460,14 +392,14 @@ export const WutaiTownGame = ({ onBack }) => {
         />
       )}
 
-      {/* ── 模態彈窗 3：學生個人背包倉庫 ── */}
+      {/* ── 學生個人背包倉庫模態窗 ── */}
       {isBackpackOpen && (
         <BackpackModal
           onClose={() => setIsBackpackOpen(false)}
         />
       )}
 
-      {/* ── 模態彈窗 4：每日任務公佈欄 ── */}
+      {/* ── 每日任務公佈欄模態窗 ── */}
       {isQuestBoardOpen && (
         <QuestBoardModal
           onClose={() => setIsQuestBoardOpen(false)}
