@@ -31,7 +31,7 @@ export const TOWN_LOCATIONS = [
     mapArea: { left: 32, top: 33, width: 29, height: 26 },
     mapCoords: { x: 46.5, y: 46 },
     standeeSide: 'left',
-    voiceProfile: { gender: 'male', pitch: 0.85, rate: 0.85 }, // 穩重慈祥的雲豹男校長
+    voiceProfile: { gender: 'male', pitch: 0.88, rate: 0.85, accent: 'en-GB' }, // 沉穩溫和的英國紳士腔老校長
     bgGradient: 'from-blue-600/20 via-indigo-500/20 to-teal-500/20',
     borderColor: 'border-blue-400 dark:border-blue-600',
     iconColor: 'text-blue-500',
@@ -517,7 +517,7 @@ export const VISITING_TEACHERS = {
     avatar: '👨‍🏫',
     portrait: '/assets/town/teacher_mario.png',
     standeeSide: 'right',
-    voiceProfile: { gender: 'male', pitch: 0.92, rate: 0.92 }, // 活力美語男外師
+    voiceProfile: { gender: 'male', pitch: 0.94, rate: 0.92, accent: 'en-US' }, // 活力陽光美語男外師
     bgGradient: 'from-amber-500/30 via-red-500/20 to-orange-500/30',
     tag: '🌟 客座外師 Mario 現身！',
     dialogueTree: {
@@ -581,7 +581,7 @@ export const VISITING_TEACHERS = {
     avatar: '👩‍🏫',
     portrait: '/assets/town/teacher_ibu.png',
     standeeSide: 'right',
-    voiceProfile: { gender: 'female', pitch: 1.05, rate: 0.86 }, // 親切溫暖雙語女外師
+    voiceProfile: { gender: 'female', pitch: 1.04, rate: 0.88, accent: 'en-US' }, // 來自加州的親切溫暖美語女外師
     bgGradient: 'from-pink-500/30 via-purple-500/20 to-indigo-500/30',
     tag: '🌟 客座外師 Ibu 現身！',
     dialogueTree: {

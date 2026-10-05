@@ -55,16 +55,16 @@ export const HomeScene = ({ onClose }) => {
     setTimeout(() => setUseToast(null), 3000);
   };
 
-  // 嘗試解鎖並播放溫暖音樂
+  // 進入房間自動啟動溫暖八音盒音樂
   const triggerAudio = () => {
     soundEngine.init();
     if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
       soundEngine.ctx.resume().then(() => {
-        soundEngine.startHomeBgm();
+        soundEngine.startSceneBgm('home');
         setIsBgmPlaying(true);
       }).catch(() => {});
     } else {
-      soundEngine.startHomeBgm();
+      soundEngine.startSceneBgm('home');
       setIsBgmPlaying(true);
     }
   };
@@ -73,7 +73,6 @@ export const HomeScene = ({ onClose }) => {
     triggerAudio();
 
     return () => {
-      soundEngine.stopHomeBgm();
       stopSpeech();
     };
   }, []);
@@ -195,12 +194,6 @@ export const HomeScene = ({ onClose }) => {
             </div>
           </div>
 
-          {/* 中央動態操作引導 (取消遮擋，提示點擊互動目標) */}
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-xl bg-white/10 border border-white/10 text-xs font-bold text-slate-200">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin-slow" />
-            <span>點擊椅子上的「🎒 書包」或牆上的「📜 告示板」探索房間</span>
-          </div>
-
           {/* 右側：八音盒音樂開關 + 金幣與積分計數 */}
           <div className="flex items-center gap-2 shrink-0">
             {/* 🎵 溫馨循環背景音樂按鈕 */}
@@ -216,13 +209,13 @@ export const HomeScene = ({ onClose }) => {
               {isBgmPlaying ? (
                 <>
                   <Music className="w-3.5 h-3.5 animate-bounce text-amber-300" />
-                  <span className="hidden sm:inline">八音盒音樂：</span>
+                  <span className="hidden sm:inline">音樂：</span>
                   <span>播放中</span>
                 </>
               ) : (
                 <>
                   <VolumeX className="w-3.5 h-3.5 text-slate-400" />
-                  <span>音樂靜音</span>
+                  <span>靜音</span>
                 </>
               )}
             </button>
@@ -248,7 +241,7 @@ export const HomeScene = ({ onClose }) => {
           onClick={handleOpenBackpack}
           style={{ left: '39.5%', top: '44%', width: '10.5%', height: '28%' }}
           className="absolute z-20 cursor-pointer rounded-2xl group transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95"
-          title="點擊開啟探險書包，整理你的文具與道具"
+          title="開啟書包"
         >
           {/* 呼吸微發光光圈 */}
           <div className="absolute inset-0 rounded-2xl border-2 border-emerald-400/70 shadow-[0_0_22px_rgba(52,211,153,0.7),inset_0_0_12px_rgba(52,211,153,0.3)] animate-pulse group-hover:border-emerald-300 group-hover:shadow-[0_0_32px_rgba(52,211,153,0.95)]" />
@@ -256,7 +249,7 @@ export const HomeScene = ({ onClose }) => {
           {/* 懸浮引導標籤 */}
           <div className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-emerald-400/70 text-white text-[11px] font-black flex items-center gap-1 shadow-xl whitespace-nowrap group-hover:-translate-y-1 transition-transform pointer-events-none">
             <span className="text-xs">🎒</span>
-            <span className="text-emerald-200">點擊開啟書包</span>
+            <span className="text-emerald-200">書包</span>
             <span className="text-[10px] text-emerald-400">({items.length})</span>
           </div>
         </div>
@@ -266,7 +259,7 @@ export const HomeScene = ({ onClose }) => {
           onClick={handleOpenNoticeBoard}
           style={{ left: '66.5%', top: '5.5%', width: '25%', height: '34%' }}
           className="absolute z-20 cursor-pointer rounded-2xl group transition-all duration-300 flex items-center justify-center hover:scale-102 active:scale-98"
-          title="點擊查看學習成果告示板、金幣與冒險積分"
+          title="查看告示板"
         >
           {/* 呼吸金色發光邊框 */}
           <div className="absolute inset-0 rounded-2xl border-2 border-amber-400/70 shadow-[0_0_22px_rgba(251,191,36,0.7),inset_0_0_12px_rgba(251,191,36,0.3)] animate-pulse group-hover:border-amber-300 group-hover:shadow-[0_0_35px_rgba(251,191,36,0.95)]" />
@@ -274,8 +267,7 @@ export const HomeScene = ({ onClose }) => {
           {/* 懸浮引導標籤 */}
           <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-amber-400/70 text-white text-[11px] font-black flex items-center gap-1 shadow-xl whitespace-nowrap group-hover:translate-y-1 transition-transform pointer-events-none">
             <span className="text-xs">📜</span>
-            <span className="text-amber-200">學習榮譽告示板</span>
-            <span className="text-[10px] text-amber-300">🪙 {coins}</span>
+            <span className="text-amber-200">告示板</span>
           </div>
         </div>
 
@@ -289,7 +281,7 @@ export const HomeScene = ({ onClose }) => {
           }}
           style={{ left: '21.5%', top: '44%', width: '15%', height: '26%' }}
           className="absolute z-20 cursor-pointer rounded-2xl group transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95"
-          title="點擊書桌上的魔法書，翻開今日英語智慧靈感卡！"
+          title="翻開每日靈感卡"
         >
           {/* 呼吸紫金色發光邊框 */}
           <div className="absolute inset-0 rounded-2xl border-2 border-indigo-400/80 shadow-[0_0_24px_rgba(129,140,248,0.7),inset_0_0_12px_rgba(129,140,248,0.3)] animate-pulse group-hover:border-indigo-300 group-hover:shadow-[0_0_35px_rgba(129,140,248,0.95)]" />
@@ -297,8 +289,7 @@ export const HomeScene = ({ onClose }) => {
           {/* 懸浮引導標籤 */}
           <div className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-xl bg-slate-950/85 backdrop-blur-md border border-indigo-400/70 text-white text-[11px] font-black flex items-center gap-1 shadow-xl whitespace-nowrap group-hover:-translate-y-1 transition-transform pointer-events-none">
             <span className="text-xs">📖</span>
-            <span className="text-indigo-200">今日魔法靈感卡</span>
-            <span className="text-[10px] text-amber-300">✨ 翻牌</span>
+            <span className="text-indigo-200">每日靈感卡</span>
           </div>
         </div>
 
@@ -307,7 +298,7 @@ export const HomeScene = ({ onClose }) => {
           onClick={handleBedClick}
           style={{ left: '74%', top: '44%', width: '23%', height: '35%' }}
           className="absolute z-10 cursor-pointer rounded-2xl hover:border border-amber-300/40 hover:backdrop-brightness-105 transition-all group"
-          title="點擊大床：溫暖休息充電！"
+          title="溫暖休息"
         />
 
         {/* ── 底部超薄極簡快捷列 (Minimal Bottom Quick Bar) ── */}
@@ -317,7 +308,7 @@ export const HomeScene = ({ onClose }) => {
             className="px-3 py-1 rounded-xl bg-emerald-500/30 hover:bg-emerald-500/50 text-emerald-200 border border-emerald-400/40 text-xs font-black transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
           >
             <span>🎒</span>
-            <span>開啟書包 ({items.length})</span>
+            <span>書包 ({items.length})</span>
           </button>
 
           <button
@@ -330,7 +321,7 @@ export const HomeScene = ({ onClose }) => {
             className="px-3 py-1 rounded-xl bg-indigo-500/30 hover:bg-indigo-500/50 text-indigo-200 border border-indigo-400/40 text-xs font-black transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
           >
             <span>📖</span>
-            <span>靈感翻卡</span>
+            <span>每日靈感卡</span>
           </button>
 
           <button
@@ -338,7 +329,7 @@ export const HomeScene = ({ onClose }) => {
             className="px-3 py-1 rounded-xl bg-amber-500/30 hover:bg-amber-500/50 text-amber-200 border border-amber-400/40 text-xs font-black transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
           >
             <span>📜</span>
-            <span>榮譽告示板</span>
+            <span>告示板</span>
           </button>
 
           <button
@@ -349,6 +340,8 @@ export const HomeScene = ({ onClose }) => {
             <span>返回小鎮</span>
           </button>
         </div>
+
+
 
         {/* ── 互動趣味 Toast 提示 ── */}
         {useToast && (

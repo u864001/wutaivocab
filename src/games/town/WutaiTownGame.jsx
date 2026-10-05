@@ -127,24 +127,28 @@ export const WutaiTownGame = ({ onBack }) => {
     }
   }, [currentStudent?.daily_quest, updateDailyQuest]);
 
-  // ── 小鎮全景地圖專屬晨曦冒險進行曲生命週期管理 ──
+  // ── 全自動場景背景音樂無縫切換 (Town / Home / Sub-scenes) ──
   useEffect(() => {
-    if (!isHomeOpen && !activeDialogueLocation && isTownBgmActive) {
-      soundEngine.init();
-      if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
-        soundEngine.ctx.resume().catch(() => {});
-      }
-      soundEngine.startSceneBgm('town');
+    if (!isTownBgmActive) {
+      soundEngine.stopSceneBgm();
+      return;
     }
 
-    return () => {
-      if (!isHomeOpen && !activeDialogueLocation) {
-        soundEngine.stopSceneBgm();
-      }
-    };
+    soundEngine.init();
+    if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
+      soundEngine.ctx.resume().catch(() => {});
+    }
+
+    if (isHomeOpen) {
+      soundEngine.startSceneBgm('home');
+    } else if (activeDialogueLocation) {
+      soundEngine.startSceneBgm(activeDialogueLocation.id);
+    } else {
+      soundEngine.startSceneBgm('town');
+    }
   }, [isHomeOpen, activeDialogueLocation, isTownBgmActive]);
 
-  // 組件卸載時立即強制中斷所有 TTS 語音與音樂
+  // 組件卸載時中斷所有 TTS 語音與音樂
   useEffect(() => {
     return () => {
       stopSpeech();
@@ -159,7 +163,6 @@ export const WutaiTownGame = ({ onBack }) => {
       soundEngine.stopSceneBgm();
       setIsTownBgmActive(false);
     } else {
-      soundEngine.startSceneBgm('town');
       setIsTownBgmActive(true);
     }
   };
@@ -167,13 +170,7 @@ export const WutaiTownGame = ({ onBack }) => {
   const handleOpenLocation = (loc) => {
     stopSpeech();
     soundEngine.click();
-    soundEngine.stopSceneBgm();
     if (loc.id === 'home') {
-      soundEngine.init();
-      if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
-        soundEngine.ctx.resume().catch(() => {});
-      }
-      soundEngine.startHomeBgm();
       setIsHomeOpen(true);
       return;
     }
@@ -245,14 +242,14 @@ export const WutaiTownGame = ({ onBack }) => {
                     )}
                   </div>
                   <div className="text-[10px] font-bold text-slate-300 hidden md:block">
-                    {hoveredLocation.npcName} • {hoveredLocation.description}
+                    {hoveredLocation.npcName}
                   </div>
                 </div>
               </div>
             ) : (
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 border border-white/10 text-slate-200 text-xs font-bold shadow-sm">
                 <Compass className="w-3.5 h-3.5 text-emerald-300 animate-spin-slow" />
-                <span>移動滑鼠探索小鎮 9 大建築地標・點擊進入 2D 冒險</span>
+                <span>探索霧臺小鎮</span>
               </div>
             )}
           </div>

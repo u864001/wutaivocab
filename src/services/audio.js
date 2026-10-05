@@ -801,7 +801,7 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 
-const findBestVoice = (gender = 'male', preferredLang = 'en-US') => {
+const findBestVoice = (gender = 'male', preferredLang = 'en-US', accent = 'en-US') => {
   if (!cachedVoices || cachedVoices.length === 0) {
     loadVoices();
   }
@@ -810,34 +810,63 @@ const findBestVoice = (gender = 'male', preferredLang = 'en-US') => {
   const englishVoices = cachedVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
   if (englishVoices.length === 0) return null;
 
-  // 常見男聲關鍵字 (Windows / macOS / Chrome / Edge / iOS)
-  const maleKeywords = [
-    'david', 'mark', 'guy', 'george', 'male', 'james', 'richard',
-    'stefan', 'ryan', 'daniel', 'oliver', 'tom', 'alex', 'fred', 'bruce'
-  ];
-  // 常見女聲關鍵字
+  // 1. 若角色指定英國腔 (保留一位如老校長)
+  if (accent === 'en-GB') {
+    const ukVoices = englishVoices.filter(v => 
+      v.lang.toLowerCase().includes('gb') || 
+      v.name.toLowerCase().includes('uk') || 
+      v.name.toLowerCase().includes('british') || 
+      v.name.toLowerCase().includes('george') || 
+      v.name.toLowerCase().includes('oliver')
+    );
+    if (ukVoices.length > 0) {
+      if (gender === 'male') {
+        const ukMale = ukVoices.find(v => ['george', 'oliver', 'daniel', 'male'].some(kw => v.name.toLowerCase().includes(kw)));
+        if (ukMale) return ukMale;
+      }
+      return ukVoices[0];
+    }
+  }
+
+  // 2. 預設優先使用「美語腔調 (en-US)」(包含加州親切腔、美國標準男聲與女聲)
+  const usVoices = englishVoices.filter(v => 
+    v.lang.toLowerCase().includes('us') || 
+    v.name.toLowerCase().includes('united states') || 
+    v.name.toLowerCase().includes('us english') ||
+    v.name.toLowerCase().includes('david') ||
+    v.name.toLowerCase().includes('zira') ||
+    v.name.toLowerCase().includes('jenny') ||
+    v.name.toLowerCase().includes('samantha') ||
+    v.name.toLowerCase().includes('guy') ||
+    v.name.toLowerCase().includes('aria')
+  );
+
+  const candidatePool = usVoices.length > 0 ? usVoices : englishVoices;
+
+  // 美語女聲關鍵字 (Ibu 外師加州陽光腔、診所、書局等)
   const femaleKeywords = [
-    'zira', 'jenny', 'aria', 'hazel', 'susan', 'female', 'catherine',
-    'linda', 'samantha', 'victoria', 'karen', 'anna', 'stephanie', 'fiona'
+    'samantha', 'jenny', 'zira', 'aria', 'hazel', 'victoria', 'karen', 'female', 'linda', 'anna'
+  ];
+  // 美語男聲關鍵字 (Mario 外師、山豬、站長、黑熊等)
+  const maleKeywords = [
+    'david', 'guy', 'mark', 'richard', 'ryan', 'male', 'alex', 'fred', 'bruce'
   ];
 
-  if (gender === 'male') {
-    const maleVoice = englishVoices.find(v => {
-      const name = v.name.toLowerCase();
-      return maleKeywords.some(kw => name.includes(kw));
-    });
-    if (maleVoice) return maleVoice;
-  } else if (gender === 'female') {
-    const femaleVoice = englishVoices.find(v => {
+  if (gender === 'female') {
+    const fVoice = candidatePool.find(v => {
       const name = v.name.toLowerCase();
       return femaleKeywords.some(kw => name.includes(kw));
     });
-    if (femaleVoice) return femaleVoice;
+    if (fVoice) return fVoice;
+  } else if (gender === 'male') {
+    const mVoice = candidatePool.find(v => {
+      const name = v.name.toLowerCase();
+      return maleKeywords.some(kw => name.includes(kw));
+    });
+    if (mVoice) return mVoice;
   }
 
-  // 若無直接關鍵字命中，優先使用指定語系聲音 (如 en-US)
-  const langMatch = englishVoices.find(v => v.lang.toLowerCase() === preferredLang.toLowerCase());
-  return langMatch || englishVoices[0];
+  return candidatePool[0] || englishVoices[0];
 };
 
 // ── 立即強制中斷所有 TTS 語音朗讀 ──
@@ -871,8 +900,8 @@ export const speakEnglish = (text, options = {}) => {
     utterance.rate = typeof options.rate === 'number' ? options.rate : 0.88;
     utterance.pitch = typeof options.pitch === 'number' ? options.pitch : 1.0;
 
-    // 3. 匹配男女專屬音色 (Voice)
-    const voice = findBestVoice(options.gender || 'male', lang);
+    // 3. 匹配男女專屬音色與腔調 (Voice & Accent)
+    const voice = findBestVoice(options.gender || 'male', lang, options.accent || 'en-US');
     if (voice) {
       utterance.voice = voice;
     }
