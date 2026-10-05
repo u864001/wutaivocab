@@ -1,0 +1,308 @@
+import React, { useState, useCallback } from 'react';
+import { GlassCard } from '../../components/ui/GlassCard';
+import { Button3D } from '../../components/ui/Button3D';
+import { useI18n } from '../../context/I18nContext';
+import { useStudent } from '../../context/StudentContext';
+import { TOWN_LOCATIONS, TOWN_ITEMS } from './townData';
+import { DialogueEngine } from './DialogueEngine';
+import { ShopModal } from './ShopModal';
+import { BackpackModal } from './BackpackModal';
+import { QuestBoardModal } from './QuestBoardModal';
+import { soundEngine } from '../../services/audio';
+import { formatStudentBadge } from '../../utils/studentIdHelper';
+import {
+  ArrowLeft, Coins, Trophy, Package, ScrollText, Sparkles,
+  MapPin, ShoppingBag, MessageSquare, Home, Compass, User,
+  CheckCircle2, ChevronRight, Shield
+} from 'lucide-react';
+import confetti from 'canvas-confetti';
+
+export const WutaiTownGame = ({ onBack }) => {
+  const { t, lang } = useI18n();
+  const {
+    currentStudent,
+    coins,
+    questPoints,
+    inventory,
+    isLoggedIn,
+    openModal,
+    updateDailyQuest
+  } = useStudent();
+
+  // 畫面模態狀態
+  const [activeDialogueLocation, setActiveDialogueLocation] = useState(null);
+  const [activeShopLocationId, setActiveShopLocationId] = useState(null);
+  const [isBackpackOpen, setIsBackpackOpen] = useState(false);
+  const [isQuestBoardOpen, setIsQuestBoardOpen] = useState(false);
+
+  // 任務進度監聽處理
+  const handleQuestProgress = useCallback(async (actionType, param1, param2) => {
+    const dailyQuest = currentStudent?.daily_quest;
+    if (!dailyQuest || dailyQuest.completed || dailyQuest.rewardClaimed) return;
+
+    let shouldComplete = false;
+
+    // 簡易任務 1：黑熊超市買食物
+    if (dailyQuest.questId === 'easy_greet_supermarket') {
+      if (actionType === 'buy' && (param1 === 'food' || param2 === 'sandwich_item' || param2 === 'apple_item')) {
+        shouldComplete = true;
+      }
+    }
+    // 簡易任務 2：書局買文具
+    else if (dailyQuest.questId === 'easy_stationery_check') {
+      if (actionType === 'buy' && (param1 === 'stationery' || param2 === 'pencil_item' || param2 === 'eraser_item')) {
+        shouldComplete = true;
+      }
+    }
+    // 中階任務 1：公園自然對話
+    else if (dailyQuest.questId === 'medium_nature_explorer') {
+      if (actionType === 'dialogue' && param1 === 'park') {
+        shouldComplete = true;
+      }
+    }
+    // 中階任務 2：診所就醫購買
+    else if (dailyQuest.questId === 'medium_healthy_hero') {
+      if (actionType === 'buy' && (param1 === 'special' || param1 === 'food' || param2 === 'throat_lozenge')) {
+        shouldComplete = true;
+      }
+    }
+    // 高階任務：集會所購買百合勳章
+    else if (dailyQuest.questId === 'hard_tribal_warrior') {
+      if (actionType === 'buy' && param2 === 'lily_badge') {
+        shouldComplete = true;
+      }
+    }
+
+    if (shouldComplete) {
+      soundEngine.win();
+      try {
+        confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
+      } catch (e) {}
+
+      const updated = {
+        ...dailyQuest,
+        completed: true,
+        completedAt: new Date().toISOString()
+      };
+      await updateDailyQuest(updated);
+    }
+  }, [currentStudent?.daily_quest, updateDailyQuest]);
+
+  const handleOpenLocation = (loc) => {
+    soundEngine.click();
+
+    if (loc.id === 'home') {
+      setIsBackpackOpen(true);
+      return;
+    }
+
+    if (loc.id === 'school') {
+      // 國小直接開啟任務公佈欄，亦可點擊對話
+      setIsQuestBoardOpen(true);
+      return;
+    }
+
+    setActiveDialogueLocation(loc);
+  };
+
+  const activeQuest = currentStudent?.daily_quest;
+
+  return (
+    <div className="w-full max-w-6xl mx-auto px-4 py-4 sm:py-6 animate-fadeIn pb-16 space-y-6">
+      {/* ── 頂部小鎮 HUD 導航與狀態列 ── */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white/80 dark:bg-slate-800/80 p-4 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-md">
+        <div className="flex items-center gap-3">
+          <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
+            {lang === 'zh-TW' ? '回學習宇宙' : 'Back Home'}
+          </Button3D>
+
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-white font-heading flex items-center gap-1.5">
+                <span>🏔️ 霧臺小鎮</span>
+                <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full">
+                  Wutai Town RPG
+                </span>
+              </h2>
+            </div>
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 hidden sm:block">
+              社區英語探索・9大生活地標・零延遲對話冒險
+            </p>
+          </div>
+        </div>
+
+        {/* 學生身分晶片、金幣與背包按鈕 */}
+        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+          {/* 金幣計數器 */}
+          <div className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-300 dark:border-amber-700 flex items-center gap-1.5 text-amber-700 dark:text-amber-300 text-xs font-black">
+            <Coins className="w-4 h-4 text-amber-500" />
+            <span className="font-mono text-sm">{coins}</span>
+          </div>
+
+          {/* 探索積分計數器 */}
+          <div className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-300 dark:border-indigo-700 flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300 text-xs font-black">
+            <Trophy className="w-4 h-4 text-indigo-500" />
+            <span className="font-mono text-sm">{questPoints}</span>
+          </div>
+
+          {/* 快捷背包按鈕 */}
+          <button
+            onClick={() => {
+              soundEngine.click();
+              setIsBackpackOpen(true);
+            }}
+            className="px-3 py-1.5 rounded-xl bg-lime-500 hover:bg-lime-600 text-white text-xs font-black flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
+            title="開啟個人背包"
+          >
+            <Package className="w-4 h-4" />
+            <span>背包 ({inventory?.length || 0})</span>
+          </button>
+
+          {/* 任務公佈欄按鈕 */}
+          <button
+            onClick={() => {
+              soundEngine.click();
+              setIsQuestBoardOpen(true);
+            }}
+            className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
+            title="查看每日任務"
+          >
+            <ScrollText className="w-4 h-4" />
+            <span>每日任務</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ── 進行中每日任務提示小卡 (若有) ── */}
+      {activeQuest && activeQuest.questId && !activeQuest.rewardClaimed && (
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-indigo-500/15 via-blue-500/15 to-purple-500/15 border-2 border-indigo-300 dark:border-indigo-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm animate-fadeIn">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-indigo-600 text-white shrink-0">
+              <ScrollText className="w-4 h-4" />
+            </span>
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
+                {activeQuest.completed ? '🎯 任務已達成！' : '🧭 進行中任務：'}
+              </span>
+              <p className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-100">
+                {activeQuest.completed ? '任務目標已完成！請前往霧臺國小領取探索積分獎勵！' : '請前往小鎮各商家完成英語互動！'}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsQuestBoardOpen(true)}
+            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs transition-colors shrink-0 cursor-pointer"
+          >
+            {activeQuest.completed ? '領取獎勵 🏆' : '查看任務詳情 📜'}
+          </button>
+        </div>
+      )}
+
+      {/* ── 9 大社區地標視覺化全景導覽地圖 (Town Map Bento Grid) ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        {TOWN_LOCATIONS.map((loc) => {
+          return (
+            <GlassCard
+              key={loc.id}
+              hoverable={true}
+              onClick={() => handleOpenLocation(loc)}
+              className="group cursor-pointer p-5 flex flex-col justify-between border-2 hover:border-emerald-400 dark:hover:border-emerald-500 transition-all shadow-md relative overflow-hidden"
+            >
+              {/* 背景微光裝飾 */}
+              <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gradient-to-br ${loc.bgGradient} blur-2xl group-hover:scale-125 transition-transform pointer-events-none`} />
+
+              <div>
+                <div className="flex items-start justify-between gap-3 mb-3 relative z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center text-3xl shadow-md group-hover:scale-110 group-hover:rotate-3 transition-transform shrink-0 border border-slate-200 dark:border-slate-700">
+                    {loc.npcAvatar}
+                  </div>
+
+                  <div className="text-right">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                      {loc.nameEn.split(' ')[0]}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="relative z-10">
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-base sm:text-lg font-black text-slate-800 dark:text-white font-heading group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                      {loc.nameZh}
+                    </h3>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-slate-400 block mb-2">
+                    {loc.nameEn}
+                  </span>
+
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-xs font-bold text-slate-600 dark:text-slate-300 leading-relaxed mb-3">
+                    <div className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 mb-0.5">
+                      NPC: {loc.npcName}
+                    </div>
+                    {loc.description}
+                  </div>
+                </div>
+              </div>
+
+              {/* 底部功能標籤與進入按鈕 */}
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/80 relative z-10">
+                <div className="flex items-center gap-1 text-[11px] font-black text-slate-500">
+                  {loc.hasShop && <span className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">商店</span>}
+                  {loc.hasQuests && <span className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">任務</span>}
+                  {loc.hasBackpack && <span className="px-1.5 py-0.5 rounded bg-lime-100 dark:bg-lime-950 text-lime-700 dark:text-lime-300">背包</span>}
+                </div>
+
+                <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 group-hover:translate-x-1 transition-transform">
+                  <span>進入地標</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
+            </GlassCard>
+          );
+        })}
+      </div>
+
+      {/* ── 模態彈窗 1：NPC 零延遲對話樹 ── */}
+      {activeDialogueLocation && (
+        <DialogueEngine
+          location={activeDialogueLocation}
+          onClose={() => setActiveDialogueLocation(null)}
+          onOpenShop={(shopId) => setActiveShopLocationId(shopId)}
+          onOpenQuests={() => setIsQuestBoardOpen(true)}
+          onQuestProgress={handleQuestProgress}
+        />
+      )}
+
+      {/* ── 模態彈窗 2：金幣商店 ── */}
+      {activeShopLocationId && (
+        <ShopModal
+          locationId={activeShopLocationId}
+          onClose={() => setActiveShopLocationId(null)}
+          onQuestProgress={handleQuestProgress}
+        />
+      )}
+
+      {/* ── 模態彈窗 3：學生個人背包倉庫 ── */}
+      {isBackpackOpen && (
+        <BackpackModal
+          onClose={() => setIsBackpackOpen(false)}
+        />
+      )}
+
+      {/* ── 模態彈窗 4：每日任務公佈欄 ── */}
+      {isQuestBoardOpen && (
+        <QuestBoardModal
+          onClose={() => setIsQuestBoardOpen(false)}
+          onNavigateLocation={(targetLocId) => {
+            const found = TOWN_LOCATIONS.find(l => l.id === targetLocId);
+            if (found) {
+              handleOpenLocation(found);
+            }
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default WutaiTownGame;

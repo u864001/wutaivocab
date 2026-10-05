@@ -21,6 +21,9 @@ import {
   MessageSquare,
   ClipboardCheck,
   ExternalLink,
+  Store,
+  MapPin,
+  Coins,
 } from 'lucide-react';
 
 export const Portal = ({
@@ -195,7 +198,65 @@ export const Portal = ({
           </div>
         </GlassCard>
 
-        {/* ── 模組三：ClassQnA 線上互動教室與回家作業 (Virtual Classroom & Homework) ── */}
+        {/* ── 模組三：霧臺小鎮生活冒險 RPG (Wutai Town Dialogue RPG) ── */}
+        <GlassCard
+          hoverable={true}
+          onClick={() => onNavigate('town')}
+          className="relative overflow-hidden group cursor-pointer border-2 border-amber-300 dark:border-amber-700/60 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-rose-500/10 dark:from-amber-950/40 dark:via-slate-900/50 dark:to-orange-950/30 p-6 sm:p-8"
+        >
+          {/* 背景裝飾光暈 */}
+          <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-amber-500/10 dark:bg-amber-500/5 blur-3xl group-hover:scale-125 transition-transform duration-500 pointer-events-none" />
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
+            <div className="flex items-start sm:items-center gap-5">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 text-white flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-amber-500/30 shrink-0">
+                <Store className="w-8 h-8 sm:w-10 sm:h-10" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h3 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 font-heading">
+                    {t.townModuleTitle}
+                  </h3>
+                  <span className="px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-sm">
+                    {t.townModuleBadge}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                  {t.townModuleDesc}
+                </p>
+
+                {/* 亮點標籤列 */}
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                    <MapPin className="w-3.5 h-3.5 text-amber-500" />
+                    {lang === 'zh-TW' ? '9 大生活地標' : '9 Landmarks'}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                    <MessageSquare className="w-3.5 h-3.5 text-orange-500" />
+                    {lang === 'zh-TW' ? '沉浸情境英語對話' : 'Dialogue Trees'}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                    <Coins className="w-3.5 h-3.5 text-yellow-500" />
+                    {lang === 'zh-TW' ? '金幣商店與每日任務' : 'Shops & Quests'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <Button3D
+              variant="amber"
+              size="lg"
+              className="shrink-0 w-full sm:w-auto shadow-lg group-hover:scale-105 transition-transform"
+            >
+              <div className="flex items-center gap-2">
+                <span>{t.townModuleEnter}</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Button3D>
+          </div>
+        </GlassCard>
+
+        {/* ── 模組四：ClassQnA 線上互動教室與回家作業 (Virtual Classroom & Homework) ── */}
         <GlassCard
           hoverable={true}
           onClick={() => window.open('https://classqna.vercel.app/', '_blank', 'noopener,noreferrer')}

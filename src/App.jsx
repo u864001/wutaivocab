@@ -13,6 +13,7 @@ import { AlphabetMazeGame } from './games/maze/AlphabetMazeGame';
 import { SwipeCardGame } from './games/swipe/SwipeCardGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
+import { WutaiTownGame } from './games/town/WutaiTownGame';
 import { TeacherAuthModal } from './components/TeacherAuthModal';
 import { StudentProfileModal } from './components/StudentProfileModal';
 import { useI18n } from './context/I18nContext';
@@ -91,6 +92,9 @@ export function App() {
       }
       if (path === '/vocab' || path === '/lobby' || urlParams.get('view') === 'lobby' || urlParams.get('view') === 'vocab') {
         return 'lobby';
+      }
+      if (path === '/town' || urlParams.get('view') === 'town') {
+        return 'town';
       }
       if (urlParams.get('join')) {
         return 'battle';
@@ -200,6 +204,10 @@ export function App() {
         if (window.location.pathname !== '/vocab') {
           window.history.pushState({ view: 'lobby' }, '', '/vocab');
         }
+      } else if (view === 'town') {
+        if (window.location.pathname !== '/town') {
+          window.history.pushState({ view: 'town' }, '', '/town');
+        }
       } else if (view === 'portal') {
         if (window.location.pathname !== '/') {
           window.history.pushState({ view: 'portal' }, '', '/');
@@ -245,7 +253,7 @@ export function App() {
   const handleGoParent = () => {
     // 依層級關係精確返回上一層：
     // 若當前在單字學習館大廳 (lobby) 或自然發音 (phonics)，上一層為學習宇宙首頁 (portal)
-    if (currentView === 'lobby' || currentView === 'phonics') {
+    if (currentView === 'lobby' || currentView === 'phonics' || currentView === 'town') {
       handleNavigate('portal');
     } else if (currentView !== 'portal') {
       // 若當前在任何單字遊戲、字母迷宮、排行榜或教師後台，上一層為單字學習館 (lobby)
@@ -380,6 +388,12 @@ export function App() {
                 setAutoJoinCode(null);
                 handleNavigate('lobby');
               }}
+            />
+          )}
+
+          {currentView === 'town' && (
+            <WutaiTownGame
+              onBack={() => handleNavigate('portal')}
             />
           )}
 

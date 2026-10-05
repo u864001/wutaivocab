@@ -8,7 +8,8 @@ import {
   Trophy, Settings2, Swords, Rocket, Puzzle,
   Volume2, Keyboard, ChevronDown, ChevronUp, Check,
   QrCode, Sparkles, BookOpen, UserCheck, Megaphone, Home,
-  Compass, Flame, Coins, User, RefreshCw, Package, ShieldCheck
+  Compass, Flame, Coins, User, RefreshCw, Package, ShieldCheck,
+  Store, MapPin
 } from 'lucide-react';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 
@@ -219,6 +220,42 @@ export const Lobby = ({
             </Button3D>
           </div>
         )}
+      </GlassCard>
+
+      {/* ── 快速傳送：霧臺小鎮生活冒險 RPG 橫幅 ── */}
+      <GlassCard
+        hoverable={true}
+        onClick={() => onNavigate('town')}
+        className="cursor-pointer border-2 border-amber-300 dark:border-amber-700/60 bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-yellow-500/15 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4"
+      >
+        <div className="flex items-center gap-3.5 text-left">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center text-2xl shadow-md shrink-0">
+            🏘️
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black px-2 py-0.5 rounded-full bg-amber-500 text-white shadow-sm">
+                RPG 探索
+              </span>
+              <h4 className="text-base sm:text-lg font-black text-slate-800 dark:text-white font-heading">
+                {t.townModuleTitle || '霧臺小鎮生活冒險 RPG'}
+              </h4>
+            </div>
+            <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mt-0.5">
+              {lang === 'zh-TW'
+                ? '9 大生活地標・情境英語對話・金幣商店採買・每日懸賞任務！'
+                : 'Explore 9 landmarks, dialogue trees, shops, backpack, and daily quests!'}
+            </p>
+          </div>
+        </div>
+
+        <Button3D
+          variant="amber"
+          size="sm"
+          className="shrink-0 w-full sm:w-auto shadow-md pointer-events-none"
+        >
+          <span>{lang === 'zh-TW' ? '前往小鎮 🏘️' : 'Visit Town 🏘️'}</span>
+        </Button3D>
       </GlassCard>
 
       {/* ── 複習範圍便當盒 (Bento Tile) ── */}
