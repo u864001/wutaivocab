@@ -20,6 +20,9 @@ class SoundEngine {
 
   toggleMute() {
     this.isMuted = !this.isMuted;
+    if (this.isMuted) {
+      stopSpeech();
+    }
     return this.isMuted;
   }
 
@@ -93,14 +96,102 @@ class SoundEngine {
 
 export const soundEngine = new SoundEngine();
 
-// ── 英文單字語音播放 (TTS) ──
-export const speakEnglish = (text) => {
+// ── 語音庫快取與性別音色匹配系統 ──
+let cachedVoices = [];
+
+const loadVoices = () => {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      cachedVoices = window.speechSynthesis.getVoices() || [];
+    } catch (e) {
+      cachedVoices = [];
+    }
+  }
+};
+
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+const findBestVoice = (gender = 'male', preferredLang = 'en-US') => {
+  if (!cachedVoices || cachedVoices.length === 0) {
+    loadVoices();
+  }
+  if (!cachedVoices || cachedVoices.length === 0) return null;
+
+  const englishVoices = cachedVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+  if (englishVoices.length === 0) return null;
+
+  // 常見男聲關鍵字 (Windows / macOS / Chrome / Edge / iOS)
+  const maleKeywords = [
+    'david', 'mark', 'guy', 'george', 'male', 'james', 'richard',
+    'stefan', 'ryan', 'daniel', 'oliver', 'tom', 'alex', 'fred', 'bruce'
+  ];
+  // 常見女聲關鍵字
+  const femaleKeywords = [
+    'zira', 'jenny', 'aria', 'hazel', 'susan', 'female', 'catherine',
+    'linda', 'samantha', 'victoria', 'karen', 'anna', 'stephanie', 'fiona'
+  ];
+
+  if (gender === 'male') {
+    const maleVoice = englishVoices.find(v => {
+      const name = v.name.toLowerCase();
+      return maleKeywords.some(kw => name.includes(kw));
+    });
+    if (maleVoice) return maleVoice;
+  } else if (gender === 'female') {
+    const femaleVoice = englishVoices.find(v => {
+      const name = v.name.toLowerCase();
+      return femaleKeywords.some(kw => name.includes(kw));
+    });
+    if (femaleVoice) return femaleVoice;
+  }
+
+  // 若無直接關鍵字命中，優先使用指定語系聲音 (如 en-US)
+  const langMatch = englishVoices.find(v => v.lang.toLowerCase() === preferredLang.toLowerCase());
+  return langMatch || englishVoices[0];
+};
+
+// ── 立即強制中斷所有 TTS 語音朗讀 ──
+export const stopSpeech = () => {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch (e) {
+      // Safe ignore
+    }
+  }
+};
+
+// ── 英文單字與對話樹語音播放 (TTS - 支援人物專屬音色、音調與性別) ──
+export const speakEnglish = (text, options = {}) => {
   if (soundEngine.isMuted) return;
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+  // 1. 播放新句子前，立即中斷上一句，防止聲音疊加或延遲殘留
+  stopSpeech();
+
+  if (!text) return;
+
+  try {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.88;
+    const lang = options.lang || 'en-US';
+    utterance.lang = lang;
+
+    // 2. 應用角色專屬語速與音調 (Pitch & Rate)
+    // 音調 Pitch：0.5 ~ 2.0 (男性低沉野獸/大熊音約 0.65~0.75，高亢活潑飛鼠約 1.35)
+    utterance.rate = typeof options.rate === 'number' ? options.rate : 0.88;
+    utterance.pitch = typeof options.pitch === 'number' ? options.pitch : 1.0;
+
+    // 3. 匹配男女專屬音色 (Voice)
+    const voice = findBestVoice(options.gender || 'male', lang);
+    if (voice) {
+      utterance.voice = voice;
+    }
+
     window.speechSynthesis.speak(utterance);
+  } catch (e) {
+    // Safe caught
   }
 };

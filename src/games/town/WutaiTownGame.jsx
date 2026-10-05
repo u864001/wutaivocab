@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { useStudent } from '../../context/StudentContext';
@@ -14,7 +14,7 @@ import { DialogueEngine } from './DialogueEngine';
 import { ShopModal } from './ShopModal';
 import { BackpackModal } from './BackpackModal';
 import { QuestBoardModal } from './QuestBoardModal';
-import { soundEngine } from '../../services/audio';
+import { soundEngine, stopSpeech } from '../../services/audio';
 import {
   ArrowLeft, Coins, Trophy, Package, ScrollText, Sparkles,
   Compass, ChevronRight, Gift
@@ -124,9 +124,22 @@ export const WutaiTownGame = ({ onBack }) => {
     }
   }, [currentStudent?.daily_quest, updateDailyQuest]);
 
+  // 組件卸載時立即強制中斷所有 TTS 語音
+  useEffect(() => {
+    return () => {
+      stopSpeech();
+    };
+  }, []);
+
   const handleOpenLocation = (loc) => {
+    stopSpeech();
     soundEngine.click();
     setActiveDialogueLocation(loc);
+  };
+
+  const handleBackToGalaxy = () => {
+    stopSpeech();
+    if (onBack) onBack();
   };
 
   const isTeacherAtActiveLocation = Boolean(
@@ -153,7 +166,7 @@ export const WutaiTownGame = ({ onBack }) => {
           
           {/* 左側：返回學習宇宙與標題 */}
           <div className="flex items-center gap-2.5 shrink-0">
-            <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
+            <Button3D variant="slate" size="sm" onClick={handleBackToGalaxy} icon={ArrowLeft}>
               {lang === 'zh-TW' ? '回學習宇宙' : 'Back'}
             </Button3D>
 
@@ -330,9 +343,18 @@ export const WutaiTownGame = ({ onBack }) => {
       {activeDialogueLocation && (
         <DialogueEngine
           location={activeDialogueLocation}
-          onClose={() => setActiveDialogueLocation(null)}
-          onOpenShop={(shopId) => setActiveShopLocationId(shopId)}
-          onOpenQuests={() => setIsQuestBoardOpen(true)}
+          onClose={() => {
+            stopSpeech();
+            setActiveDialogueLocation(null);
+          }}
+          onOpenShop={(shopId) => {
+            stopSpeech();
+            setActiveShopLocationId(shopId);
+          }}
+          onOpenQuests={() => {
+            stopSpeech();
+            setIsQuestBoardOpen(true);
+          }}
           onQuestProgress={handleQuestProgress}
           isVisitingTeacher={isTeacherAtActiveLocation}
           visitingTeacher={teacherInfo.teacher}

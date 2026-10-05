@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getDialogueTreeForLocation } from './townData';
-import { speakEnglish, soundEngine } from '../../services/audio';
+import { speakEnglish, stopSpeech, soundEngine } from '../../services/audio';
 import {
   Volume2, X, MessageSquare, Sparkles, ShoppingBag,
   ScrollText, Gift, ChevronRight, Compass, ArrowLeft, LogOut
@@ -30,25 +30,46 @@ export const DialogueEngine = ({
   const [bgError, setBgError] = useState(false);
   const [isDialogueReady, setIsDialogueReady] = useState(false);
 
-  // 當進入新節點時播放清脆提示音，並自動朗讀英語發音
+  // 決定當前發言人物的專屬音色設定 (性別、音調 pitch、語速 rate)
+  const activeVoiceProfile = useMemo(() => {
+    if (isVisitingTeacher && visitingTeacher?.voiceProfile) {
+      return visitingTeacher.voiceProfile;
+    }
+    return location?.voiceProfile || { gender: 'male', pitch: 1.0, rate: 0.88 };
+  }, [isVisitingTeacher, visitingTeacher, location]);
+
+  // 離開或組件卸載時，立即強制中斷所有 TTS 朗讀，徹底消除背景殘留聲音
+  useEffect(() => {
+    return () => {
+      stopSpeech();
+    };
+  }, []);
+
+  // 當進入新節點時播放清脆提示音，並套用角色專屬音色自動朗讀英語發音
   useEffect(() => {
     if (currentNode?.en) {
       soundEngine.click();
-      speakEnglish(currentNode.en);
+      speakEnglish(currentNode.en, activeVoiceProfile);
       // 觸發任務對話目標比對
       if (onQuestProgress) {
         onQuestProgress('dialogue', location.id, currentNodeId);
       }
     }
-  }, [currentNodeId, currentNode, location?.id]);
+  }, [currentNodeId, currentNode, location?.id, activeVoiceProfile]);
 
-  // 人物滑入就定位後延遲彈出對話框 (約 250ms)
+  // 人物滑入就定位後延遲彈出對話框 (約 280ms)
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsDialogueReady(true);
     }, 280);
     return () => clearTimeout(timer);
   }, []);
+
+  // 安全退出並停止語音
+  const handleClose = () => {
+    stopSpeech();
+    if (onClose) onClose();
+  };
 
   if (!location || !tree || !currentNode) {
     return null;
@@ -59,40 +80,44 @@ export const DialogueEngine = ({
 
     // 處理外師彩蛋領獎動作
     if (opt.action === 'CLAIM_TEACHER_BONUS') {
+      stopSpeech();
       if (onTeacherBonusClaimed) {
         onTeacherBonusClaimed();
       }
-      onClose();
+      handleClose();
       return;
     }
 
     // 處理特殊動作 (Action)
     if (opt.action === 'OPEN_SHOP') {
-      onClose();
+      stopSpeech();
+      handleClose();
       if (onOpenShop) onOpenShop(location.id);
       return;
     }
     if (opt.action === 'OPEN_QUESTS') {
-      onClose();
+      stopSpeech();
+      handleClose();
       if (onOpenQuests) onOpenQuests();
       return;
     }
 
     if (opt.target_id === 'END') {
-      onClose();
+      handleClose();
       return;
     }
 
     if (opt.target_id && tree.nodes[opt.target_id]) {
+      // 切換新節點，前一個節點語音會被 speakEnglish 自動 stopSpeech
       setCurrentNodeId(opt.target_id);
     } else {
-      onClose();
+      handleClose();
     }
   };
 
   const handleReplaySpeech = () => {
     if (currentNode?.en) {
-      speakEnglish(currentNode.en);
+      speakEnglish(currentNode.en, activeVoiceProfile);
     }
   };
 
@@ -132,7 +157,7 @@ export const DialogueEngine = ({
         <div className="flex items-center gap-3">
           {/* 返回小鎮地圖快捷鈕 */}
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="px-3.5 py-1.5 rounded-2xl bg-white/20 hover:bg-white/30 text-white font-black text-xs sm:text-sm backdrop-blur-md border border-white/30 flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
             title="隨時返回霧臺小鎮全景地圖"
           >
@@ -165,7 +190,7 @@ export const DialogueEngine = ({
           {!isVisitingTeacher && location.hasShop && (
             <button
               onClick={() => {
-                onClose();
+                handleClose();
                 if (onOpenShop) onOpenShop(location.id);
               }}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs shadow-md transition-all cursor-pointer"
@@ -178,7 +203,7 @@ export const DialogueEngine = ({
           {!isVisitingTeacher && location.hasQuests && (
             <button
               onClick={() => {
-                onClose();
+                handleClose();
                 if (onOpenQuests) onOpenQuests();
               }}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all cursor-pointer"
@@ -189,7 +214,7 @@ export const DialogueEngine = ({
           )}
 
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer border border-white/20"
             title="關閉返回"
           >
@@ -339,7 +364,7 @@ export const DialogueEngine = ({
 
               {/* 🚪 永久離開選項：隨時可返回小鎮大地圖 */}
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="w-full text-left p-2.5 sm:p-3 rounded-2xl bg-slate-100/80 hover:bg-rose-50 dark:bg-slate-800/50 dark:hover:bg-rose-950/40 border border-slate-200 hover:border-rose-300 dark:border-slate-700 dark:hover:border-rose-500 transition-all shadow-sm active:scale-98 group cursor-pointer flex items-center justify-between"
               >
                 <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-slate-600 dark:text-slate-300 group-hover:text-rose-600 dark:group-hover:text-rose-400">
