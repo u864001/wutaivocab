@@ -23,7 +23,7 @@ export const DialogueEngine = ({
       speakEnglish(currentNode.en);
       // 觸發任務對話目標比對
       if (onQuestProgress) {
-        onQuestProgress('dialogue', location.id);
+        onQuestProgress('dialogue', location.id, currentNodeId);
       }
     }
   }, [currentNodeId, currentNode, location?.id]);

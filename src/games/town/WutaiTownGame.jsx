@@ -42,33 +42,37 @@ export const WutaiTownGame = ({ onBack }) => {
 
     let shouldComplete = false;
 
-    // 簡易任務 1：黑熊超市買食物
+    // 簡易任務 1：黑熊超市買食物或進行問候對話
     if (dailyQuest.questId === 'easy_greet_supermarket') {
-      if (actionType === 'buy' && (param1 === 'food' || param2 === 'sandwich_item' || param2 === 'apple_item')) {
+      if ((actionType === 'buy' && (param1 === 'food' || param2 === 'sandwich_item' || param2 === 'apple_item')) ||
+          (actionType === 'dialogue' && param1 === 'supermarket')) {
         shouldComplete = true;
       }
     }
-    // 簡易任務 2：書局買文具
+    // 簡易任務 2：書局買文具或向店長請教
     else if (dailyQuest.questId === 'easy_stationery_check') {
-      if (actionType === 'buy' && (param1 === 'stationery' || param2 === 'pencil_item' || param2 === 'eraser_item')) {
+      if ((actionType === 'buy' && (param1 === 'stationery' || param2 === 'pencil_item' || param2 === 'eraser_item')) ||
+          (actionType === 'dialogue' && param1 === 'bookstore')) {
         shouldComplete = true;
       }
     }
-    // 中階任務 1：公園自然對話
+    // 中階任務 1：公園自然四季生態對話（需在飛鼠公園對話樹中探討晴天/涼爽/四季/動物節點）
     else if (dailyQuest.questId === 'medium_nature_explorer') {
-      if (actionType === 'dialogue' && param1 === 'park') {
+      if (actionType === 'dialogue' && param1 === 'park' && ['sunny', 'cool', 'animals', 'seasons'].includes(param2)) {
         shouldComplete = true;
       }
     }
-    // 中階任務 2：診所就醫購買
+    // 中階任務 2：診所就醫健康對話（需在貓頭鷹診所諮詢喉嚨痛/健康保養節點）或購買保健物資
     else if (dailyQuest.questId === 'medium_healthy_hero') {
-      if (actionType === 'buy' && (param1 === 'special' || param1 === 'food' || param2 === 'throat_lozenge')) {
+      if ((actionType === 'dialogue' && param1 === 'clinic' && ['throat', 'healthy'].includes(param2)) ||
+          (actionType === 'buy' && (param1 === 'special' || param2 === 'throat_lozenge' || param2 === 'cooling_patch' || param2 === 'water_bottle_item'))) {
         shouldComplete = true;
       }
     }
-    // 高階任務：集會所購買百合勳章
+    // 高階任務：集會所深入了解百合文化涵義（需在百步蛇集會所對話樹解鎖 lily_meaning 或 badge_offer 節點）或購買百合勇士勳章
     else if (dailyQuest.questId === 'hard_tribal_warrior') {
-      if (actionType === 'buy' && param2 === 'lily_badge') {
+      if ((actionType === 'dialogue' && param1 === 'plaza' && ['lily_meaning', 'badge_offer'].includes(param2)) ||
+          (actionType === 'buy' && param2 === 'lily_badge')) {
         shouldComplete = true;
       }
     }
