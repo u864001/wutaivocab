@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useStudent } from '../../context/StudentContext';
 import { soundEngine, speakEnglish, stopSpeech } from '../../services/audio';
+import { WisdomCardModal } from './WisdomCardModal';
 import {
   ArrowLeft, Music, VolumeX, Sparkles, Package, Coins, Trophy,
   Volume2, Compass, Heart, Award, Shield, CheckCircle2, ShoppingBag,
@@ -22,6 +23,7 @@ export const HomeScene = ({ onClose }) => {
   const [isBgmPlaying, setIsBgmPlaying] = useState(true);
   const [isBackpackOpen, setIsBackpackOpen] = useState(false);
   const [isNoticeBoardOpen, setIsNoticeBoardOpen] = useState(false);
+  const [isWisdomModalOpen, setIsWisdomModalOpen] = useState(false);
   const [useToast, setUseToast] = useState(null);
   const [bgError, setBgError] = useState(false);
 
@@ -249,13 +251,28 @@ export const HomeScene = ({ onClose }) => {
           </div>
         </div>
 
-        {/* 🎯 熱區 3：窗前原木書桌彩蛋 (Study Desk Easter Egg) */}
+        {/* 🎯 熱區 3：書桌上的魔法書 (Daily Word Wisdom Card / 每日英語靈感卡) */}
         <div
-          onClick={handleDeskClick}
-          style={{ left: '16%', top: '44%', width: '23%', height: '26%' }}
-          className="absolute z-10 cursor-pointer rounded-2xl hover:border border-amber-300/40 hover:backdrop-brightness-105 transition-all group"
-          title="點擊書桌：大聲說英語，加油打氣！"
-        />
+          onClick={(e) => {
+            if (e) e.stopPropagation();
+            triggerAudio();
+            soundEngine.click();
+            setIsWisdomModalOpen(true);
+          }}
+          style={{ left: '21.5%', top: '44%', width: '15%', height: '26%' }}
+          className="absolute z-20 cursor-pointer rounded-2xl group transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95"
+          title="點擊書桌上的魔法書，翻開今日英語智慧靈感卡！"
+        >
+          {/* 呼吸紫金色發光邊框 */}
+          <div className="absolute inset-0 rounded-2xl border-2 border-indigo-400/80 shadow-[0_0_24px_rgba(129,140,248,0.7),inset_0_0_12px_rgba(129,140,248,0.3)] animate-pulse group-hover:border-indigo-300 group-hover:shadow-[0_0_35px_rgba(129,140,248,0.95)]" />
+
+          {/* 懸浮引導標籤 */}
+          <div className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-xl bg-slate-950/85 backdrop-blur-md border border-indigo-400/70 text-white text-[11px] font-black flex items-center gap-1 shadow-xl whitespace-nowrap group-hover:-translate-y-1 transition-transform pointer-events-none">
+            <span className="text-xs">📖</span>
+            <span className="text-indigo-200">今日魔法靈感卡</span>
+            <span className="text-[10px] text-amber-300">✨ 翻牌</span>
+          </div>
+        </div>
 
         {/* 🎯 熱區 4：陽光大床彩蛋 (Cozy Bed Easter Egg) */}
         <div
@@ -273,6 +290,19 @@ export const HomeScene = ({ onClose }) => {
           >
             <span>🎒</span>
             <span>開啟書包 ({items.length})</span>
+          </button>
+
+          <button
+            onClick={(e) => {
+              if (e) e.stopPropagation();
+              triggerAudio();
+              soundEngine.click();
+              setIsWisdomModalOpen(true);
+            }}
+            className="px-3 py-1 rounded-xl bg-indigo-500/30 hover:bg-indigo-500/50 text-indigo-200 border border-indigo-400/40 text-xs font-black transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+          >
+            <span>📖</span>
+            <span>靈感翻卡</span>
           </button>
 
           <button
@@ -300,6 +330,13 @@ export const HomeScene = ({ onClose }) => {
           </div>
         )}
       </div>
+
+      {/* ── 📖 模態彈窗 3：書桌魔法英語靈感卡牌 ── */}
+      {isWisdomModalOpen && (
+        <WisdomCardModal
+          onClose={() => setIsWisdomModalOpen(false)}
+        />
+      )}
 
       {/* ── 🎒 模態彈窗 1：點擊書包後開啟之背包整理視窗 ── */}
       {isBackpackOpen && (

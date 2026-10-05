@@ -1,50 +1,253 @@
-// ── Web Audio 音效合成、語音朗讀與溫馨背景音樂引擎 ──
+// ── Web Audio 音效合成、語音朗讀與 9 大場景專屬背景音樂引擎 ──
 
-const HOME_NOTES = {
-  C2: 65.41, F2: 87.31, G2: 98.00, A2: 110.00,
-  C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
-  C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
-  C5: 523.25, D4: 293.66, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880.00
+const NOTES = {
+  C2: 65.41, D2: 73.42, Eb2: 77.78, E2: 82.41, F2: 87.31, G2: 98.00, Ab2: 103.83, A2: 110.00, Bb2: 116.54, B2: 123.47,
+  C3: 130.81, D3: 146.83, Eb3: 155.56, E3: 164.81, F3: 174.61, Fs3: 185.00, G3: 196.00, Ab3: 207.65, A3: 220.00, Bb3: 233.08, B3: 246.94,
+  C4: 261.63, Cs4: 277.18, D4: 293.66, Eb4: 311.13, E4: 329.63, F4: 349.23, Fs4: 369.99, G4: 392.00, Ab4: 415.30, A4: 440.00, Bb4: 466.16, B4: 493.88,
+  C5: 523.25, Cs5: 554.37, D5: 587.33, Eb5: 622.25, E5: 659.25, F5: 698.46, Fs5: 739.99, G5: 783.99, Ab5: 830.61, A5: 880.00, Bb5: 932.33, B5: 987.77,
+  C6: 1046.50
 };
 
-// 溫暖八音盒與木屋晨光 16 步拍子循環樂譜 (Cmaj7 -> Am7 -> Fmaj7 -> G7sus4)
-const HOME_MUSIC_PATTERN = [
-  // ── 小節 1: Cmaj7 (晨曦木屋) ──
-  { bass: HOME_NOTES.C3, chords: [HOME_NOTES.E3, HOME_NOTES.G3], melody: HOME_NOTES.E4 },
-  { chords: [HOME_NOTES.B3], melody: HOME_NOTES.G4 },
-  { chords: [HOME_NOTES.C4], melody: HOME_NOTES.B4 },
-  { chords: [HOME_NOTES.E4], melody: HOME_NOTES.C5 },
+// ── 9 大場景專屬純程式化音律庫 (0 流量負擔，100% 本地數學合成) ──
+const SCENE_BGM_CONFIGS = {
+  // 1. 學生溫馨的家 (溫暖吉卜力八音盒)
+  home: {
+    stepIntervalMs: 520,
+    filterFreq: 1600,
+    waveType: 'sine',
+    pattern: [
+      { bass: NOTES.C3, chords: [NOTES.E3, NOTES.G3], melody: NOTES.E4 },
+      { chords: [NOTES.B3], melody: NOTES.G4 },
+      { chords: [NOTES.C4], melody: NOTES.B4 },
+      { chords: [NOTES.E4], melody: NOTES.C5 },
+      { bass: NOTES.A2, chords: [NOTES.C3, NOTES.E3], melody: NOTES.A4 },
+      { chords: [NOTES.G3], melody: NOTES.E4 },
+      { chords: [NOTES.C4], melody: NOTES.G4 },
+      { chords: [NOTES.E4], melody: NOTES.A4 },
+      { bass: NOTES.F2, chords: [NOTES.A2, NOTES.C3], melody: NOTES.F4 },
+      { chords: [NOTES.E3], melody: NOTES.A4 },
+      { chords: [NOTES.A3], melody: NOTES.C5 },
+      { chords: [NOTES.C4], melody: NOTES.E5 },
+      { bass: NOTES.G2, chords: [NOTES.D3, NOTES.G3], melody: NOTES.D5 },
+      { chords: [NOTES.B3], melody: NOTES.B4 },
+      { chords: [NOTES.D4], melody: NOTES.G4 },
+      { chords: [NOTES.G4], melody: NOTES.E4 }
+    ]
+  },
 
-  // ── 小節 2: Am7 (大武山微風) ──
-  { bass: HOME_NOTES.A2, chords: [HOME_NOTES.C3, HOME_NOTES.E3], melody: HOME_NOTES.A4 },
-  { chords: [HOME_NOTES.G3], melody: HOME_NOTES.E4 },
-  { chords: [HOME_NOTES.C4], melody: HOME_NOTES.G4 },
-  { chords: [HOME_NOTES.E4], melody: HOME_NOTES.A4 },
+  // 2. 霧臺國小校長室/活動大廳 (明亮晨會鐘聲與朝氣進行曲)
+  school: {
+    stepIntervalMs: 480,
+    filterFreq: 2200,
+    waveType: 'triangle',
+    pattern: [
+      { bass: NOTES.D3, chords: [NOTES.Fs3, NOTES.A3], melody: NOTES.D5 },
+      { chords: [NOTES.A3], melody: NOTES.Fs4 },
+      { chords: [NOTES.B3], melody: NOTES.G4 },
+      { chords: [NOTES.Cs4], melody: NOTES.E5 },
+      { bass: NOTES.G2, chords: [NOTES.B3, NOTES.D4], melody: NOTES.G4 },
+      { chords: [NOTES.D4], melody: NOTES.B4 },
+      { chords: [NOTES.A3], melody: NOTES.E4 },
+      { chords: [NOTES.Fs4], melody: NOTES.D5 },
+      { bass: NOTES.A2, chords: [NOTES.Cs4, NOTES.E4], melody: NOTES.A4 },
+      { chords: [NOTES.E4], melody: NOTES.Cs5 },
+      { chords: [NOTES.D4], melody: NOTES.Fs4 },
+      { chords: [NOTES.E4], melody: NOTES.G4 },
+      { bass: NOTES.D3, chords: [NOTES.Fs3, NOTES.A3], melody: NOTES.D5 },
+      { chords: [NOTES.A3], melody: NOTES.Fs4 },
+      { chords: [NOTES.A2], melody: NOTES.E4 },
+      { chords: [NOTES.D3], melody: NOTES.D4 }
+    ]
+  },
 
-  // ── 小節 3: Fmaj7 (溫暖的柴火) ──
-  { bass: HOME_NOTES.F2, chords: [HOME_NOTES.A2, HOME_NOTES.C3], melody: HOME_NOTES.F4 },
-  { chords: [HOME_NOTES.E3], melody: HOME_NOTES.A4 },
-  { chords: [HOME_NOTES.A3], melody: HOME_NOTES.C5 },
-  { chords: [HOME_NOTES.C4], melody: HOME_NOTES.E5 },
+  // 3. 雲豹書局 (巴洛克書香古典羽管鍵琴琶音)
+  bookstore: {
+    stepIntervalMs: 560,
+    filterFreq: 1400,
+    waveType: 'sine',
+    pattern: [
+      { bass: NOTES.A2, chords: [NOTES.C3, NOTES.E3], melody: NOTES.A4 },
+      { chords: [NOTES.E3], melody: NOTES.C4 },
+      { chords: [NOTES.C4], melody: NOTES.E4 },
+      { chords: [NOTES.E4], melody: NOTES.A4 },
+      { bass: NOTES.D3, chords: [NOTES.F3, NOTES.A3], melody: NOTES.D5 },
+      { chords: [NOTES.A3], melody: NOTES.F4 },
+      { chords: [NOTES.F4], melody: NOTES.D4 },
+      { chords: [NOTES.D4], melody: NOTES.F4 },
+      { bass: NOTES.E2, chords: [NOTES.Ab3, NOTES.B3], melody: NOTES.E5 },
+      { chords: [NOTES.B3], melody: NOTES.Ab4 },
+      { chords: [NOTES.Ab4], melody: NOTES.E4 },
+      { chords: [NOTES.B3], melody: NOTES.D4 },
+      { bass: NOTES.A2, chords: [NOTES.C3, NOTES.E3], melody: NOTES.C5 },
+      { chords: [NOTES.E3], melody: NOTES.B4 },
+      { chords: [NOTES.C3], melody: NOTES.A4 },
+      { chords: [NOTES.A2], melody: NOTES.E4 }
+    ]
+  },
 
-  // ── 小節 4: G7sus4 -> G (安心避風港) ──
-  { bass: HOME_NOTES.G2, chords: [HOME_NOTES.D3, HOME_NOTES.G3], melody: HOME_NOTES.D5 },
-  { chords: [HOME_NOTES.B3], melody: HOME_NOTES.B4 },
-  { chords: [HOME_NOTES.D4], melody: HOME_NOTES.G4 },
-  { chords: [HOME_NOTES.G4], melody: HOME_NOTES.E4 }
-];
+  // 4. 黑熊超市 (輕快活潑木琴撥弦跳躍市集風)
+  supermarket: {
+    stepIntervalMs: 460,
+    filterFreq: 2400,
+    waveType: 'triangle',
+    pattern: [
+      { bass: NOTES.F2, chords: [NOTES.A3, NOTES.C4], melody: NOTES.C5 },
+      { chords: [NOTES.C3], melody: NOTES.F4 },
+      { chords: [NOTES.A3], melody: NOTES.A4 },
+      { chords: [NOTES.C4], melody: NOTES.C5 },
+      { bass: NOTES.Bb2, chords: [NOTES.D3, NOTES.F3], melody: NOTES.D5 },
+      { chords: [NOTES.D3], melody: NOTES.Bb4 },
+      { chords: [NOTES.F3], melody: NOTES.F4 },
+      { chords: [NOTES.Bb3], melody: NOTES.D5 },
+      { bass: NOTES.C3, chords: [NOTES.E3, NOTES.G3], melody: NOTES.E5 },
+      { chords: [NOTES.G3], melody: NOTES.C5 },
+      { chords: [NOTES.E3], melody: NOTES.G4 },
+      { chords: [NOTES.G3], melody: NOTES.E5 },
+      { bass: NOTES.F2, chords: [NOTES.A3, NOTES.C4], melody: NOTES.F5 },
+      { chords: [NOTES.C3], melody: NOTES.A4 },
+      { chords: [NOTES.A2], melody: NOTES.C5 },
+      { chords: [NOTES.F2], melody: NOTES.F4 }
+    ]
+  },
+
+  // 5. 飛鼠公園 (清涼高山森林鳥鳴與清泉微風水滴)
+  park: {
+    stepIntervalMs: 600,
+    filterFreq: 1900,
+    waveType: 'sine',
+    pattern: [
+      { bass: NOTES.G2, chords: [NOTES.D3, NOTES.G3], melody: NOTES.B4 },
+      { chords: [NOTES.B3], melody: NOTES.G5 },
+      { chords: [NOTES.D4], melody: NOTES.D5 },
+      { chords: [NOTES.G4], melody: NOTES.B5 },
+      { bass: NOTES.E2, chords: [NOTES.B2, NOTES.E3], melody: NOTES.E5 },
+      { chords: [NOTES.G3], melody: NOTES.B4 },
+      { chords: [NOTES.B3], melody: NOTES.E5 },
+      { chords: [NOTES.E4], melody: NOTES.G5 },
+      { bass: NOTES.C3, chords: [NOTES.G3, NOTES.C4], melody: NOTES.G5 },
+      { chords: [NOTES.E3], melody: NOTES.E5 },
+      { chords: [NOTES.G3], melody: NOTES.D5 },
+      { chords: [NOTES.C4], melody: NOTES.B4 },
+      { bass: NOTES.D2, chords: [NOTES.A2, NOTES.D3], melody: NOTES.A5 },
+      { chords: [NOTES.Fs3], melody: NOTES.D5 },
+      { chords: [NOTES.A3], melody: NOTES.Fs5 },
+      { chords: [NOTES.D3], melody: NOTES.G4 }
+    ]
+  },
+
+  // 6. 貓頭鷹診所 (療癒溫柔水晶豎琴與舒緩微風)
+  clinic: {
+    stepIntervalMs: 640,
+    filterFreq: 1300,
+    waveType: 'sine',
+    pattern: [
+      { bass: NOTES.Eb2, chords: [NOTES.Bb2, NOTES.G3], melody: NOTES.Eb5 },
+      { chords: [NOTES.G3], melody: NOTES.Bb4 },
+      { chords: [NOTES.Bb3], melody: NOTES.G5 },
+      { chords: [NOTES.Eb4], melody: NOTES.Eb5 },
+      { bass: NOTES.Ab2, chords: [NOTES.C3, NOTES.Eb3], melody: NOTES.C5 },
+      { chords: [NOTES.Eb3], melody: NOTES.Ab4 },
+      { chords: [NOTES.Ab3], melody: NOTES.C5 },
+      { chords: [NOTES.C4], melody: NOTES.Eb5 },
+      { bass: NOTES.Bb2, chords: [NOTES.D3, NOTES.F3], melody: NOTES.D5 },
+      { chords: [NOTES.F3], melody: NOTES.Bb4 },
+      { chords: [NOTES.D3], melody: NOTES.F4 },
+      { chords: [NOTES.F3], melody: NOTES.D5 },
+      { bass: NOTES.Eb2, chords: [NOTES.G3, NOTES.Bb3], melody: NOTES.Bb4 },
+      { chords: [NOTES.Bb3], melody: NOTES.G4 },
+      { chords: [NOTES.G3], melody: NOTES.Eb4 },
+      { chords: [NOTES.Eb2], melody: NOTES.Bb3 }
+    ]
+  },
+
+  // 7. 霧臺客運站 (公路旅行民謠原木吉他掃弦)
+  station: {
+    stepIntervalMs: 490,
+    filterFreq: 2000,
+    waveType: 'triangle',
+    pattern: [
+      { bass: NOTES.E2, chords: [NOTES.B2, NOTES.E3], melody: NOTES.E4 },
+      { chords: [NOTES.Ab3], melody: NOTES.B4 },
+      { chords: [NOTES.B2], melody: NOTES.Ab4 },
+      { chords: [NOTES.E3], melody: NOTES.E5 },
+      { bass: NOTES.A2, chords: [NOTES.E3, NOTES.A3], melody: NOTES.Cs5 },
+      { chords: [NOTES.A3], melody: NOTES.E4 },
+      { chords: [NOTES.E3], melody: NOTES.A4 },
+      { chords: [NOTES.A2], melody: NOTES.Cs5 },
+      { bass: NOTES.B2, chords: [NOTES.Fs3, NOTES.B3], melody: NOTES.Ds5 },
+      { chords: [NOTES.B3], melody: NOTES.Fs4 },
+      { chords: [NOTES.Fs3], melody: NOTES.B4 },
+      { chords: [NOTES.B2], melody: NOTES.Ds5 },
+      { bass: NOTES.E2, chords: [NOTES.B2, NOTES.E3], melody: NOTES.E5 },
+      { chords: [NOTES.Ab3], melody: NOTES.E4 },
+      { chords: [NOTES.B2], melody: NOTES.Ab4 },
+      { chords: [NOTES.E2], melody: NOTES.E4 }
+    ]
+  },
+
+  // 8. 百步蛇集會所 (原民古調五聲音階與部落竹笛木鼓心跳律動)
+  plaza: {
+    stepIntervalMs: 540,
+    filterFreq: 1500,
+    waveType: 'triangle',
+    pattern: [
+      { bass: NOTES.D2, chords: [NOTES.A2, NOTES.D3], melody: NOTES.D4 },
+      { chords: [NOTES.F3], melody: NOTES.A4 },
+      { chords: [NOTES.A2], melody: NOTES.F4 },
+      { chords: [NOTES.D3], melody: NOTES.D5 },
+      { bass: NOTES.G2, chords: [NOTES.D3, NOTES.G3], melody: NOTES.G4 },
+      { chords: [NOTES.Bb3], melody: NOTES.D5 },
+      { chords: [NOTES.D3], melody: NOTES.C5 },
+      { chords: [NOTES.G2], melody: NOTES.A4 },
+      { bass: NOTES.C2, chords: [NOTES.G2, NOTES.C3], melody: NOTES.C5 },
+      { chords: [NOTES.E3], melody: NOTES.G4 },
+      { chords: [NOTES.G2], melody: NOTES.E4 },
+      { chords: [NOTES.C3], melody: NOTES.G4 },
+      { bass: NOTES.D2, chords: [NOTES.A2, NOTES.D3], melody: NOTES.A4 },
+      { chords: [NOTES.F3], melody: NOTES.D4 },
+      { chords: [NOTES.A2], melody: NOTES.F4 },
+      { chords: [NOTES.D2], melody: NOTES.D4 }
+    ]
+  },
+
+  // 9. 山豬影城 (復古爆米花微醺老爵士搖擺沙發風)
+  cinema: {
+    stepIntervalMs: 530,
+    filterFreq: 1700,
+    waveType: 'triangle',
+    pattern: [
+      { bass: NOTES.Bb2, chords: [NOTES.D3, NOTES.F3], melody: NOTES.F4 },
+      { chords: [NOTES.D3], melody: NOTES.Bb4 },
+      { chords: [NOTES.F2], melody: NOTES.D4 },
+      { chords: [NOTES.Bb2], melody: NOTES.F5 },
+      { bass: NOTES.G2, chords: [NOTES.Bb2, NOTES.D3], melody: NOTES.D4 },
+      { chords: [NOTES.Bb2], melody: NOTES.G4 },
+      { chords: [NOTES.D2], melody: NOTES.Bb4 },
+      { chords: [NOTES.G2], melody: NOTES.D5 },
+      { bass: NOTES.C3, chords: [NOTES.Eb3, NOTES.G3], melody: NOTES.G4 },
+      { chords: [NOTES.Eb3], melody: NOTES.C5 },
+      { chords: [NOTES.G2], melody: NOTES.Eb4 },
+      { chords: [NOTES.C3], melody: NOTES.G5 },
+      { bass: NOTES.F2, chords: [NOTES.A2, NOTES.C3], melody: NOTES.F4 },
+      { chords: [NOTES.C3], melody: NOTES.A4 },
+      { chords: [NOTES.A2], melody: NOTES.F4 },
+      { chords: [NOTES.F2], melody: NOTES.C4 }
+    ]
+  }
+};
 
 class SoundEngine {
   constructor() {
     this.ctx = null;
     this.isMuted = false;
-    this.homeBgmRunning = false;
-    this.homeBgmTimer = null;
-    this.homeBgmMasterGain = null;
-    this.homeBgmFilter = null;
-    this.homeBgmDelay = null;
-    this.homeBgmDelayGain = null;
-    this.homeBgmStep = 0;
+    this.currentSceneId = null;
+    this.sceneBgmRunning = false;
+    this.sceneBgmTimer = null;
+    this.sceneBgmMasterGain = null;
+    this.sceneBgmFilter = null;
+    this.sceneBgmDelay = null;
+    this.sceneBgmDelayGain = null;
+    this.sceneBgmStep = 0;
   }
 
   init() {
@@ -55,7 +258,7 @@ class SoundEngine {
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
     }
   }
 
@@ -63,7 +266,7 @@ class SoundEngine {
     this.isMuted = !this.isMuted;
     if (this.isMuted) {
       stopSpeech();
-      this.stopHomeBgm();
+      this.stopSceneBgm();
     }
     return this.isMuted;
   }
@@ -135,8 +338,8 @@ class SoundEngine {
     this.playTone(400, 'triangle', 0.04, 0.08);
   }
 
-  // ── 溫馨的家：吉卜力八音盒與溫暖房間循環背景音樂 (Procedural Warm Home BGM) ──
-  startHomeBgm() {
+  // ── 9 大場景專屬背景音樂啟動 (0 頻寬負擔，純演算法合成) ──
+  startSceneBgm(sceneId = 'home') {
     if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
@@ -145,78 +348,85 @@ class SoundEngine {
       this.ctx.resume().catch(() => {});
     }
 
-    if (this.homeBgmRunning) return;
+    // 若同一場景正在播放，避免重啟
+    if (this.sceneBgmRunning && this.currentSceneId === sceneId) return;
 
-    this.homeBgmRunning = true;
-    this.homeBgmStep = 0;
+    // 先停止前一個場景
+    if (this.sceneBgmRunning) {
+      this.stopSceneBgm();
+    }
+
+    const config = SCENE_BGM_CONFIGS[sceneId] || SCENE_BGM_CONFIGS.home;
+    this.currentSceneId = sceneId;
+    this.sceneBgmRunning = true;
+    this.sceneBgmStep = 0;
 
     try {
-      // 建立 BGM 專屬母音量與暖色低通濾波器
-      this.homeBgmMasterGain = this.ctx.createGain();
+      this.sceneBgmMasterGain = this.ctx.createGain();
       const now = this.ctx.currentTime;
-      this.homeBgmMasterGain.gain.setValueAtTime(0.001, now);
-      // 飽滿清晰淡入 0.5 秒 (0.42 音量，溫暖清晰)
-      this.homeBgmMasterGain.gain.exponentialRampToValueAtTime(0.42, now + 0.5);
+      this.sceneBgmMasterGain.gain.setValueAtTime(0.001, now);
+      // 溫柔淡入 0.6 秒 (0.38 音量)
+      this.sceneBgmMasterGain.gain.exponentialRampToValueAtTime(0.38, now + 0.6);
 
-      // 溫暖低通濾波器 (頻率 1600Hz，保持八音盒清脆度同時濾除刺耳噪聲)
-      this.homeBgmFilter = this.ctx.createBiquadFilter();
-      this.homeBgmFilter.type = 'lowpass';
-      this.homeBgmFilter.frequency.setValueAtTime(1600, now);
+      // 低通暖色濾波
+      this.sceneBgmFilter = this.ctx.createBiquadFilter();
+      this.sceneBgmFilter.type = 'lowpass';
+      this.sceneBgmFilter.frequency.setValueAtTime(config.filterFreq || 1600, now);
 
-      // 空間微迴音延遲 (Delay)
-      this.homeBgmDelay = this.ctx.createDelay();
-      this.homeBgmDelay.delayTime.setValueAtTime(0.32, now);
-      this.homeBgmDelayGain = this.ctx.createGain();
-      this.homeBgmDelayGain.gain.setValueAtTime(0.25, now);
+      // 空間微延遲
+      this.sceneBgmDelay = this.ctx.createDelay();
+      this.sceneBgmDelay.delayTime.setValueAtTime(0.32, now);
+      this.sceneBgmDelayGain = this.ctx.createGain();
+      this.sceneBgmDelayGain.gain.setValueAtTime(0.24, now);
 
-      this.homeBgmDelay.connect(this.homeBgmDelayGain);
-      this.homeBgmDelayGain.connect(this.homeBgmDelay);
-      this.homeBgmDelayGain.connect(this.homeBgmMasterGain);
+      this.sceneBgmDelay.connect(this.sceneBgmDelayGain);
+      this.sceneBgmDelayGain.connect(this.sceneBgmDelay);
+      this.sceneBgmDelayGain.connect(this.sceneBgmMasterGain);
 
-      this.homeBgmFilter.connect(this.homeBgmMasterGain);
-      this.homeBgmFilter.connect(this.homeBgmDelay);
-      this.homeBgmMasterGain.connect(this.ctx.destination);
+      this.sceneBgmFilter.connect(this.sceneBgmMasterGain);
+      this.sceneBgmFilter.connect(this.sceneBgmDelay);
+      this.sceneBgmMasterGain.connect(this.ctx.destination);
     } catch (e) {
       return;
     }
 
-    const stepIntervalMs = 520; // 每個步長約 0.52 秒，舒服悠閒的節奏
+    const stepIntervalMs = config.stepIntervalMs || 520;
 
     const tick = () => {
-      if (!this.homeBgmRunning || !this.ctx || this.isMuted) return;
+      if (!this.sceneBgmRunning || !this.ctx || this.isMuted) return;
 
       if (this.ctx.state === 'suspended') {
         this.ctx.resume().catch(() => {});
       }
 
-      const idx = this.homeBgmStep % HOME_MUSIC_PATTERN.length;
-      const beat = HOME_MUSIC_PATTERN[idx];
+      const idx = this.sceneBgmStep % config.pattern.length;
+      const beat = config.pattern[idx];
       const now = this.ctx.currentTime;
 
-      // 1. 溫暖低音 (Bass)
+      // 1. 低音旋律 (Bass)
       if (beat.bass) {
-        this.scheduleWarmTone(beat.bass, 'triangle', now, 0.9, 0.24);
+        this.scheduleWarmTone(beat.bass, config.waveType || 'triangle', now, 0.9, 0.22);
       }
-      // 2. 溫柔和弦伴奏 (Chords)
+      // 2. 和弦伴奏 (Chords)
       if (beat.chords && beat.chords.length > 0) {
         beat.chords.forEach(freq => {
-          this.scheduleWarmTone(freq, 'sine', now + 0.02, 0.65, 0.12);
+          this.scheduleWarmTone(freq, 'sine', now + 0.02, 0.65, 0.10);
         });
       }
-      // 3. 八音盒清脆主旋律 (Music Box Bell)
+      // 3. 主旋律音符 (Melody)
       if (beat.melody) {
-        this.scheduleMusicBoxNote(beat.melody, now, 0.85, 0.28);
+        this.scheduleMusicBoxNote(beat.melody, now, 0.85, 0.26, config.waveType);
       }
 
-      this.homeBgmStep++;
-      this.homeBgmTimer = setTimeout(tick, stepIntervalMs);
+      this.sceneBgmStep++;
+      this.sceneBgmTimer = setTimeout(tick, stepIntervalMs);
     };
 
     tick();
   }
 
-  scheduleWarmTone(freq, type, startTime, duration = 0.9, vol = 0.24) {
-    if (!this.ctx || !this.homeBgmFilter) return;
+  scheduleWarmTone(freq, type, startTime, duration = 0.9, vol = 0.22) {
+    if (!this.ctx || !this.sceneBgmFilter) return;
     try {
       const now = this.ctx.currentTime;
       const start = Math.max(startTime, now + 0.01);
@@ -231,73 +441,89 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
 
       osc.connect(gain);
-      gain.connect(this.homeBgmFilter);
+      gain.connect(this.sceneBgmFilter);
 
       osc.start(start);
       osc.stop(start + duration + 0.05);
     } catch (e) {}
   }
 
-  scheduleMusicBoxNote(freq, startTime, duration = 0.85, vol = 0.28) {
-    if (!this.ctx || !this.homeBgmFilter) return;
+  scheduleMusicBoxNote(freq, startTime, duration = 0.85, vol = 0.26, waveType = 'sine') {
+    if (!this.ctx || !this.sceneBgmFilter) return;
     try {
       const now = this.ctx.currentTime;
       const start = Math.max(startTime, now + 0.01);
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
-      osc.type = 'sine';
+      osc.type = waveType;
       osc.frequency.setValueAtTime(freq, start);
 
-      // 八音盒音色：敲擊清脆迅速，隨後緩慢長尾迴響
       gain.gain.setValueAtTime(0.001, start);
       gain.gain.linearRampToValueAtTime(vol, start + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
 
       osc.connect(gain);
-      gain.connect(this.homeBgmFilter);
+      gain.connect(this.sceneBgmFilter);
 
       osc.start(start);
       osc.stop(start + duration + 0.05);
     } catch (e) {}
   }
 
-  stopHomeBgm() {
-    this.homeBgmRunning = false;
-    if (this.homeBgmTimer) {
-      clearTimeout(this.homeBgmTimer);
-      this.homeBgmTimer = null;
+  stopSceneBgm() {
+    this.sceneBgmRunning = false;
+    this.currentSceneId = null;
+    if (this.sceneBgmTimer) {
+      clearTimeout(this.sceneBgmTimer);
+      this.sceneBgmTimer = null;
     }
-    if (this.homeBgmMasterGain && this.ctx) {
+    if (this.sceneBgmMasterGain && this.ctx) {
       try {
-        // 柔和淡出 0.3 秒，避免突然截斷產生爆音
-        this.homeBgmMasterGain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+        this.sceneBgmMasterGain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
         setTimeout(() => {
           try {
-            if (this.homeBgmMasterGain) {
-              this.homeBgmMasterGain.disconnect();
-              this.homeBgmMasterGain = null;
+            if (this.sceneBgmMasterGain) {
+              this.sceneBgmMasterGain.disconnect();
+              this.sceneBgmMasterGain = null;
             }
           } catch (e) {}
         }, 350);
       } catch (e) {
-        this.homeBgmMasterGain = null;
+        this.sceneBgmMasterGain = null;
       }
     }
   }
 
+  // 相容函式別名 (Backward Compatibility)
+  startHomeBgm() {
+    this.startSceneBgm('home');
+  }
+
+  stopHomeBgm() {
+    this.stopSceneBgm();
+  }
+
   toggleHomeBgm() {
-    if (this.homeBgmRunning) {
-      this.stopHomeBgm();
+    return this.toggleSceneBgm('home');
+  }
+
+  toggleSceneBgm(sceneId = 'home') {
+    if (this.sceneBgmRunning) {
+      this.stopSceneBgm();
       return false;
     } else {
-      this.startHomeBgm();
+      this.startSceneBgm(sceneId);
       return true;
     }
   }
 
   isHomeBgmActive() {
-    return Boolean(this.homeBgmRunning);
+    return Boolean(this.sceneBgmRunning);
+  }
+
+  isSceneBgmActive() {
+    return Boolean(this.sceneBgmRunning);
   }
 }
 

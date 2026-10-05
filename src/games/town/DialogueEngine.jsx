@@ -3,7 +3,8 @@ import { getDialogueTreeForLocation } from './townData';
 import { speakEnglish, stopSpeech, soundEngine } from '../../services/audio';
 import {
   Volume2, X, MessageSquare, Sparkles, ShoppingBag,
-  ScrollText, Gift, ChevronRight, Compass, ArrowLeft, LogOut
+  ScrollText, Gift, ChevronRight, Compass, ArrowLeft, LogOut,
+  Music, VolumeX
 } from 'lucide-react';
 
 export const DialogueEngine = ({
@@ -38,12 +39,26 @@ export const DialogueEngine = ({
     return location?.voiceProfile || { gender: 'male', pitch: 1.0, rate: 0.88 };
   }, [isVisitingTeacher, visitingTeacher, location]);
 
-  // 離開或組件卸載時，立即強制中斷所有 TTS 朗讀，徹底消除背景殘留聲音
+  const [isBgmPlaying, setIsBgmPlaying] = useState(true);
+
+  // 進入場景時啟動該地標專屬的純程式化背景音樂；離開時立即停止
   useEffect(() => {
+    if (location?.id) {
+      soundEngine.startSceneBgm(location.id);
+      setIsBgmPlaying(soundEngine.isSceneBgmActive());
+    }
+
     return () => {
+      soundEngine.stopSceneBgm();
       stopSpeech();
     };
-  }, []);
+  }, [location?.id]);
+
+  const handleToggleBgm = () => {
+    soundEngine.click();
+    const active = soundEngine.toggleSceneBgm(location?.id);
+    setIsBgmPlaying(active);
+  };
 
   // 當進入新節點時播放清脆提示音，並套用角色專屬音色自動朗讀英語發音
   useEffect(() => {
@@ -65,8 +80,9 @@ export const DialogueEngine = ({
     return () => clearTimeout(timer);
   }, []);
 
-  // 安全退出並停止語音
+  // 安全退出並停止語音與場景音樂
   const handleClose = () => {
+    soundEngine.stopSceneBgm();
     stopSpeech();
     if (onClose) onClose();
   };
@@ -212,6 +228,29 @@ export const DialogueEngine = ({
               <span>任務公佈欄</span>
             </button>
           )}
+
+          {/* 場景專屬背景音樂按鈕 */}
+          <button
+            onClick={handleToggleBgm}
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 ${
+              isBgmPlaying
+                ? 'bg-amber-500/25 hover:bg-amber-500/35 text-amber-200 border-amber-400/40'
+                : 'bg-white/15 hover:bg-white/25 text-slate-300 border-white/20'
+            }`}
+            title={isBgmPlaying ? '暫停場景音樂' : '播放場景音樂'}
+          >
+            {isBgmPlaying ? (
+              <>
+                <Music className="w-3.5 h-3.5 animate-bounce text-amber-300" />
+                <span className="hidden sm:inline">音樂</span>
+              </>
+            ) : (
+              <>
+                <VolumeX className="w-3.5 h-3.5 text-slate-400" />
+                <span className="hidden sm:inline">靜音</span>
+              </>
+            )}
+          </button>
 
           <button
             onClick={handleClose}
