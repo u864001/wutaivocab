@@ -31,7 +31,7 @@ export const TOWN_LOCATIONS = [
     mapArea: { left: 32, top: 33, width: 29, height: 26 },
     mapCoords: { x: 46.5, y: 46 },
     standeeSide: 'left',
-    voiceProfile: { gender: 'male', pitch: 0.88, rate: 0.85, accent: 'en-GB' }, // 沉穩溫和的英國紳士腔老校長
+    voiceProfile: { gender: 'male', pitch: 0.78, rate: 0.82, accent: 'en-GB' }, // 沉穩智慧的英國紳士腔老校長
     bgGradient: 'from-blue-600/20 via-indigo-500/20 to-teal-500/20',
     borderColor: 'border-blue-400 dark:border-blue-600',
     iconColor: 'text-blue-500',
@@ -56,7 +56,7 @@ export const TOWN_LOCATIONS = [
     mapArea: { left: 31, top: 7, width: 18, height: 23 },
     mapCoords: { x: 40, y: 18.5 },
     standeeSide: 'left',
-    voiceProfile: { gender: 'male', pitch: 1.02, rate: 0.92 }, // 熱情活潑儒雅的雲豹男店長
+    voiceProfile: { gender: 'male', pitch: 0.96, rate: 0.92, accent: 'en-US' }, // 熱情活潑清亮書卷氣的雲豹男店長
     bgGradient: 'from-amber-500/20 via-orange-500/20 to-yellow-500/20',
     borderColor: 'border-amber-400 dark:border-amber-600',
     iconColor: 'text-amber-500',
@@ -81,7 +81,7 @@ export const TOWN_LOCATIONS = [
     mapArea: { left: 53, top: 15, width: 22, height: 21 },
     mapCoords: { x: 64, y: 25.5 },
     standeeSide: 'left',
-    voiceProfile: { gender: 'male', pitch: 0.68, rate: 0.82 }, // 低沉渾厚大黑熊男音
+    voiceProfile: { gender: 'male', pitch: 0.60, rate: 0.78, accent: 'en-US' }, // 極渾厚低沉憨厚的大黑熊男音
     bgGradient: 'from-emerald-500/20 via-green-500/20 to-teal-500/20',
     borderColor: 'border-emerald-400 dark:border-emerald-600',
     iconColor: 'text-emerald-500',
@@ -106,7 +106,7 @@ export const TOWN_LOCATIONS = [
     mapArea: { left: 72, top: 26, width: 26, height: 26 },
     mapCoords: { x: 85, y: 39 },
     standeeSide: 'left',
-    voiceProfile: { gender: 'male', pitch: 1.35, rate: 0.90 }, // 輕快高亢敏捷的飛鼠長老音
+    voiceProfile: { gender: 'male', pitch: 1.15, rate: 0.95, accent: 'en-US' }, // 輕快靈動有精神的飛鼠長老音
     bgGradient: 'from-teal-500/20 via-cyan-500/20 to-emerald-500/20',
     borderColor: 'border-teal-400 dark:border-teal-600',
     iconColor: 'text-teal-500',
@@ -131,7 +131,7 @@ export const TOWN_LOCATIONS = [
     mapArea: { left: 3, top: 42, width: 27, height: 25 },
     mapCoords: { x: 16.5, y: 54.5 },
     standeeSide: 'left',
-    voiceProfile: { gender: 'male', pitch: 0.88, rate: 0.88 }, // 俐落威嚴自信的雄鷹男站長
+    voiceProfile: { gender: 'male', pitch: 0.85, rate: 0.90, accent: 'en-US' }, // 俐落威嚴自信的雄鷹男站長
     bgGradient: 'from-orange-500/20 via-amber-600/20 to-rose-500/20',
     borderColor: 'border-orange-400 dark:border-orange-600',
     iconColor: 'text-orange-500',
@@ -156,7 +156,7 @@ export const TOWN_LOCATIONS = [
     mapArea: { left: 58, top: 50, width: 19, height: 23 },
     mapCoords: { x: 67.5, y: 61.5 },
     standeeSide: 'left',
-    voiceProfile: { gender: 'male', pitch: 0.80, rate: 0.80 }, // 溫和深沉治癒的貓頭鷹男醫師
+    voiceProfile: { gender: 'male', pitch: 0.75, rate: 0.80, accent: 'en-US' }, // 溫和深沉治癒安心的貓頭鷹男醫師
     bgGradient: 'from-cyan-500/20 via-blue-500/20 to-indigo-500/20',
     borderColor: 'border-cyan-400 dark:border-cyan-600',
     iconColor: 'text-cyan-500',
@@ -181,7 +181,7 @@ export const TOWN_LOCATIONS = [
     mapArea: { left: 2, top: 6, width: 23, height: 28 },
     mapCoords: { x: 13.5, y: 20 },
     standeeSide: 'left',
-    voiceProfile: { gender: 'female', pitch: 1.15, rate: 0.86 }, // 優雅柔和悅耳的百合女設計師
+    voiceProfile: { gender: 'female', pitch: 1.18, rate: 0.85, accent: 'en-US' }, // 優雅柔和婉約悅耳的百合女設計師
     bgGradient: 'from-purple-500/20 via-pink-500/20 to-rose-500/20',
     borderColor: 'border-purple-400 dark:border-purple-600',
     iconColor: 'text-purple-500',
@@ -206,7 +206,7 @@ export const TOWN_LOCATIONS = [
     mapArea: { left: 79, top: 52, width: 19, height: 29 },
     mapCoords: { x: 88.5, y: 66.5 },
     standeeSide: 'left',
-    voiceProfile: { gender: 'male', pitch: 0.74, rate: 0.88 }, // 粗曠熱情有力的山豬男售票員
+    voiceProfile: { gender: 'male', pitch: 0.68, rate: 0.88, accent: 'en-US' }, // 粗曠熱情有力的山豬男售票員
     bgGradient: 'from-rose-500/20 via-pink-600/20 to-purple-600/20',
     borderColor: 'border-rose-400 dark:border-rose-600',
     iconColor: 'text-rose-500',
@@ -517,7 +517,7 @@ export const VISITING_TEACHERS = {
     avatar: '👨‍🏫',
     portrait: '/assets/town/teacher_mario.png',
     standeeSide: 'right',
-    voiceProfile: { gender: 'male', pitch: 0.94, rate: 0.92, accent: 'en-US' }, // 活力陽光美語男外師
+    voiceProfile: { gender: 'male', pitch: 0.90, rate: 0.92, accent: 'en-US' }, // 活力陽光美語男外師
     bgGradient: 'from-amber-500/30 via-red-500/20 to-orange-500/30',
     tag: '🌟 客座外師 Mario 現身！',
     dialogueTree: {

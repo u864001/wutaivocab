@@ -170,6 +170,10 @@ export const WutaiTownGame = ({ onBack }) => {
   const handleOpenLocation = (loc) => {
     stopSpeech();
     soundEngine.click();
+    soundEngine.init();
+    if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
+      soundEngine.ctx.resume().catch(() => {});
+    }
     if (loc.id === 'home') {
       setIsHomeOpen(true);
       return;

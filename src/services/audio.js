@@ -285,6 +285,30 @@ class SoundEngine {
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume().catch(() => {});
     }
+
+    // 首次使用者點擊/按鍵時強制解鎖音訊上下文，並啟動待播場景背景音
+    if (typeof window !== 'undefined' && !this._unlocked) {
+      const unlock = () => {
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().then(() => {
+            this._unlocked = true;
+            if (this.sceneBgmRunning && this.currentSceneId) {
+              const current = this.currentSceneId;
+              this.sceneBgmRunning = false;
+              this.startSceneBgm(current);
+            }
+          }).catch(() => {});
+        } else {
+          this._unlocked = true;
+        }
+        window.removeEventListener('pointerdown', unlock);
+        window.removeEventListener('keydown', unlock);
+        window.removeEventListener('click', unlock);
+      };
+      window.addEventListener('pointerdown', unlock, { once: true });
+      window.addEventListener('keydown', unlock, { once: true });
+      window.addEventListener('click', unlock, { once: true });
+    }
   }
 
   toggleMute() {
@@ -734,13 +758,12 @@ class SoundEngine {
     }
     if (this.sceneBgmMasterGain && this.ctx) {
       try {
-        this.sceneBgmMasterGain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+        const gainToFade = this.sceneBgmMasterGain;
+        this.sceneBgmMasterGain = null; // 立即清空成員變數，避免延遲的 disconnect 誤切斷下個場景的新節點！
+        gainToFade.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
         setTimeout(() => {
           try {
-            if (this.sceneBgmMasterGain) {
-              this.sceneBgmMasterGain.disconnect();
-              this.sceneBgmMasterGain = null;
-            }
+            gainToFade.disconnect();
           } catch (e) {}
         }, 350);
       } catch (e) {
@@ -801,72 +824,112 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 
+// ── 性別與腔調智慧語音選擇器 ──
+const isExplicitMale = (v) => {
+  const name = (v.name || '').toLowerCase();
+  const femaleSignals = [
+    'female', 'woman', 'girl', 'zira', 'jenny', 'samantha', 'aria', 'hazel', 
+    'victoria', 'karen', 'linda', 'anna', 'michelle', 'ana', 'ava', 'emma', 
+    'susan', 'heera', 'catherine', 'clara', 'natasha', 'sonia', 'neerja', 
+    'stephanie', 'alice', 'julie', 'sarah', 'google us english', 'google uk english female'
+  ];
+  if (femaleSignals.some(f => name.includes(f))) return false;
+
+  const maleSignals = [
+    'male', 'david', 'guy', 'mark', 'christopher', 'eric', 'roger', 'steffan', 
+    'alex', 'fred', 'daniel', 'george', 'oliver', 'tom', 'aaron', 'bruce', 
+    'richard', 'ryan', 'james', 'john', 'paul', 'william', 'charles', 'google uk english male'
+  ];
+  return maleSignals.some(m => name.includes(m));
+};
+
+const isExplicitFemale = (v) => {
+  const name = (v.name || '').toLowerCase();
+  const maleSignals = [
+    'david', 'guy', 'mark', 'christopher', 'eric', 'roger', 'steffan', 
+    'alex', 'fred', 'daniel', 'george', 'oliver', 'tom', 'aaron', 'bruce', 
+    'richard', 'ryan', 'google uk english male'
+  ];
+  if (maleSignals.some(m => name.includes(m)) && !name.includes('female')) return false;
+
+  const femaleSignals = [
+    'female', 'woman', 'girl', 'zira', 'jenny', 'samantha', 'aria', 'hazel', 
+    'victoria', 'karen', 'linda', 'anna', 'michelle', 'ana', 'ava', 'emma', 
+    'susan', 'heera', 'catherine', 'clara', 'natasha', 'sonia', 'neerja', 
+    'stephanie', 'alice', 'julie', 'sarah', 'google us english', 'google uk english female'
+  ];
+  return femaleSignals.some(f => name.includes(f));
+};
+
 const findBestVoice = (gender = 'male', preferredLang = 'en-US', accent = 'en-US') => {
-  if (!cachedVoices || cachedVoices.length === 0) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
+
+  let voices = window.speechSynthesis.getVoices();
+  if (!voices || voices.length === 0) {
     loadVoices();
+    voices = cachedVoices;
   }
-  if (!cachedVoices || cachedVoices.length === 0) return null;
+  if (!voices || voices.length === 0) return null;
 
-  const englishVoices = cachedVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
-  if (englishVoices.length === 0) return null;
+  const englishVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+  if (englishVoices.length === 0) return voices[0] || null;
 
-  // 1. 若角色指定英國腔 (保留一位如老校長)
+  // 1. 若角色指定英國腔 (例如校長 Principal Hawk)
   if (accent === 'en-GB') {
-    const ukVoices = englishVoices.filter(v => 
+    const gbVoices = englishVoices.filter(v => 
       v.lang.toLowerCase().includes('gb') || 
       v.name.toLowerCase().includes('uk') || 
-      v.name.toLowerCase().includes('british') || 
-      v.name.toLowerCase().includes('george') || 
-      v.name.toLowerCase().includes('oliver')
+      v.name.toLowerCase().includes('british')
     );
-    if (ukVoices.length > 0) {
-      if (gender === 'male') {
-        const ukMale = ukVoices.find(v => ['george', 'oliver', 'daniel', 'male'].some(kw => v.name.toLowerCase().includes(kw)));
-        if (ukMale) return ukMale;
-      }
-      return ukVoices[0];
+    if (gender === 'male') {
+      const gbMale = gbVoices.find(isExplicitMale) || englishVoices.find(v => isExplicitMale(v) && v.name.toLowerCase().includes('uk'));
+      if (gbMale) return gbMale;
+      const anyMale = englishVoices.find(isExplicitMale);
+      if (anyMale) return anyMale;
+    } else {
+      const gbFemale = gbVoices.find(isExplicitFemale);
+      if (gbFemale) return gbFemale;
     }
   }
 
-  // 2. 預設優先使用「美語腔調 (en-US)」(包含加州親切腔、美國標準男聲與女聲)
-  const usVoices = englishVoices.filter(v => 
-    v.lang.toLowerCase().includes('us') || 
-    v.name.toLowerCase().includes('united states') || 
-    v.name.toLowerCase().includes('us english') ||
-    v.name.toLowerCase().includes('david') ||
-    v.name.toLowerCase().includes('zira') ||
-    v.name.toLowerCase().includes('jenny') ||
-    v.name.toLowerCase().includes('samantha') ||
-    v.name.toLowerCase().includes('guy') ||
-    v.name.toLowerCase().includes('aria')
-  );
-
-  const candidatePool = usVoices.length > 0 ? usVoices : englishVoices;
-
-  // 美語女聲關鍵字 (Ibu 外師加州陽光腔、診所、書局等)
-  const femaleKeywords = [
-    'samantha', 'jenny', 'zira', 'aria', 'hazel', 'victoria', 'karen', 'female', 'linda', 'anna'
-  ];
-  // 美語男聲關鍵字 (Mario 外師、山豬、站長、黑熊等)
-  const maleKeywords = [
-    'david', 'guy', 'mark', 'richard', 'ryan', 'male', 'alex', 'fred', 'bruce'
-  ];
-
-  if (gender === 'female') {
-    const fVoice = candidatePool.find(v => {
-      const name = v.name.toLowerCase();
-      return femaleKeywords.some(kw => name.includes(kw));
+  // 2. 男性角色 (gender === 'male')：嚴格確保性別一致，絕不 fallback 到女性聲音
+  if (gender === 'male') {
+    // 優先 A：美語原生男聲 (US Male: David, Guy, Christopher, Mark, Eric, Alex, etc.)
+    const usMale = englishVoices.find(v => {
+      const isUS = v.lang.toLowerCase().includes('us') || v.name.toLowerCase().includes('united states') || v.name.toLowerCase().includes('us english');
+      return isUS && isExplicitMale(v);
     });
-    if (fVoice) return fVoice;
-  } else if (gender === 'male') {
-    const mVoice = candidatePool.find(v => {
-      const name = v.name.toLowerCase();
-      return maleKeywords.some(kw => name.includes(kw));
-    });
-    if (mVoice) return mVoice;
+    if (usMale) return usMale;
+
+    // 優先 B：任何英語男聲 (絕不讓男性角色被 Chrome 預設指派為 Google US English 女聲！例如 Google UK English Male, Daniel 等)
+    const anyEnglishMale = englishVoices.find(isExplicitMale);
+    if (anyEnglishMale) return anyEnglishMale;
+
+    // 優先 C：排除明確為女聲的聲音
+    const nonFemale = englishVoices.find(v => !isExplicitFemale(v));
+    if (nonFemale) return nonFemale;
+
+    // 若系統完全無男聲安裝，返回 null，由 speakEnglish 強制壓低 pitch 調頻為男低音
+    return null;
   }
 
-  return candidatePool[0] || englishVoices[0];
+  // 3. 女性角色 (gender === 'female')
+  if (gender === 'female') {
+    // 優先 A：美語女聲 (US Female: Samantha, Jenny, Zira, Aria, Google US English 等)
+    const usFemale = englishVoices.find(v => {
+      const isUS = v.lang.toLowerCase().includes('us') || v.name.toLowerCase().includes('united states') || v.name.toLowerCase().includes('us english');
+      return isUS && isExplicitFemale(v);
+    });
+    if (usFemale) return usFemale;
+
+    // 優先 B：任何英語女聲
+    const anyEnglishFemale = englishVoices.find(isExplicitFemale);
+    if (anyEnglishFemale) return anyEnglishFemale;
+
+    return englishVoices[0];
+  }
+
+  return englishVoices[0];
 };
 
 // ── 立即強制中斷所有 TTS 語音朗讀 ──
@@ -880,7 +943,7 @@ export const stopSpeech = () => {
   }
 };
 
-// ── 英文單字與對話樹語音播放 (TTS - 支援人物專屬音色、音調與性別) ──
+// ── 英文單字與對話樹語音播放 (TTS - 支援人物專屬音色、音調與性別保護) ──
 export const speakEnglish = (text, options = {}) => {
   if (soundEngine.isMuted) return;
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
@@ -895,16 +958,30 @@ export const speakEnglish = (text, options = {}) => {
     const lang = options.lang || 'en-US';
     utterance.lang = lang;
 
-    // 2. 應用角色專屬語速與音調 (Pitch & Rate)
-    // 音調 Pitch：0.5 ~ 2.0 (男性低沉野獸/大熊音約 0.65~0.75，高亢活潑飛鼠約 1.35)
-    utterance.rate = typeof options.rate === 'number' ? options.rate : 0.88;
-    utterance.pitch = typeof options.pitch === 'number' ? options.pitch : 1.0;
+    const gender = options.gender || 'male';
+    const accent = options.accent || 'en-US';
 
-    // 3. 匹配男女專屬音色與腔調 (Voice & Accent)
-    const voice = findBestVoice(options.gender || 'male', lang, options.accent || 'en-US');
+    // 2. 匹配男女專屬音色與腔調 (Voice & Accent)
+    const voice = findBestVoice(gender, lang, accent);
     if (voice) {
       utterance.voice = voice;
     }
+
+    // 3. 角色聲線深度差異化與性別保護 (Pitch & Rate Modulation)
+    // 預設男性低厚穩重，女性柔和明亮
+    let pitch = typeof options.pitch === 'number' ? options.pitch : (gender === 'male' ? 0.78 : 1.10);
+    if (gender === 'male') {
+      // 若系統沒有原生男聲而回退到女聲或 null，強制調低 pitch (0.60 ~ 0.70) 轉為渾厚男低音
+      if (!voice || isExplicitFemale(voice)) {
+        pitch = Math.min(pitch, 0.68);
+      }
+    } else if (gender === 'female') {
+      // 女性角色確保音調柔和清脆 (1.05 ~ 1.25)
+      pitch = Math.max(pitch, 1.05);
+    }
+
+    utterance.pitch = pitch;
+    utterance.rate = typeof options.rate === 'number' ? options.rate : 0.88;
 
     window.speechSynthesis.speak(utterance);
   } catch (e) {
