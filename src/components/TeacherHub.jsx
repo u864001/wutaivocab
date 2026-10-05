@@ -10,7 +10,8 @@ import {
   adminResetWeekScores,
   adminGetSystemStats,
   getWeekNumber,
-  supabase
+  supabase,
+  STUDENT_PROFILES_TABLE_SQL
 } from '../services/supabase';
 import {
   Lock, ArrowLeft, PlusCircle, Trash2, CheckCircle2, AlertCircle,
@@ -932,6 +933,32 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords }) => {
                   </div>
                   <p className="text-[11px] text-slate-400 mt-2 font-bold leading-relaxed">
                     💡 依目前增長速度，霧臺國小全校成績資料可持續安心保存 1～2 年以上，完全無須擔心觸及 500 MB 免費上限。
+                  </p>
+                </div>
+
+                {/* 學生漫遊資料庫表結構 SQL */}
+                <div className="p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800">
+                  <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                    <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300 font-black text-sm">
+                      <Database className="w-4 h-4" />
+                      <span>霧臺英語宇宙 2.0 學生漫遊雲端資料表 (SQL)</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard?.writeText(STUDENT_PROFILES_TABLE_SQL);
+                        setToast({ type: 'success', text: '已複製 student_profiles SQL 至剪貼簿！' });
+                        setTimeout(() => setToast(null), 3000);
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs transition-colors cursor-pointer"
+                    >
+                      複製 SQL
+                    </button>
+                  </div>
+                  <pre className="p-3 rounded-xl bg-slate-900 text-slate-200 text-[11px] font-mono overflow-x-auto max-h-40 leading-relaxed">
+                    {STUDENT_PROFILES_TABLE_SQL.trim()}
+                  </pre>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 font-bold">
+                    📌 說明：系統已內建無損本機離線快取防護。若需開啟全校跨裝置即時漫遊，可隨時將上述 SQL 貼至 Supabase SQL Editor 執行。
                   </p>
                 </div>
               </div>

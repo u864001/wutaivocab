@@ -2,11 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { GlassCard } from './ui/GlassCard';
 import { Button3D } from './ui/Button3D';
 import { useI18n } from '../context/I18nContext';
+import { useStudent } from '../context/StudentContext';
+import { formatStudentDisplayName, formatStudentBadge } from '../utils/studentIdHelper';
 import {
   Trophy, Settings2, Swords, Rocket, Puzzle,
   Volume2, Keyboard, ChevronDown, ChevronUp, Check,
   QrCode, Sparkles, BookOpen, UserCheck, Megaphone, Home,
-  Compass, Flame
+  Compass, Flame, Coins, User, RefreshCw, Package, ShieldCheck
 } from 'lucide-react';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 
@@ -20,6 +22,7 @@ export const Lobby = ({
   qualifyingBook
 }) => {
   const { t, lang } = useI18n();
+  const { currentStudent, isLoggedIn, openModal } = useStudent();
   const [activeTab, setActiveTab] = useState('official'); // 'official' or 'teacher'
   const [expandedBooks, setExpandedBooks] = useState(['1', 'Mario專區']);
 
@@ -139,6 +142,83 @@ export const Lobby = ({
         >
           {t.leaderboard}
         </Button3D>
+      </GlassCard>
+
+      {/* ── 霧臺宇宙學生漫遊通行證名片 / 登入引導 (Bento Tile) ── */}
+      <GlassCard className="border-2 border-emerald-400/60 dark:border-emerald-600/60 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-indigo-500/10 dark:from-emerald-950/30 dark:to-slate-800/60 p-4 sm:p-5">
+        {isLoggedIn ? (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center font-heading font-black text-lg shadow-md shrink-0">
+                {currentStudent.nickname?.slice(0, 1) || '學'}
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-black px-2 py-0.5 rounded-full bg-emerald-500 text-white shadow-sm">
+                    {formatStudentBadge(currentStudent, lang)}
+                  </span>
+                  <h4 className="text-base sm:text-lg font-black text-slate-800 dark:text-white font-heading">
+                    {currentStudent.nickname}
+                  </h4>
+                  <span className="font-mono text-[11px] font-bold text-slate-500 dark:text-slate-400 bg-white/80 dark:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                    ID: {currentStudent.student_id}
+                  </span>
+                </div>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>{t.ownGradeRewardTip}</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+              <div className="flex items-center gap-2">
+                <div className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-300 dark:border-amber-700 flex items-center gap-1.5 text-amber-700 dark:text-amber-300 text-xs font-black">
+                  <Coins className="w-4 h-4 text-amber-500 shrink-0" />
+                  <span className="font-mono text-sm">{currentStudent.coins ?? 0}</span>
+                </div>
+                <div className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-300 dark:border-indigo-700 flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300 text-xs font-black">
+                  <Trophy className="w-4 h-4 text-indigo-500 shrink-0" />
+                  <span className="font-mono text-sm">{currentStudent.quest_points ?? 0}</span>
+                </div>
+              </div>
+
+              <button
+                onClick={openModal}
+                className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-black flex items-center gap-1 shadow-sm transition-all active:scale-95 cursor-pointer shrink-0"
+              >
+                <RefreshCw className="w-3.5 h-3.5 text-emerald-500" />
+                <span>{t.switchSeatBtn}</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-heading font-black text-xl shrink-0">
+                🎒
+              </div>
+              <div>
+                <h4 className="text-sm sm:text-base font-black text-slate-800 dark:text-white font-heading">
+                  {t.noStudentSelected}
+                </h4>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5">
+                  {t.clickToLoginStudent}
+                </p>
+              </div>
+            </div>
+
+            <Button3D
+              variant="amber"
+              size="sm"
+              onClick={openModal}
+              icon={User}
+              className="w-full sm:w-auto shadow-md"
+            >
+              {t.loginToRoam}
+            </Button3D>
+          </div>
+        )}
       </GlassCard>
 
       {/* ── 複習範圍便當盒 (Bento Tile) ── */}

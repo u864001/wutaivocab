@@ -1,8 +1,10 @@
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
+import { useStudent } from '../context/StudentContext';
+import { formatStudentBadge } from '../utils/studentIdHelper';
 import { soundEngine } from '../services/audio';
-import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles, BookOpen, Home, ArrowLeft } from 'lucide-react';
+import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles, BookOpen, Home, ArrowLeft, User, Coins } from 'lucide-react';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 
 export const Header = ({
@@ -16,6 +18,7 @@ export const Header = ({
 }) => {
   const { isDark, toggleTheme } = useTheme();
   const { lang, toggleLang, t } = useI18n();
+  const { currentStudent, isLoggedIn, openModal } = useStudent();
   const [isMuted, setIsMuted] = React.useState(soundEngine.isMuted);
 
   const handleAdminTrigger = useEasterEgg(onOpenTeacherHub, 5, 2000);
@@ -63,6 +66,36 @@ export const Header = ({
 
       {/* 功能控制區：首頁返回、自然發音板切換、音效、雙語、主題 */}
       <div className="flex items-center gap-2 sm:gap-2.5">
+        {/* 學生 6 碼雲端漫遊通行證標籤 / 登入按鈕 */}
+        {isLoggedIn ? (
+          <button
+            onClick={openModal}
+            title={t.currentIdentity}
+            className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-2xl bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 border border-emerald-300 dark:border-emerald-600 text-slate-800 dark:text-slate-100 flex items-center gap-1.5 text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer"
+          >
+            <span className="w-5 h-5 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-[10px] shrink-0 font-bold">
+              <User className="w-3.5 h-3.5" />
+            </span>
+            <span className="font-heading truncate max-w-[70px] sm:max-w-[110px]">
+              {formatStudentBadge(currentStudent, lang)}
+            </span>
+            <span className="flex items-center gap-0.5 text-amber-600 dark:text-amber-400 font-mono font-black ml-0.5">
+              <Coins className="w-3 h-3" />
+              {currentStudent.coins ?? 0}
+            </span>
+          </button>
+        ) : (
+          <button
+            onClick={openModal}
+            title={t.loginToRoam}
+            className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white flex items-center gap-1.5 text-xs font-black shadow-sm shadow-amber-500/20 transition-all active:scale-95 cursor-pointer"
+          >
+            <User className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{t.loginToRoam}</span>
+            <span className="sm:hidden">{lang === 'zh-TW' ? '座號' : 'ID'}</span>
+          </button>
+        )}
+
         {/* 上一層返回按鈕 (依階層精確返回父層級，不直接跳至最頂層首頁) */}
         {(onGoParent || onGoHome) && currentView !== 'portal' && (
           <button

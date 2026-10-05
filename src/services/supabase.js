@@ -424,3 +424,278 @@ export const adminGetSystemStats = async () => {
   }
 };
 
+// ============================================================
+// ── 學生 6 碼雲端漫遊身分 (Student Roaming Profiles) ──
+// ============================================================
+
+export const STUDENT_PROFILES_TABLE_SQL = `
+-- 霧臺英語宇宙 2.0: 學生身分與漫遊資料表
+create table if not exists student_profiles (
+  student_id text primary key, -- e.g. '040209'
+  grade text not null,
+  class text not null,
+  seat text not null,
+  nickname text not null,
+  coins integer default 0,
+  quest_points integer default 0,
+  inventory jsonb default '[]'::jsonb,
+  daily_quest jsonb default '{}'::jsonb,
+  updated_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- 啟用 RLS 與開放讀寫策略 (供全校學童免登入直接暢玩)
+alter table student_profiles enable row level security;
+create policy "Allow all read on student_profiles" on student_profiles for select using (true);
+create policy "Allow all insert on student_profiles" on student_profiles for insert with check (true);
+create policy "Allow all update on student_profiles" on student_profiles for update using (true);
+`;
+
+const getLocalStudentProfile = (studentId) => {
+  try {
+    const raw = localStorage.getItem(`wutai_student_profile_${studentId}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+const setLocalStudentProfile = (studentId, profile) => {
+  try {
+    localStorage.setItem(`wutai_student_profile_${studentId}`, JSON.stringify(profile));
+  } catch (e) {}
+};
+
+/**
+ * 讀取學生雲端漫遊檔案 (含本機快取與無損離線回退)
+ */
+export const fetchStudentProfile = async (studentId) => {
+  if (!studentId) return null;
+  try {
+    const { data, error } = await supabase
+      .from('student_profiles')
+      .select('*')
+      .eq('student_id', studentId)
+      .maybeSingle();
+
+    if (error) {
+      // 若資料表尚未於 Supabase 建立或網路中斷，平滑回退本機快取
+      console.warn('雲端讀取學生檔案提示 (回退本機快取):', error.message);
+      return getLocalStudentProfile(studentId);
+    }
+
+    if (data) {
+      // 成功讀取遠端檔案，同步更新本機快取
+      const normalized = {
+        student_id: data.student_id,
+        grade: data.grade,
+        class: data.class,
+        seat: data.seat,
+        nickname: data.nickname,
+        coins: Number(data.coins) || 0,
+        quest_points: Number(data.quest_points) || 0,
+        inventory: Array.isArray(data.inventory) ? data.inventory : [],
+        daily_quest: (typeof data.daily_quest === 'object' && data.daily_quest) ? data.daily_quest : {},
+        updated_at: data.updated_at
+      };
+      setLocalStudentProfile(studentId, normalized);
+      return normalized;
+    }
+
+    // 遠端尚無紀錄，查看本機是否有快取
+    return getLocalStudentProfile(studentId);
+  } catch (err) {
+    console.warn('讀取學生檔案連線異常，回退本機快取:', err);
+    return getLocalStudentProfile(studentId);
+  }
+};
+
+/**
+ * 建立或更新學生雲端檔案 (Upsert)
+ */
+export const upsertStudentProfile = async (profileData) => {
+  if (!profileData?.student_id) return null;
+
+  const sanitized = {
+    student_id: String(profileData.student_id),
+    grade: String(profileData.grade || '00'),
+    class: String(profileData.class || profileData.classNum || '00'),
+    seat: String(profileData.seat || '00'),
+    nickname: String(profileData.nickname || '好學生').trim(),
+    coins: Math.max(0, Number(profileData.coins) || 0),
+    quest_points: Math.max(0, Number(profileData.quest_points) || 0),
+    inventory: Array.isArray(profileData.inventory) ? profileData.inventory : [],
+    daily_quest: (typeof profileData.daily_quest === 'object' && profileData.daily_quest) ? profileData.daily_quest : {},
+    updated_at: new Date().toISOString()
+  };
+
+  // 1. 立即寫入本機快取保證即時響應
+  setLocalStudentProfile(sanitized.student_id, sanitized);
+
+  // 2. 嘗試非同步同步至 Supabase
+  try {
+    const { data, error } = await supabase
+      .from('student_profiles')
+      .upsert(sanitized, { onConflict: 'student_id' })
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Supabase upsert 學生檔案提示 (資料已安全暫存本機):', error.message);
+      return sanitized;
+    }
+    return data || sanitized;
+  } catch (err) {
+    console.warn('學生檔案雲端同步暫緩，本機安全保留:', err);
+    return sanitized;
+  }
+};
+
+/**
+ * 安全增減金幣 (支援正負數，最低不小於 0)
+ */
+export const updateStudentCoins = async (studentId, deltaCoins) => {
+  if (!studentId || typeof deltaCoins !== 'number') return null;
+
+  const current = (await fetchStudentProfile(studentId)) || {
+    student_id: studentId,
+    grade: studentId.substring(0, 2),
+    class: studentId.substring(2, 4),
+    seat: studentId.substring(4, 6),
+    nickname: '好學生',
+    coins: 0,
+    quest_points: 0,
+    inventory: [],
+    daily_quest: {}
+  };
+
+  const newCoins = Math.max(0, (current.coins || 0) + deltaCoins);
+  const updated = {
+    ...current,
+    coins: newCoins,
+    updated_at: new Date().toISOString()
+  };
+
+  return await upsertStudentProfile(updated);
+};
+
+/**
+ * 累加探索積分
+ */
+export const updateStudentQuestPoints = async (studentId, deltaPoints) => {
+  if (!studentId || typeof deltaPoints !== 'number') return null;
+
+  const current = (await fetchStudentProfile(studentId)) || {
+    student_id: studentId,
+    grade: studentId.substring(0, 2),
+    class: studentId.substring(2, 4),
+    seat: studentId.substring(4, 6),
+    nickname: '好學生',
+    coins: 0,
+    quest_points: 0,
+    inventory: [],
+    daily_quest: {}
+  };
+
+  const newPoints = Math.max(0, (current.quest_points || 0) + deltaPoints);
+  const updated = {
+    ...current,
+    quest_points: newPoints,
+    updated_at: new Date().toISOString()
+  };
+
+  return await upsertStudentProfile(updated);
+};
+
+/**
+ * 更新學生背包物品庫 (Inventory)
+ */
+export const updateStudentInventory = async (studentId, newInventory) => {
+  if (!studentId || !Array.isArray(newInventory)) return null;
+
+  const current = (await fetchStudentProfile(studentId)) || {
+    student_id: studentId,
+    grade: studentId.substring(0, 2),
+    class: studentId.substring(2, 4),
+    seat: studentId.substring(4, 6),
+    nickname: '好學生',
+    coins: 0,
+    quest_points: 0,
+    inventory: [],
+    daily_quest: {}
+  };
+
+  const updated = {
+    ...current,
+    inventory: newInventory,
+    updated_at: new Date().toISOString()
+  };
+
+  return await upsertStudentProfile(updated);
+};
+
+/**
+ * 更新每日任務狀態 (Daily Quest)
+ */
+export const updateStudentDailyQuest = async (studentId, dailyQuestData) => {
+  if (!studentId || typeof dailyQuestData !== 'object') return null;
+
+  const current = (await fetchStudentProfile(studentId)) || {
+    student_id: studentId,
+    grade: studentId.substring(0, 2),
+    class: studentId.substring(2, 4),
+    seat: studentId.substring(4, 6),
+    nickname: '好學生',
+    coins: 0,
+    quest_points: 0,
+    inventory: [],
+    daily_quest: {}
+  };
+
+  const updated = {
+    ...current,
+    daily_quest: dailyQuestData,
+    updated_at: new Date().toISOString()
+  };
+
+  return await upsertStudentProfile(updated);
+};
+
+/**
+ * 讀取大富翁財富榜 (Monopoly Wealth Board: 依金幣降序)
+ */
+export const fetchMonopolyLeaderboard = async (limit = 50) => {
+  try {
+    const { data, error } = await supabase
+      .from('student_profiles')
+      .select('student_id, grade, class, seat, nickname, coins, updated_at')
+      .order('coins', { ascending: false })
+      .limit(limit);
+
+    if (error || !data) return [];
+    return data;
+  } catch (err) {
+    console.warn('大富翁財富榜讀取回退:', err);
+    return [];
+  }
+};
+
+/**
+ * 讀取小鎮探索榮譽榜 (Town Quest Points Board: 依積分降序)
+ */
+export const fetchQuestPointsLeaderboard = async (limit = 50) => {
+  try {
+    const { data, error } = await supabase
+      .from('student_profiles')
+      .select('student_id, grade, class, seat, nickname, quest_points, updated_at')
+      .order('quest_points', { ascending: false })
+      .limit(limit);
+
+    if (error || !data) return [];
+    return data;
+  } catch (err) {
+    console.warn('小鎮榮譽榜讀取回退:', err);
+    return [];
+  }
+};
+
+

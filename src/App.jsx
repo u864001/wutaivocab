@@ -14,6 +14,7 @@ import { SwipeCardGame } from './games/swipe/SwipeCardGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
 import { TeacherAuthModal } from './components/TeacherAuthModal';
+import { StudentProfileModal } from './components/StudentProfileModal';
 import { useI18n } from './context/I18nContext';
 import { useTheme } from './context/ThemeContext';
 import { fetchWordsFromDb } from './services/supabase';
@@ -409,6 +410,9 @@ export function App() {
           handleNavigate('teacher-hub');
         }}
       />
+
+      {/* 學生 6 碼雲端漫遊通行證彈窗 */}
+      <StudentProfileModal />
     </div>
   );
 }

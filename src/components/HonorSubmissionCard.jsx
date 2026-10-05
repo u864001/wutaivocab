@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button3D } from './ui/Button3D';
 import { useI18n } from '../context/I18nContext';
+import { useStudent } from '../context/StudentContext';
+import { formatStudentDisplayName } from '../utils/studentIdHelper';
 import { checkIfQualifiesForTop50, uploadScore } from '../services/supabase';
 import { CertificateModal } from './CertificateModal';
 import { getAccuracyLevel } from '../services/certificateGenerator';
@@ -19,10 +21,17 @@ export const HonorSubmissionCard = ({
   onSuccess
 }) => {
   const { t } = useI18n();
+  const { currentStudent } = useStudent();
   const [status, setStatus] = useState('checking'); // 'checking' | 'not_qualifying_book' | 'not_top50' | 'qualified' | 'submitting' | 'submitted'
   const [playerName, setPlayerName] = useState(() => {
     return localStorage.getItem('wutai_player_name') || '';
   });
+
+  useEffect(() => {
+    if (currentStudent && !playerName) {
+      setPlayerName(currentStudent.nickname || '');
+    }
+  }, [currentStudent]);
   const [validationError, setValidationError] = useState('');
   const [isCertOpen, setIsCertOpen] = useState(false);
   const hasSubmittedRef = useRef(false);
