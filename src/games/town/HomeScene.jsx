@@ -27,7 +27,6 @@ export const HomeScene = ({ onClose }) => {
   const [pinnedWisdomCard, setPinnedWisdomCard] = useState(null);
   const [useToast, setUseToast] = useState(null);
   const [bgError, setBgError] = useState(false);
-  const [isBgLoaded, setIsBgLoaded] = useState(false);
 
   // 載入釘在告示板上的英語靈感卡 (僅存最新單張)
   const loadPinnedCard = () => {
@@ -163,11 +162,8 @@ export const HomeScene = ({ onClose }) => {
           <img
             src="/assets/town/bg_home.webp"
             alt="學生溫馨的家"
-            onLoad={() => setIsBgLoaded(true)}
             onError={() => setBgError(true)}
-            className={`absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.98] contrast-[1.02] pointer-events-none transition-opacity duration-700 ${
-              isBgLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
+            className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.98] contrast-[1.02] pointer-events-none transition-all duration-700"
           />
         )}
 

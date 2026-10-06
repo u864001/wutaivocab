@@ -446,6 +446,7 @@ export const WutaiTownGame = ({ onBack }) => {
       {/* ── 全螢幕 2D 視覺小說冒險對話場景 (Visual Novel Scene Stage) ── */}
       {activeDialogueLocation && activeDialogueLocation.id !== 'home' && (
         <DialogueEngine
+          key={activeDialogueLocation.id + (isTeacherAtActiveLocation ? '_teacher' : '')}
           location={activeDialogueLocation}
           onClose={() => {
             stopSpeech();

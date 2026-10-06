@@ -247,6 +247,24 @@ vercel-live-feedback,
   animation: slideInFromRight 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes slideOutToLeft {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(-120%); opacity: 0; }
+}
+
+@keyframes slideOutToRight {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+
+.animate-slide-out-left {
+  animation: slideOutToLeft 0.32s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-out-right {
+  animation: slideOutToRight 0.32s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
 .animate-hotspot-pulse {
   animation: mapHotspotPulse 2.4s infinite;
 }
