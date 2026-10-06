@@ -75,39 +75,49 @@ export const WutaiTownGame = ({ onBack }) => {
     const dailyQuest = currentStudent?.daily_quest;
     if (!dailyQuest || dailyQuest.completed || dailyQuest.rewardClaimed) return;
 
+    const currentQuestId = dailyQuest.questId || dailyQuest.activeQuestId;
+    if (!currentQuestId) return;
+
     let shouldComplete = false;
 
-    // 簡易任務 1：黑熊超市買食物或進行問候對話
-    if (dailyQuest.questId === 'easy_greet_supermarket') {
-      if ((actionType === 'buy' && (param1 === 'food' || param2 === 'sandwich_item' || param2 === 'apple_item')) ||
-          (actionType === 'dialogue' && param1 === 'supermarket')) {
+    // 簡易任務 1：黑熊超市買食物或進行英語對話
+    if (currentQuestId === 'easy_greet_supermarket') {
+      if ((actionType === 'buy' && (param1 === 'food' || param2 === 'sandwich_item' || param2 === 'apple_item' || param2 === 'banana_item')) ||
+          (actionType === 'dialogue' && param1 === 'supermarket' && param2 && param2 !== 'welcome')) {
         shouldComplete = true;
       }
     }
-    // 簡易任務 2：書局買文具或向店長請教
-    else if (dailyQuest.questId === 'easy_stationery_check') {
-      if ((actionType === 'buy' && (param1 === 'stationery' || param2 === 'pencil_item' || param2 === 'eraser_item')) ||
-          (actionType === 'dialogue' && param1 === 'bookstore')) {
+    // 簡易任務 2：書局買文具或進行英語對話
+    else if (currentQuestId === 'easy_stationery_check') {
+      if ((actionType === 'buy' && (param1 === 'stationery' || param2 === 'pencil_item' || param2 === 'eraser_item' || param2 === 'notebook_item' || param2 === 'marker_item')) ||
+          (actionType === 'dialogue' && param1 === 'bookstore' && param2 && param2 !== 'welcome')) {
         shouldComplete = true;
       }
     }
-    // 中階任務 1：公園自然四季生態對話
-    else if (dailyQuest.questId === 'medium_nature_explorer') {
-      if (actionType === 'dialogue' && param1 === 'park' && ['sunny', 'cool', 'animals', 'seasons'].includes(param2)) {
+    // 中階任務 1：公園大武山自然觀察家 (與雲豹長老英語對話互動)
+    else if (currentQuestId === 'medium_nature_explorer') {
+      if (actionType === 'dialogue' && param1 === 'park' && param2 && param2 !== 'welcome') {
         shouldComplete = true;
       }
     }
-    // 中階任務 2：診所就醫健康對話或購買保健物資
-    else if (dailyQuest.questId === 'medium_healthy_hero') {
-      if ((actionType === 'dialogue' && param1 === 'clinic' && ['throat', 'healthy'].includes(param2)) ||
+    // 中階任務 2：山林鐵道旅行家 (向穿山甲站長諮詢或購買車票)
+    else if (currentQuestId === 'medium_train_traveler') {
+      if ((actionType === 'dialogue' && param1 === 'station' && param2 && param2 !== 'welcome') ||
+          (actionType === 'buy' && (param2 === 'train_ticket' || param2 === 'map_item'))) {
+        shouldComplete = true;
+      }
+    }
+    // 高階任務 1：診所就醫健康對話或購買保健物資
+    else if (currentQuestId === 'hard_healthy_hero') {
+      if ((actionType === 'dialogue' && param1 === 'clinic' && param2 && param2 !== 'welcome') ||
           (actionType === 'buy' && (param1 === 'special' || param2 === 'throat_lozenge' || param2 === 'cooling_patch' || param2 === 'water_bottle_item'))) {
         shouldComplete = true;
       }
     }
-    // 高階任務：集會所深入了解百合文化涵義或購買百合勇士勳章
-    else if (dailyQuest.questId === 'hard_tribal_warrior') {
-      if ((actionType === 'dialogue' && param1 === 'plaza' && ['lily_meaning', 'badge_offer'].includes(param2)) ||
-          (actionType === 'buy' && param2 === 'lily_badge')) {
+    // 高階任務 2：集會所深入了解傳統文化與百合花涵義或收藏紀念章
+    else if (currentQuestId === 'hard_tribal_warrior') {
+      if ((actionType === 'dialogue' && param1 === 'plaza' && param2 && param2 !== 'welcome') ||
+          (actionType === 'buy' && (param2 === 'lily_badge' || param2 === 'glass_bead' || param2 === 'warrior_hat'))) {
         shouldComplete = true;
       }
     }

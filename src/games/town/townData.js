@@ -758,9 +758,11 @@ export const DIALOGUE_TREES = {
   cinema: DIALOGUE_VARIANTS.cinema[0]
 };
 
-// ── 9. 每日任務系統清單 ──
+// ── 9. 每日任務系統清單 (固定開出 2 低、2 中、2 高，每日限選 3 任務，數值平穩不通膨) ──
+export const MAX_DAILY_QUESTS = 3;
+
 export const DAILY_QUEST_TEMPLATES = [
-  // 🟢 難度一：簡單任務 (免費領取，+20 探索積分)
+  // 🟢 難度一：簡單探索 (2 款，免費接取，+20 探索積分)
   {
     id: 'easy_greet_supermarket',
     tier: 'easy',
@@ -769,10 +771,9 @@ export const DAILY_QUEST_TEMPLATES = [
     cost: 0,
     rewardPoints: 20,
     targetLocation: 'supermarket',
-    descriptionZh: '前往黑熊超市，與店員或客座外師進行一段英語問候，並購買任意一項健康點心。',
-    descriptionEn: 'Visit Black Bear Supermarket, chat in English, and purchase any healthy snack.',
-    actionRequired: 'buy_food',
-    dialogueTarget: 'supermarket'
+    descriptionZh: '前往黑熊超市，與店長或客座外師進行英語對話，並選購任意一項美味水果點心。',
+    descriptionEn: 'Visit Black Bear Supermarket, chat in English, and purchase any fruit or snack.',
+    actionRequired: 'visit_supermarket'
   },
   {
     id: 'easy_stationery_check',
@@ -782,52 +783,60 @@ export const DAILY_QUEST_TEMPLATES = [
     cost: 0,
     rewardPoints: 20,
     targetLocation: 'bookstore',
-    descriptionZh: '前往雲豹書局與店長交談，挑選一枝鉛筆或橡皮擦放入你的背包。',
-    descriptionEn: 'Visit Cloud Leopard Bookstore, talk to Manager Leopard, and buy a pencil or eraser.',
-    actionRequired: 'buy_stationery',
-    dialogueTarget: 'bookstore'
+    descriptionZh: '前往貓頭鷹書局向店長打招呼交談，挑選一枝鉛筆、橡皮擦或彩色筆放入背包。',
+    descriptionEn: 'Visit Owl Bookstore, talk to Manager Owl, and pick up a pencil or eraser.',
+    actionRequired: 'visit_bookstore'
   },
 
-  // 🔵 難度二：中階挑戰 (需投注 50 金幣解鎖，+90 探索積分)
+  // 🔵 難度二：中階挑戰 (2 款，投注 20 金幣解鎖，+50 探索積分)
   {
     id: 'medium_nature_explorer',
     tier: 'medium',
     titleZh: '大武山自然觀察家',
-    titleEn: 'Da-Wu Mountain Nature Explorer',
-    cost: 50,
-    rewardPoints: 90,
+    titleEn: 'Mountain Nature Explorer',
+    cost: 20,
+    rewardPoints: 50,
     targetLocation: 'park',
-    descriptionZh: '投注 50 金幣解鎖！前往飛鼠公園向長老請教今日四季天氣（解鎖晴天/四季/動物對話），融入大自然。',
-    descriptionEn: 'Bet 50 coins! Chat about weather, seasons, and animals at Flying Squirrel Park.',
-    actionRequired: 'visit_park_and_station',
-    dialogueTarget: 'park'
+    descriptionZh: '投注 20 金幣解鎖！前往飛鼠公園向雲豹長老請教大自然與四季生態，融入山林綠意。',
+    descriptionEn: 'Invest 20 coins! Chat about weather, nature, and animals at Flying Squirrel Park.',
+    actionRequired: 'visit_park'
   },
   {
-    id: 'medium_healthy_hero',
+    id: 'medium_train_traveler',
     tier: 'medium',
+    titleZh: '山林鐵道旅行家',
+    titleEn: 'Forest Railway Traveler',
+    cost: 20,
+    rewardPoints: 50,
+    targetLocation: 'station',
+    descriptionZh: '投注 20 金幣解鎖！前往山林火車站向穿山甲站長諮詢觀光列車與旅行計畫，或購買車票。',
+    descriptionEn: 'Invest 20 coins! Consult Station Master Pangolin about trips or purchase train tickets.',
+    actionRequired: 'visit_station'
+  },
+
+  // 🟡 難度三：高階解謎 (2 款，投注 50 金幣解鎖，+90 探索積分)
+  {
+    id: 'hard_healthy_hero',
+    tier: 'hard',
     titleZh: '小鎮健康衛士',
     titleEn: 'Town Health Defender',
     cost: 50,
     rewardPoints: 90,
     targetLocation: 'clinic',
-    descriptionZh: '投注 50 金幣解鎖！前往貓頭鷹診所諮詢健康保健或身體症狀（喉嚨痛/健康習慣），並購買一包潤喉薄荷糖或健康大水壺。',
-    descriptionEn: 'Bet 50 coins! Consult Dr. Owl at the clinic, and purchase throat lozenges or water bottle.',
-    actionRequired: 'buy_clinic_item',
-    dialogueTarget: 'clinic'
+    descriptionZh: '投注 50 金幣解鎖！前往貓頭鷹診所諮詢山羊醫生健康生活習慣，或選購潤喉薄荷糖或健康大水壺。',
+    descriptionEn: 'Invest 50 coins! Consult Dr. Goat at the clinic about wellness, or buy throat lozenges.',
+    actionRequired: 'visit_clinic'
   },
-
-  // 🟡 難度三：高階解謎 (需投注 100 金幣解鎖，+180 探索積分)
   {
     id: 'hard_tribal_warrior',
     tier: 'hard',
-    titleZh: '百步蛇傳奇榮譽勇士',
-    titleEn: 'Legend of Hundred-Pace Warrior',
-    cost: 100,
-    rewardPoints: 180,
+    titleZh: '百步蛇文化探索榮譽',
+    titleEn: 'Legend of Hundred-Pace Culture',
+    cost: 50,
+    rewardPoints: 90,
     targetLocation: 'plaza',
-    descriptionZh: '投注 100 金幣解鎖高難度榮譽挑戰！前往百步蛇集會所深入了解白百合花涵義，學習純潔勇士精神，並獲得純潔百合勇士勳章！',
-    descriptionEn: 'Bet 100 coins! Learn about the White Lily at the Gathering Hall, and earn the Lily Badge!',
-    actionRequired: 'buy_lily_and_cinema',
-    dialogueTarget: 'plaza'
+    descriptionZh: '投注 50 金幣解鎖！前往百步蛇集會所深入了解傳統文化與百合花涵義，或收藏純潔百合學習紀念章！',
+    descriptionEn: 'Invest 50 coins! Learn about Rukai traditions at the Gathering Hall, or collect the Lily Badge!',
+    actionRequired: 'visit_plaza'
   }
 ];
