@@ -4,13 +4,13 @@
  */
 
 export const GRADE_OPTIONS = [
-  { id: '01', zh: '一年級', en: 'Grade 1', shortZh: '1年', books: ['1'] },
-  { id: '02', zh: '二年級', en: 'Grade 2', shortZh: '2年', books: ['2'] },
-  { id: '03', zh: '三年級', en: 'Grade 3', shortZh: '3年', books: ['1', '2'] },
-  { id: '04', zh: '四年級', en: 'Grade 4', shortZh: '4年', books: ['3', '4'] },
-  { id: '05', zh: '五年級', en: 'Grade 5', shortZh: '5年', books: ['5', '6'] },
-  { id: '06', zh: '六年級', en: 'Grade 6', shortZh: '6年', books: ['7', '8'] },
-  { id: '00', zh: '訪客 / 教職員', en: 'Guest / Staff', shortZh: '訪客', books: ['1', '2', '3', '4', '5', '6', '7', '8'] },
+  { id: '01', zh: '一年級', en: 'Grade 1', shortZh: '1年', books: ['1', 'abc'], descZh: '一年級字母啟蒙樂園' },
+  { id: '02', zh: '二年級', en: 'Grade 2', shortZh: '2年', books: ['2', 'abc'], descZh: '二年級字母進階樂園' },
+  { id: '03', zh: '三年級', en: 'Grade 3', shortZh: '3年', books: ['1', '2'], descZh: '三年級第1~2冊綜合' },
+  { id: '04', zh: '四年級', en: 'Grade 4', shortZh: '4年', books: ['3', '4'], descZh: '四年級第3~4冊進階' },
+  { id: '05', zh: '五年級', en: 'Grade 5', shortZh: '5年', books: ['5', '6'], descZh: '五年級第5~6冊高年級' },
+  { id: '06', zh: '六年級', en: 'Grade 6', shortZh: '6年', books: ['7', '8'], descZh: '六年級第7~8冊畢業會考' },
+  { id: '00', zh: '訪客 / 全校大亂鬥', en: 'Guest / All School', shortZh: '全校', books: ['1', '2', '3', '4', '5', '6', '7', '8', 'abc'] },
 ];
 
 export const CLASS_OPTIONS = [
@@ -109,16 +109,44 @@ export const getRandomFunNickname = () => {
 };
 
 /**
- * 檢查冊別是否屬於學生自己的年級範圍
+ * 判斷模式或冊別是否屬於「字母類遊戲」
+ * 包含：字母巡航迷宮、極速是非滑牌(字母)、隕石防衛戰(ABC)、星際記憶翻牌等
+ */
+export const isAlphabetGameMode = (mode, book) => {
+  if (book === 'abc' || book === 'alphabet') return true;
+  if (!mode) return false;
+  const m = String(mode);
+  return (
+    m.startsWith('maze') ||
+    m === 'swipe-abc' ||
+    m === 'meteor-abc' ||
+    m === 'memory-single'
+  );
+};
+
+/**
+ * 檢查遊戲或冊別是否屬於學生自己的年級範圍
+ * 一、二年級：所有字母類遊戲 (迷宮、是非、隕石、翻牌) 均為本年級合格範圍！
  * 年級 3 -> 第 1, 2 冊
  * 年級 4 -> 第 3, 4 冊
  * 年級 5 -> 第 5, 6 冊
  * 年級 6 -> 第 7, 8 冊
  * 年級 0 (訪客/全開) -> 全冊皆符合
  */
-export const isBookInOwnGrade = (book, grade) => {
+export const isBookInOwnGrade = (book, grade, mode = null) => {
   const cleanGrade = pad2(grade);
   if (cleanGrade === '00') return true; // 訪客全開放
+
+  // 一、二年級核心範圍：所有字母類遊戲均直接認定為本年級合格範圍！
+  if ((cleanGrade === '01' || cleanGrade === '02') && isAlphabetGameMode(mode, book)) {
+    return true;
+  }
+
+  // 字母標記
+  if (String(book) === 'abc' && (cleanGrade === '01' || cleanGrade === '02')) {
+    return true;
+  }
+
   const gradeObj = GRADE_OPTIONS.find(g => g.id === cleanGrade);
   if (!gradeObj || !gradeObj.books) return false;
   return gradeObj.books.includes(String(book));
@@ -129,6 +157,7 @@ export const isBookInOwnGrade = (book, grade) => {
  */
 export const getGradeFromBook = (book) => {
   const b = String(book);
+  if (b === 'abc') return '01'; // 字母類歸屬低年級啟蒙
   if (b === '1' || b === '2') return '03'; // 國小三年級啟蒙第 1, 2 冊
   if (b === '3' || b === '4') return '04'; // 四年級第 3, 4 冊
   if (b === '5' || b === '6') return '05'; // 五年級第 5, 6 冊

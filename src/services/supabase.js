@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { containsProfanity } from './profanityFilter';
+import { getCurrentSemesterId, checkAndApplySemesterReset } from '../utils/semesterHelper';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://fqkdkmcqjswufzbvkram.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_M9phUn6LH1yeVA9NbIXesg_tVABCW5z';
@@ -188,6 +189,8 @@ export const uploadScore = async ({ mode, book, name, score, time }) => {
     cleanName = '文明好學生';
   }
 
+  const actualBook = (book && book !== 'null' && book !== 'undefined') ? String(book) : 'abc';
+
   try {
     // 檢查本週同裝置且同姓名的紀錄 (同台 iPad 不同學生戰績完全獨立)
     const { data: existing } = await supabase
@@ -197,7 +200,7 @@ export const uploadScore = async ({ mode, book, name, score, time }) => {
       .eq('name', cleanName)
       .eq('week', currentWeek)
       .eq('mode', mode)
-      .eq('book', String(book))
+      .eq('book', actualBook)
       .maybeSingle();
 
     if (existing) {
@@ -213,7 +216,7 @@ export const uploadScore = async ({ mode, book, name, score, time }) => {
         device_id: deviceId,
         name: cleanName,
         mode,
-        book: String(book),
+        book: actualBook,
         score,
         time,
         week: currentWeek
@@ -230,13 +233,15 @@ export const uploadScore = async ({ mode, book, name, score, time }) => {
 export const checkIfQualifiesForTop50 = async ({ mode, book, score, time }) => {
   if (!score || score <= 0) return false;
   const currentWeek = getWeekNumber();
+  const actualBook = (book && book !== 'null' && book !== 'undefined') ? String(book) : 'abc';
+
   try {
     const { data, error } = await supabase
       .from('leaderboard')
       .select('score, time')
       .eq('week', currentWeek)
       .eq('mode', mode)
-      .eq('book', String(book))
+      .eq('book', actualBook)
       .order('score', { ascending: false })
       .order('time', { ascending: true })
       .limit(50);
@@ -464,6 +469,8 @@ create table if not exists student_profiles (
   nickname text not null,
   coins integer default 0,
   quest_points integer default 0,
+  semester_id text default '115-1',
+  semester_history jsonb default '[]'::jsonb,
   inventory jsonb default '[]'::jsonb,
   daily_quest jsonb default '{}'::jsonb,
   updated_at timestamp with time zone default timezone('utc'::text, now())
@@ -479,7 +486,13 @@ create policy "Allow all update on student_profiles" on student_profiles for upd
 const getLocalStudentProfile = (studentId) => {
   try {
     const raw = localStorage.getItem(`wutai_student_profile_${studentId}`);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    const checked = checkAndApplySemesterReset(parsed);
+    if (checked?.has_just_reset_semester) {
+      setLocalStudentProfile(studentId, checked);
+    }
+    return checked;
   } catch (e) {
     return null;
   }
@@ -510,8 +523,8 @@ export const fetchStudentProfile = async (studentId) => {
     }
 
     if (data) {
-      // 成功讀取遠端檔案，同步更新本機快取
-      const normalized = {
+      // 成功讀取遠端檔案，同步檢查學期換日並更新本機快取
+      const rawNormalized = {
         student_id: data.student_id,
         grade: data.grade,
         class: data.class,
@@ -519,11 +532,17 @@ export const fetchStudentProfile = async (studentId) => {
         nickname: data.nickname,
         coins: Number(data.coins) || 0,
         quest_points: Number(data.quest_points) || 0,
+        semester_id: data.semester_id || null,
+        semester_history: Array.isArray(data.semester_history) ? data.semester_history : [],
         inventory: Array.isArray(data.inventory) ? data.inventory : [],
         daily_quest: (typeof data.daily_quest === 'object' && data.daily_quest) ? data.daily_quest : {},
         updated_at: data.updated_at
       };
+      const normalized = checkAndApplySemesterReset(rawNormalized);
       setLocalStudentProfile(studentId, normalized);
+      if (normalized?.has_just_reset_semester) {
+        upsertStudentProfile(normalized).catch(() => {});
+      }
       return normalized;
     }
 
@@ -541,6 +560,7 @@ export const fetchStudentProfile = async (studentId) => {
 export const upsertStudentProfile = async (profileData) => {
   if (!profileData?.student_id) return null;
 
+  const currentSem = getCurrentSemesterId();
   const sanitized = {
     student_id: String(profileData.student_id),
     grade: String(profileData.grade || '00'),
@@ -549,6 +569,8 @@ export const upsertStudentProfile = async (profileData) => {
     nickname: String(profileData.nickname || '好學生').trim(),
     coins: Math.max(0, Number(profileData.coins) || 0),
     quest_points: Math.max(0, Number(profileData.quest_points) || 0),
+    semester_id: String(profileData.semester_id || currentSem),
+    semester_history: Array.isArray(profileData.semester_history) ? profileData.semester_history : [],
     inventory: Array.isArray(profileData.inventory) ? profileData.inventory : [],
     daily_quest: (typeof profileData.daily_quest === 'object' && profileData.daily_quest) ? profileData.daily_quest : {},
     updated_at: new Date().toISOString()
@@ -695,8 +717,9 @@ const getLocalLeaderboardProfiles = (metric = 'coins', grade = null, limit = 50)
         const item = localStorage.getItem(key);
         if (item) {
           try {
-            const parsed = JSON.parse(item);
-            if (parsed && parsed.student_id) {
+            const raw = JSON.parse(item);
+            if (raw && raw.student_id) {
+              const parsed = checkAndApplySemesterReset(raw);
               if (!grade || grade === '00' || grade === 'all' || parsed.grade === String(grade).padStart(2, '0')) {
                 profiles.push(parsed);
               }

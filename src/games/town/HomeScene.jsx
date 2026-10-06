@@ -18,7 +18,7 @@ const CATEGORY_TABS = [
 ];
 
 export const HomeScene = ({ onClose }) => {
-  const { currentStudent, coins, questPoints, inventory } = useStudent();
+  const { currentStudent, coins, questPoints, inventory, semesterName, semesterNotice, clearSemesterNotice } = useStudent();
   const [activeCategory, setActiveCategory] = useState('all');
   const [isBgmPlaying, setIsBgmPlaying] = useState(true);
   const [isBackpackOpen, setIsBackpackOpen] = useState(false);
@@ -518,13 +518,18 @@ export const HomeScene = ({ onClose }) => {
                   🎓
                 </span>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     <h4 className="text-base font-black text-slate-800 dark:text-white font-heading">
                       {currentStudent?.nickname || '好學生'}
                     </h4>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white">
                       初級探險家
                     </span>
+                    {semesterName && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-400/30 text-indigo-700 dark:text-indigo-300">
+                        {semesterName}
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
                     學生座號：{currentStudent?.student_id || '訪客身分'}

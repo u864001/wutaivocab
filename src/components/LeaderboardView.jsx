@@ -9,6 +9,7 @@ import {
   fetchQuestPointsLeaderboard,
   getWeekNumber
 } from '../services/supabase';
+import { getCurrentSemesterId, getSemesterDisplayName } from '../utils/semesterHelper';
 import { soundEngine } from '../services/audio';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 import { pad2, formatStudentBadge } from '../utils/studentIdHelper';
@@ -16,17 +17,17 @@ import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
   Swords, X, ChevronRight, Compass, Flame, Coins, Award,
-  Users, Crown, Zap
+  Users, Crown, Zap, School
 } from 'lucide-react';
 
 export const GRADE_LEADERBOARD_TABS = [
-  { id: '01', zh: '一年級', en: 'Grade 1', books: ['1'], descZh: '字母啟蒙與初階單字 (第1冊)' },
-  { id: '02', zh: '二年級', en: 'Grade 2', books: ['2'], descZh: '生活用語與日常單字 (第2冊)' },
+  { id: '01', zh: '一年級', en: 'Grade 1', books: ['abc', '1'], isAlphabet: true, descZh: '字母啟蒙樂園 (字母是非、字母迷宮、字母隕石、記憶翻牌)' },
+  { id: '02', zh: '二年級', en: 'Grade 2', books: ['abc', '2'], isAlphabet: true, descZh: '字母進階樂園 (字母是非、字母迷宮、字母隕石、記憶翻牌)' },
   { id: '03', zh: '三年級', en: 'Grade 3', books: ['1', '2'], descZh: '第1~2冊綜合競賽' },
   { id: '04', zh: '四年級', en: 'Grade 4', books: ['3', '4'], descZh: '第3~4冊進階挑戰' },
   { id: '05', zh: '五年級', en: 'Grade 5', books: ['5', '6'], descZh: '第5~6冊高年級挑戰' },
   { id: '06', zh: '六年級', en: 'Grade 6', books: ['7', '8'], descZh: '第7~8冊畢業大會考' },
-  { id: '00', zh: '全校財富榜', en: 'School Wealth', books: ['1','2','3','4','5','6','7','8'], descZh: '全校大富翁金幣與小鎮榮譽' }
+  { id: 'all', zh: '全校大亂鬥', en: 'All School', books: null, isAllSchool: true, descZh: '全校1~6年級跨冊別、跨模式巔峰大亂鬥與大富翁榮譽榜' }
 ];
 
 export const CONSOLIDATED_GAME_MODES = [
@@ -178,11 +179,13 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
     const cacheTtl = isPastWeek ? 7 * 24 * 60 * 60 * 1000 : 45 * 1000;
     const now = Date.now();
 
-    const books = activeGradeObj.books;
+    const isAll = activeGradeObj.isAllSchool || selectedGrade === 'all' || selectedGrade === '00';
+    const isAlphabetGrade = Boolean(activeGradeObj.isAlphabet);
+    const books = isAll ? null : activeGradeObj.books;
 
     await Promise.all(
       CONSOLIDATED_GAME_MODES.map(async (m) => {
-        const CACHE_KEY = `lb_g2_${selectedWeek}_${selectedGrade}_${m.id}`;
+        const CACHE_KEY = `lb_g4_${selectedWeek}_${selectedGrade}_${m.id}`;
 
         if (!force) {
           const cached = localStorage.getItem(CACHE_KEY);
@@ -200,11 +203,17 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
         let fetchedList = [];
         try {
           if (m.isSpecial === 'monopoly') {
-            fetchedList = await fetchMonopolyLeaderboard(selectedGrade === '00' ? null : selectedGrade, 50);
+            fetchedList = await fetchMonopolyLeaderboard(isAll ? null : selectedGrade, 50);
           } else if (m.isSpecial === 'quest') {
-            fetchedList = await fetchQuestPointsLeaderboard(selectedGrade === '00' ? null : selectedGrade, 50);
+            fetchedList = await fetchQuestPointsLeaderboard(isAll ? null : selectedGrade, 50);
           } else {
-            fetchedList = await fetchLeaderboard(selectedWeek, m.modeKeys, books, 50);
+            // 一、二年級字母模式：若為字母遊戲模式，不限冊別（包含 abc 與基礎冊別）；若為全校大亂鬥則不限冊別
+            const queryBooks = isAll
+              ? null
+              : (isAlphabetGrade && (m.id === 'maze' || m.id === 'swipe' || m.id === 'meteor' || m.id === 'memory'))
+              ? null
+              : books;
+            fetchedList = await fetchLeaderboard(selectedWeek, m.modeKeys, queryBooks, 50);
           }
         } catch (err) {
           console.warn(`讀取模式 ${m.id} 排行失敗:`, err);
@@ -225,6 +234,15 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
   useEffect(() => {
     loadGradeBoards();
   }, [selectedGrade, selectedWeek]);
+
+  // 一、二年級優先排列字母類遊戲
+  const displayModes = useMemo(() => {
+    if (activeGradeObj.isAlphabet) {
+      const alphabetOrder = ['maze', 'swipe', 'meteor', 'memory', 'monopoly', 'town-quest', 'snake', 'spelling', 'quiz', 'battle'];
+      return [...CONSOLIDATED_GAME_MODES].sort((a, b) => alphabetOrder.indexOf(a.id) - alphabetOrder.indexOf(b.id));
+    }
+    return CONSOLIDATED_GAME_MODES;
+  }, [activeGradeObj]);
 
   // 彈窗詳細資料
   const activeModalMode = useMemo(() => {
@@ -277,7 +295,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
         </button>
       </div>
 
-      {/* ── 年級分流分頁導覽列 (Consolidated 6 Grades + School Wealth) ── */}
+      {/* ── 年級分流分頁導覽列 (一到六年級 + 全校大亂鬥 共 7 大類別) ── */}
       <div className="mb-4">
         <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 overflow-x-auto scrollbar-none shadow-sm">
           {GRADE_LEADERBOARD_TABS.map((tab) => {
@@ -289,16 +307,24 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                   soundEngine.click();
                   setSelectedGrade(tab.id);
                 }}
-                className={`flex-1 min-w-[90px] py-2 px-2 rounded-xl text-xs sm:text-sm font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer shrink-0 ${
+                className={`flex-1 min-w-[95px] py-2 px-2 rounded-xl text-xs sm:text-sm font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer shrink-0 ${
                   isSelected
                     ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-md scale-102 border border-emerald-300 dark:border-emerald-600'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
                 }`}
               >
                 <span>{lang === 'zh-TW' ? tab.zh : tab.en}</span>
-                {tab.id !== '00' && (
+                {tab.isAlphabet ? (
+                  <span className={`text-[10px] font-bold ${isSelected ? 'text-indigo-500 dark:text-indigo-300' : 'text-slate-400'}`}>
+                    字母樂園 🔤
+                  </span>
+                ) : tab.isAllSchool ? (
+                  <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-500 dark:text-amber-300' : 'text-slate-400'}`}>
+                    綜合大亂鬥 ⚔️
+                  </span>
+                ) : (
                   <span className={`text-[10px] font-bold ${isSelected ? 'text-emerald-500 dark:text-emerald-300' : 'text-slate-400'}`}>
-                    第 {tab.books.join('、')} 冊
+                    第 {tab.books?.join('、')} 冊
                   </span>
                 )}
               </button>
@@ -307,15 +333,15 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
         </div>
       </div>
 
-      {/* ── 篩選控制器便當卡 (當前年級資訊 ＆ 競賽週次切換) ── */}
+      {/* ── 篩選控制器便當卡 (當前年級資訊、學期身分 ＆ 競賽週次切換) ── */}
       <GlassCard className="mb-6 p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black">
-              <Users className="w-5 h-5" />
+              {activeGradeObj.isAllSchool ? <Swords className="w-5 h-5 text-amber-500" /> : <Users className="w-5 h-5" />}
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-black text-slate-800 dark:text-white">
                   {lang === 'zh-TW' ? activeGradeObj.zh : activeGradeObj.en} 榮譽競賽榜
                 </span>
@@ -324,6 +350,11 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                     我的年級 🎯
                   </span>
                 )}
+                {/* 當前學期標籤 */}
+                <span className="px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-400/30 text-indigo-700 dark:text-indigo-300 text-[10px] font-black flex items-center gap-1">
+                  <School className="w-3 h-3" />
+                  {getSemesterDisplayName()}
+                </span>
               </div>
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5">
                 {activeGradeObj.descZh}
@@ -358,7 +389,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
 
       {/* ── Tier 1: 10 大遊戲模式 Top 5 風雲英雄小卡網格 (Bento Grid) ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-        {CONSOLIDATED_GAME_MODES.map((mode) => {
+        {displayModes.map((mode) => {
           const Icon = mode.icon;
           const ranks = (boardData[mode.id] || []).slice(0, 5);
 

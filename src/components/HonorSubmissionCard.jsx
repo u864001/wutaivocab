@@ -1,7 +1,8 @@
+import React, { useState, useEffect, useRef } from 'react';
 import { Button3D } from './ui/Button3D';
 import { useI18n } from '../context/I18nContext';
 import { useStudent } from '../context/StudentContext';
-import { formatStudentDisplayName, isBookInOwnGrade } from '../utils/studentIdHelper';
+import { formatStudentDisplayName, isBookInOwnGrade, isAlphabetGameMode } from '../utils/studentIdHelper';
 import { checkIfQualifiesForTop50, uploadScore } from '../services/supabase';
 import { CertificateModal } from './CertificateModal';
 import { getAccuracyLevel } from '../services/certificateGenerator';
@@ -29,6 +30,10 @@ export const HonorSubmissionCard = ({
   const hasAwardedCoinsRef = useRef(false);
   const [awardedInfo, setAwardedInfo] = useState({ delta: 0, reason: '', type: 'none' });
 
+  // 判斷是否為字母類遊戲 (迷宮、是非字母、隕石ABC、記憶翻牌)
+  const isAlphabet = isAlphabetGameMode(mode, book);
+  const effectiveBook = book || (isAlphabet ? 'abc' : null);
+
   useEffect(() => {
     if (currentStudent && !playerName) {
       setPlayerName(currentStudent.nickname || '');
@@ -44,7 +49,7 @@ export const HonorSubmissionCard = ({
 
     // 防刷門檻 (Anti-exploit Gate)：答題數 >= 5、總題數 >= 10，或挑戰時間 >= 20 秒
     const isLegitimateSession = totalCount >= 10 || score >= 5 || time >= 20;
-    const isOwnGrade = isBookInOwnGrade(book, currentStudent?.grade);
+    const isOwnGrade = isBookInOwnGrade(effectiveBook, currentStudent?.grade, mode);
 
     if (!isLegitimateSession) {
       setAwardedInfo({
@@ -69,6 +74,8 @@ export const HonorSubmissionCard = ({
     const rewardType = coinDelta === 10 ? 'top50' : 'clear';
     const reasonText = coinDelta === 10
       ? '👑 突破本週全校 Top 50 榮譽榜！獲得 +10 宇宙金幣！'
+      : (isAlphabet && (currentStudent?.grade === '01' || currentStudent?.grade === '02'))
+      ? '🌟 完美挑戰低年級字母樂園！獲得 +1 宇宙金幣！'
       : '👏 完整挑戰本年級單元！獲得 +1 宇宙金幣！';
 
     setAwardedInfo({
@@ -81,7 +88,7 @@ export const HonorSubmissionCard = ({
       hasAwardedCoinsRef.current = true;
       addCoins(coinDelta);
     }
-  }, [status, book, totalCount, score, time, currentStudent, isLoggedIn, addCoins]);
+  }, [status, effectiveBook, totalCount, score, time, currentStudent, isLoggedIn, addCoins, isAlphabet, mode]);
 
   // 當學生在結算卡片點擊「登入」後立即補發金幣
   useEffect(() => {
@@ -98,8 +105,8 @@ export const HonorSubmissionCard = ({
   useEffect(() => {
     let isCancelled = false;
 
-    // 1. 若未滿足單冊單元範圍門檻 (跨多冊或題數不足)
-    if (!book) {
+    // 1. 若未滿足單冊單元範圍門檻 (跨多冊或題數不足)，但字母類遊戲不受單冊冊數限制！
+    if (!effectiveBook && !isAlphabet) {
       setStatus('not_qualifying_book');
       return;
     }
@@ -112,7 +119,7 @@ export const HonorSubmissionCard = ({
 
     // 3. 向 Supabase 檢查本週該冊別、該模式是否達到 Top 50 門檻
     setStatus('checking');
-    checkIfQualifiesForTop50({ mode, book, score, time })
+    checkIfQualifiesForTop50({ mode, book: effectiveBook || 'abc', score, time })
       .then((qualified) => {
         if (isCancelled) return;
         if (qualified) {
@@ -131,7 +138,7 @@ export const HonorSubmissionCard = ({
     return () => {
       isCancelled = true;
     };
-  }, [mode, book, score, time]);
+  }, [mode, effectiveBook, score, time, isAlphabet]);
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
@@ -151,7 +158,7 @@ export const HonorSubmissionCard = ({
 
     const success = await uploadScore({
       mode,
-      book,
+      book: effectiveBook || 'abc',
       name: trimmedName,
       score,
       time

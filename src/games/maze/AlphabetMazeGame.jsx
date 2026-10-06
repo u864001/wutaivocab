@@ -1267,7 +1267,7 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
             isPerfect ? (
               <HonorSubmissionCard
                 mode={isLowercase ? 'maze-lower' : 'maze-upper'}
-                book={qualifyingBook || '1'}
+                book={qualifyingBook || 'abc'}
                 score={score}
                 time={time}
                 totalCount={totalCount || 26}

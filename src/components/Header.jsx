@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useI18n } from '../context/I18nContext';
 import { useStudent } from '../context/StudentContext';
@@ -19,7 +19,7 @@ export const Header = ({
   const { isDark, toggleTheme } = useTheme();
   const { lang, toggleLang, t } = useI18n();
   const { currentStudent, isLoggedIn, openModal } = useStudent();
-  const [isMuted, setIsMuted] = React.useState(soundEngine.isMuted);
+  const [isMuted, setIsMuted] = useState(soundEngine.isMuted);
 
   const handleAdminTrigger = useEasterEgg(onOpenTeacherHub, 5, 2000);
 

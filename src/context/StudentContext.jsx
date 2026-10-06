@@ -13,6 +13,11 @@ import {
   isBookInOwnGrade,
   getRandomFunNickname
 } from '../utils/studentIdHelper';
+import {
+  getCurrentSemesterId,
+  getSemesterDisplayName,
+  checkAndApplySemesterReset
+} from '../utils/semesterHelper';
 import { containsProfanity } from '../services/profanityFilter';
 
 const StudentContext = createContext(null);
@@ -23,6 +28,7 @@ export const StudentProvider = ({ children }) => {
   const [currentStudent, setCurrentStudent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [semesterNotice, setSemesterNotice] = useState(null);
 
   // 初始化：嘗試自本機記憶載入上次漫遊座號或訪客狀態
   useEffect(() => {
@@ -34,6 +40,9 @@ export const StudentProvider = ({ children }) => {
           const profile = await fetchStudentProfile(lastId);
           if (!isCancelled && profile) {
             setCurrentStudent(profile);
+            if (profile.has_just_reset_semester) {
+              setSemesterNotice(profile.last_reset_notice || '🎉 歡迎進入新學期！全新學期競賽已開跑！');
+            }
             return;
           }
         }
@@ -41,7 +50,13 @@ export const StudentProvider = ({ children }) => {
         const guestSaved = localStorage.getItem('wutai_guest_student');
         if (guestSaved && !isCancelled) {
           try {
-            setCurrentStudent(JSON.parse(guestSaved));
+            const parsed = JSON.parse(guestSaved);
+            const checked = checkAndApplySemesterReset(parsed);
+            setCurrentStudent(checked);
+            if (checked.has_just_reset_semester) {
+              setSemesterNotice(checked.last_reset_notice);
+              try { localStorage.setItem('wutai_guest_student', JSON.stringify(checked)); } catch (e) {}
+            }
           } catch (e) {}
         }
       } catch (e) {
@@ -73,7 +88,7 @@ export const StudentProvider = ({ children }) => {
 
       // 先嘗試自雲端或快取取得既有資料
       const existing = await fetchStudentProfile(studentId);
-
+      const currentSem = getCurrentSemesterId();
       const profileToSave = {
         student_id: studentId,
         grade: String(grade).padStart(2, '0'),
@@ -82,6 +97,8 @@ export const StudentProvider = ({ children }) => {
         nickname: cleanNick,
         coins: existing?.coins ?? 0,
         quest_points: existing?.quest_points ?? 0,
+        semester_id: existing?.semester_id || currentSem,
+        semester_history: Array.isArray(existing?.semester_history) ? existing.semester_history : [],
         inventory: Array.isArray(existing?.inventory) ? existing.inventory : [],
         daily_quest: (typeof existing?.daily_quest === 'object' && existing?.daily_quest) ? existing.daily_quest : {}
       };
@@ -283,11 +300,11 @@ export const StudentProvider = ({ children }) => {
   }, [currentStudent?.student_id]);
 
   /**
-   * 判斷是否為學生本年級教材
+   * 判斷是否為學生本年級教材 (支援字母模式直接符合一、二年級)
    */
-  const isOwnGradeBook = useCallback((book) => {
+  const isOwnGradeBook = useCallback((book, mode = null) => {
     if (!currentStudent) return true; // 未登入前不限制
-    return isBookInOwnGrade(book, currentStudent.grade);
+    return isBookInOwnGrade(book, currentStudent.grade, mode);
   }, [currentStudent]);
 
   const value = {
@@ -310,7 +327,11 @@ export const StudentProvider = ({ children }) => {
     studentGrade: currentStudent?.grade || '00',
     coins: currentStudent?.coins || 0,
     questPoints: currentStudent?.quest_points || 0,
-    inventory: currentStudent?.inventory || []
+    inventory: currentStudent?.inventory || [],
+    currentSemesterId: getCurrentSemesterId(),
+    semesterName: getSemesterDisplayName(),
+    semesterNotice,
+    clearSemesterNotice: () => setSemesterNotice(null)
   };
 
   return (

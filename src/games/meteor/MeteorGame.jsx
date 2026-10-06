@@ -430,7 +430,7 @@ export const MeteorGame = ({
           {/* 榮譽榜破紀錄留名判定卡與獎狀領取 */}
           <HonorSubmissionCard
             mode={`meteor-${subMode}`}
-            book={qualifyingBook}
+            book={qualifyingBook || (subMode === 'abc' ? 'abc' : null)}
             score={score}
             time={survivalTime}
             totalCount={totalCountForAccuracy}

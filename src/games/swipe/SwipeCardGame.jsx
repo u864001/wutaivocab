@@ -1114,7 +1114,7 @@ export const SwipeCardGame = ({
           {/* 提報全校 Top 50 英雄榜卡片 */}
           <HonorSubmissionCard
             mode={isVocab ? 'swipe-vocab' : 'swipe-abc'}
-            book={qualifyingBook || '1'}
+            book={qualifyingBook || (isVocab ? '1' : 'abc')}
             score={score}
             time={30}
             totalCount={totalSwiped || 20}
