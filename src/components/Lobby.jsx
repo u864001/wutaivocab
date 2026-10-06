@@ -9,7 +9,7 @@ import {
   Volume2, Keyboard, ChevronDown, ChevronUp, Check,
   QrCode, Sparkles, BookOpen, UserCheck, Megaphone, Home,
   Compass, Flame, Coins, User, RefreshCw, Package, ShieldCheck,
-  Store, MapPin
+  Store, MapPin, KeyRound
 } from 'lucide-react';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 
@@ -526,7 +526,30 @@ export const Lobby = ({
           {t.secSolo}
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-4">
+          {/* 神祕密室逃脫 (分年級主題解謎、聽力拼字、高畫質沉浸探索) */}
+          <GlassCard
+            hoverable={true}
+            onClick={() => onNavigate('escape')}
+            className="text-center flex flex-col items-center justify-between group border-2 border-emerald-400/80 bg-gradient-to-b from-emerald-500/15 via-teal-500/10 to-transparent relative shadow-md cursor-pointer"
+          >
+            <div className="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm flex items-center gap-0.5">
+              <span>全新密室</span>
+            </div>
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-md">
+              <KeyRound className="w-7 h-7" />
+            </div>
+            <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+              {t.escapeTitle || '神祕密室逃脫'}
+            </h4>
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+              {t.escapeDesc || '四大機關封印！聲納聽力、羊皮紙線索、拼字輪盤與對偶之門！'}
+            </p>
+            <Button3D variant="emerald" size="sm" className="w-full">
+              進入密室
+            </Button3D>
+          </GlassCard>
+
           {/* 極速是非滑牌 (30秒卡牌速辨，低年級字母 / 中高年級單字) */}
           <GlassCard
             hoverable={true}

@@ -11,6 +11,7 @@ import { MemoryGameSingle } from './games/memory/MemoryGameSingle';
 import { BattleGame } from './games/battle/BattleGame';
 import { AlphabetMazeGame } from './games/maze/AlphabetMazeGame';
 import { SwipeCardGame } from './games/swipe/SwipeCardGame';
+import { VocabEscapeGame } from './games/escape/VocabEscapeGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
 import { WutaiTownGame } from './games/town/WutaiTownGame';
@@ -95,6 +96,9 @@ export function App() {
       }
       if (path === '/town' || urlParams.get('view') === 'town') {
         return 'town';
+      }
+      if (path === '/escape' || urlParams.get('view') === 'escape') {
+        return 'escape';
       }
       if (urlParams.get('join')) {
         return 'battle';
@@ -372,6 +376,15 @@ export function App() {
 
           {currentView === 'swipe' && (
             <SwipeCardGame
+              settings={settings}
+              words={words}
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
+
+          {currentView === 'escape' && (
+            <VocabEscapeGame
               settings={settings}
               words={words}
               qualifyingBook={qualifyingBook}
