@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Scroll, CheckCircle2, XCircle, Sparkles, KeyRound } from 'lucide-react';
-import { soundEngine, speakEnglish } from '../../../services/audio';
+import React, { useState, useEffect } from 'react';
+import { Scroll, CheckCircle2, XCircle, Sparkles, Volume2, ChevronDown, ChevronUp, Eye } from 'lucide-react';
+import { soundEngine } from '../../../services/audio';
+import { speakMysteriousEnglish } from '../escapeAudio';
 
 export const MeaningPuzzle = ({
   puzzle,
@@ -12,6 +13,21 @@ export const MeaningPuzzle = ({
 }) => {
   const [selectedId, setSelectedId] = useState(null);
   const [feedback, setFeedback] = useState(null);
+  const [isChineseOpen, setIsChineseOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isSolved && puzzle?.englishSentence) {
+      const timer = setTimeout(() => {
+        speakMysteriousEnglish(puzzle.englishSentence);
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+  }, [puzzle, isSolved]);
+
+  const handlePlayVoice = () => {
+    soundEngine.click();
+    speakMysteriousEnglish(puzzle.englishSentence || puzzle.targetWord.en);
+  };
 
   const handleSelectOption = (option) => {
     if (isSolved || feedback) return;
@@ -21,7 +37,6 @@ export const MeaningPuzzle = ({
     if (option.id === puzzle.targetWord.id) {
       setFeedback('correct');
       soundEngine.correct();
-      speakEnglish(option.en);
       setTimeout(() => {
         onSolve(puzzle.id, option);
       }, 900);
@@ -37,25 +52,54 @@ export const MeaningPuzzle = ({
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center p-3 sm:p-5 text-center select-none animate-fadeIn">
-      {/* 羊皮紙卷軸神秘謎面 */}
-      <div className="w-full max-w-xl mb-5 sm:mb-6 p-5 sm:p-6 rounded-3xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700/80 shadow-lg relative overflow-hidden">
-        <div className="absolute top-2 right-3 text-amber-500/20 text-6xl select-none pointer-events-none">
-          📜
+    <div className="w-full flex flex-col items-center justify-center p-2 sm:p-5 text-center select-none animate-fadeIn">
+      {/* 羊皮紙卷軸神秘預言 */}
+      <div className="w-full max-w-xl mb-4 sm:mb-6 p-4 sm:p-5 rounded-3xl bg-amber-950/40 border-2 border-amber-500/50 shadow-xl text-left relative">
+        <div className="flex items-center justify-between mb-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black">
+            <Scroll className="w-3.5 h-3.5" />
+            <span>羊皮紙密語 (Scroll of Lore)</span>
+          </div>
+
+          <button
+            onClick={handlePlayVoice}
+            className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition-all active:scale-95 flex items-center gap-1.5 shadow-md cursor-pointer"
+            title="以神秘低沉語音朗讀"
+          >
+            <Volume2 className="w-4 h-4" />
+            <span>聆聽神秘朗讀</span>
+          </button>
         </div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-200/60 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 text-xs font-black mb-2">
-          <Scroll className="w-3.5 h-3.5" />
-          <span>遠古羊皮紙線索</span>
-        </div>
-        <h3 className="text-2xl sm:text-3xl font-black font-heading text-amber-950 dark:text-amber-100 tracking-wide mt-1">
-          {puzzle.clueZh}
-        </h3>
-        <p className="text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300/80 mt-1.5">
-          解鎖密碼匣：請挑選出對應此中文意義的英文咒語
+
+        {/* 英文句子 */}
+        <p className="text-base sm:text-xl font-heading font-black text-amber-100 tracking-wide leading-relaxed my-2">
+          "{puzzle.englishSentence}"
         </p>
+
+        {/* 預設隱藏的中文譯文 (點擊展開) */}
+        <div className="mt-3 pt-3 border-t border-white/10">
+          <button
+            type="button"
+            onClick={() => {
+              soundEngine.click();
+              setIsChineseOpen(!isChineseOpen);
+            }}
+            className="text-xs font-black text-amber-400/90 hover:text-amber-300 flex items-center gap-1 cursor-pointer transition-colors"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>{isChineseOpen ? '收合中文詳解' : '📜 揭示古代石刻中文譯文 (點擊展開)'}</span>
+            {isChineseOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
+
+          {isChineseOpen && (
+            <div className="mt-2 p-2.5 rounded-xl bg-black/40 text-xs sm:text-sm font-bold text-slate-300 animate-fadeIn">
+              {puzzle.chineseClue}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* 4 個刻字石匣選項 */}
+      {/* 4 個選項 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full max-w-xl">
         {puzzle.options.map((opt, idx) => {
           const isEliminated = opt.id === eliminatedOptionId;

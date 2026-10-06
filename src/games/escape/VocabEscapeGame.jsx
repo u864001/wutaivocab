@@ -4,7 +4,8 @@ import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { useStudent } from '../../context/StudentContext';
 import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
-import { soundEngine, bgmManager, speakEnglish } from '../../services/audio';
+import { soundEngine } from '../../services/audio';
+import { escapeAudio, speakMysteriousEnglish } from './escapeAudio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { getRandomFunNickname } from '../../utils/studentIdHelper';
 import { generateEscapeRoomCampaign } from './escapeData';
@@ -12,7 +13,6 @@ import { ChamberScene } from './ChamberScene';
 import { ListeningPuzzle } from './puzzles/ListeningPuzzle';
 import { MeaningPuzzle } from './puzzles/MeaningPuzzle';
 import { SpellingPuzzle } from './puzzles/SpellingPuzzle';
-import { PairingPuzzle } from './puzzles/PairingPuzzle';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Trophy, RotateCcw, Sparkles, Key, CheckCircle2,
@@ -29,7 +29,7 @@ export const VocabEscapeGame = ({
   const { lang, t } = useI18n();
   const { currentStudent, addQuestPoints } = useStudent();
 
-  // 學生自訂暱稱 (預設自動帶出登入暱稱或本機記憶)
+  // 學生自訂暱稱 (自動帶出登入暱稱或本機記憶)
   const [playerName, setPlayerName] = useState(() => {
     return (
       currentStudent?.nickname ||
@@ -48,7 +48,7 @@ export const VocabEscapeGame = ({
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [hintCount, setHintCount] = useState(2);
   const [eliminatedOptions, setEliminatedOptions] = useState({});
-  const [isBgmMuted, setIsBgmMuted] = useState(() => !bgmManager.isBgmActive());
+  const [isBgmMuted, setIsBgmMuted] = useState(false);
 
   const timerRef = useRef(null);
   const startTimeRef = useRef(null);
@@ -77,11 +77,11 @@ export const VocabEscapeGame = ({
     initCampaign();
   }, [initCampaign]);
 
-  // 卸載時還原全螢幕、停止計時器與停止 BGM
+  // 卸載時還原全螢幕、停止計時器與停止合成音樂
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      bgmManager.stopBgm();
+      escapeAudio.stopCurrentMusic();
       exitFullscreen();
     };
   }, []);
@@ -100,6 +100,7 @@ export const VocabEscapeGame = ({
   const handleStartEscape = () => {
     soundEngine.init();
     soundEngine.click();
+    escapeAudio.init();
 
     // 記憶暱稱
     const cleanNick = playerName.trim() || '探險小勇士';
@@ -110,10 +111,10 @@ export const VocabEscapeGame = ({
     // 立即觸發全螢幕沉浸
     enterFullscreen();
 
-    // 啟動第一室專屬背景音樂 (cinema 懸疑神殿)
+    // 啟動第一室專屬 Web Audio 合成懸疑音樂
     const firstRoom = campaignData?.chapters?.[0];
-    if (firstRoom?.bgmId) {
-      bgmManager.playScene(firstRoom.bgmId);
+    if (firstRoom?.themeId) {
+      escapeAudio.playRoomBgm(firstRoom.themeId);
     }
 
     setGameState('playing');
@@ -127,14 +128,14 @@ export const VocabEscapeGame = ({
 
   // 切換音樂靜音
   const handleToggleBgm = () => {
-    const isNowMuted = !bgmManager.toggleMute();
-    setIsBgmMuted(isNowMuted);
+    const muted = escapeAudio.toggleMute();
+    setIsBgmMuted(muted);
   };
 
   // 放棄逃脫退出
   const handleQuitGame = () => {
     if (timerRef.current) clearInterval(timerRef.current);
-    bgmManager.stopBgm();
+    escapeAudio.stopCurrentMusic();
     exitFullscreen();
     onBack();
   };
@@ -146,16 +147,18 @@ export const VocabEscapeGame = ({
     const nextSolved = new Set(solvedPuzzleIds);
     nextSolved.add(puzzleId);
     setSolvedPuzzleIds(nextSolved);
-    setActivePuzzleId(null); // 關閉彈窗回到房間
+    setActivePuzzleId(null);
 
-    // 檢查當前房間內的所有題目是否全部解鎖
+    // 檢查當前房間內 3 個關鍵核心印記是否都已解鎖
     const currentRoomPuzzles = currentChapter?.puzzles || [];
-    const isRoomCleared = currentRoomPuzzles.every(p => nextSolved.has(p.id));
+    const keySolvedCount = currentRoomPuzzles.filter(p => p.isKeyRelic && nextSolved.has(p.id)).length;
 
-    if (isRoomCleared) {
+    if (keySolvedCount >= 3) {
+      // 本室關鍵 3 點全部解鎖！觸發重型石門升起開啟音效
+      escapeAudio.playDoorUnlockSound();
       soundEngine.win();
       try {
-        confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       } catch (e) {}
 
       if (currentChapterIndex < (campaignData.chapters.length - 1)) {
@@ -174,10 +177,10 @@ export const VocabEscapeGame = ({
     const nextIdx = currentChapterIndex + 1;
     setCurrentChapterIndex(nextIdx);
 
-    // 平滑切換下一室專屬背景音樂
+    // 平滑切換下一室專屬 Web Audio 奇幻環境音樂
     const nextChapterMeta = campaignData?.chapters?.[nextIdx];
-    if (nextChapterMeta?.bgmId) {
-      bgmManager.playScene(nextChapterMeta.bgmId);
+    if (nextChapterMeta?.themeId) {
+      escapeAudio.playRoomBgm(nextChapterMeta.themeId);
     }
 
     setGameState('playing');
@@ -188,7 +191,6 @@ export const VocabEscapeGame = ({
     setLives(prev => {
       const nextLives = Math.max(0, prev - 1);
       if (nextLives === 0) {
-        // 生命值見底時自動防呆回充 1 點，避免國小學童受挫卡死
         setTimeout(() => setLives(1), 1500);
       }
       return nextLives;
@@ -214,7 +216,7 @@ export const VocabEscapeGame = ({
         setHintCount(prev => Math.max(0, prev - 1));
       }
     } else if (currentPuzzle.type === 'spelling') {
-      speakEnglish(currentPuzzle.targetWord.en);
+      speakMysteriousEnglish(currentPuzzle.englishSentence || currentPuzzle.targetWord.en);
       setHintCount(prev => Math.max(0, prev - 1));
     }
   };
@@ -254,22 +256,20 @@ export const VocabEscapeGame = ({
   const { chapters, qualifyingBook, totalPuzzlesCount, allWordsInvolved } = campaignData;
   const activePuzzle = currentChapter.puzzles.find(p => p.id === activePuzzleId);
 
-  // ── 畫面 1：行前前情提要與暱稱設定 (Prologue Briefing Screen) ──
+  // ── 畫面 1：行前前情提要與暱稱設定 (Prologue Screen) ──
   if (gameState === 'briefing') {
     return (
       <div className="min-h-[85vh] flex items-center justify-center p-4 animate-fadeIn">
         <GlassCard className="max-w-2xl w-full p-6 sm:p-8 text-center relative overflow-hidden border-2 border-amber-400/70 shadow-2xl">
-          {/* 背景光暈 */}
           <div className="absolute -top-16 -right-16 w-52 h-52 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
 
-          {/* 頂部古代圖騰 */}
           <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-500 to-emerald-500 text-white flex items-center justify-center mx-auto mb-3 shadow-xl shadow-amber-500/30 text-3xl">
             🗝️
           </div>
 
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-200 text-xs font-black mb-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>大武山遠古石板屋遺跡 • 三連環密室逃脫</span>
+            <span>大武山遠古石板屋遺跡 • 三連環密室大脫逃</span>
           </div>
 
           <h2 className="text-2xl sm:text-4xl font-black font-heading text-slate-800 dark:text-slate-100 mb-2">
@@ -279,10 +279,13 @@ export const VocabEscapeGame = ({
           {/* 前情提要冒險背景說明 */}
           <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 mb-5 text-left text-xs sm:text-sm text-amber-900 dark:text-amber-200 leading-relaxed font-bold">
             <p className="mb-2">
-              📜 <strong>【前情提要】</strong>探險家在屏東霧台深山調查古石板屋秘境時，意外踏中地面機關，身後沉重的青石大門應聲落下，退路已被萬斤巨石阻斷！
+              📜 <strong>【前情提要】</strong>探險家在屏東霧台深山調查古石板屋遺跡時，不慎踏中機關陷阱，身後千斤青石大門轟隆落下，退路已被徹底封死！
+            </p>
+            <p className="mb-2">
+              每間石室隱藏著 <strong>5 處神秘遺跡</strong>，但只有 <strong>3 個散發淡淡金色呼吸光暈的才是過關關鍵</strong>（其餘為白色迷途古物）！
             </p>
             <p>
-              前方傳來神秘的回音與齒輪聲，唯有依序解鎖<strong>【第1室：回音石廊】</strong> ➔ <strong>【第2室：典籍知識庫】</strong> ➔ <strong>【第3室：星象脫逃祭壇】</strong>的古老單字封印，才能重返陽光普照的地表！
+              聆聽石壁發出的<strong>低沉神秘英文預言</strong>，解開三道石門，重回陽光灑落的青山大地！
             </p>
           </div>
 
@@ -322,7 +325,7 @@ export const VocabEscapeGame = ({
                   全自動年級適配（第 {qualifyingBook} 冊單元詞彙）
                 </div>
                 <div className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
-                  已鎖定本年級教材！成功脫逃可直接登錄全校英雄榜並領取宇宙金幣！
+                  符合全校英雄榜登錄與宇宙金幣領取門檻！
                 </div>
               </div>
             </div>
@@ -356,7 +359,7 @@ export const VocabEscapeGame = ({
     );
   }
 
-  // ── 畫面 2：房間之間過場串場說明 (Transition Story Screen) ──
+  // ── 畫面 2：房間過場說明 (Transition Screen) ──
   if (gameState === 'transition') {
     const nextChapterMeta = chapters[currentChapterIndex + 1];
 
@@ -375,7 +378,6 @@ export const VocabEscapeGame = ({
             {currentChapter.titleZh} 脫逃成功！
           </h3>
 
-          {/* 過場劇情故事說明 */}
           <div className="p-4 rounded-2xl bg-black/40 border border-white/10 mb-6 text-left text-xs sm:text-sm text-slate-200 font-bold leading-relaxed">
             {currentChapter.transitionStoryZh}
           </div>
@@ -394,7 +396,7 @@ export const VocabEscapeGame = ({
     );
   }
 
-  // ── 畫面 3：密室主要場景 (Chamber In-Game Scene) ──
+  // ── 畫面 3：密室探索主場景 ──
   return (
     <div className="relative w-full h-[100dvh]">
       <ChamberScene
@@ -416,13 +418,12 @@ export const VocabEscapeGame = ({
       {activePuzzle && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-md animate-fadeIn">
           <div className="relative w-full max-w-2xl bg-white/95 dark:bg-slate-900/95 border-2 border-amber-400/80 rounded-3xl p-5 sm:p-7 shadow-2xl overflow-hidden max-h-[90dvh] overflow-y-auto">
-            {/* 彈窗頂部 */}
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2.5">
                 <span className="text-xl">{currentChapter.runeIcon}</span>
                 <div>
                   <span className="text-[11px] font-bold text-slate-400">
-                    {activePuzzle.stationName}
+                    {activePuzzle.hint}
                   </span>
                   <h3 className="text-lg sm:text-xl font-black font-heading text-slate-800 dark:text-slate-100">
                     {activePuzzle.titleZh}
@@ -441,7 +442,6 @@ export const VocabEscapeGame = ({
               </button>
             </div>
 
-            {/* 載入特定謎題組件 */}
             {activePuzzle.type === 'listening' && (
               <ListeningPuzzle
                 puzzle={activePuzzle}
@@ -473,21 +473,11 @@ export const VocabEscapeGame = ({
                 themeColor={currentChapter.color}
               />
             )}
-
-            {activePuzzle.type === 'pairing' && (
-              <PairingPuzzle
-                puzzle={activePuzzle}
-                onSolve={handleSolvePuzzle}
-                onMistake={handleMistake}
-                isSolved={solvedPuzzleIds.has(activePuzzle.id)}
-                themeColor={currentChapter.color}
-              />
-            )}
           </div>
         </div>
       )}
 
-      {/* ── 畫面 4：終極大脫逃勝利結算 (Victory Grand Finale) ── */}
+      {/* ── 畫面 4：終極大脫逃勝利結算 ── */}
       {gameState === 'victory' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
           <GlassCard className="max-w-md w-full p-6 sm:p-8 text-center relative overflow-hidden border-2 border-emerald-400 shadow-2xl max-h-[92dvh] overflow-y-auto">
@@ -502,14 +492,13 @@ export const VocabEscapeGame = ({
               🎉 逃脫成功！
             </h2>
             <p className="text-xs font-bold text-slate-400 mb-3">
-              恭喜探險家 <strong className="text-amber-400">{playerName}</strong> 歷時 <span className="text-amber-400 font-black text-base">{timeElapsed} 秒</span> 破解三連環全部封印！
+              探險家 <strong className="text-amber-400">{playerName}</strong> 歷時 <span className="text-amber-400 font-black text-base">{timeElapsed} 秒</span> 破解三連環全部封印！
             </p>
 
             <div className="p-3.5 rounded-2xl bg-black/40 border border-white/10 mb-4 text-xs font-bold text-slate-300 text-left leading-relaxed">
               {currentChapter.victoryStoryZh}
             </div>
 
-            {/* 榮譽榜登錄與宇宙金幣結算卡 */}
             <div className="mb-5 text-left">
               <HonorSubmissionCard
                 mode="escape"
@@ -527,7 +516,6 @@ export const VocabEscapeGame = ({
               />
             </div>
 
-            {/* 動作按鈕 */}
             <div className="space-y-2.5">
               <Button3D
                 variant="amber"

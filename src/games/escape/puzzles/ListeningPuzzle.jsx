@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, CheckCircle2, XCircle, Sparkles, HelpCircle } from 'lucide-react';
-import { soundEngine, speakEnglish } from '../../../services/audio';
+import { Volume2, CheckCircle2, XCircle, Sparkles, ChevronDown, ChevronUp, Eye } from 'lucide-react';
+import { soundEngine } from '../../../services/audio';
+import { speakMysteriousEnglish } from '../escapeAudio';
 
 export const ListeningPuzzle = ({
   puzzle,
@@ -11,13 +12,14 @@ export const ListeningPuzzle = ({
   themeColor = 'emerald'
 }) => {
   const [selectedId, setSelectedId] = useState(null);
-  const [feedback, setFeedback] = useState(null); // 'correct' | 'wrong'
+  const [feedback, setFeedback] = useState(null);
+  const [isChineseOpen, setIsChineseOpen] = useState(false);
 
-  // 自動播放外師語音 (第一次點開時自動朗讀)
+  // 初次打開自動以神秘低沉語音朗讀英文句子
   useEffect(() => {
-    if (!isSolved && puzzle?.targetWord?.en) {
+    if (!isSolved && puzzle?.englishSentence) {
       const timer = setTimeout(() => {
-        speakEnglish(puzzle.targetWord.en);
+        speakMysteriousEnglish(puzzle.englishSentence);
       }, 350);
       return () => clearTimeout(timer);
     }
@@ -25,7 +27,7 @@ export const ListeningPuzzle = ({
 
   const handlePlayVoice = () => {
     soundEngine.click();
-    speakEnglish(puzzle.targetWord.en);
+    speakMysteriousEnglish(puzzle.englishSentence || puzzle.targetWord.en);
   };
 
   const handleSelectOption = (option) => {
@@ -51,27 +53,54 @@ export const ListeningPuzzle = ({
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center p-3 sm:p-5 text-center select-none animate-fadeIn">
-      {/* 聲納聽力共鳴台核心 */}
-      <div className="mb-5 sm:mb-7 flex flex-col items-center">
-        <button
-          onClick={handlePlayVoice}
-          className="relative group p-5 sm:p-7 rounded-3xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-emerald-400 text-white shadow-xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-emerald-300/60"
-          title="點擊聆聽純美式外師發音"
-        >
-          <div className="absolute -inset-1 rounded-3xl bg-emerald-400/40 blur group-hover:blur-md transition-all animate-pulse" />
-          <Volume2 className="w-12 h-12 sm:w-16 sm:h-16 relative z-10 animate-bounce" />
-          <span className="block text-[11px] sm:text-xs font-black tracking-widest mt-1 opacity-90">
-            TAP TO LISTEN
-          </span>
-        </button>
-        <p className="mt-3 text-xs sm:text-sm font-black text-slate-700 dark:text-slate-200 flex items-center gap-1.5 bg-white/70 dark:bg-slate-800/70 px-4 py-1.5 rounded-full border border-slate-200/80 dark:border-slate-700">
-          <Sparkles className="w-4 h-4 text-emerald-500" />
-          <span>聆聽石柱共鳴語音，挑選正確刻印符石</span>
+    <div className="w-full flex flex-col items-center justify-center p-2 sm:p-5 text-center select-none animate-fadeIn">
+      {/* 神秘英文預言句子展示台 */}
+      <div className="w-full max-w-xl mb-4 sm:mb-6 p-4 sm:p-5 rounded-3xl bg-slate-900/90 border-2 border-emerald-500/40 shadow-xl text-left relative">
+        <div className="flex items-center justify-between mb-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>遠古回音預言 (Ancient Prophecy)</span>
+          </div>
+
+          <button
+            onClick={handlePlayVoice}
+            className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-all active:scale-95 flex items-center gap-1.5 shadow-md cursor-pointer"
+            title="以低沉神秘語音再次朗讀"
+          >
+            <Volume2 className="w-4 h-4" />
+            <span>聆聽神秘朗讀</span>
+          </button>
+        </div>
+
+        {/* 英文句子 */}
+        <p className="text-base sm:text-xl font-heading font-black text-emerald-100 tracking-wide leading-relaxed my-2">
+          "{puzzle.englishSentence}"
         </p>
+
+        {/* 預設隱藏的中文譯文 (可點擊展開) */}
+        <div className="mt-3 pt-3 border-t border-white/10">
+          <button
+            type="button"
+            onClick={() => {
+              soundEngine.click();
+              setIsChineseOpen(!isChineseOpen);
+            }}
+            className="text-xs font-black text-emerald-400/90 hover:text-emerald-300 flex items-center gap-1 cursor-pointer transition-colors"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>{isChineseOpen ? '收合中文詳解' : '📜 揭示古代石刻中文譯文 (點擊展開)'}</span>
+            {isChineseOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
+
+          {isChineseOpen && (
+            <div className="mt-2 p-2.5 rounded-xl bg-black/40 text-xs sm:text-sm font-bold text-slate-300 animate-fadeIn">
+              {puzzle.chineseClue}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* 4 個大尺寸石符文選項 (iPad 友善觸控熱區) */}
+      {/* 4 個選項 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full max-w-xl">
         {puzzle.options.map((opt, idx) => {
           const isEliminated = opt.id === eliminatedOptionId;
