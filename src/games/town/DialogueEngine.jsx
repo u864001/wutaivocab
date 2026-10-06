@@ -221,7 +221,7 @@ export const DialogueEngine = ({
 
         {/* 右側快捷操作 */}
         <div className="flex items-center gap-2">
-          {!isVisitingTeacher && location.hasShop && (
+          {location.hasShop && (
             <button
               onClick={() => {
                 stopSpeech();
@@ -235,7 +235,7 @@ export const DialogueEngine = ({
             </button>
           )}
 
-          {!isVisitingTeacher && location.hasQuests && (
+          {location.hasQuests && (
             <button
               onClick={() => {
                 stopSpeech();

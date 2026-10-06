@@ -119,10 +119,13 @@ export const StudentProvider = ({ children }) => {
   }, []);
 
   /**
-   * 登出當前身分 (切換前置作業)
+   * 登出當前身分 (切換前置作業，確保共用 iPad 不殘留上一位學生座號)
    */
   const logoutStudent = useCallback(() => {
     setCurrentStudent(null);
+    try {
+      localStorage.removeItem(LAST_STUDENT_ID_KEY);
+    } catch (e) {}
   }, []);
 
   /**

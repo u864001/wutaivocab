@@ -11,6 +11,7 @@ import confetti from 'canvas-confetti';
 
 export const ShopModal = ({ locationId, onClose, onQuestProgress }) => {
   const { currentStudent, coins, spendCoins, inventory, updateInventory, isLoggedIn, openModal } = useStudent();
+  const [isBuying, setIsBuying] = useState(false);
   const [purchaseToast, setPurchaseToast] = useState(null);
   const [errorToast, setErrorToast] = useState(null);
 
@@ -18,6 +19,7 @@ export const ShopModal = ({ locationId, onClose, onQuestProgress }) => {
   const items = TOWN_ITEMS.filter(it => it.shopId === locationId);
 
   const handleBuyItem = async (item) => {
+    if (isBuying) return;
     soundEngine.click();
 
     if (!isLoggedIn) {
@@ -33,30 +35,35 @@ export const ShopModal = ({ locationId, onClose, onQuestProgress }) => {
       return;
     }
 
-    const success = await spendCoins(item.price);
-    if (success) {
-      soundEngine.correct();
-      try {
-        confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
-      } catch (e) {}
+    setIsBuying(true);
+    try {
+      const success = await spendCoins(item.price);
+      if (success) {
+        soundEngine.correct();
+        try {
+          confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+        } catch (e) {}
 
-      // 將道具存入背包
-      const newInventory = [
-        ...(inventory || []),
-        {
-          ...item,
-          purchasedAt: new Date().toISOString()
+        // 將道具存入背包
+        const newInventory = [
+          ...(inventory || []),
+          {
+            ...item,
+            purchasedAt: new Date().toISOString()
+          }
+        ];
+        await updateInventory(newInventory);
+
+        setPurchaseToast(`成功購買「${item.nameZh} (${item.nameEn})」！已收入背包。`);
+        setTimeout(() => setPurchaseToast(null), 3000);
+
+        // 觸發任務比對 (Action: buy)
+        if (onQuestProgress) {
+          onQuestProgress('buy', item.category, item.id);
         }
-      ];
-      await updateInventory(newInventory);
-
-      setPurchaseToast(`成功購買「${item.nameZh} (${item.nameEn})」！已收入背包。`);
-      setTimeout(() => setPurchaseToast(null), 3000);
-
-      // 觸發任務比對 (Action: buy)
-      if (onQuestProgress) {
-        onQuestProgress('buy', item.category, item.id);
       }
+    } finally {
+      setIsBuying(false);
     }
   };
 
@@ -189,9 +196,9 @@ export const ShopModal = ({ locationId, onClose, onQuestProgress }) => {
                       variant={canAfford ? 'amber' : 'slate'}
                       size="sm"
                       onClick={() => handleBuyItem(item)}
-                      disabled={!canAfford && isLoggedIn}
+                      disabled={isBuying || (!canAfford && isLoggedIn)}
                     >
-                      {isLoggedIn ? '立即購買' : '登入購買'}
+                      {isBuying ? '處理中...' : (isLoggedIn ? '立即購買' : '登入購買')}
                     </Button3D>
                   </div>
                 </div>

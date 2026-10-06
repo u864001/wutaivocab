@@ -16,13 +16,35 @@ export const getDaySeed = (dateStr = getTodayDateStr()) => {
   return hash;
 };
 
-// 32-bit 高散列整數隨機運算器 (保證每日多樣化輪替與非重複地點)
+// 32-bit 真實整數乘法散列 (符合 MDN Math.imul 規範，防整數溢位)
 export const hashInt = (x) => {
-  x = ((x >>> 16) ^ x) * 0x45d9f3b;
-  x = ((x >>> 16) ^ x) * 0x45d9f3b;
+  x = Math.imul((x >>> 16) ^ x, 0x45d9f3b);
+  x = Math.imul((x >>> 16) ^ x, 0x45d9f3b);
   x = (x >>> 16) ^ x;
   return x >>> 0;
 };
+
+// 取得台灣時間 (Asia/Taipei, UTC+8) 的連續日序號，完美避開跨月/跨年/閏年邊界問題
+export const getTaiwanEpochDay = (dateStr = getTodayDateStr()) => {
+  try {
+    const timestamp = Date.parse(`${dateStr}T12:00:00+08:00`);
+    if (!isNaN(timestamp)) {
+      return Math.floor(timestamp / 86400000);
+    }
+  } catch (e) {}
+  return Math.floor((Date.now() + 8 * 3600 * 1000) / 86400000);
+};
+
+// 外師巡迴的 7 個社區與商店地標 (依固定的良好混合順序輪替，連續兩天保證 0 重複，每 7 天巡迴一輪)
+export const VISITING_LOCATION_CYCLE = [
+  'supermarket', // 黑熊超市
+  'station',     // 山林火車站
+  'clinic',      // 貓頭鷹診所
+  'bookstore',   // 貓頭鷹書局
+  'plaza',       // 百步蛇集會所
+  'park',        // 飛鼠公園
+  'cinema'       // 露天電影院
+];
 
 // ── 0.5 霧臺小鎮全景地圖常數與 50 套對話樹匯入 ──
 import { DIALOGUE_VARIANTS, VISITING_TEACHER_VARIANTS } from './townDialogueData.js';
@@ -457,12 +479,12 @@ export const TOWN_ITEMS = [
   {
     id: 'lily_badge',
     shopId: 'plaza',
-    nameEn: 'White Lily Badge',
-    nameZh: '純潔百合勇士勳章',
+    nameEn: 'White Lily Cultural Badge',
+    nameZh: '純潔百合學習紀念章',
     price: 50,
     icon: '⚜️',
     category: 'special',
-    description: '魯凱族象徵尊貴、純潔與榮耀的白百合徽章！'
+    description: '【文化榮譽紀念】向魯凱族純潔、勇氣與傳統配飾權榮譽文化致敬的學習紀念章！'
   },
   {
     id: 'glass_bead',
@@ -650,35 +672,21 @@ export const VISITING_TEACHERS = {
   }
 };
 
-// ── 5. 計算今日值勤外師與出現地標 (高散列非重複演算法 + 5 套專屬外師輪替對話) ──
+// ── 5. 計算今日值勤外師與出現地標 (連續日序號輪替，保證連續兩天地點絕對 0 重複) ──
 export const getDailyVisitingTeacherInfo = (dateStr = getTodayDateStr()) => {
-  const seed = getDaySeed(dateStr);
+  const epochDay = getTaiwanEpochDay(dateStr);
   const teacherKeys = ['mario', 'ibu'];
-  // 每日交替巡迴外師 (Mario / Ibu 每日動態換班)
-  const teacherIndex = hashInt(seed + 99) % teacherKeys.length;
-  const teacherKey = teacherKeys[teacherIndex];
 
-  // 外師巡迴的 7 個社區與商店地標 (不包含國小與玩家家裡)
-  const possibleLocations = ['bookstore', 'supermarket', 'park', 'station', 'clinic', 'plaza', 'cinema'];
-  let locIndex = hashInt(seed + 77) % possibleLocations.length;
+  // 1. 每日嚴格輪流換班 (Mario 偶數日 / Ibu 奇數日，保證兩位外師均勻輪流到校)
+  const teacherKey = teacherKeys[epochDay % 2];
 
-  // 確保連續兩天不會重複出現在相同地標 (防連續同一地點卡死)
-  try {
-    const d = new Date(dateStr);
-    d.setDate(d.getDate() - 1);
-    const prevDateStr = d.toISOString().slice(0, 10);
-    const prevSeed = getDaySeed(prevDateStr);
-    const prevLocIndex = hashInt(prevSeed + 77) % possibleLocations.length;
-    if (locIndex === prevLocIndex) {
-      locIndex = (locIndex + 1) % possibleLocations.length;
-    }
-  } catch (e) {}
+  // 2. 7 大地標依連續日序號輪替 (7 與 2 互質，連續兩天絕對 0 重複，且每 14 天兩位老師均踏遍全部 7 地點！)
+  const locIndex = epochDay % VISITING_LOCATION_CYCLE.length;
+  const locationId = VISITING_LOCATION_CYCLE[locIndex];
 
-  const locationId = possibleLocations[locIndex];
-
-  // 每日自該外師專屬 5 套對話樹中隨機抽取出 1 套使用
+  // 3. 每日對話樹自 5 套專屬對話中輪替 (5 與 7、2 皆互質，週期長達 70 天，豐富不重複)
   const teacherVariants = VISITING_TEACHER_VARIANTS[teacherKey] || [];
-  const variantIndex = hashInt(seed + 333) % Math.max(1, teacherVariants.length);
+  const variantIndex = epochDay % Math.max(1, teacherVariants.length);
   const dailyDialogueTree = teacherVariants[variantIndex] || VISITING_TEACHERS[teacherKey]?.dialogueTree;
 
   return {
@@ -710,17 +718,32 @@ export const getDialogueTreeForLocation = (locationId, options = {}) => {
     return teacher.dialogueTree;
   }
 
-  // 2. 否則依據當日種子自多樣化對話樹池中選取當日輪替對話樹 (使用 32-bit hashInt 混合地標偏移，確保各建築每天獨立隨機抽取 5 套之一)
+  // 2. 否則依據台灣連續日序號自多樣化對話樹池中選取當日輪替對話樹 (5 天週期循環，保證 5 天內必定能體驗全部 5 套對話)
   const variants = DIALOGUE_VARIANTS[locationId];
   if (Array.isArray(variants) && variants.length > 0) {
-    const seed = getDaySeed(dateStr);
+    const epochDay = getTaiwanEpochDay(dateStr);
     const locHashOffset = locationId.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-    const variantIndex = hashInt(seed + locHashOffset) % variants.length;
+    const variantIndex = (epochDay + locHashOffset) % variants.length;
     return variants[variantIndex];
   }
 
-  // 備援回退
-  return DIALOGUE_VARIANTS.school ? DIALOGUE_VARIANTS.school[0] : null;
+  // 備援回退：友善安全提示，避免跨地標出現突兀校長歡迎詞
+  return {
+    variantId: `${locationId}_fallback`,
+    title: '小鎮日常生活',
+    startNode: 'welcome',
+    nodes: {
+      welcome: {
+        id: 'welcome',
+        speaker: '小鎮居民',
+        en: 'Welcome to Wutai Town! Have a wonderful day of learning!',
+        zh: '歡迎來到霧臺小鎮！祝你有個充滿活力與收穫的英語學習日！',
+        options: [
+          { text_en: 'Thank you! Goodbye!', text_zh: '謝謝！再見！', target_id: 'END' }
+        ]
+      }
+    }
+  };
 };
 
 // ── 8. 相容預設對話樹導出 (Backward Compatibility) ──
