@@ -162,8 +162,10 @@ export const HomeScene = ({ onClose }) => {
           <img
             src="/assets/town/bg_home.webp"
             alt="學生溫馨的家"
+            fetchPriority="high"
+            decoding="async"
             onError={() => setBgError(true)}
-            className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.98] contrast-[1.02] pointer-events-none transition-all duration-700"
+            className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.98] contrast-[1.02] pointer-events-none"
           />
         )}
 

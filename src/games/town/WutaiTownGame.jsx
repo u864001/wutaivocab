@@ -160,6 +160,7 @@ export const WutaiTownGame = ({ onBack }) => {
   useEffect(() => {
     const preloadList = [
       ...TOWN_LOCATIONS.flatMap(loc => [loc.bgImage, loc.npcPortrait].filter(Boolean)),
+      '/assets/town/bg_home.webp',
       '/assets/town/teacher_mario.webp',
       '/assets/town/teacher_ibu.webp'
     ];

@@ -16,7 +16,18 @@ export const getDaySeed = (dateStr = getTodayDateStr()) => {
   return hash;
 };
 
-// ── 0.5 霧臺小鎮全景地圖常數 ──
+// 32-bit 高散列整數隨機運算器 (保證每日多樣化輪替與非重複地點)
+export const hashInt = (x) => {
+  x = ((x >>> 16) ^ x) * 0x45d9f3b;
+  x = ((x >>> 16) ^ x) * 0x45d9f3b;
+  x = (x >>> 16) ^ x;
+  return x >>> 0;
+};
+
+// ── 0.5 霧臺小鎮全景地圖常數與 50 套對話樹匯入 ──
+import { DIALOGUE_VARIANTS, VISITING_TEACHER_VARIANTS } from './townDialogueData.js';
+export { DIALOGUE_VARIANTS, VISITING_TEACHER_VARIANTS };
+
 export const TOWN_MAP_PANORAMA_IMG = '/assets/town/town_map_panorama.webp';
 
 // ── 1. 霧臺小鎮 9 大社區地標清單 ──
@@ -639,727 +650,46 @@ export const VISITING_TEACHERS = {
   }
 };
 
-// ── 5. 計算今日值勤外師與出現地標 ──
+// ── 5. 計算今日值勤外師與出現地標 (高散列非重複演算法 + 5 套專屬外師輪替對話) ──
 export const getDailyVisitingTeacherInfo = (dateStr = getTodayDateStr()) => {
   const seed = getDaySeed(dateStr);
   const teacherKeys = ['mario', 'ibu'];
-  const teacherKey = teacherKeys[seed % teacherKeys.length];
+  // 每日交替巡迴外師 (Mario / Ibu 每日動態換班)
+  const teacherIndex = hashInt(seed + 99) % teacherKeys.length;
+  const teacherKey = teacherKeys[teacherIndex];
+
   // 外師巡迴的 7 個社區與商店地標 (不包含國小與玩家家裡)
   const possibleLocations = ['bookstore', 'supermarket', 'park', 'station', 'clinic', 'plaza', 'cinema'];
-  const locationIndex = Math.floor(seed / 7) % possibleLocations.length;
-  const locationId = possibleLocations[locationIndex];
+  let locIndex = hashInt(seed + 77) % possibleLocations.length;
+
+  // 確保連續兩天不會重複出現在相同地標 (防連續同一地點卡死)
+  try {
+    const d = new Date(dateStr);
+    d.setDate(d.getDate() - 1);
+    const prevDateStr = d.toISOString().slice(0, 10);
+    const prevSeed = getDaySeed(prevDateStr);
+    const prevLocIndex = hashInt(prevSeed + 77) % possibleLocations.length;
+    if (locIndex === prevLocIndex) {
+      locIndex = (locIndex + 1) % possibleLocations.length;
+    }
+  } catch (e) {}
+
+  const locationId = possibleLocations[locIndex];
+
+  // 每日自該外師專屬 5 套對話樹中隨機抽取出 1 套使用
+  const teacherVariants = VISITING_TEACHER_VARIANTS[teacherKey] || [];
+  const variantIndex = hashInt(seed + 333) % Math.max(1, teacherVariants.length);
+  const dailyDialogueTree = teacherVariants[variantIndex] || VISITING_TEACHERS[teacherKey]?.dialogueTree;
 
   return {
     date: dateStr,
     teacherKey,
-    teacher: VISITING_TEACHERS[teacherKey],
+    teacher: {
+      ...VISITING_TEACHERS[teacherKey],
+      dialogueTree: dailyDialogueTree
+    },
     locationId
   };
-};
-
-// ── 6. 各地標多樣化輪替對話樹清單 (Dialogue Variants Pool) ──
-export const DIALOGUE_VARIANTS = {
-  // ── 🏫 霧臺國小校長 (2 種日常輪替主題) ──
-  school: [
-    {
-      variantId: 'school_v0',
-      title: '晨光朝氣與全校任務篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '校長 (Principal)',
-          en: "Good morning, young learner! Welcome back to Wutai Elementary School. How are you today?",
-          zh: "早安，優秀的小小冒險家！歡迎回到霧臺國小。你今天好嗎？",
-          options: [
-            { text_en: "I am happy and ready to learn!", text_zh: "我很快樂，準備好學習了！", target_id: 'quest_intro' },
-            { text_en: "What classes do we have today?", text_zh: "我們今天有哪些課呢？", target_id: 'classes' },
-            { text_en: "I am a little tired today.", text_zh: "我今天有點累。", target_id: 'encourage' }
-          ]
-        },
-        quest_intro: {
-          id: 'quest_intro',
-          speaker: '校長 (Principal)',
-          en: "Wonderful energy! The school bulletin board has daily quests today. Complete them to earn Quest Points for our school honor roll!",
-          zh: "太棒的朝氣了！學校布告欄今天有每日探索任務。完成它們可以為我們學校的榮譽榜贏得探索積分喔！",
-          options: [
-            { text_en: "Let me check the Quest Board!", text_zh: "讓我看看任務布告欄！", action: 'OPEN_QUESTS' },
-            { text_en: "Thank you, Principal!", text_zh: "謝謝校長！", target_id: 'farewell' }
-          ]
-        },
-        classes: {
-          id: 'classes',
-          speaker: '校長 (Principal)',
-          en: "Today is an exciting day! We have English, Math, and PE on the sports ground. Remember to bring your workbook and water bottle!",
-          zh: "今天是很充實的一天！我們在操場有英語課、數學課和體育課。記得帶你的作業本和大水壺喔！",
-          options: [
-            { text_en: "I love English and PE!", text_zh: "我最喜歡英語課和體育課！", target_id: 'quest_intro' },
-            { text_en: "I will get my workbook ready.", text_zh: "我會準備好我的作業本。", target_id: 'farewell' }
-          ]
-        },
-        encourage: {
-          id: 'encourage',
-          speaker: '校長 (Principal)',
-          en: "Take a deep breath of our fresh mountain air! Drink some warm water, and visit the park after class to see the green trees.",
-          zh: "深呼吸一口我們大武山清新的空氣吧！喝點溫水，下課後去公園看看綠樹放鬆一下。",
-          options: [
-            { text_en: "Thank you, I feel better now!", text_zh: "謝謝您，我感覺好多了！", target_id: 'quest_intro' }
-          ]
-        },
-        farewell: {
-          id: 'farewell',
-          speaker: '校長 (Principal)',
-          en: "Work hard and enjoy your day at Wutai Elementary! Have fun!",
-          zh: "認真學習，享受你在霧臺國小的一天！祝你玩得開心！",
-          options: [
-            { text_en: "Goodbye, Principal!", text_zh: "再見，校長！", target_id: 'END' }
-          ]
-        }
-      }
-    },
-    {
-      variantId: 'school_v1',
-      title: '學用品準備與閱讀推廣篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '校長 (Principal)',
-          en: "Hello, diligent student! Did you pack your school bag and pencil case before coming to school?",
-          zh: "你好，勤奮的同學！來學校前，你的書包和鉛筆盒都收拾好了嗎？",
-          options: [
-            { text_en: "Yes, I have my pencil, eraser, and ruler!", text_zh: "是的，我有鉛筆、橡皮擦和直尺！", target_id: 'bag_check' },
-            { text_en: "I forgot my eraser at home.", text_zh: "我把橡皮擦忘在家裡了。", target_id: 'bookstore_tip' }
-          ]
-        },
-        bag_check: {
-          id: 'bag_check',
-          speaker: '校長 (Principal)',
-          en: "Excellent preparation! Being organized is the first step to successful learning. Check the bulletin board for new adventures!",
-          zh: "太優秀的準備了！有條不紊是成功學習的第一步。快看看布告欄上有沒有新的冒險吧！",
-          options: [
-            { text_en: "Open Quest Board!", text_zh: "開啟任務公佈欄！", action: 'OPEN_QUESTS' }
-          ]
-        },
-        bookstore_tip: {
-          id: 'bookstore_tip',
-          speaker: '校長 (Principal)',
-          en: "Don't worry! You can visit Cloud Leopard Bookstore to get a colorful eraser with your student coins.",
-          zh: "別擔心！你可以去雲豹書局用你獲得的學生金幣挑選一個彩色橡皮擦。",
-          options: [
-            { text_en: "I will visit the bookstore!", text_zh: "我等一下去書局看看！", target_id: 'END' }
-          ]
-        }
-      }
-    }
-  ],
-
-  // ── 📖 雲豹書局店長 (2 種日常輪替主題) ──
-  bookstore: [
-    {
-      variantId: 'bookstore_v0',
-      title: '經典文具採買篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '雲豹店長 (Manager Leopard)',
-          en: "Hello! Welcome to Cloud Leopard Bookstore. We have books, pencils, and rulers. How can I help you?",
-          zh: "你好！歡迎光臨雲豹書局。我們有書本、鉛筆和尺。有什麼我可以幫你的嗎？",
-          options: [
-            { text_en: "I want to buy some stationery.", text_zh: "我想買一些文具。", action: 'OPEN_SHOP' },
-            { text_en: "Do you have English storybooks?", text_zh: "你們有英語故事書嗎？", target_id: 'books' },
-            { text_en: "Just looking around, thank you!", text_zh: "我只是隨意看看，謝謝！", target_id: 'browse' }
-          ]
-        },
-        books: {
-          id: 'books',
-          speaker: '雲豹店長 (Manager Leopard)',
-          en: "Yes, we do! We have stories about courageous mountain boars and clever flying squirrels. Reading books makes your English great!",
-          zh: "當然有！我們有關於勇敢山豬與聰明飛鼠的故事。閱讀英文書能讓你的英語能力大躍進！",
-          options: [
-            { text_en: "Let me check your shop items!", text_zh: "讓我看看你的商品！", action: 'OPEN_SHOP' },
-            { text_en: "I will read them every day.", text_zh: "我會每天閱讀它們。", target_id: 'farewell' }
-          ]
-        },
-        browse: {
-          id: 'browse',
-          speaker: '雲豹店長 (Manager Leopard)',
-          en: "Take your time! If you need a pencil or eraser for school, just ask me anytime.",
-          zh: "慢慢看！如果學校需要鉛筆或橡皮擦，隨時告訴我喔。",
-          options: [
-            { text_en: "Open stationery shop.", text_zh: "開啟文具商店。", action: 'OPEN_SHOP' },
-            { text_en: "Thank you, goodbye!", text_zh: "謝謝店長，再見！", target_id: 'END' }
-          ]
-        },
-        farewell: {
-          id: 'farewell',
-          speaker: '雲豹店長 (Manager Leopard)',
-          en: "Happy studying! Keep learning new English words every day!",
-          zh: "學習愉快！每天都要持續學習新的英語單字喔！",
-          options: [
-            { text_en: "Goodbye, Manager Leopard!", text_zh: "再見，雲豹店長！", target_id: 'END' }
-          ]
-        }
-      }
-    },
-    {
-      variantId: 'bookstore_v1',
-      title: '彩繪創作與彩色麥克筆篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '雲豹店長 (Manager Leopard)',
-          en: "Welcome back! Today we have bright markers: red, blue, green, and yellow! Do you like drawing pictures?",
-          zh: "歡迎光臨！今天我們進了色彩鮮豔的麥克筆：紅色、藍色、綠色還有黃色！你喜歡畫畫嗎？",
-          options: [
-            { text_en: "I love drawing mountain animals!", text_zh: "我最喜歡畫大武山上的動物了！", target_id: 'art_talk' },
-            { text_en: "Show me the colorful markers, please.", text_zh: "請讓我看看彩色麥克筆。", action: 'OPEN_SHOP' }
-          ]
-        },
-        art_talk: {
-          id: 'art_talk',
-          speaker: '雲豹店長 (Manager Leopard)',
-          en: "Drawing and labeling things in English is a fun way to learn vocabulary! Grab a marker and start creating!",
-          zh: "畫畫並在旁邊標註英文單字，是學習字彙超好玩的方式！挑一組麥克筆開始創作吧！",
-          options: [
-            { text_en: "Let me buy some markers!", text_zh: "我要買麥克筆！", action: 'OPEN_SHOP' },
-            { text_en: "Thank you for the wonderful idea!", text_zh: "謝謝店長超棒的點子！", target_id: 'END' }
-          ]
-        }
-      }
-    }
-  ],
-
-  // ── 🏪 黑熊超市店員 (2 種日常輪替主題) ──
-  supermarket: [
-    {
-      variantId: 'supermarket_v0',
-      title: '美味點心與熱騰騰披薩篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '黑熊店員 (Clerk Bear)',
-          en: "Hello, friendly kid! Welcome to Black Bear Supermarket. Are you hungry or thirsty?",
-          zh: "你好，有禮貌的同學！歡迎來到黑熊超市。你肚子餓還是口渴了嗎？",
-          options: [
-            { text_en: "I am hungry! I want food.", text_zh: "我肚子餓了！我想要好吃的食物。", target_id: 'hungry' },
-            { text_en: "I am thirsty! I want a drink.", text_zh: "我口渴了！我想要喝飲料。", target_id: 'thirsty' },
-            { text_en: "Let me see all items in the store.", text_zh: "讓我逛逛超市裡的所有商品。", action: 'OPEN_SHOP' }
-          ]
-        },
-        hungry: {
-          id: 'hungry',
-          speaker: '黑熊店員 (Clerk Bear)',
-          en: "We have fresh sandwiches, red apples, and delicious pizza slices today. What do you like?",
-          zh: "我們今天有新鮮的三明治、紅蘋果和美味的披薩切片。你喜歡哪一個呢？",
-          options: [
-            { text_en: "I like sandwiches and apples!", text_zh: "我喜歡三明治和蘋果！", action: 'OPEN_SHOP' },
-            { text_en: "Pizza smells so good!", text_zh: "披薩聞起來好香啊！", action: 'OPEN_SHOP' }
-          ]
-        },
-        thirsty: {
-          id: 'thirsty',
-          speaker: '黑熊店員 (Clerk Bear)',
-          en: "Cold milk and sweet orange juice are ready in the fridge! They are cold and refreshing.",
-          zh: "冰牛奶和香甜柳橙汁已經在冰箱準備好了！冰涼又爽口。",
-          options: [
-            { text_en: "I want to buy some drinks!", text_zh: "我想買好喝的飲料！", action: 'OPEN_SHOP' },
-            { text_en: "Drinking water is good for health too.", text_zh: "喝白開水對健康也很好。", target_id: 'farewell' }
-          ]
-        },
-        farewell: {
-          id: 'farewell',
-          speaker: '黑熊店員 (Clerk Bear)',
-          en: "Enjoy your snack and have a joyful day! Come back soon!",
-          zh: "享受你的美味點心，祝你有個愉快的一天！歡迎常常來！",
-          options: [
-            { text_en: "Thank you, Clerk Bear!", text_zh: "謝謝你，黑熊店員！", target_id: 'END' }
-          ]
-        }
-      }
-    },
-    {
-      variantId: 'supermarket_v1',
-      title: '晨光元氣早餐與高鈣牛奶篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '黑熊店員 (Clerk Bear)',
-          en: "Good morning! Eating a nutritious breakfast gives you big power for English quizzes! Did you eat breakfast?",
-          zh: "早安！吃頓有營養的早餐會給你滿滿的活力應對英語小測驗！你今天吃早餐了嗎？",
-          options: [
-            { text_en: "I want a sandwich and cold milk!", text_zh: "我想要三明治和冰牛奶！", action: 'OPEN_SHOP' },
-            { text_en: "What fruits do you recommend?", text_zh: "你推薦什麼水果呢？", target_id: 'fruit_rec' }
-          ]
-        },
-        fruit_rec: {
-          id: 'fruit_rec',
-          speaker: '黑熊店員 (Clerk Bear)',
-          en: "Sweet bananas give instant energy, and crunchy red apples keep the doctor away! Both are fresh from the farm.",
-          zh: "香甜香蕉能迅速補充體力，脆甜紅蘋果讓醫生遠離你！都是產地新鮮直送喔。",
-          options: [
-            { text_en: "Let me buy some bananas and apples!", text_zh: "我要買香蕉和蘋果！", action: 'OPEN_SHOP' }
-          ]
-        }
-      }
-    }
-  ],
-
-  // ── 🌳 飛鼠公園長老 (2 種日常輪替主題) ──
-  park: [
-    {
-      variantId: 'park_v0',
-      title: '晴朗四季與白百合生態篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '飛鼠長老 (Elder Squirrel)',
-          en: "Welcome to Flying Squirrel Park, my young friend! Listen to the birds singing. How is the weather today?",
-          zh: "歡迎來到飛鼠公園，我的年輕朋友！聽聽鳥兒的歌聲。今天的天氣怎麼樣呢？",
-          options: [
-            { text_en: "It is sunny and warm today!", text_zh: "今天天氣晴朗又溫暖！", target_id: 'sunny' },
-            { text_en: "It is cloudy and cool today.", text_zh: "今天多雲又涼爽。", target_id: 'cool' },
-            { text_en: "What animals live in this park?", text_zh: "這個公園裡住著哪些動物呢？", target_id: 'animals' }
-          ]
-        },
-        sunny: {
-          id: 'sunny',
-          speaker: '飛鼠長老 (Elder Squirrel)',
-          en: "Sunny days are great for playing outside! Look at the colorful butterflies dancing over the white lilies.",
-          zh: "晴天最適合在戶外玩耍了！看看五彩繽紛的蝴蝶在純白百合花上跳舞呢。",
-          options: [
-            { text_en: "Nature in Wutai is so beautiful!", text_zh: "霧臺的大自然真是太美了！", target_id: 'farewell' },
-            { text_en: "Which season do you like best?", text_zh: "長老您最喜歡哪個季節呢？", target_id: 'seasons' }
-          ]
-        },
-        cool: {
-          id: 'cool',
-          speaker: '飛鼠長老 (Elder Squirrel)',
-          en: "Cool mountain breezes make jogging comfortable! Don't forget to put on a jacket if it gets windy.",
-          zh: "涼爽的山風讓慢跑很舒服！如果風變大了，別忘了穿上一件夾克外套喔。",
-          options: [
-            { text_en: "I will wear my jacket.", text_zh: "我會穿上我的夾克。", target_id: 'farewell' }
-          ]
-        },
-        animals: {
-          id: 'animals',
-          speaker: '飛鼠長老 (Elder Squirrel)',
-          en: "We have butterflies, green frogs, clever birds, and little dogs playing on the grass. We love and protect all animals!",
-          zh: "我們有蝴蝶、綠青蛙、聰明的鳥兒，還有在草地上玩耍的小狗。我們熱愛並保護所有動物！",
-          options: [
-            { text_en: "Animals are our best friends!", text_zh: "動物是我們最好的朋友！", target_id: 'farewell' }
-          ]
-        },
-        seasons: {
-          id: 'seasons',
-          speaker: '飛鼠長老 (Elder Squirrel)',
-          en: "I love spring when flowers bloom, and autumn when the mountain air is dry and fresh. Every season in Wutai is a blessing.",
-          zh: "我喜歡繁花盛開的春天，也喜歡山風乾爽清新的秋天。霧臺的每個季節都是恩賜。",
-          options: [
-            { text_en: "Thank you for sharing, Elder!", text_zh: "謝謝長老的分享！", target_id: 'farewell' }
-          ]
-        },
-        farewell: {
-          id: 'farewell',
-          speaker: '飛鼠長老 (Elder Squirrel)',
-          en: "May the sunshine guide your steps today! Go boldly!",
-          zh: "願今天的陽光指引你的腳步！勇敢向前邁進吧！",
-          options: [
-            { text_en: "Goodbye, Elder Squirrel!", text_zh: "再見，飛鼠長老！", target_id: 'END' }
-          ]
-        }
-      }
-    },
-    {
-      variantId: 'park_v1',
-      title: '山林慢跑與季節微風篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '飛鼠長老 (Elder Squirrel)',
-          en: "Feel the mountain breeze today! In autumn and winter, cool air blows through the tall trees. How are you feeling?",
-          zh: "感受今天的山風吧！在秋冬時節，涼爽的微風吹過高聳的樹林。你感覺如何？",
-          options: [
-            { text_en: "It is cool and refreshing today.", text_zh: "今天涼爽又神清氣爽。", target_id: 'cool' },
-            { text_en: "The sun is shining brightly!", text_zh: "陽光非常燦爛！", target_id: 'sunny' },
-            { text_en: "Tell me about the seasons here.", text_zh: "請跟我說說這裡的四季故事。", target_id: 'seasons' }
-          ]
-        },
-        cool: {
-          id: 'cool',
-          speaker: '飛鼠長老 (Elder Squirrel)',
-          en: "Running on the soft grass keeps your heart healthy! Remember to stretch your legs.",
-          zh: "在柔軟的草地上跑步能保持心臟強健！記得活動雙腿拉拉筋喔。",
-          options: [
-            { text_en: "I love jogging in the park!", text_zh: "我喜歡在公園裡慢跑！", target_id: 'END' }
-          ]
-        },
-        sunny: {
-          id: 'sunny',
-          speaker: '飛鼠長老 (Elder Squirrel)',
-          en: "Warm sunshine lights up the mountain trails. Enjoy every golden minute of today!",
-          zh: "溫暖的陽光照亮了山間小徑。好好享受今天每一刻黃金般的時光！",
-          options: [
-            { text_en: "Thank you, Elder Squirrel!", text_zh: "謝謝飛鼠長老！", target_id: 'END' }
-          ]
-        },
-        seasons: {
-          id: 'seasons',
-          speaker: '飛鼠長老 (Elder Squirrel)',
-          en: "Spring brings green leaves, summer brings rain, autumn brings crisp air, and winter brings cozy fires. Every season is unique!",
-          zh: "春天帶來綠葉、夏天帶來雨水、秋天帶來乾爽涼風、冬天帶來溫暖柴火。每個季節都獨一無二！",
-          options: [
-            { text_en: "Wutai's nature is wonderful!", text_zh: "霧臺的大自然太棒了！", target_id: 'END' }
-          ]
-        }
-      }
-    }
-  ],
-
-  // ── 🚌 霧臺客運站雄鷹站長 (2 種日常輪替主題) ──
-  station: [
-    {
-      variantId: 'station_v0',
-      title: '谷川大橋與屏東客運巴士篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '雄鷹站長 (Station Master Eagle)',
-          en: "Welcome to Wutai Bus Station! I am Station Master Eagle. Where are you traveling today, little adventurer?",
-          zh: "歡迎來到霧臺客運站！我是雄鷹站長。小小探險家，你今天要去哪裡旅行呢？",
-          options: [
-            { text_en: "How do you go to Pingtung?", text_zh: "請問怎麼去屏東呢？", target_id: 'pingtung' },
-            { text_en: "I want to buy a bus ticket.", text_zh: "我想買一張公車票。", action: 'OPEN_SHOP' },
-            { text_en: "Can I ride my bike here?", text_zh: "我可以騎腳踏車嗎？", target_id: 'bike' }
-          ]
-        },
-        pingtung: {
-          id: 'pingtung',
-          speaker: '雄鷹站長 (Station Master Eagle)',
-          en: "You can go by bus! The green bus leaves every hour. It drives through our scenic mountain valleys and Guchuan Bridge.",
-          zh: "你可以搭公車去！綠色的客運巴士每小時出發一班，會穿過壯麗的山谷和谷川大橋喔。",
-          options: [
-            { text_en: "One bus ticket, please!", text_zh: "請給我一張公車票！", action: 'OPEN_SHOP' },
-            { text_en: "Sounds like a fun trip!", text_zh: "聽起來是一趟好玩的旅程！", target_id: 'farewell' }
-          ]
-        },
-        bike: {
-          id: 'bike',
-          speaker: '雄鷹站長 (Station Master Eagle)',
-          en: "Riding a bicycle is great exercise! Remember to ring your bell around sharp corners and wear a helmet.",
-          zh: "騎腳踏車是很棒的運動！過彎時記得按鈴鐺提醒，並且要戴好安全帽喔。",
-          options: [
-            { text_en: "Safety first! Thank you, Station Master.", text_zh: "安全第一！謝謝雄鷹站長。", target_id: 'farewell' }
-          ]
-        },
-        farewell: {
-          id: 'farewell',
-          speaker: '雄鷹站長 (Station Master Eagle)',
-          en: "Have a safe and happy journey! Fasten your seatbelt!",
-          zh: "祝你有一趟安全又快樂的旅程！記得繫好安全帶！",
-          options: [
-            { text_en: "Goodbye, Station Master Eagle!", text_zh: "再見，雄鷹站長！", target_id: 'END' }
-          ]
-        }
-      }
-    },
-    {
-      variantId: 'station_v1',
-      title: '火車站轉乘與高雄都會探險篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '雄鷹站長 (Station Master Eagle)',
-          en: "All aboard! Beyond Pingtung lies the fast express train to Kaohsiung city! Are you planning a big trip?",
-          zh: "各位旅客請上車！抵達屏東後，還能換乘前往高雄大城市的疾速火車喔！你正計畫一場大旅行嗎？",
-          options: [
-            { text_en: "I want an express train ticket!", text_zh: "我想要一張疾速火車票！", action: 'OPEN_SHOP' },
-            { text_en: "Is the train faster than the bus?", text_zh: "火車比公車快嗎？", target_id: 'train_speed' }
-          ]
-        },
-        train_speed: {
-          id: 'train_speed',
-          speaker: '雄鷹站長 (Station Master Eagle)',
-          en: "Yes! Trains zoom on steel rails with zero traffic lights. But our mountain buses have the finest scenic views!",
-          zh: "沒錯！火車在鐵軌上奔馳沒有紅綠燈。但我們山區客運沿途有全台灣最絕美的山景！",
-          options: [
-            { text_en: "I love both buses and trains!", text_zh: "公車和火車我都好喜歡！", action: 'OPEN_SHOP' }
-          ]
-        }
-      }
-    }
-  ],
-
-  // ── 🏥 貓頭鷹診所醫師 (2 種日常輪替主題) ──
-  clinic: [
-    {
-      variantId: 'clinic_v0',
-      title: '喉嚨舒緩與健康保健三大法寶篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '貓頭鷹醫師 (Dr. Owl)',
-          en: "Hello, dear child! This is Owl Health Clinic. You look thoughtful. What is wrong with you?",
-          zh: "你好，親愛的孩子！這裡是貓頭鷹健康診所。你看起來有些沉思。身體有哪裡不舒服嗎？",
-          options: [
-            { text_en: "I am healthy and strong!", text_zh: "我身體很健康強壯！", target_id: 'healthy' },
-            { text_en: "I have a sore throat.", text_zh: "我喉嚨有點痛。", target_id: 'throat' },
-            { text_en: "Do you have first aid items?", text_zh: "你們有急救保健用品嗎？", action: 'OPEN_SHOP' }
-          ]
-        },
-        healthy: {
-          id: 'healthy',
-          speaker: '貓頭鷹醫師 (Dr. Owl)',
-          en: "I love hearing that! Eating fresh fruit, drinking enough water, and sleeping eight hours keep sickness away.",
-          zh: "聽到這個我真高興！多吃新鮮水果、喝足夠的水、每天睡滿八小時，病菌就會遠離你。",
-          options: [
-            { text_en: "I drink water every day!", text_zh: "我每天都有喝很多水！", target_id: 'farewell' },
-            { text_en: "Let me buy a water bottle.", text_zh: "我想買個健康大水壺。", action: 'OPEN_SHOP' }
-          ]
-        },
-        throat: {
-          id: 'throat',
-          speaker: '貓頭鷹醫師 (Dr. Owl)',
-          en: "A sore throat can happen when the air gets dry. Have a mint throat lozenge and rest your voice.",
-          zh: "天氣乾燥時容易喉嚨痛。含一顆薄荷潤喉糖，並讓聲帶多休息吧。",
-          options: [
-            { text_en: "I will take a throat lozenge.", text_zh: "我想買一包潤喉糖。", action: 'OPEN_SHOP' },
-            { text_en: "Thank you for the advice!", text_zh: "謝謝醫師的建議！", target_id: 'farewell' }
-          ]
-        },
-        farewell: {
-          id: 'farewell',
-          speaker: '貓頭鷹醫師 (Dr. Owl)',
-          en: "Stay healthy and keep smiling! Health is your greatest treasure.",
-          zh: "保持健康，維持燦爛笑容！健康是你最珍貴的寶藏。",
-          options: [
-            { text_en: "Thank you, Dr. Owl!", text_zh: "謝謝您，貓頭鷹醫師！", target_id: 'END' }
-          ]
-        }
-      }
-    },
-    {
-      variantId: 'clinic_v1',
-      title: '退熱冰貼與運動防護篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '貓頭鷹醫師 (Dr. Owl)',
-          en: "Greetings, active explorer! Running on mountain trails requires good care. Do you have a fever or cold?",
-          zh: "問候你，活潑的探險家！在山間小徑奔跑需要好好照顧身體。你有發燒或感冒嗎？",
-          options: [
-            { text_en: "I am feeling healthy today!", text_zh: "我今天感覺很健康！", target_id: 'healthy' },
-            { text_en: "My forehead feels warm.", text_zh: "我的額頭摸起來熱熱的。", target_id: 'fever' }
-          ]
-        },
-        healthy: {
-          id: 'healthy',
-          speaker: '貓頭鷹醫師 (Dr. Owl)',
-          en: "Keep up the great habits: Wash your hands with soap and drink clean water throughout the day!",
-          zh: "繼續保持好習慣：用肥皂勤洗手，整天都要隨時補充純淨水！",
-          options: [
-            { text_en: "I will do that! Thank you.", text_zh: "我會做到的！謝謝醫師。", target_id: 'END' }
-          ]
-        },
-        fever: {
-          id: 'fever',
-          speaker: '貓頭鷹醫師 (Dr. Owl)',
-          en: "A cooling patch helps soothe a warm forehead. Drink warm water and get plenty of restful sleep.",
-          zh: "退熱冰冰貼可以舒緩溫熱的額頭。多喝溫水並獲得充足的睡眠休息。",
-          options: [
-            { text_en: "I need a cooling patch, please.", text_zh: "請給我一包退熱冰冰貼。", action: 'OPEN_SHOP' }
-          ]
-        }
-      }
-    }
-  ],
-
-  // ── 🏛️ 百步蛇集會所設計師 (2 種日常輪替主題) ──
-  plaza: [
-    {
-      variantId: 'plaza_v0',
-      title: '純潔白百合與榮譽勇士文化篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '百合設計師 (Stylist Lily)',
-          en: "Welcome to Hundred-Pace Gathering Hall! Look at our beautiful traditional vest, hunter caps, and white lily badges. Do you like fashion?",
-          zh: "歡迎來到百步蛇集會所！看看我們美麗的傳統背心、獵人帽與純白百合勳章。你喜歡服飾配件嗎？",
-          options: [
-            { text_en: "I want to see the tribal badges!", text_zh: "我想看看部落勳章與項鍊！", action: 'OPEN_SHOP' },
-            { text_en: "What does the White Lily mean?", text_zh: "請問白百合花代表什麼意思呢？", target_id: 'lily_meaning' },
-            { text_en: "These clothes are very cool!", text_zh: "這些衣服真帥氣！", action: 'OPEN_SHOP' }
-          ]
-        },
-        lily_meaning: {
-          id: 'lily_meaning',
-          speaker: '百合設計師 (Stylist Lily)',
-          en: "In Rukai culture, the white lily symbolizes honor, purity, and bravery! Only true warriors and kind learners earn the right to wear it.",
-          zh: "在魯凱族文化中，白百合花象徵榮譽、純潔與英勇！只有真正的勇士與善良認真的學者才有資格佩戴它。",
-          options: [
-            { text_en: "I want to be an honorable learner!", text_zh: "我也想成為一名有榮譽感的學者！", target_id: 'badge_offer' },
-            { text_en: "Let me buy a White Lily badge.", text_zh: "我要用金幣購買白百合勳章。", action: 'OPEN_SHOP' }
-          ]
-        },
-        badge_offer: {
-          id: 'badge_offer',
-          speaker: '百合設計師 (Stylist Lily)',
-          en: "Study hard, speak kind words, and conquer the English universe! You are already a shining star of Wutai.",
-          zh: "認真學習、口說善言，並征服英語宇宙吧！你已經是霧臺一顆閃亮之星。",
-          options: [
-            { text_en: "Thank you for the encouragement!", text_zh: "謝謝百合設計師的鼓勵！", target_id: 'farewell' }
-          ]
-        },
-        farewell: {
-          id: 'farewell',
-          speaker: '百合設計師 (Stylist Lily)',
-          en: "Wear your courage with pride! Come back and visit us anytime!",
-          zh: "驕傲地展現你的勇氣吧！隨時歡迎常來集會所交流！",
-          options: [
-            { text_en: "Goodbye, Stylist Lily!", text_zh: "再見，百合設計師！", target_id: 'END' }
-          ]
-        }
-      }
-    },
-    {
-      variantId: 'plaza_v1',
-      title: '傳家七彩琉璃珠與陶壺傳奇篇',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '百合設計師 (Stylist Lily)',
-          en: "Sabau! Look at these colorful glass beads! In our traditions, each bead tells an ancient story of wisdom, courage, and love.",
-          zh: "Sabau！看看這些七彩琉璃珠！在我們的傳統中，每顆珠子都述說著古老的智慧、勇氣與愛的故事。",
-          options: [
-            { text_en: "What does the White Lily mean?", text_zh: "那白百合花又代表什麼意思呢？", target_id: 'lily_meaning' },
-            { text_en: "I want to wear a glass bead necklace!", text_zh: "我想戴上琉璃珠項鍊！", action: 'OPEN_SHOP' }
-          ]
-        },
-        lily_meaning: {
-          id: 'lily_meaning',
-          speaker: '百合設計師 (Stylist Lily)',
-          en: "The white lily represents purity and bravery! Coupled with the glass beads, you will carry the strength of our ancestors.",
-          zh: "白百合代表著純潔與勇敢！配上琉璃珠，你將承載祖先賜予的力量。",
-          options: [
-            { text_en: "I will be brave in learning English!", text_zh: "我學英文會非常勇敢！", target_id: 'badge_offer' }
-          ]
-        },
-        badge_offer: {
-          id: 'badge_offer',
-          speaker: '百合設計師 (Stylist Lily)',
-          en: "Hold your head high! You are our proud tribal scholar.",
-          zh: "昂首闊步吧！你是我們引以為傲的部落學者。",
-          options: [
-            { text_en: "Thank you, Stylist Lily!", text_zh: "謝謝百合設計師！", target_id: 'END' }
-          ]
-        }
-      }
-    }
-  ],
-
-  // ── 🎬 山豬影城野豬售票員 (3 部輪播檔期電影篇) ──
-  cinema: [
-    {
-      variantId: 'cinema_v0',
-      title: '熱映強檔：《雲豹大冒險 3D》',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '野豬售票員 (Clerk Boar)',
-          en: "Hey there! Welcome to Boar Cinema! It is a fantastic weekend for movies. Would you like a ticket or some popcorn?",
-          zh: "嗨，朋友！歡迎來到山豬影城！這真是看電影的完美週末。你想要電影票還是香濃爆米花呢？",
-          options: [
-            { text_en: "I want popcorn and a ticket!", text_zh: "我想要爆米花和電影票！", action: 'OPEN_SHOP' },
-            { text_en: "What movie is playing today?", text_zh: "今天正在上映什麼電影呢？", target_id: 'movie_info' },
-            { text_en: "What do you like to do on weekends?", text_zh: "你週末喜歡做什麼呢？", target_id: 'weekend_chat' }
-          ]
-        },
-        movie_info: {
-          id: 'movie_info',
-          speaker: '野豬售票員 (Clerk Boar)',
-          en: "We are showing 'The Legend of Cloud Leopard 3D'! It has exciting adventures, flying squirrels, and cheerful music.",
-          zh: "我們正在上映《雲豹大冒險 3D》！裡面有刺激的冒險、會飛的松鼠，還有歡樂的配樂喔。",
-          options: [
-            { text_en: "I definitely want to watch it!", text_zh: "我一定要看這部電影！", action: 'OPEN_SHOP' },
-            { text_en: "Sounds like a great movie!", text_zh: "聽起來是一部超棒的電影！", target_id: 'farewell' }
-          ]
-        },
-        weekend_chat: {
-          id: 'weekend_chat',
-          speaker: '野豬售票員 (Clerk Boar)',
-          en: "In my free time, I like playing basketball, listening to lively music, and eating sandwiches! What about you?",
-          zh: "休閒時間裡，我喜歡打籃球、聽歡樂的音樂，還有大口吃三明治！你呢？",
-          options: [
-            { text_en: "I like studying English and playing games!", text_zh: "我喜歡學英文和玩益智遊戲！", target_id: 'farewell' }
-          ]
-        },
-        farewell: {
-          id: 'farewell',
-          speaker: '野豬售票員 (Clerk Boar)',
-          en: "Enjoy the show! Don't drop your popcorn on the floor!",
-          zh: "好好享受這場電影！別把爆米花掉到地上喔！",
-          options: [
-            { text_en: "Thank you, Clerk Boar!", text_zh: "謝謝你，野豬售票員！", target_id: 'END' }
-          ]
-        }
-      }
-    },
-    {
-      variantId: 'cinema_v1',
-      title: '熱映強檔：《百步蛇傳奇守護者》',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '野豬售票員 (Clerk Boar)',
-          en: "Lights, camera, action! Today's feature presentation is 'The Hundred-Pace Guardian'! An epic tale of courage!",
-          zh: "燈光、攝影機、開拍！今天上映的大片是《百步蛇傳奇守護者》！一場關於勇氣的史詩冒險！",
-          options: [
-            { text_en: "I want a movie ticket, please!", text_zh: "請給我一張電影票！", action: 'OPEN_SHOP' },
-            { text_en: "Tell me about the Guardian story.", text_zh: "請跟我說說守護者的故事。", target_id: 'guardian_story' }
-          ]
-        },
-        guardian_story: {
-          id: 'guardian_story',
-          speaker: '野豬售票員 (Clerk Boar)',
-          en: "A young mountain adventurer saves the ancient forest using wisdom and kind words. It is deeply moving!",
-          zh: "一位年輕的山林冒險家運用智慧與善良的話語拯救了古老森林。非常感人！",
-          options: [
-            { text_en: "Give me some butter popcorn and tickets!", text_zh: "請給我爆米花和電影票！", action: 'OPEN_SHOP' }
-          ]
-        }
-      }
-    },
-    {
-      variantId: 'cinema_v2',
-      title: '熱映強檔：《飛鼠快俠與星空探險》',
-      startNode: 'welcome',
-      nodes: {
-        welcome: {
-          id: 'welcome',
-          speaker: '野豬售票員 (Clerk Boar)',
-          en: "Zoom! Our fast flying squirrel hero is flying across the starry skies in 'Flying Squirrel Speedster'! Grab your seats!",
-          zh: "咻！我們疾速飛鼠英雄正在《飛鼠快俠與星空探險》中劃過星空！快入座吧！",
-          options: [
-            { text_en: "I want popcorn and tickets!", text_zh: "我要爆米花和電影票！", action: 'OPEN_SHOP' }
-          ]
-        }
-      }
-    }
-  ]
 };
 
 // ── 7. 智慧對話樹取得函式 (支援外師巡迴與每日輪替) ──
@@ -1380,15 +710,17 @@ export const getDialogueTreeForLocation = (locationId, options = {}) => {
     return teacher.dialogueTree;
   }
 
-  // 2. 否則依據當日種子自多樣化對話樹池中選取當日輪替對話樹
+  // 2. 否則依據當日種子自多樣化對話樹池中選取當日輪替對話樹 (使用 32-bit hashInt 混合地標偏移，確保各建築每天獨立隨機抽取 5 套之一)
   const variants = DIALOGUE_VARIANTS[locationId];
   if (Array.isArray(variants) && variants.length > 0) {
     const seed = getDaySeed(dateStr);
-    return variants[seed % variants.length];
+    const locHashOffset = locationId.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    const variantIndex = hashInt(seed + locHashOffset) % variants.length;
+    return variants[variantIndex];
   }
 
   // 備援回退
-  return DIALOGUE_VARIANTS.school[0];
+  return DIALOGUE_VARIANTS.school ? DIALOGUE_VARIANTS.school[0] : null;
 };
 
 // ── 8. 相容預設對話樹導出 (Backward Compatibility) ──
