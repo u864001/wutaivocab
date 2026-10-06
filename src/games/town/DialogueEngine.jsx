@@ -32,7 +32,16 @@ export const DialogueEngine = ({
   const currentNode = tree?.nodes?.[currentNodeId];
   const [portraitError, setPortraitError] = useState(false);
   const [bgError, setBgError] = useState(false);
+  const [isBgLoaded, setIsBgLoaded] = useState(false);
+  const [isPortraitLoaded, setIsPortraitLoaded] = useState(false);
   const [isDialogueReady, setIsDialogueReady] = useState(false);
+
+  useEffect(() => {
+    setIsBgLoaded(false);
+    setIsPortraitLoaded(false);
+    setBgError(false);
+    setPortraitError(false);
+  }, [location?.id, isVisitingTeacher]);
 
   // 決定當前發言人物的專屬語音指紋 (Persona Key: mario, ibu, school, supermarket, etc.)
   const activeVoicePersonaKey = useMemo(() => {
@@ -165,17 +174,19 @@ export const DialogueEngine = ({
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-slate-950 overflow-hidden select-none animate-fadeIn">
       
-      {/* ── 1. 全螢幕 16:9 室內場景底圖 ── */}
+      {/* ── 1. 全螢幕 16:9 室內場景底圖 (第 0 毫秒即渲染專屬漸層氛圍，絕不黑屏) ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {displayBg && !bgError ? (
+        <div className={`absolute inset-0 bg-gradient-to-br ${location.bgGradient || 'from-indigo-950 via-slate-900 to-teal-950'} transition-colors duration-500`} />
+        {displayBg && !bgError && (
           <img
             src={displayBg}
             alt={location.nameZh}
+            onLoad={() => setIsBgLoaded(true)}
             onError={() => setBgError(true)}
-            className="w-full h-full object-cover object-center filter brightness-[0.88] contrast-[1.03] transition-all duration-700"
+            className={`w-full h-full object-cover object-center filter brightness-[0.88] contrast-[1.03] transition-opacity duration-700 ${
+              isBgLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
           />
-        ) : (
-          <div className={`w-full h-full bg-gradient-to-br ${location.bgGradient}`} />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/50" />
       </div>
@@ -273,11 +284,21 @@ export const DialogueEngine = ({
         }`}>
           {displayPortrait && !portraitError ? (
             <div className="relative group pointer-events-auto flex flex-col items-center">
+              {!isPortraitLoaded && (
+                <div className="h-52 sm:h-64 md:h-[460px] lg:h-[520px] max-h-[66vh] w-40 sm:w-56 md:w-64 flex items-center justify-center animate-pulse">
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white/10 flex items-center justify-center text-4xl shadow-inner border border-white/20">
+                    {displayAvatar}
+                  </div>
+                </div>
+              )}
               <img
                 src={displayPortrait}
                 alt={currentNode.speaker}
+                onLoad={() => setIsPortraitLoaded(true)}
                 onError={() => setPortraitError(true)}
-                className="h-52 sm:h-64 md:h-[460px] lg:h-[520px] max-h-[66vh] object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.7)] select-none transition-transform duration-300 group-hover:scale-102"
+                className={`h-52 sm:h-64 md:h-[460px] lg:h-[520px] max-h-[66vh] object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.7)] select-none transition-all duration-500 group-hover:scale-102 ${
+                  isPortraitLoaded ? 'opacity-100 block' : 'opacity-0 absolute pointer-events-none'
+                }`}
               />
               <div className="mt-1 px-4 py-1.5 rounded-full bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border border-white/50 dark:border-slate-700/60 shadow-xl flex items-center gap-2 pointer-events-auto">
                 <span className="text-xl">{displayAvatar}</span>

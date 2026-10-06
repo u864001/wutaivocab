@@ -156,6 +156,30 @@ export const WutaiTownGame = ({ onBack }) => {
     };
   }, []);
 
+  // ── 預先快取小鎮各場景與 NPC WebP 圖片 (瀏覽器背景閒置預載，秒開零等待) ──
+  useEffect(() => {
+    const preloadList = [
+      ...TOWN_LOCATIONS.flatMap(loc => [loc.bgImage, loc.npcPortrait].filter(Boolean)),
+      '/assets/town/teacher_mario.webp',
+      '/assets/town/teacher_ibu.webp'
+    ];
+
+    const runPreload = () => {
+      preloadList.forEach(url => {
+        const img = new Image();
+        img.src = url;
+      });
+    };
+
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(runPreload, { timeout: 2000 });
+      } else {
+        setTimeout(runPreload, 300);
+      }
+    }
+  }, []);
+
   const handleToggleTownBgm = (e) => {
     if (e) e.stopPropagation();
     soundEngine.click();

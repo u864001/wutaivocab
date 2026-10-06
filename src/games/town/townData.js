@@ -17,7 +17,7 @@ export const getDaySeed = (dateStr = getTodayDateStr()) => {
 };
 
 // ── 0.5 霧臺小鎮全景地圖常數 ──
-export const TOWN_MAP_PANORAMA_IMG = '/assets/town/town_map_panorama.png';
+export const TOWN_MAP_PANORAMA_IMG = '/assets/town/town_map_panorama.webp';
 
 // ── 1. 霧臺小鎮 9 大社區地標清單 ──
 export const TOWN_LOCATIONS = [
@@ -41,8 +41,8 @@ export const TOWN_LOCATIONS = [
       '今日校園公告：準備探險作業本與鉛筆盒',
       '今日校園公告：大武山清新晨間活力'
     ],
-    bgImage: '/assets/town/bg_school.png',
-    npcPortrait: '/assets/town/npc_principal.png',
+    bgImage: '/assets/town/bg_school.webp',
+    npcPortrait: '/assets/town/npc_principal.webp',
     hasShop: false,
     hasQuests: true
   },
@@ -66,8 +66,8 @@ export const TOWN_LOCATIONS = [
       '今日書局特輯：大武山山豬與飛鼠冒險繪本',
       '今日彩繪特輯：美術色彩筆與彩繪筆記本'
     ],
-    bgImage: '/assets/town/bg_bookstore.png',
-    npcPortrait: '/assets/town/npc_bookstore.png',
+    bgImage: '/assets/town/bg_bookstore.webp',
+    npcPortrait: '/assets/town/npc_bookstore.webp',
     hasShop: true,
     hasQuests: false
   },
@@ -91,8 +91,8 @@ export const TOWN_LOCATIONS = [
       '今日早餐特供：純淨鮮牛奶與酸甜柳橙汁',
       '今日野餐特刊：黃金香蕉與山林探險補給'
     ],
-    bgImage: '/assets/town/bg_supermarket.png',
-    npcPortrait: '/assets/town/npc_supermarket.png',
+    bgImage: '/assets/town/bg_supermarket.webp',
+    npcPortrait: '/assets/town/npc_supermarket.webp',
     hasShop: true,
     hasQuests: false
   },
@@ -116,8 +116,8 @@ export const TOWN_LOCATIONS = [
       '今日大自然觀察：涼爽山風與草地慢跑時光',
       '今日大自然觀察：大武山四季風景與野生動物'
     ],
-    bgImage: '/assets/town/bg_park.png',
-    npcPortrait: '/assets/town/npc_park.png',
+    bgImage: '/assets/town/bg_park.webp',
+    npcPortrait: '/assets/town/npc_park.webp',
     hasShop: false,
     hasQuests: false
   },
@@ -141,8 +141,8 @@ export const TOWN_LOCATIONS = [
       '今日安全倡導：山林自行車漫遊與安全帽騎乘',
       '今日轉乘資訊：出發前往屏東與高雄城市之旅'
     ],
-    bgImage: '/assets/town/bg_station.png',
-    npcPortrait: '/assets/town/npc_station.png',
+    bgImage: '/assets/town/bg_station.webp',
+    npcPortrait: '/assets/town/npc_station.webp',
     hasShop: true,
     hasQuests: false
   },
@@ -166,8 +166,8 @@ export const TOWN_LOCATIONS = [
       '今日衛教專欄：多喝溫水與睡滿八小時健康法則',
       '今日衛教專欄：戶外運動防護與退熱冰冰貼'
     ],
-    bgImage: '/assets/town/bg_clinic.png',
-    npcPortrait: '/assets/town/npc_clinic.png',
+    bgImage: '/assets/town/bg_clinic.webp',
+    npcPortrait: '/assets/town/npc_clinic.webp',
     hasShop: true,
     hasQuests: false
   },
@@ -191,8 +191,8 @@ export const TOWN_LOCATIONS = [
       '今日工藝焦點：傳家七彩琉璃珠與陶壺故事',
       '今日服飾風尚：帥氣獵人帽與百步蛇圖騰背心'
     ],
-    bgImage: '/assets/town/bg_plaza.png',
-    npcPortrait: '/assets/town/npc_plaza.png',
+    bgImage: '/assets/town/bg_plaza.webp',
+    npcPortrait: '/assets/town/npc_plaza.webp',
     hasShop: true,
     hasQuests: false
   },
@@ -216,8 +216,8 @@ export const TOWN_LOCATIONS = [
       '今日熱映中：《百步蛇傳奇守護者》(The Hundred-Pace Guardian)',
       '今日熱映中：《飛鼠快俠與星空探險》(Flying Squirrel Speedster)'
     ],
-    bgImage: '/assets/town/bg_cinema.png',
-    npcPortrait: '/assets/town/npc_cinema.png',
+    bgImage: '/assets/town/bg_cinema.webp',
+    npcPortrait: '/assets/town/npc_cinema.webp',
     hasShop: true,
     hasQuests: false
   },
@@ -237,7 +237,7 @@ export const TOWN_LOCATIONS = [
     iconColor: 'text-amber-500',
     description: '溫暖舒服的個人房間，伴隨輕柔八音盒音樂，整理背包道具與收藏榮譽。',
     dailyThemes: ['溫暖的家：放鬆聆聽房間八音盒音樂，整理個人探險背包'],
-    bgImage: '/assets/town/bg_home.png',
+    bgImage: '/assets/town/bg_home.webp',
     npcPortrait: null,
     hasShop: false,
     hasBackpack: true
@@ -515,7 +515,7 @@ export const VISITING_TEACHERS = {
     nameEn: 'Teacher Mario',
     roleZh: '雙語活力外師 • 街頭英語互動',
     avatar: '👨‍🏫',
-    portrait: '/assets/town/teacher_mario.png',
+    portrait: '/assets/town/teacher_mario.webp',
     standeeSide: 'right',
     voiceProfile: { gender: 'male', pitch: 0.90, rate: 0.92, accent: 'en-US' }, // 活力陽光美語男外師
     bgGradient: 'from-amber-500/30 via-red-500/20 to-orange-500/30',
@@ -579,7 +579,7 @@ export const VISITING_TEACHERS = {
     nameEn: 'Teacher Ibu',
     roleZh: '親切雙語外師 • 文化發音互動',
     avatar: '👩‍🏫',
-    portrait: '/assets/town/teacher_ibu.png',
+    portrait: '/assets/town/teacher_ibu.webp',
     standeeSide: 'right',
     voiceProfile: { gender: 'female', pitch: 1.04, rate: 0.88, accent: 'en-US' }, // 來自加州的親切溫暖美語女外師
     bgGradient: 'from-pink-500/30 via-purple-500/20 to-indigo-500/30',

@@ -50,7 +50,7 @@ export const BackpackModal = ({ onClose }) => {
         {/* 頂部倉庫橫幅 */}
         <div className="relative p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
-            <img src="/assets/town/bg_home.png" alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
+            <img src="/assets/town/bg_home.webp" alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
             <div className="absolute inset-0 bg-emerald-950/70 backdrop-blur-[2px]" />
           </div>
 

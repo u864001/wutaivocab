@@ -102,13 +102,13 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
         {/* 頂部布告欄橫幅 */}
         <div className="relative p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
-            <img src="/assets/town/bg_school.png" alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
+            <img src="/assets/town/bg_school.webp" alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
             <div className="absolute inset-0 bg-indigo-950/70 backdrop-blur-[2px]" />
           </div>
 
           <div className="relative z-10 flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-white/90 dark:bg-slate-800/90 shadow-md flex items-center justify-center overflow-hidden shrink-0 border border-white/20">
-              <img src="/assets/town/npc_principal.png" alt="校長" className="w-full h-full object-contain" />
+              <img src="/assets/town/npc_principal.webp" alt="校長" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="flex items-center gap-2">

@@ -27,6 +27,7 @@ export const HomeScene = ({ onClose }) => {
   const [pinnedWisdomCard, setPinnedWisdomCard] = useState(null);
   const [useToast, setUseToast] = useState(null);
   const [bgError, setBgError] = useState(false);
+  const [isBgLoaded, setIsBgLoaded] = useState(false);
 
   // 載入釘在告示板上的英語靈感卡 (僅存最新單張)
   const loadPinnedCard = () => {
@@ -156,16 +157,18 @@ export const HomeScene = ({ onClose }) => {
       {/* ── 16:9 比例完整保留吉卜力房間舞臺 (Zero-crop 16:9 Scenic Stage) ── */}
       <div className="relative w-full aspect-[16/9] max-h-screen overflow-hidden shadow-2xl bg-slate-950">
         
-        {/* 全螢幕 16:9 原畫背景圖 (100% 完整無裁切、無任何遮擋) */}
-        {!bgError ? (
+        {/* 全螢幕 16:9 原畫背景圖 (100% 完整無裁切、底層氛圍漸層確保首毫秒絕不黑屏) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-700/30 via-orange-800/20 to-lime-900/30" />
+        {!bgError && (
           <img
-            src="/assets/town/bg_home.png"
+            src="/assets/town/bg_home.webp"
             alt="學生溫馨的家"
+            onLoad={() => setIsBgLoaded(true)}
             onError={() => setBgError(true)}
-            className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.98] contrast-[1.02] pointer-events-none"
+            className={`absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.98] contrast-[1.02] pointer-events-none transition-opacity duration-700 ${
+              isBgLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
           />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-700/30 via-orange-800/20 to-lime-900/30" />
         )}
 
         {/* ── 頂部懸浮超薄毛玻璃導航列 (Floating Minimal HUD) ── */}
