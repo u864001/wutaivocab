@@ -1,44 +1,53 @@
-// ── 密室逃脫：年級主題題庫分類對照表與程序化謎題生成引擎 ──
+// ── 密室逃脫：三連環多房間劇情冒險與程序化謎題生成引擎 ──
 
-export const CHAMBER_THEMES = [
+export const CHAMBER_CHAPTERS = [
   {
-    id: 'temple',
-    nameZh: '百步蛇神廟密室',
-    nameEn: 'The Sacred Serpent Temple',
-    subtitleZh: '大自然、野生動物與神秘符文',
-    subtitleEn: 'Nature, Wildlife & Sacred Runes',
-    descZh: '深藏在大武山古老山壁中的神秘神殿，青石地板與圖騰巨柱刻劃著遠古傳說。大門被四道符文封印，唯有解開英語謎題才能迎來曙光！',
+    id: 'chamber_1',
+    roomNumber: 1,
+    titleZh: '第一室：百步蛇前殿 • 回音石廊',
+    titleEn: 'Chamber I: The Echo Antechamber',
+    subtitleZh: '大自然生態與聽力共鳴',
+    themeId: 'temple',
     bg: '/assets/escape/bg_temple.webp',
+    bgmId: 'cinema', // 懸疑神秘探險音樂
     color: 'emerald',
-    badge: '部落探險',
+    badge: '第一道門',
     runeIcon: '🐍',
-    allowedCategories: ['animals', 'nature', 'actions', 'adventure']
+    introStoryZh: '探險家在大武山探尋古老石板遺跡時，踩中了地面陷阱，身後千斤巨石轟隆落下封死退路！四周火把驟然點亮，石柱發出神秘回音。唯有破解此處的語言封印，才能升起石門逃往深處！',
+    transitionStoryZh: '轟隆隆——！青銅石門發出沉重巨響緩緩升起，露出向下延伸的旋轉石階！空氣中飄散出古老羊皮紙與乾燥墨水的香氣。你快步穿過長廊，來到了沉寂千年的古代典籍密室...',
+    puzzleTypes: ['listening', 'meaning']
   },
   {
-    id: 'library',
-    nameZh: '長老魔法圖書館',
-    nameEn: 'The Arcane Library',
-    subtitleZh: '學院文具、色彩感知與生活日常',
-    subtitleEn: 'School Life, Colors & Daily Wisdom',
-    descZh: '環形高聳的古老書架擺滿了魔法典籍與漂浮卷軸，壁爐劈啪燃燒著微光。解鎖羊皮紙箱與符文轉盤，帶走這座知識寶庫的探險榮耀！',
+    id: 'chamber_2',
+    roomNumber: 2,
+    titleZh: '第二室：長老秘境 • 典籍知識庫',
+    titleEn: 'Chamber II: The Arcane Archives',
+    subtitleZh: '古卷書庫與拼字構詞',
+    themeId: 'library',
     bg: '/assets/escape/bg_library.webp',
+    bgmId: 'bookstore', // 典雅神秘魔法書香音樂
     color: 'amber',
-    badge: '智慧魔法',
+    badge: '第二道門',
     runeIcon: '📜',
-    allowedCategories: ['school', 'colors_numbers', 'family', 'feelings', 'adventure']
+    introStoryZh: '高聳的環形書架直抵穹頂，漂浮魔法卷軸與古星盤在微光中輕輕旋轉。通往深處的暗門被古代拼字轉盤與釋義封印緊緊扣住。繼續推敲線索，找出前進的通道吧！',
+    transitionStoryZh: '咔嚓、咔嚓！隱藏在書架後方的巨型機械齒輪開始咬合旋轉，暗門赫然退開！上方傳來星際流光的呼嘯與清脆鐘鳴。你拾階而上，眼前豁然開朗，抵達了宏偉壯麗的星象祭壇大殿！',
+    puzzleTypes: ['spelling', 'meaning']
   },
   {
-    id: 'observatory',
-    nameZh: '星象時光鐘樓',
-    nameEn: 'The Celestial Observatory',
-    subtitleZh: '城鎮場所、交通工具與美味佳餚',
-    subtitleEn: 'Places, Transit, Food & Constellations',
-    descZh: '巨大黃銅齒輪與渾天儀在璀璨星河下緩緩運轉。大門鑲嵌著十二星座之印，只有辨識星際語音與搭配詞彙，才能開啟通往銀河的出口！',
+    id: 'chamber_3',
+    roomNumber: 3,
+    titleZh: '第三室：大武山之巔 • 星象脫逃祭壇',
+    titleEn: 'Chamber III: The Celestial Sanctuary',
+    subtitleZh: '星際鐘樓與終極對偶之門',
+    themeId: 'observatory',
     bg: '/assets/escape/bg_observatory.webp',
+    bgmId: 'plaza', // 宏大莊嚴史詩通關音樂
     color: 'indigo',
-    badge: '星際奇幻',
+    badge: '終極脫逃門',
     runeIcon: '🔭',
-    allowedCategories: ['food', 'places_transport', 'daily_life', 'adventure']
+    introStoryZh: '巨大的黃銅渾天儀在大武山璀璨星河下緩緩運轉。前方正對著通往地表山谷的終極脫逃大門！大門需要注入精準拼字能量並解開雙重星座配對印記，重見天日的時刻就在眼前！',
+    victoryStoryZh: '金光萬丈——！巨大的星圖大門完全敞開，清新的高山微風伴隨著溫暖的第一道晨曦傾瀉而入！你成功破解所有古代封印，順利逃出了神秘石板密室！',
+    puzzleTypes: ['spelling', 'pairing']
   }
 ];
 
@@ -67,7 +76,6 @@ export const tagWordCategory = (word) => {
     }
   }
 
-  // 依單元名稱輔助分類
   const lesson = (word.lesson || '').toLowerCase();
   if (lesson.includes('動物') || lesson.includes('animal')) return 'animals';
   if (lesson.includes('食物') || lesson.includes('甜點') || lesson.includes('food')) return 'food';
@@ -105,157 +113,184 @@ const shuffle = (array) => {
 };
 
 /**
- * 動態程序化生成密室謎題
- * @param {Array} allWords - 全庫單字 (Supabase or fallback)
- * @param {Object} options - { grade, themeId, selectedUnits }
+ * 程序化生成三連環密室大逃脫會話 (Multi-Chamber Campaign Generator)
  */
-export const generateEscapeRoomSession = (allWords = [], options = {}) => {
-  const { grade = '03', themeId = null, selectedUnits = [] } = options;
+export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
+  const { grade = '03', selectedUnits = [] } = options;
 
   // 1. 決定題庫範圍與上榜冊別 (qualifyingBook)
   let eligibleWords = [];
   let qualifyingBook = null;
 
   if (Array.isArray(selectedUnits) && selectedUnits.length > 0) {
-    // 優先使用 Lobby 勾選範圍
     eligibleWords = allWords.filter(w => selectedUnits.includes(`${w.book}-${w.lesson}`));
     const selectedBooks = [...new Set(selectedUnits.map(u => u.split('-')[0]))];
-    if (selectedBooks.length === 1 && eligibleWords.length >= 10) {
+    if (selectedBooks.length === 1 && eligibleWords.length >= 8) {
       qualifyingBook = selectedBooks[0];
     }
   }
 
-  // 若自選範圍不足 8 字，或未勾選自選範圍，依學生年級自適應挑選本年級教材單字
-  if (eligibleWords.length < 8) {
+  // 若自選範圍不足 10 字，自動依年級選定本年級教材單字
+  if (eligibleWords.length < 10) {
     const gradeBooks = getBooksForGrade(grade);
     eligibleWords = allWords.filter(w => gradeBooks.includes(String(w.book)));
-    if (eligibleWords.length < 8) {
+    if (eligibleWords.length < 10) {
       eligibleWords = [...allWords];
     }
-    // 預設將學生本年級代表冊別設為合格冊別
     qualifyingBook = gradeBooks[0] || '1';
   }
 
-  // 2. 挑選密室主題 (支援指定或隨機輪替，並防同主題連續出現)
-  let theme = null;
-  if (themeId) {
-    theme = CHAMBER_THEMES.find(t => t.id === themeId) || CHAMBER_THEMES[0];
-  } else {
-    let lastThemeId = null;
-    try {
-      lastThemeId = sessionStorage.getItem('wutai_last_escape_theme');
-    } catch (e) {}
-    const availableThemes = CHAMBER_THEMES.filter(t => t.id !== lastThemeId);
-    theme = availableThemes[Math.floor(Math.random() * availableThemes.length)] || CHAMBER_THEMES[0];
-    try {
-      sessionStorage.setItem('wutai_last_escape_theme', theme.id);
-    } catch (e) {}
-  }
-
-  // 3. 語意分類過濾：優先提取與主題最貼近的單字
-  const taggedWords = eligibleWords.map(w => ({
+  const taggedPool = eligibleWords.map(w => ({
     ...w,
     category: tagWordCategory(w)
   }));
 
-  const primaryPool = taggedWords.filter(w => theme.allowedCategories.includes(w.category));
-  const fallbackPool = taggedWords.filter(w => !theme.allowedCategories.includes(w.category));
+  const shuffledPool = shuffle(taggedPool);
+  const usedWordIds = new Set();
+  const allWordsInvolved = [];
 
-  // 組合總候選池 (優先主題，次用同冊補足)
-  const candidatePool = shuffle([...primaryPool, ...fallbackPool]);
-
-  // 至少需要 6 個不同單字供 4 道機關解謎與生成干擾項
-  const sessionWords = candidatePool.slice(0, Math.min(candidatePool.length, 12));
-  const poolForDistractors = shuffle(allWords.filter(w => !sessionWords.some(sw => sw.id === w.id)));
-
-  // ── 謎題 1：聲納回音石門 (聽力辨識 Hearing Echo) ──
-  const p1Target = sessionWords[0] || { id: 'p1', en: 'apple', zh: '蘋果' };
-  const p1Distractors = shuffle([
-    ...sessionWords.filter(w => w.id !== p1Target.id),
-    ...poolForDistractors
-  ]).slice(0, 3);
-  const puzzleListening = {
-    id: 'puzzle_listening',
-    titleZh: '聲納回音石門',
-    titleEn: 'Echo Chamber of Voices',
-    type: 'listening',
-    stationName: '回音石柱',
-    targetWord: p1Target,
-    options: shuffle([p1Target, ...p1Distractors]),
-    hintZh: '點擊喇叭或石柱聆聽外師純美式發音，點選共鳴的英文字符！',
-    rewardItemZh: '青銅回音符石',
-    rewardItemIcon: '🟢'
+  // 工具：從候選池中取出非重複的單字
+  const takeWord = (preferredCategories = []) => {
+    let candidate = shuffledPool.find(w => !usedWordIds.has(w.id) && preferredCategories.includes(w.category));
+    if (!candidate) {
+      candidate = shuffledPool.find(w => !usedWordIds.has(w.id));
+    }
+    if (!candidate) {
+      // 題庫耗盡時循環複用
+      candidate = shuffledPool[Math.floor(Math.random() * shuffledPool.length)] || { id: 'fallback', en: 'star', zh: '星星' };
+    }
+    usedWordIds.add(candidate.id);
+    allWordsInvolved.push(candidate);
+    return candidate;
   };
 
-  // ── 謎題 2：遠古羊皮紙匣 (中文釋義與情境線索) ──
-  const p2Target = sessionWords[1] || { id: 'p2', en: 'banana', zh: '香蕉' };
-  const p2Distractors = shuffle([
-    ...sessionWords.filter(w => w.id !== p2Target.id && w.id !== p1Target.id),
-    ...poolForDistractors
-  ]).slice(0, 3);
-  const puzzleMeaning = {
-    id: 'puzzle_meaning',
-    titleZh: '遠古羊皮紙匣',
-    titleEn: 'Ancient Codex Parchment',
-    type: 'meaning',
-    stationName: '密碼石匣',
-    targetWord: p2Target,
-    options: shuffle([p2Target, ...p2Distractors]),
-    clueZh: p2Target.zh,
-    hintZh: '解讀羊皮紙上記載的古老密語，挑選出正確的英文刻印！',
-    rewardItemZh: '銀月解碼印記',
-    rewardItemIcon: '🌙'
+  const getDistractors = (targetWord, count = 3) => {
+    const sameCat = allWords.filter(w => w.id !== targetWord.id && tagWordCategory(w) === tagWordCategory(targetWord));
+    const other = allWords.filter(w => w.id !== targetWord.id && tagWordCategory(w) !== tagWordCategory(targetWord));
+    return shuffle([...sameCat, ...other]).slice(0, count);
   };
 
-  // ── 謎題 3：百步蛇拼字石盤 (字母重組與拼寫解密) ──
-  const p3Target = sessionWords[2] || { id: 'p3', en: 'dog', zh: '狗' };
-  const cleanTargetLetters = p3Target.en.toLowerCase().replace(/[^a-z]/g, '').split('');
-  // 隨機添加 1 個干擾字母增加國小中高年級鑑別度
-  const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-  const extraLetters = cleanTargetLetters.length <= 5
-    ? [alphabet[Math.floor(Math.random() * alphabet.length)]]
-    : [];
-  const puzzleSpelling = {
-    id: 'puzzle_spelling',
-    titleZh: '百步蛇符文石盤',
-    titleEn: 'Serpent Rune Wheel',
-    type: 'spelling',
-    stationName: '中央轉盤',
-    targetWord: p3Target,
-    cleanLetters: cleanTargetLetters,
-    scrambledLetters: shuffle([...cleanTargetLetters, ...extraLetters]).map((char, index) => ({
-      id: `letter-${index}-${char}`,
-      char
-    })),
-    hintZh: '點擊下方散落的字母符文，按順序填滿石刻槽位拼出單字！',
-    rewardItemZh: '黃金拼字齒輪',
-    rewardItemIcon: '⚙️'
-  };
+  // 2. 為三個房間分別生成題目
+  const chapters = CHAMBER_CHAPTERS.map((chapMeta, chapIdx) => {
+    const puzzles = [];
 
-  // ── 謎題 4：終極對偶之門 (英中配對 / 生活詞彙對應) ──
-  const p4PairPool = shuffle(sessionWords.slice(3, 7));
-  const pairingWords = p4PairPool.length >= 3 ? p4PairPool.slice(0, 3) : sessionWords.slice(0, 3);
-  const puzzlePairing = {
-    id: 'puzzle_pairing',
-    titleZh: '終極對偶之門',
-    titleEn: 'Gateway of Twin Runes',
-    type: 'pairing',
-    stationName: '終極封印大門',
-    pairs: pairingWords.map(w => ({ id: w.id, en: w.en, zh: w.zh })),
-    hintZh: '左側英文與右側中文彼此呼應，依序點選互相配對以解開門鎖！',
-    rewardItemZh: '永恆逃脫之鑰',
-    rewardItemIcon: '🔑'
-  };
+    if (chapMeta.id === 'chamber_1') {
+      // 第一室：聽力聲納 (1) + 羊皮紙釋義 (2)
+      const p1Target = takeWord(['animals', 'nature', 'actions']);
+      const p1Distractors = getDistractors(p1Target, 3);
+      puzzles.push({
+        id: 'p1_listening',
+        titleZh: '聲納回音石門',
+        titleEn: 'Echo Chamber of Voices',
+        type: 'listening',
+        stationName: '回音石柱',
+        targetWord: p1Target,
+        options: shuffle([p1Target, ...p1Distractors]),
+        hintZh: '點擊石柱聆聽外師純美式發音，點選共鳴的英文字符！',
+        rewardItemZh: '青銅回音符石',
+        rewardItemIcon: '🟢'
+      });
+
+      const p2Target = takeWord(['animals', 'nature', 'food']);
+      const p2Distractors = getDistractors(p2Target, 3);
+      puzzles.push({
+        id: 'p1_meaning',
+        titleZh: '石壁圖騰線索',
+        titleEn: 'Ancient Codex Clue',
+        type: 'meaning',
+        stationName: '壁刻石匣',
+        targetWord: p2Target,
+        options: shuffle([p2Target, ...p2Distractors]),
+        clueZh: p2Target.zh,
+        hintZh: '依據壁刻中文線索，挑選相應的英文圖騰！',
+        rewardItemZh: '青銅解鎖鑰匙',
+        rewardItemIcon: '🗝️'
+      });
+    } else if (chapMeta.id === 'chamber_2') {
+      // 第二室：拼字轉盤 (1) + 典籍釋義 (2)
+      const p3Target = takeWord(['school', 'colors_numbers', 'family']);
+      const cleanLetters = p3Target.en.toLowerCase().replace(/[^a-z]/g, '').split('');
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      const extraLetters = cleanLetters.length <= 5 ? [alphabet[Math.floor(Math.random() * alphabet.length)]] : [];
+      puzzles.push({
+        id: 'p2_spelling',
+        titleZh: '古卷拼字輪盤',
+        titleEn: 'Arcane Spelling Disc',
+        type: 'spelling',
+        stationName: '中央典籍轉盤',
+        targetWord: p3Target,
+        cleanLetters,
+        scrambledLetters: shuffle([...cleanLetters, ...extraLetters]).map((c, i) => ({ id: `p2_${i}_${c}`, char: c })),
+        hintZh: '點擊散落的字母重組單字，解開轉盤齒輪！',
+        rewardItemZh: '銀月齒輪',
+        rewardItemIcon: '⚙️'
+      });
+
+      const p4Target = takeWord(['school', 'feelings', 'colors_numbers']);
+      const p4Distractors = getDistractors(p4Target, 3);
+      puzzles.push({
+        id: 'p2_meaning',
+        titleZh: '長老羊皮紙匣',
+        titleEn: 'Elder Parchment Box',
+        type: 'meaning',
+        stationName: '智慧石匣',
+        targetWord: p4Target,
+        options: shuffle([p4Target, ...p4Distractors]),
+        clueZh: p4Target.zh,
+        hintZh: '解鎖智慧石匣：挑選符合羊皮紙文字的正確詞彙！',
+        rewardItemZh: '銀月暗門鑰匙',
+        rewardItemIcon: '🗝️'
+      });
+    } else {
+      // 第三室：星際拼字 (1) + 終極雙印對偶大門 (2)
+      const p5Target = takeWord(['places_transport', 'daily_life', 'food']);
+      const cleanLetters = p5Target.en.toLowerCase().replace(/[^a-z]/g, '').split('');
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      const extraLetters = cleanLetters.length <= 5 ? [alphabet[Math.floor(Math.random() * alphabet.length)]] : [];
+      puzzles.push({
+        id: 'p3_spelling',
+        titleZh: '星際拼字解碼盤',
+        titleEn: 'Celestial Word Dial',
+        type: 'spelling',
+        stationName: '渾天儀拼字台',
+        targetWord: p5Target,
+        cleanLetters,
+        scrambledLetters: shuffle([...cleanLetters, ...extraLetters]).map((c, i) => ({ id: `p3_${i}_${c}`, char: c })),
+        hintZh: '重組渾天儀上的星際單字，點亮脫逃光芒！',
+        rewardItemZh: '黃金星盤印記',
+        rewardItemIcon: '🌟'
+      });
+
+      const pair1 = takeWord();
+      const pair2 = takeWord();
+      const pair3 = takeWord();
+      puzzles.push({
+        id: 'p3_pairing',
+        titleZh: '終極對偶大門',
+        titleEn: 'The Final Gateway',
+        type: 'pairing',
+        stationName: '終極封印門扉',
+        pairs: [
+          { id: pair1.id, en: pair1.en, zh: pair1.zh },
+          { id: pair2.id, en: pair2.en, zh: pair2.zh },
+          { id: pair3.id, en: pair3.en, zh: pair3.zh }
+        ],
+        hintZh: '配對 3 組英中星象符文，徹底開啟逃脫大門！',
+        rewardItemZh: '永恆自由之鑰',
+        rewardItemIcon: '🔑'
+      });
+    }
+
+    return {
+      ...chapMeta,
+      puzzles
+    };
+  });
 
   return {
-    theme,
+    chapters,
     qualifyingBook,
-    wordsInvolved: [p1Target, p2Target, p3Target, ...pairingWords],
-    puzzles: [
-      puzzleListening,
-      puzzleMeaning,
-      puzzleSpelling,
-      puzzlePairing
-    ]
+    totalPuzzlesCount: 6,
+    allWordsInvolved
   };
 };
