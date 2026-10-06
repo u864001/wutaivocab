@@ -2,9 +2,9 @@ name: 🔄 Supabase Keep-Alive & Health Check
 
 on:
   schedule:
-    # 台灣時間 (UTC+8) 每週一與週四凌晨 00:00 自動執行 (即 UTC 週日與週三 16:00)
-    # 每 3~4 天自動發起一次極輕量健康打卡，徹底防範寒暑假或長假期間 Supabase 7 天未活動而被官方休眠 (Pause)
-    - cron: '0 16 * * 0,3'
+    # 每日台灣時間上午 10:00 (UTC 02:00) 自動打卡巡檢
+    # 每天執行一次超輕量探測，即使偶遇 GitHub Actions 尖峰排隊延遲也絕不逼近 7 天休眠門檻
+    - cron: '0 2 * * *'
   workflow_dispatch: # 支援在 GitHub Actions 後台隨時手動點擊「Run workflow」打卡測試
 
 jobs:
