@@ -758,85 +758,21 @@ export const DIALOGUE_TREES = {
   cinema: DIALOGUE_VARIANTS.cinema[0]
 };
 
-// ── 9. 每日任務系統清單 (固定開出 2 低、2 中、2 高，每日限選 3 任務，數值平穩不通膨) ──
-export const MAX_DAILY_QUESTS = 3;
+// ── 9. 每日任務系統清單 (52 款任務大師池，兩級制防通膨：普通 0 元 +10 點，高級 10 元 +20 點) ──
+import {
+  MAX_DAILY_QUESTS,
+  DAILY_QUEST_MASTER_POOL,
+  NORMAL_QUESTS,
+  ADVANCED_QUESTS,
+  getDailyQuestBoard
+} from './townQuestData.js';
 
-export const DAILY_QUEST_TEMPLATES = [
-  // 🟢 難度一：簡單探索 (2 款，免費接取，+20 探索積分)
-  {
-    id: 'easy_greet_supermarket',
-    tier: 'easy',
-    titleZh: '超市晨光打招呼',
-    titleEn: 'Morning Greeting at Supermarket',
-    cost: 0,
-    rewardPoints: 20,
-    targetLocation: 'supermarket',
-    descriptionZh: '前往黑熊超市，與店長或客座外師進行英語對話，並選購任意一項美味水果點心。',
-    descriptionEn: 'Visit Black Bear Supermarket, chat in English, and purchase any fruit or snack.',
-    actionRequired: 'visit_supermarket'
-  },
-  {
-    id: 'easy_stationery_check',
-    tier: 'easy',
-    titleZh: '書局採買小幫手',
-    titleEn: 'Bookstore Stationery Helper',
-    cost: 0,
-    rewardPoints: 20,
-    targetLocation: 'bookstore',
-    descriptionZh: '前往貓頭鷹書局向店長打招呼交談，挑選一枝鉛筆、橡皮擦或彩色筆放入背包。',
-    descriptionEn: 'Visit Owl Bookstore, talk to Manager Owl, and pick up a pencil or eraser.',
-    actionRequired: 'visit_bookstore'
-  },
+export {
+  MAX_DAILY_QUESTS,
+  DAILY_QUEST_MASTER_POOL,
+  NORMAL_QUESTS,
+  ADVANCED_QUESTS,
+  getDailyQuestBoard
+};
 
-  // 🔵 難度二：中階挑戰 (2 款，投注 20 金幣解鎖，+50 探索積分)
-  {
-    id: 'medium_nature_explorer',
-    tier: 'medium',
-    titleZh: '大武山自然觀察家',
-    titleEn: 'Mountain Nature Explorer',
-    cost: 20,
-    rewardPoints: 50,
-    targetLocation: 'park',
-    descriptionZh: '投注 20 金幣解鎖！前往飛鼠公園向雲豹長老請教大自然與四季生態，融入山林綠意。',
-    descriptionEn: 'Invest 20 coins! Chat about weather, nature, and animals at Flying Squirrel Park.',
-    actionRequired: 'visit_park'
-  },
-  {
-    id: 'medium_train_traveler',
-    tier: 'medium',
-    titleZh: '山林鐵道旅行家',
-    titleEn: 'Forest Railway Traveler',
-    cost: 20,
-    rewardPoints: 50,
-    targetLocation: 'station',
-    descriptionZh: '投注 20 金幣解鎖！前往山林火車站向穿山甲站長諮詢觀光列車與旅行計畫，或購買車票。',
-    descriptionEn: 'Invest 20 coins! Consult Station Master Pangolin about trips or purchase train tickets.',
-    actionRequired: 'visit_station'
-  },
-
-  // 🟡 難度三：高階解謎 (2 款，投注 50 金幣解鎖，+90 探索積分)
-  {
-    id: 'hard_healthy_hero',
-    tier: 'hard',
-    titleZh: '小鎮健康衛士',
-    titleEn: 'Town Health Defender',
-    cost: 50,
-    rewardPoints: 90,
-    targetLocation: 'clinic',
-    descriptionZh: '投注 50 金幣解鎖！前往貓頭鷹診所諮詢山羊醫生健康生活習慣，或選購潤喉薄荷糖或健康大水壺。',
-    descriptionEn: 'Invest 50 coins! Consult Dr. Goat at the clinic about wellness, or buy throat lozenges.',
-    actionRequired: 'visit_clinic'
-  },
-  {
-    id: 'hard_tribal_warrior',
-    tier: 'hard',
-    titleZh: '百步蛇文化探索榮譽',
-    titleEn: 'Legend of Hundred-Pace Culture',
-    cost: 50,
-    rewardPoints: 90,
-    targetLocation: 'plaza',
-    descriptionZh: '投注 50 金幣解鎖！前往百步蛇集會所深入了解傳統文化與百合花涵義，或收藏純潔百合學習紀念章！',
-    descriptionEn: 'Invest 50 coins! Learn about Rukai traditions at the Gathering Hall, or collect the Lily Badge!',
-    actionRequired: 'visit_plaza'
-  }
-];
+export const DAILY_QUEST_TEMPLATES = DAILY_QUEST_MASTER_POOL;

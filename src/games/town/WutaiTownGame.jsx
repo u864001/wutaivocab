@@ -8,7 +8,8 @@ import {
   TOWN_MAP_PANORAMA_IMG,
   getTodayDateStr,
   getDailyVisitingTeacherInfo,
-  getLocationDailyTheme
+  getLocationDailyTheme,
+  DAILY_QUEST_MASTER_POOL
 } from './townData';
 import { DialogueEngine } from './DialogueEngine';
 import { HomeScene } from './HomeScene';
@@ -48,9 +49,9 @@ export const WutaiTownGame = ({ onBack }) => {
   const [hoveredLocation, setHoveredLocation] = useState(null);
   const [isTownBgmActive, setIsTownBgmActive] = useState(true);
 
-  // 領取外師每日彩蛋積分處理
+  // 領取外師每日彩蛋積分處理 (提升至 10 ~ 20 探索積分，尊榮外師每日限定)
   const handleTeacherBonusClaimed = async () => {
-    const bonus = Math.floor(Math.random() * 6) + 5; // 隨機 5 ~ 10 探索積分
+    const bonus = Math.floor(Math.random() * 11) + 10; // 隨機 10 ~ 20 探索積分
     soundEngine.win();
     try {
       confetti({ particleCount: 90, spread: 75, origin: { y: 0.6 } });
@@ -70,7 +71,7 @@ export const WutaiTownGame = ({ onBack }) => {
     }, 4500);
   };
 
-  // 任務進度監聽處理
+  // 任務進度監聽處理 (全自動適配 52 款大師任務池：單點交談、單品採買、類別採購、雙點巡禮、三地標大巡查)
   const handleQuestProgress = useCallback(async (actionType, param1, param2) => {
     const dailyQuest = currentStudent?.daily_quest;
     if (!dailyQuest || dailyQuest.completed || dailyQuest.rewardClaimed) return;
@@ -78,46 +79,83 @@ export const WutaiTownGame = ({ onBack }) => {
     const currentQuestId = dailyQuest.questId || dailyQuest.activeQuestId;
     if (!currentQuestId) return;
 
+    const template = DAILY_QUEST_MASTER_POOL.find(q => q.id === currentQuestId);
+    if (!template) return;
+
+    // 累積記錄進度：造訪過的地標與購買過的道具
+    const prevProgress = (typeof dailyQuest.progress === 'object' && dailyQuest.progress) ? dailyQuest.progress : {};
+    const visitedLocations = Array.isArray(prevProgress.visitedLocations) ? [...prevProgress.visitedLocations] : [];
+    const boughtItems = Array.isArray(prevProgress.boughtItems) ? [...prevProgress.boughtItems] : [];
+
+    let progressChanged = false;
+
+    // 1. 對話推進 (param1: locationId, param2: currentNodeId)
+    if (actionType === 'dialogue' && param1 && param2 && param2 !== 'welcome') {
+      if (!visitedLocations.includes(param1)) {
+        visitedLocations.push(param1);
+        progressChanged = true;
+      }
+    }
+
+    // 2. 道具購買 (param1: item.category, param2: item.id)
+    if (actionType === 'buy' && param2) {
+      if (!boughtItems.includes(param2)) {
+        boughtItems.push(param2);
+        progressChanged = true;
+      }
+      const shopLoc = TOWN_ITEMS.find(it => it.id === param2)?.shopId;
+      if (shopLoc && !visitedLocations.includes(shopLoc)) {
+        visitedLocations.push(shopLoc);
+        progressChanged = true;
+      }
+    }
+
     let shouldComplete = false;
 
-    // 簡易任務 1：黑熊超市買食物或進行英語對話
-    if (currentQuestId === 'easy_greet_supermarket') {
-      if ((actionType === 'buy' && (param1 === 'food' || param2 === 'sandwich_item' || param2 === 'apple_item' || param2 === 'banana_item')) ||
-          (actionType === 'dialogue' && param1 === 'supermarket' && param2 && param2 !== 'welcome')) {
+    // ── 依任務類型進行達成判定 ──
+    // A. 單地標生活英語交談 (talk)
+    if (template.type === 'talk') {
+      if (visitedLocations.includes(template.targetLocation)) {
         shouldComplete = true;
       }
     }
-    // 簡易任務 2：書局買文具或進行英語對話
-    else if (currentQuestId === 'easy_stationery_check') {
-      if ((actionType === 'buy' && (param1 === 'stationery' || param2 === 'pencil_item' || param2 === 'eraser_item' || param2 === 'notebook_item' || param2 === 'marker_item')) ||
-          (actionType === 'dialogue' && param1 === 'bookstore' && param2 && param2 !== 'welcome')) {
+    // B. 指定單品採買 (buy_item)
+    else if (template.type === 'buy_item') {
+      if (boughtItems.includes(template.targetItemId)) {
         shouldComplete = true;
       }
     }
-    // 中階任務 1：公園大武山自然觀察家 (與雲豹長老英語對話互動)
-    else if (currentQuestId === 'medium_nature_explorer') {
-      if (actionType === 'dialogue' && param1 === 'park' && param2 && param2 !== 'welcome') {
+    // C. 類別採買 (buy_category)
+    else if (template.type === 'buy_category') {
+      if (actionType === 'buy' && param1 === template.targetCategory) {
         shouldComplete = true;
       }
     }
-    // 中階任務 2：山林鐵道旅行家 (向穿山甲站長諮詢或購買車票)
-    else if (currentQuestId === 'medium_train_traveler') {
-      if ((actionType === 'dialogue' && param1 === 'station' && param2 && param2 !== 'welcome') ||
-          (actionType === 'buy' && (param2 === 'train_ticket' || param2 === 'map_item'))) {
+    // D. 地標交談或採買皆可 (talk_or_buy)
+    else if (template.type === 'talk_or_buy') {
+      if (visitedLocations.includes(template.targetLocation)) {
         shouldComplete = true;
       }
     }
-    // 高階任務 1：診所就醫健康對話或購買保健物資
-    else if (currentQuestId === 'hard_healthy_hero') {
-      if ((actionType === 'dialogue' && param1 === 'clinic' && param2 && param2 !== 'welcome') ||
-          (actionType === 'buy' && (param1 === 'special' || param2 === 'throat_lozenge' || param2 === 'cooling_patch' || param2 === 'water_bottle_item'))) {
+    // E. 雙地標跨點巡禮 (multi_tour)
+    else if (template.type === 'multi_tour') {
+      if (Array.isArray(template.targetLocations) && template.targetLocations.every(loc => visitedLocations.includes(loc))) {
         shouldComplete = true;
       }
     }
-    // 高階任務 2：集會所深入了解傳統文化與百合花涵義或收藏紀念章
-    else if (currentQuestId === 'hard_tribal_warrior') {
-      if ((actionType === 'dialogue' && param1 === 'plaza' && param2 && param2 !== 'welcome') ||
-          (actionType === 'buy' && (param2 === 'lily_badge' || param2 === 'glass_bead' || param2 === 'warrior_hat'))) {
+    // F. 複合任務：買道具 + 指定地點對話 (buy_and_visit)
+    else if (template.type === 'buy_and_visit') {
+      const hasBought = Array.isArray(template.validItemIds)
+        ? template.validItemIds.some(id => boughtItems.includes(id))
+        : boughtItems.length > 0;
+      const hasVisited = visitedLocations.includes(template.targetLocation);
+      if (hasBought && hasVisited) {
+        shouldComplete = true;
+      }
+    }
+    // G. 三地標大巡禮 (grand_tour)
+    else if (template.type === 'grand_tour') {
+      if (visitedLocations.length >= (template.requiredCount || 3)) {
         shouldComplete = true;
       }
     }
@@ -131,9 +169,22 @@ export const WutaiTownGame = ({ onBack }) => {
       const updated = {
         ...dailyQuest,
         completed: true,
-        completedAt: new Date().toISOString()
+        completedAt: new Date().toISOString(),
+        progress: {
+          visitedLocations,
+          boughtItems
+        }
       };
       await updateDailyQuest(updated);
+    } else if (progressChanged) {
+      // 僅更新中間進度供 UI 即時打勾
+      await updateDailyQuest({
+        ...dailyQuest,
+        progress: {
+          visitedLocations,
+          boughtItems
+        }
+      });
     }
   }, [currentStudent?.daily_quest, updateDailyQuest]);
 

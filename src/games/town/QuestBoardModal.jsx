@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { Button3D } from '../../components/ui/Button3D';
 import { useStudent } from '../../context/StudentContext';
-import { DAILY_QUEST_TEMPLATES, MAX_DAILY_QUESTS, getTodayDateStr } from './townData';
+import {
+  DAILY_QUEST_MASTER_POOL,
+  MAX_DAILY_QUESTS,
+  getDailyQuestBoard,
+  getTodayDateStr
+} from './townData';
 import { soundEngine } from '../../services/audio';
 import {
   ScrollText, X, Trophy, Coins, CheckCircle2, AlertCircle,
-  Sparkles, Target, Award, Clock
+  Sparkles, Target, Award, Clock, MapPin
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -35,13 +40,17 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
   const completedTodayCount = claimedList.length;
   const isDailyLimitReached = completedTodayCount >= MAX_DAILY_QUESTS;
 
+  // 今日校長室開出的 7 款任務 (4 普通 + 3 高級，自 52 款任務大師池隨機挑選)
+  const todayQuests = getDailyQuestBoard(today);
+
   // 當前正在進行中任務 (若今日已領獎則代表無進行中任務)
   const currentActiveId = (isTodayData && !rawQuestData.rewardClaimed)
     ? (rawQuestData.questId || rawQuestData.activeQuestId)
     : null;
 
+  // 自 52 款任務總大師池中查找範本，保證永不漏失
   const activeTemplate = currentActiveId
-    ? DAILY_QUEST_TEMPLATES.find(q => q.id === currentActiveId)
+    ? DAILY_QUEST_MASTER_POOL.find(q => q.id === currentActiveId)
     : null;
 
   const isCurrentCompleted = Boolean(isTodayData && activeTemplate && rawQuestData.completed);
@@ -77,11 +86,11 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
       return;
     }
 
-    // 若需要投注金幣
+    // 若需要投注金幣 (高級任務 10 金幣)
     if (quest.cost > 0) {
       if (coins < quest.cost) {
         soundEngine.wrong();
-        setToastMessage({ type: 'error', text: `宇宙金幣不足！接取此任務需要投注 ${quest.cost} 金幣，快去闖關單字遊戲累積金幣吧！` });
+        setToastMessage({ type: 'error', text: `宇宙金幣不足！接取此高級任務需要投注 ${quest.cost} 金幣，快去闖關單字遊戲累積金幣吧！` });
         setTimeout(() => setToastMessage(null), 3500);
         return;
       }
@@ -102,8 +111,8 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
       claimedQuestIds: claimedList,
       completedCount: claimedList.length,
       progress: {
-        dialogueDone: false,
-        actionDone: false
+        visitedLocations: [],
+        boughtItems: []
       }
     };
 
@@ -183,7 +192,7 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
                 </span>
               </div>
               <p className="text-xs font-bold text-amber-200">
-                探索小鎮完成生活英語任務！每日限挑選 3 個任務爭奪全校榮譽榜！
+                52 款生活英語委託！每日限挑選 3 個任務爭奪全校榮譽榜！
               </p>
             </div>
           </div>
@@ -231,7 +240,7 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
                   🎉 太優秀了！今日 3 個探索任務已全數圓滿達成！
                 </h4>
                 <p className="text-xs text-emerald-300/90 font-bold mt-0.5">
-                  你今天表現非常認真，探索積分已全數入帳！請好好休息，明天 00:00 換日後再來挑戰全新任務！
+                  你今天表現非常認真，探索積分已全數入帳！請好好休息，明天 00:00 換日後再來挑選全新任務！
                 </p>
               </div>
             </div>
@@ -262,9 +271,39 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
                 <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-2 leading-relaxed">
                   {activeTemplate.descriptionZh}
                 </p>
+
+                {/* 雙地標巡禮即時打勾進度 */}
+                {activeTemplate.type === 'multi_tour' && Array.isArray(activeTemplate.targetLocations) && (
+                  <div className="flex items-center gap-2 mt-3 flex-wrap pt-2 border-t border-slate-200/80 dark:border-slate-700/80">
+                    <span className="text-[11px] font-black text-slate-500 dark:text-slate-400">巡禮進度:</span>
+                    {activeTemplate.targetLocations.map((loc, idx) => {
+                      const isDone = Array.isArray(rawQuestData.progress?.visitedLocations) && rawQuestData.progress.visitedLocations.includes(loc);
+                      const name = activeTemplate.targetLocationsNamesZh ? activeTemplate.targetLocationsNamesZh[idx] : loc;
+                      return (
+                        <span
+                          key={loc}
+                          className={`px-2.5 py-0.5 rounded-lg text-xs font-black flex items-center gap-1 border transition-all ${
+                            isDone
+                              ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-400'
+                              : 'bg-slate-200 dark:bg-slate-800 text-slate-500 border-slate-300 dark:border-slate-700'
+                          }`}
+                        >
+                          {isDone ? '✓ ' : '○ '}{name}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* 三地標大巡禮即時已訪計數 */}
+                {activeTemplate.type === 'grand_tour' && (
+                  <div className="mt-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 pt-2 border-t border-slate-200/80 dark:border-slate-700/80">
+                    📍 已造訪不同地標: {Math.min(3, (rawQuestData.progress?.visitedLocations?.length || 0))} / 3
+                  </div>
+                )}
               </div>
 
-              {/* 進度條與狀態 */}
+              {/* 進度條與狀態按鈕 */}
               <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <span className={`w-2.5 h-2.5 rounded-full ${isCurrentCompleted ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
@@ -286,7 +325,7 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
                     </Button3D>
                   ) : (
                     <>
-                      {onNavigateLocation && (
+                      {onNavigateLocation && activeTemplate.targetLocation && (
                         <button
                           onClick={() => {
                             onClose();
@@ -310,18 +349,18 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
             </div>
           )}
 
-          {/* 任務階層選擇目錄 (6 款任務：2 低、2 中、2 高) */}
+          {/* 今日精選任務清單 (4 普通 + 3 高級) */}
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
               <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                今日可挑選任務列表 (固定 6 款，每日限完成 3 個)：
+                今日精選任務列表 (4 普通 + 3 高級，每日限完成 3 個)：
               </span>
               <span className="text-xs font-black text-indigo-500 dark:text-indigo-400">
                 已完成 {completedTodayCount} / {MAX_DAILY_QUESTS}
               </span>
             </div>
 
-            {DAILY_QUEST_TEMPLATES.map((q) => {
+            {todayQuests.map((q) => {
               const isClaimed = claimedList.includes(q.id);
               const isSelected = activeTemplate && activeTemplate.id === q.id;
 
@@ -340,17 +379,13 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full ${
-                          q.tier === 'easy'
+                          q.tier === 'normal'
                             ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                            : q.tier === 'medium'
-                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
                             : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
                         }`}>
-                          {q.tier === 'easy'
-                            ? '🟢 簡單探索 (免費)'
-                            : q.tier === 'medium'
-                            ? `🔵 中階挑戰 (投注 ${q.cost} 金幣)`
-                            : `🟡 榮譽解謎 (投注 ${q.cost} 金幣)`}
+                          {q.tier === 'normal'
+                            ? '🟢 普通任務 (免費)'
+                            : `🟡 高級挑戰 (投注 ${q.cost} 金幣)`}
                         </span>
 
                         <span className="text-xs font-black text-amber-600 dark:text-amber-400 font-mono">
@@ -408,3 +443,5 @@ export const QuestBoardModal = ({ onClose, onNavigateLocation }) => {
     </div>
   );
 };
+
+export default QuestBoardModal;
