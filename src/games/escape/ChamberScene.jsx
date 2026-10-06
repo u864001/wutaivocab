@@ -28,29 +28,39 @@ export const ChamberScene = ({
 
   return (
     <div className="relative w-full h-[100dvh] max-h-screen overflow-hidden flex flex-col justify-between select-none bg-slate-950">
-      {/* 內嵌專屬錯落明滅呼吸光暈動畫 (明滅至亮度 0，完全不生硬) */}
+      {/* 內嵌專屬錯落明滅呼吸光暈動畫 (最暗保持低亮度0.12，進關時保持全最暗，滑鼠hover平滑漸變放大) */}
       <style>{`
-        @keyframes subtleBreathZero {
-          0%, 35% {
-            opacity: 0;
-            transform: scale(0.85);
+        @keyframes subtleHaloBreath {
+          0% {
+            opacity: 0.12;
+            transform: scale(0.92);
           }
-          65% {
-            opacity: 0.55;
-            transform: scale(1.15);
-          }
-          85% {
-            opacity: 0.15;
-            transform: scale(0.95);
+          50% {
+            opacity: 0.46;
+            transform: scale(1.08);
           }
           100% {
-            opacity: 0;
-            transform: scale(0.85);
+            opacity: 0.12;
+            transform: scale(0.92);
           }
         }
-        .animate-subtle-breath {
-          animation: subtleBreathZero var(--anim-duration, 5s) ease-in-out infinite;
+        .halo-breath-base {
+          opacity: 0.12;
+          transform: scale(0.92);
+          animation: subtleHaloBreath var(--anim-duration, 5s) ease-in-out infinite both;
           animation-delay: var(--anim-delay, 0s);
+        }
+        .halo-hover-illumination {
+          opacity: 0;
+          transform: scale(0.96);
+          transition: opacity 0.45s cubic-bezier(0.2, 0.8, 0.3, 1),
+                      transform 0.45s cubic-bezier(0.2, 0.8, 0.3, 1),
+                      box-shadow 0.45s ease-out;
+        }
+        .group:hover .halo-hover-illumination,
+        .group:active .halo-hover-illumination {
+          opacity: 0.88;
+          transform: scale(1.18);
         }
       `}</style>
 
@@ -167,11 +177,27 @@ export const ChamberScene = ({
               }}
               title={isSolved ? `${puzzle.stationName} (已解開)` : '點擊調查此處遺跡'}
             >
-              {/* 自然呼吸微光圈：平時錯落明滅（會完全降至 0 亮度），Hover 或觸控碰觸時立即亮起 */}
+              {/* 雙層光暈：底層獨立呼吸（進關全最暗，永不斷層），頂層Hover時平滑升亮微幅放大 */}
               {!isSolved ? (
-                <div
-                  className={`w-14 h-14 sm:w-18 sm:h-18 rounded-full transition-all duration-300 ${haloRingStyle} animate-subtle-breath group-hover:scale-130 group-hover:opacity-90 group-active:scale-95`}
-                />
+                <div className="relative w-14 h-14 sm:w-18 sm:h-18 flex items-center justify-center pointer-events-none">
+                  {/* 底層：持續背景幽微呼吸光暈 (最暗0.12 ~ 最亮0.46，各走各的頻率與延遲，進關時皆為初始最暗) */}
+                  <div
+                    style={{
+                      '--anim-delay': puzzle.animDelay || '0s',
+                      '--anim-duration': puzzle.animDuration || '5s'
+                    }}
+                    className={`absolute inset-0 rounded-full ${haloRingStyle} halo-breath-base`}
+                  />
+
+                  {/* 頂層：滑鼠 Hover / 觸控喚醒微光層 (平時 opacity:0，滑入時從目前亮度平滑漸亮至0.88並擴大1.18倍，移開平滑漸暗回呼吸) */}
+                  <div
+                    className={`absolute inset-0 rounded-full ${
+                      isKey
+                        ? 'border-2 border-amber-300 bg-amber-400/35 shadow-[0_0_36px_rgba(251,191,36,0.85)]'
+                        : 'border-2 border-slate-100 bg-white/25 shadow-[0_0_30px_rgba(255,255,255,0.75)]'
+                    } halo-hover-illumination`}
+                  />
+                </div>
               ) : (
                 /* 已解開的熱區：留下微光印記 */
                 <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-black/60 border border-emerald-400/60 text-emerald-300 flex items-center justify-center shadow-lg shadow-emerald-500/30 scale-95 transition-transform group-hover:scale-110">

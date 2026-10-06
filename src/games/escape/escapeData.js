@@ -63,7 +63,7 @@ export const OPPOSITES_POOL = [
   { word: 'new', opposite: 'old', zh: '新', oppZh: '舊' }
 ];
 
-// ── 日常會話問答呼應庫 ──
+// ── 日常會話問答呼應庫 (精選16組國小生活常用口語問答) ──
 export const DIALOGUES_POOL = [
   {
     question: 'How are you today?',
@@ -100,10 +100,70 @@ export const DIALOGUES_POOL = [
     correct: "It is two o'clock.",
     distractors: ["Yes, I am happy.", "I like hamburgers.", "She can dance."],
     zh: '現在幾點鐘了？'
+  },
+  {
+    question: 'What is your name?',
+    correct: 'My name is Leo.',
+    distractors: ["I am nine years old.", "It is blue.", "Yes, I am."],
+    zh: '請問你叫什麼名字？'
+  },
+  {
+    question: 'Where is my English book?',
+    correct: 'It is on your desk.',
+    distractors: ["I like red.", "At seven o'clock.", "He is my brother."],
+    zh: '我的英文書在哪裡？'
+  },
+  {
+    question: 'How old are you?',
+    correct: 'I am nine years old.',
+    distractors: ["I'm happy.", "It is cold outside.", "Yes, I can."],
+    zh: '你今年幾歲呢？'
+  },
+  {
+    question: 'What color do you like?',
+    correct: 'I like blue and green.',
+    distractors: ["I have a dog.", "It is three o'clock.", "I can jump."],
+    zh: '你喜歡什麼顏色？'
+  },
+  {
+    question: 'Good morning, teacher!',
+    correct: 'Good morning, everyone!',
+    distractors: ["Good night.", "See you yesterday.", "I am eating lunch."],
+    zh: '老師早安！'
+  },
+  {
+    question: 'See you tomorrow!',
+    correct: 'Goodbye! See you.',
+    distractors: ["Yes, please.", "Thank you very much.", "It is five dollars."],
+    zh: '明天見！'
+  },
+  {
+    question: 'Can you help me, please?',
+    correct: 'Sure, I can help you.',
+    distractors: ["I am eight.", "It is purple.", "Under the chair."],
+    zh: '請問你能幫我一下嗎？'
+  },
+  {
+    question: 'Do you have a pet at home?',
+    correct: 'Yes, I have a cute dog.',
+    distractors: ["It is red.", "I like bananas.", "At the library."],
+    zh: '你家裡有養寵物嗎？'
+  },
+  {
+    question: 'May I drink some water?',
+    correct: 'Sure, go ahead.',
+    distractors: ["It is hot today.", "I have three balls.", "She is singing."],
+    zh: '我可以喝點水嗎？'
+  },
+  {
+    question: 'Is this your pencil box?',
+    correct: 'Yes, it is mine. Thank you!',
+    distractors: ["No, it's yellow.", "I'm ten.", "He is very tall."],
+    zh: '這是你的鉛筆盒嗎？'
   }
 ];
 
-// ── 生活特徵謎語庫 ──
+// ── 生活特徵謎語庫 (精選16組國小生活與自然特徵謎語) ──
 export const RIDDLES_POOL = [
   {
     riddle: "I have two long ears and I love carrots. What am I?",
@@ -146,6 +206,76 @@ export const RIDDLES_POOL = [
     distractors: ['lion', 'elephant', 'horse'],
     zh: '我住在水裡，沒有腳卻能游得很快。我是誰？',
     wordZh: '魚'
+  },
+  {
+    riddle: "I say woof! I am a loyal friend and I love to wag my tail. What am I?",
+    answer: 'dog',
+    distractors: ['cat', 'duck', 'bear'],
+    zh: '我會汪汪叫！我是忠實的好朋友，喜歡開心地搖尾巴。我是誰？',
+    wordZh: '小狗'
+  },
+  {
+    riddle: "I say meow. I like to catch mice and take naps in the warm sun. What am I?",
+    answer: 'cat',
+    distractors: ['dog', 'cow', 'tiger'],
+    zh: '我會喵喵叫，喜歡抓老鼠並在溫暖陽光下打瞌睡。我是誰？',
+    wordZh: '小貓'
+  },
+  {
+    riddle: "I am long and yellow. Monkeys love to peel and eat me. What am I?",
+    answer: 'banana',
+    distractors: ['apple', 'orange', 'grape'],
+    zh: '我又長又黃，猴子最喜歡剝開吃我。我是誰？',
+    wordZh: '香蕉'
+  },
+  {
+    riddle: "I have many pages and stories, but I cannot speak. You can read me. What am I?",
+    answer: 'book',
+    distractors: ['desk', 'chair', 'bag'],
+    zh: '我有許多書頁與故事，但我不會說話。你每天可以閱讀我。我是誰？',
+    wordZh: '書本'
+  },
+  {
+    riddle: "I have two hands and a round face. I tick-tock all day to tell the time. What am I?",
+    answer: 'clock',
+    distractors: ['ruler', 'eraser', 'pen'],
+    zh: '我有兩隻指針與圓臉，整天滴答走告訴你現在幾點。我是誰？',
+    wordZh: '時鐘'
+  },
+  {
+    riddle: "I shine high in the sky during the day. I bring you light and warmth. What am I?",
+    answer: 'sun',
+    distractors: ['star', 'moon', 'cloud'],
+    zh: '我在白天高懸空中，為大地帶來明亮光芒與溫暖。我是誰？',
+    wordZh: '太陽'
+  },
+  {
+    riddle: "I am white, cold, and healthy to drink. Cows give me to kids. What am I?",
+    answer: 'milk',
+    distractors: ['juice', 'tea', 'soup'],
+    zh: '我是白色又健康的飲品，乳牛媽媽將我送給小朋友。我是誰？',
+    wordZh: '牛奶'
+  },
+  {
+    riddle: "I have four wheels. I drive on the road with a beep-beep horn. What am I?",
+    answer: 'car',
+    distractors: ['bike', 'plane', 'boat'],
+    zh: '我有四個輪子，在馬路上奔馳並按著嗶嗶喇叭。我是誰？',
+    wordZh: '汽車'
+  },
+  {
+    riddle: "I have green leaves and strong branches. Birds build their homes in me. What am I?",
+    answer: 'tree',
+    distractors: ['flower', 'stone', 'grass'],
+    zh: '我有綠色的樹葉與堅固的枝枒，小鳥喜歡在我身上築巢。我是誰？',
+    wordZh: '大樹'
+  },
+  {
+    riddle: "I am the king of the jungle with a golden mane and a loud roar. What am I?",
+    answer: 'lion',
+    distractors: ['rabbit', 'sheep', 'pig'],
+    zh: '我有金色鬃毛與威猛的吼聲，我是森林百獸之王。我是誰？',
+    wordZh: '獅子'
   }
 ];
 
@@ -296,6 +426,8 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
     return shuffle([...sameCat, ...other]).slice(0, count);
   };
 
+  let oppositesUsedInCampaign = false;
+
   // 生成三間房間
   const chapters = CHAMBER_CHAPTERS.map((chapMeta, chapIdx) => {
     // 1. 每關隨機生成 5 個不重疊的點位
@@ -305,21 +437,20 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
     const shuffledIndices = shuffle([0, 1, 2, 3, 4]);
     const keyIndices = new Set(shuffledIndices.slice(0, 3));
 
-    // 3. 多元題型池洗牌指派 (克漏字、謎語、聽力、拼字、句子重組、對偶配對、反義詞、問答呼應)
-    const availableTypes = shuffle([
-      'cloze',           // 1. 情境克漏字填空
-      'riddle',          // 2. 生活特徵推理解謎
-      'listening',       // 3. 純聽力聲納辨音
-      'spelling',        // 4. 百步蛇散落拼字
-      'sentence_order',  // 5. 句子單字重組排列
-      'opposites',       // 6. 反義詞對偶解碼
-      'dialogue',        // 7. 日常會話問答呼應
-      'pairing'          // 8. 中英雙向對偶消消樂
-    ]);
+    // 3. 多元題型池洗牌指派：優先使用國小高教育價值核心題型（克漏字、聽力、拼字、句子重組、對偶配對、謎語、會話）
+    const coreTypes = ['cloze', 'listening', 'spelling', 'sentence_order', 'pairing', 'riddle', 'dialogue'];
+    let roomTypes = shuffle([...coreTypes]).slice(0, 5);
+
+    // 大幅壓低 opposites 出現機率：整場戰役 3 間房間最多只會出現 1 題，且整體出現率僅約 15%
+    if (!oppositesUsedInCampaign && chapIdx === 1 && Math.random() < 0.15) {
+      roomTypes[4] = 'opposites';
+      oppositesUsedInCampaign = true;
+      roomTypes = shuffle(roomTypes);
+    }
 
     const puzzles = hotspots.map((spot, spotIdx) => {
       const isKeyRelic = keyIndices.has(spotIdx);
-      const puzzleType = availableTypes[spotIdx] || 'cloze';
+      const puzzleType = roomTypes[spotIdx] || 'cloze';
       const targetWord = takeWord();
       const distractors = getDistractors(targetWord, 3);
 
@@ -343,17 +474,32 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
       if (puzzleType === 'cloze') {
         // 題型 1：情境克漏字填空 (讀懂前後文填空)
         const cat = tagWordCategory(targetWord);
-        let sentenceWithBlank = `We can see a wild ___ in the green mountains.`;
-        let zhTrans = `我們可以在青山中看見野生的【${targetWord.zh}】。`;
-        if (cat === 'food') {
-          sentenceWithBlank = `For lunch, I love to eat a fresh ___ with juice.`;
+        let sentenceWithBlank = `We can see a mysterious ___ in the ancient chamber.`;
+        let zhTrans = `我們可以在古老石室中看見神秘的【${targetWord.zh}】。`;
+        if (cat === 'animals') {
+          sentenceWithBlank = `Look at that cute ___ sleeping under the big green tree.`;
+          zhTrans = `看那隻在綠色大樹下睡覺的可愛【${targetWord.zh}】。`;
+        } else if (cat === 'food') {
+          sentenceWithBlank = `For lunch, I love to eat a fresh ___ with sweet juice.`;
           zhTrans = `午餐時，我喜歡吃新鮮的【${targetWord.zh}】配果汁。`;
         } else if (cat === 'school') {
-          sentenceWithBlank = `Please open your ___ and read lesson one carefully.`;
-          zhTrans = `請打開你的【${targetWord.zh}】，仔細閱讀第一課。`;
+          sentenceWithBlank = `Please put your ___ on the wooden desk right now.`;
+          zhTrans = `請立刻把你的【${targetWord.zh}】放在木頭書桌上。`;
         } else if (cat === 'actions') {
-          sentenceWithBlank = `On a sunny day, we can ___ happily in the park.`;
-          zhTrans = `在陽光明媚的日子裡，我們可以在公園裡開心地【${targetWord.zh}】。`;
+          sentenceWithBlank = `On a sunny morning, children love to ___ in the park.`;
+          zhTrans = `在陽光明媚的早晨，小朋友喜歡在公園裡【${targetWord.zh}】。`;
+        } else if (cat === 'colors_numbers') {
+          sentenceWithBlank = `I can see a bright ___ picture on the classroom wall.`;
+          zhTrans = `我可以在教室牆上看到一張鮮豔的【${targetWord.zh}】圖片。`;
+        } else if (cat === 'places_transport') {
+          sentenceWithBlank = `We took a fast ___ to visit our grandparents today.`;
+          zhTrans = `我們今天搭乘快捷的【${targetWord.zh}】去探望祖父母。`;
+        } else if (cat === 'family') {
+          sentenceWithBlank = `My ___ is cooking a sweet apple pie in the kitchen.`;
+          zhTrans = `我的【${targetWord.zh}】正在廚房裡烤香甜的蘋果派。`;
+        } else if (cat === 'feelings') {
+          sentenceWithBlank = `After running for an hour, I feel very ___ today.`;
+          zhTrans = `跑了一個小時後，我今天覺得很【${targetWord.zh}】。`;
         }
         puzzleObj.titleZh = '情境克漏字填空';
         puzzleObj.englishPrompt = sentenceWithBlank;
