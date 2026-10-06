@@ -17,9 +17,9 @@ export const SpellingPuzzle = ({
   const [isChineseOpen, setIsChineseOpen] = useState(false);
 
   useEffect(() => {
-    if (!isSolved && puzzle?.englishSentence) {
+    if (!isSolved && (puzzle?.voiceText || puzzle?.englishSentence)) {
       const timer = setTimeout(() => {
-        speakMysteriousEnglish(puzzle.englishSentence);
+        speakMysteriousEnglish(puzzle.voiceText || puzzle.englishSentence);
       }, 350);
       return () => clearTimeout(timer);
     }
@@ -27,7 +27,7 @@ export const SpellingPuzzle = ({
 
   const handlePlayVoice = () => {
     soundEngine.click();
-    speakMysteriousEnglish(puzzle.englishSentence || puzzle.targetWord.en);
+    speakMysteriousEnglish(puzzle.voiceText || puzzle.englishSentence || puzzle.targetWord?.en);
   };
 
   const handleLetterClick = (letterObj) => {
@@ -110,9 +110,9 @@ export const SpellingPuzzle = ({
           </button>
         </div>
 
-        {/* 英文句子 */}
+        {/* 英文句子 / 提示 */}
         <p className="text-base sm:text-xl font-heading font-black text-indigo-100 tracking-wide leading-relaxed my-2">
-          "{puzzle.englishSentence}"
+          "{puzzle.englishPrompt || puzzle.englishSentence}"
         </p>
 
         {/* 預設隱藏的中文譯文 (點擊展開) */}

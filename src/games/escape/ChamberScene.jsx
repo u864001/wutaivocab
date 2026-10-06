@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Key, CheckCircle2, Lock, Volume2, Scroll, Settings2, DoorClosed, VolumeX, Music, HelpCircle } from 'lucide-react';
+import { Sparkles, Key, CheckCircle2, VolumeX, Music } from 'lucide-react';
 import { soundEngine } from '../../services/audio';
 
 export const ChamberScene = ({
@@ -28,13 +28,39 @@ export const ChamberScene = ({
 
   return (
     <div className="relative w-full h-[100dvh] max-h-screen overflow-hidden flex flex-col justify-between select-none bg-slate-950">
+      {/* 內嵌專屬錯落明滅呼吸光暈動畫 (明滅至亮度 0，完全不生硬) */}
+      <style>{`
+        @keyframes subtleBreathZero {
+          0%, 35% {
+            opacity: 0;
+            transform: scale(0.85);
+          }
+          65% {
+            opacity: 0.55;
+            transform: scale(1.15);
+          }
+          85% {
+            opacity: 0.15;
+            transform: scale(0.95);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0.85);
+          }
+        }
+        .animate-subtle-breath {
+          animation: subtleBreathZero var(--anim-duration, 5s) ease-in-out infinite;
+          animation-delay: var(--anim-delay, 0s);
+        }
+      `}</style>
+
       {/* ── 1. 底層：純淨高清全景手繪背景 (無任何刻意生硬的大圖示) ── */}
       <div
         className="absolute inset-0 bg-cover bg-center transition-all duration-1000 pointer-events-none"
         style={{ backgroundImage: `url(${currentChapter.bg})` }}
       />
 
-      {/* ── 2. 光影層：暗角與環境金粉微光 ── */}
+      {/* ── 2. 光影層：暗角與環境微光 ── */}
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-slate-950/65 pointer-events-none" />
       <div className="absolute inset-0 bg-radial-vignette pointer-events-none opacity-40" />
 
@@ -114,37 +140,40 @@ export const ChamberScene = ({
         </div>
       </header>
 
-      {/* ── 4. 中層：5 處自然融入場景的神秘隱藏熱區 (無圖示，淡淡呼吸微光圈) ── */}
+      {/* ── 4. 中層：5 處隨機生成不重疊熱區（明滅至0，錯落忽明忽暗） ── */}
       <main className="relative flex-1 w-full max-w-6xl mx-auto h-full z-10">
-        {puzzles.map((puzzle, idx) => {
+        {puzzles.map((puzzle) => {
           const isSolved = solvedPuzzleIds.has(puzzle.id);
           const isKey = puzzle.isKeyRelic;
 
-          // 呼吸微光樣式配置：
-          // 關鍵核心點 (isKeyRelic)：淡淡金黃色呼吸光暈 (淡金忽明忽暗)
-          // 迷途干擾點 (!isKeyRelic)：淡淡乳白色/淡黃呼吸光暈 (淡白忽明忽暗)
+          // 關鍵點：淡淡金色光暈；迷途點：淡淡白黃光暈
           const haloRingStyle = isKey
-            ? 'border border-amber-400/40 bg-amber-400/10 shadow-[0_0_20px_rgba(251,191,36,0.35)]'
-            : 'border border-slate-200/35 bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.25)]';
+            ? 'border-2 border-amber-400/50 bg-amber-400/15 shadow-[0_0_25px_rgba(251,191,36,0.45)]'
+            : 'border-2 border-slate-100/40 bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.3)]';
 
           return (
             <div
               key={puzzle.id}
-              style={{ top: puzzle.top, left: puzzle.left }}
-              className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer group p-4"
+              style={{
+                top: puzzle.top,
+                left: puzzle.left,
+                '--anim-delay': puzzle.animDelay || '0s',
+                '--anim-duration': puzzle.animDuration || '5s'
+              }}
+              className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer group p-5"
               onClick={() => {
                 soundEngine.click();
                 onSelectStation(puzzle.id);
               }}
               title={isSolved ? `${puzzle.stationName} (已解開)` : '點擊調查此處遺跡'}
             >
-              {/* 自然呼吸微光圈 (未解開時忽明忽暗，滑鼠 Hover 時顯露加強) */}
+              {/* 自然呼吸微光圈：平時錯落明滅（會完全降至 0 亮度），Hover 或觸控碰觸時立即亮起 */}
               {!isSolved ? (
                 <div
-                  className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full transition-all duration-300 ${haloRingStyle} animate-pulse group-hover:scale-125 group-hover:opacity-100 opacity-40 group-active:scale-95`}
+                  className={`w-14 h-14 sm:w-18 sm:h-18 rounded-full transition-all duration-300 ${haloRingStyle} animate-subtle-breath group-hover:scale-130 group-hover:opacity-90 group-active:scale-95`}
                 />
               ) : (
-                /* 已解開的熱區：留下淡淡發光的精緻印記 */
+                /* 已解開的熱區：留下微光印記 */
                 <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-black/60 border border-emerald-400/60 text-emerald-300 flex items-center justify-center shadow-lg shadow-emerald-500/30 scale-95 transition-transform group-hover:scale-110">
                   <span className="text-sm sm:text-base">{puzzle.rewardItemIcon}</span>
                 </div>
@@ -154,7 +183,7 @@ export const ChamberScene = ({
         })}
       </main>
 
-      {/* ── 5. 底欄：尋找 3 個關鍵逃脫核心進度指示條 ── */}
+      {/* ── 5. 底欄：尋找 3 個關鍵逃脫印記進度指示條 ── */}
       <footer className="relative z-20 w-full p-3 sm:p-4 bg-slate-900/85 backdrop-blur-md border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2.5 max-w-2xl mx-auto rounded-t-3xl shadow-2xl">
         <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-slate-300">
           <span>🗝️ 本室石門關鍵印記：</span>
@@ -162,7 +191,7 @@ export const ChamberScene = ({
             {keySolvedCount} / 3 個尋獲
           </span>
           <span className="text-[11px] font-normal text-slate-400 hidden xs:inline">
-            (需解開 3 個散發淡金微光的關鍵點)
+            (找出 3 個散發淡金微光的關鍵點)
           </span>
         </div>
 
@@ -180,7 +209,7 @@ export const ChamberScene = ({
                 }`}
               >
                 <span>{isFilled ? '🗝️' : '⚪'}</span>
-                <span>核心印記 #{slotIdx + 1}</span>
+                <span>印記 #{slotIdx + 1}</span>
               </div>
             );
           })}

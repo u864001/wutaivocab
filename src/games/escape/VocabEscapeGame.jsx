@@ -10,9 +10,10 @@ import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { getRandomFunNickname } from '../../utils/studentIdHelper';
 import { generateEscapeRoomCampaign } from './escapeData';
 import { ChamberScene } from './ChamberScene';
-import { ListeningPuzzle } from './puzzles/ListeningPuzzle';
-import { MeaningPuzzle } from './puzzles/MeaningPuzzle';
+import { UniversalOptionPuzzle } from './puzzles/UniversalOptionPuzzle';
+import { SentenceOrderPuzzle } from './puzzles/SentenceOrderPuzzle';
 import { SpellingPuzzle } from './puzzles/SpellingPuzzle';
+import { PairingPuzzle } from './puzzles/PairingPuzzle';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Trophy, RotateCcw, Sparkles, Key, CheckCircle2,
@@ -205,18 +206,25 @@ export const VocabEscapeGame = ({
 
     soundEngine.click();
 
-    if (currentPuzzle.type === 'listening' || currentPuzzle.type === 'meaning') {
-      const wrongOptions = currentPuzzle.options.filter(o => o.id !== currentPuzzle.targetWord.id);
+    if (['cloze', 'riddle', 'listening', 'opposites', 'dialogue', 'meaning'].includes(currentPuzzle.type)) {
+      const wrongOptions = (currentPuzzle.options || []).filter(o => {
+        const text = typeof o === 'string' ? o : (o.en || o.id || '');
+        const target = currentPuzzle.targetText || currentPuzzle.targetWord?.en || '';
+        return text.toLowerCase() !== target.toLowerCase();
+      });
       if (wrongOptions.length > 0) {
-        const toEliminate = wrongOptions[0];
+        const toEliminate = typeof wrongOptions[0] === 'string' ? wrongOptions[0] : (wrongOptions[0].id || wrongOptions[0].en);
         setEliminatedOptions(prev => ({
           ...prev,
-          [activePuzzleId]: toEliminate.id
+          [activePuzzleId]: toEliminate
         }));
         setHintCount(prev => Math.max(0, prev - 1));
       }
     } else if (currentPuzzle.type === 'spelling') {
-      speakMysteriousEnglish(currentPuzzle.englishSentence || currentPuzzle.targetWord.en);
+      speakMysteriousEnglish(currentPuzzle.voiceText || currentPuzzle.englishPrompt || currentPuzzle.targetWord?.en);
+      setHintCount(prev => Math.max(0, prev - 1));
+    } else if (currentPuzzle.type === 'sentence_order') {
+      speakMysteriousEnglish(currentPuzzle.voiceText);
       setHintCount(prev => Math.max(0, prev - 1));
     }
   };
@@ -442,8 +450,8 @@ export const VocabEscapeGame = ({
               </button>
             </div>
 
-            {activePuzzle.type === 'listening' && (
-              <ListeningPuzzle
+            {['cloze', 'riddle', 'listening', 'opposites', 'dialogue', 'meaning'].includes(activePuzzle.type) && (
+              <UniversalOptionPuzzle
                 puzzle={activePuzzle}
                 onSolve={handleSolvePuzzle}
                 onMistake={handleMistake}
@@ -453,19 +461,28 @@ export const VocabEscapeGame = ({
               />
             )}
 
-            {activePuzzle.type === 'meaning' && (
-              <MeaningPuzzle
+            {activePuzzle.type === 'sentence_order' && (
+              <SentenceOrderPuzzle
                 puzzle={activePuzzle}
                 onSolve={handleSolvePuzzle}
                 onMistake={handleMistake}
                 isSolved={solvedPuzzleIds.has(activePuzzle.id)}
-                eliminatedOptionId={eliminatedOptions[activePuzzle.id]}
                 themeColor={currentChapter.color}
               />
             )}
 
             {activePuzzle.type === 'spelling' && (
               <SpellingPuzzle
+                puzzle={activePuzzle}
+                onSolve={handleSolvePuzzle}
+                onMistake={handleMistake}
+                isSolved={solvedPuzzleIds.has(activePuzzle.id)}
+                themeColor={currentChapter.color}
+              />
+            )}
+
+            {activePuzzle.type === 'pairing' && (
+              <PairingPuzzle
                 puzzle={activePuzzle}
                 onSolve={handleSolvePuzzle}
                 onMistake={handleMistake}
