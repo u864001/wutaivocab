@@ -33,6 +33,7 @@ export const VocabSpotterGame = ({
   const [solvedDiffIds, setSolvedDiffIds] = useState(() => new Set());
   const [shakeScene, setShakeScene] = useState(false);
   const [missFeedback, setMissFeedback] = useState(null);
+  const [matchSuccessFeedback, setMatchSuccessFeedback] = useState(null);
   const [missRipples, setMissRipples] = useState([]);
 
   // 計時器 (毫秒精度，過關時結算)
@@ -64,6 +65,7 @@ export const VocabSpotterGame = ({
     setSolvedDiffIds(new Set());
     setElapsedMs(0);
     setMissFeedback(null);
+    setMatchSuccessFeedback(null);
     setMissRipples([]);
     startTimeRef.current = Date.now();
   };
@@ -125,6 +127,17 @@ export const VocabSpotterGame = ({
     newSolved.add(diffId);
     setSolvedDiffIds(newSolved);
     setSpotlightDiffId(null);
+
+    const targetDiff = activeDifferences.find(d => d.id === diffId);
+    if (targetDiff) {
+      setMatchSuccessFeedback({
+        word: targetDiff.word,
+        wordZh: targetDiff.wordZh,
+        solvedCount: newSolved.size,
+        total: totalCount
+      });
+      setTimeout(() => setMatchSuccessFeedback(null), 2500);
+    }
 
     // 檢查是否全破通關 (本局 5 個相異點全部尋獲)
     if (newSolved.size >= totalCount) {
@@ -227,6 +240,19 @@ export const VocabSpotterGame = ({
           </span>
         ))}
       </div>
+
+      {/* ── 答對成功激勵橫幅 ── */}
+      {matchSuccessFeedback && (
+        <div className="p-3.5 rounded-2xl bg-emerald-500/15 border-2 border-emerald-400 text-emerald-800 dark:text-emerald-200 text-xs sm:text-sm font-black flex items-center justify-between gap-2 animate-bounce shadow-md">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+            <span>🎉 太強了！成功尋獲相異物品：<strong className="font-heading uppercase underline decoration-2">{matchSuccessFeedback.word}</strong>（{matchSuccessFeedback.wordZh}）！</span>
+          </div>
+          <span className="px-2.5 py-1 rounded-full bg-emerald-500 text-white text-xs font-black shrink-0">
+            已尋獲 {matchSuccessFeedback.solvedCount} / {matchSuccessFeedback.total}
+          </span>
+        </div>
+      )}
 
       {/* ── 點錯警示提示橫幅 ── */}
       {missFeedback && (

@@ -1,774 +1,966 @@
 import React from 'react';
 
-// ── 《鷹眼神探 • 單字找不同》 20 大目標單字向量精靈圖庫 (Sprite Atlas) ──
-// 每個單字包含：default（未被抽中時，左右完全一致）與多元 variants（抽中為相異處時，依據 isLeft 呈現差異）
+// ── 《鷹眼神探 • 單字找不同》 20 大目標單字吉卜力動漫手繪精靈圖庫 (Ghibli Cel Art Atlas) ──
+// 完美契合陽光歐風露天咖啡廣場底圖，精準座標定位、賽璐珞陰影與生動差異樣態
 
-// 1. 果汁 (juice) - 位置: (320, 435)
+// 1. 果汁 (juice) - 咖啡桌 (840, 460)
 export const renderJuiceSprite = (variantKey, isLeft) => {
-  // 差異樣態：
-  // 'color': 左綠奇異果汁 / 右紅西瓜汁
-  // 'size': 左大杯巨無霸 / 右小迷你杯
-  // 'presence': 左滿杯帶吸管 / 右空杯
-  // 'quantity': 左2杯 / 右1杯
+  const x = 840;
+  const y = 460;
+
   if (variantKey === 'color') {
-    const liquidColor = isLeft ? '#10b981' : '#ef4444';
-    const strawColor = isLeft ? '#facc15' : '#10b981';
+    const liquidColor = isLeft ? '#10b981' : '#ef4444'; // 左奇異果綠 / 右西瓜紅
+    const fruitSlice = isLeft ? '#86efac' : '#fca5a5';
     return (
-      <g transform="translate(308, 420)">
-        <path d="M 5 5 L 25 5 L 22 38 L 8 38 Z" fill="none" stroke="#64748b" strokeWidth="1.5" />
-        <path d="M 6 12 L 24 12 L 21.5 37 L 8.5 37 Z" fill={liquidColor} opacity="0.9" />
-        <line x1="12" y1="-2" x2="20" y2="35" stroke={strawColor} strokeWidth="2.5" strokeLinecap="round" />
-        <circle cx="7" cy="6" r="5" fill="#fef08a" stroke="#ca8a04" strokeWidth="1" />
+      <g transform={`translate(${x - 14}, ${y - 25})`} filter="url(#ghibliShadow)">
+        {/* 玻璃杯身 */}
+        <path d="M 4 4 L 24 4 L 20 44 L 8 44 Z" fill="rgba(255,255,255,0.3)" stroke="#475569" strokeWidth="1.6" />
+        {/* 果汁液體 */}
+        <path d="M 5.5 12 L 22.5 12 L 19.5 43 L 8.5 43 Z" fill={liquidColor} opacity="0.92" />
+        {/* 冰塊 */}
+        <rect x="9" y="16" width="6" height="6" rx="1.5" fill="#ffffff" opacity="0.75" />
+        <rect x="13" y="24" width="5.5" height="5.5" rx="1.5" fill="#ffffff" opacity="0.75" />
+        {/* 吸管 */}
+        <path d="M 14 -4 L 14 6 L 19 40" stroke="#facc15" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        {/* 杯緣水果切片 */}
+        <circle cx="6" cy="6" r="6" fill={fruitSlice} stroke="#059669" strokeWidth="1" />
       </g>
     );
   }
-  if (variantKey === 'size') {
-    const scale = isLeft ? 1.3 : 0.7;
-    return (
-      <g transform={`translate(310, 422) scale(${scale})`}>
-        <path d="M 5 5 L 25 5 L 22 38 L 8 38 Z" fill="none" stroke="#64748b" strokeWidth="1.5" />
-        <path d="M 6 12 L 24 12 L 21.5 37 L 8.5 37 Z" fill="#f97316" opacity="0.9" />
-        <line x1="12" y1="-2" x2="20" y2="35" stroke="#facc15" strokeWidth="2.5" strokeLinecap="round" />
-      </g>
-    );
-  }
-  if (variantKey === 'presence') {
-    return (
-      <g transform="translate(308, 420)">
-        <path d="M 5 5 L 25 5 L 22 38 L 8 38 Z" fill="none" stroke="#64748b" strokeWidth="1.5" />
-        {isLeft ? (
-          <>
-            <path d="M 6 12 L 24 12 L 21.5 37 L 8.5 37 Z" fill="#06b6d4" opacity="0.9" />
-            <line x1="12" y1="-2" x2="20" y2="35" stroke="#facc15" strokeWidth="2.5" strokeLinecap="round" />
-          </>
-        ) : null}
-      </g>
-    );
-  }
-  // Default (未抽中：左右均為經典柳橙汁)
-  return (
-    <g transform="translate(308, 420)">
-      <path d="M 5 5 L 25 5 L 22 38 L 8 38 Z" fill="none" stroke="#64748b" strokeWidth="1.5" />
-      <path d="M 6 12 L 24 12 L 21.5 37 L 8.5 37 Z" fill="#f59e0b" opacity="0.9" />
-      <line x1="12" y1="-2" x2="20" y2="35" stroke="#facc15" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="7" cy="6" r="5" fill="#fef08a" stroke="#ca8a04" strokeWidth="1" />
-    </g>
-  );
-};
 
-// 2. 茶壺 (tea) - 位置: (235, 460)
-export const renderTeaSprite = (variantKey, isLeft) => {
-  if (variantKey === 'color') {
-    const potColor = isLeft ? '#f59e0b' : '#8b5cf6';
-    return (
-      <g transform="translate(220, 442)">
-        <ellipse cx="20" cy="22" rx="16" ry="14" fill={potColor} stroke="#78350f" strokeWidth="1.8" />
-        <ellipse cx="20" cy="8" rx="8" ry="3" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
-        <circle cx="20" cy="5" r="2" fill={potColor} />
-        <path d="M 5 16 Q -5 20, 5 28" stroke="#78350f" strokeWidth="3" fill="none" />
-        <path d="M 33 16 Q 42 12, 38 24" stroke="#78350f" strokeWidth="3" fill="none" />
-      </g>
-    );
-  }
-  if (variantKey === 'size') {
-    const scale = isLeft ? 1.3 : 0.75;
-    return (
-      <g transform={`translate(222, 445) scale(${scale})`}>
-        <ellipse cx="20" cy="22" rx="16" ry="14" fill="#0d9488" stroke="#134e4a" strokeWidth="1.8" />
-        <ellipse cx="20" cy="8" rx="8" ry="3" fill="#ffffff" stroke="#134e4a" strokeWidth="1.5" />
-        <path d="M 5 16 Q -5 20, 5 28" stroke="#134e4a" strokeWidth="3" fill="none" />
-        <path d="M 33 16 Q 42 12, 38 24" stroke="#134e4a" strokeWidth="3" fill="none" />
-      </g>
-    );
-  }
-  if (variantKey === 'presence') {
-    return (
-      <g transform="translate(220, 442)">
-        {isLeft ? (
-          <>
-            <ellipse cx="20" cy="22" rx="16" ry="14" fill="#d97706" stroke="#78350f" strokeWidth="1.8" />
-            <ellipse cx="20" cy="8" rx="8" ry="3" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
-            <path d="M 5 16 Q -5 20, 5 28" stroke="#78350f" strokeWidth="3" fill="none" />
-            <path d="M 33 16 Q 42 12, 38 24" stroke="#78350f" strokeWidth="3" fill="none" />
-          </>
-        ) : (
-          <ellipse cx="20" cy="26" rx="8" ry="5" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1.5" />
-        )}
-      </g>
-    );
-  }
-  // Default
-  return (
-    <g transform="translate(220, 442)">
-      <ellipse cx="20" cy="22" rx="16" ry="14" fill="#b45309" stroke="#78350f" strokeWidth="1.8" />
-      <ellipse cx="20" cy="8" rx="8" ry="3" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
-      <circle cx="20" cy="5" r="2" fill="#d97706" />
-      <path d="M 5 16 Q -5 20, 5 28" stroke="#78350f" strokeWidth="3" fill="none" />
-      <path d="M 33 16 Q 42 12, 38 24" stroke="#78350f" strokeWidth="3" fill="none" />
-    </g>
-  );
-};
-
-// 3. 冰淇淋 (ice cream) - 位置: (830, 395)
-export const renderIceCreamSprite = (variantKey, isLeft) => {
-  if (variantKey === 'presence') {
-    return (
-      <g transform="translate(820, 375)">
-        <path d="M -5 18 L 15 18 L 10 28 L 0 28 Z" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="1" />
-        {isLeft && (
-          <g transform="translate(5, -5)">
-            <polygon points="0,22 10,22 5,42" fill="#d97706" stroke="#b45309" strokeWidth="1" />
-            <circle cx="5" cy="16" r="8" fill="#a7f3d0" />
-            <circle cx="5" cy="6" r="7" fill="#f472b6" />
-            <circle cx="5" cy="-1" r="2.5" fill="#dc2626" />
-          </g>
-        )}
-      </g>
-    );
-  }
-  if (variantKey === 'color') {
-    const scoop1 = isLeft ? '#a7f3d0' : '#fde047';
-    const scoop2 = isLeft ? '#f472b6' : '#60a5fa';
-    return (
-      <g transform="translate(825, 370)">
-        <polygon points="0,22 10,22 5,42" fill="#d97706" stroke="#b45309" strokeWidth="1" />
-        <circle cx="5" cy="16" r="8" fill={scoop1} />
-        <circle cx="5" cy="6" r="7" fill={scoop2} />
-        <circle cx="5" cy="-1" r="2.5" fill="#dc2626" />
-      </g>
-    );
-  }
-  if (variantKey === 'size') {
-    const scale = isLeft ? 1.3 : 0.7;
-    return (
-      <g transform={`translate(825, 375) scale(${scale})`}>
-        <polygon points="0,22 10,22 5,42" fill="#d97706" stroke="#b45309" strokeWidth="1" />
-        <circle cx="5" cy="16" r="8" fill="#fed7aa" />
-        <circle cx="5" cy="6" r="7" fill="#f472b6" />
-      </g>
-    );
-  }
-  // Default
-  return (
-    <g transform="translate(825, 370)">
-      <polygon points="0,22 10,22 5,42" fill="#d97706" stroke="#b45309" strokeWidth="1" />
-      <circle cx="5" cy="16" r="8" fill="#fef08a" />
-      <circle cx="5" cy="6" r="7" fill="#f472b6" />
-      <circle cx="5" cy="-1" r="2.5" fill="#dc2626" />
-    </g>
-  );
-};
-
-// 4. 月餅 (moon cake) - 位置: (645, 450)
-export const renderMoonCakeSprite = (variantKey, isLeft) => {
-  if (variantKey === 'presence') {
-    return (
-      <g transform="translate(625, 440)">
-        <ellipse cx="20" cy="18" rx="22" ry="9" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
-        {isLeft && (
-          <g transform="translate(10, 5)">
-            <ellipse cx="10" cy="10" rx="12" ry="8" fill="#b45309" stroke="#78350f" strokeWidth="1.5" />
-            <circle cx="10" cy="9" r="3" stroke="#fef08a" strokeWidth="1" fill="none" />
-          </g>
-        )}
-      </g>
-    );
-  }
-  if (variantKey === 'quantity') {
-    return (
-      <g transform="translate(625, 440)">
-        <ellipse cx="20" cy="18" rx="22" ry="9" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
-        <g transform="translate(6, 5)">
-          <ellipse cx="10" cy="10" rx="9" ry="6" fill="#b45309" />
-        </g>
-        {isLeft && (
-          <g transform="translate(18, 5)">
-            <ellipse cx="10" cy="10" rx="9" ry="6" fill="#b45309" />
-          </g>
-        )}
-      </g>
-    );
-  }
-  // Default
-  return (
-    <g transform="translate(625, 440)">
-      <ellipse cx="20" cy="18" rx="22" ry="9" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
-      <g transform="translate(10, 5)">
-        <ellipse cx="10" cy="10" rx="12" ry="8" fill="#b45309" stroke="#78350f" strokeWidth="1.5" />
-        <circle cx="10" cy="9" r="3" stroke="#fef08a" strokeWidth="1" fill="none" />
-      </g>
-    </g>
-  );
-};
-
-// 5. 西瓜 (watermelon) - 位置: (135, 485)
-export const renderWatermelonSprite = (variantKey, isLeft) => {
   if (variantKey === 'size') {
     const scale = isLeft ? 1.25 : 0.65;
+    const dy = isLeft ? -5 : 10;
     return (
-      <g transform={`translate(135, 485) scale(${scale})`}>
-        <circle cx="0" cy="0" r="26" fill="#15803d" stroke="#14532d" strokeWidth="2" />
-        <path d="M -13 -22 Q -9 0, -13 22" stroke="#052e16" strokeWidth="3.5" fill="none" />
-        <path d="M 0 -26 Q 3 0, 0 26" stroke="#052e16" strokeWidth="3.5" fill="none" />
-        <path d="M 13 -22 Q 9 0, 13 22" stroke="#052e16" strokeWidth="3.5" fill="none" />
+      <g transform={`translate(${x - 14}, ${y - 25 + dy}) scale(${scale})`} filter="url(#ghibliShadow)">
+        <path d="M 4 4 L 24 4 L 20 44 L 8 44 Z" fill="rgba(255,255,255,0.3)" stroke="#475569" strokeWidth="1.6" />
+        <path d="M 5.5 12 L 22.5 12 L 19.5 43 L 8.5 43 Z" fill="#f97316" opacity="0.92" />
+        <path d="M 14 -4 L 14 6 L 19 40" stroke="#facc15" strokeWidth="2.5" strokeLinecap="round" fill="none" />
       </g>
     );
   }
-  if (variantKey === 'color') {
-    const fleshColor = isLeft ? '#ef4444' : '#facc15';
-    return (
-      <g transform="translate(135, 485)">
-        <path d="M -22 10 A 22 22 0 0 0 22 10 Z" fill="#15803d" />
-        <path d="M -19 8 A 19 19 0 0 0 19 8 Z" fill={fleshColor} />
-        <circle cx="-6" cy="4" r="1.5" fill="#000" />
-        <circle cx="6" cy="4" r="1.5" fill="#000" />
-      </g>
-    );
-  }
-  // Default
-  return (
-    <g transform="translate(135, 485)">
-      <circle cx="0" cy="0" r="22" fill="#15803d" stroke="#14532d" strokeWidth="2" />
-      <path d="M -11 -18 Q -8 0, -11 18" stroke="#052e16" strokeWidth="3" fill="none" />
-      <path d="M 0 -22 Q 2 0, 0 22" stroke="#052e16" strokeWidth="3" fill="none" />
-      <path d="M 11 -18 Q 8 0, 11 18" stroke="#052e16" strokeWidth="3" fill="none" />
-    </g>
-  );
-};
 
-// 6. 漢堡 (hamburger) - 位置: (485, 445)
-export const renderHamburgerSprite = (variantKey, isLeft) => {
-  if (variantKey === 'size') {
-    const scale = isLeft ? 1.25 : 0.7;
-    return (
-      <g transform={`translate(485, 445) scale(${scale})`}>
-        <ellipse cx="0" cy="-12" rx="16" ry="10" fill="#d97706" />
-        <ellipse cx="-3" cy="-14" rx="1.5" ry="0.8" fill="#fef3c7" />
-        <ellipse cx="3" cy="-13" rx="1.5" ry="0.8" fill="#fef3c7" />
-        <rect x="-14" y="-4" width="28" height="3" fill="#22c55e" rx="1.5" />
-        <rect x="-13" y="-1" width="26" height="4" fill="#78350f" rx="1.5" />
-        <polygon points="-8,3 8,3 4,7" fill="#facc15" />
-        <rect x="-13" y="5" width="26" height="4" fill="#78350f" rx="1.5" />
-        <ellipse cx="0" cy="11" rx="15" ry="5" fill="#d97706" />
-      </g>
-    );
-  }
   if (variantKey === 'presence') {
     return (
-      <g transform="translate(485, 445)">
+      <g transform={`translate(${x - 14}, ${y - 25})`} filter="url(#ghibliShadow)">
+        <path d="M 4 4 L 24 4 L 20 44 L 8 44 Z" fill="rgba(255,255,255,0.3)" stroke="#475569" strokeWidth="1.6" />
         {isLeft ? (
           <>
-            <ellipse cx="0" cy="-8" rx="14" ry="8" fill="#d97706" />
-            <rect x="-12" y="-1" width="24" height="3" fill="#22c55e" />
-            <rect x="-12" y="2" width="24" height="4" fill="#78350f" />
-            <ellipse cx="0" cy="8" rx="13" ry="5" fill="#d97706" />
+            <path d="M 5.5 12 L 22.5 12 L 19.5 43 L 8.5 43 Z" fill="#06b6d4" opacity="0.92" />
+            <rect x="9" y="16" width="6" height="6" rx="1.5" fill="#ffffff" opacity="0.75" />
+            <path d="M 14 -4 L 14 6 L 19 40" stroke="#facc15" strokeWidth="2.5" strokeLinecap="round" fill="none" />
           </>
         ) : (
-          <ellipse cx="0" cy="8" rx="16" ry="4" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="1" />
+          <ellipse cx="14" cy="40" rx="4" ry="2" fill="#cbd5e1" opacity="0.8" />
         )}
       </g>
     );
   }
-  // Default
+
+  // Default: 金黃柳橙汁
   return (
-    <g transform="translate(485, 445)">
-      <ellipse cx="0" cy="-8" rx="14" ry="8" fill="#d97706" />
-      <rect x="-12" y="-1" width="24" height="3" fill="#22c55e" />
-      <rect x="-12" y="2" width="24" height="4" fill="#78350f" />
-      <ellipse cx="0" cy="8" rx="13" ry="5" fill="#d97706" />
+    <g transform={`translate(${x - 14}, ${y - 25})`} filter="url(#ghibliShadow)">
+      <path d="M 4 4 L 24 4 L 20 44 L 8 44 Z" fill="rgba(255,255,255,0.3)" stroke="#475569" strokeWidth="1.6" />
+      <path d="M 5.5 12 L 22.5 12 L 19.5 43 L 8.5 43 Z" fill="#f59e0b" opacity="0.92" />
+      <rect x="9" y="16" width="6" height="6" rx="1.5" fill="#ffffff" opacity="0.75" />
+      <path d="M 14 -4 L 14 6 L 19 40" stroke="#facc15" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <circle cx="6" cy="6" r="6" fill="#fef08a" stroke="#ca8a04" strokeWidth="1" />
     </g>
   );
 };
 
-// 7. 蘋果 (apple) - 位置: (85, 410)
-export const renderAppleSprite = (variantKey, isLeft) => {
-  if (variantKey === 'quantity') {
-    return (
-      <g transform="translate(60, 395)">
-        <rect x="0" y="0" width="55" height="32" rx="4" fill="#a16207" stroke="#713f12" strokeWidth="2" />
-        {isLeft ? (
-          <g>
-            <circle cx="12" cy="16" r="8" fill="#dc2626" />
-            <circle cx="27" cy="16" r="8" fill="#ef4444" />
-            <circle cx="42" cy="16" r="8" fill="#dc2626" />
-            <circle cx="20" cy="7" r="7.5" fill="#f87171" />
-            <circle cx="34" cy="7" r="7.5" fill="#ef4444" />
-          </g>
-        ) : (
-          <g>
-            <circle cx="18" cy="18" r="8" fill="#dc2626" />
-            <circle cx="36" cy="18" r="8" fill="#ef4444" />
-          </g>
-        )}
-      </g>
-    );
-  }
+// 2. 茶壺 (tea) - 咖啡桌 (895, 455)
+export const renderTeaSprite = (variantKey, isLeft) => {
+  const x = 895;
+  const y = 455;
+
   if (variantKey === 'color') {
-    const appleColor = isLeft ? '#dc2626' : '#22c55e';
+    const potColor = isLeft ? '#f59e0b' : '#a855f7'; // 左琥珀花草茶 / 右紫羅蘭花茶
     return (
-      <g transform="translate(60, 395)">
-        <rect x="0" y="0" width="55" height="32" rx="4" fill="#a16207" stroke="#713f12" strokeWidth="2" />
-        <circle cx="16" cy="16" r="8" fill={appleColor} />
-        <circle cx="38" cy="16" r="8" fill={appleColor} />
-        <circle cx="27" cy="8" r="7.5" fill={appleColor} />
+      <g transform={`translate(${x - 18}, ${y - 18})`} filter="url(#ghibliShadow)">
+        <ellipse cx="18" cy="20" rx="14" ry="12" fill={potColor} stroke="#78350f" strokeWidth="1.8" />
+        <ellipse cx="18" cy="8" rx="8" ry="3" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
+        <circle cx="18" cy="5" r="2.5" fill={potColor} />
+        <path d="M 5 15 Q -4 19, 5 26" stroke="#78350f" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+        <path d="M 30 15 Q 38 12, 35 22" stroke="#78350f" strokeWidth="2.8" fill="none" strokeLinecap="round" />
       </g>
     );
   }
-  // Default
-  return (
-    <g transform="translate(60, 395)">
-      <rect x="0" y="0" width="55" height="32" rx="4" fill="#a16207" stroke="#713f12" strokeWidth="2" />
-      <circle cx="16" cy="16" r="8" fill="#dc2626" />
-      <circle cx="38" cy="16" r="8" fill="#ef4444" />
-      <circle cx="27" cy="8" r="7.5" fill="#dc2626" />
-    </g>
-  );
-};
 
-// 8. 熱狗 (hot dog) - 位置: (745, 450)
-export const renderHotDogSprite = (variantKey, isLeft) => {
-  if (variantKey === 'quantity') {
+  if (variantKey === 'size') {
+    const scale = isLeft ? 1.3 : 0.7;
+    const dy = isLeft ? -4 : 8;
     return (
-      <g transform="translate(715, 430)">
-        <rect x="0" y="15" width="60" height="25" rx="3" fill="#334155" />
-        {isLeft ? (
-          <g>
-            <ellipse cx="12" cy="10" rx="8" ry="4" fill="#d97706" />
-            <rect x="5" y="8" width="14" height="4" fill="#dc2626" rx="2" />
-            <ellipse cx="30" cy="10" rx="8" ry="4" fill="#d97706" />
-            <rect x="23" y="8" width="14" height="4" fill="#dc2626" rx="2" />
-            <ellipse cx="48" cy="10" rx="8" ry="4" fill="#d97706" />
-            <rect x="41" y="8" width="14" height="4" fill="#dc2626" rx="2" />
-          </g>
-        ) : (
-          <g>
-            <ellipse cx="30" cy="10" rx="8" ry="4" fill="#d97706" />
-            <rect x="23" y="8" width="14" height="4" fill="#dc2626" rx="2" />
-          </g>
-        )}
+      <g transform={`translate(${x - 18}, ${y - 18 + dy}) scale(${scale})`} filter="url(#ghibliShadow)">
+        <ellipse cx="18" cy="20" rx="14" ry="12" fill="#0d9488" stroke="#134e4a" strokeWidth="1.8" />
+        <ellipse cx="18" cy="8" rx="8" ry="3" fill="#ffffff" stroke="#134e4a" strokeWidth="1.5" />
+        <path d="M 5 15 Q -4 19, 5 26" stroke="#134e4a" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+        <path d="M 30 15 Q 38 12, 35 22" stroke="#134e4a" strokeWidth="2.8" fill="none" strokeLinecap="round" />
       </g>
     );
   }
+
   if (variantKey === 'presence') {
     return (
-      <g transform="translate(715, 430)">
-        <rect x="0" y="15" width="60" height="25" rx="3" fill="#334155" />
-        {isLeft && (
-          <g>
-            <ellipse cx="20" cy="10" rx="8" ry="4" fill="#d97706" />
-            <rect x="13" y="8" width="14" height="4" fill="#dc2626" rx="2" />
-            <ellipse cx="40" cy="10" rx="8" ry="4" fill="#d97706" />
-            <rect x="33" y="8" width="14" height="4" fill="#dc2626" rx="2" />
+      <g transform={`translate(${x - 18}, ${y - 18})`} filter="url(#ghibliShadow)">
+        {isLeft ? (
+          <>
+            <ellipse cx="18" cy="20" rx="14" ry="12" fill="#d97706" stroke="#78350f" strokeWidth="1.8" />
+            <ellipse cx="18" cy="8" rx="8" ry="3" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
+            <path d="M 5 15 Q -4 19, 5 26" stroke="#78350f" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+            <path d="M 30 15 Q 38 12, 35 22" stroke="#78350f" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+          </>
+        ) : (
+          <g transform="translate(10, 10)">
+            <ellipse cx="10" cy="14" rx="8" ry="4" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1.4" />
+            <ellipse cx="10" cy="13" rx="5" ry="2.5" fill="#fef08a" />
           </g>
         )}
       </g>
     );
   }
-  // Default
+
+  // Default: 古典瓷英式茶壺
   return (
-    <g transform="translate(715, 430)">
-      <rect x="0" y="15" width="60" height="25" rx="3" fill="#334155" />
-      <ellipse cx="20" cy="10" rx="8" ry="4" fill="#d97706" />
-      <rect x="13" y="8" width="14" height="4" fill="#dc2626" rx="2" />
-      <ellipse cx="40" cy="10" rx="8" ry="4" fill="#d97706" />
-      <rect x="33" y="8" width="14" height="4" fill="#dc2626" rx="2" />
+    <g transform={`translate(${x - 18}, ${y - 18})`} filter="url(#ghibliShadow)">
+      <ellipse cx="18" cy="20" rx="14" ry="12" fill="#b45309" stroke="#78350f" strokeWidth="1.8" />
+      <ellipse cx="18" cy="8" rx="8" ry="3" fill="#ffffff" stroke="#78350f" strokeWidth="1.5" />
+      <circle cx="18" cy="5" r="2.5" fill="#d97706" />
+      <path d="M 5 15 Q -4 19, 5 26" stroke="#78350f" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+      <path d="M 30 15 Q 38 12, 35 22" stroke="#78350f" strokeWidth="2.8" fill="none" strokeLinecap="round" />
     </g>
   );
 };
 
-// 9. 香蕉 (banana) - 位置: (180, 435) 或懸掛 (180, 285)
-export const renderBananaSprite = (variantKey, isLeft) => {
-  if (variantKey === 'displacement') {
-    if (isLeft) {
-      // 左圖：平放在檯面 (x: 180, y: 435)
-      return (
-        <g transform="translate(160, 420)">
-          <path d="M 5 20 Q 20 8, 38 18 Q 22 28, 5 20 Z" fill="#eab308" stroke="#ca8a04" strokeWidth="1.5" />
-          <circle cx="5" cy="20" r="2" fill="#713f12" />
-        </g>
-      );
-    } else {
-      // 右圖：高掛在上方黃銅掛鉤 (x: 180, y: 285)
-      return (
-        <g transform="translate(165, 265)">
-          <path d="M 18 0 L 18 15 Q 18 22, 10 20" stroke="#d97706" strokeWidth="3" fill="none" />
-          <path d="M 10 18 Q 5 35, 18 45 Q 24 32, 10 18 Z" fill="#eab308" stroke="#ca8a04" strokeWidth="1.5" />
-          <circle cx="10" cy="18" r="2.5" fill="#713f12" />
-        </g>
-      );
-    }
-  }
-  if (variantKey === 'color') {
-    const bananaFill = isLeft ? '#eab308' : '#84cc16';
+// 3. 冰淇淋 (ice cream) - 咖啡桌 (890, 510)
+export const renderIceCreamSprite = (variantKey, isLeft) => {
+  const x = 890;
+  const y = 510;
+
+  if (variantKey === 'presence') {
     return (
-      <g transform="translate(160, 420)">
-        <path d="M 5 20 Q 20 8, 38 18 Q 22 28, 5 20 Z" fill={bananaFill} stroke="#ca8a04" strokeWidth="1.5" />
+      <g transform={`translate(${x - 12}, ${y - 25})`} filter="url(#ghibliShadow)">
+        <ellipse cx="12" cy="38" rx="12" ry="4" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="1" />
+        {isLeft && (
+          <g>
+            <polygon points="6,20 18,20 12,38" fill="#d97706" stroke="#b45309" strokeWidth="1.2" />
+            <circle cx="12" cy="15" r="9" fill="#6ee7b7" stroke="#059669" strokeWidth="1.2" />
+            <circle cx="12" cy="5" r="8" fill="#f472b6" stroke="#db2777" strokeWidth="1.2" />
+            <circle cx="12" cy="-2" r="3" fill="#dc2626" />
+          </g>
+        )}
       </g>
     );
   }
+
+  if (variantKey === 'color') {
+    const scoop1 = isLeft ? '#6ee7b7' : '#fde047'; // 左薄荷綠 / 右芒果黃
+    const scoop2 = isLeft ? '#f472b6' : '#60a5fa'; // 左草莓粉 / 右藍莓藍
+    return (
+      <g transform={`translate(${x - 12}, ${y - 25})`} filter="url(#ghibliShadow)">
+        <polygon points="6,20 18,20 12,38" fill="#d97706" stroke="#b45309" strokeWidth="1.2" />
+        <circle cx="12" cy="15" r="9" fill={scoop1} stroke="#78350f" strokeWidth="1.2" />
+        <circle cx="12" cy="5" r="8" fill={scoop2} stroke="#78350f" strokeWidth="1.2" />
+        <circle cx="12" cy="-2" r="3" fill="#dc2626" />
+      </g>
+    );
+  }
+
+  if (variantKey === 'size') {
+    const scale = isLeft ? 1.3 : 0.65;
+    const dy = isLeft ? -6 : 10;
+    return (
+      <g transform={`translate(${x - 12}, ${y - 25 + dy}) scale(${scale})`} filter="url(#ghibliShadow)">
+        <polygon points="6,20 18,20 12,38" fill="#d97706" stroke="#b45309" strokeWidth="1.2" />
+        <circle cx="12" cy="15" r="9" fill="#fef08a" stroke="#ca8a04" strokeWidth="1.2" />
+        <circle cx="12" cy="5" r="8" fill="#f472b6" stroke="#db2777" strokeWidth="1.2" />
+        <circle cx="12" cy="-2" r="3" fill="#dc2626" />
+      </g>
+    );
+  }
+
   // Default
   return (
-    <g transform="translate(160, 420)">
-      <path d="M 5 20 Q 20 8, 38 18 Q 22 28, 5 20 Z" fill="#eab308" stroke="#ca8a04" strokeWidth="1.5" />
-      <circle cx="5" cy="20" r="2" fill="#713f12" />
+    <g transform={`translate(${x - 12}, ${y - 25})`} filter="url(#ghibliShadow)">
+      <polygon points="6,20 18,20 12,38" fill="#d97706" stroke="#b45309" strokeWidth="1.2" />
+      <circle cx="12" cy="15" r="9" fill="#fef08a" stroke="#ca8a04" strokeWidth="1.2" />
+      <circle cx="12" cy="5" r="8" fill="#f472b6" stroke="#db2777" strokeWidth="1.2" />
+      <circle cx="12" cy="-2" r="3" fill="#dc2626" />
     </g>
   );
 };
 
-// 10. 十六 (sixteen) - 位置: (395, 195)
-export const renderSixteenSprite = (variantKey, isLeft) => {
-  if (variantKey === 'text') {
-    const numText = isLeft ? '16' : '20';
+// 4. 月餅 (moon cake) - 咖啡桌 (765, 495)
+export const renderMoonCakeSprite = (variantKey, isLeft) => {
+  const x = 765;
+  const y = 495;
+
+  if (variantKey === 'presence') {
     return (
-      <g transform="translate(370, 165)">
-        <rect x="0" y="0" width="46" height="34" rx="6" fill="#78350f" stroke="#f59e0b" strokeWidth="2.5" />
-        <rect x="4" y="4" width="38" height="26" rx="4" fill="#451a03" />
-        <text x="23" y="23" fill="#fef08a" fontSize="17" fontWeight="900" textAnchor="middle" fontFamily="monospace">
-          {numText}
+      <g transform={`translate(${x - 18}, ${y - 12})`} filter="url(#ghibliShadow)">
+        <ellipse cx="18" cy="16" rx="18" ry="8" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+        {isLeft && (
+          <g transform="translate(6, 2)">
+            <ellipse cx="12" cy="10" rx="12" ry="7" fill="#b45309" stroke="#78350f" strokeWidth="1.5" />
+            <circle cx="12" cy="9" r="4.5" fill="#f59e0b" />
+          </g>
+        )}
+      </g>
+    );
+  }
+
+  if (variantKey === 'quantity') {
+    return (
+      <g transform={`translate(${x - 22}, ${y - 14})`} filter="url(#ghibliShadow)">
+        <ellipse cx="22" cy="18" rx="22" ry="9" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+        <g transform="translate(4, 4)">
+          <ellipse cx="10" cy="10" rx="10" ry="6" fill="#b45309" stroke="#78350f" strokeWidth="1.5" />
+          <circle cx="10" cy="9" r="4" fill="#f59e0b" />
+        </g>
+        {isLeft && (
+          <g transform="translate(18, 4)">
+            <ellipse cx="10" cy="10" rx="10" ry="6" fill="#b45309" stroke="#78350f" strokeWidth="1.5" />
+            <circle cx="10" cy="9" r="4" fill="#f59e0b" />
+          </g>
+        )}
+      </g>
+    );
+  }
+
+  // Default
+  return (
+    <g transform={`translate(${x - 18}, ${y - 12})`} filter="url(#ghibliShadow)">
+      <ellipse cx="18" cy="16" rx="18" ry="8" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+      <g transform="translate(6, 2)">
+        <ellipse cx="12" cy="10" rx="12" ry="7" fill="#b45309" stroke="#78350f" strokeWidth="1.5" />
+        <circle cx="12" cy="9" r="4.5" fill="#f59e0b" />
+      </g>
+    </g>
+  );
+};
+
+// 5. 西瓜 (watermelon) - 水果攤木箱 (315, 470)
+export const renderWatermelonSprite = (variantKey, isLeft) => {
+  const x = 315;
+  const y = 470;
+
+  if (variantKey === 'size') {
+    const scale = isLeft ? 1.35 : 0.65;
+    const dy = isLeft ? -6 : 8;
+    return (
+      <g transform={`translate(${x - 20}, ${y - 20 + dy}) scale(${scale})`} filter="url(#ghibliShadow)">
+        <path d="M 4 28 A 20 20 0 0 0 36 28 Z" fill="#15803d" stroke="#14532d" strokeWidth="1.5" />
+        <path d="M 6 26 A 18 18 0 0 0 34 26 Z" fill="#ffffff" />
+        <path d="M 7 24 A 16 16 0 0 0 33 24 Z" fill="#ef4444" />
+        <circle cx="16" cy="28" r="1.2" fill="#0f172a" />
+        <circle cx="24" cy="28" r="1.2" fill="#0f172a" />
+        <circle cx="20" cy="32" r="1.2" fill="#0f172a" />
+      </g>
+    );
+  }
+
+  if (variantKey === 'color') {
+    const fleshColor = isLeft ? '#ef4444' : '#facc15'; // 左紅西瓜 / 右小玉黃西瓜
+    return (
+      <g transform={`translate(${x - 20}, ${y - 20})`} filter="url(#ghibliShadow)">
+        <path d="M 4 28 A 20 20 0 0 0 36 28 Z" fill="#15803d" stroke="#14532d" strokeWidth="1.5" />
+        <path d="M 6 26 A 18 18 0 0 0 34 26 Z" fill="#ffffff" />
+        <path d="M 7 24 A 16 16 0 0 0 33 24 Z" fill={fleshColor} />
+        <circle cx="16" cy="28" r="1.2" fill="#0f172a" />
+        <circle cx="24" cy="28" r="1.2" fill="#0f172a" />
+        <circle cx="20" cy="32" r="1.2" fill="#0f172a" />
+      </g>
+    );
+  }
+
+  // Default
+  return (
+    <g transform={`translate(${x - 20}, ${y - 20})`} filter="url(#ghibliShadow)">
+      <path d="M 4 28 A 20 20 0 0 0 36 28 Z" fill="#15803d" stroke="#14532d" strokeWidth="1.5" />
+      <path d="M 6 26 A 18 18 0 0 0 34 26 Z" fill="#ffffff" />
+      <path d="M 7 24 A 16 16 0 0 0 33 24 Z" fill="#ef4444" />
+      <circle cx="16" cy="28" r="1.2" fill="#0f172a" />
+      <circle cx="24" cy="28" r="1.2" fill="#0f172a" />
+      <circle cx="20" cy="32" r="1.2" fill="#0f172a" />
+    </g>
+  );
+};
+
+// 6. 漢堡 (hamburger) - 咖啡桌 (830, 510)
+export const renderHamburgerSprite = (variantKey, isLeft) => {
+  const x = 830;
+  const y = 510;
+
+  if (variantKey === 'presence') {
+    return (
+      <g transform={`translate(${x - 18}, ${y - 18})`} filter="url(#ghibliShadow)">
+        <ellipse cx="18" cy="24" rx="20" ry="7" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+        {isLeft && (
+          <g transform="translate(3, 2)">
+            <ellipse cx="15" cy="18" rx="13" ry="4" fill="#d97706" />
+            <rect x="4" y="14" width="22" height="3.5" rx="1" fill="#451a03" />
+            <polygon points="5,14 25,14 22,17 7,17" fill="#eab308" />
+            <rect x="3" y="11" width="24" height="2.5" rx="1" fill="#22c55e" />
+            <path d="M 3 11 A 12 9 0 0 1 27 11 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="1.2" />
+            <circle cx="10" cy="6" r="0.8" fill="#ffffff" />
+            <circle cx="16" cy="5" r="0.8" fill="#ffffff" />
+            <circle cx="21" cy="7" r="0.8" fill="#ffffff" />
+          </g>
+        )}
+      </g>
+    );
+  }
+
+  if (variantKey === 'size') {
+    const scale = isLeft ? 1.3 : 0.65;
+    const dy = isLeft ? -6 : 8;
+    return (
+      <g transform={`translate(${x - 18}, ${y - 18 + dy}) scale(${scale})`} filter="url(#ghibliShadow)">
+        <ellipse cx="18" cy="24" rx="20" ry="7" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+        <g transform="translate(3, 2)">
+          <ellipse cx="15" cy="18" rx="13" ry="4" fill="#d97706" />
+          <rect x="4" y="14" width="22" height="3.5" rx="1" fill="#451a03" />
+          <polygon points="5,14 25,14 22,17 7,17" fill="#eab308" />
+          <rect x="3" y="11" width="24" height="2.5" rx="1" fill="#22c55e" />
+          <path d="M 3 11 A 12 9 0 0 1 27 11 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="1.2" />
+        </g>
+      </g>
+    );
+  }
+
+  // Default
+  return (
+    <g transform={`translate(${x - 18}, ${y - 18})`} filter="url(#ghibliShadow)">
+      <ellipse cx="18" cy="24" rx="20" ry="7" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+      <g transform="translate(3, 2)">
+        <ellipse cx="15" cy="18" rx="13" ry="4" fill="#d97706" />
+        <rect x="4" y="14" width="22" height="3.5" rx="1" fill="#451a03" />
+        <polygon points="5,14 25,14 22,17 7,17" fill="#eab308" />
+        <rect x="3" y="11" width="24" height="2.5" rx="1" fill="#22c55e" />
+        <path d="M 3 11 A 12 9 0 0 1 27 11 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="1.2" />
+        <circle cx="10" cy="6" r="0.8" fill="#ffffff" />
+        <circle cx="16" cy="5" r="0.8" fill="#ffffff" />
+        <circle cx="21" cy="7" r="0.8" fill="#ffffff" />
+      </g>
+    </g>
+  );
+};
+
+// 7. 蘋果 (apple) - 水果攤木箱 (345, 420)
+export const renderAppleSprite = (variantKey, isLeft) => {
+  const x = 345;
+  const y = 420;
+
+  if (variantKey === 'color') {
+    const appleColor = isLeft ? '#ef4444' : '#22c55e'; // 左紅蘋果 / 右青蘋果
+    return (
+      <g transform={`translate(${x - 14}, ${y - 14})`} filter="url(#ghibliShadow)">
+        <circle cx="14" cy="16" r="12" fill={appleColor} stroke="#7f1d1d" strokeWidth="1.2" />
+        <path d="M 14 5 Q 16 0, 19 2" stroke="#78350f" strokeWidth="2" fill="none" strokeLinecap="round" />
+        <path d="M 15 5 Q 20 4, 18 8 Z" fill="#4ade80" />
+      </g>
+    );
+  }
+
+  if (variantKey === 'quantity') {
+    return (
+      <g transform={`translate(${x - 18}, ${y - 16})`} filter="url(#ghibliShadow)">
+        <circle cx="12" cy="16" r="8" fill="#ef4444" stroke="#7f1d1d" strokeWidth="1.2" />
+        <circle cx="24" cy="16" r="8" fill="#ef4444" stroke="#7f1d1d" strokeWidth="1.2" />
+        {isLeft && (
+          <>
+            <circle cx="18" cy="8" r="8" fill="#ef4444" stroke="#7f1d1d" strokeWidth="1.2" />
+            <circle cx="8" cy="24" r="6" fill="#ef4444" />
+          </>
+        )}
+      </g>
+    );
+  }
+
+  // Default: 紅蘋果
+  return (
+    <g transform={`translate(${x - 14}, ${y - 14})`} filter="url(#ghibliShadow)">
+      <circle cx="14" cy="16" r="12" fill="#ef4444" stroke="#7f1d1d" strokeWidth="1.2" />
+      <path d="M 14 5 Q 16 0, 19 2" stroke="#78350f" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <path d="M 15 5 Q 20 4, 18 8 Z" fill="#4ade80" />
+    </g>
+  );
+};
+
+// 8. 熱狗 (hot dog) - 烘焙坊托盤 (85, 535)
+export const renderHotDogSprite = (variantKey, isLeft) => {
+  const x = 85;
+  const y = 535;
+
+  if (variantKey === 'presence') {
+    return (
+      <g transform={`translate(${x - 18}, ${y - 12})`} filter="url(#ghibliShadow)">
+        <ellipse cx="18" cy="16" rx="18" ry="7" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1.5" />
+        {isLeft && (
+          <g transform="translate(3, 4)">
+            <rect x="0" y="4" width="28" height="9" rx="4.5" fill="#f59e0b" stroke="#b45309" strokeWidth="1.2" />
+            <rect x="2" y="6" width="26" height="5" rx="2.5" fill="#dc2626" />
+            <path d="M 4 8.5 Q 10 7, 16 9 T 26 8" stroke="#facc15" strokeWidth="1.8" fill="none" />
+          </g>
+        )}
+      </g>
+    );
+  }
+
+  if (variantKey === 'quantity') {
+    return (
+      <g transform={`translate(${x - 22}, ${y - 14})`} filter="url(#ghibliShadow)">
+        <ellipse cx="22" cy="18" rx="22" ry="8" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1.5" />
+        <rect x="6" y="8" width="22" height="7" rx="3.5" fill="#f59e0b" stroke="#b45309" strokeWidth="1" />
+        <rect x="8" y="9.5" width="20" height="4" rx="2" fill="#dc2626" />
+        {isLeft && (
+          <g transform="translate(14, -6)">
+            <rect x="0" y="8" width="20" height="6" rx="3" fill="#f59e0b" stroke="#b45309" strokeWidth="1" />
+            <rect x="2" y="9" width="18" height="3.5" rx="1.5" fill="#dc2626" />
+          </g>
+        )}
+      </g>
+    );
+  }
+
+  // Default
+  return (
+    <g transform={`translate(${x - 18}, ${y - 12})`} filter="url(#ghibliShadow)">
+      <ellipse cx="18" cy="16" rx="18" ry="7" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1.5" />
+      <g transform="translate(3, 4)">
+        <rect x="0" y="4" width="28" height="9" rx="4.5" fill="#f59e0b" stroke="#b45309" strokeWidth="1.2" />
+        <rect x="2" y="6" width="26" height="5" rx="2.5" fill="#dc2626" />
+        <path d="M 4 8.5 Q 10 7, 16 9 T 26 8" stroke="#facc15" strokeWidth="1.8" fill="none" />
+      </g>
+    </g>
+  );
+};
+
+// 9. 香蕉 (banana) - 水果架 (415, 380) 或吊鉤 (415, 310)
+export const renderBananaSprite = (variantKey, isLeft) => {
+  const isMoved = variantKey === 'displacement' && !isLeft;
+  const x = 415;
+  const y = isMoved ? 310 : 380;
+
+  if (variantKey === 'color') {
+    const bananaColor = isLeft ? '#facc15' : '#84cc16'; // 左成熟黃 / 右青綠未熟
+    return (
+      <g transform={`translate(${x - 15}, ${y - 15})`} filter="url(#ghibliShadow)">
+        <path d="M 5 6 Q 16 12, 26 5 Q 20 22, 6 18 Z" fill={bananaColor} stroke="#65a30d" strokeWidth="1.4" />
+        <circle cx="5" cy="6" r="1.5" fill="#451a03" />
+        <circle cx="26" cy="5" r="1.2" fill="#451a03" />
+      </g>
+    );
+  }
+
+  // Default & displacement
+  return (
+    <g transform={`translate(${x - 15}, ${y - 15})`} filter="url(#ghibliShadow)">
+      {isMoved && (
+        <line x1="15" y1="-15" x2="15" y2="4" stroke="#78350f" strokeWidth="2" strokeDasharray="2 2" />
+      )}
+      <path d="M 5 6 Q 16 12, 26 5 Q 20 22, 6 18 Z" fill="#facc15" stroke="#ca8a04" strokeWidth="1.4" />
+      <circle cx="5" cy="6" r="1.5" fill="#451a03" />
+      <circle cx="26" cy="5" r="1.2" fill="#451a03" />
+    </g>
+  );
+};
+
+// 10. 十六 (sixteen) - 烘焙坊門牌 (200, 250)
+export const renderSixteenSprite = (variantKey, isLeft) => {
+  const x = 200;
+  const y = 250;
+
+  if (variantKey === 'text') {
+    const textNum = isLeft ? '16' : '20';
+    return (
+      <g transform={`translate(${x - 16}, ${y - 12})`} filter="url(#ghibliShadow)">
+        <rect width="32" height="24" rx="5" fill="#fef08a" stroke="#b45309" strokeWidth="2" />
+        <text x="16" y="17" fill="#78350f" fontSize="13" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">
+          {textNum}
         </text>
       </g>
     );
   }
+
   if (variantKey === 'color') {
-    const bgCol = isLeft ? '#78350f' : '#1e3a8a';
+    const bgColor = isLeft ? '#fef08a' : '#1e3a8a';
+    const textColor = isLeft ? '#78350f' : '#ffffff';
+    const borderColor = isLeft ? '#b45309' : '#3b82f6';
     return (
-      <g transform="translate(370, 165)">
-        <rect x="0" y="0" width="46" height="34" rx="6" fill={bgCol} stroke="#f59e0b" strokeWidth="2.5" />
-        <rect x="4" y="4" width="38" height="26" rx="4" fill="#0f172a" />
-        <text x="23" y="23" fill="#fef08a" fontSize="17" fontWeight="900" textAnchor="middle" fontFamily="monospace">
+      <g transform={`translate(${x - 16}, ${y - 12})`} filter="url(#ghibliShadow)">
+        <rect width="32" height="24" rx="5" fill={bgColor} stroke={borderColor} strokeWidth="2" />
+        <text x="16" y="17" fill={textColor} fontSize="13" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">
           16
         </text>
       </g>
     );
   }
+
   // Default
   return (
-    <g transform="translate(370, 165)">
-      <rect x="0" y="0" width="46" height="34" rx="6" fill="#78350f" stroke="#f59e0b" strokeWidth="2.5" />
-      <rect x="4" y="4" width="38" height="26" rx="4" fill="#451a03" />
-      <text x="23" y="23" fill="#fef08a" fontSize="17" fontWeight="900" textAnchor="middle" fontFamily="monospace">
+    <g transform={`translate(${x - 16}, ${y - 12})`} filter="url(#ghibliShadow)">
+      <rect width="32" height="24" rx="5" fill="#fef08a" stroke="#b45309" strokeWidth="2" />
+      <text x="16" y="17" fill="#78350f" fontSize="13" fontWeight="900" textAnchor="middle" fontFamily="sans-serif">
         16
       </text>
     </g>
   );
 };
 
-// 11. 披薩 (pizza) - 位置: (545, 435)
+// 11. 披薩 (pizza) - 廣場餐桌 (570, 450)
 export const renderPizzaSprite = (variantKey, isLeft) => {
-  if (variantKey === 'quantity') {
-    return (
-      <g transform="translate(535, 425)">
-        <polygon points="5,5 35,5 20,35" fill="#facc15" stroke="#ca8a04" strokeWidth="1.5" />
-        <circle cx="16" cy="14" r="3" fill="#dc2626" />
-        {isLeft && (
-          <polygon points="25,10 50,10 38,38" fill="#facc15" stroke="#ca8a04" strokeWidth="1.5" />
-        )}
-      </g>
-    );
-  }
+  const x = 570;
+  const y = 450;
+
   if (variantKey === 'presence') {
     return (
-      <g transform="translate(535, 425)">
-        <ellipse cx="20" cy="20" rx="22" ry="8" fill="#cbd5e1" opacity="0.4" />
+      <g transform={`translate(${x - 18}, ${y - 16})`} filter="url(#ghibliShadow)">
+        <ellipse cx="18" cy="20" rx="18" ry="8" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1.5" />
         {isLeft && (
-          <polygon points="5,5 35,5 20,35" fill="#facc15" stroke="#ca8a04" strokeWidth="1.5" />
+          <path d="M 6 18 L 28 8 A 14 14 0 0 1 28 26 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="1.4" />
         )}
       </g>
     );
   }
+
+  if (variantKey === 'quantity') {
+    return (
+      <g transform={`translate(${x - 20}, ${y - 18})`} filter="url(#ghibliShadow)">
+        <ellipse cx="20" cy="22" rx="20" ry="9" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1.5" />
+        <path d="M 8 20 L 28 10 A 12 12 0 0 1 28 24 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="1.2" />
+        {isLeft && (
+          <path d="M 6 14 L 22 4 A 12 12 0 0 1 22 18 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="1.2" />
+        )}
+      </g>
+    );
+  }
+
   // Default
   return (
-    <g transform="translate(535, 425)">
-      <polygon points="5,5 35,5 20,35" fill="#facc15" stroke="#ca8a04" strokeWidth="1.5" />
-      <circle cx="16" cy="14" r="3" fill="#dc2626" />
-      <circle cx="24" cy="16" r="2.5" fill="#dc2626" />
+    <g transform={`translate(${x - 18}, ${y - 16})`} filter="url(#ghibliShadow)">
+      <ellipse cx="18" cy="20" rx="18" ry="8" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1.5" />
+      <path d="M 6 18 L 28 8 A 14 14 0 0 1 28 26 Z" fill="#f59e0b" stroke="#b45309" strokeWidth="1.4" />
+      <circle cx="18" cy="17" r="2.5" fill="#dc2626" />
+      <circle cx="23" cy="14" r="2" fill="#dc2626" />
     </g>
   );
 };
 
-// 12. 蛋糕 (cake) - 位置: (595, 430)
+// 12. 蛋糕 (cake) - 烘焙坊展櫃 (195, 425)
 export const renderCakeSprite = (variantKey, isLeft) => {
+  const x = 195;
+  const y = 425;
+
   if (variantKey === 'color') {
-    const cakeColor = isLeft ? '#fbcfe8' : '#78350f';
+    const cakeColor = isLeft ? '#f472b6' : '#451a03'; // 左粉紅草莓奶油 / 右黑巧克力
+    const frostColor = isLeft ? '#ffffff' : '#78350f';
     return (
-      <g transform="translate(585, 415)">
-        <rect x="5" y="12" width="28" height="18" rx="3" fill={cakeColor} stroke="#94a3b8" strokeWidth="1" />
-        <circle cx="19" cy="8" r="4" fill="#dc2626" />
+      <g transform={`translate(${x - 18}, ${y - 20})`} filter="url(#ghibliShadow)">
+        <rect x="4" y="16" width="28" height="18" rx="3" fill={cakeColor} stroke="#78350f" strokeWidth="1.5" />
+        <rect x="2" y="13" width="32" height="5" rx="2" fill={frostColor} />
+        <circle cx="10" cy="10" r="3" fill="#dc2626" />
+        <circle cx="18" cy="9" r="3" fill="#dc2626" />
+        <circle cx="26" cy="10" r="3" fill="#dc2626" />
       </g>
     );
   }
+
   if (variantKey === 'presence') {
     return (
-      <g transform="translate(585, 415)">
-        <ellipse cx="19" cy="30" rx="18" ry="6" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="1" />
+      <g transform={`translate(${x - 18}, ${y - 20})`} filter="url(#ghibliShadow)">
+        <ellipse cx="18" cy="34" rx="18" ry="5" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="1.4" />
         {isLeft && (
-          <>
-            <rect x="5" y="12" width="28" height="18" rx="3" fill="#fbcfe8" />
-            <circle cx="19" cy="8" r="4" fill="#dc2626" />
-          </>
+          <g>
+            <rect x="4" y="16" width="28" height="18" rx="3" fill="#f472b6" stroke="#db2777" strokeWidth="1.5" />
+            <rect x="2" y="13" width="32" height="5" rx="2" fill="#ffffff" />
+            <circle cx="18" cy="9" r="3.5" fill="#dc2626" />
+          </g>
         )}
       </g>
     );
   }
+
   // Default
   return (
-    <g transform="translate(585, 415)">
-      <rect x="5" y="12" width="28" height="18" rx="3" fill="#fbcfe8" stroke="#f472b6" strokeWidth="1.5" />
-      <rect x="5" y="18" width="28" height="4" fill="#f43f5e" />
-      <circle cx="19" cy="8" r="4" fill="#dc2626" />
+    <g transform={`translate(${x - 18}, ${y - 20})`} filter="url(#ghibliShadow)">
+      <rect x="4" y="16" width="28" height="18" rx="3" fill="#f472b6" stroke="#db2777" strokeWidth="1.5" />
+      <rect x="2" y="13" width="32" height="5" rx="2" fill="#ffffff" />
+      <circle cx="10" cy="10" r="3" fill="#dc2626" />
+      <circle cx="18" cy="9" r="3" fill="#dc2626" />
+      <circle cx="26" cy="10" r="3" fill="#dc2626" />
     </g>
   );
 };
 
-// 13. 三明治 (sandwich) - 位置: (340, 455)
+// 13. 三明治 (sandwich) - 烘焙坊櫃台 (130, 455)
 export const renderSandwichSprite = (variantKey, isLeft) => {
-  if (variantKey === 'quantity') {
-    return (
-      <g transform="translate(330, 445)">
-        <polygon points="5,20 28,5 28,20" fill="#fde047" stroke="#ca8a04" strokeWidth="1" />
-        {isLeft && (
-          <polygon points="15,22 38,7 38,22" fill="#fde047" stroke="#ca8a04" strokeWidth="1" />
-        )}
-      </g>
-    );
-  }
+  const x = 130;
+  const y = 455;
+
   if (variantKey === 'presence') {
     return (
-      <g transform="translate(330, 445)">
-        {isLeft ? (
-          <polygon points="5,20 28,5 28,20" fill="#fde047" stroke="#ca8a04" strokeWidth="1" />
-        ) : (
-          <ellipse cx="18" cy="22" rx="14" ry="5" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="1" />
+      <g transform={`translate(${x - 16}, ${y - 14})`} filter="url(#ghibliShadow)">
+        <ellipse cx="16" cy="18" rx="16" ry="6" fill="#e2e8f0" stroke="#cbd5e1" strokeWidth="1.2" />
+        {isLeft && (
+          <g>
+            <polygon points="4,18 28,18 16,4" fill="#fde68a" stroke="#d97706" strokeWidth="1.4" />
+            <polygon points="7,17 25,17 16,6" fill="#22c55e" opacity="0.8" />
+            <polygon points="8,16 23,16 16,8" fill="#ef4444" opacity="0.8" />
+          </g>
         )}
       </g>
     );
   }
+
+  if (variantKey === 'quantity') {
+    return (
+      <g transform={`translate(${x - 18}, ${y - 16})`} filter="url(#ghibliShadow)">
+        <ellipse cx="18" cy="20" rx="18" ry="7" fill="#e2e8f0" stroke="#cbd5e1" strokeWidth="1.2" />
+        <polygon points="4,20 24,20 14,7" fill="#fde68a" stroke="#d97706" strokeWidth="1.2" />
+        {isLeft && (
+          <polygon points="12,18 32,18 22,5" fill="#fde68a" stroke="#d97706" strokeWidth="1.2" />
+        )}
+      </g>
+    );
+  }
+
   // Default
   return (
-    <g transform="translate(330, 445)">
-      <polygon points="5,20 28,5 28,20" fill="#fde047" stroke="#ca8a04" strokeWidth="1" />
-      <polygon points="5,22 28,7 28,22" fill="#ef4444" />
-      <polygon points="5,24 28,9 28,24" fill="#22c55e" />
+    <g transform={`translate(${x - 16}, ${y - 14})`} filter="url(#ghibliShadow)">
+      <ellipse cx="16" cy="18" rx="16" ry="6" fill="#e2e8f0" stroke="#cbd5e1" strokeWidth="1.2" />
+      <polygon points="4,18 28,18 16,4" fill="#fde68a" stroke="#d97706" strokeWidth="1.4" />
+      <polygon points="7,17 25,17 16,6" fill="#22c55e" opacity="0.8" />
+      <polygon points="8,16 23,16 16,8" fill="#ef4444" opacity="0.8" />
     </g>
   );
 };
 
-// 14. 牛奶 (milk) - 位置: (360, 465)
+// 14. 牛奶 (milk) - 咖啡邊桌 (735, 450)
 export const renderMilkSprite = (variantKey, isLeft) => {
+  const x = 735;
+  const y = 450;
+
+  if (variantKey === 'color') {
+    const milkColor = isLeft ? '#ffffff' : '#f472b6'; // 左純白鮮乳 / 右粉紅草莓調味乳
+    return (
+      <g transform={`translate(${x - 10}, ${y - 20})`} filter="url(#ghibliShadow)">
+        <path d="M 6 8 L 14 8 L 17 14 L 17 38 L 3 38 L 3 14 Z" fill={milkColor} stroke="#64748b" strokeWidth="1.5" />
+        <rect x="7" y="4" width="6" height="4" fill="#ef4444" stroke="#b91c1c" strokeWidth="1" />
+        <rect x="5" y="20" width="10" height="10" rx="1" fill="#3b82f6" opacity="0.75" />
+      </g>
+    );
+  }
+
   if (variantKey === 'presence') {
     return (
-      <g transform="translate(352, 450)">
-        <rect x="5" y="8" width="14" height="24" rx="3" fill={isLeft ? '#ffffff' : 'none'} stroke="#94a3b8" strokeWidth="1.5" />
-        <ellipse cx="12" cy="8" rx="5" ry="2" fill="#3b82f6" />
+      <g transform={`translate(${x - 10}, ${y - 20})`} filter="url(#ghibliShadow)">
+        <path d="M 6 8 L 14 8 L 17 14 L 17 38 L 3 38 L 3 14 Z" fill={isLeft ? '#ffffff' : 'rgba(255,255,255,0.2)'} stroke="#64748b" strokeWidth="1.5" />
+        <rect x="7" y="4" width="6" height="4" fill={isLeft ? '#ef4444' : '#94a3b8'} />
+        {isLeft && <rect x="5" y="20" width="10" height="10" rx="1" fill="#3b82f6" opacity="0.75" />}
       </g>
     );
   }
-  if (variantKey === 'color') {
-    const milkColor = isLeft ? '#ffffff' : '#fbcfe8';
-    return (
-      <g transform="translate(352, 450)">
-        <rect x="5" y="8" width="14" height="24" rx="3" fill={milkColor} stroke="#94a3b8" strokeWidth="1.5" />
-        <ellipse cx="12" cy="8" rx="5" ry="2" fill="#3b82f6" />
-      </g>
-    );
-  }
-  // Default
+
+  // Default: 純白鮮乳
   return (
-    <g transform="translate(352, 450)">
-      <rect x="5" y="8" width="14" height="24" rx="3" fill="#ffffff" stroke="#94a3b8" strokeWidth="1.5" />
-      <ellipse cx="12" cy="8" rx="5" ry="2" fill="#3b82f6" />
+    <g transform={`translate(${x - 10}, ${y - 20})`} filter="url(#ghibliShadow)">
+      <path d="M 6 8 L 14 8 L 17 14 L 17 38 L 3 38 L 3 14 Z" fill="#ffffff" stroke="#64748b" strokeWidth="1.5" />
+      <rect x="7" y="4" width="6" height="4" fill="#ef4444" stroke="#b91c1c" strokeWidth="1" />
+      <rect x="5" y="20" width="10" height="10" rx="1" fill="#3b82f6" opacity="0.75" />
     </g>
   );
 };
 
-// 15. 水 (water) - 位置: (265, 435)
+// 15. 水 (water) - 咖啡桌 (795, 460)
 export const renderWaterSprite = (variantKey, isLeft) => {
+  const x = 795;
+  const y = 460;
+
+  if (variantKey === 'color') {
+    const waterColor = isLeft ? '#38bdf8' : '#a855f7'; // 左清澈純水 / 右蝶豆花紫水
+    return (
+      <g transform={`translate(${x - 11}, ${y - 18})`} filter="url(#ghibliShadow)">
+        <path d="M 3 2 L 19 2 L 17 32 L 5 32 Z" fill="rgba(255,255,255,0.3)" stroke="#64748b" strokeWidth="1.4" />
+        <path d="M 4 8 L 18 8 L 16.5 31 L 5.5 31 Z" fill={waterColor} opacity="0.8" />
+        <circle cx="11" cy="18" r="3.5" fill="#fde047" stroke="#ca8a04" strokeWidth="0.8" />
+      </g>
+    );
+  }
+
   if (variantKey === 'presence') {
     return (
-      <g transform="translate(258, 420)">
-        <path d="M 5 0 L 18 0 L 16 26 L 7 26 Z" fill={isLeft ? '#38bdf8' : 'none'} opacity="0.6" stroke="#0284c7" strokeWidth="1.2" />
+      <g transform={`translate(${x - 11}, ${y - 18})`} filter="url(#ghibliShadow)">
+        <path d="M 3 2 L 19 2 L 17 32 L 5 32 Z" fill="rgba(255,255,255,0.3)" stroke="#64748b" strokeWidth="1.4" />
+        {isLeft && (
+          <>
+            <path d="M 4 8 L 18 8 L 16.5 31 L 5.5 31 Z" fill="#38bdf8" opacity="0.8" />
+            <circle cx="11" cy="18" r="3.5" fill="#fde047" stroke="#ca8a04" strokeWidth="0.8" />
+          </>
+        )}
       </g>
     );
   }
-  if (variantKey === 'color') {
-    const waterColor = isLeft ? '#38bdf8' : '#c084fc';
-    return (
-      <g transform="translate(258, 420)">
-        <path d="M 5 0 L 18 0 L 16 26 L 7 26 Z" fill={waterColor} opacity="0.7" stroke="#0284c7" strokeWidth="1.2" />
-      </g>
-    );
-  }
+
   // Default
   return (
-    <g transform="translate(258, 420)">
-      <path d="M 5 0 L 18 0 L 16 26 L 7 26 Z" fill="#38bdf8" opacity="0.6" stroke="#0284c7" strokeWidth="1.2" />
+    <g transform={`translate(${x - 11}, ${y - 18})`} filter="url(#ghibliShadow)">
+      <path d="M 3 2 L 19 2 L 17 32 L 5 32 Z" fill="rgba(255,255,255,0.3)" stroke="#64748b" strokeWidth="1.4" />
+      <path d="M 4 8 L 18 8 L 16.5 31 L 5.5 31 Z" fill="#38bdf8" opacity="0.8" />
+      <circle cx="11" cy="18" r="3.5" fill="#fde047" stroke="#ca8a04" strokeWidth="0.8" />
     </g>
   );
 };
 
-// 16. 柳橙 (orange) - 位置: (125, 375)
+// 16. 柳橙 (orange) - 水果攤編織籃 (385, 455)
 export const renderOrangeSprite = (variantKey, isLeft) => {
-  if (variantKey === 'quantity') {
+  const x = 385;
+  const y = 455;
+
+  if (variantKey === 'presence') {
     return (
-      <g transform="translate(115, 365)">
-        <ellipse cx="20" cy="22" rx="18" ry="12" fill="#c2410c" />
-        <circle cx="14" cy="14" r="8" fill="#f97316" />
-        <circle cx="26" cy="14" r="8" fill="#fb923c" />
-        {isLeft && <circle cx="20" cy="7" r="7.5" fill="#f97316" />}
+      <g transform={`translate(${x - 16}, ${y - 14})`} filter="url(#ghibliShadow)">
+        <ellipse cx="16" cy="18" rx="16" ry="8" fill="#d97706" stroke="#92400e" strokeWidth="1.5" />
+        {isLeft && (
+          <circle cx="16" cy="12" r="10" fill="#f97316" stroke="#c2410c" strokeWidth="1.2" />
+        )}
       </g>
     );
   }
-  if (variantKey === 'presence') {
+
+  if (variantKey === 'quantity') {
     return (
-      <g transform="translate(115, 365)">
-        <ellipse cx="20" cy="22" rx="18" ry="12" fill="#c2410c" />
+      <g transform={`translate(${x - 18}, ${y - 16})`} filter="url(#ghibliShadow)">
+        <ellipse cx="18" cy="20" rx="18" ry="8" fill="#d97706" stroke="#92400e" strokeWidth="1.5" />
+        <circle cx="12" cy="14" r="8" fill="#f97316" stroke="#c2410c" strokeWidth="1" />
         {isLeft && (
           <>
-            <circle cx="14" cy="14" r="8" fill="#f97316" />
-            <circle cx="26" cy="14" r="8" fill="#fb923c" />
+            <circle cx="24" cy="14" r="8" fill="#f97316" stroke="#c2410c" strokeWidth="1" />
+            <circle cx="18" cy="7" r="7.5" fill="#f97316" stroke="#c2410c" strokeWidth="1" />
           </>
         )}
       </g>
     );
   }
+
   // Default
   return (
-    <g transform="translate(115, 365)">
-      <ellipse cx="20" cy="22" rx="18" ry="12" fill="#c2410c" />
-      <circle cx="14" cy="14" r="8" fill="#f97316" />
-      <circle cx="26" cy="14" r="8" fill="#fb923c" />
-      <circle cx="20" cy="7" r="7.5" fill="#f97316" />
+    <g transform={`translate(${x - 16}, ${y - 14})`} filter="url(#ghibliShadow)">
+      <ellipse cx="16" cy="18" rx="16" ry="8" fill="#d97706" stroke="#92400e" strokeWidth="1.5" />
+      <circle cx="16" cy="12" r="10" fill="#f97316" stroke="#c2410c" strokeWidth="1.2" />
+      <circle cx="16" cy="5" r="1.5" fill="#15803d" />
     </g>
   );
 };
 
-// 17. 柚子 (pomelo) - 位置: (45, 475)
+// 17. 柚子 (pomelo) - 水果攤木箱旁 (415, 490)
 export const renderPomeloSprite = (variantKey, isLeft) => {
-  if (variantKey === 'presence') {
-    return (
-      <g transform="translate(35, 465)">
-        {isLeft && (
-          <path d="M 20 5 C 10 5, 5 20, 5 30 C 5 40, 12 45, 20 45 C 28 45, 35 40, 35 30 C 35 20, 30 5, 20 5 Z" fill="#84cc16" stroke="#4d7c0f" strokeWidth="1.5" />
-        )}
-      </g>
-    );
-  }
+  const x = 415;
+  const y = 490;
+
   if (variantKey === 'size') {
-    const scale = isLeft ? 1.3 : 0.7;
+    const scale = isLeft ? 1.35 : 0.65;
+    const dy = isLeft ? -5 : 8;
     return (
-      <g transform={`translate(35, 465) scale(${scale})`}>
-        <path d="M 20 5 C 10 5, 5 20, 5 30 C 5 40, 12 45, 20 45 C 28 45, 35 40, 35 30 C 35 20, 30 5, 20 5 Z" fill="#84cc16" stroke="#4d7c0f" strokeWidth="1.5" />
+      <g transform={`translate(${x - 14}, ${y - 18 + dy}) scale(${scale})`} filter="url(#ghibliShadow)">
+        <path d="M 14 3 C 24 3, 27 28, 14 28 C 1 28, 4 3, 14 3 Z" fill="#84cc16" stroke="#4d7c0f" strokeWidth="1.4" />
+        <circle cx="14" cy="4" r="1.5" fill="#365314" />
       </g>
     );
   }
-  // Default
-  return (
-    <g transform="translate(35, 465)">
-      <path d="M 20 5 C 10 5, 5 20, 5 30 C 5 40, 12 45, 20 45 C 28 45, 35 40, 35 30 C 35 20, 30 5, 20 5 Z" fill="#84cc16" stroke="#4d7c0f" strokeWidth="1.5" />
-    </g>
-  );
-};
 
-// 18. 米飯 (rice) - 位置: (515, 475)
-export const renderRiceSprite = (variantKey, isLeft) => {
   if (variantKey === 'presence') {
     return (
-      <g transform="translate(505, 465)">
-        <ellipse cx="16" cy="18" rx="14" ry="7" fill="#475569" />
+      <g transform={`translate(${x - 14}, ${y - 18})`} filter="url(#ghibliShadow)">
         {isLeft && (
-          <path d="M 5 16 Q 16 2, 27 16 Z" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-        )}
-      </g>
-    );
-  }
-  if (variantKey === 'quantity') {
-    return (
-      <g transform="translate(505, 465)">
-        <ellipse cx="16" cy="18" rx="14" ry="7" fill="#475569" />
-        <path d="M 5 16 Q 12 2, 18 16 Z" fill="#ffffff" />
-        {isLeft && <path d="M 14 16 Q 22 2, 28 16 Z" fill="#ffffff" />}
-      </g>
-    );
-  }
-  // Default
-  return (
-    <g transform="translate(505, 465)">
-      <ellipse cx="16" cy="18" rx="14" ry="7" fill="#475569" />
-      <path d="M 5 16 Q 16 2, 27 16 Z" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-      <rect x="13" y="10" width="6" height="5" fill="#0f172a" />
-    </g>
-  );
-};
-
-// 19. 晴朗太陽 (sunny) - 位置: (80, 75)
-export const renderSunnySprite = (variantKey, isLeft) => {
-  if (variantKey === 'symbol') {
-    // 符號文字/表情差異：左笑臉 / 右酷墨鏡
-    return (
-      <g transform="translate(60, 50)">
-        <circle cx="25" cy="25" r="18" fill="#f59e0b" filter="drop-shadow(0 0 6px #fbbf24)" />
-        {isLeft ? (
           <>
-            <circle cx="20" cy="22" r="2" fill="#78350f" />
-            <circle cx="30" cy="22" r="2" fill="#78350f" />
-            <path d="M 20 28 Q 25 33, 30 28" stroke="#78350f" strokeWidth="1.8" fill="none" />
+            <path d="M 14 3 C 24 3, 27 28, 14 28 C 1 28, 4 3, 14 3 Z" fill="#84cc16" stroke="#4d7c0f" strokeWidth="1.4" />
+            <circle cx="14" cy="4" r="1.5" fill="#365314" />
           </>
-        ) : (
-          <rect x="15" y="20" width="20" height="6" rx="2" fill="#0f172a" />
         )}
       </g>
     );
   }
-  if (variantKey === 'color') {
-    const sunColor = isLeft ? '#f59e0b' : '#ef4444';
-    return (
-      <g transform="translate(60, 50)">
-        <circle cx="25" cy="25" r="18" fill={sunColor} filter="drop-shadow(0 0 6px #fbbf24)" />
-      </g>
-    );
-  }
+
   // Default
   return (
-    <g transform="translate(60, 50)">
-      <circle cx="25" cy="25" r="18" fill="#f59e0b" filter="drop-shadow(0 0 6px #fbbf24)" />
-      <circle cx="20" cy="22" r="2" fill="#78350f" />
-      <circle cx="30" cy="22" r="2" fill="#78350f" />
-      <path d="M 20 28 Q 25 33, 30 28" stroke="#78350f" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+    <g transform={`translate(${x - 14}, ${y - 18})`} filter="url(#ghibliShadow)">
+      <path d="M 14 3 C 24 3, 27 28, 14 28 C 1 28, 4 3, 14 3 Z" fill="#84cc16" stroke="#4d7c0f" strokeWidth="1.4" />
+      <circle cx="14" cy="4" r="1.5" fill="#365314" />
     </g>
   );
 };
 
-// 20. 雲朵 (cloudy) - 位置: (240, 70)
-export const renderCloudySprite = (variantKey, isLeft) => {
+// 18. 米飯 (rice) - 廣場餐桌 (520, 465)
+export const renderRiceSprite = (variantKey, isLeft) => {
+  const x = 520;
+  const y = 465;
+
+  if (variantKey === 'presence') {
+    return (
+      <g transform={`translate(${x - 16}, ${y - 14})`} filter="url(#ghibliShadow)">
+        <path d="M 4 14 C 4 28, 28 28, 28 14 Z" fill="#0284c7" stroke="#0369a1" strokeWidth="1.5" />
+        {isLeft && (
+          <ellipse cx="16" cy="12" rx="11" ry="6" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.2" />
+        )}
+      </g>
+    );
+  }
+
   if (variantKey === 'quantity') {
     return (
-      <g transform="translate(210, 50)" opacity="0.9">
-        <ellipse cx="40" cy="25" rx="25" ry="15" fill="#ffffff" />
+      <g transform={`translate(${x - 18}, ${y - 16})`} filter="url(#ghibliShadow)">
+        <polygon points="4,20 18,20 11,8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.4" />
+        <rect x="8" y="14" width="6" height="6" fill="#0f172a" />
         {isLeft && (
-          <ellipse cx="80" cy="20" rx="18" ry="12" fill="#ffffff" />
+          <g transform="translate(14, 0)">
+            <polygon points="4,20 18,20 11,8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.4" />
+            <rect x="8" y="14" width="6" height="6" fill="#0f172a" />
+          </g>
         )}
       </g>
     );
   }
-  if (variantKey === 'color') {
-    const cloudColor = isLeft ? '#ffffff' : '#94a3b8';
-    return (
-      <g transform="translate(210, 50)" opacity="0.9">
-        <ellipse cx="40" cy="25" rx="25" ry="15" fill={cloudColor} />
-      </g>
-    );
-  }
+
   // Default
   return (
-    <g transform="translate(210, 50)" opacity="0.9">
-      <ellipse cx="40" cy="25" rx="25" ry="15" fill="#ffffff" />
-      <ellipse cx="60" cy="20" rx="18" ry="16" fill="#ffffff" />
-      <ellipse cx="25" cy="22" rx="16" ry="12" fill="#ffffff" />
+    <g transform={`translate(${x - 16}, ${y - 14})`} filter="url(#ghibliShadow)">
+      <path d="M 4 14 C 4 28, 28 28, 28 14 Z" fill="#0284c7" stroke="#0369a1" strokeWidth="1.5" />
+      <ellipse cx="16" cy="12" rx="11" ry="6" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.2" />
+      <rect x="13" y="9" width="6" height="3" fill="#0f172a" />
     </g>
   );
 };
 
-// ── 匯出精靈圖註冊表 ──
+// 19. 晴天太陽 (sunny) - 天空 (440, 65)
+export const renderSunnySprite = (variantKey, isLeft) => {
+  const x = 440;
+  const y = 65;
+
+  if (variantKey === 'symbol') {
+    const isSunglasses = !isLeft; // 右圖戴墨鏡
+    return (
+      <g transform={`translate(${x}, ${y})`}>
+        {/* 光芒 */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map(deg => (
+          <line
+            key={deg}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="-26"
+            stroke="#f59e0b"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            transform={`rotate(${deg})`}
+          />
+        ))}
+        {/* 太陽本體 */}
+        <circle cx="0" cy="0" r="17" fill="#facc15" stroke="#d97706" strokeWidth="2" />
+        {isSunglasses ? (
+          /* 黑色酷墨鏡 */
+          <g transform="translate(-10, -5)">
+            <rect x="0" y="0" width="8" height="6" rx="1.5" fill="#0f172a" />
+            <rect x="12" y="0" width="8" height="6" rx="1.5" fill="#0f172a" />
+            <line x1="8" y1="2" x2="12" y2="2" stroke="#0f172a" strokeWidth="2" />
+            <path d="M 5 8 Q 10 13, 15 8" stroke="#78350f" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+          </g>
+        ) : (
+          /* 露齒微笑 */
+          <g>
+            <circle cx="-5" cy="-3" r="2" fill="#78350f" />
+            <circle cx="5" cy="-3" r="2" fill="#78350f" />
+            <circle cx="-9" cy="2" r="2.5" fill="#f87171" opacity="0.8" />
+            <circle cx="9" cy="2" r="2.5" fill="#f87171" opacity="0.8" />
+            <path d="M -6 4 Q 0 11, 6 4 Z" fill="#ef4444" stroke="#78350f" strokeWidth="1" />
+          </g>
+        )}
+      </g>
+    );
+  }
+
+  if (variantKey === 'color') {
+    const sunColor = isLeft ? '#facc15' : '#ef4444'; // 左金黃 / 右火紅夕陽
+    const beamColor = isLeft ? '#f59e0b' : '#b91c1c';
+    return (
+      <g transform={`translate(${x}, ${y})`}>
+        {[0, 45, 90, 135, 180, 225, 270, 315].map(deg => (
+          <line
+            key={deg}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="-26"
+            stroke={beamColor}
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            transform={`rotate(${deg})`}
+          />
+        ))}
+        <circle cx="0" cy="0" r="17" fill={sunColor} stroke={beamColor} strokeWidth="2" />
+      </g>
+    );
+  }
+
+  // Default
+  return (
+    <g transform={`translate(${x}, ${y})`}>
+      {[0, 45, 90, 135, 180, 225, 270, 315].map(deg => (
+        <line
+          key={deg}
+          x1="0"
+          y1="0"
+          x2="0"
+          y2="-26"
+          stroke="#f59e0b"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+          transform={`rotate(${deg})`}
+        />
+      ))}
+      <circle cx="0" cy="0" r="17" fill="#facc15" stroke="#d97706" strokeWidth="2" />
+      <circle cx="-5" cy="-3" r="2" fill="#78350f" />
+      <circle cx="5" cy="-3" r="2" fill="#78350f" />
+      <path d="M -6 4 Q 0 11, 6 4 Z" fill="#ef4444" stroke="#78350f" strokeWidth="1" />
+    </g>
+  );
+};
+
+// 20. 多雲 (cloudy) - 天空 (630, 75)
+export const renderCloudySprite = (variantKey, isLeft) => {
+  const x = 630;
+  const y = 75;
+
+  if (variantKey === 'quantity') {
+    return (
+      <g transform={`translate(${x - 25}, ${y - 18})`}>
+        <path d="M 10 20 A 10 10 0 0 1 28 12 A 14 14 0 0 1 48 16 A 10 10 0 0 1 48 28 L 10 28 Z" fill="#ffffff" opacity="0.9" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.15))" />
+        {isLeft && (
+          <path d="M 35 10 A 7 7 0 0 1 48 4 A 10 10 0 0 1 62 8 A 7 7 0 0 1 62 18 L 35 18 Z" fill="#ffffff" opacity="0.85" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.15))" />
+        )}
+      </g>
+    );
+  }
+
+  if (variantKey === 'color') {
+    const cloudColor = isLeft ? '#ffffff' : '#64748b'; // 左白雲 / 右暗灰雨雲
+    return (
+      <g transform={`translate(${x - 25}, ${y - 18})`}>
+        <path d="M 10 20 A 10 10 0 0 1 28 12 A 14 14 0 0 1 48 16 A 10 10 0 0 1 48 28 L 10 28 Z" fill={cloudColor} opacity="0.92" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))" />
+      </g>
+    );
+  }
+
+  // Default
+  return (
+    <g transform={`translate(${x - 25}, ${y - 18})`}>
+      <path d="M 10 20 A 10 10 0 0 1 28 12 A 14 14 0 0 1 48 16 A 10 10 0 0 1 48 28 L 10 28 Z" fill="#ffffff" opacity="0.9" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.15))" />
+      <path d="M 35 10 A 7 7 0 0 1 48 4 A 10 10 0 0 1 62 8 A 7 7 0 0 1 62 18 L 35 18 Z" fill="#ffffff" opacity="0.85" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.15))" />
+    </g>
+  );
+};
+
+// ── 20 大目標單字繪製映射表 ──
 export const SPRITE_RENDERERS = {
   juice: renderJuiceSprite,
   tea: renderTeaSprite,

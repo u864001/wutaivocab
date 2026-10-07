@@ -14,35 +14,35 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'juice',
     wordZh: '果汁',
-    x: 320,
-    y: 440,
-    radius: 46,
+    x: 840,
+    y: 460,
+    radius: 38,
     variants: [
-      { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是綠色奇異果汁，右圖是鮮紅色西瓜汁' },
-      { id: 'size', type: 'size', typeZh: '大小差異', descZh: '左圖是大杯果汁，右圖是小迷你果汁' },
-      { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖杯中有果汁，右圖杯子是空的' }
+      { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是清爽翠綠奇異果汁，右圖是鮮紅西瓜汁' },
+      { id: 'size', type: 'size', typeZh: '大小差異', descZh: '左圖是大杯特調果汁，右圖是小迷你果汁' },
+      { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖杯中有冰涼果汁，右圖杯子是空的' }
     ]
   },
   {
     word: 'tea',
     wordZh: '茶',
-    x: 235,
-    y: 465,
-    radius: 46,
+    x: 895,
+    y: 455,
+    radius: 38,
     variants: [
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是金黃琥珀洋甘菊茶，右圖是紫色花果茶' },
       { id: 'size', type: 'size', typeZh: '大小差異', descZh: '左圖是大茶壺，右圖是小單人茶壺' },
-      { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖桌上有茶壺，右圖只有茶杯' }
+      { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖桌上有典雅茶壺，右圖只有茶杯' }
     ]
   },
   {
     word: 'ice cream',
     wordZh: '冰淇淋',
-    x: 830,
-    y: 395,
-    radius: 48,
+    x: 890,
+    y: 510,
+    radius: 38,
     variants: [
-      { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖甜點車上有雙球冰淇淋，右圖架上空無一物' },
+      { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖咖啡桌上有雙球冰淇淋，右圖架上空無一物' },
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是草莓薄荷雙球，右圖是芒果藍莓雙球' },
       { id: 'size', type: 'size', typeZh: '大小差異', descZh: '左圖是特大雙球冰淇淋，右圖是迷你袖珍冰淇淋' }
     ]
@@ -50,9 +50,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'moon cake',
     wordZh: '月餅',
-    x: 645,
-    y: 450,
-    radius: 46,
+    x: 765,
+    y: 495,
+    radius: 36,
     variants: [
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖盤中盛放著金黃烘焙月餅，右圖盤子是空的' },
       { id: 'quantity', type: 'quantity', typeZh: '數量差異', descZh: '左圖盤中有 2 顆月餅，右圖只有 1 顆月餅' }
@@ -61,9 +61,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'watermelon',
     wordZh: '西瓜',
-    x: 135,
-    y: 485,
-    radius: 50,
+    x: 315,
+    y: 470,
+    radius: 42,
     variants: [
       { id: 'size', type: 'size', typeZh: '大小差異', descZh: '左圖水果架上是特大號巨無霸西瓜，右圖是迷你西瓜' },
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是紅肉切片西瓜，右圖是小玉黃肉西瓜' }
@@ -72,9 +72,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'hamburger',
     wordZh: '漢堡',
-    x: 485,
-    y: 445,
-    radius: 48,
+    x: 830,
+    y: 510,
+    radius: 40,
     variants: [
       { id: 'size', type: 'size', typeZh: '大小差異', descZh: '左圖餐桌上是特大雙層巨無霸漢堡，右圖是一口小漢堡' },
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖桌上有漢堡，右圖只有空白餐巾包裝紙' }
@@ -83,9 +83,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'apple',
     wordZh: '蘋果',
-    x: 85,
-    y: 410,
-    radius: 48,
+    x: 345,
+    y: 420,
+    radius: 36,
     variants: [
       { id: 'quantity', type: 'quantity', typeZh: '數量差異', descZh: '左圖木箱裝滿 5 顆紅蘋果，右圖箱內只有 2 顆蘋果' },
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是紅蘋果，右圖是青翠綠蘋果' }
@@ -94,42 +94,42 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'hot dog',
     wordZh: '熱狗',
-    x: 745,
-    y: 450,
-    radius: 48,
+    x: 85,
+    y: 535,
+    radius: 38,
     variants: [
-      { id: 'quantity', type: 'quantity', typeZh: '數量差異', descZh: '左圖烤架上排列著 3 份熱狗堡，右圖只有 1 份熱狗堡' },
-      { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖烤架上有熱狗滋滋作響，右圖烤架空空如也' }
+      { id: 'quantity', type: 'quantity', typeZh: '數量差異', descZh: '左圖托盤上排列著 3 份熱狗堡，右圖只有 1 份熱狗堡' },
+      { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖托盤上有美味熱狗堡，右圖托盤空空如也' }
     ]
   },
   {
     word: 'banana',
     wordZh: '香蕉',
-    x: 180,
-    y: 435,
-    radius: 48,
+    x: 415,
+    y: 380,
+    radius: 38,
     variants: [
-      { id: 'displacement', type: 'displacement', typeZh: '位移差異', descZh: '左圖香蕉平放在桌面，右圖香蕉懸掛在上方的吊鉤上', altPos: { x: 180, y: 285 } },
+      { id: 'displacement', type: 'displacement', typeZh: '位移差異', descZh: '左圖香蕉平放在桌面，右圖香蕉懸掛在上方的吊鉤上', altPos: { x: 415, y: 310 } },
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖香蕉金黃成熟，右圖香蕉青綠未熟' }
     ]
   },
   {
     word: 'sixteen',
     wordZh: '十六',
-    x: 395,
-    y: 195,
-    radius: 46,
+    x: 200,
+    y: 250,
+    radius: 38,
     variants: [
-      { id: 'text', type: 'text', typeZh: '符號文字', descZh: '左圖街燈古典掛牌為 16 號，右圖掛牌為 20 號' },
+      { id: 'text', type: 'text', typeZh: '符號文字', descZh: '左圖烘焙坊掛牌為 16 號，右圖掛牌為 20 號' },
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖門牌為古銅金底色，右圖門牌為深藍色底色' }
     ]
   },
   {
     word: 'pizza',
     wordZh: '披薩',
-    x: 545,
-    y: 435,
-    radius: 46,
+    x: 570,
+    y: 450,
+    radius: 40,
     variants: [
       { id: 'quantity', type: 'quantity', typeZh: '數量差異', descZh: '左圖托盤上有 2 片披薩，右圖只有 1 片披薩' },
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖托盤上有披薩，右圖托盤上只有碎屑' }
@@ -138,9 +138,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'cake',
     wordZh: '蛋糕',
-    x: 595,
-    y: 430,
-    radius: 46,
+    x: 195,
+    y: 425,
+    radius: 40,
     variants: [
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是粉紅草莓奶油蛋糕，右圖是濃黑巧克力蛋糕' },
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖玻璃罩內有蛋糕，右圖玻璃罩內是空的' }
@@ -149,9 +149,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'sandwich',
     wordZh: '三明治',
-    x: 340,
+    x: 130,
     y: 455,
-    radius: 46,
+    radius: 38,
     variants: [
       { id: 'quantity', type: 'quantity', typeZh: '數量差異', descZh: '左圖盤中有 2 份三明治，右圖只有 1 份三明治' },
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖盤中有三明治，右圖盤子是空的' }
@@ -160,9 +160,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'milk',
     wordZh: '牛奶',
-    x: 360,
-    y: 465,
-    radius: 46,
+    x: 735,
+    y: 450,
+    radius: 36,
     variants: [
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖有裝滿牛奶的玻璃瓶，右圖瓶子是透明空的' },
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是純白鮮乳，右圖是粉紅草莓調味乳' }
@@ -171,9 +171,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'water',
     wordZh: '水',
-    x: 265,
-    y: 435,
-    radius: 46,
+    x: 795,
+    y: 460,
+    radius: 36,
     variants: [
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖有裝滿冰水的水杯壺，右圖水壺是空的' },
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是清澈純水，右圖是紫色蝶豆花水' }
@@ -182,9 +182,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'orange',
     wordZh: '柳橙',
-    x: 125,
-    y: 375,
-    radius: 46,
+    x: 385,
+    y: 455,
+    radius: 36,
     variants: [
       { id: 'quantity', type: 'quantity', typeZh: '數量差異', descZh: '左圖籃中有 3 顆柳橙，右圖籃中只有 2 顆柳橙' },
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖籃中有柳橙，右圖編織籃是空的' }
@@ -193,9 +193,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'pomelo',
     wordZh: '柚子',
-    x: 45,
-    y: 475,
-    radius: 46,
+    x: 415,
+    y: 490,
+    radius: 38,
     variants: [
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖木箱旁放有柚子，右圖該位置空無一物' },
       { id: 'size', type: 'size', typeZh: '大小差異', descZh: '左圖是巨大節慶柚子，右圖是迷你小柚子' }
@@ -204,9 +204,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'rice',
     wordZh: '米飯',
-    x: 515,
-    y: 475,
-    radius: 46,
+    x: 520,
+    y: 465,
+    radius: 36,
     variants: [
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖碗中盛放白米飯，右圖碗是空的' },
       { id: 'quantity', type: 'quantity', typeZh: '數量差異', descZh: '左圖有 2 顆三角飯糰，右圖只有 1 顆飯糰' }
@@ -215,9 +215,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'sunny',
     wordZh: '晴朗的',
-    x: 80,
-    y: 75,
-    radius: 48,
+    x: 440,
+    y: 65,
+    radius: 44,
     variants: [
       { id: 'symbol', type: 'text', typeZh: '符號文字', descZh: '左圖太陽露齒微笑，右圖太陽戴著黑色酷墨鏡' },
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是金黃太陽，右圖是火紅夕陽' }
@@ -226,9 +226,9 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'cloudy',
     wordZh: '多雲的',
-    x: 240,
-    y: 70,
-    radius: 48,
+    x: 630,
+    y: 75,
+    radius: 46,
     variants: [
       { id: 'quantity', type: 'quantity', typeZh: '數量差異', descZh: '左圖天空中飄著 2 朵雲，右圖只有 1 朵雲' },
       { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是雪白雲朵，右圖是暗灰雨雲' }

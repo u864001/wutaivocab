@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { soundEngine } from '../../services/audio';
-import { Volume2, Lock, Target } from 'lucide-react';
+import { soundEngine, speakEnglish } from '../../services/audio';
+import { Volume2, Lock, Target, CheckCircle2 } from 'lucide-react';
 
 export const SpotterWordBank = ({
   spotlightDiff = null,
@@ -11,28 +11,40 @@ export const SpotterWordBank = ({
   onWordMatchFail
 }) => {
   const [shakingWord, setShakingWord] = useState(null);
+  const [successWord, setSuccessWord] = useState(null);
 
   // 點擊發音
   const handlePronounce = (e, word) => {
     e.stopPropagation();
-    soundEngine.speak(word, 'mario');
+    speakEnglish(word, 'mario');
   };
 
   // 學生點擊單字選項
   const handleSelectWord = (option) => {
     if (!spotlightDiff) return; // 若非配對階段，直接無視
 
-    if (option.word.toLowerCase() === spotlightDiff.word.toLowerCase()) {
-      // 答對！
+    const optWord = (option.word || '').trim().toLowerCase();
+    const spotWord = (spotlightDiff.word || '').trim().toLowerCase();
+
+    if (optWord === spotWord) {
+      // 答對！播放清脆答對音效、美語發音、高亮按鈕、回傳母組件更新進度解除聚光燈
       soundEngine.correct();
-      soundEngine.speak(option.word, 'mario');
-      onWordMatchSuccess(spotlightDiff.id);
+      speakEnglish(option.word, 'mario');
+      setSuccessWord(option.word);
+      setTimeout(() => {
+        setSuccessWord(null);
+        if (onWordMatchSuccess) {
+          onWordMatchSuccess(spotlightDiff.id);
+        }
+      }, 350);
     } else {
       // 答錯！震動、扣心、但保留聚光燈！
       soundEngine.wrong();
       setShakingWord(option.word);
       setTimeout(() => setShakingWord(null), 600);
-      onWordMatchFail(option.word);
+      if (onWordMatchFail) {
+        onWordMatchFail(option.word);
+      }
     }
   };
 
@@ -77,19 +89,24 @@ export const SpotterWordBank = ({
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5">
         {wordOptions.map((opt) => {
           const isShaking = shakingWord === opt.word;
+          const isSuccess = successWord === opt.word;
           const isThisDiffSolved = activeDifferences.some(d => d.word === opt.word && solvedDiffIds.has(d.id));
 
           return (
             <button
               key={opt.word}
               type="button"
-              disabled={!spotlightDiff}
+              disabled={!spotlightDiff || isThisDiffSolved}
               onClick={() => handleSelectWord(opt)}
               className={`group relative p-2.5 sm:p-3 rounded-xl font-heading text-left transition-all flex flex-col justify-between cursor-pointer active:scale-95 ${
                 !spotlightDiff
-                  ? 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 border border-transparent cursor-not-allowed'
+                  ? 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 border border-transparent cursor-not-allowed opacity-75'
+                  : isSuccess
+                  ? 'bg-emerald-500 text-white border-2 border-emerald-400 scale-105 shadow-xl animate-bounce'
                   : isShaking
                   ? 'bg-rose-500 text-white border-2 border-rose-600 scale-95 animate-headShake shadow-md'
+                  : isThisDiffSolved
+                  ? 'bg-slate-100/90 dark:bg-slate-800/80 text-slate-400 border border-slate-200 dark:border-slate-700 cursor-not-allowed opacity-60'
                   : 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 hover:bg-amber-50 dark:hover:bg-amber-950/40 border-2 border-slate-200 dark:border-slate-600 hover:border-amber-400 shadow-sm hover:shadow-md hover:scale-102'
               }`}
             >

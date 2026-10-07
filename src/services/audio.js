@@ -546,6 +546,12 @@ class SoundEngine {
     this.playTone(400, 'triangle', 0.04, 0.08);
   }
 
+  // 美語發音呼叫 (代理至 voiceManager)
+  speak(text, persona = 'mario') {
+    if (this.isMuted) return;
+    voiceManager.speak(text, persona);
+  }
+
   // 魔法靈感卡 急速旋轉音效
   spinCard() {
     if (this.isMuted) return;
