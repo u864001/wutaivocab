@@ -10,13 +10,71 @@ export const SpotterScene = ({
   solvedDiffIds = new Set(),
   onDifferenceClicked,
   onMissClicked,
-  missRipples = []
+  missRipples = [],
+  isInspectMode = false,
+  zoomLevel = 2.0,
+  pan = { x: 0, y: 0 },
+  onPanChange,
+  hintDiffId = null
 }) => {
   const svgRef = useRef(null);
+  const isDraggingRef = useRef(false);
+  const dragStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
+
+  // 放大鏡檢視：視口與邊界平移計算
+  const effectiveZoom = isInspectMode ? (zoomLevel || 2.0) : 1.0;
+  const viewW = 1376 / effectiveZoom;
+  const viewH = 768 / effectiveZoom;
+  const maxPanX = 1376 - viewW;
+  const maxPanY = 768 - viewH;
+  const curPanX = isInspectMode ? Math.max(0, Math.min(pan.x, maxPanX)) : 0;
+  const curPanY = isInspectMode ? Math.max(0, Math.min(pan.y, maxPanY)) : 0;
+  const currentViewBox = `${curPanX} ${curPanY} ${viewW} ${viewH}`;
+
+  // 放大鏡拖曳事件處理（雙圖同步聯動）
+  const handlePointerDown = (e) => {
+    if (!isInspectMode) return;
+    isDraggingRef.current = true;
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      panX: curPanX,
+      panY: curPanY
+    };
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (err) {}
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isInspectMode || !isDraggingRef.current || !onPanChange) return;
+    const dx = e.clientX - dragStartRef.current.x;
+    const dy = e.clientY - dragStartRef.current.y;
+
+    if (!svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const scaleX = viewW / rect.width;
+    const scaleY = viewH / rect.height;
+
+    const nextPanX = Math.max(0, Math.min(maxPanX, dragStartRef.current.panX - dx * scaleX));
+    const nextPanY = Math.max(0, Math.min(maxPanY, dragStartRef.current.panY - dy * scaleY));
+
+    onPanChange({ x: nextPanX, y: nextPanY });
+  };
+
+  const handlePointerUp = (e) => {
+    if (!isInspectMode) return;
+    isDraggingRef.current = false;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch (err) {}
+  };
 
   // 取得點擊座標並轉換為 SVG 標準解析度 [0..1376, 0..768]
   const handleClick = (e) => {
     if (!svgRef.current) return;
+    // 放大鏡檢視模式下純粹檢視用，絕不觸發任何點擊作答！
+    if (isInspectMode) return;
     // 若聚光燈已鎖定中，雙圖區完全鎖定不接受再次點選，由 Word Bank 接管
     if (spotlightDiffId) return;
 
@@ -89,18 +147,26 @@ export const SpotterScene = ({
   const maskId = `spotlight-mask-${isLeft ? 'left' : 'right'}`;
 
   return (
-    <div className="relative w-full aspect-[1376/768] select-none rounded-2xl overflow-hidden shadow-xl border-2 border-slate-300 dark:border-slate-700 bg-sky-100 touch-manipulation">
+    <div className={`relative w-full aspect-[1376/768] select-none rounded-2xl overflow-hidden shadow-xl border-2 border-slate-300 dark:border-slate-700 bg-sky-100 ${isInspectMode ? 'touch-none cursor-grab active:cursor-grabbing' : 'touch-manipulation'}`}>
       {/* 標籤標記 */}
-      <div className="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-xl bg-slate-900/75 backdrop-blur-md text-white text-xs font-black shadow-md flex items-center gap-1.5 pointer-events-none">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-        <span>{isLeft ? '左側視圖 (Left Scene)' : '右側視圖 (Right Scene)'}</span>
+      <div className="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-xl bg-slate-900/80 backdrop-blur-md text-white text-xs font-black shadow-md flex items-center gap-1.5 pointer-events-none">
+        <span className={`w-2 h-2 rounded-full ${isInspectMode ? 'bg-amber-400 animate-ping' : 'bg-emerald-400 animate-pulse'}`} />
+        <span>
+          {isInspectMode
+            ? `${isLeft ? '左圖' : '右圖'} 🔍 放大鏡檢視中 (支援拖曳)`
+            : (isLeft ? '左側視圖 (Left Scene)' : '右側視圖 (Right Scene)')}
+        </span>
       </div>
 
       <svg
         ref={svgRef}
-        viewBox="0 0 1376 768"
-        className={`w-full h-full block ${spotlightDiffId ? 'cursor-not-allowed' : 'cursor-crosshair'}`}
+        viewBox={currentViewBox}
+        className={`w-full h-full block ${isInspectMode ? 'cursor-grab active:cursor-grabbing' : (spotlightDiffId ? 'cursor-not-allowed' : 'cursor-crosshair')}`}
         onClick={handleClick}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -108,6 +174,15 @@ export const SpotterScene = ({
           <filter id="glowGold" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="6" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+
+          {/* 提示光圈高對比霓虹青光濾鏡 */}
+          <filter id="glowNeon" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
 
           {/* 聚光燈遮罩：背景暗化，僅目標孔徑透光 */}
@@ -215,6 +290,71 @@ export const SpotterScene = ({
             </g>
           );
         })}
+
+        {/* ── 6.5 鷹眼提示霓虹光環 (Hint Ring: 消耗 1 心換取之顯著提示，直至點擊作答後消失) ── */}
+        {hintDiffId && (
+          (() => {
+            const hintDiff = activeDifferences.find(d => d.id === hintDiffId);
+            if (!hintDiff) return null;
+            const hx = (!isLeft && hintDiff.altX !== undefined) ? hintDiff.altX : hintDiff.x;
+            const hy = (!isLeft && hintDiff.altY !== undefined) ? hintDiff.altY : hintDiff.y;
+            const hr = (hintDiff.radius || 50) + 8;
+
+            return (
+              <g key="hint-neon-marker" className="pointer-events-none">
+                {/* 外部旋轉金色破折光圈 */}
+                <circle
+                  cx={hx}
+                  cy={hy}
+                  r={hr + 14}
+                  fill="rgba(251, 191, 36, 0.22)"
+                  stroke="#fbbf24"
+                  strokeWidth="3.5"
+                  strokeDasharray="10 6"
+                  className="animate-spin"
+                  style={{ transformOrigin: `${hx}px ${hy}px`, animationDuration: '6s' }}
+                />
+
+                {/* 內部高亮度青藍霓虹脈動圈 */}
+                <circle
+                  cx={hx}
+                  cy={hy}
+                  r={hr}
+                  fill="none"
+                  stroke="#00f0ff"
+                  strokeWidth="4"
+                  filter="url(#glowNeon)"
+                  className="animate-pulse"
+                />
+
+                {/* 頂部顯著提示膠囊標籤 */}
+                <g transform={`translate(${hx}, ${hy - hr - 16})`}>
+                  <rect
+                    x="-50"
+                    y="-13"
+                    width="100"
+                    height="26"
+                    rx="13"
+                    fill="#f59e0b"
+                    stroke="#ffffff"
+                    strokeWidth="2.5"
+                    filter="drop-shadow(0 4px 8px rgba(0,0,0,0.4))"
+                  />
+                  <text
+                    x="0"
+                    y="4"
+                    fill="#ffffff"
+                    fontSize="12"
+                    fontWeight="900"
+                    textAnchor="middle"
+                  >
+                    💡 線索在此！
+                  </text>
+                </g>
+              </g>
+            );
+          })()
+        )}
 
         {/* ── 7. 點錯失敗漣漪動畫 (Miss Ripple) ── */}
         {missRipples.map(ripple => (

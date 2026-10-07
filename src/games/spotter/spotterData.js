@@ -9,7 +9,7 @@ export const DIFFERENCE_CATEGORIES = [
   { id: 'text', labelZh: '符號文字', color: 'text-cyan-500', icon: '🔤' }
 ];
 
-// 核心目標與場景單字池（以 1376x768 立體紙雕市集場景精確錨定，8 大候選目標皆具備原生無瑕局部圖層）
+// 核心目標與場景單字池（以 1376x768 立體紙雕市集場景精確錨定，8 大候選目標皆具備 2~3 種多重無瑕局部樣態）
 export const TARGET_ITEMS_POOL = [
   {
     word: 'juice',
@@ -17,15 +17,11 @@ export const TARGET_ITEMS_POOL = [
     x: 778,
     y: 640,
     radius: 55,
-    patch: {
-      url: '/assets/spotter/patches/patch_juice.webp',
-      x: 730,
-      y: 580,
-      width: 100,
-      height: 115
-    },
+    patchBox: { x: 730, y: 580, width: 100, height: 115 },
     variants: [
-      { id: 'color', type: 'color', typeZh: '果汁風味', descZh: '左圖桌上是金黃柳橙果汁，右圖是鮮紅西瓜果汁' }
+      { id: 'red', type: 'color', typeZh: '果汁風味', descZh: '左圖桌上是金黃柳橙果汁，右圖是鮮紅西瓜果汁', patchUrl: '/assets/spotter/patches/patch_juice.webp' },
+      { id: 'green', type: 'color', typeZh: '果汁風味', descZh: '左圖桌上是金黃柳橙果汁，右圖是翠綠奇異果汁', patchUrl: '/assets/spotter/patches/patch_juice_green.webp' },
+      { id: 'empty', type: 'presence', typeZh: '有無差異', descZh: '左圖桌上有滿滿冰果汁，右圖杯子已空空如也', patchUrl: '/assets/spotter/patches/patch_juice_empty.webp' }
     ]
   },
   {
@@ -34,15 +30,10 @@ export const TARGET_ITEMS_POOL = [
     x: 928,
     y: 648,
     radius: 65,
-    patch: {
-      url: '/assets/spotter/patches/patch_tea.webp',
-      x: 880,
-      y: 580,
-      width: 100,
-      height: 130
-    },
+    patchBox: { x: 880, y: 580, width: 100, height: 130 },
     variants: [
-      { id: 'color', type: 'color', typeZh: '茶品與蒸氣', descZh: '左圖茶壺是金黃琥珀茶且茶杯冒出白煙，右圖茶壺是紫色花草茶且無白煙' }
+      { id: 'purple', type: 'color', typeZh: '茶品與蒸氣', descZh: '左圖茶壺是金黃琥珀茶且茶杯冒出白煙，右圖茶壺是紫色花草茶且無白煙', patchUrl: '/assets/spotter/patches/patch_tea.webp' },
+      { id: 'matcha', type: 'color', typeZh: '茶品與蒸氣', descZh: '左圖茶壺是金黃琥珀茶且茶杯冒出白煙，右圖茶壺是翠綠日式抹茶且無白煙', patchUrl: '/assets/spotter/patches/patch_tea_matcha.webp' }
     ]
   },
   {
@@ -51,15 +42,10 @@ export const TARGET_ITEMS_POOL = [
     x: 1070,
     y: 712,
     radius: 60,
-    patch: {
-      url: '/assets/spotter/patches/patch_pizza.webp',
-      x: 1010,
-      y: 650,
-      width: 120,
-      height: 115
-    },
+    patchBox: { x: 1010, y: 650, width: 120, height: 115 },
     variants: [
-      { id: 'color', type: 'color', typeZh: '披薩配料', descZh: '左圖是經典紅色臘腸披薩，右圖是翠綠青醬橄欖披薩' }
+      { id: 'pesto', type: 'color', typeZh: '披薩配料', descZh: '左圖是經典紅色臘腸披薩，右圖是翠綠青醬橄欖披薩', patchUrl: '/assets/spotter/patches/patch_pizza.webp' },
+      { id: 'cheese', type: 'color', typeZh: '披薩配料', descZh: '左圖是紅色臘腸披薩，右圖是香濃甜玉米起司披薩', patchUrl: '/assets/spotter/patches/patch_pizza_cheese.webp' }
     ]
   },
   {
@@ -68,15 +54,10 @@ export const TARGET_ITEMS_POOL = [
     x: 1265,
     y: 630,
     radius: 60,
-    patch: {
-      url: '/assets/spotter/patches/patch_icecream.webp',
-      x: 1200,
-      y: 560,
-      width: 130,
-      height: 130
-    },
+    patchBox: { x: 1200, y: 560, width: 130, height: 130 },
     variants: [
-      { id: 'color', type: 'color', typeZh: '冰淇淋口味', descZh: '左圖聖代是草莓與薄荷雙球，右圖是藍莓黑醋栗與濃黑巧克力雙球' }
+      { id: 'dark', type: 'color', typeZh: '冰淇淋口味', descZh: '左圖聖代是草莓與薄荷雙球，右圖是藍莓黑醋栗與濃黑巧克力雙球', patchUrl: '/assets/spotter/patches/patch_icecream.webp' },
+      { id: 'mango', type: 'color', typeZh: '冰淇淋口味', descZh: '左圖聖代是粉紅草莓薄荷，右圖轉為金黃芒果與濃巧克力雙球', patchUrl: '/assets/spotter/patches/patch_icecream_mango.webp' }
     ]
   },
   {
@@ -85,15 +66,10 @@ export const TARGET_ITEMS_POOL = [
     x: 114,
     y: 668,
     radius: 55,
-    patch: {
-      url: '/assets/spotter/patches/patch_apple.webp',
-      x: 60,
-      y: 615,
-      width: 110,
-      height: 110
-    },
+    patchBox: { x: 60, y: 615, width: 110, height: 110 },
     variants: [
-      { id: 'color', type: 'color', typeZh: '品種顏色', descZh: '左圖木箱全裝滿紅富士蘋果，右圖最前排是一顆青翠綠蘋果' }
+      { id: 'green', type: 'color', typeZh: '品種顏色', descZh: '左圖木箱全裝滿紅富士蘋果，右圖最前排是一顆青翠綠蘋果', patchUrl: '/assets/spotter/patches/patch_apple.webp' },
+      { id: 'yellow', type: 'color', typeZh: '品種顏色', descZh: '左圖木箱全是紅富士蘋果，右圖最前排轉為金黃金冠蘋果', patchUrl: '/assets/spotter/patches/patch_apple_yellow.webp' }
     ]
   },
   {
@@ -102,15 +78,10 @@ export const TARGET_ITEMS_POOL = [
     x: 1148,
     y: 615,
     radius: 55,
-    patch: {
-      url: '/assets/spotter/patches/patch_hamburger.webp',
-      x: 1080,
-      y: 560,
-      width: 140,
-      height: 110
-    },
+    patchBox: { x: 1080, y: 560, width: 140, height: 110 },
     variants: [
-      { id: 'color', type: 'color', typeZh: '漢堡配料', descZh: '左圖漢堡內夾新鮮紅色番茄切片，右圖轉為紫紅洋蔥圈' }
+      { id: 'onion', type: 'color', typeZh: '漢堡配料', descZh: '左圖漢堡內夾新鮮紅色番茄切片，右圖轉為紫紅洋蔥圈', patchUrl: '/assets/spotter/patches/patch_hamburger.webp' },
+      { id: 'crispy', type: 'color', typeZh: '肉排風味', descZh: '左圖漢堡是經典厚牛排，右圖轉為香脆金黃炸魚排', patchUrl: '/assets/spotter/patches/patch_hamburger_gold.webp' }
     ]
   },
   {
@@ -119,15 +90,10 @@ export const TARGET_ITEMS_POOL = [
     x: 255,
     y: 545,
     radius: 55,
-    patch: {
-      url: '/assets/spotter/patches/patch_banana.webp',
-      x: 190,
-      y: 480,
-      width: 130,
-      height: 120
-    },
+    patchBox: { x: 190, y: 480, width: 130, height: 120 },
     variants: [
-      { id: 'color', type: 'color', typeZh: '顏色成熟度', descZh: '左圖木箱全是一整串金黃熟成香蕉，右圖轉為一整串青脆鮮綠香蕉' }
+      { id: 'green', type: 'color', typeZh: '成熟度差異', descZh: '左圖木箱全是一整串金黃熟成香蕉，右圖轉為一整串青脆鮮綠香蕉', patchUrl: '/assets/spotter/patches/patch_banana.webp' },
+      { id: 'orange', type: 'color', typeZh: '熱帶品種', descZh: '左圖木箱是金黃香蕉，右圖轉為濃郁橘紅熱帶大蕉', patchUrl: '/assets/spotter/patches/patch_banana_orange.webp' }
     ]
   },
   {
@@ -136,15 +102,10 @@ export const TARGET_ITEMS_POOL = [
     x: 350,
     y: 665,
     radius: 60,
-    patch: {
-      url: '/assets/spotter/patches/patch_watermelon.webp',
-      x: 290,
-      y: 590,
-      width: 140,
-      height: 130
-    },
+    patchBox: { x: 290, y: 590, width: 140, height: 130 },
     variants: [
-      { id: 'color', type: 'color', typeZh: '果肉品種', descZh: '左圖木箱前排是鮮紅甜美西瓜切片，右圖轉為金黃甜美的小玉西瓜切片' }
+      { id: 'yellow', type: 'color', typeZh: '果肉品種', descZh: '左圖木箱前排是鮮紅甜美西瓜切片，右圖轉為金黃甜美的小玉西瓜切片', patchUrl: '/assets/spotter/patches/patch_watermelon.webp' },
+      { id: 'orange', type: 'color', typeZh: '果肉品種', descZh: '左圖木箱前排是紅肉西瓜切片，右圖轉為金橙色哈密瓜風味西瓜切片', patchUrl: '/assets/spotter/patches/patch_watermelon_orange.webp' }
     ]
   },
   {
@@ -178,7 +139,7 @@ export const DISTRACTOR_WORDS_POOL = [
   { word: 'clock', wordZh: '時鐘' }
 ];
 
-// ── 動態出題產生器 (每次進關從 8 大驗證相異單字隨機抽選 5 個，未抽中者兩邊完全相同！) ──
+// ── 動態出題產生器 (每次進關從 8 大候選隨機抽選 5 個，且每個候選各自隨機抽取一種變體！) ──
 export const generateSpotterRound = (targetCount = 5) => {
   // 洗牌演算法 (Fisher-Yates)
   const shuffle = (arr) => {
@@ -191,13 +152,13 @@ export const generateSpotterRound = (targetCount = 5) => {
   };
 
   // 1. 從 8 個立體紙雕精製相異目標候選中，隨機動態抽選 5 個 (C(8, 5) = 56 種不重複出題組合！)
-  const candidatePool = TARGET_ITEMS_POOL.filter(item => !!item.patch);
+  const candidatePool = TARGET_ITEMS_POOL.filter(item => !!item.patchBox);
   const chosenTargets = shuffle(candidatePool).slice(0, targetCount);
   const unchosenTargets = TARGET_ITEMS_POOL.filter(item => !chosenTargets.some(c => c.word === item.word));
 
-  // 2. 為選中的 5 個目標各自指定驗證過的自然樣態變化
+  // 2. 為選中的 5 個目標各自隨機指定一種驗證過的自然樣態變化 (多型態隨機抽選！)
   const activeDifferences = chosenTargets.map(item => {
-    const chosenVariant = item.variants[0];
+    const chosenVariant = shuffle(item.variants)[0]; // 每個物品隨機選取 1 款樣態！
     return {
       id: `diff-${item.word}`,
       word: item.word,
@@ -205,7 +166,13 @@ export const generateSpotterRound = (targetCount = 5) => {
       x: item.x,
       y: item.y,
       radius: item.radius || 55,
-      patch: item.patch,
+      patch: {
+        url: chosenVariant.patchUrl,
+        x: item.patchBox.x,
+        y: item.patchBox.y,
+        width: item.patchBox.width,
+        height: item.patchBox.height
+      },
       altX: chosenVariant.altPos?.x,
       altY: chosenVariant.altPos?.y,
       type: chosenVariant.type,

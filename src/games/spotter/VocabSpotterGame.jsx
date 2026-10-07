@@ -9,7 +9,7 @@ import { soundEngine } from '../../services/audio';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Heart, Timer, Trophy, Sparkles, RefreshCw,
-  CheckCircle2, AlertTriangle, ShieldAlert
+  CheckCircle2, AlertTriangle, ShieldAlert, Search, Lightbulb
 } from 'lucide-react';
 
 export const VocabSpotterGame = ({
@@ -35,6 +35,14 @@ export const VocabSpotterGame = ({
   const [missFeedback, setMissFeedback] = useState(null);
   const [matchSuccessFeedback, setMatchSuccessFeedback] = useState(null);
   const [missRipples, setMissRipples] = useState([]);
+
+  // 放大鏡檢視模式狀態（雙圖同步縮放平移，純檢視不觸發點擊）
+  const [isInspectMode, setIsInspectMode] = useState(false);
+  const [pan, setPan] = useState({ x: 300, y: 180 });
+
+  // 鷹眼提示狀態 (消耗 1 心換取未解線索霓虹光環)
+  const [hintDiffId, setHintDiffId] = useState(null);
+  const [showHintConfirmModal, setShowHintConfirmModal] = useState(false);
 
   // 計時器 (毫秒精度，過關時結算)
   const [elapsedMs, setElapsedMs] = useState(0);
@@ -67,7 +75,34 @@ export const VocabSpotterGame = ({
     setMissFeedback(null);
     setMatchSuccessFeedback(null);
     setMissRipples([]);
+    setHintDiffId(null);
+    setIsInspectMode(false);
+    setPan({ x: 300, y: 180 });
     startTimeRef.current = Date.now();
+  };
+
+  // 觸發提示請求
+  const handleRequestHint = () => {
+    if (gameState !== 'playing' || spotlightDiffId) return;
+    if (lives <= 1) {
+      setMissFeedback("⚠️ 愛心僅剩 1 顆，無法使用提示（避免耗盡失敗）！");
+      setTimeout(() => setMissFeedback(null), 2500);
+      return;
+    }
+    setShowHintConfirmModal(true);
+  };
+
+  // 確認消耗 1 心取得提示
+  const handleConfirmHint = () => {
+    setShowHintConfirmModal(false);
+    const unsolved = activeDifferences.filter(d => !solvedDiffIds.has(d.id));
+    if (unsolved.length === 0) return;
+
+    setLives(prev => Math.max(1, prev - 1));
+    soundEngine.click();
+
+    const target = unsolved[Math.floor(Math.random() * unsolved.length)];
+    setHintDiffId(target.id);
   };
 
   // 扣心與檢查失敗
@@ -93,6 +128,7 @@ export const VocabSpotterGame = ({
   // 點擊命中相異目標
   const handleDifferenceClicked = (diffId, clickPos) => {
     if (spotlightDiffId) return; // 聚光燈鎖定中不重複觸發
+    if (hintDiffId) setHintDiffId(null); // 作答時消滅提示圈
 
     soundEngine.correct();
     setSpotlightDiffId(diffId);
@@ -102,6 +138,7 @@ export const VocabSpotterGame = ({
   // 點擊非相異之處 (點錯)
   const handleMissClicked = (clickPos) => {
     if (spotlightDiffId) return;
+    if (hintDiffId) setHintDiffId(null); // 作答時消滅提示圈
 
     soundEngine.wrong();
     const rippleId = Date.now() + Math.random();
@@ -223,10 +260,36 @@ export const VocabSpotterGame = ({
             <span>{formattedTime}</span>
           </div>
 
+          {/* 💡 鷹眼提示按鈕 (消耗 1 心) */}
+          <button
+            onClick={handleRequestHint}
+            disabled={gameState !== 'playing' || !!spotlightDiffId}
+            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-400/40 text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            title="消耗 1 顆愛心圈出 1 處未解線索"
+          >
+            <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+            <span className="hidden sm:inline">提示</span>
+            <span className="text-[10px] text-rose-500 font-black">(-1❤️)</span>
+          </button>
+
+          {/* 🔍 放大鏡檢視按鈕 */}
+          <button
+            onClick={() => setIsInspectMode(prev => !prev)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer ${
+              isInspectMode
+                ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md font-black animate-pulse'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
+            }`}
+            title={isInspectMode ? '退出放大鏡檢視 (回到作答)' : '開啟放大鏡檢視模式'}
+          >
+            <Search className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{isInspectMode ? '退出放大' : '放大鏡'}</span>
+          </button>
+
           {/* 隨機換題按鈕 */}
           <button
             onClick={handleRestart}
-            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-400/40 text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
             title="隨機換一組 5 處相異題"
           >
             <RefreshCw className="w-3.5 h-3.5" />
@@ -234,6 +297,30 @@ export const VocabSpotterGame = ({
           </button>
         </div>
       </GlassCard>
+
+      {/* ── 放大鏡檢視狀態浮動提示列 ── */}
+      {isInspectMode && (
+        <div className="p-3 rounded-2xl bg-amber-500/15 border-2 border-amber-400 dark:border-amber-500 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-black flex flex-wrap items-center justify-between gap-2 shadow-lg backdrop-blur-md animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <span className="p-1.5 rounded-xl bg-amber-500 text-slate-950 font-black shrink-0">🔍 放大檢視</span>
+            <span>拖曳任意一圖可同步移動視野，此模式下點擊安全不作答、絕不扣心！</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPan({ x: 300, y: 180 })}
+              className="px-2.5 py-1.5 rounded-xl bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-black border border-slate-300 dark:border-slate-600 active:scale-95 transition-all cursor-pointer"
+            >
+              視野居中
+            </button>
+            <button
+              onClick={() => setIsInspectMode(false)}
+              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer"
+            >
+              ✕ 退出放大鏡 (回到作答)
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── 6 大差異類型標籤導引欄 ── */}
       <div className="flex items-center gap-1.5 p-2 rounded-2xl bg-white/70 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 overflow-x-auto scrollbar-none text-xs font-bold text-slate-600 dark:text-slate-300">
@@ -287,6 +374,11 @@ export const VocabSpotterGame = ({
           onDifferenceClicked={handleDifferenceClicked}
           onMissClicked={handleMissClicked}
           missRipples={missRipples}
+          isInspectMode={isInspectMode}
+          zoomLevel={2.2}
+          pan={pan}
+          onPanChange={setPan}
+          hintDiffId={hintDiffId}
         />
 
         {/* 右圖 */}
@@ -299,6 +391,11 @@ export const VocabSpotterGame = ({
           onDifferenceClicked={handleDifferenceClicked}
           onMissClicked={handleMissClicked}
           missRipples={missRipples}
+          isInspectMode={isInspectMode}
+          zoomLevel={2.2}
+          pan={pan}
+          onPanChange={setPan}
+          hintDiffId={hintDiffId}
         />
       </div>
 
@@ -311,6 +408,52 @@ export const VocabSpotterGame = ({
         onWordMatchSuccess={handleWordMatchSuccess}
         onWordMatchFail={handleWordMatchFail}
       />
+
+      {/* ── 彈窗 0：提示確認對話框 (Hint Confirmation) ── */}
+      {showHintConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+          <GlassCard className="max-w-md w-full p-6 text-center relative overflow-hidden border-2 border-amber-400/80 shadow-2xl">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-3 shadow-inner">
+              <Lightbulb className="w-8 h-8 animate-pulse text-amber-400" />
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-black font-heading text-slate-800 dark:text-white mb-2">
+              💡 鷹眼神探線索提示
+            </h3>
+
+            <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
+              是否消耗 <span className="text-rose-500 font-black">1 顆愛心 ❤️</span>，由鷹眼神探在雙圖以顯眼霓虹光環圈出 1 處未尋獲的相異點？
+            </p>
+
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-xs font-bold text-amber-800 dark:text-amber-300 mb-5 flex items-center justify-center gap-3">
+              <span>現有愛心：<strong className="text-rose-500">❤️ x {lives}</strong></span>
+              <span>➔</span>
+              <span>提示後：<strong className="text-rose-400">❤️ x {lives - 1}</strong></span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              <Button3D
+                variant="slate"
+                size="md"
+                onClick={() => setShowHintConfirmModal(false)}
+                className="w-full text-xs sm:text-sm"
+              >
+                再自己找找
+              </Button3D>
+
+              <Button3D
+                variant="amber"
+                size="md"
+                onClick={handleConfirmHint}
+                icon={Lightbulb}
+                className="w-full text-xs sm:text-sm shadow-amber-500/30"
+              >
+                確定消耗 1❤️
+              </Button3D>
+            </div>
+          </GlassCard>
+        </div>
+      )}
 
       {/* ── 彈窗 1：通關大捷勝利結算 (Victory) ── */}
       {gameState === 'victory' && (
