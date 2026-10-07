@@ -44,8 +44,10 @@ export const VocabEscapeGame = ({
     return localStorage.getItem('wutai_escape_theme') || 'temple';
   });
 
-  // 遊戲狀態機: 'briefing' | 'playing' | 'transition' | 'victory'
+  // 遊戲狀態機: 'briefing' | 'intro' | 'playing' | 'transition' | 'victory'
   const [gameState, setGameState] = useState('briefing');
+  const [showChineseTranslation, setShowChineseTranslation] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [campaignData, setCampaignData] = useState(null);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [activePuzzleId, setActivePuzzleId] = useState(null);
@@ -59,6 +61,17 @@ export const VocabEscapeGame = ({
   const timerRef = useRef(null);
   const startTimeRef = useRef(null);
   const hasAddedQuestPointsRef = useRef(false);
+
+  // 進入密室館時，背景預先載入所有 12 張超高壓縮 WebP 底圖，消滅任何黑屏與載入延遲
+  useEffect(() => {
+    try {
+      const allBgUrls = ESCAPE_THEMES.flatMap(t => t.chapters.map(c => c.bg));
+      allBgUrls.forEach(url => {
+        const img = new Image();
+        img.src = url;
+      });
+    } catch (e) {}
+  }, []);
 
   // 初始化連續 3 室逃脫會話
   const initCampaign = useCallback((overrideThemeId = null) => {
@@ -114,7 +127,7 @@ export const VocabEscapeGame = ({
     } catch (e) {}
   };
 
-  // 開始冒險：進入第一室並全螢幕
+  // 開始冒險：進入儀式感神祕序章並預載該主題三圖
   const handleStartEscape = () => {
     soundEngine.init();
     soundEngine.click();
@@ -129,11 +142,53 @@ export const VocabEscapeGame = ({
     // 立即觸發全螢幕沉浸
     enterFullscreen();
 
-    // 啟動第一室專屬 Web Audio 合成懸疑音樂
+    // 啟動專屬高品質環境音樂
     const firstRoom = campaignData?.chapters?.[0];
     if (firstRoom?.themeId) {
       escapeAudio.playRoomBgm(firstRoom.themeId);
     }
+
+    try {
+      window.history.pushState({ escapeStage: 'intro' }, '');
+    } catch (e) {}
+
+    setGameState('intro');
+    setShowChineseTranslation(false);
+
+    // 預加載當前主題 3 張房間圖片
+    const curThemeChapters = campaignData?.chapters || [];
+    let loadedCount = 0;
+    if (curThemeChapters.length === 0) {
+      setImagesLoaded(true);
+    } else {
+      setImagesLoaded(false);
+      curThemeChapters.forEach(chap => {
+        const img = new Image();
+        img.onload = img.onerror = () => {
+          loadedCount++;
+          if (loadedCount >= curThemeChapters.length) {
+            setImagesLoaded(true);
+          }
+        };
+        img.src = chap.bg;
+      });
+    }
+
+    // 沉浸神秘英語外師誦讀序章文字
+    const curTheme = ESCAPE_THEMES.find(th => th.id === selectedThemeId) || ESCAPE_THEMES[0];
+    if (curTheme?.prologueEn) {
+      speakMysteriousEnglish(curTheme.prologueEn);
+    }
+  };
+
+  // 點擊「立即進入密室」或跳過序章：無縫切入第一室
+  const handleProceedToFirstChamber = () => {
+    soundEngine.click();
+    try {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    } catch (e) {}
 
     try {
       window.history.pushState({ escapeStage: 'playing' }, '');
@@ -154,9 +209,14 @@ export const VocabEscapeGame = ({
     setIsBgmMuted(muted);
   };
 
-  // 1. 在密室遊戲中 (playing / transition / victory) 點擊退回：返回「密室逃脫大廳」
+  // 1. 在密室遊戲中 (intro / playing / transition / victory) 點擊退回：返回「密室逃脫大廳」
   const handleExitToEscapeLobby = () => {
     soundEngine.click();
+    try {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    } catch (e) {}
     if (timerRef.current) clearInterval(timerRef.current);
     escapeAudio.stopCurrentMusic();
     exitFullscreen();
@@ -166,6 +226,11 @@ export const VocabEscapeGame = ({
   // 2. 在「密室逃脫大廳」(briefing) 點擊返回：回到「單字冒險大廳 (單字館)」
   const handleQuitGameToVocabLobby = () => {
     soundEngine.click();
+    try {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    } catch (e) {}
     if (timerRef.current) clearInterval(timerRef.current);
     escapeAudio.stopCurrentMusic();
     exitFullscreen();
@@ -176,6 +241,11 @@ export const VocabEscapeGame = ({
   useEffect(() => {
     const handlePopState = () => {
       if (gameState !== 'briefing') {
+        try {
+          if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+          }
+        } catch (e) {}
         if (timerRef.current) clearInterval(timerRef.current);
         escapeAudio.stopCurrentMusic();
         exitFullscreen();
@@ -461,6 +531,73 @@ export const VocabEscapeGame = ({
             </Button3D>
           </div>
         </GlassCard>
+      </div>
+    );
+  }
+
+  // ── 畫面 1.5：沉浸式神祕前導序章 (全黑儀式感背景、低沉外師嗓音誦讀、三圖秒級預載) ──
+  if (gameState === 'intro') {
+    const curTheme = ESCAPE_THEMES.find(th => th.id === selectedThemeId) || ESCAPE_THEMES[0];
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950 text-white select-none overflow-hidden animate-fadeIn">
+        {/* 背景氛圍微光 */}
+        <div className="absolute inset-0 bg-radial-vignette opacity-80 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-transparent to-black/95 pointer-events-none" />
+
+        <div className="relative z-10 max-w-2xl w-full text-center px-4 py-8">
+          {/* 主題徽章 */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-black mb-6 text-amber-300">
+            <span>{curTheme.icon}</span>
+            <span>{curTheme.nameZh}</span>
+            <span className="text-white/40">•</span>
+            <span className="text-white/80">{curTheme.badge}</span>
+          </div>
+
+          {/* 神秘英文序言文字 (外師沉穩低音朗讀) */}
+          <div className="mb-8 space-y-4">
+            <blockquote className="text-lg sm:text-2xl font-serif italic text-amber-100/90 leading-relaxed drop-shadow-md">
+              "{curTheme.prologueEn}"
+            </blockquote>
+
+            {/* 中文翻譯 (玩家選擇性顯示) */}
+            {showChineseTranslation ? (
+              <p className="text-sm sm:text-base text-amber-200/80 font-bold leading-relaxed animate-fadeIn">
+                {curTheme.prologueZh}
+              </p>
+            ) : null}
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setShowChineseTranslation(prev => !prev)}
+                className="text-xs text-white/50 hover:text-amber-300 underline underline-offset-4 transition-colors cursor-pointer"
+              >
+                {showChineseTranslation ? '隱藏中文說明' : '👁️ 點此查看中文說明'}
+              </button>
+            </div>
+          </div>
+
+          {/* 進入第一室 / 載入狀態按鈕 */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Button3D
+              variant="amber"
+              size="lg"
+              onClick={handleProceedToFirstChamber}
+              className="w-full sm:w-auto px-8 py-3 text-base sm:text-lg animate-pulse"
+            >
+              <span>{imagesLoaded ? '立即進入密室 (Skip) 🗝️' : '探索準備就緒，點擊進入 🗝️'}</span>
+            </Button3D>
+
+            <button
+              type="button"
+              onClick={handleExitToEscapeLobby}
+              className="px-4 py-2 text-xs text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              ← 暫退大廳
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
