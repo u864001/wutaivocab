@@ -19,12 +19,13 @@ export const PairingPuzzle = ({
 
   const [selectedLeft, setSelectedLeft] = useState(null);
   const [selectedRight, setSelectedRight] = useState(null);
-  const [matchedIds, setMatchedIds] = useState(new Set());
+  const [matchedLeftIds, setMatchedLeftIds] = useState(new Set());
+  const [matchedRightIds, setMatchedRightIds] = useState(new Set());
   const [wrongPair, setWrongPair] = useState(false);
 
   // 點擊左側英文
   const handleSelectLeft = (item) => {
-    if (isSolved || matchedIds.has(item.id) || wrongPair) return;
+    if (isSolved || matchedLeftIds.has(item.id) || wrongPair) return;
     soundEngine.click();
     speakEnglish(item.en);
     setSelectedLeft(item);
@@ -36,7 +37,7 @@ export const PairingPuzzle = ({
 
   // 點擊右側中文
   const handleSelectRight = (item) => {
-    if (isSolved || matchedIds.has(item.id) || wrongPair) return;
+    if (isSolved || matchedRightIds.has(item.id) || wrongPair) return;
     soundEngine.click();
     setSelectedRight(item);
 
@@ -45,19 +46,31 @@ export const PairingPuzzle = ({
     }
   };
 
-  // 校驗配對
+  // 校驗配對 (支援相同單字或意義對應，雙向相符均認定為正確答案)
   const checkMatch = (left, right) => {
-    if (left.id === right.id) {
+    const cleanLeftEn = (left.en || '').toLowerCase().trim();
+    const cleanRightZh = (right.zh || '').trim();
+
+    // 只要英文與中文在中英對照庫中有任一筆對應相符，即視為成功配對
+    const isPairMatch = left.id === right.id || pairs.some(p =>
+      (p.en || '').toLowerCase().trim() === cleanLeftEn &&
+      (p.zh || '').trim() === cleanRightZh
+    );
+
+    if (isPairMatch) {
       // 配對成功！
       soundEngine.correct();
-      const nextMatched = new Set(matchedIds);
-      nextMatched.add(left.id);
-      setMatchedIds(nextMatched);
+      const nextMatchedLeft = new Set(matchedLeftIds);
+      const nextMatchedRight = new Set(matchedRightIds);
+      nextMatchedLeft.add(left.id);
+      nextMatchedRight.add(right.id);
+      setMatchedLeftIds(nextMatchedLeft);
+      setMatchedRightIds(nextMatchedRight);
       setSelectedLeft(null);
       setSelectedRight(null);
 
       // 全部配對完成
-      if (nextMatched.size === pairs.length) {
+      if (nextMatchedLeft.size >= pairs.length) {
         setTimeout(() => {
           onSolve(puzzle.id, pairs);
         }, 900);
@@ -93,7 +106,7 @@ export const PairingPuzzle = ({
             ENGLISH
           </div>
           {leftItems.map((item) => {
-            const isMatched = matchedIds.has(item.id);
+            const isMatched = matchedLeftIds.has(item.id);
             const isSelected = selectedLeft?.id === item.id;
 
             let cardStyle = 'bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-700 hover:border-amber-400';
@@ -128,7 +141,7 @@ export const PairingPuzzle = ({
             CHINESE
           </div>
           {rightItems.map((item) => {
-            const isMatched = matchedIds.has(item.id);
+            const isMatched = matchedRightIds.has(item.id);
             const isSelected = selectedRight?.id === item.id;
 
             let cardStyle = 'bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-700 hover:border-amber-400';

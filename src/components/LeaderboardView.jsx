@@ -17,7 +17,7 @@ import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
   Swords, X, ChevronRight, Compass, Flame, Coins, Award,
-  Users, Crown, Zap, School
+  Users, Crown, Zap, School, KeyRound
 } from 'lucide-react';
 
 export const GRADE_LEADERBOARD_TABS = [
@@ -112,6 +112,15 @@ export const CONSOLIDATED_GAME_MODES = [
       { key: 'quiz-listening', label: '英語聽力' },
       { key: 'quiz-hard', label: '魔王綜合' }
     ]
+  },
+  {
+    id: 'escape',
+    label: '神祕密室大脫逃',
+    icon: KeyRound,
+    color: 'text-amber-500',
+    unit: '秒',
+    modeKeys: ['escape'],
+    subModes: [{ key: 'escape', label: '三連環脫逃' }]
   },
   {
     id: 'battle',
@@ -235,14 +244,8 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
     loadGradeBoards();
   }, [selectedGrade, selectedWeek]);
 
-  // 一、二年級優先排列字母類遊戲
-  const displayModes = useMemo(() => {
-    if (activeGradeObj.isAlphabet) {
-      const alphabetOrder = ['maze', 'swipe', 'meteor', 'memory', 'monopoly', 'town-quest', 'snake', 'spelling', 'quiz', 'battle'];
-      return [...CONSOLIDATED_GAME_MODES].sort((a, b) => alphabetOrder.indexOf(a.id) - alphabetOrder.indexOf(b.id));
-    }
-    return CONSOLIDATED_GAME_MODES;
-  }, [activeGradeObj]);
+  // 全校各年級（1~6 年級與全校大亂鬥）保持完全一致的九宮格固定順序，跨年級切換不跳位
+  const displayModes = CONSOLIDATED_GAME_MODES;
 
   // 彈窗詳細資料
   const activeModalMode = useMemo(() => {
@@ -438,6 +441,8 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                         ? (entry.coins ?? 0)
                         : mode.isSpecial === 'quest'
                         ? (entry.quest_points ?? 0)
+                        : mode.id === 'escape'
+                        ? (entry.time ?? entry.score)
                         : entry.score;
 
                       const badgeText = getSubModeBadge(entry, mode);
@@ -545,6 +550,8 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                     ? (entry.coins ?? 0)
                     : activeModalMode.isSpecial === 'quest'
                     ? (entry.quest_points ?? 0)
+                    : activeModalMode.id === 'escape'
+                    ? (entry.time ?? entry.score)
                     : entry.score;
 
                   const badgeText = getSubModeBadge(entry, activeModalMode);
@@ -591,11 +598,15 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                               {activeModalMode.unit}
                             </span>
                           </div>
-                          {entry.time !== undefined && entry.time > 0 && (
+                          {activeModalMode.id === 'escape' ? (
+                            <span className="text-[10px] font-bold text-slate-400 block font-mono">
+                              已解開 {entry.score} 道機關
+                            </span>
+                          ) : entry.time !== undefined && entry.time > 0 && activeModalMode.unit !== '秒' ? (
                             <span className="text-[10px] font-bold text-slate-400 block font-mono">
                               耗時 {entry.time} 秒
                             </span>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     </div>

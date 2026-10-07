@@ -381,6 +381,24 @@ export const generateNonOverlappingHotspots = (count = 5) => {
 };
 
 /**
+ * 依臺灣國小學期標準時間，自動自適應當前學期之正式教材進度冊別
+ * 8月~1月 (上學期)：三年級第1冊、四年級第3冊、五年級第5冊、六年級第7冊 (一二年級為 abc)
+ * 2月~7月 (下學期)：三年級第2冊、四年級第4冊、五年級第6冊、六年級第8冊
+ */
+export const getActiveCurriculumBookForGrade = (grade, date = new Date()) => {
+  const g = String(grade || '03').padStart(2, '0');
+  const month = date.getMonth() + 1;
+  const isSemester1 = month >= 8 || month === 1;
+
+  if (g === '01' || g === '02') return 'abc';
+  if (g === '03') return isSemester1 ? '1' : '2';
+  if (g === '04') return isSemester1 ? '3' : '4';
+  if (g === '05') return isSemester1 ? '5' : '6';
+  if (g === '06') return isSemester1 ? '7' : '8';
+  return '1';
+};
+
+/**
  * 程序化生成三連環密室大逃脫會話 (八大多元題型 + 隨機不重疊熱區 + 3關鍵2干擾)
  */
 export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
@@ -389,6 +407,7 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
   let eligibleWords = [];
   let qualifyingBook = null;
 
+  // 1. 若大廳有自訂勾選單元，優先採用
   if (Array.isArray(selectedUnits) && selectedUnits.length > 0) {
     eligibleWords = allWords.filter(w => selectedUnits.includes(`${w.book}-${w.lesson}`));
     const selectedBooks = [...new Set(selectedUnits.map(u => u.split('-')[0]))];
@@ -397,33 +416,76 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
     }
   }
 
+  // 2. 自適應當前學期標準進度 (學生無須特別手動挑選，進關即為進度標準教材，保證符合上榜規範)
   if (eligibleWords.length < 10) {
-    const gradeBooks = getBooksForGrade(grade);
-    eligibleWords = allWords.filter(w => gradeBooks.includes(String(w.book)));
-    if (eligibleWords.length < 10) {
-      eligibleWords = [...allWords];
+    const activeBook = getActiveCurriculumBookForGrade(grade);
+    qualifyingBook = activeBook;
+
+    if (activeBook === 'abc') {
+      eligibleWords = allWords.filter(w => String(w.book) === 'abc' || String(w.book) === '1');
+    } else {
+      eligibleWords = allWords.filter(w => String(w.book) === String(activeBook));
     }
-    qualifyingBook = gradeBooks[0] || '1';
+
+    // 備援：若單冊單字極少，補足該年級雙冊詞彙
+    if (eligibleWords.length < 10) {
+      const gradeBooks = getBooksForGrade(grade);
+      eligibleWords = allWords.filter(w => gradeBooks.includes(String(w.book)));
+      if (eligibleWords.length < 10) {
+        eligibleWords = [...allWords];
+      }
+    }
   }
 
-  const taggedPool = shuffle(eligibleWords.map(w => ({ ...w, category: tagWordCategory(w) })));
-  const usedWordIds = new Set();
+  // 3. 嚴格單字文本去重 (避免同一生字因不同課次出現而重複抽取)
+  const seenEnWords = new Set();
+  const uniqueEligibleWords = [];
+  for (const w of eligibleWords) {
+    const enClean = (w.en || '').toLowerCase().trim();
+    if (enClean && !seenEnWords.has(enClean)) {
+      seenEnWords.add(enClean);
+      uniqueEligibleWords.push({ ...w, category: tagWordCategory(w) });
+    }
+  }
+
+  const taggedPool = shuffle(uniqueEligibleWords.length >= 8 ? uniqueEligibleWords : eligibleWords.map(w => ({ ...w, category: tagWordCategory(w) })));
+  const usedWordTexts = new Set();
   const allWordsInvolved = [];
 
   const takeWord = () => {
-    let candidate = taggedPool.find(w => !usedWordIds.has(w.id));
+    let candidate = taggedPool.find(w => !usedWordTexts.has((w.en || '').toLowerCase().trim()));
     if (!candidate) {
       candidate = taggedPool[Math.floor(Math.random() * taggedPool.length)] || { id: 'fallback', en: 'star', zh: '星星' };
     }
-    usedWordIds.add(candidate.id);
+    if (candidate?.en) {
+      usedWordTexts.add(candidate.en.toLowerCase().trim());
+    }
     allWordsInvolved.push(candidate);
     return candidate;
   };
 
   const getDistractors = (targetWord, count = 3) => {
-    const sameCat = allWords.filter(w => w.id !== targetWord.id && tagWordCategory(w) === tagWordCategory(targetWord));
-    const other = allWords.filter(w => w.id !== targetWord.id && tagWordCategory(w) !== tagWordCategory(targetWord));
-    return shuffle([...sameCat, ...other]).slice(0, count);
+    const targetEn = (targetWord.en || '').toLowerCase().trim();
+    const targetZh = (targetWord.zh || '').trim();
+    const seenTexts = new Set([targetEn]);
+    const seenZh = new Set([targetZh]);
+    const result = [];
+
+    const sameCat = allWords.filter(w => (w.en || '').toLowerCase().trim() !== targetEn && tagWordCategory(w) === tagWordCategory(targetWord));
+    const other = allWords.filter(w => (w.en || '').toLowerCase().trim() !== targetEn && tagWordCategory(w) !== tagWordCategory(targetWord));
+    const candidates = shuffle([...sameCat, ...other]);
+
+    for (const c of candidates) {
+      const en = (c.en || '').toLowerCase().trim();
+      const zh = (c.zh || '').trim();
+      if (en && zh && !seenTexts.has(en) && !seenZh.has(zh)) {
+        seenTexts.add(en);
+        seenZh.add(zh);
+        result.push(c);
+        if (result.length >= count) break;
+      }
+    }
+    return result;
   };
 
   let oppositesUsedInCampaign = false;
@@ -578,18 +640,41 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
         puzzleObj.options = shuffle([diagObj.correct, ...diagObj.distractors]);
       }
       else {
-        // 題型 8：中英雙向對偶消消樂 (pairing)
-        const pair1 = takeWord();
-        const pair2 = takeWord();
-        const pair3 = takeWord();
+        // 題型 8：中英雙向對偶消消樂 (pairing) - 嚴格保證 3 組單字與涵義完全互異
+        const pList = [];
+        const seenEn = new Set();
+        const seenZh = new Set();
+        for (let attempt = 0; attempt < 10 && pList.length < 3; attempt++) {
+          const w = takeWord();
+          const en = (w.en || '').toLowerCase().trim();
+          const zh = (w.zh || '').trim();
+          if (en && zh && !seenEn.has(en) && !seenZh.has(zh)) {
+            seenEn.add(en);
+            seenZh.add(zh);
+            pList.push(w);
+          }
+        }
+        // 保底：若抽樣未滿 3 組，補足備用詞
+        const backupPairs = [
+          { en: 'sun', zh: '太陽' },
+          { en: 'moon', zh: '月亮' },
+          { en: 'star', zh: '星星' }
+        ];
+        while (pList.length < 3) {
+          const bp = backupPairs.find(b => !seenEn.has(b.en) && !seenZh.has(b.zh)) || backupPairs[pList.length];
+          seenEn.add(bp.en);
+          seenZh.add(bp.zh);
+          pList.push(bp);
+        }
+
         puzzleObj.titleZh = '中英雙向對偶消消樂';
         puzzleObj.englishPrompt = '點選左側英文與右側中文，完成 3 組成對配對：';
         puzzleObj.chineseClue = '將每一組相對應的英文字詞與中文涵義連線配對。';
-        puzzleObj.voiceText = `${pair1.en}, ${pair2.en}, ${pair3.en}`;
+        puzzleObj.voiceText = `${pList[0].en}, ${pList[1].en}, ${pList[2].en}`;
         puzzleObj.pairs = [
-          { id: pair1.id, en: pair1.en, zh: pair1.zh },
-          { id: pair2.id, en: pair2.en, zh: pair2.zh },
-          { id: pair3.id, en: pair3.en, zh: pair3.zh }
+          { id: `pair_0_${pList[0].en}`, en: pList[0].en, zh: pList[0].zh },
+          { id: `pair_1_${pList[1].en}`, en: pList[1].en, zh: pList[1].zh },
+          { id: `pair_2_${pList[2].en}`, en: pList[2].en, zh: pList[2].zh }
         ];
       }
 
