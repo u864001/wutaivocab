@@ -205,9 +205,11 @@ export const uploadScore = async ({ mode, book, name, score, time }) => {
 
     if (existing) {
       const isTimeAscending = mode === 'spotter' || mode === 'escape';
+      // 找不同與密室逃脫：以過關時間升冪排序 (time ASC)，同時間再比剩餘愛心/機關數 (score DESC)
+      // 其他模式：以得分降冪排序 (score DESC)，同分再比通關速度 (time ASC)
       const isBetter = isTimeAscending
-        ? (time < existing.time || (time === existing.time && score > existing.score))
-        : (score > existing.score || (score === existing.score && time < existing.time));
+        ? ((time > 0 && (existing.time === 0 || time < existing.time)) || (time === existing.time && score > existing.score))
+        : (score > existing.score || (score === existing.score && (existing.time === 0 || time < existing.time)));
       if (isBetter) {
         await supabase
           .from('leaderboard')
@@ -258,11 +260,11 @@ export const checkIfQualifiesForTop50 = async ({ mode, book, score, time }) => {
     if (error) return true; // 若連線異常，直接允許留名鼓勵學生
     if (!data || data.length < 50) return true; // 未滿 50 人，任何正分皆可上榜！
 
-    // 已滿 50 人：
+    // 已滿 50 人門檻比較
     const last50th = data[data.length - 1];
     return isTimeAscending
-      ? (time < last50th.time || (time === last50th.time && score > last50th.score))
-      : (score > last50th.score || (score === last50th.score && time < last50th.time));
+      ? ((time > 0 && (last50th.time === 0 || time < last50th.time)) || (time === last50th.time && score > last50th.score))
+      : (score > last50th.score || (score === last50th.score && (last50th.time === 0 || time < last50th.time)));
   } catch (e) {
     return true;
   }

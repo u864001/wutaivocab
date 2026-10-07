@@ -107,6 +107,25 @@ export const ChamberScene = ({
               </span>
             </div>
           </div>
+
+          {/* 三大古老符印蒐集進度 */}
+          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-black/50 border border-white/10">
+            <span className="text-[10px] font-bold text-slate-400">符印：</span>
+            {['🦉 智慧之符', '⭐ 蒼穹之鑰', '💎 守護之印'].map((rune, idx) => (
+              <span
+                key={idx}
+                className={`text-[11px] px-2 py-0.5 rounded-lg font-black transition-all ${
+                  idx < chapterIndex
+                    ? 'bg-amber-500/25 text-amber-300 border border-amber-400/40 shadow-sm'
+                    : idx === chapterIndex
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 animate-pulse'
+                    : 'opacity-30 grayscale text-slate-500'
+                }`}
+              >
+                {rune}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* 中間：逃脫計時器 */}

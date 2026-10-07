@@ -617,9 +617,27 @@ export const VocabEscapeGame = ({
             <span>🎉 第 {currentChapter.roomNumber} 道石門已解除封印！</span>
           </div>
 
-          <h3 className="text-xl sm:text-2xl font-black font-heading text-white mb-3">
+          <h3 className="text-xl sm:text-2xl font-black font-heading text-white mb-2">
             {currentChapter.titleZh} 脫逃成功！
           </h3>
+
+          {/* 古老符印解鎖與主線連貫 */}
+          <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-400/40 mb-4 flex items-center justify-between text-left">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">{currentChapterIndex === 0 ? '🦉' : '⭐'}</span>
+              <div>
+                <div className="text-xs font-black text-amber-300">
+                  {currentChapterIndex === 0 ? '獲得第一枚符印：🦉 智慧之符' : '獲得第二枚符印：⭐ 蒼穹之鑰'}
+                </div>
+                <div className="text-[11px] font-bold text-amber-200/70">
+                  {currentChapterIndex === 0 ? '已集齊 1/3 符印！石階通道轟隆開啟' : '已集齊 2/3 符印！即將啟動終極大門封印！'}
+                </div>
+              </div>
+            </div>
+            <span className="px-2.5 py-1 rounded-full bg-amber-500 text-slate-950 text-xs font-black shrink-0">
+              {currentChapterIndex + 1} / 3 符印
+            </span>
+          </div>
 
           <div className="p-4 rounded-2xl bg-black/40 border border-white/10 mb-6 text-left text-xs sm:text-sm text-slate-200 font-bold leading-relaxed">
             {currentChapter.transitionStoryZh}
@@ -753,6 +771,26 @@ export const VocabEscapeGame = ({
             <p className="text-xs font-bold text-slate-400 mb-3">
               探險家 <strong className="text-amber-400">{playerName}</strong> 歷時 <span className="text-amber-400 font-black text-base">{timeElapsed} 秒</span> 破解三連環全部封印！
             </p>
+
+            {/* 三大古老符印全數集齊 */}
+            <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-400/40 mb-3">
+              <div className="text-[11px] font-black text-amber-300 mb-1.5 flex items-center justify-center gap-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>三大古老符印全數集齊 • 終極封印完全瓦解</span>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                {[
+                  { icon: '🦉', name: '智慧之符' },
+                  { icon: '⭐', name: '蒼穹之鑰' },
+                  { icon: '💎', name: '守護之印' }
+                ].map((r, i) => (
+                  <div key={i} className="px-2.5 py-1 rounded-xl bg-black/50 border border-amber-400/30 flex items-center gap-1 text-[11px] font-black text-amber-200 shadow-sm">
+                    <span>{r.icon}</span>
+                    <span>{r.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             <div className="p-3.5 rounded-2xl bg-black/40 border border-white/10 mb-4 text-xs font-bold text-slate-300 text-left leading-relaxed">
               {currentChapter.victoryStoryZh}

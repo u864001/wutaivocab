@@ -42,8 +42,8 @@ export const TARGET_ITEMS_POOL = [
     y: 510,
     radius: 38,
     variants: [
+      { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是薄荷綠球聖代，右圖是藍莓黑醋栗雙球聖代' },
       { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '左圖咖啡桌上有雙球冰淇淋，右圖架上空無一物' },
-      { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖是草莓薄荷雙球，右圖是芒果藍莓雙球' },
       { id: 'size', type: 'size', typeZh: '大小差異', descZh: '左圖是特大雙球冰淇淋，右圖是迷你袖珍冰淇淋' }
     ]
   },
@@ -248,7 +248,10 @@ export const DISTRACTOR_WORDS_POOL = [
   { word: 'twenty', wordZh: '二十' }
 ];
 
-// ── 動態隨機抽題產生器 (隨機抽取 5 個單字作為相異目標) ──
+// ── 5 處黃金示範相異單字集（100% 自然融入背景、透視與陰影完全吻合） ──
+export const DEMO_TARGET_WORDS = ['juice', 'tea', 'ice cream', 'apple', 'pizza'];
+
+// ── 動態出題產生器 (預設以 5 大驗證相異單字為核心，單字庫減負至 8 張大字卡) ──
 export const generateSpotterRound = (targetCount = 5) => {
   // 洗牌演算法
   const shuffle = (arr) => {
@@ -260,21 +263,26 @@ export const generateSpotterRound = (targetCount = 5) => {
     return list;
   };
 
-  // 1. 從 20 個待測目標中隨機抽取 targetCount (預設 5 個) 作為本局題目
-  const shuffledTargets = shuffle(TARGET_ITEMS_POOL);
-  const chosenTargets = shuffledTargets.slice(0, targetCount);
-  const unchosenTargets = shuffledTargets.slice(targetCount);
+  // 1. 優先選取 5 個通過視覺驗證的示範單字
+  const primaryTargets = TARGET_ITEMS_POOL.filter(item => DEMO_TARGET_WORDS.includes(item.word));
+  const otherTargets = TARGET_ITEMS_POOL.filter(item => !DEMO_TARGET_WORDS.includes(item.word));
 
-  // 2. 為選中的 5 個目標各自隨機指定 1 種樣態變化
+  const chosenTargets = primaryTargets.length >= targetCount
+    ? primaryTargets.slice(0, targetCount)
+    : [...primaryTargets, ...shuffle(otherTargets)].slice(0, targetCount);
+
+  const unchosenTargets = TARGET_ITEMS_POOL.filter(item => !chosenTargets.some(c => c.word === item.word));
+
+  // 2. 為選中的 5 個目標各自指定驗證過的自然樣態變化 (同杯型/同果盤/同餐盤)
   const activeDifferences = chosenTargets.map(item => {
-    const chosenVariant = item.variants[Math.floor(Math.random() * item.variants.length)];
+    const chosenVariant = item.variants[0]; // 採用第一款最自然穩定的變體
     return {
       id: `diff-${item.word}`,
       word: item.word,
       wordZh: item.wordZh,
       x: item.x,
       y: item.y,
-      radius: item.radius,
+      radius: item.radius || 40,
       altX: chosenVariant.altPos?.x,
       altY: chosenVariant.altPos?.y,
       type: chosenVariant.type,
@@ -284,16 +292,21 @@ export const generateSpotterRound = (targetCount = 5) => {
     };
   });
 
-  // 3. 建立 20 個物件的狀態字典 (active 目標使用該 variantKey，其他 15 個目標一律使用 'default')
+  // 3. 建立 20 個物件的狀態字典 (active 目標使用該 variantKey，其他一律使用 'default')
   const itemStateMap = {};
   TARGET_ITEMS_POOL.forEach(item => {
     const active = activeDifferences.find(d => d.word === item.word);
     itemStateMap[item.word] = active ? active.variantKey : 'default';
   });
 
-  // 4. 組裝 Word Bank 選項：5 個正解目標 + 11 個場景中的誘答單字 = 16 個選項
-  const distractorsPool = shuffle([...unchosenTargets, ...DISTRACTOR_WORDS_POOL]);
-  const chosenDistractors = distractorsPool.slice(0, 11).map(d => ({ word: d.word, wordZh: d.wordZh }));
+  // 4. 組裝 Word Bank 選項：5 個正解目標 + 3 個現場常見誘答單字 = 8 個友善大字卡（大幅降低學童認知負荷）
+  const distractorsPool = shuffle([
+    { word: 'water', wordZh: '水' },
+    { word: 'cake', wordZh: '蛋糕' },
+    { word: 'sandwich', wordZh: '三明治' },
+    ...unchosenTargets.map(t => ({ word: t.word, wordZh: t.wordZh }))
+  ]);
+  const chosenDistractors = distractorsPool.slice(0, 3).map(d => ({ word: d.word, wordZh: d.wordZh }));
 
   const rawOptions = [
     ...chosenTargets.map(t => ({ word: t.word, wordZh: t.wordZh })),

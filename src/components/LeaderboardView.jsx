@@ -622,6 +622,10 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                             <span className="text-[10px] font-bold text-slate-400 block font-mono">
                               已解開 {entry.score} 道機關
                             </span>
+                          ) : activeModalMode.id === 'spotter' ? (
+                            <span className="text-[10px] font-bold text-rose-400 block font-mono">
+                              剩餘 ❤️ x {entry.score}
+                            </span>
                           ) : entry.time !== undefined && entry.time > 0 && activeModalMode.unit !== '秒' ? (
                             <span className="text-[10px] font-bold text-slate-400 block font-mono">
                               耗時 {entry.time} 秒

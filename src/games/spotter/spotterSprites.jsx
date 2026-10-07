@@ -17,14 +17,17 @@ export const renderJuiceSprite = (variantKey, isLeft) => {
       ? `${BASE_ITEM_PATH}juice_green.webp` // 左綠奇異果汁
       : `${BASE_ITEM_PATH}juice_red.webp`;   // 右紅西瓜汁
     return (
-      <image
-        href={src}
-        x={x - w / 2}
-        y={y - h / 2}
-        width={w}
-        height={h}
-        filter="url(#ghibliShadow)"
-      />
+      <g>
+        <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.44} ry={h * 0.11} fill="url(#contactShadow)" />
+        <image
+          href={src}
+          x={x - w / 2}
+          y={y - h / 2}
+          width={w}
+          height={h}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
     );
   }
 
@@ -34,20 +37,41 @@ export const renderJuiceSprite = (variantKey, isLeft) => {
     const curH = h * scale;
     const dy = isLeft ? -4 : 6;
     return (
-      <image
-        href={`${BASE_ITEM_PATH}juice_default.webp`}
-        x={x - curW / 2}
-        y={y - curH / 2 + dy}
-        width={curW}
-        height={curH}
-        filter="url(#ghibliShadow)"
-      />
+      <g>
+        <ellipse cx={x} cy={y + curH / 2 + dy - 2} rx={curW * 0.44} ry={curH * 0.11} fill="url(#contactShadow)" />
+        <image
+          href={`${BASE_ITEM_PATH}juice_default.webp`}
+          x={x - curW / 2}
+          y={y - curH / 2 + dy}
+          width={curW}
+          height={curH}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
     );
   }
 
   if (variantKey === 'presence') {
     if (!isLeft) return null;
     return (
+      <g>
+        <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.44} ry={h * 0.11} fill="url(#contactShadow)" />
+        <image
+          href={`${BASE_ITEM_PATH}juice_default.webp`}
+          x={x - w / 2}
+          y={y - h / 2}
+          width={w}
+          height={h}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
+    );
+  }
+
+  // Default
+  return (
+    <g>
+      <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.44} ry={h * 0.11} fill="url(#contactShadow)" />
       <image
         href={`${BASE_ITEM_PATH}juice_default.webp`}
         x={x - w / 2}
@@ -56,19 +80,7 @@ export const renderJuiceSprite = (variantKey, isLeft) => {
         height={h}
         filter="url(#ghibliShadow)"
       />
-    );
-  }
-
-  // Default
-  return (
-    <image
-      href={`${BASE_ITEM_PATH}juice_default.webp`}
-      x={x - w / 2}
-      y={y - h / 2}
-      width={w}
-      height={h}
-      filter="url(#ghibliShadow)"
-    />
+    </g>
   );
 };
 
@@ -84,14 +96,17 @@ export const renderTeaSprite = (variantKey, isLeft) => {
       ? `${BASE_ITEM_PATH}tea_default.webp` // 左古典琥珀茶
       : `${BASE_ITEM_PATH}tea_purple.webp`;  // 右紫羅蘭花茶
     return (
-      <image
-        href={src}
-        x={x - w / 2}
-        y={y - h / 2}
-        width={w}
-        height={h}
-        filter="url(#ghibliShadow)"
-      />
+      <g>
+        <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.44} ry={h * 0.12} fill="url(#contactShadow)" />
+        <image
+          href={src}
+          x={x - w / 2}
+          y={y - h / 2}
+          width={w}
+          height={h}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
     );
   }
 
@@ -101,20 +116,41 @@ export const renderTeaSprite = (variantKey, isLeft) => {
     const curH = h * scale;
     const dy = isLeft ? -4 : 5;
     return (
-      <image
-        href={`${BASE_ITEM_PATH}tea_default.webp`}
-        x={x - curW / 2}
-        y={y - curH / 2 + dy}
-        width={curW}
-        height={curH}
-        filter="url(#ghibliShadow)"
-      />
+      <g>
+        <ellipse cx={x} cy={y + curH / 2 + dy - 2} rx={curW * 0.44} ry={curH * 0.12} fill="url(#contactShadow)" />
+        <image
+          href={`${BASE_ITEM_PATH}tea_default.webp`}
+          x={x - curW / 2}
+          y={y - curH / 2 + dy}
+          width={curW}
+          height={curH}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
     );
   }
 
   if (variantKey === 'presence') {
     if (!isLeft) return null;
     return (
+      <g>
+        <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.44} ry={h * 0.12} fill="url(#contactShadow)" />
+        <image
+          href={`${BASE_ITEM_PATH}tea_default.webp`}
+          x={x - w / 2}
+          y={y - h / 2}
+          width={w}
+          height={h}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
+    );
+  }
+
+  // Default
+  return (
+    <g>
+      <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.44} ry={h * 0.12} fill="url(#contactShadow)" />
       <image
         href={`${BASE_ITEM_PATH}tea_default.webp`}
         x={x - w / 2}
@@ -123,19 +159,7 @@ export const renderTeaSprite = (variantKey, isLeft) => {
         height={h}
         filter="url(#ghibliShadow)"
       />
-    );
-  }
-
-  // Default
-  return (
-    <image
-      href={`${BASE_ITEM_PATH}tea_default.webp`}
-      x={x - w / 2}
-      y={y - h / 2}
-      width={w}
-      height={h}
-      filter="url(#ghibliShadow)"
-    />
+    </g>
   );
 };
 
@@ -151,28 +175,34 @@ export const renderIceCreamSprite = (variantKey, isLeft) => {
       ? `${BASE_ITEM_PATH}icecream_mint.webp`  // 左薄荷綠球聖代
       : `${BASE_ITEM_PATH}icecream_berry.webp`; // 右藍莓藍球聖代
     return (
-      <image
-        href={src}
-        x={x - w / 2}
-        y={y - h / 2}
-        width={w}
-        height={h}
-        filter="url(#ghibliShadow)"
-      />
+      <g>
+        <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.42} ry={h * 0.1} fill="url(#contactShadow)" />
+        <image
+          href={src}
+          x={x - w / 2}
+          y={y - h / 2}
+          width={w}
+          height={h}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
     );
   }
 
   if (variantKey === 'presence') {
     if (!isLeft) return null;
     return (
-      <image
-        href={`${BASE_ITEM_PATH}icecream_default.webp`}
-        x={x - w / 2}
-        y={y - h / 2}
-        width={w}
-        height={h}
-        filter="url(#ghibliShadow)"
-      />
+      <g>
+        <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.42} ry={h * 0.1} fill="url(#contactShadow)" />
+        <image
+          href={`${BASE_ITEM_PATH}icecream_default.webp`}
+          x={x - w / 2}
+          y={y - h / 2}
+          width={w}
+          height={h}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
     );
   }
 
@@ -182,27 +212,33 @@ export const renderIceCreamSprite = (variantKey, isLeft) => {
     const curH = h * scale;
     const dy = isLeft ? -5 : 6;
     return (
-      <image
-        href={`${BASE_ITEM_PATH}icecream_default.webp`}
-        x={x - curW / 2}
-        y={y - curH / 2 + dy}
-        width={curW}
-        height={curH}
-        filter="url(#ghibliShadow)"
-      />
+      <g>
+        <ellipse cx={x} cy={y + curH / 2 + dy - 2} rx={curW * 0.42} ry={curH * 0.1} fill="url(#contactShadow)" />
+        <image
+          href={`${BASE_ITEM_PATH}icecream_default.webp`}
+          x={x - curW / 2}
+          y={y - curH / 2 + dy}
+          width={curW}
+          height={curH}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
     );
   }
 
   // Default
   return (
-    <image
-      href={`${BASE_ITEM_PATH}icecream_default.webp`}
-      x={x - w / 2}
-      y={y - h / 2}
-      width={w}
-      height={h}
-      filter="url(#ghibliShadow)"
-    />
+    <g>
+      <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.42} ry={h * 0.1} fill="url(#contactShadow)" />
+      <image
+        href={`${BASE_ITEM_PATH}icecream_default.webp`}
+        x={x - w / 2}
+        y={y - h / 2}
+        width={w}
+        height={h}
+        filter="url(#ghibliShadow)"
+      />
+    </g>
   );
 };
 
@@ -379,57 +415,66 @@ export const renderAppleSprite = (variantKey, isLeft) => {
       ? `${BASE_ITEM_PATH}apple_default.webp` // 左紅蘋果
       : `${BASE_ITEM_PATH}apple_green.webp`;   // 右青蘋果
     return (
-      <image
-        href={src}
-        x={x - w / 2}
-        y={y - h / 2}
-        width={w}
-        height={h}
-        filter="url(#ghibliShadow)"
-      />
+      <g>
+        <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.44} ry={h * 0.12} fill="url(#contactShadow)" />
+        <image
+          href={src}
+          x={x - w / 2}
+          y={y - h / 2}
+          width={w}
+          height={h}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
     );
   }
 
   if (variantKey === 'quantity') {
     return (
-      <g filter="url(#ghibliShadow)">
-        <image
-          href={`${BASE_ITEM_PATH}apple_default.webp`}
-          x={x - w / 2 - 8}
-          y={y - h / 2}
-          width={w * 0.85}
-          height={h * 0.85}
-        />
-        <image
-          href={`${BASE_ITEM_PATH}apple_default.webp`}
-          x={x - w / 2 + 10}
-          y={y - h / 2 + 2}
-          width={w * 0.85}
-          height={h * 0.85}
-        />
-        {isLeft && (
+      <g>
+        <ellipse cx={x} cy={y + h / 2 + 2} rx={w * 0.72} ry={h * 0.14} fill="url(#contactShadow)" />
+        <g filter="url(#ghibliShadow)">
           <image
             href={`${BASE_ITEM_PATH}apple_default.webp`}
-            x={x - w / 2 + 1}
-            y={y - h / 2 - 10}
+            x={x - w / 2 - 8}
+            y={y - h / 2}
             width={w * 0.85}
             height={h * 0.85}
           />
-        )}
+          <image
+            href={`${BASE_ITEM_PATH}apple_default.webp`}
+            x={x - w / 2 + 10}
+            y={y - h / 2 + 2}
+            width={w * 0.85}
+            height={h * 0.85}
+          />
+          {isLeft && (
+            <image
+              href={`${BASE_ITEM_PATH}apple_default.webp`}
+              x={x - w / 2 + 1}
+              y={y - h / 2 - 10}
+              width={w * 0.85}
+              height={h * 0.85}
+            />
+          )}
+        </g>
       </g>
     );
   }
 
   // Default
   return (
-    <image
-      href={`${BASE_ITEM_PATH}apple_default.webp`}
-      x={x - w / 2}
-      y={y - h / 2}
-      width={w}
-      height={h}
-      filter="url(#ghibliShadow)"
-    />
+    <g>
+      <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.44} ry={h * 0.12} fill="url(#contactShadow)" />
+      <image
+        href={`${BASE_ITEM_PATH}apple_default.webp`}
+        x={x - w / 2}
+        y={y - h / 2}
+        width={w}
+        height={h}
+        filter="url(#ghibliShadow)"
+      />
+    </g>
   );
 };
 
@@ -593,6 +638,50 @@ export const renderPizzaSprite = (variantKey, isLeft) => {
   if (variantKey === 'presence') {
     if (!isLeft) return null;
     return (
+      <g>
+        <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.48} ry={h * 0.12} fill="url(#contactShadow)" />
+        <image
+          href={`${BASE_ITEM_PATH}pizza_default.webp`}
+          x={x - w / 2}
+          y={y - h / 2}
+          width={w}
+          height={h}
+          filter="url(#ghibliShadow)"
+        />
+      </g>
+    );
+  }
+
+  if (variantKey === 'quantity') {
+    return (
+      <g>
+        <ellipse cx={x} cy={y + h / 2 - 1} rx={w * 0.52} ry={h * 0.13} fill="url(#contactShadow)" />
+        <g filter="url(#ghibliShadow)">
+          <image
+            href={`${BASE_ITEM_PATH}pizza_default.webp`}
+            x={x - w / 2 - 4}
+            y={y - h / 2}
+            width={w * 0.9}
+            height={h * 0.9}
+          />
+          {isLeft && (
+            <image
+              href={`${BASE_ITEM_PATH}pizza_default.webp`}
+              x={x - w / 2 + 10}
+              y={y - h / 2 - 6}
+              width={w * 0.85}
+              height={h * 0.85}
+            />
+          )}
+        </g>
+      </g>
+    );
+  }
+
+  // Default
+  return (
+    <g>
+      <ellipse cx={x} cy={y + h / 2 - 2} rx={w * 0.48} ry={h * 0.12} fill="url(#contactShadow)" />
       <image
         href={`${BASE_ITEM_PATH}pizza_default.webp`}
         x={x - w / 2}
@@ -601,42 +690,7 @@ export const renderPizzaSprite = (variantKey, isLeft) => {
         height={h}
         filter="url(#ghibliShadow)"
       />
-    );
-  }
-
-  if (variantKey === 'quantity') {
-    return (
-      <g filter="url(#ghibliShadow)">
-        <image
-          href={`${BASE_ITEM_PATH}pizza_default.webp`}
-          x={x - w / 2 - 4}
-          y={y - h / 2}
-          width={w * 0.9}
-          height={h * 0.9}
-        />
-        {isLeft && (
-          <image
-            href={`${BASE_ITEM_PATH}pizza_default.webp`}
-            x={x - w / 2 + 10}
-            y={y - h / 2 - 6}
-            width={w * 0.85}
-            height={h * 0.85}
-          />
-        )}
-      </g>
-    );
-  }
-
-  // Default
-  return (
-    <image
-      href={`${BASE_ITEM_PATH}pizza_default.webp`}
-      x={x - w / 2}
-      y={y - h / 2}
-      width={w}
-      height={h}
-      filter="url(#ghibliShadow)"
-    />
+    </g>
   );
 };
 

@@ -127,25 +127,25 @@ const HearthEmbers = () => {
 const ShootingStarMasked = () => {
   const [active, setActive] = useState(false);
   const [starKey, setStarKey] = useState(0);
-  const [startPos, setStartPos] = useState({ top: '15%', right: '12%' });
+  const [startPos, setStartPos] = useState({ top: '15%', right: '10%' });
 
   useEffect(() => {
     let timer;
     const scheduleNext = () => {
-      // 每 18 ~ 32 秒劃過一次
-      const delay = Math.floor(Math.random() * 14000) + 18000;
+      // 每 14 ~ 26 秒劃過一次，自然靈動
+      const delay = Math.floor(Math.random() * 12000) + 14000;
       timer = setTimeout(() => {
-        // 隨機在左側窗戶上部各點劃過
+        // 隨機在左窗戶太空背景右上深處出發
         setStartPos({
-          top: `${Math.floor(Math.random() * 25) + 10}%`,
-          right: `${Math.floor(Math.random() * 25) + 8}%`
+          top: `${Math.floor(Math.random() * 20) + 8}%`,
+          right: `${Math.floor(Math.random() * 20) + 5}%`
         });
         setStarKey(k => k + 1);
         setActive(true);
         setTimeout(() => {
           setActive(false);
           scheduleNext();
-        }, 650);
+        }, 550);
       }, delay);
     };
 
@@ -154,41 +154,63 @@ const ShootingStarMasked = () => {
   }, []);
 
   return (
-    // 嚴格裁切容器：僅限於左側拱窗開口範圍 (left: 1.5%~28%, top: 7%~57%)
+    // 嚴格裁切容器：精確錨定於左側拱窗玻璃開口內 (left: 15.6%, width: 14.0%, top: 22.0%, height: 55.0%)
+    // 配合拱頂 clip-path，絕對不會畫到外圍石柱、提燈與牆壁上！
     <div
       className="absolute overflow-hidden pointer-events-none"
       style={{
-        left: '1.5%',
-        top: '7%',
-        width: '26.5%',
-        height: '50%'
+        left: '15.6%',
+        top: '22.0%',
+        width: '14.0%',
+        height: '55.0%',
+        borderRadius: '50% 50% 0 0 / 22% 22% 0 0',
+        clipPath: 'polygon(0% 20%, 8% 10%, 20% 4%, 50% 0%, 80% 4%, 92% 10%, 100% 20%, 100% 100%, 0% 100%)'
       }}
     >
       {active && (
         <div
           key={starKey}
-          className="absolute animate-quickMeteor"
+          className="absolute animate-celestialMeteor"
           style={{
             top: startPos.top,
             right: startPos.right,
-            width: '52px', /* 迅疾短小，不拖冗長亮尾 */
-            height: '2.5px',
-            background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(186,230,253,0.35) 55%, rgba(255,255,255,0.95) 90%, #ffffff 100%)',
-            boxShadow: '0 0 6px #ffffff, 0 0 10px #7dd3fc',
-            borderRadius: '2px',
+            width: '28px', /* 極細小優雅，不冗長 */
+            height: '1.2px',
+            background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(186,230,253,0.18) 50%, rgba(255,255,255,0.85) 90%, #ffffff 100%)',
             transformOrigin: 'right center'
           }}
-        />
+        >
+          {/* 流星最前端：唯一明亮的極小光點 (1.5px 光斑與微星暈) */}
+          <div
+            className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              width: '2px',
+              height: '2px',
+              background: '#ffffff',
+              boxShadow: '0 0 3px 1px rgba(255, 255, 255, 0.95), 0 0 6px 2px rgba(186, 230, 253, 0.8)'
+            }}
+          />
+        </div>
       )}
       <style>{`
-        @keyframes quickMeteor {
-          0% { transform: rotate(-35deg) translateX(0); opacity: 0; }
-          15% { opacity: 1; }
-          75% { opacity: 0.85; }
-          100% { transform: rotate(-35deg) translateX(-180px); opacity: 0; }
+        @keyframes celestialMeteorAnim {
+          0% {
+            transform: rotate(-38deg) translateX(0);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.95;
+          }
+          55% {
+            opacity: 0.8;
+          }
+          100% {
+            transform: rotate(-38deg) translateX(-140px);
+            opacity: 0;
+          }
         }
-        .animate-quickMeteor {
-          animation: quickMeteor 0.55s ease-out forwards;
+        .animate-celestialMeteor {
+          animation: celestialMeteorAnim 0.48s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
         }
       `}</style>
     </div>

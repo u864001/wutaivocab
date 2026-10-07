@@ -31,21 +31,30 @@ export const SpotterScene = ({
     const clickX = svgPt.x;
     const clickY = svgPt.y;
 
-    // 檢查是否命中本局 5 個相異目標中「尚未破解」者
+    // 檢查是否命中本局 5 個相異目標
     let hitDiff = null;
+    let hitSolved = false;
     for (const diff of activeDifferences) {
-      if (solvedDiffIds.has(diff.id)) continue; // 已破解者略過
-
       // 目標座標（支援位移差異左右圖座標不同）
       const targetX = (!isLeft && diff.altX !== undefined) ? diff.altX : diff.x;
       const targetY = (!isLeft && diff.altY !== undefined) ? diff.altY : diff.y;
-      const radius = diff.radius || 46;
+      const radius = (diff.radius || 40) + 6; // 稍微加大命中容錯率，方便 iPad 觸控
 
       const dist = Math.sqrt(Math.pow(clickX - targetX, 2) + Math.pow(clickY - targetY, 2));
       if (dist <= radius) {
-        hitDiff = diff;
-        break;
+        if (solvedDiffIds.has(diff.id)) {
+          hitSolved = true;
+          break;
+        } else {
+          hitDiff = diff;
+          break;
+        }
       }
+    }
+
+    if (hitSolved) {
+      // 點擊已破解之相異點：無害略過，絕不扣心！
+      return;
     }
 
     if (hitDiff) {
@@ -99,6 +108,13 @@ export const SpotterScene = ({
           <filter id="ghibliShadow" x="-30%" y="-30%" width="160%" height="160%">
             <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#0f172a" floodOpacity="0.45" />
           </filter>
+
+          {/* 自然物件接觸陰影 (Contact Shadow / Ambient Occlusion) 消除貼紙漂浮感 */}
+          <radialGradient id="contactShadow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#0f172a" stopOpacity="0.55" />
+            <stop offset="50%" stopColor="#0f172a" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="#0f172a" stopOpacity="0" />
+          </radialGradient>
 
           {/* 聚光燈金色光芒濾鏡 */}
           <filter id="glowGold" x="-30%" y="-30%" width="160%" height="160%">
