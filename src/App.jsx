@@ -12,6 +12,7 @@ import { BattleGame } from './games/battle/BattleGame';
 import { AlphabetMazeGame } from './games/maze/AlphabetMazeGame';
 import { SwipeCardGame } from './games/swipe/SwipeCardGame';
 import { VocabEscapeGame } from './games/escape/VocabEscapeGame';
+import { VocabSpotterGame } from './games/spotter/VocabSpotterGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
 import { WutaiTownGame } from './games/town/WutaiTownGame';
@@ -99,6 +100,9 @@ export function App() {
       }
       if (path === '/escape' || urlParams.get('view') === 'escape') {
         return 'escape';
+      }
+      if (path === '/spotter' || urlParams.get('view') === 'spotter') {
+        return 'spotter';
       }
       if (urlParams.get('join')) {
         return 'battle';
@@ -211,6 +215,14 @@ export function App() {
       } else if (view === 'town') {
         if (window.location.pathname !== '/town') {
           window.history.pushState({ view: 'town' }, '', '/town');
+        }
+      } else if (view === 'escape') {
+        if (window.location.pathname !== '/escape') {
+          window.history.pushState({ view: 'escape' }, '', '/escape');
+        }
+      } else if (view === 'spotter') {
+        if (window.location.pathname !== '/spotter') {
+          window.history.pushState({ view: 'spotter' }, '', '/spotter');
         }
       } else if (view === 'portal') {
         if (window.location.pathname !== '/') {
@@ -385,6 +397,15 @@ export function App() {
 
           {currentView === 'escape' && (
             <VocabEscapeGame
+              settings={settings}
+              words={words}
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
+
+          {currentView === 'spotter' && (
+            <VocabSpotterGame
               settings={settings}
               words={words}
               qualifyingBook={qualifyingBook}

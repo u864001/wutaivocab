@@ -9,7 +9,7 @@ import {
   Volume2, Keyboard, ChevronDown, ChevronUp, Check,
   QrCode, Sparkles, BookOpen, UserCheck, Megaphone, Home,
   Compass, Flame, Coins, User, RefreshCw, Package, ShieldCheck,
-  Store, MapPin, KeyRound
+  Store, MapPin, KeyRound, Eye
 } from 'lucide-react';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 
@@ -520,169 +520,216 @@ export const Lobby = ({
         </GlassCard>
       </div>
 
-      {/* ── 單人冒險挑戰便當網格 (4 Columns) ── */}
-      <div>
-        <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 font-heading mb-3 flex items-center gap-2">
-          {t.secSolo}
-        </h3>
+      {/* ── 單人冒險挑戰便當網格 (分兩大主題館：沉浸解謎 vs 極速街機) ── */}
+      <div className="space-y-6">
+        {/* 第一排：【✨ 沉浸解謎與主題探索館】 */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 font-heading flex items-center gap-2">
+              <KeyRound className="w-5 h-5 text-emerald-500" />
+              <span>✨ 沉浸解謎與主題探索館</span>
+            </h3>
+            <span className="text-xs font-bold text-slate-400">
+              情境解謎 • 鷹眼辨析 • 字母巡航 • 拼字拼裝
+            </span>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-4">
-          {/* 神祕密室逃脫 (分年級主題解謎、聽力拼字、高畫質沉浸探索) */}
-          <GlassCard
-            hoverable={true}
-            onClick={() => onNavigate('escape')}
-            className="text-center flex flex-col items-center justify-between group border-2 border-emerald-400/80 bg-gradient-to-b from-emerald-500/15 via-teal-500/10 to-transparent relative shadow-md cursor-pointer"
-          >
-            <div className="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm flex items-center gap-0.5">
-              <span>全新密室</span>
-            </div>
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-md">
-              <KeyRound className="w-7 h-7" />
-            </div>
-            <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
-              {t.escapeTitle || '神祕密室逃脫'}
-            </h4>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
-              {t.escapeDesc || '四大機關封印！聲納聽力、羊皮紙線索、拼字輪盤與對偶之門！'}
-            </p>
-            <Button3D variant="emerald" size="sm" className="w-full">
-              進入密室
-            </Button3D>
-          </GlassCard>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 1. 神祕密室逃脫 */}
+            <GlassCard
+              hoverable={true}
+              onClick={() => onNavigate('escape')}
+              className="text-center flex flex-col items-center justify-between group border-2 border-emerald-400/80 bg-gradient-to-b from-emerald-500/15 via-teal-500/10 to-transparent relative shadow-md cursor-pointer"
+            >
+              <div className="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm flex items-center gap-0.5">
+                <span>全新密室</span>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-md">
+                <KeyRound className="w-7 h-7" />
+              </div>
+              <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+                {t.escapeTitle || '神祕密室逃脫'}
+              </h4>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+                {t.escapeDesc || '四大機關封印！聲納聽力、羊皮紙線索、拼字輪盤與對偶之門！'}
+              </p>
+              <Button3D variant="emerald" size="sm" className="w-full">
+                進入密室
+              </Button3D>
+            </GlassCard>
 
-          {/* 極速是非滑牌 (30秒卡牌速辨，低年級字母 / 中高年級單字) */}
-          <GlassCard
-            hoverable={true}
-            onClick={() => onNavigate('swipe')}
-            className="text-center flex flex-col items-center justify-between group border-2 border-rose-400/60 bg-gradient-to-b from-rose-500/10 via-orange-500/5 to-transparent relative shadow-md cursor-pointer"
-          >
-            <div className="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-sm flex items-center gap-0.5">
-              <span>30秒對決</span>
-            </div>
-            <div className="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-md">
-              <Flame className="w-7 h-7" />
-            </div>
-            <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
-              {t.swipeTitle || '極速是非滑牌'}
-            </h4>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
-              {t.swipeDesc || '30秒極速對決！左右滑動手牌，挑戰功能彩蛋與連擊！'}
-            </p>
-            <Button3D variant="rose" size="sm" className="w-full">
-              滑牌挑戰
-            </Button3D>
-          </GlassCard>
+            {/* 2. 鷹眼神探 • 單字找不同 (緊鄰密室逃脫！) */}
+            <GlassCard
+              hoverable={true}
+              onClick={() => onNavigate('spotter')}
+              className="text-center flex flex-col items-center justify-between group border-2 border-amber-400/80 bg-gradient-to-b from-amber-500/15 via-yellow-500/10 to-transparent relative shadow-md cursor-pointer"
+            >
+              <div className="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-amber-500 to-yellow-500 text-stone-950 shadow-sm flex items-center gap-0.5">
+                <span>鷹眼辨析</span>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-stone-950 transition-all shadow-md">
+                <Eye className="w-7 h-7" />
+              </div>
+              <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+                鷹眼神探找不同
+              </h4>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+                高密情境繪卷！找出6大相異點，聚光燈鎖定配對英語單字！
+              </p>
+              <Button3D variant="amber" size="sm" className="w-full">
+                鷹眼搜查
+              </Button3D>
+            </GlassCard>
 
-          {/* 星際字母迷宮 / 百步蛇字母巡航 (低年級專屬，免選單字即玩) */}
-          <GlassCard
-            hoverable={true}
-            onClick={() => onNavigate('maze')}
-            className="text-center flex flex-col items-center justify-between group border-2 border-amber-400/60 bg-gradient-to-b from-amber-500/10 via-orange-500/5 to-transparent relative shadow-md"
-          >
-            <div className="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-stone-950 shadow-sm flex items-center gap-0.5">
-              <span>低年級首選</span>
-            </div>
-            <div className="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-stone-950 transition-all shadow-md">
-              <Compass className="w-7 h-7" />
-            </div>
-            <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
-              {t.mazeTitle || '字母巡航迷宮'}
-            </h4>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
-              {t.mazeDesc || '百步蛇手指巡航！A到Z字母連線與10x10挑戰！'}
-            </p>
-            <Button3D variant="amber" size="sm" className="w-full">
-              巡航探險
-            </Button3D>
-          </GlassCard>
+            {/* 3. 星際字母迷宮 (低年級首選) */}
+            <GlassCard
+              hoverable={true}
+              onClick={() => onNavigate('maze')}
+              className="text-center flex flex-col items-center justify-between group border-2 border-violet-400/60 bg-gradient-to-b from-violet-500/10 via-indigo-500/5 to-transparent relative shadow-md cursor-pointer"
+            >
+              <div className="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-violet-500 to-indigo-500 text-white shadow-sm flex items-center gap-0.5">
+                <span>低年級首選</span>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-violet-500/20 text-violet-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-violet-500 group-hover:text-white transition-all shadow-md">
+                <Compass className="w-7 h-7" />
+              </div>
+              <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+                {t.mazeTitle || '字母巡航迷宮'}
+              </h4>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+                {t.mazeDesc || '百步蛇手指巡航！A到Z字母連線與10x10挑戰！'}
+              </p>
+              <Button3D variant="slate" size="sm" className="w-full">
+                巡航探險
+              </Button3D>
+            </GlassCard>
 
-          {/* 隕石防衛戰 */}
-          <GlassCard
-            hoverable={!isSelectionEmpty}
-            onClick={() => !isSelectionEmpty && onNavigate('meteor')}
-            className={`text-center flex flex-col items-center justify-between ${
-              isSelectionEmpty ? 'opacity-50 cursor-not-allowed' : 'group'
-            }`}
-          >
-            <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-              <Rocket className="w-7 h-7" />
-            </div>
-            <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
-              {t.meteorTitle}
-            </h4>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
-              {t.meteorDesc}
-            </p>
-            <Button3D variant="blue" size="sm" disabled={isSelectionEmpty} className="w-full">
-              出發防衛
-            </Button3D>
-          </GlassCard>
+            {/* 4. 拖曳拼字大師 */}
+            <GlassCard
+              hoverable={!isSelectionEmpty}
+              onClick={() => !isSelectionEmpty && onNavigate('spelling')}
+              className={`text-center flex flex-col items-center justify-between ${
+                isSelectionEmpty ? 'opacity-50 cursor-not-allowed' : 'group cursor-pointer'
+              }`}
+            >
+              <div className="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                <Puzzle className="w-7 h-7" />
+              </div>
+              <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+                {t.spellingTitle}
+              </h4>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+                {t.spellingDesc}
+              </p>
+              <Button3D variant="rose" size="sm" disabled={isSelectionEmpty} className="w-full">
+                開始拼字
+              </Button3D>
+            </GlassCard>
+          </div>
+        </div>
 
-          {/* 叢林貪食蛇 */}
-          <GlassCard
-            hoverable={!isSelectionEmpty}
-            onClick={() => !isSelectionEmpty && onNavigate('snake')}
-            className={`text-center flex flex-col items-center justify-between ${
-              isSelectionEmpty ? 'opacity-50 cursor-not-allowed' : 'group'
-            }`}
-          >
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all">
-              <Sparkles className="w-7 h-7" />
-            </div>
-            <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
-              {t.snakeTitle}
-            </h4>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
-              {t.snakeDesc}
-            </p>
-            <Button3D variant="emerald" size="sm" disabled={isSelectionEmpty} className="w-full">
-              進入叢林
-            </Button3D>
-          </GlassCard>
+        {/* 第二排：【⚡ 極速反應與街機挑戰館】 */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 font-heading flex items-center gap-2">
+              <Flame className="w-5 h-5 text-rose-500" />
+              <span>⚡ 極速反應與街機挑戰館</span>
+            </h3>
+            <span className="text-xs font-bold text-slate-400">
+              手速對決 • 3D防衛 • 百步蛇與翻牌
+            </span>
+          </div>
 
-          {/* 拖曳拼字大師 */}
-          <GlassCard
-            hoverable={!isSelectionEmpty}
-            onClick={() => !isSelectionEmpty && onNavigate('spelling')}
-            className={`text-center flex flex-col items-center justify-between ${
-              isSelectionEmpty ? 'opacity-50 cursor-not-allowed' : 'group'
-            }`}
-          >
-            <div className="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-rose-500 group-hover:text-white transition-all">
-              <Puzzle className="w-7 h-7" />
-            </div>
-            <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
-              {t.spellingTitle}
-            </h4>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
-              {t.spellingDesc}
-            </p>
-            <Button3D variant="rose" size="sm" disabled={isSelectionEmpty} className="w-full">
-              開始拼字
-            </Button3D>
-          </GlassCard>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* 1. 極速是非滑牌 */}
+            <GlassCard
+              hoverable={true}
+              onClick={() => onNavigate('swipe')}
+              className="text-center flex flex-col items-center justify-between group border-2 border-rose-400/60 bg-gradient-to-b from-rose-500/10 via-orange-500/5 to-transparent relative shadow-md cursor-pointer"
+            >
+              <div className="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-sm flex items-center gap-0.5">
+                <span>30秒手速比拼</span>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-500 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-md">
+                <Flame className="w-7 h-7" />
+              </div>
+              <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+                {t.swipeTitle || '極速是非滑牌'}
+              </h4>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+                30秒極速對決！左右滑牌比手速，挑戰連擊與功能彩蛋！
+              </p>
+              <Button3D variant="rose" size="sm" className="w-full">
+                滑牌挑戰
+              </Button3D>
+            </GlassCard>
 
-          {/* 記憶翻牌 */}
-          <GlassCard
-            hoverable={!isSelectionEmpty}
-            onClick={() => !isSelectionEmpty && onNavigate('memory')}
-            className={`text-center flex flex-col items-center justify-between ${
-              isSelectionEmpty ? 'opacity-50 cursor-not-allowed' : 'group'
-            }`}
-          >
-            <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-white transition-all">
-              <Trophy className="w-7 h-7" />
-            </div>
-            <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
-              {t.memoryTitle}
-            </h4>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
-              {t.memoryDesc}
-            </p>
-            <Button3D variant="slate" size="sm" disabled={isSelectionEmpty} className="w-full">
-              翻牌挑戰
-            </Button3D>
-          </GlassCard>
+            {/* 2. 叢林貪食蛇 */}
+            <GlassCard
+              hoverable={!isSelectionEmpty}
+              onClick={() => !isSelectionEmpty && onNavigate('snake')}
+              className={`text-center flex flex-col items-center justify-between ${
+                isSelectionEmpty ? 'opacity-50 cursor-not-allowed' : 'group cursor-pointer'
+              }`}
+            >
+              <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                <Sparkles className="w-7 h-7" />
+              </div>
+              <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+                {t.snakeTitle}
+              </h4>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+                {t.snakeDesc}
+              </p>
+              <Button3D variant="emerald" size="sm" disabled={isSelectionEmpty} className="w-full">
+                進入叢林
+              </Button3D>
+            </GlassCard>
+
+            {/* 3. 隕石防衛戰 */}
+            <GlassCard
+              hoverable={!isSelectionEmpty}
+              onClick={() => !isSelectionEmpty && onNavigate('meteor')}
+              className={`text-center flex flex-col items-center justify-between ${
+                isSelectionEmpty ? 'opacity-50 cursor-not-allowed' : 'group cursor-pointer'
+              }`}
+            >
+              <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                <Rocket className="w-7 h-7" />
+              </div>
+              <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+                {t.meteorTitle}
+              </h4>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+                {t.meteorDesc}
+              </p>
+              <Button3D variant="blue" size="sm" disabled={isSelectionEmpty} className="w-full">
+                出發防衛
+              </Button3D>
+            </GlassCard>
+
+            {/* 4. 記憶翻牌 */}
+            <GlassCard
+              hoverable={!isSelectionEmpty}
+              onClick={() => !isSelectionEmpty && onNavigate('memory')}
+              className={`text-center flex flex-col items-center justify-between ${
+                isSelectionEmpty ? 'opacity-50 cursor-not-allowed' : 'group cursor-pointer'
+              }`}
+            >
+              <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-white transition-all">
+                <Trophy className="w-7 h-7" />
+              </div>
+              <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+                {t.memoryTitle}
+              </h4>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 mb-4 flex-1">
+                {t.memoryDesc}
+              </p>
+              <Button3D variant="slate" size="sm" disabled={isSelectionEmpty} className="w-full">
+                翻牌挑戰
+              </Button3D>
+            </GlassCard>
+          </div>
         </div>
       </div>
 

@@ -204,7 +204,10 @@ export const uploadScore = async ({ mode, book, name, score, time }) => {
       .maybeSingle();
 
     if (existing) {
-      const isBetter = score > existing.score || (score === existing.score && time < existing.time);
+      const isTimeAscending = mode === 'spotter' || mode === 'escape';
+      const isBetter = isTimeAscending
+        ? (time < existing.time || (time === existing.time && score > existing.score))
+        : (score > existing.score || (score === existing.score && time < existing.time));
       if (isBetter) {
         await supabase
           .from('leaderboard')
@@ -236,22 +239,30 @@ export const checkIfQualifiesForTop50 = async ({ mode, book, score, time }) => {
   const actualBook = (book && book !== 'null' && book !== 'undefined') ? String(book) : 'abc';
 
   try {
-    const { data, error } = await supabase
+    const isTimeAscending = mode === 'spotter' || mode === 'escape';
+    let query = supabase
       .from('leaderboard')
       .select('score, time')
       .eq('week', currentWeek)
       .eq('mode', mode)
-      .eq('book', actualBook)
-      .order('score', { ascending: false })
-      .order('time', { ascending: true })
-      .limit(50);
+      .eq('book', actualBook);
+
+    if (isTimeAscending) {
+      query = query.order('time', { ascending: true }).order('score', { ascending: false });
+    } else {
+      query = query.order('score', { ascending: false }).order('time', { ascending: true });
+    }
+
+    const { data, error } = await query.limit(50);
 
     if (error) return true; // 若連線異常，直接允許留名鼓勵學生
     if (!data || data.length < 50) return true; // 未滿 50 人，任何正分皆可上榜！
 
-    // 已滿 50 人：分數必須超越第 50 名，或同分但時間更短
+    // 已滿 50 人：
     const last50th = data[data.length - 1];
-    return score > last50th.score || (score === last50th.score && time < last50th.time);
+    return isTimeAscending
+      ? (time < last50th.time || (time === last50th.time && score > last50th.score))
+      : (score > last50th.score || (score === last50th.score && time < last50th.time));
   } catch (e) {
     return true;
   }
@@ -328,10 +339,16 @@ export const fetchLeaderboard = async (week, mode, bookOrBooks, limit = 50) => {
       query = query.eq('book', String(bookOrBooks));
     }
 
-    const { data, error } = await query
-      .order('score', { ascending: false })
-      .order('time', { ascending: true })
-      .limit(limit * 2); // 取稍多以利學生最佳紀錄去重
+    const isTimeAscending = (Array.isArray(mode) ? mode.includes('spotter') : mode === 'spotter') ||
+                            (Array.isArray(mode) ? mode.includes('escape') : mode === 'escape');
+
+    if (isTimeAscending) {
+      query = query.order('time', { ascending: true }).order('score', { ascending: false });
+    } else {
+      query = query.order('score', { ascending: false }).order('time', { ascending: true });
+    }
+
+    const { data, error } = await query.limit(limit * 2); // 取稍多以利學生最佳紀錄去重
 
     if (error) throw error;
     if (!data || data.length === 0) return [];

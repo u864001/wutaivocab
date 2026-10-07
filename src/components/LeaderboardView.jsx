@@ -17,7 +17,7 @@ import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
   Swords, X, ChevronRight, Compass, Flame, Coins, Award,
-  Users, Crown, Zap, School, KeyRound
+  Users, Crown, Zap, School, KeyRound, Eye
 } from 'lucide-react';
 
 export const GRADE_LEADERBOARD_TABS = [
@@ -121,6 +121,15 @@ export const CONSOLIDATED_GAME_MODES = [
     unit: '秒',
     modeKeys: ['escape'],
     subModes: [{ key: 'escape', label: '三連環脫逃' }]
+  },
+  {
+    id: 'spotter',
+    label: '鷹眼神探找不同',
+    icon: Eye,
+    color: 'text-amber-500',
+    unit: '秒',
+    modeKeys: ['spotter'],
+    subModes: [{ key: 'spotter', label: '鷹眼搜查' }]
   },
   {
     id: 'battle',
@@ -263,6 +272,12 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
     }
     if (modeObj.isSpecial === 'quest') {
       return formatStudentBadge({ grade: row.grade, class: row.class, seat: row.seat }, lang);
+    }
+
+    if (modeObj.id === 'spotter') {
+      const bookLabel = row.book ? `B${row.book}` : '';
+      const heartsLabel = row.score ? `❤️x${row.score}` : '';
+      return [bookLabel, heartsLabel].filter(Boolean).join(' • ');
     }
 
     const sm = modeObj.subModes?.find(s => s.key === row.mode);
@@ -441,8 +456,8 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                         ? (entry.coins ?? 0)
                         : mode.isSpecial === 'quest'
                         ? (entry.quest_points ?? 0)
-                        : mode.id === 'escape'
-                        ? (entry.time ?? entry.score)
+                        : (mode.id === 'escape' || mode.id === 'spotter')
+                        ? (entry.time > 1000 ? (entry.time / 1000).toFixed(1) : (entry.time ?? entry.score))
                         : entry.score;
 
                       const badgeText = getSubModeBadge(entry, mode);
@@ -550,8 +565,8 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                     ? (entry.coins ?? 0)
                     : activeModalMode.isSpecial === 'quest'
                     ? (entry.quest_points ?? 0)
-                    : activeModalMode.id === 'escape'
-                    ? (entry.time ?? entry.score)
+                    : (activeModalMode.id === 'escape' || activeModalMode.id === 'spotter')
+                    ? (entry.time > 1000 ? (entry.time / 1000).toFixed(1) : (entry.time ?? entry.score))
                     : entry.score;
 
                   const badgeText = getSubModeBadge(entry, activeModalMode);
