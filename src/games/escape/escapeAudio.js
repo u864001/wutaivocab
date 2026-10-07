@@ -1,13 +1,14 @@
-// ── 密室逃脫專屬：純 Web Audio 懸疑探險／星際奇幻合成音樂引擎 ＆ 10大美英雙語外師語音 ──
-// 零頻寬消耗、零外加音檔、純瀏覽器原生振盪器與濾波器生成電影級環境音
+// ── 密室逃脫專屬：電影級高品質環境背景音樂 (OGG) ＆ 逼真環境音效 ＆ 10大美英雙語外師語音 ──
+// 使用 public/audio/escape/ 靜態高清環境音檔 (零 Supabase 頻寬消耗，CDN 高速快取)
 
 class EscapeAudioEngine {
   constructor() {
     this.ctx = null;
+    this.bgmAudio = null;
     this.currentTrack = null;
+    this.currentUrl = null;
     this.isMuted = false;
-    this.nodes = [];
-    this.intervalId = null;
+    this.bgmVolume = 0.32;
   }
 
   init() {
@@ -22,25 +23,120 @@ class EscapeAudioEngine {
     }
   }
 
-  stopCurrentMusic() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
+  /**
+   * 取得各密室主題對應之高品質低頻寬環境音檔路徑
+   */
+  getBgmUrl(themeId = 'temple') {
+    const tid = String(themeId).toLowerCase();
+    if (tid.startsWith('dungeon')) {
+      return '/audio/escape/escape_dungeon.ogg';
     }
-    this.nodes.forEach(n => {
+    if (tid.startsWith('tomb')) {
+      return '/audio/escape/escape_tomb.ogg';
+    }
+    if (tid.startsWith('asylum')) {
+      return '/audio/escape/escape_asylum.ogg';
+    }
+    // 預設與古神殿 / 書庫 / 星象祭壇
+    return '/audio/escape/escape_temple.ogg';
+  }
+
+  /**
+   * 播放房間專屬高品質環境音 (具備平滑淡入與同曲去重)
+   */
+  playRoomBgm(themeId = 'temple') {
+    this.currentTrack = themeId;
+    const targetUrl = this.getBgmUrl(themeId);
+
+    // 若同一首音訊正在播放且未中斷，無需重新加載
+    if (this.bgmAudio && this.currentUrl === targetUrl && !this.bgmAudio.paused) {
+      return;
+    }
+
+    // 淡出並關閉前一首
+    if (this.bgmAudio) {
+      const oldAudio = this.bgmAudio;
+      let fadeVol = oldAudio.volume;
+      const fadeInterval = setInterval(() => {
+        fadeVol = Math.max(0, fadeVol - 0.08);
+        oldAudio.volume = fadeVol;
+        if (fadeVol <= 0.02) {
+          clearInterval(fadeInterval);
+          try {
+            oldAudio.pause();
+            oldAudio.currentTime = 0;
+          } catch (e) {}
+        }
+      }, 50);
+      this.bgmAudio = null;
+    }
+
+    if (this.isMuted) {
+      this.currentUrl = targetUrl;
+      return;
+    }
+
+    try {
+      const audio = new Audio(targetUrl);
+      audio.loop = true;
+      audio.volume = 0.05;
+      this.bgmAudio = audio;
+      this.currentUrl = targetUrl;
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // 平滑淡入至目標音量
+            let v = 0.05;
+            const fadeInTimer = setInterval(() => {
+              if (!this.bgmAudio || this.isMuted) {
+                clearInterval(fadeInTimer);
+                return;
+              }
+              v = Math.min(this.bgmVolume, v + 0.05);
+              this.bgmAudio.volume = v;
+              if (v >= this.bgmVolume) {
+                clearInterval(fadeInTimer);
+              }
+            }, 60);
+          })
+          .catch((err) => {
+            console.log('密室 BGM 自動播放受瀏覽器政策限制或待互動:', err);
+          });
+      }
+    } catch (e) {
+      console.warn('密室環境音播放異常:', e);
+    }
+  }
+
+  stopCurrentMusic() {
+    if (this.bgmAudio) {
       try {
-        if (n.stop) n.stop();
-        if (n.disconnect) n.disconnect();
+        this.bgmAudio.pause();
+        this.bgmAudio.currentTime = 0;
       } catch (e) {}
-    });
-    this.nodes = [];
+      this.bgmAudio = null;
+    }
+    this.currentUrl = null;
     this.currentTrack = null;
   }
 
   toggleMute() {
     this.isMuted = !this.isMuted;
     if (this.isMuted) {
-      this.stopCurrentMusic();
+      if (this.bgmAudio) {
+        this.bgmAudio.volume = 0;
+      }
+    } else {
+      if (this.bgmAudio) {
+        this.bgmAudio.volume = this.bgmVolume;
+        if (this.bgmAudio.paused) {
+          this.bgmAudio.play().catch(() => {});
+        }
+      } else if (this.currentTrack) {
+        this.playRoomBgm(this.currentTrack);
+      }
     }
     return this.isMuted;
   }
@@ -62,7 +158,7 @@ class EscapeAudioEngine {
       osc.frequency.linearRampToValueAtTime(3850, now + 0.035);
       osc.frequency.linearRampToValueAtTime(3200, now + 0.08);
 
-      gain.gain.setValueAtTime(0.035, now);
+      gain.gain.setValueAtTime(0.04, now);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.085);
 
       osc.connect(gain);
@@ -73,204 +169,54 @@ class EscapeAudioEngine {
   }
 
   /**
-   * 播放房間專屬環境音 (temple | library | observatory)
+   * 鐘樓夜雨環境彩蛋：遠處逼真低頻滾動雷鳴 (Procedural Brown Noise Sweep)
    */
-  playRoomBgm(themeId = 'temple') {
+  playThunderRumble() {
     if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
-    if (this.currentTrack === themeId) return;
-
-    this.stopCurrentMusic();
-    this.currentTrack = themeId;
-
     try {
-      const tid = String(themeId);
-      if (tid === 'temple' || tid.startsWith('dungeon_1') || tid.startsWith('tomb_1')) {
-        this.startTempleAmbience();
-      } else if (tid === 'library' || tid.startsWith('dungeon_2') || tid.startsWith('tomb_2') || tid.startsWith('asylum_1') || tid.startsWith('asylum_2')) {
-        this.startLibraryAmbience();
-      } else if (tid === 'observatory' || tid.startsWith('dungeon_3') || tid.startsWith('tomb_3') || tid.startsWith('asylum_3')) {
-        this.startObservatoryAmbience();
-      } else {
-        this.startTempleAmbience();
+      const ctx = this.ctx;
+      const now = ctx.currentTime;
+
+      // 生成 2.6 秒 Brown Noise 緩衝區
+      const bufferSize = Math.floor(ctx.sampleRate * 2.6);
+      const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      let lastOut = 0.0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        output[i] = (lastOut + (0.025 * white)) / 1.025;
+        lastOut = output[i];
+        output[i] *= 3.8;
       }
+
+      const noiseSource = ctx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+
+      // 深層低通共鳴濾波器，模擬遠處穿透石牆的沉悶雷響
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(140, now);
+      filter.frequency.linearRampToValueAtTime(200, now + 0.35);
+      filter.frequency.exponentialRampToValueAtTime(40, now + 2.5);
+      filter.Q.setValueAtTime(2.2, now);
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.24, now + 0.3);
+      gain.gain.linearRampToValueAtTime(0.14, now + 1.1);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+
+      noiseSource.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      noiseSource.start(now);
+      noiseSource.stop(now + 2.6);
     } catch (e) {
-      console.warn('密室環境音播放異常:', e);
+      console.warn('Thunder rumble error:', e);
     }
-  }
-
-  // 1. 第一室 神廟密室：遠古石窟空靈共鳴 (D3 146Hz ~ D4 293Hz 溫暖厚實) + 青銅頌缽古磬音
-  startTempleAmbience() {
-    const ctx = this.ctx;
-    const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0.14, ctx.currentTime);
-    masterGain.connect(ctx.destination);
-    this.nodes.push(masterGain);
-
-    // 溫暖厚實的遠古石室中低頻襯底 (D3 146.83Hz + A3 220Hz + D4 293.66Hz)
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const osc3 = ctx.createOscillator();
-    const filter = ctx.createBiquadFilter();
-
-    osc1.type = 'triangle';
-    osc1.frequency.setValueAtTime(146.83, ctx.currentTime); // D3
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(220.00, ctx.currentTime); // A3
-    osc3.type = 'sine';
-    osc3.frequency.setValueAtTime(293.66, ctx.currentTime); // D4
-
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(480, ctx.currentTime);
-    filter.Q.setValueAtTime(1.2, ctx.currentTime);
-
-    osc1.connect(filter);
-    osc2.connect(filter);
-    osc3.connect(filter);
-    filter.connect(masterGain);
-
-    osc1.start();
-    osc2.start();
-    osc3.start();
-    this.nodes.push(osc1, osc2, osc3, filter);
-
-    // 週期性遠古青銅石鐘／空靈頌缽古磬音 (每 2.8 秒隨機敲響一記)
-    const templeChimes = [293.66, 349.23, 392.00, 440.00, 523.25, 587.33]; // D小調五聲
-    this.intervalId = setInterval(() => {
-      if (this.isMuted || !this.ctx) return;
-      try {
-        const chimeOsc = ctx.createOscillator();
-        const chimeHarmonic = ctx.createOscillator();
-        const chimeGain = ctx.createGain();
-        const f = templeChimes[Math.floor(Math.random() * templeChimes.length)];
-
-        chimeOsc.type = 'sine';
-        chimeOsc.frequency.setValueAtTime(f, ctx.currentTime);
-
-        chimeHarmonic.type = 'triangle';
-        chimeHarmonic.frequency.setValueAtTime(f * 2, ctx.currentTime);
-
-        chimeGain.gain.setValueAtTime(0.11, ctx.currentTime);
-        chimeGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3.2);
-
-        chimeOsc.connect(chimeGain);
-        chimeHarmonic.connect(chimeGain);
-        chimeGain.connect(ctx.destination);
-
-        chimeOsc.start();
-        chimeHarmonic.start();
-        chimeOsc.stop(ctx.currentTime + 3.2);
-        chimeHarmonic.stop(ctx.currentTime + 3.2);
-      } catch (e) {}
-    }, 2800);
-  }
-
-  // 2. 第二室 魔法圖書館：奇幻典籍和弦呼吸 (F大調 174~440Hz 柔和明亮) + 漂浮魔法豎琴琶音
-  startLibraryAmbience() {
-    const ctx = this.ctx;
-    const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0.13, ctx.currentTime);
-    masterGain.connect(ctx.destination);
-    this.nodes.push(masterGain);
-
-    // 奇幻典籍溫暖和弦 (F3 174.61Hz + C4 261.63Hz + A4 440Hz)
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const filter = ctx.createBiquadFilter();
-
-    osc1.type = 'triangle';
-    osc1.frequency.setValueAtTime(174.61, ctx.currentTime); // F3
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(261.63, ctx.currentTime); // C4
-
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(750, ctx.currentTime);
-    filter.Q.setValueAtTime(1.0, ctx.currentTime);
-
-    osc1.connect(filter);
-    osc2.connect(filter);
-    filter.connect(masterGain);
-
-    osc1.start();
-    osc2.start();
-    this.nodes.push(osc1, osc2, filter);
-
-    // 每 2.4 秒隨機撥動漂浮魔法豎琴與水晶大鍵琴音 (F, A, C, E, F, A)
-    const harpNotes = [349.23, 440.00, 523.25, 659.25, 698.46, 880.00];
-    this.intervalId = setInterval(() => {
-      if (this.isMuted || !this.ctx) return;
-      try {
-        const noteOsc = ctx.createOscillator();
-        const noteGain = ctx.createGain();
-        const f = harpNotes[Math.floor(Math.random() * harpNotes.length)];
-
-        noteOsc.type = 'sine';
-        noteOsc.frequency.setValueAtTime(f, ctx.currentTime);
-
-        noteGain.gain.setValueAtTime(0.10, ctx.currentTime);
-        noteGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2.5);
-
-        noteOsc.connect(noteGain);
-        noteGain.connect(ctx.destination);
-
-        noteOsc.start();
-        noteOsc.stop(ctx.currentTime + 2.5);
-      } catch (e) {}
-    }, 2400);
-  }
-
-  // 3. 第三室 星象鐘樓：浩瀚星河太空脈衝 + 璀璨水晶星核閃爍 (維持清晰並微調平衡)
-  startObservatoryAmbience() {
-    const ctx = this.ctx;
-    const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0.14, ctx.currentTime);
-    masterGain.connect(ctx.destination);
-    this.nodes.push(masterGain);
-
-    // 浩瀚深邃太空雙振盪器 (E2 82.41Hz + B2 123.47Hz + E3 164.81Hz)
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const filter = ctx.createBiquadFilter();
-
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(82.41, ctx.currentTime); // E2
-    osc2.type = 'sawtooth';
-    osc2.frequency.setValueAtTime(123.47, ctx.currentTime); // B2
-
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(320, ctx.currentTime);
-
-    osc1.connect(filter);
-    osc2.connect(filter);
-    filter.connect(masterGain);
-
-    osc1.start();
-    osc2.start();
-    this.nodes.push(osc1, osc2, filter);
-
-    // 每 2.8 秒一次璀璨星座星塵閃爍 (High Crystal Shimmer: E5, G#5, B5, E6)
-    const starFrequencies = [659.25, 830.61, 987.77, 1318.51];
-    this.intervalId = setInterval(() => {
-      if (this.isMuted || !this.ctx) return;
-      try {
-        const starOsc = ctx.createOscillator();
-        const starGain = ctx.createGain();
-        const freq = starFrequencies[Math.floor(Math.random() * starFrequencies.length)];
-
-        starOsc.type = 'triangle';
-        starOsc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-        starGain.gain.setValueAtTime(0.09, ctx.currentTime);
-        starGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2.4);
-
-        starOsc.connect(starGain);
-        starGain.connect(ctx.destination);
-
-        starOsc.start();
-        starOsc.stop(ctx.currentTime + 2.4);
-      } catch (e) {}
-    }, 2800);
   }
 
   // 播放重型石門緩緩升起開啟音效
