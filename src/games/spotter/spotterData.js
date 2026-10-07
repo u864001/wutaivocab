@@ -9,7 +9,7 @@ export const DIFFERENCE_CATEGORIES = [
   { id: 'text', labelZh: '符號文字', color: 'text-cyan-500', icon: '🔤' }
 ];
 
-// 核心目標與場景單字池（以 1376x768 立體紙雕市集場景精確錨定）
+// 核心目標與場景單字池（以 1376x768 立體紙雕市集場景精確錨定，8 大候選目標皆具備原生無瑕局部圖層）
 export const TARGET_ITEMS_POOL = [
   {
     word: 'juice',
@@ -17,8 +17,15 @@ export const TARGET_ITEMS_POOL = [
     x: 778,
     y: 640,
     radius: 55,
+    patch: {
+      url: '/assets/spotter/patches/patch_juice.webp',
+      x: 730,
+      y: 580,
+      width: 100,
+      height: 115
+    },
     variants: [
-      { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '左圖桌上是金黃柳橙果汁，右圖是鮮紅西瓜果汁' }
+      { id: 'color', type: 'color', typeZh: '果汁風味', descZh: '左圖桌上是金黃柳橙果汁，右圖是鮮紅西瓜果汁' }
     ]
   },
   {
@@ -27,8 +34,15 @@ export const TARGET_ITEMS_POOL = [
     x: 928,
     y: 648,
     radius: 65,
+    patch: {
+      url: '/assets/spotter/patches/patch_tea.webp',
+      x: 880,
+      y: 580,
+      width: 100,
+      height: 130
+    },
     variants: [
-      { id: 'color', type: 'color', typeZh: '顏色與蒸氣', descZh: '左圖茶壺是金黃琥珀茶且茶杯冒出白煙，右圖茶壺是紫色花草茶且無白煙' }
+      { id: 'color', type: 'color', typeZh: '茶品與蒸氣', descZh: '左圖茶壺是金黃琥珀茶且茶杯冒出白煙，右圖茶壺是紫色花草茶且無白煙' }
     ]
   },
   {
@@ -37,8 +51,15 @@ export const TARGET_ITEMS_POOL = [
     x: 1070,
     y: 712,
     radius: 60,
+    patch: {
+      url: '/assets/spotter/patches/patch_pizza.webp',
+      x: 1010,
+      y: 650,
+      width: 120,
+      height: 115
+    },
     variants: [
-      { id: 'color', type: 'color', typeZh: '配料差異', descZh: '左圖是經典紅色臘腸披薩，右圖是翠綠青醬橄欖披薩' }
+      { id: 'color', type: 'color', typeZh: '披薩配料', descZh: '左圖是經典紅色臘腸披薩，右圖是翠綠青醬橄欖披薩' }
     ]
   },
   {
@@ -47,8 +68,15 @@ export const TARGET_ITEMS_POOL = [
     x: 1265,
     y: 630,
     radius: 60,
+    patch: {
+      url: '/assets/spotter/patches/patch_icecream.webp',
+      x: 1200,
+      y: 560,
+      width: 130,
+      height: 130
+    },
     variants: [
-      { id: 'color', type: 'color', typeZh: '口味差異', descZh: '左圖聖代是草莓與薄荷雙球，右圖是藍莓黑醋栗與濃黑巧克力雙球' }
+      { id: 'color', type: 'color', typeZh: '冰淇淋口味', descZh: '左圖聖代是草莓與薄荷雙球，右圖是藍莓黑醋栗與濃黑巧克力雙球' }
     ]
   },
   {
@@ -57,6 +85,13 @@ export const TARGET_ITEMS_POOL = [
     x: 114,
     y: 668,
     radius: 55,
+    patch: {
+      url: '/assets/spotter/patches/patch_apple.webp',
+      x: 60,
+      y: 615,
+      width: 110,
+      height: 110
+    },
     variants: [
       { id: 'color', type: 'color', typeZh: '品種顏色', descZh: '左圖木箱全裝滿紅富士蘋果，右圖最前排是一顆青翠綠蘋果' }
     ]
@@ -64,31 +99,52 @@ export const TARGET_ITEMS_POOL = [
   {
     word: 'hamburger',
     wordZh: '漢堡',
-    x: 1140,
-    y: 610,
+    x: 1148,
+    y: 615,
     radius: 55,
+    patch: {
+      url: '/assets/spotter/patches/patch_hamburger.webp',
+      x: 1080,
+      y: 560,
+      width: 140,
+      height: 110
+    },
     variants: [
-      { id: 'presence', type: 'presence', typeZh: '存在差異', descZh: '桌上有美味多層牛肉起司漢堡' }
+      { id: 'color', type: 'color', typeZh: '漢堡配料', descZh: '左圖漢堡內夾新鮮紅色番茄切片，右圖轉為紫紅洋蔥圈' }
     ]
   },
   {
     word: 'banana',
     wordZh: '香蕉',
-    x: 240,
-    y: 530,
+    x: 255,
+    y: 545,
     radius: 55,
+    patch: {
+      url: '/assets/spotter/patches/patch_banana.webp',
+      x: 190,
+      y: 480,
+      width: 130,
+      height: 120
+    },
     variants: [
-      { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '木箱中有金黃熟成的香蕉' }
+      { id: 'color', type: 'color', typeZh: '顏色成熟度', descZh: '左圖木箱全是一整串金黃熟成香蕉，右圖轉為一整串青脆鮮綠香蕉' }
     ]
   },
   {
     word: 'watermelon',
     wordZh: '西瓜',
-    x: 345,
-    y: 660,
+    x: 350,
+    y: 665,
     radius: 60,
+    patch: {
+      url: '/assets/spotter/patches/patch_watermelon.webp',
+      x: 290,
+      y: 590,
+      width: 140,
+      height: 130
+    },
     variants: [
-      { id: 'color', type: 'color', typeZh: '顏色差異', descZh: '木箱中擺放著鮮紅甜美的切片西瓜' }
+      { id: 'color', type: 'color', typeZh: '果肉品種', descZh: '左圖木箱前排是鮮紅甜美西瓜切片，右圖轉為金黃甜美的小玉西瓜切片' }
     ]
   },
   {
@@ -115,9 +171,6 @@ export const TARGET_ITEMS_POOL = [
 
 // 補充誘答單字池（底圖環境常駐元素，皆真實存在於 3D 紙雕市集中）
 export const DISTRACTOR_WORDS_POOL = [
-  { word: 'hamburger', wordZh: '漢堡' },
-  { word: 'banana', wordZh: '香蕉' },
-  { word: 'watermelon', wordZh: '西瓜' },
   { word: 'water', wordZh: '水' },
   { word: 'sunny', wordZh: '晴天' },
   { word: 'dog', wordZh: '狗' },
@@ -125,12 +178,9 @@ export const DISTRACTOR_WORDS_POOL = [
   { word: 'clock', wordZh: '時鐘' }
 ];
 
-// ── 5 處黃金示範相異單字集（100% 自然融入背景、透視與陰影完全吻合） ──
-export const DEMO_TARGET_WORDS = ['juice', 'tea', 'ice cream', 'apple', 'pizza'];
-
-// ── 動態出題產生器 (預設以 5 大驗證相異單字為核心，單字庫減負至 8 張大字卡) ──
+// ── 動態出題產生器 (每次進關從 8 大驗證相異單字隨機抽選 5 個，未抽中者兩邊完全相同！) ──
 export const generateSpotterRound = (targetCount = 5) => {
-  // 洗牌演算法
+  // 洗牌演算法 (Fisher-Yates)
   const shuffle = (arr) => {
     const list = [...arr];
     for (let i = list.length - 1; i > 0; i--) {
@@ -140,14 +190,9 @@ export const generateSpotterRound = (targetCount = 5) => {
     return list;
   };
 
-  // 1. 優先選取 5 個通過視覺驗證的示範單字
-  const primaryTargets = TARGET_ITEMS_POOL.filter(item => DEMO_TARGET_WORDS.includes(item.word));
-  const otherTargets = TARGET_ITEMS_POOL.filter(item => !DEMO_TARGET_WORDS.includes(item.word));
-
-  const chosenTargets = primaryTargets.length >= targetCount
-    ? primaryTargets.slice(0, targetCount)
-    : [...primaryTargets, ...shuffle(otherTargets)].slice(0, targetCount);
-
+  // 1. 從 8 個立體紙雕精製相異目標候選中，隨機動態抽選 5 個 (C(8, 5) = 56 種不重複出題組合！)
+  const candidatePool = TARGET_ITEMS_POOL.filter(item => !!item.patch);
+  const chosenTargets = shuffle(candidatePool).slice(0, targetCount);
   const unchosenTargets = TARGET_ITEMS_POOL.filter(item => !chosenTargets.some(c => c.word === item.word));
 
   // 2. 為選中的 5 個目標各自指定驗證過的自然樣態變化
@@ -160,6 +205,7 @@ export const generateSpotterRound = (targetCount = 5) => {
       x: item.x,
       y: item.y,
       radius: item.radius || 55,
+      patch: item.patch,
       altX: chosenVariant.altPos?.x,
       altY: chosenVariant.altPos?.y,
       type: chosenVariant.type,

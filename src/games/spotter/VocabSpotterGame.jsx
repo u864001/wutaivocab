@@ -222,6 +222,16 @@ export const VocabSpotterGame = ({
             <Timer className="w-4 h-4 text-amber-500" />
             <span>{formattedTime}</span>
           </div>
+
+          {/* 隨機換題按鈕 */}
+          <button
+            onClick={handleRestart}
+            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-400/40 text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+            title="隨機換一組 5 處相異題"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">換題</span>
+          </button>
         </div>
       </GlassCard>
 
@@ -241,24 +251,27 @@ export const VocabSpotterGame = ({
         ))}
       </div>
 
-      {/* ── 答對成功激勵橫幅 ── */}
-      {matchSuccessFeedback && (
-        <div className="p-3.5 rounded-2xl bg-emerald-500/15 border-2 border-emerald-400 text-emerald-800 dark:text-emerald-200 text-xs sm:text-sm font-black flex items-center justify-between gap-2 animate-bounce shadow-md">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-            <span>🎉 太強了！成功尋獲相異物品：<strong className="font-heading uppercase underline decoration-2">{matchSuccessFeedback.word}</strong>（{matchSuccessFeedback.wordZh}）！</span>
-          </div>
-          <span className="px-2.5 py-1 rounded-full bg-emerald-500 text-white text-xs font-black shrink-0">
-            已尋獲 {matchSuccessFeedback.solvedCount} / {matchSuccessFeedback.total}
-          </span>
-        </div>
-      )}
+      {/* ── 浮動提示膠囊 (Toast HUD：浮於畫卷之上，徹底杜絕畫面跳動與 Layout Shift) ── */}
+      {(matchSuccessFeedback || missFeedback) && (
+        <div className="fixed top-20 sm:top-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none max-w-lg w-[92%] transition-all duration-300">
+          {matchSuccessFeedback && (
+            <div className="p-3 sm:p-3.5 rounded-2xl bg-emerald-600/95 dark:bg-emerald-700/95 text-white text-xs sm:text-sm font-black flex items-center justify-between gap-3 shadow-2xl backdrop-blur-md border border-emerald-300/40 animate-in fade-in slide-in-from-top-4">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-200 shrink-0" />
+                <span>🎉 太強了！成功尋獲相異物品：<strong className="underline decoration-2 text-yellow-300 uppercase">{matchSuccessFeedback.word}</strong>（{matchSuccessFeedback.wordZh}）！</span>
+              </div>
+              <span className="px-2.5 py-1 rounded-full bg-emerald-800/80 text-emerald-100 text-xs font-black shrink-0">
+                {matchSuccessFeedback.solvedCount} / {matchSuccessFeedback.total}
+              </span>
+            </div>
+          )}
 
-      {/* ── 點錯警示提示橫幅 ── */}
-      {missFeedback && (
-        <div className="p-3 rounded-2xl bg-rose-500/15 border-2 border-rose-400 text-rose-700 dark:text-rose-200 text-xs sm:text-sm font-black flex items-center gap-2 animate-bounce">
-          <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
-          <span>{missFeedback}</span>
+          {missFeedback && !matchSuccessFeedback && (
+            <div className="p-3 sm:p-3.5 rounded-2xl bg-rose-600/95 dark:bg-rose-700/95 text-white text-xs sm:text-sm font-black flex items-center gap-2.5 shadow-2xl backdrop-blur-md border border-rose-300/40 animate-in fade-in slide-in-from-top-4">
+              <AlertTriangle className="w-4 h-4 text-rose-200 shrink-0 animate-bounce" />
+              <span>{missFeedback}</span>
+            </div>
+          )}
         </div>
       )}
 
