@@ -14,7 +14,7 @@ export const SpotterScene = ({
 }) => {
   const svgRef = useRef(null);
 
-  // 取得點擊座標並轉換為 SVG 標準解析度 [0..1000, 0..650]
+  // 取得點擊座標並轉換為 SVG 標準解析度 [0..1376, 0..768]
   const handleClick = (e) => {
     if (!svgRef.current) return;
     // 若聚光燈已鎖定中，雙圖區完全鎖定不接受再次點選，由 Word Bank 接管
@@ -89,7 +89,7 @@ export const SpotterScene = ({
   const maskId = `spotlight-mask-${isLeft ? 'left' : 'right'}`;
 
   return (
-    <div className="relative w-full aspect-[1000/650] select-none rounded-2xl overflow-hidden shadow-xl border-2 border-slate-300 dark:border-slate-700 bg-sky-100 touch-manipulation">
+    <div className="relative w-full aspect-[1376/768] select-none rounded-2xl overflow-hidden shadow-xl border-2 border-slate-300 dark:border-slate-700 bg-sky-100 touch-manipulation">
       {/* 標籤標記 */}
       <div className="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-xl bg-slate-900/75 backdrop-blur-md text-white text-xs font-black shadow-md flex items-center gap-1.5 pointer-events-none">
         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -98,24 +98,12 @@ export const SpotterScene = ({
 
       <svg
         ref={svgRef}
-        viewBox="0 0 1000 650"
+        viewBox="0 0 1376 768"
         className={`w-full h-full block ${spotlightDiffId ? 'cursor-not-allowed' : 'cursor-crosshair'}`}
         onClick={handleClick}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          {/* 吉卜力物件投影濾鏡 */}
-          <filter id="ghibliShadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#0f172a" floodOpacity="0.45" />
-          </filter>
-
-          {/* 自然物件接觸陰影 (Contact Shadow / Ambient Occlusion) 消除貼紙漂浮感 */}
-          <radialGradient id="contactShadow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#0f172a" stopOpacity="0.55" />
-            <stop offset="50%" stopColor="#0f172a" stopOpacity="0.28" />
-            <stop offset="100%" stopColor="#0f172a" stopOpacity="0" />
-          </radialGradient>
-
           {/* 聚光燈金色光芒濾鏡 */}
           <filter id="glowGold" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="6" result="blur" />
@@ -125,66 +113,26 @@ export const SpotterScene = ({
           {/* 聚光燈遮罩：背景暗化，僅目標孔徑透光 */}
           {spotlightPos && (
             <mask id={maskId}>
-              <rect width="1000" height="650" fill="white" />
+              <rect width="1376" height="768" fill="white" />
               <circle cx={spotlightPos.x} cy={spotlightPos.y} r={spotlightPos.radius} fill="black" />
             </mask>
           )}
-
-          {/* 午後陽光金黃微暈濾鏡 */}
-          <linearGradient id="sunlightGlow" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#fef08a" stopOpacity="0.12" />
-            <stop offset="60%" stopColor="#fde047" stopOpacity="0.04" />
-            <stop offset="100%" stopColor="#d97706" stopOpacity="0.08" />
-          </linearGradient>
         </defs>
 
-        {/* ── 1. 吉卜力大師級手繪陽光露天咖啡市集底圖 ── */}
+        {/* ── 1. 3D 立體紙雕繪本風成對全景圖（一體成型、零貼紙感） ── */}
         <image
-          href="/assets/spotter/bg_plaza_cafe.webp"
+          href={isLeft ? '/assets/spotter/scene_papercraft_left.webp' : '/assets/spotter/scene_papercraft_right.webp'}
           x="0"
           y="0"
-          width="1000"
-          height="650"
+          width="1376"
+          height="768"
           preserveAspectRatio="xMidYMid slice"
         />
-
-        {/* 陽光午後暖色氛圍圖層 */}
-        <rect width="1000" height="650" fill="url(#sunlightGlow)" pointerEvents="none" />
-
-        {/* 誘答背景單字元素：輕撫微風風向計 (windy) */}
-        <g id="item-windy" transform="translate(515, 120)" className="pointer-events-none" opacity="0.85">
-          <line x1="15" y1="15" x2="15" y2="45" stroke="#475569" strokeWidth="2.5" />
-          <circle cx="15" cy="15" r="3.5" fill="#f59e0b" />
-          <path d="M 15 15 L 5 5 Q 12 12, 15 15 Z" fill="#ef4444" />
-          <path d="M 15 15 L 25 5 Q 18 12, 15 15 Z" fill="#3b82f6" />
-          <path d="M 15 15 L 25 25 Q 18 18, 15 15 Z" fill="#10b981" />
-        </g>
-
-        {/* 誘答背景單字元素：遠方晴雨小雲朵 (rainy) */}
-        <g id="item-rainy" transform="translate(860, 45)" className="pointer-events-none" opacity="0.65">
-          <ellipse cx="25" cy="18" rx="16" ry="10" fill="#94a3b8" />
-          <ellipse cx="38" cy="16" rx="12" ry="9" fill="#94a3b8" />
-          <line x1="20" y1="28" x2="16" y2="38" stroke="#38bdf8" strokeWidth="1.8" strokeDasharray="2 2" />
-          <line x1="28" y1="28" x2="24" y2="38" stroke="#38bdf8" strokeWidth="1.8" strokeDasharray="2 2" />
-        </g>
-
-        {/* ── 4. 動態調用 20 大目標單字之向量精靈圖庫 (Sprite Atlas) ── */}
-        {/* 未抽中者使用 'default'（左右保證 100% 相同）；抽中者使用相異 variantKey（呈現生動差異） */}
-        {TARGET_ITEMS_POOL.map(item => {
-          const renderer = SPRITE_RENDERERS[item.word];
-          if (!renderer) return null;
-          const variantKey = itemStateMap[item.word] || 'default';
-          return (
-            <g key={item.word} id={`sprite-${item.word}`}>
-              {renderer(variantKey, isLeft)}
-            </g>
-          );
-        })}
 
         {/* ── 5. 聚光燈遮罩特效 (Phase 2 Spotlight Effect) ── */}
         {spotlightPos && (
           <g id="spotlight-overlay" className="pointer-events-none">
-            <rect width="1000" height="650" fill="rgba(10, 15, 30, 0.75)" mask={`url(#${maskId})`} />
+            <rect width="1376" height="768" fill="rgba(10, 15, 30, 0.75)" mask={`url(#${maskId})`} />
 
             {/* 聚光燈外環脈動光波 */}
             <circle
