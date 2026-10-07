@@ -31,17 +31,24 @@ export const GRADE_LEADERBOARD_TABS = [
 ];
 
 export const CONSOLIDATED_GAME_MODES = [
+  // ── 第一排：沉浸解謎與主題探索館 ──
   {
-    id: 'swipe',
-    label: '極速是非滑牌',
-    icon: Flame,
-    color: 'text-rose-500',
-    unit: '分',
-    modeKeys: ['swipe-vocab', 'swipe-abc'],
-    subModes: [
-      { key: 'swipe-vocab', label: '30秒單字' },
-      { key: 'swipe-abc', label: '30秒字母' }
-    ]
+    id: 'escape',
+    label: '神祕密室大脫逃',
+    icon: KeyRound,
+    color: 'text-amber-500',
+    unit: '秒',
+    modeKeys: ['escape'],
+    subModes: [{ key: 'escape', label: '三連環脫逃' }]
+  },
+  {
+    id: 'spotter',
+    label: '鷹眼神探找不同',
+    icon: Eye,
+    color: 'text-amber-500',
+    unit: '秒',
+    modeKeys: ['spotter'],
+    subModes: [{ key: 'spotter', label: '鷹眼搜查' }]
   },
   {
     id: 'maze',
@@ -53,6 +60,29 @@ export const CONSOLIDATED_GAME_MODES = [
     subModes: [
       { key: 'maze-upper', label: '大寫巡航' },
       { key: 'maze-lower', label: '小寫巡航' }
+    ]
+  },
+  {
+    id: 'spelling',
+    label: '拖曳拼字大師',
+    icon: Puzzle,
+    color: 'text-pink-500',
+    unit: '分',
+    modeKeys: ['spelling'],
+    subModes: [{ key: 'spelling', label: '標準拼字' }]
+  },
+
+  // ── 第二排：極速反應與街機挑戰館 ──
+  {
+    id: 'swipe',
+    label: '極速是非滑牌',
+    icon: Flame,
+    color: 'text-rose-500',
+    unit: '分',
+    modeKeys: ['swipe-vocab', 'swipe-abc'],
+    subModes: [
+      { key: 'swipe-vocab', label: '30秒單字' },
+      { key: 'swipe-abc', label: '30秒字母' }
     ]
   },
   {
@@ -90,15 +120,8 @@ export const CONSOLIDATED_GAME_MODES = [
     modeKeys: ['memory-single'],
     subModes: [{ key: 'memory-single', label: '標準翻牌' }]
   },
-  {
-    id: 'spelling',
-    label: '拖曳拼字大師',
-    icon: Puzzle,
-    color: 'text-pink-500',
-    unit: '分',
-    modeKeys: ['spelling'],
-    subModes: [{ key: 'spelling', label: '標準拼字' }]
-  },
+
+  // ── 經典測驗、多人競技與探索特區 ──
   {
     id: 'quiz',
     label: '四大經典測驗',
@@ -112,24 +135,6 @@ export const CONSOLIDATED_GAME_MODES = [
       { key: 'quiz-listening', label: '英語聽力' },
       { key: 'quiz-hard', label: '魔王綜合' }
     ]
-  },
-  {
-    id: 'escape',
-    label: '神祕密室大脫逃',
-    icon: KeyRound,
-    color: 'text-amber-500',
-    unit: '秒',
-    modeKeys: ['escape'],
-    subModes: [{ key: 'escape', label: '三連環脫逃' }]
-  },
-  {
-    id: 'spotter',
-    label: '鷹眼神探找不同',
-    icon: Eye,
-    color: 'text-amber-500',
-    unit: '秒',
-    modeKeys: ['spotter'],
-    subModes: [{ key: 'spotter', label: '鷹眼搜查' }]
   },
   {
     id: 'battle',

@@ -3,13 +3,13 @@ import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { SpotterScene } from './SpotterScene';
 import { SpotterWordBank } from './SpotterWordBank';
-import { SPOTTER_SCENES, DIFFERENCE_CATEGORIES } from './spotterData';
+import { SPOTTER_SCENES, DIFFERENCE_CATEGORIES, generateSpotterRound } from './spotterData';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { soundEngine } from '../../services/audio';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Heart, Timer, Trophy, Sparkles, RefreshCw,
-  Eye, CheckCircle2, AlertTriangle, ShieldAlert
+  CheckCircle2, AlertTriangle, ShieldAlert
 } from 'lucide-react';
 
 export const VocabSpotterGame = ({
@@ -18,8 +18,13 @@ export const VocabSpotterGame = ({
   qualifyingBook,
   onBack
 }) => {
-  const currentScene = SPOTTER_SCENES[0]; // 目前以第 3 冊陽光市集為主關卡
-  const totalDifferences = currentScene.differences.length; // 10
+  const currentScene = SPOTTER_SCENES[0];
+
+  // 每一局動態隨機抽取 5 個目標單字並指定樣態
+  const [roundSeed, setRoundSeed] = useState(() => Date.now());
+  const roundData = useMemo(() => generateSpotterRound(5), [roundSeed]);
+
+  const { activeDifferences, itemStateMap, wordBankOptions, totalCount } = roundData;
 
   // 遊戲核心狀態
   const [gameState, setGameState] = useState('playing'); // 'playing' | 'failed' | 'victory'
@@ -50,8 +55,9 @@ export const VocabSpotterGame = ({
     };
   }, [gameState]);
 
-  // 重置挑戰
+  // 重置/開啟全新題目挑戰
   const handleRestart = () => {
+    setRoundSeed(Date.now()); // 換一組全新的隨機 5 個題目與樣態
     setGameState('playing');
     setLives(5);
     setSpotlightDiffId(null);
@@ -96,7 +102,6 @@ export const VocabSpotterGame = ({
     if (spotlightDiffId) return;
 
     soundEngine.wrong();
-    // 增加點錯漣漪
     const rippleId = Date.now() + Math.random();
     setMissRipples(prev => [...prev, { id: rippleId, x: clickPos.x, y: clickPos.y }]);
     setTimeout(() => {
@@ -108,7 +113,6 @@ export const VocabSpotterGame = ({
 
   // 單字庫點選成功
   const handleWordMatchSuccess = (diffId) => {
-    // 灑花慶祝
     try {
       confetti({
         particleCount: 50,
@@ -122,8 +126,8 @@ export const VocabSpotterGame = ({
     setSolvedDiffIds(newSolved);
     setSpotlightDiffId(null);
 
-    // 檢查是否全破通關 (10 / 10)
-    if (newSolved.size >= totalDifferences) {
+    // 檢查是否全破通關 (本局 5 個相異點全部尋獲)
+    if (newSolved.size >= totalCount) {
       setGameState('victory');
       soundEngine.win();
       setTimeout(() => {
@@ -151,7 +155,7 @@ export const VocabSpotterGame = ({
     return `${String(mins).padStart(2, '0')}:${secs.padStart(4, '0')}`;
   }, [elapsedMs]);
 
-  const activeSpotlightDiff = currentScene.differences.find(d => d.id === spotlightDiffId);
+  const activeSpotlightDiff = activeDifferences.find(d => d.id === spotlightDiffId);
 
   return (
     <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 space-y-4 animate-fadeIn pb-16 select-none">
@@ -159,7 +163,7 @@ export const VocabSpotterGame = ({
       <GlassCard className="p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3 border-2 border-amber-300 dark:border-amber-700/60 bg-gradient-to-r from-amber-500/10 via-yellow-500/5 to-amber-500/10">
         <div className="flex items-center gap-2 sm:gap-3">
           <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
-            {window.innerWidth < 640 ? '' : '回大廳'}
+            {typeof window !== 'undefined' && window.innerWidth < 640 ? '' : '回大廳'}
           </Button3D>
 
           <div>
@@ -169,11 +173,11 @@ export const VocabSpotterGame = ({
                 鷹眼神探 • 單字找不同
               </h2>
               <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-black">
-                第 3 冊全冊
+                隨機 5 處相異題
               </span>
             </div>
             <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
-              {currentScene.titleZh} • 找出 10 處相異點並在單字庫相認！
+              {currentScene.titleZh} • 20大單字隨機組合 • 找出本局 5 處相異處！
             </p>
           </div>
         </div>
@@ -194,10 +198,10 @@ export const VocabSpotterGame = ({
             ))}
           </div>
 
-          {/* 破案進度 (0/10) */}
+          {/* 破案進度 (0/5) */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-black">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span>進度：{solvedDiffIds.size} / {totalDifferences}</span>
+            <span>進度：{solvedDiffIds.size} / {totalCount}</span>
           </div>
 
           {/* 計時器 */}
@@ -236,7 +240,8 @@ export const VocabSpotterGame = ({
       <div className={`grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 transition-transform ${shakeScene ? 'animate-headShake' : ''}`}>
         {/* 左圖 */}
         <SpotterScene
-          scene={currentScene}
+          itemStateMap={itemStateMap}
+          activeDifferences={activeDifferences}
           isLeft={true}
           spotlightDiffId={spotlightDiffId}
           solvedDiffIds={solvedDiffIds}
@@ -247,7 +252,8 @@ export const VocabSpotterGame = ({
 
         {/* 右圖 */}
         <SpotterScene
-          scene={currentScene}
+          itemStateMap={itemStateMap}
+          activeDifferences={activeDifferences}
           isLeft={false}
           spotlightDiffId={spotlightDiffId}
           solvedDiffIds={solvedDiffIds}
@@ -260,8 +266,8 @@ export const VocabSpotterGame = ({
       {/* ── 下方單字庫 (Word Bank) ── */}
       <SpotterWordBank
         spotlightDiff={activeSpotlightDiff}
-        allDifferences={currentScene.differences}
-        distractors={currentScene.distractors}
+        wordOptions={wordBankOptions}
+        activeDifferences={activeDifferences}
         solvedDiffIds={solvedDiffIds}
         onWordMatchSuccess={handleWordMatchSuccess}
         onWordMatchFail={handleWordMatchFail}
@@ -275,7 +281,7 @@ export const VocabSpotterGame = ({
 
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-black mb-1">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>鷹眼破案 • 10 大相異處全數尋獲</span>
+              <span>鷹眼破案 • 5 大相異處全數尋獲</span>
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-black font-heading text-slate-800 dark:text-white mb-1">
@@ -289,12 +295,12 @@ export const VocabSpotterGame = ({
             <div className="mb-5 text-left">
               <HonorSubmissionCard
                 mode="spotter"
-                book={qualifyingBook || currentScene.book || '3'}
+                book={qualifyingBook || '3'}
                 score={lives}
                 time={Math.round(elapsedMs / 1000)}
-                totalCount={totalDifferences}
-                rangeText={`第 ${currentScene.book} 冊 - 鷹眼神探單字找不同`}
-                reviewWords={currentScene.differences.map(d => ({
+                totalCount={totalCount}
+                rangeText="第 3 冊 - 鷹眼神探單字找不同"
+                reviewWords={activeDifferences.map(d => ({
                   id: d.id,
                   en: d.word,
                   zh: d.wordZh,
@@ -311,7 +317,7 @@ export const VocabSpotterGame = ({
                 icon={RefreshCw}
                 className="w-full"
               >
-                再次挑戰破紀錄
+                換一組隨機題目挑戰 🎲
               </Button3D>
 
               <Button3D
@@ -345,7 +351,7 @@ export const VocabSpotterGame = ({
               挑戰失敗 (Failed)
             </h2>
             <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
-              本次探查已破解 <strong className="text-amber-500">{solvedDiffIds.size} / {totalDifferences}</strong> 處差異。<br />
+              本次探查已破解 <strong className="text-amber-500">{solvedDiffIds.size} / {totalCount}</strong> 處差異。<br />
               深呼吸一口氣，聚精會神，再來一次定能通關！
             </p>
 

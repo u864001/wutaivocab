@@ -1,43 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Button3D } from '../../components/ui/Button3D';
+import React, { useState } from 'react';
 import { soundEngine } from '../../services/audio';
-import { Volume2, Sparkles, AlertCircle, Lock, Target } from 'lucide-react';
+import { Volume2, Lock, Target } from 'lucide-react';
 
 export const SpotterWordBank = ({
   spotlightDiff = null,
-  allDifferences = [],
-  distractors = [],
+  wordOptions = [],
   solvedDiffIds = new Set(),
+  activeDifferences = [],
   onWordMatchSuccess,
-  onWordMatchFail,
-  isLocked = true
+  onWordMatchFail
 }) => {
   const [shakingWord, setShakingWord] = useState(null);
-
-  // 組合候選單字庫：當前目標 + 所有相異目標 + 繪入圖中的誘答單字
-  const wordOptions = useMemo(() => {
-    const list = [];
-    const seen = new Set();
-
-    // 1. 所有尚未解鎖的差異目標單字
-    allDifferences.forEach(diff => {
-      if (!seen.has(diff.word)) {
-        seen.add(diff.word);
-        list.push({ word: diff.word, wordZh: diff.wordZh, isTarget: false });
-      }
-    });
-
-    // 2. 補充圖中可見的誘答單字
-    distractors.forEach(item => {
-      if (!seen.has(item.word)) {
-        seen.add(item.word);
-        list.push({ word: item.word, wordZh: item.wordZh, isTarget: false });
-      }
-    });
-
-    // 依英文字母順序排列，方便學生辨識尋找
-    return list.sort((a, b) => a.word.localeCompare(b.word));
-  }, [allDifferences, distractors]);
 
   // 點擊發音
   const handlePronounce = (e, word) => {
@@ -104,7 +77,7 @@ export const SpotterWordBank = ({
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5">
         {wordOptions.map((opt) => {
           const isShaking = shakingWord === opt.word;
-          const isThisDiffSolved = allDifferences.some(d => d.word === opt.word && solvedDiffIds.has(d.id));
+          const isThisDiffSolved = activeDifferences.some(d => d.word === opt.word && solvedDiffIds.has(d.id));
 
           return (
             <button
