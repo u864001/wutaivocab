@@ -58,12 +58,15 @@ class EscapeAudioEngine {
     this.currentTrack = themeId;
 
     try {
-      if (themeId === 'temple') {
+      const tid = String(themeId);
+      if (tid === 'temple' || tid.startsWith('dungeon_1') || tid.startsWith('tomb_1')) {
         this.startTempleAmbience();
-      } else if (themeId === 'library') {
+      } else if (tid === 'library' || tid.startsWith('dungeon_2') || tid.startsWith('tomb_2') || tid.startsWith('asylum_1') || tid.startsWith('asylum_2')) {
         this.startLibraryAmbience();
-      } else if (themeId === 'observatory') {
+      } else if (tid === 'observatory' || tid.startsWith('dungeon_3') || tid.startsWith('tomb_3') || tid.startsWith('asylum_3')) {
         this.startObservatoryAmbience();
+      } else {
+        this.startTempleAmbience();
       }
     } catch (e) {
       console.warn('密室環境音播放異常:', e);

@@ -8,7 +8,7 @@ import { soundEngine } from '../../services/audio';
 import { escapeAudio, speakMysteriousEnglish } from './escapeAudio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { getRandomFunNickname } from '../../utils/studentIdHelper';
-import { generateEscapeRoomCampaign } from './escapeData';
+import { generateEscapeRoomCampaign, ESCAPE_THEMES } from './escapeData';
 import { ChamberScene } from './ChamberScene';
 import { UniversalOptionPuzzle } from './puzzles/UniversalOptionPuzzle';
 import { SentenceOrderPuzzle } from './puzzles/SentenceOrderPuzzle';
@@ -39,6 +39,11 @@ export const VocabEscapeGame = ({
     );
   });
 
+  // 當前選定的密室風格主題 (temple | dungeon | tomb | asylum | random)
+  const [selectedThemeId, setSelectedThemeId] = useState(() => {
+    return localStorage.getItem('wutai_escape_theme') || 'temple';
+  });
+
   // 遊戲狀態機: 'briefing' | 'playing' | 'transition' | 'victory'
   const [gameState, setGameState] = useState('briefing');
   const [campaignData, setCampaignData] = useState(null);
@@ -56,11 +61,13 @@ export const VocabEscapeGame = ({
   const hasAddedQuestPointsRef = useRef(false);
 
   // 初始化連續 3 室逃脫會話
-  const initCampaign = useCallback(() => {
+  const initCampaign = useCallback((overrideThemeId = null) => {
     const studentGrade = currentStudent?.grade || '03';
+    const themeToUse = overrideThemeId || selectedThemeId;
     const campaign = generateEscapeRoomCampaign(words, {
       grade: studentGrade,
-      selectedUnits: settings.selectedUnits || []
+      selectedUnits: settings.selectedUnits || [],
+      themeId: themeToUse
     });
 
     setCampaignData(campaign);
@@ -72,7 +79,17 @@ export const VocabEscapeGame = ({
     setHintCount(2);
     setEliminatedOptions({});
     hasAddedQuestPointsRef.current = false;
-  }, [words, currentStudent, settings.selectedUnits]);
+  }, [words, currentStudent, settings.selectedUnits, selectedThemeId]);
+
+  // 切換密室風格主題
+  const handleSelectTheme = (themeId) => {
+    soundEngine.click();
+    setSelectedThemeId(themeId);
+    try {
+      localStorage.setItem('wutai_escape_theme', themeId);
+    } catch (e) {}
+    initCampaign(themeId);
+  };
 
   useEffect(() => {
     initCampaign();
@@ -261,7 +278,7 @@ export const VocabEscapeGame = ({
     );
   }
 
-  const { chapters, qualifyingBook, totalPuzzlesCount, allWordsInvolved } = campaignData;
+  const { chapters, qualifyingBook, totalPuzzlesCount, allWordsInvolved, theme: currentThemeObj = ESCAPE_THEMES[0] } = campaignData;
   const activePuzzle = currentChapter.puzzles.find(p => p.id === activePuzzleId);
 
   // ── 畫面 1：行前前情提要與暱稱設定 (Prologue Screen) ──
@@ -272,28 +289,81 @@ export const VocabEscapeGame = ({
           <div className="absolute -top-16 -right-16 w-52 h-52 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
 
           <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-500 to-emerald-500 text-white flex items-center justify-center mx-auto mb-3 shadow-xl shadow-amber-500/30 text-3xl">
-            🗝️
+            {currentThemeObj.icon}
           </div>
 
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-200 text-xs font-black mb-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>大武山遠古石板屋遺跡 • 三連環密室大脫逃</span>
+            <span>{currentThemeObj.nameZh} • 三連環密室大脫逃</span>
           </div>
 
           <h2 className="text-2xl sm:text-4xl font-black font-heading text-slate-800 dark:text-slate-100 mb-2">
             神祕密室大脫逃
           </h2>
 
+          {/* 密室探險主題風格切換器 */}
+          <div className="mb-5 text-left">
+            <label className="text-xs font-black text-slate-500 dark:text-slate-400 mb-2 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Compass className="w-3.5 h-3.5 text-amber-500" />
+                <span>選擇密室探險主題（每主題皆為獨立 3 連環關卡）：</span>
+              </span>
+              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                點擊即時切換場景
+              </span>
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+              {ESCAPE_THEMES.map((th) => {
+                const isSelected = selectedThemeId === th.id;
+                return (
+                  <button
+                    key={th.id}
+                    type="button"
+                    onClick={() => handleSelectTheme(th.id)}
+                    className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden active:scale-95 flex flex-col justify-between ${
+                      isSelected
+                        ? 'bg-amber-500/20 border-amber-500 text-amber-950 dark:text-amber-200 shadow-md ring-2 ring-amber-400/50 scale-102 font-black'
+                        : 'bg-white/70 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-amber-400/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-lg">{th.icon}</span>
+                      <span className="text-xs truncate">{th.nameZh}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 truncate">
+                      {th.badge}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* 連續 3 關路線名稱導覽 */}
+            <div className="p-2.5 rounded-2xl bg-slate-900/90 text-white border border-white/10 flex items-center justify-between gap-1 text-[11px] font-mono font-bold overflow-x-auto scrollbar-none shadow-inner">
+              {currentThemeObj.chapters.map((chap, cIdx) => (
+                <div key={chap.id} className="flex items-center gap-1.5 shrink-0">
+                  <span className="w-5 h-5 rounded-full bg-amber-500/30 text-amber-300 flex items-center justify-center text-[10px] font-black">
+                    {cIdx + 1}
+                  </span>
+                  <span className="truncate max-w-[120px] sm:max-w-none text-slate-200">
+                    {chap.runeIcon} {chap.titleZh.split('：')[1] || chap.titleZh}
+                  </span>
+                  {cIdx < 2 && <span className="text-amber-400 text-xs mx-1">➔</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* 前情提要冒險背景說明 */}
           <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 mb-5 text-left text-xs sm:text-sm text-amber-900 dark:text-amber-200 leading-relaxed font-bold">
             <p className="mb-2">
-              📜 <strong>【前情提要】</strong>探險家在屏東霧台深山調查古石板屋遺跡時，不慎踏中機關陷阱，身後千斤青石大門轟隆落下，退路已被徹底封死！
+              📜 <strong>【{currentThemeObj.nameZh} • 前情提要】</strong>{currentThemeObj.briefZh}
             </p>
             <p className="mb-2">
-              每間石室隱藏著 <strong>5 處神秘遺跡</strong>，但只有 <strong>3 個散發淡淡金色呼吸光暈的才是過關關鍵</strong>（其餘為白色迷途古物）！
+              每間石室隱藏著 <strong>5 處神秘遺跡（位置每次進入皆動態隨機）</strong>，但只有 <strong>3 個散發淡淡金色呼吸光暈的才是過關關鍵</strong>（其餘為淡白迷途古物）！
             </p>
             <p>
-              聆聽石壁發出的<strong>低沉神秘英文預言</strong>，解開三道石門，重回陽光灑落的青山大地！
+              聆聽石壁發出的<strong>神秘美語預言</strong>，解開連續三道石門，重回陽光灑落的廣闊天地！
             </p>
           </div>
 

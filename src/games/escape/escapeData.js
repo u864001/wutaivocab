@@ -1,49 +1,222 @@
-// ── 密室逃脫：八大豐富題型、動態不重疊座標與三室戰役生成引擎 ──
+// ── 密室逃脫：四大風格主題、八大多元題型、動態不重疊座標與三室戰役生成引擎 ──
 
-export const CHAMBER_CHAPTERS = [
+export const ESCAPE_THEMES = [
   {
-    id: 'chamber_1',
-    roomNumber: 1,
-    titleZh: '第一室：百步蛇前殿 • 回音石廊',
-    titleEn: 'Chamber I: The Echo Antechamber',
-    subtitleZh: '大自然生態與聽力共鳴',
-    themeId: 'temple',
-    bg: '/assets/escape/bg_temple.webp',
+    id: 'temple',
+    nameZh: '大武山遠古石板遺跡',
+    nameEn: 'Ancient Ruins Sanctuary',
+    icon: '🏛️',
+    badge: '大武山石板傳奇',
     color: 'emerald',
-    badge: '第一道門',
-    runeIcon: '🐍',
-    introStoryZh: '探險家在大武山探尋古老石板遺跡時，踩中了地面暗磚，身後千斤巨石轟隆落下封死退路！四周火把驟然點亮，石室中暗藏著 5 處神秘遺跡（位置每次探索皆會改變）。細心觀察那錯落明滅的微光，只有 3 個散發淡金色呼吸光暈的才是過關關鍵！',
-    transitionStoryZh: '轟隆隆——！青銅石門發出沉重巨響緩緩升起，露出向下延伸的旋轉石階！空氣中飄散出古老羊皮紙與乾燥墨水的香氣。你快步穿過長廊，來到了沉寂千年的古代典籍密室...'
+    briefZh: '探尋大武山深處古石板屋遺跡時踩中暗磚，巨石降下封死退路！需破解百步蛇回音石廊、典籍書庫與星象祭壇脫困。',
+    chapters: [
+      {
+        id: 'temple_1',
+        roomNumber: 1,
+        titleZh: '第一室：百步蛇前殿 • 回音石廊',
+        titleEn: 'Chamber I: The Echo Antechamber',
+        subtitleZh: '大自然生態與聽力共鳴',
+        themeId: 'temple',
+        bg: '/assets/escape/bg_temple.webp',
+        color: 'emerald',
+        badge: '第一道門',
+        runeIcon: '🐍',
+        introStoryZh: '探險家在大武山探尋古老石板遺跡時，踩中了地面暗磚，身後千斤巨石轟隆落下封死退路！四周火把驟然點亮，石室中暗藏著 5 處神秘遺跡（位置每次探索皆會改變）。細心觀察那錯落明滅的微光，只有 3 個散發淡金色呼吸光暈的才是過關關鍵！',
+        transitionStoryZh: '轟隆隆——！青銅石門發出沉重巨響緩緩升起，露出向下延伸的旋轉石階！空氣中飄散出古老羊皮紙與乾燥墨水的香氣。你快步穿過長廊，來到了沉寂千年的古代典籍密室...'
+      },
+      {
+        id: 'temple_2',
+        roomNumber: 2,
+        titleZh: '第二室：長老秘境 • 典籍知識庫',
+        titleEn: 'Chamber II: The Arcane Archives',
+        subtitleZh: '古卷書庫與拼字構詞',
+        themeId: 'library',
+        bg: '/assets/escape/bg_library.webp',
+        color: 'amber',
+        badge: '第二道門',
+        runeIcon: '📜',
+        introStoryZh: '高聳的環形書架直抵穹頂，漂浮魔法卷軸與古星盤在微光中輕輕旋轉。這座知識寶庫中隨機散落著 5 個線索節點，光暈忽明忽暗錯落閃爍，找出 3 個金色關鍵真理印記！',
+        transitionStoryZh: '咔嚓、咔嚓！隱藏在書架後方的巨型機械齒輪開始咬合旋轉，暗門赫然退開！上方傳來星際流光的呼嘯與清脆鐘鳴。你拾階而上，眼前豁然開朗，抵達了宏偉壯麗的星象祭壇大殿！'
+      },
+      {
+        id: 'temple_3',
+        roomNumber: 3,
+        titleZh: '第三室：大武山之巔 • 星象脫逃祭壇',
+        titleEn: 'Chamber III: The Celestial Sanctuary',
+        subtitleZh: '星際鐘樓與終極對偶之門',
+        themeId: 'observatory',
+        bg: '/assets/escape/bg_observatory.webp',
+        color: 'indigo',
+        badge: '終極脫逃門',
+        runeIcon: '🔭',
+        introStoryZh: '巨大的黃銅渾天儀在大武山璀璨星河下緩緩運轉。前方正對著通往地表山谷的終極脫逃大門！房間星空中有 5 處隨機分佈的天體機關，只有啟動正確的 3 顆核心星核，沉睡大門才會為你敞開！',
+        victoryStoryZh: '金光萬丈——！巨大的星圖大門完全敞開，清新的高山微風伴隨著溫暖的第一道晨曦傾瀉而入！你成功破解所有古代封印，順利逃出了神秘石板密室！'
+      }
+    ]
   },
   {
-    id: 'chamber_2',
-    roomNumber: 2,
-    titleZh: '第二室：長老秘境 • 典籍知識庫',
-    titleEn: 'Chamber II: The Arcane Archives',
-    subtitleZh: '古卷書庫與拼字構詞',
-    themeId: 'library',
-    bg: '/assets/escape/bg_library.webp',
+    id: 'dungeon',
+    nameZh: '地底黑曜地下城',
+    nameEn: 'Obsidian Dungeon Chambers',
+    icon: '⛓️',
+    badge: '中世紀黑曜地牢與熔岩',
     color: 'amber',
-    badge: '第二道門',
-    runeIcon: '📜',
-    introStoryZh: '高聳的環形書架直抵穹頂，漂浮魔法卷軸與古星盤在微光中輕輕旋轉。這座知識寶庫中隨機散落著 5 個線索節點，光暈忽明忽暗錯落閃爍，找出 3 個金色關鍵真理印記！',
-    transitionStoryZh: '咔嚓、咔嚓！隱藏在書架後方的巨型機械齒輪開始咬合旋轉，暗門赫然退開！上方傳來星際流光的呼嘯與清脆鐘鳴。你拾階而上，眼前豁然開朗，抵達了宏偉壯麗的星象祭壇大殿！'
+    briefZh: '失足墜入封閉百年的黑曜石囚室，鐵柵欄緊鎖、熔岩深淵橫亙。唯有解開遠古矮人石板機關與煉金術方程式，才能啟動地底升降機逃脫！',
+    chapters: [
+      {
+        id: 'dungeon_1',
+        roomNumber: 1,
+        titleZh: '第一室：黑曜石囚室 • 鐵鎖地牢',
+        titleEn: 'Chamber I: The Obsidian Cell',
+        subtitleZh: '斑駁石壁與鐵鎖暗號',
+        themeId: 'dungeon_1',
+        bg: '/assets/escape/dungeon_room1.jpg',
+        color: 'amber',
+        badge: '第一道門',
+        runeIcon: '⛓️',
+        introStoryZh: '你在地下城探險時不慎踏空，掉落進百年前封鎖的黑曜石囚室！厚重鐵閘門轟然落下，牆壁上閃爍著未知的古語符文。石壁四周散落著 5 個閃爍光暈的機關點，唯有找出 3 個金色呼吸微光的真理節點，才能升起重鐵閘門！',
+        transitionStoryZh: '嘎吱——轟！粗大的鐵鏈齒輪轉動，千斤鐵閘門與石柵緩緩升起！你穿過潮濕陰暗的石道，空氣中飄散出硫磺與奇異藥劑的氣息，來到了地下煉金術長廊……'
+      },
+      {
+        id: 'dungeon_2',
+        roomNumber: 2,
+        titleZh: '第二室：地下秘境 • 煉金術長廊',
+        titleEn: 'Chamber II: The Alchemist Corridor',
+        subtitleZh: '青苔拱廊與發光藥劑秘文',
+        themeId: 'dungeon_2',
+        bg: '/assets/escape/dungeon_room2.jpg',
+        color: 'emerald',
+        badge: '第二道門',
+        runeIcon: '🧪',
+        introStoryZh: '古老青苔覆蓋著石壁拱頂，長桌上擺放著冒出氣泡的彩色神秘藥劑與銅蒸餾管。幽暗的長廊中隱藏著 5 處煉金機關節點，解開 3 個散發淡金光暈的核心秘文，開啟通往地心深淵的暗門！',
+        transitionStoryZh: '卡嗒一聲！厚重的鐵皮橡木門猛然開啟，撲面而來的是熾熱的熱浪與遠處地底熔岩河的咕嘟聲！你沿著石橋前進，抵達了地底最底層的終極熔岩升降大廳！'
+      },
+      {
+        id: 'dungeon_3',
+        roomNumber: 3,
+        titleZh: '第三室：地心深淵 • 熔岩升降巨門',
+        titleEn: 'Chamber III: The Magma Abyss Portal',
+        subtitleZh: '矮人巨構與地表升降鐵籠',
+        themeId: 'dungeon_3',
+        bg: '/assets/escape/dungeon_room3.jpg',
+        color: 'rose',
+        badge: '終極脫逃門',
+        runeIcon: '🌋',
+        introStoryZh: '奔騰的熔岩河在石橋下流淌，前方聳立著銘刻神秘矮人發光符文的百米巨門，右側是直通地表的升降鐵籠！最後 5 處水晶機關正在閃爍，啟動 3 個核心符文，重啟升降機衝出地下城！',
+        victoryStoryZh: '巨型機械齒輪飛速咬合，升降鐵籠轟隆上升，穿透層層地穴直奔藍天！溫暖陽光與清涼清風迎面而來，你成功解開所有地底謎題，逃出了黑曜地下城！'
+      }
+    ]
   },
   {
-    id: 'chamber_3',
-    roomNumber: 3,
-    titleZh: '第三室：大武山之巔 • 星象脫逃祭壇',
-    titleEn: 'Chamber III: The Celestial Sanctuary',
-    subtitleZh: '星際鐘樓與終極對偶之門',
-    themeId: 'observatory',
-    bg: '/assets/escape/bg_observatory.webp',
-    color: 'indigo',
-    badge: '終極脫逃門',
-    runeIcon: '🔭',
-    introStoryZh: '巨大的黃銅渾天儀在大武山璀璨星河下緩緩運轉。前方正對著通往地表山谷的終極脫逃大門！房間星空中有 5 處隨機分佈的天體機關，只有啟動正確的 3 顆核心星核，沉睡大門才會為你敞開！',
-    victoryStoryZh: '金光萬丈——！巨大的星圖大門完全敞開，清新的高山微風伴隨著溫暖的第一道晨曦傾瀉而入！你成功破解所有古代封印，順利逃出了神秘石板密室！'
+    id: 'tomb',
+    nameZh: '法老秘境古墓探險',
+    nameEn: 'Ancient Pharaoh Tomb',
+    icon: '🏺',
+    badge: '尼羅河金字塔千年秘藏',
+    color: 'yellow',
+    briefZh: '金字塔深處的塵封墓道在劇震中閉合！巨大的砂岩壁畫與黃金聖甲蟲守護著墓室。解開聖書體象形英文密碼，迎向金字塔頂的重生天光！',
+    chapters: [
+      {
+        id: 'tomb_1',
+        roomNumber: 1,
+        titleZh: '第一室：法老前殿 • 聖書體外槨室',
+        titleEn: 'Chamber I: The Hieroglyphic Vestibule',
+        subtitleZh: '千古壁畫與石棺機關',
+        themeId: 'tomb_1',
+        bg: '/assets/escape/tomb_room1.jpg',
+        color: 'amber',
+        badge: '第一道門',
+        runeIcon: '🏺',
+        introStoryZh: '金字塔深處的砂岩墓道在劇震中封閉！巨大的石棺矗立在祭壇中央，石壁上密密麻麻的聖書體符文彷彿在訴說著千年的警告。石室中有 5 處神秘法老機關，唯有解開 3 處金色微光，才能開啟通向黃金密室的第一道重門！',
+        transitionStoryZh: '萬斤滑動石門發出震撼轟鳴緩緩滑開，映入眼簾的是令人屏息的萬丈金光！你踏入了堆滿黃金聖甲蟲與古文物的阿努比斯藏寶室……'
+      },
+      {
+        id: 'tomb_2',
+        roomNumber: 2,
+        titleZh: '第二室：阿努比斯 • 黃金聖甲蟲寶庫',
+        titleEn: 'Chamber II: The Anubis Treasury',
+        subtitleZh: '璀璨黃金祭器與神守秘道',
+        themeId: 'tomb_2',
+        bg: '/assets/escape/tomb_room2.jpg',
+        color: 'yellow',
+        badge: '第二道門',
+        runeIcon: '👑',
+        introStoryZh: '堆積如山的黃金珠寶、璀璨寶箱與聖甲蟲浮雕在青綠與金黃火盆下熠熠生輝，兩尊高聳的胡狼頭神阿努比斯守護著密道。找出 3 個金色關鍵印記，解開石像神力防禦法陣！',
+        transitionStoryZh: '石像手中的權杖閃爍神聖光芒，後方的旋轉密道緩緩開啟！上方透出了純淨的自然天光，你快步攀上石階，來到了金字塔頂端太陽神殿！'
+      },
+      {
+        id: 'tomb_3',
+        roomNumber: 3,
+        titleZh: '第三室：金字塔之巔 • 太陽神天光大殿',
+        titleEn: 'Chamber III: The Solar Apex Sanctuary',
+        subtitleZh: '天光金棺與無垠荒漠大門',
+        themeId: 'tomb_3',
+        bg: '/assets/escape/tomb_room3.jpg',
+        color: 'amber',
+        badge: '終極脫逃門',
+        runeIcon: '☀️',
+        introStoryZh: '一道神聖璀璨的太陽天光穿透金字塔頂端天窗，筆直照耀在中央金棺之上！高大的法老坐像守護著通往沙漠綠洲的終極石門。解開最後 3 道太陽符文，擁抱自由重見天日！',
+        victoryStoryZh: '轟隆隆——！高達十米的法老大門完全敞開，金色沙漠上的微風夾帶著大地的氣息擁抱著你，你成功破解千年法老密碼，成為古墓探險傳奇生還者！'
+      }
+    ]
+  },
+  {
+    id: 'asylum',
+    nameZh: '殘破時鐘廢棄建築',
+    nameEn: 'Abandoned Clockwork Asylum',
+    icon: '🕰️',
+    badge: '暴風雨夜維多利亞鐘樓',
+    color: 'violet',
+    briefZh: '暴風雨之夜躲入荒廢數十年的老舊鐘樓建築，身後大門驟然反鎖，逆轉的時鐘開始滴答作響。在鐘聲響起十二下前，解開齒輪機械並推開安全逃脫門！',
+    chapters: [
+      {
+        id: 'asylum_1',
+        roomNumber: 1,
+        titleZh: '第一室：老舊門廳 • 逆轉鐘樓走廊',
+        titleEn: 'Chamber I: The Desolate Hallway',
+        subtitleZh: '斑駁殘壁與雨夜月光',
+        themeId: 'asylum_1',
+        bg: '/assets/escape/asylum_room1.jpg',
+        color: 'violet',
+        badge: '第一道門',
+        runeIcon: '🕰️',
+        introStoryZh: '暴風雨肆虐的夜晚，你躲入這棟廢棄數十年的老舊維多利亞建築，身後厚重鐵門啪嗒一聲被反鎖！破損的彩繪玻璃窗透進慘白月光，斑駁的壁紙在風中搖曳。找出 5 處發光節點中的 3 個金色發條印記，打開通往研究室的通道！',
+        transitionStoryZh: '吱呀——！生鏽的橡木大門被推開，空氣中瀰漫著古老潤滑油與銅鏽的機械氣味，巨型齒輪轉動的沉悶卡嗒聲引導你步入鐘錶核心研究室……'
+      },
+      {
+        id: 'asylum_2',
+        roomNumber: 2,
+        titleZh: '第二室：機械核心 • 齒輪發條研究室',
+        titleEn: 'Chamber II: The Clockwork Laboratory',
+        subtitleZh: '巨型機械齒輪與蒸汽管道',
+        themeId: 'asylum_2',
+        bg: '/assets/escape/asylum_room2.jpg',
+        color: 'cyan',
+        badge: '第二道門',
+        runeIcon: '⚙️',
+        introStoryZh: '高聳的石壁中嵌著數米寬的巨型黃銅齒輪，工作台上散落著真空管、發條核心與泛黃筆記。管道中噴出微弱蒸汽，找出 3 個關鍵齒輪印記，重新啟動通往鐘樓頂部的旋轉鐵梯！',
+        transitionStoryZh: '轟隆！蒸汽閥門釋放，鐵梯降下，窗外閃電如銀蛇般劃破黑夜！你攀上鐵梯，抵達了鐘樓最高層的巨型時鐘大殿！'
+      },
+      {
+        id: 'asylum_3',
+        roomNumber: 3,
+        titleZh: '第三室：鐘樓頂層 • 暴風雨終極逃脫門',
+        titleEn: 'Chamber III: The Storm Belfry',
+        subtitleZh: '閃電鐘面與綠光安全門',
+        themeId: 'asylum_3',
+        bg: '/assets/escape/asylum_room3.jpg',
+        color: 'sky',
+        badge: '終極脫逃門',
+        runeIcon: '⚡',
+        introStoryZh: '高達五米的巨大圓形羅馬數字玻璃鐘面在暴風雨閃電照耀下清晰無比，旁邊赫然是一扇亮著綠色 EXIT 標誌的生鏽安全鐵門！解開最後 3 道時間密碼，推開安全門逃出這座建築！',
+        victoryStoryZh: '卡嗒！安全門的推桿應聲彈開，冰涼清新的雨後微風迎面吹來，遠處城市天際線泛起第一道晨曦，身後鐘樓停下了詭譎的擺動，你成功逃出了這座廢棄建築！'
+      }
+    ]
   }
 ];
+
+// 向後相容導出預設第 1 主題房間
+export const CHAMBER_CHAPTERS = ESCAPE_THEMES[0].chapters;
 
 // ── 反義詞詞庫對照表 ──
 export const OPPOSITES_POOL = [
@@ -402,7 +575,16 @@ export const getActiveCurriculumBookForGrade = (grade, date = new Date()) => {
  * 程序化生成三連環密室大逃脫會話 (八大多元題型 + 隨機不重疊熱區 + 3關鍵2干擾)
  */
 export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
-  const { grade = '03', selectedUnits = [] } = options;
+  const { grade = '03', selectedUnits = [], themeId = 'temple' } = options;
+
+  // 挑選密室主題風格 (temple | dungeon | tomb | asylum | random)
+  let selectedTheme = ESCAPE_THEMES[0];
+  if (themeId === 'random') {
+    selectedTheme = ESCAPE_THEMES[Math.floor(Math.random() * ESCAPE_THEMES.length)];
+  } else if (themeId) {
+    selectedTheme = ESCAPE_THEMES.find(t => t.id === themeId) || ESCAPE_THEMES[0];
+  }
+  const targetChapters = selectedTheme.chapters;
 
   let eligibleWords = [];
   let qualifyingBook = null;
@@ -491,7 +673,7 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
   let oppositesUsedInCampaign = false;
 
   // 生成三間房間
-  const chapters = CHAMBER_CHAPTERS.map((chapMeta, chapIdx) => {
+  const chapters = targetChapters.map((chapMeta, chapIdx) => {
     // 1. 每關隨機生成 5 個不重疊的點位
     const hotspots = generateNonOverlappingHotspots(5);
 
@@ -689,6 +871,7 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
   });
 
   return {
+    theme: selectedTheme,
     chapters,
     qualifyingBook,
     totalPuzzlesCount: 9,
