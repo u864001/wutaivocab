@@ -73,9 +73,14 @@ export const VocabEscapeGame = ({
     } catch (e) {}
   }, []);
 
+  // 學生當前挑戰年級 (預設為學生登入年級或三年級，亦可於行前說明自由切換)
+  const [selectedGrade, setSelectedGrade] = useState(() => {
+    return currentStudent?.grade || '03';
+  });
+
   // 初始化連續 3 室逃脫會話
-  const initCampaign = useCallback((overrideThemeId = null) => {
-    const studentGrade = currentStudent?.grade || '03';
+  const initCampaign = useCallback((overrideThemeId = null, overrideGrade = null) => {
+    const studentGrade = overrideGrade || selectedGrade || currentStudent?.grade || '03';
     const themeToUse = overrideThemeId || selectedThemeId;
     const campaign = generateEscapeRoomCampaign(words, {
       grade: studentGrade,
@@ -92,7 +97,7 @@ export const VocabEscapeGame = ({
     setHintCount(2);
     setEliminatedOptions({});
     hasAddedQuestPointsRef.current = false;
-  }, [words, currentStudent, settings.selectedUnits, selectedThemeId]);
+  }, [words, currentStudent, selectedGrade, settings.selectedUnits, selectedThemeId]);
 
   // 切換密室風格主題
   const handleSelectTheme = (themeId) => {
@@ -492,22 +497,59 @@ export const VocabEscapeGame = ({
             </div>
           </div>
 
-          {/* 年級適配與上榜保證徽章 */}
-          <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 mb-6 flex items-center justify-between text-left">
-            <div className="flex items-center gap-2.5">
-              <Compass className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <div>
-                <div className="text-xs font-black text-emerald-900 dark:text-emerald-200">
-                  全自動年級適配（第 {qualifyingBook} 冊單元詞彙）
-                </div>
-                <div className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
-                  符合全校英雄榜登錄與宇宙金幣領取門檻！
-                </div>
-              </div>
+          {/* 年級適配與自由切換面板 */}
+          <div className="mb-6 p-4 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 max-w-md mx-auto text-left shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-black text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
+                <span>挑戰教材進度（點擊切換）：</span>
+              </label>
+              <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
+                目前出題：第 {qualifyingBook} 冊
+              </span>
             </div>
-            <span className="px-2.5 py-1 rounded-full bg-emerald-500 text-white text-[11px] font-black shrink-0">
-              上榜認證
-            </span>
+
+            <div className="grid grid-cols-5 gap-1.5 mb-2.5">
+              {[
+                { grade: '01', label: '1~2年 (ABC)' },
+                { grade: '03', label: '3年級 (B1/2)' },
+                { grade: '04', label: '4年級 (B3/4)' },
+                { grade: '05', label: '5年級 (B5/6)' },
+                { grade: '06', label: '6年級 (B7/8)' }
+              ].map(g => {
+                const isActive = (selectedGrade === g.grade) || (!selectedGrade && g.grade === '03');
+                return (
+                  <button
+                    key={g.grade}
+                    type="button"
+                    onClick={() => {
+                      soundEngine.click();
+                      setSelectedGrade(g.grade);
+                      initCampaign(null, g.grade);
+                    }}
+                    className={`py-1.5 px-1 rounded-xl text-[11px] font-black transition-all cursor-pointer text-center leading-tight ${
+                      isActive
+                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30 scale-102 ring-2 ring-indigo-400 font-black'
+                        : 'bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                    }`}
+                  >
+                    {g.label.split(' ')[0]}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-200">
+                  {currentStudent ? `已自動適配 ${currentStudent.nickname || '同學'} 之年級教材` : '自動適配學期標準教材，符合榮譽榜門檻'}
+                </span>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-black shrink-0">
+                上榜認證
+              </span>
+            </div>
           </div>
 
           {/* 操作按鈕 */}

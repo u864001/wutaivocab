@@ -42,7 +42,7 @@ export const ChamberAmbience = ({ themeId = 'temple', isMuted = false }) => {
   })();
 
   return (
-    <div className="absolute inset-0 pointer-events-none select-none z-10 overflow-hidden">
+    <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
       {ambienceType === 'falling_pebbles' && <FallingPebbles />}
       {ambienceType === 'hearth_embers' && <HearthEmbers />}
       {ambienceType === 'shooting_star' && <ShootingStarMasked />}

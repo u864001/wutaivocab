@@ -1,4 +1,9 @@
 // ── 密室逃脫：四大風格主題、八大多元題型、動態不重疊座標與三室戰役生成引擎 ──
+import {
+  generatePedagogicalCloze,
+  generatePedagogicalSentenceOrder,
+  getWordSemanticCategory
+} from './escapeSentenceGenerator';
 
 export const ESCAPE_THEMES = [
   {
@@ -460,36 +465,9 @@ export const RIDDLES_POOL = [
   }
 ];
 
-// ── 語意類別字典與特徵標籤 ──
-const CATEGORY_KEYWORDS = {
-  animals: ['cat', 'dog', 'bird', 'fish', 'elephant', 'tiger', 'monkey', 'bear', 'lion', 'zebra', 'rabbit', 'pig', 'cow', 'duck', 'horse', 'sheep', 'turtle', 'frog', 'butterfly', 'deer', 'snake', 'pet', 'animal'],
-  food: ['apple', 'banana', 'grape', 'orange', 'pizza', 'hamburger', 'sandwich', 'juice', 'milk', 'water', 'tea', 'ice cream', 'cake', 'bread', 'rice', 'egg', 'chicken', 'fruit', 'pie', 'cookie', 'soup', 'salad'],
-  colors_numbers: ['red', 'blue', 'yellow', 'green', 'pink', 'purple', 'black', 'white', 'brown', 'orange', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen'],
-  school: ['book', 'ruler', 'pencil', 'eraser', 'desk', 'chair', 'pen', 'bag', 'marker', 'glue', 'classroom', 'school', 'teacher', 'student', 'bell', 'box', 'draw', 'write', 'read'],
-  actions: ['run', 'jump', 'sing', 'dance', 'swim', 'read', 'write', 'draw', 'play', 'eat', 'drink', 'sleep', 'walk', 'talk', 'fly', 'help', 'cook', 'listen', 'look', 'climb'],
-  places_transport: ['park', 'supermarket', 'hospital', 'school', 'library', 'zoo', 'station', 'store', 'cinema', 'bus', 'train', 'car', 'bike', 'bicycle', 'plane', 'boat', 'ship', 'taxi'],
-  family: ['father', 'mother', 'brother', 'sister', 'grandfather', 'grandmother', 'dad', 'mom', 'friend', 'boy', 'girl'],
-  feelings: ['happy', 'sad', 'tired', 'hungry', 'thirsty', 'angry', 'sick', 'hot', 'cold', 'cool', 'warm', 'good', 'fine']
-};
-
+// ── 語意類別特徵標籤 ──
 export const tagWordCategory = (word) => {
-  if (!word || !word.en) return 'adventure';
-  const cleanEn = word.en.toLowerCase().trim();
-
-  for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-    if (keywords.some(k => cleanEn === k || cleanEn.includes(k))) {
-      return cat;
-    }
-  }
-
-  const lesson = (word.lesson || '').toLowerCase();
-  if (lesson.includes('動物') || lesson.includes('animal')) return 'animals';
-  if (lesson.includes('食物') || lesson.includes('甜點') || lesson.includes('food')) return 'food';
-  if (lesson.includes('學校') || lesson.includes('school')) return 'school';
-  if (lesson.includes('自然') || lesson.includes('nature')) return 'nature';
-  if (lesson.includes('運動') || lesson.includes('sport')) return 'actions';
-
-  return 'adventure';
+  return getWordSemanticCategory(word);
 };
 
 export const getBooksForGrade = (grade) => {
@@ -724,40 +702,13 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
 
       // 依題型構建專屬題目內容與線索
       if (puzzleType === 'cloze') {
-        // 題型 1：情境克漏字填空 (讀懂前後文填空)
-        const cat = tagWordCategory(targetWord);
-        let sentenceWithBlank = `We can see a mysterious ___ in the ancient chamber.`;
-        let zhTrans = `我們可以在古老石室中看見神秘的【${targetWord.zh}】。`;
-        if (cat === 'animals') {
-          sentenceWithBlank = `Look at that cute ___ sleeping under the big green tree.`;
-          zhTrans = `看那隻在綠色大樹下睡覺的可愛【${targetWord.zh}】。`;
-        } else if (cat === 'food') {
-          sentenceWithBlank = `For lunch, I love to eat a fresh ___ with sweet juice.`;
-          zhTrans = `午餐時，我喜歡吃新鮮的【${targetWord.zh}】配果汁。`;
-        } else if (cat === 'school') {
-          sentenceWithBlank = `Please put your ___ on the wooden desk right now.`;
-          zhTrans = `請立刻把你的【${targetWord.zh}】放在木頭書桌上。`;
-        } else if (cat === 'actions') {
-          sentenceWithBlank = `On a sunny morning, children love to ___ in the park.`;
-          zhTrans = `在陽光明媚的早晨，小朋友喜歡在公園裡【${targetWord.zh}】。`;
-        } else if (cat === 'colors_numbers') {
-          sentenceWithBlank = `I can see a bright ___ picture on the classroom wall.`;
-          zhTrans = `我可以在教室牆上看到一張鮮豔的【${targetWord.zh}】圖片。`;
-        } else if (cat === 'places_transport') {
-          sentenceWithBlank = `We took a fast ___ to visit our grandparents today.`;
-          zhTrans = `我們今天搭乘快捷的【${targetWord.zh}】去探望祖父母。`;
-        } else if (cat === 'family') {
-          sentenceWithBlank = `My ___ is cooking a sweet apple pie in the kitchen.`;
-          zhTrans = `我的【${targetWord.zh}】正在廚房裡烤香甜的蘋果派。`;
-        } else if (cat === 'feelings') {
-          sentenceWithBlank = `After running for an hour, I feel very ___ today.`;
-          zhTrans = `跑了一個小時後，我今天覺得很【${targetWord.zh}】。`;
-        }
+        // 題型 1：情境克漏字填空 (讀懂前後文填空 - 100% 語法自然、教學級文法結構)
+        const clozeData = generatePedagogicalCloze(targetWord);
         puzzleObj.titleZh = '情境克漏字填空';
-        puzzleObj.englishPrompt = sentenceWithBlank;
+        puzzleObj.englishPrompt = clozeData.englishPrompt;
         puzzleObj.targetText = targetWord.en;
-        puzzleObj.chineseClue = zhTrans;
-        puzzleObj.voiceText = sentenceWithBlank.replace('___', targetWord.en);
+        puzzleObj.chineseClue = clozeData.chineseClue;
+        puzzleObj.voiceText = clozeData.voiceText;
         puzzleObj.options = shuffle([targetWord.en, ...distractors.map(d => d.en)]);
       }
       else if (puzzleType === 'riddle') {
@@ -793,20 +744,14 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
         puzzleObj.scrambledLetters = shuffle([...cleanLetters, ...extraLetters]).map((c, i) => ({ id: `sc_${i}_${c}`, char: c }));
       }
       else if (puzzleType === 'sentence_order') {
-        // 題型 5：句子單字重組排列
-        const sampleSentences = [
-          { words: ['This', 'is', 'a', targetWord.en], zh: `這是一隻${targetWord.zh}。` },
-          { words: ['I', 'can', 'see', targetWord.en], zh: `我看得見${targetWord.zh}。` },
-          { words: ['We', 'like', 'the', targetWord.en], zh: `我們喜歡${targetWord.zh}。` },
-          { words: ['Look', 'at', 'that', targetWord.en], zh: `看那隻${targetWord.zh}！` }
-        ];
-        const picked = shuffle(sampleSentences)[0];
+        // 題型 5：句子單字重組排列 (100% 國小標準句型，杜絕生硬機械拼湊)
+        const orderData = generatePedagogicalSentenceOrder(targetWord);
         puzzleObj.titleZh = '古代句子詞序重組';
         puzzleObj.englishPrompt = '將下方散落的單字依正確語序排列：';
-        puzzleObj.targetTokens = picked.words;
-        puzzleObj.chineseClue = `重組正確句子中文為：「${picked.zh}」`;
-        puzzleObj.voiceText = picked.words.join(' ');
-        puzzleObj.scrambledTokens = shuffle(picked.words.map((w, i) => ({ id: `tk_${i}_${w}`, word: w })));
+        puzzleObj.targetTokens = orderData.tokens;
+        puzzleObj.chineseClue = `重組正確句子中文為：「${orderData.zh}」`;
+        puzzleObj.voiceText = orderData.tokens.join(' ');
+        puzzleObj.scrambledTokens = shuffle(orderData.tokens.map((w, i) => ({ id: `tk_${i}_${w}`, word: w })));
       }
       else if (puzzleType === 'opposites') {
         // 題型 6：反義詞對偶解碼
