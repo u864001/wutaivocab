@@ -135,6 +135,10 @@ export const VocabEscapeGame = ({
       escapeAudio.playRoomBgm(firstRoom.themeId);
     }
 
+    try {
+      window.history.pushState({ escapeStage: 'playing' }, '');
+    } catch (e) {}
+
     setGameState('playing');
     startTimeRef.current = Date.now();
 
@@ -150,13 +154,37 @@ export const VocabEscapeGame = ({
     setIsBgmMuted(muted);
   };
 
-  // 放棄逃脫退出
-  const handleQuitGame = () => {
+  // 1. 在密室遊戲中 (playing / transition / victory) 點擊退回：返回「密室逃脫大廳」
+  const handleExitToEscapeLobby = () => {
+    soundEngine.click();
+    if (timerRef.current) clearInterval(timerRef.current);
+    escapeAudio.stopCurrentMusic();
+    exitFullscreen();
+    setGameState('briefing');
+  };
+
+  // 2. 在「密室逃脫大廳」(briefing) 點擊返回：回到「單字冒險大廳 (單字館)」
+  const handleQuitGameToVocabLobby = () => {
+    soundEngine.click();
     if (timerRef.current) clearInterval(timerRef.current);
     escapeAudio.stopCurrentMusic();
     exitFullscreen();
     onBack();
   };
+
+  // 監聽瀏覽器上一頁：若在密室遊戲進行中按上一頁，退回密室逃脫大廳，而非直接跳回單字館
+  useEffect(() => {
+    const handlePopState = () => {
+      if (gameState !== 'briefing') {
+        if (timerRef.current) clearInterval(timerRef.current);
+        escapeAudio.stopCurrentMusic();
+        exitFullscreen();
+        setGameState('briefing');
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [gameState]);
 
   const currentChapter = campaignData?.chapters?.[currentChapterIndex];
 
@@ -426,10 +454,10 @@ export const VocabEscapeGame = ({
             <Button3D
               variant="slate"
               size="md"
-              onClick={handleQuitGame}
+              onClick={handleQuitGameToVocabLobby}
               className="w-full"
             >
-              返回大廳
+              返回單字冒險大廳 🏠
             </Button3D>
           </div>
         </GlassCard>
@@ -464,11 +492,18 @@ export const VocabEscapeGame = ({
             variant="emerald"
             size="lg"
             onClick={handleGoNextRoom}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 mb-2"
           >
             <span>進入下一個房間：{nextChapterMeta?.titleZh}</span>
             <ArrowRight className="w-5 h-5" />
           </Button3D>
+
+          <button
+            onClick={handleExitToEscapeLobby}
+            className="text-xs font-bold text-slate-400 hover:text-emerald-300 transition-colors cursor-pointer py-1"
+          >
+            暫停並返回密室大廳
+          </button>
         </GlassCard>
       </div>
     );
@@ -487,7 +522,7 @@ export const VocabEscapeGame = ({
         timeElapsed={timeElapsed}
         hintCount={hintCount}
         onUseHint={handleUseHint}
-        onQuit={handleQuitGame}
+        onQuit={handleExitToEscapeLobby}
         isBgmMuted={isBgmMuted}
         onToggleBgm={handleToggleBgm}
       />
@@ -616,10 +651,10 @@ export const VocabEscapeGame = ({
               <Button3D
                 variant="slate"
                 size="md"
-                onClick={handleQuitGame}
+                onClick={handleExitToEscapeLobby}
                 className="w-full"
               >
-                返回大廳
+                返回密室大廳 🏰
               </Button3D>
             </div>
           </GlassCard>

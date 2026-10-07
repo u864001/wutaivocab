@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sparkles, Key, CheckCircle2, VolumeX, Music } from 'lucide-react';
 import { soundEngine } from '../../services/audio';
+import { ChamberAmbience } from './ChamberAmbience';
 
 export const ChamberScene = ({
   currentChapter,
@@ -74,18 +75,25 @@ export const ChamberScene = ({
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-slate-950/65 pointer-events-none" />
       <div className="absolute inset-0 bg-radial-vignette pointer-events-none opacity-40" />
 
+      {/* ── 2.5 環境彩蛋層：單一主題微小沉浸彩蛋 (偶發小蜘蛛 / 遁走老鼠 / 聖甲蟲 / 碎石粉塵 / 夜空流星 / 熔岩火星 / 雨絲) ── */}
+      <ChamberAmbience
+        themeId={currentChapter.themeId}
+        isMuted={isBgmMuted}
+      />
+
       {/* ── 3. 頂部儀表板 (HUD) ── */}
       <header className="relative z-20 w-full p-2.5 sm:p-4 flex items-center justify-between gap-2 sm:gap-3 bg-slate-900/75 backdrop-blur-md border-b border-white/10 shadow-lg">
-        {/* 左側：退出與當前房間指示 */}
+        {/* 左側：退回密室大廳與當前房間指示 */}
         <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={() => {
               soundEngine.click();
               onQuit();
             }}
-            className="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 text-xs sm:text-sm font-black border border-slate-700 transition-all active:scale-95 cursor-pointer"
+            className="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 text-xs sm:text-sm font-black border border-slate-700 transition-all active:scale-95 cursor-pointer flex items-center gap-1"
+            title="退回密室逃脫大廳"
           >
-            ← 退出
+            <span>← 密室大廳</span>
           </button>
 
           <div className="flex items-center gap-2 px-3 py-1 rounded-xl bg-black/50 border border-white/15">

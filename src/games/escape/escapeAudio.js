@@ -46,6 +46,33 @@ class EscapeAudioEngine {
   }
 
   /**
+   * 偶發環境彩蛋：極輕柔逼真的老鼠「吱」聲 (純 Web Audio 振盪器高頻滑音，零外加音檔)
+   */
+  playMouseSqueak() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const ctx = this.ctx;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const now = ctx.currentTime;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(3100, now);
+      osc.frequency.linearRampToValueAtTime(3850, now + 0.035);
+      osc.frequency.linearRampToValueAtTime(3200, now + 0.08);
+
+      gain.gain.setValueAtTime(0.035, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.085);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.09);
+    } catch (e) {}
+  }
+
+  /**
    * 播放房間專屬環境音 (temple | library | observatory)
    */
   playRoomBgm(themeId = 'temple') {
