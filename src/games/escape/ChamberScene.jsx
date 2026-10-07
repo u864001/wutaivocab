@@ -71,15 +71,23 @@ export const ChamberScene = ({
         style={{ backgroundImage: `url(${currentChapter.bg})` }}
       />
 
-      {/* ── 2. 光影層：暗角與環境微光 ── */}
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-slate-950/65 pointer-events-none" />
-      <div className="absolute inset-0 bg-radial-vignette pointer-events-none opacity-40" />
-
-      {/* ── 2.5 環境彩蛋層：單一主題微小沉浸彩蛋 (偶發小蜘蛛 / 遁走老鼠 / 聖甲蟲 / 碎石粉塵 / 夜空流星 / 熔岩火星 / 雨絲) ── */}
+      {/* ── 2. 環境彩蛋層：單一主題微小沉浸彩蛋 (在太空背景之上，但在建物及窗框本體之下) ── */}
       <ChamberAmbience
         themeId={currentChapter.themeId}
         isMuted={isBgmMuted}
       />
+
+      {/* ── 2.1 建物與窗框前置層 (星象祭壇第三室專屬：石牆、拱門與提燈遮罩位於流星之上，流星絕不畫上牆) ── */}
+      {(currentChapter.themeId === 'observatory' || currentChapter.id === 'temple_3') && (
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-all duration-1000 pointer-events-none z-[11]"
+          style={{ backgroundImage: 'url(/assets/escape/bg_observatory_foreground.webp)' }}
+        />
+      )}
+
+      {/* ── 2.5 光影層：暗角與環境微光 ── */}
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-slate-950/65 pointer-events-none z-[12]" />
+      <div className="absolute inset-0 bg-radial-vignette pointer-events-none opacity-40 z-[12]" />
 
       {/* ── 3. 頂部儀表板 (HUD) ── */}
       <header className="relative z-20 w-full p-2.5 sm:p-4 flex items-center justify-between gap-2 sm:gap-3 bg-slate-900/75 backdrop-blur-md border-b border-white/10 shadow-lg">

@@ -122,30 +122,34 @@ const HearthEmbers = () => {
 };
 
 // ══════════════════════════════════════════════════════════════
-// 2. 星象大殿 (temple_3)：左側窗戶劃過、受建物遮蔽之迅疾擬真流星
+// 2. 星象大殿 (temple_3)：在太空背景之上、但在建物及窗框之下的擬真小流星
+// 規格要求：
+// - 流星極細小微光，明亮處僅有 1 個領頭光點
+// - 劃過之後的路徑逐漸加速變暗，呈現微微幽淡的拖曳星影
+// - 透過 SVG 1920x1072 與 preserveAspectRatio="xMidYMid slice" 與底圖同步縮放
 // ══════════════════════════════════════════════════════════════
 const ShootingStarMasked = () => {
   const [active, setActive] = useState(false);
   const [starKey, setStarKey] = useState(0);
-  const [startPos, setStartPos] = useState({ top: '15%', right: '10%' });
+  const [startPos, setStartPos] = useState({ x: 535, y: 255 });
 
   useEffect(() => {
     let timer;
     const scheduleNext = () => {
-      // 每 14 ~ 26 秒劃過一次，自然靈動
-      const delay = Math.floor(Math.random() * 12000) + 14000;
+      // 每 12 ~ 22 秒劃過一次，自然靈動
+      const delay = Math.floor(Math.random() * 10000) + 12000;
       timer = setTimeout(() => {
-        // 隨機在左窗戶太空背景右上深處出發
+        // 在左窗深空右上區域隨機起點
         setStartPos({
-          top: `${Math.floor(Math.random() * 20) + 8}%`,
-          right: `${Math.floor(Math.random() * 20) + 5}%`
+          x: Math.floor(Math.random() * 35) + 515,
+          y: Math.floor(Math.random() * 35) + 240
         });
         setStarKey(k => k + 1);
         setActive(true);
         setTimeout(() => {
           setActive(false);
           scheduleNext();
-        }, 550);
+        }, 500);
       }, delay);
     };
 
@@ -154,66 +158,95 @@ const ShootingStarMasked = () => {
   }, []);
 
   return (
-    // 嚴格裁切容器：精確錨定於左側拱窗玻璃開口內 (left: 15.6%, width: 14.0%, top: 22.0%, height: 55.0%)
-    // 配合拱頂 clip-path，絕對不會畫到外圍石柱、提燈與牆壁上！
-    <div
-      className="absolute overflow-hidden pointer-events-none"
-      style={{
-        left: '15.6%',
-        top: '22.0%',
-        width: '14.0%',
-        height: '55.0%',
-        borderRadius: '50% 50% 0 0 / 22% 22% 0 0',
-        clipPath: 'polygon(0% 20%, 8% 10%, 20% 4%, 50% 0%, 80% 4%, 92% 10%, 100% 20%, 100% 100%, 0% 100%)'
-      }}
+    <svg
+      className="absolute inset-0 w-full h-full pointer-events-none select-none"
+      viewBox="0 0 1920 1072"
+      preserveAspectRatio="xMidYMid slice"
     >
-      {active && (
-        <div
-          key={starKey}
-          className="absolute animate-celestialMeteor"
-          style={{
-            top: startPos.top,
-            right: startPos.right,
-            width: '28px', /* 極細小優雅，不冗長 */
-            height: '1.2px',
-            background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(186,230,253,0.18) 50%, rgba(255,255,255,0.85) 90%, #ffffff 100%)',
-            transformOrigin: 'right center'
-          }}
-        >
-          {/* 流星最前端：唯一明亮的極小光點 (1.5px 光斑與微星暈) */}
-          <div
-            className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full"
+      <defs>
+        {/* 精確左拱窗開口遮罩 (嚴格限制於窗戶玻璃範圍內，絕不溢出) */}
+        <clipPath id="observatoryWindowClip">
+          <path d="M 330 844 L 330 400 A 126 176 0 0 1 582 400 L 582 844 Z" />
+        </clipPath>
+
+        {/* 流星拖曳漸層：尾端近乎全透明，越接近頭部光點越亮 */}
+        <linearGradient id="meteorTrailGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#7dd3fc" stopOpacity="0" />
+          <stop offset="45%" stopColor="#38bdf8" stopOpacity="0.12" />
+          <stop offset="78%" stopColor="#bae6fd" stopOpacity="0.45" />
+          <stop offset="94%" stopColor="#e0f2fe" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="1" />
+        </linearGradient>
+
+        {/* 領頭單一明亮光點微暈濾鏡 */}
+        <filter id="meteorCoreGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      <g clipPath="url(#observatoryWindowClip)">
+        {active && (
+          <g
+            key={starKey}
+            className="animate-celestialMeteorFast"
             style={{
-              width: '2px',
-              height: '2px',
-              background: '#ffffff',
-              boxShadow: '0 0 3px 1px rgba(255, 255, 255, 0.95), 0 0 6px 2px rgba(186, 230, 253, 0.8)'
+              transformOrigin: `${startPos.x}px ${startPos.y}px`,
+              '--start-x': `${startPos.x}px`,
+              '--start-y': `${startPos.y}px`
             }}
-          />
-        </div>
-      )}
+          >
+            {/* 微微拖曳光影（極細 1.2px，尾跡隨飛行加速變暗） */}
+            <line
+              x1={startPos.x - 38}
+              y1={startPos.y}
+              x2={startPos.x}
+              y2={startPos.y}
+              stroke="url(#meteorTrailGrad)"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+            />
+
+            {/* 流星最前端：唯一明亮的極小單一點 (半徑 1.3px) */}
+            <circle
+              cx={startPos.x}
+              cy={startPos.y}
+              r="1.3"
+              fill="#ffffff"
+              filter="url(#meteorCoreGlow)"
+            />
+          </g>
+        )}
+      </g>
+
       <style>{`
-        @keyframes celestialMeteorAnim {
+        @keyframes celestialMeteorPath {
           0% {
-            transform: rotate(-38deg) translateX(0);
+            transform: translate(0, 0) rotate(-34deg);
             opacity: 0;
           }
-          10% {
+          12% {
             opacity: 0.95;
           }
           55% {
-            opacity: 0.8;
+            opacity: 0.75;
+          }
+          85% {
+            opacity: 0.35;
           }
           100% {
-            transform: rotate(-38deg) translateX(-140px);
+            transform: translate(-145px, 0) rotate(-34deg);
             opacity: 0;
           }
         }
-        .animate-celestialMeteor {
-          animation: celestialMeteorAnim 0.48s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+        .animate-celestialMeteorFast {
+          animation: celestialMeteorPath 0.44s cubic-bezier(0.35, 0.05, 0.8, 1) forwards;
         }
       `}</style>
-    </div>
+    </svg>
   );
 };
 
