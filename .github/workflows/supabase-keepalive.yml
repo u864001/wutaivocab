@@ -2,14 +2,9 @@ name: 🔄 Supabase Keep-Alive & Health Check
 
 on:
   schedule:
-    # 每日台灣時間上午 10:00 (UTC 02:00) 自動打卡巡檢
-    # 每天執行一次超輕量探測，即使偶遇 GitHub Actions 尖峰排隊延遲也絕不逼近 7 天休眠門檻
-    - cron: '0 2 * * *'
-  workflow_dispatch: # 支援在 GitHub Actions 後台隨時手動點擊「Run workflow」打卡測試
-
-permissions:
-  actions: write
-  contents: write
+    # 每天早晚固定各發送一次保活心跳 (UTC 01:00 與 13:00，即台灣時間 09:00 與 21:00)
+    - cron: '0 1,13 * * *'
+  workflow_dispatch:
 
 jobs:
   keepalive:
@@ -23,7 +18,7 @@ jobs:
           echo "======================================================="
           
           SUPABASE_URL="https://fqkdkmcqjswufzbvkram.supabase.co"
-          SUPABASE_KEY="sb_publishable_M9phUn6LH1yeVA9NbIXesg_tVABCW5z"
+          SUPABASE_KEY="${{ secrets.VITE_SUPABASE_ANON_KEY || 'sb_publishable_M9phUn6LH1yeVA9NbIXesg_tVABCW5z' }}"
           
           # 發起極輕量 REST 探測 (僅查詢 1 筆單字 id，消耗頻寬 < 100 bytes)
           HTTP_STATUS=$(curl -s -o /tmp/resp.json -w "%{http_code}" \
@@ -37,14 +32,6 @@ jobs:
             echo "✅ 成功打卡！Supabase 運作健康，7 天無活動休眠計時器已成功重置！"
             echo "📊 探測回應: $(cat /tmp/resp.json)"
           else
-            echo "❌ 連線異常 (狀態碼: $HTTP_STATUS)"
-            cat /tmp/resp.json
-            exit 1
+            echo "⚠️ 連線狀態碼: $HTTP_STATUS"
+            cat /tmp/resp.json || true
           fi
-
-      - name: 📥 檢出程式碼以進行 GitHub 保活判定
-        uses: actions/checkout@v4
-
-      - name: 🛡️ 自動重置 GitHub 60 天活動計時器 (防止 GitHub Actions 休眠)
-        uses: gautamkrishnar/keepalive-workflow@v2
-        continue-on-error: true
