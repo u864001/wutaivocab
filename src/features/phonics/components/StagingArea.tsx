@@ -113,18 +113,18 @@ export const StagingArea: React.FC<StagingAreaProps> = ({
           {/* 無限母音卡片水平陳列列 */}
           <div
             ref={vowelRef}
-            className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto py-1 scrollbar-none min-h-[64px] sm:min-h-[82px]"
+            className="flex items-center gap-3 sm:gap-3.5 overflow-x-auto py-1 px-1 scrollbar-none min-h-[72px] sm:min-h-[86px]"
           >
             {activeVowels.map((vowel) => (
               <div key={`inf_${vowel.id}`} className="relative group shrink-0">
                 <PhonicsCardView
                   card={vowel}
-                  isInfinite={true}
+                  isInfinite={false}
                   size="sm"
                   pronunciationMode={pronunciationMode}
                   onDragStart={(e) => handleDragStart(e, vowel)}
                   onClick={() => onPlaceCard(vowel)}
-                  className="w-13! h-15! sm:w-16! sm:h-20! hover:scale-105"
+                  className="w-14 h-17 sm:w-16 sm:h-20 hover:scale-105"
                 />
               </div>
             ))}
@@ -195,7 +195,7 @@ export const StagingArea: React.FC<StagingAreaProps> = ({
           {/* 子音卡片水平捲軸 */}
           <div
             ref={trayRef}
-            className="flex-1 flex items-center gap-2 sm:gap-2.5 overflow-x-auto py-1 scroll-smooth scrollbar-none min-h-[64px] sm:min-h-[82px]"
+            className="flex-1 flex items-center gap-3 sm:gap-3.5 overflow-x-auto py-1 px-1 scroll-smooth scrollbar-none min-h-[72px] sm:min-h-[86px]"
           >
             {stagingCards.length === 0 ? (
               <div
@@ -218,7 +218,7 @@ export const StagingArea: React.FC<StagingAreaProps> = ({
                     pronunciationMode={pronunciationMode}
                     onDragStart={(e) => handleDragStart(e, card)}
                     onClick={() => onPlaceCard(card)}
-                    className="w-13! h-15! sm:w-16! sm:h-20!"
+                    className="w-14 h-17 sm:w-16 sm:h-20 hover:scale-105"
                   />
                 </div>
               ))

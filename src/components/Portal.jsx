@@ -100,15 +100,15 @@ export const Portal = ({
             {/* 全校排行榜快速通關按鈕 (手機版金牌膠囊，電腦版立體 3D 琥珀按鈕) */}
             {onOpenLeaderboard && (
               <div className="shrink-0">
-                {/* 手機版緊湊膠囊按鈕 */}
+                {/* 手機版純金色獎盃圖示 (直立時不帶文字，避免與校名標題遮蔽) */}
                 <button
                   type="button"
                   onClick={onOpenLeaderboard}
-                  className="sm:hidden flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-white font-black text-xs shadow-md shadow-amber-500/30 border border-amber-300/60 active:scale-95 transition-all cursor-pointer"
+                  className="sm:hidden w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-500 text-amber-950 flex items-center justify-center shadow-md shadow-amber-500/30 border border-amber-300/70 active:scale-95 transition-all cursor-pointer shrink-0"
                   title={t.leaderboard}
+                  aria-label={t.leaderboard}
                 >
-                  <Trophy className="w-4 h-4 text-amber-200 shrink-0" />
-                  <span className="whitespace-nowrap">{t.leaderboard}</span>
+                  <Trophy className="w-5 h-5 text-amber-900 fill-amber-300 dark:text-amber-100 shrink-0 drop-shadow-xs" />
                 </button>
 
                 {/* 電腦版 3D 按鈕 */}

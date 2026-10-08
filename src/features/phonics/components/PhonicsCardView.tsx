@@ -2,7 +2,7 @@ import React from 'react';
 import type { PhonicsCard } from '../types/phonics';
 import { CATEGORIES_META } from '../data/phonicsData';
 import { speakPhoneme } from '../utils/audio';
-import { X, Volume2 } from 'lucide-react';
+import { X } from 'lucide-react';
 
 import type { PronunciationMode } from '../utils/audio';
 
@@ -54,7 +54,7 @@ export const PhonicsCardView: React.FC<PhonicsCardViewProps> = ({
 
   // Dimensions based on size (lg 自動依手機螢幕縮放，維持單一行不折行)
   const sizeClasses = {
-    sm: 'w-13 h-15 text-xl sm:w-14 sm:h-16 sm:text-2xl',
+    sm: 'w-14 h-17 text-xl sm:w-16 sm:h-20 sm:text-2xl',
     md: 'w-18 h-22 text-2xl sm:w-22 sm:h-28 sm:text-4xl',
     lg: 'w-[70px] h-[90px] text-3xl sm:w-24 sm:h-28 sm:text-4xl md:w-28 md:h-32 md:text-5xl',
   }[size];
@@ -98,18 +98,6 @@ export const PhonicsCardView: React.FC<PhonicsCardViewProps> = ({
         ) : (
           <span>{card.displayText || card.grapheme}</span>
         )}
-      </div>
-
-      {/* Infinite badge for dispenser */}
-      {isInfinite && (
-        <span className="absolute -top-2 -right-1 bg-amber-500 text-white text-[10px] font-sans font-bold px-1.5 py-0.5 rounded-full shadow-sm">
-          ∞
-        </span>
-      )}
-
-      {/* Audio icon indicator on bottom corner */}
-      <div className="absolute bottom-1 right-1 opacity-25 hover:opacity-100 transition-opacity">
-        <Volume2 className="w-3.5 h-3.5" />
       </div>
 
       {/* Remove Button on card (for placed cards) */}
