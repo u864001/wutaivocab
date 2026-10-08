@@ -16,6 +16,7 @@ import { VocabSpotterGame } from './games/spotter/VocabSpotterGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
 import { WutaiTownGame } from './games/town/WutaiTownGame';
+import { TextbookViewer } from './components/TextbookViewer';
 import { TeacherAuthModal } from './components/TeacherAuthModal';
 import { StudentProfileModal } from './components/StudentProfileModal';
 import { useI18n } from './context/I18nContext';
@@ -97,6 +98,9 @@ export function App() {
       }
       if (path === '/town' || urlParams.get('view') === 'town') {
         return 'town';
+      }
+      if (path === '/textbook' || urlParams.get('view') === 'textbook') {
+        return 'textbook';
       }
       if (path === '/escape' || urlParams.get('view') === 'escape') {
         return 'escape';
@@ -268,8 +272,8 @@ export function App() {
 
   const handleGoParent = () => {
     // 依層級關係精確返回上一層：
-    // 若當前在單字學習館大廳 (lobby) 或自然發音 (phonics)，上一層為學習宇宙首頁 (portal)
-    if (currentView === 'lobby' || currentView === 'phonics' || currentView === 'town') {
+    // 若當前在單字學習館大廳 (lobby)、自然發音 (phonics)、小鎮 (town) 或電子書 (textbook)，上一層為學習宇宙首頁 (portal)
+    if (currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook') {
       handleNavigate('portal');
     } else if (currentView !== 'portal') {
       // 若當前在任何單字遊戲、字母迷宮、排行榜或教師後台，上一層為單字學習館 (lobby)
@@ -427,6 +431,12 @@ export function App() {
 
           {currentView === 'town' && (
             <WutaiTownGame
+              onBack={() => handleNavigate('portal')}
+            />
+          )}
+
+          {currentView === 'textbook' && (
+            <TextbookViewer
               onBack={() => handleNavigate('portal')}
             />
           )}

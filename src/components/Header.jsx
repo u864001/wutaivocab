@@ -105,7 +105,7 @@ export const Header = ({
           <button
             onClick={onGoParent || onGoHome}
             title={
-              currentView === 'lobby' || currentView === 'phonics' || currentView === 'town'
+              currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook'
                 ? (lang === 'zh-TW' ? '返回學習宇宙首頁' : 'Back to Universe Home')
                 : (lang === 'zh-TW' ? '返回單字學習館' : 'Back to Vocab Hub')
             }
@@ -113,7 +113,7 @@ export const Header = ({
           >
             <ArrowLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span className="hidden sm:inline">
-              {currentView === 'lobby' || currentView === 'phonics' || currentView === 'town'
+              {currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook'
                 ? (lang === 'zh-TW' ? '宇宙首頁' : 'Home')
                 : (lang === 'zh-TW' ? '回單字館' : 'Vocab Hub')}
             </span>

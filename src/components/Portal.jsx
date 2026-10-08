@@ -230,6 +230,34 @@ export const Portal = ({
               <ExternalLink className="w-4 h-4" />
             </div>
           </div>
+
+          {/* 手機模組 5：自編英語電子教科書 (48頁 3D 翻頁繪本) */}
+          <div
+            onClick={() => onNavigate('textbook')}
+            className="p-3.5 rounded-2xl bg-gradient-to-r from-teal-500/15 via-emerald-500/10 to-transparent dark:from-teal-950/60 dark:to-slate-900/60 border-2 border-teal-400/60 dark:border-teal-600/60 flex items-center justify-between gap-3 shadow-md active:scale-98 transition-transform cursor-pointer"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-white flex items-center justify-center shadow-md shadow-teal-500/30 shrink-0">
+                <BookOpen className="w-6 h-6" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <h3 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading truncate">
+                    {t.textbookModuleTitle || '自編英語電子教科書'}
+                  </h3>
+                  <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-teal-600 text-white shrink-0">
+                    48頁翻頁
+                  </span>
+                </div>
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                  3D 擬真翻頁 • 雙指放大 • 聽力測驗隨身聽
+                </p>
+              </div>
+            </div>
+            <div className="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <ArrowRight className="w-4 h-4" />
+            </div>
+          </div>
         </div>
 
         {/* ══════════════════════════════════════════════════════════ */}
@@ -444,6 +472,59 @@ export const Portal = ({
                 <div className="flex items-center justify-center gap-2">
                   <span>{t.classqnaModuleEnter}</span>
                   <ExternalLink className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Button3D>
+            </div>
+          </GlassCard>
+
+          {/* ── 模組五：自編英語電子教科書 (Bilingual Textbook Flipbook) ── */}
+          <GlassCard
+            hoverable={true}
+            onClick={() => onNavigate('textbook')}
+            className="relative overflow-hidden group cursor-pointer border-2 border-teal-300/80 dark:border-teal-700/60 bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-cyan-500/10 dark:from-teal-950/40 dark:via-slate-900/50 dark:to-cyan-950/30 p-5 sm:p-6 shadow-md hover:shadow-xl transition-all"
+          >
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 relative z-10">
+              <div className="flex items-center gap-4 sm:gap-5 flex-1 min-w-0">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-teal-500 via-emerald-500 to-cyan-500 text-white flex items-center justify-center group-hover:scale-105 group-hover:-rotate-3 transition-all duration-300 shadow-xl shadow-teal-500/30 shrink-0">
+                  <BookOpen className="w-8 h-8 sm:w-10 sm:h-10" />
+                </div>
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 font-heading">
+                      {t.textbookModuleTitle || '自編英語電子教科書'}
+                    </h3>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-sm">
+                      {t.textbookModuleBadge || '48頁全彩・3D翻頁・聽力隨身聽'}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                    {t.textbookModuleDesc || '收錄國小雙語校本教材全 5 單元！支援 3D 擬真翻頁、雙指放大鏡、章節快速跳轉與聽力測驗即時語音朗讀輔助。'}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-teal-200 dark:border-teal-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                      <BookOpen className="w-3.5 h-3.5 text-teal-500" />
+                      48 頁全彩教材
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-teal-200 dark:border-teal-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+                      3D 擬真翻頁
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-teal-200 dark:border-teal-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                      <Headphones className="w-3.5 h-3.5 text-cyan-500" />
+                      聽力測驗語音輔助 (0流量)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <Button3D
+                variant="emerald"
+                size="lg"
+                className="shrink-0 w-full md:w-auto shadow-lg group-hover:scale-105 transition-transform"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <span>{t.textbookModuleEnter || '翻閱電子書'}</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Button3D>
             </div>

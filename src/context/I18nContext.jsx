@@ -35,6 +35,10 @@ const DICTIONARY = {
     classqnaModuleBadge: '虛擬教室・課堂問答・回家作業',
     classqnaModuleDesc: '建立線上互動虛擬教室，支援課堂即時問答互動與雲端指派回家作業，學生離開課堂後亦可隨時跨裝置登入作答！',
     classqnaModuleEnter: '進入互動教室',
+    textbookModuleTitle: '自編英語電子教科書',
+    textbookModuleBadge: '48頁全彩・3D翻頁・聽力隨身聽',
+    textbookModuleDesc: '收錄國小雙語校本教材全 5 單元！支援 3D 擬真翻頁、雙指放大鏡、章節快速跳轉與聽力測驗即時語音朗讀輔助。',
+    textbookModuleEnter: '翻閱電子書',
 
     // 大廳區塊
     rangeTitle: '1. 設定複習範圍',
@@ -266,6 +270,10 @@ const DICTIONARY = {
     classqnaModuleBadge: 'Virtual Room • Live Q&A • Homework',
     classqnaModuleDesc: 'Create virtual interactive classrooms with real-time class Q&A and Supabase cloud homework assignments for after-school learning!',
     classqnaModuleEnter: 'Enter Classroom',
+    textbookModuleTitle: 'Bilingual E-Textbook (Flipbook)',
+    textbookModuleBadge: '48 Full-Color Pages • 3D Flip • Audio Aid',
+    textbookModuleDesc: 'Browse all 5 units of our school-based English textbook! Features 3D realistic page-flipping, pinch-to-zoom, quick chapter navigation, and live text-to-speech audio assistant.',
+    textbookModuleEnter: 'Open E-Textbook',
 
     // Lobby
     rangeTitle: '1. Select Review Range',
