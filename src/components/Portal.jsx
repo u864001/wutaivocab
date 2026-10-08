@@ -27,158 +27,6 @@ import {
   ChevronUp,
 } from 'lucide-react';
 
-// ══════════════════════════════════════════════════════════════
-// 🌿 魯凱族聖花「百合花 (Bariangalay)」隨風輕曳純前端向量動效
-// 特色：純 SVG + CSS GPU 硬體加速，0 額外網路流量、0 資料庫負擔、60FPS 絲滑省電
-// 象徵：純潔、榮耀、堅定與原住民族深厚文化底蘊
-// ══════════════════════════════════════════════════════════════
-const SwayingLily = ({ className = "w-14 h-20 sm:w-20 sm:h-28" }) => (
-  <div className={`relative pointer-events-none select-none shrink-0 ${className}`}>
-    <svg
-      viewBox="0 0 100 140"
-      className="w-full h-full overflow-visible"
-      style={{
-        animation: 'rukaiLilySway 6.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate',
-        transformOrigin: '50px 135px'
-      }}
-    >
-      <defs>
-        {/* 百合花瓣柔和漸層 (象徵純潔白色與淡紫背稜) */}
-        <linearGradient id="lilyPetalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="65%" stopColor="#f8fafc" />
-          <stop offset="100%" stopColor="#e2e8f0" />
-        </linearGradient>
-        <linearGradient id="lilyRibGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#c084fc" stopOpacity="0.8" />
-          <stop offset="50%" stopColor="#a855f7" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#475569" stopOpacity="0.1" />
-        </linearGradient>
-        {/* 翠綠花莖漸層 */}
-        <linearGradient id="lilyStemGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#34d399" />
-          <stop offset="100%" stopColor="#059669" />
-        </linearGradient>
-        {/* 金黃花蕊微暈 */}
-        <filter id="pollenGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-
-      {/* 葉片 1 (左側修長披針葉) */}
-      <path
-        d="M 50 110 Q 25 105 18 85 Q 32 98 50 105 Z"
-        fill="#10b981"
-        opacity="0.9"
-      />
-      {/* 葉片 2 (右側修長披針葉) */}
-      <path
-        d="M 50 120 Q 75 115 84 95 Q 68 110 50 115 Z"
-        fill="#059669"
-        opacity="0.95"
-      />
-
-      {/* 典雅微彎長花莖 */}
-      <path
-        d="M 50 135 Q 48 90 52 45"
-        stroke="url(#lilyStemGrad)"
-        strokeWidth="3.2"
-        strokeLinecap="round"
-        fill="none"
-      />
-
-      {/* 花托萼片 */}
-      <path
-        d="M 48 45 Q 52 40 56 45 Q 52 48 48 45 Z"
-        fill="#047857"
-      />
-
-      {/* 金黃雄蕊與雌蕊 (向外微綻) */}
-      <g filter="url(#pollenGlow)">
-        <path d="M 52 42 Q 50 24 45 18" stroke="#f59e0b" strokeWidth="1.2" fill="none" />
-        <circle cx="45" cy="17" r="2.2" fill="#d97706" />
-
-        <path d="M 52 42 Q 53 22 53 14" stroke="#f59e0b" strokeWidth="1.2" fill="none" />
-        <circle cx="53" cy="13" r="2.5" fill="#fbbf24" />
-
-        <path d="M 52 42 Q 56 25 61 19" stroke="#f59e0b" strokeWidth="1.2" fill="none" />
-        <circle cx="61" cy="18" r="2.2" fill="#d97706" />
-      </g>
-
-      {/* 臺灣百合 6 片向外反捲的潔白喇叭花瓣 */}
-      <g style={{ animation: 'rukaiPetalPulse 5s ease-in-out infinite alternate' }}>
-        {/* 後層花瓣 */}
-        <path
-          d="M 52 42 Q 38 28 32 15 Q 46 22 52 38 Z"
-          fill="url(#lilyPetalGrad)"
-          stroke="#cbd5e1"
-          strokeWidth="0.6"
-        />
-        <path
-          d="M 52 42 Q 66 28 72 15 Q 58 22 52 38 Z"
-          fill="url(#lilyPetalGrad)"
-          stroke="#cbd5e1"
-          strokeWidth="0.6"
-        />
-
-        {/* 前層主花瓣 (優雅反捲) */}
-        <path
-          d="M 52 42 Q 42 22 40 6 Q 49 18 52 40 Z"
-          fill="#ffffff"
-          stroke="#e2e8f0"
-          strokeWidth="0.6"
-        />
-        <path
-          d="M 52 42 Q 62 22 64 6 Q 55 18 52 40 Z"
-          fill="#ffffff"
-          stroke="#e2e8f0"
-          strokeWidth="0.6"
-        />
-
-        {/* 中央主瓣背稜紫線 */}
-        <path
-          d="M 52 42 Q 52 18 52 4 Q 54 20 52 42 Z"
-          stroke="url(#lilyRibGrad)"
-          strokeWidth="1.2"
-          fill="none"
-        />
-      </g>
-    </svg>
-  </div>
-);
-
-// ══════════════════════════════════════════════════════════════
-// 🐍 魯凱族傳統百步蛇幾何菱形飾帶 (Rukai Diamond Pattern)
-// ══════════════════════════════════════════════════════════════
-const RukaiPatternBar = ({ className = "" }) => (
-  <div className={`w-full overflow-hidden flex items-center justify-center opacity-80 select-none pointer-events-none ${className}`}>
-    <svg viewBox="0 0 480 12" className="w-full max-w-sm sm:max-w-md h-2.5 sm:h-3" preserveAspectRatio="none">
-      <defs>
-        <pattern id="rukaiDiamondPattern" width="28" height="12" patternUnits="userSpaceOnUse">
-          {/* 外菱形 (陶土紅) */}
-          <polygon points="14,1 27,6 14,11 1,6" fill="#dc2626" />
-          {/* 中菱形 (純白) */}
-          <polygon points="14,2.5 23,6 14,9.5 5,6" fill="#ffffff" />
-          {/* 內菱形 (琉璃金) */}
-          <polygon points="14,4 19,6 14,8 9,6" fill="#f59e0b" />
-          {/* 核心點 (玄武黑) */}
-          <circle cx="14" cy="6" r="1.2" fill="#0f172a" />
-          {/* 兩側銜接三角 */}
-          <polygon points="0,0 5,0 0,5" fill="#f59e0b" />
-          <polygon points="28,0 23,0 28,5" fill="#f59e0b" />
-          <polygon points="0,12 5,12 0,7" fill="#f59e0b" />
-          <polygon points="28,12 23,12 28,7" fill="#f59e0b" />
-        </pattern>
-      </defs>
-      <rect width="480" height="12" fill="url(#rukaiDiamondPattern)" />
-    </svg>
-  </div>
-);
-
 export const Portal = ({
   onNavigate,
   onOpenLeaderboard,
@@ -193,8 +41,8 @@ export const Portal = ({
     <div className="relative min-h-screen w-full">
       {/* ══════════════════════════════════════════════════════════ */}
       {/* 🏞️ 魯凱族原住民文化專屬自適應網頁底圖 (寬螢幕與窄螢幕自適應) */}
-      {/* 包含：北大武山晨嵐、純潔百合花 (Bariangalay)、古陶壺 (Kadilrungane)、百步蛇幾何菱紋飾邊 */}
-      {/* 構圖專為網頁設計：中央寬敞留白霧嵐、文化符號靠邊框，高雅純淨不干擾閱讀 */}
+      {/* 上方為純淨開闊的晨曦天空（無頂部織布干擾，確保導覽列文字清晰）， */}
+      {/* 下方保留盛開百合花 (Bariangalay)、神聖古陶壺 (Kadilrungane) 與幾何飾邊 */}
       {/* ══════════════════════════════════════════════════════════ */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
         <img
@@ -207,30 +55,7 @@ export const Portal = ({
       </div>
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-3 sm:px-4 py-3 sm:py-6 space-y-4 sm:space-y-6 animate-fadeIn pb-14">
-        {/* 內嵌魯凱百合花隨風飄搖 CSS 動畫 (純前端 GPU 加速，0 伺服器流量) */}
-        <style>{`
-          @keyframes rukaiLilySway {
-            0% {
-              transform: rotate(-3.5deg);
-            }
-            50% {
-              transform: rotate(2.5deg);
-            }
-            100% {
-              transform: rotate(-3.5deg);
-            }
-          }
-          @keyframes rukaiPetalPulse {
-            0%, 100% {
-              filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
-            }
-            50% {
-              filter: drop-shadow(0 0 10px rgba(253, 230, 138, 0.7));
-            }
-          }
-        `}</style>
-
-        {/* ── 頂部歡迎便當塊 (融入大武山聖山晨嵐與魯凱百合花文化) ── */}
+        {/* ── 頂部歡迎便當塊 ── */}
         <GlassCard className="relative overflow-hidden bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border-2 border-emerald-300/60 dark:border-emerald-700/60 p-4 sm:p-7 shadow-lg">
           {/* 背景裝飾：遠處大武山晨嵐微光 */}
           <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-emerald-500/15 dark:bg-emerald-500/10 blur-3xl pointer-events-none" />
@@ -270,11 +95,6 @@ export const Portal = ({
                   {lang === 'zh-TW' ? '教育部課綱教材與部落情境英語探險' : 'Curriculum & Tribal Adventure'}
                 </p>
               </div>
-
-              {/* 隨風輕曳純潔百合花動效 (象徵魯凱族榮譽與純潔聖花，全螢幕與行動裝置清晰呈現) */}
-              <div className="flex items-center justify-center pl-1 sm:pl-3 shrink-0">
-                <SwayingLily className="w-14 h-20 sm:w-20 sm:h-28" />
-              </div>
             </div>
 
             {/* 全校排行榜快速通關按鈕 */}
@@ -292,9 +112,6 @@ export const Portal = ({
               </div>
             )}
           </div>
-
-          {/* 魯凱族傳統百步蛇幾何菱紋飾帶 */}
-          <RukaiPatternBar className="mt-3.5 sm:mt-4" />
         </GlassCard>
 
         {/* ══════════════════════════════════════════════════════════ */}
@@ -626,7 +443,7 @@ export const Portal = ({
               >
                 <div className="flex items-center justify-center gap-2">
                   <span>{t.classqnaModuleEnter}</span>
-                  <ExternalLink className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform" />
+                  <ExternalLink className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Button3D>
             </div>
