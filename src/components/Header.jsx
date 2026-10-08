@@ -29,7 +29,7 @@ export const Header = ({
   };
 
   return (
-    <header className="w-full max-w-6xl mx-auto px-4 py-3 sm:py-5 flex items-center justify-between gap-3">
+    <header className="w-full max-w-6xl mx-auto px-4 py-3 sm:py-5 flex items-center justify-between gap-3 relative z-20">
       {/* 學校標題與連線狀態 (左側星光圖示連續點擊 5 次直通後台) */}
       <div className="flex items-center gap-2.5 sm:gap-3">
         <div
