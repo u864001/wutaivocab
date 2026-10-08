@@ -56,24 +56,24 @@ export const Portal = ({
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-3 sm:px-4 py-3 sm:py-6 space-y-4 sm:space-y-6 animate-fadeIn pb-14">
         {/* ── 頂部歡迎便當塊 ── */}
-        <GlassCard className="relative overflow-hidden bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border-2 border-emerald-300/60 dark:border-emerald-700/60 p-4 sm:p-7 shadow-lg">
+        <GlassCard className="relative overflow-hidden bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border-2 border-emerald-300/60 dark:border-emerald-700/60 p-3 sm:p-7 shadow-lg">
           {/* 背景裝飾：遠處大武山晨嵐微光 */}
           <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-emerald-500/15 dark:bg-emerald-500/10 blur-3xl pointer-events-none" />
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
-            <div className="flex items-center gap-3.5 sm:gap-5 w-full sm:w-auto">
+          <div className="flex items-center justify-between gap-3 sm:gap-4 relative z-10">
+            <div className="flex items-center gap-3 sm:gap-5 min-w-0 flex-1">
               {/* 霧臺學習宇宙徽章圖示 (連續點選 5 次直通後台) */}
               <div
                 onClick={handleAdminTrigger}
-                className="w-14 h-14 sm:w-18 sm:h-18 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 cursor-pointer select-none active:scale-95 transition-transform shrink-0"
+                className="w-12 h-12 sm:w-18 sm:h-18 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 cursor-pointer select-none active:scale-95 transition-transform shrink-0"
                 title="霧臺國小 英語學習宇宙"
               >
-                <Sparkles className="w-7 h-7 sm:w-10 sm:h-10 animate-pulse pointer-events-none" />
+                <Sparkles className="w-6 h-6 sm:w-10 sm:h-10 animate-pulse pointer-events-none" />
               </div>
 
               <div className="flex-1 min-w-0">
                 {/* 魯凱文化標籤 */}
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-400/20 text-emerald-800 dark:text-emerald-300 text-[11px] sm:text-xs font-black mb-1">
+                <div className="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-400/20 text-emerald-800 dark:text-emerald-300 text-[10px] sm:text-xs font-black mb-0.5 sm:mb-1">
                   <span>🌿</span>
                   <span className="truncate">
                     {lang === 'zh-TW' ? '霧臺國小 • 魯凱雙語學習宇宙' : 'Wutai Elementary Bilingual Hub'}
@@ -84,31 +84,45 @@ export const Portal = ({
                 <div className="flex items-center gap-2">
                   <h2
                     onClick={handleAdminTrigger}
-                    className="text-xl sm:text-3xl font-black text-slate-800 dark:text-white font-heading cursor-pointer select-none tracking-wide truncate"
+                    className="text-lg sm:text-3xl font-black text-slate-800 dark:text-white font-heading cursor-pointer select-none tracking-wide truncate"
                   >
                     {t.portalTitle}
                   </h2>
                 </div>
 
-                {/* 精簡副標題 */}
-                <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mt-0.5 truncate">
+                {/* 精簡副標題 (手機版隱藏以省下垂直高度，電腦版正常顯示) */}
+                <p className="hidden sm:block text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mt-0.5 truncate">
                   {lang === 'zh-TW' ? '教育部課綱教材與部落情境英語探險' : 'Curriculum & Tribal Adventure'}
                 </p>
               </div>
             </div>
 
-            {/* 全校排行榜快速通關按鈕 */}
+            {/* 全校排行榜快速通關按鈕 (手機版金牌膠囊，電腦版立體 3D 琥珀按鈕) */}
             {onOpenLeaderboard && (
-              <div className="w-full sm:w-auto shrink-0 flex items-center gap-2">
-                <Button3D
-                  variant="amber"
-                  size="md"
+              <div className="shrink-0">
+                {/* 手機版緊湊膠囊按鈕 */}
+                <button
+                  type="button"
                   onClick={onOpenLeaderboard}
-                  icon={Trophy}
-                  className="shadow-md w-full sm:w-auto text-xs sm:text-sm py-2 sm:py-2.5"
+                  className="sm:hidden flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-white font-black text-xs shadow-md shadow-amber-500/30 border border-amber-300/60 active:scale-95 transition-all cursor-pointer"
+                  title={t.leaderboard}
                 >
-                  {t.leaderboard}
-                </Button3D>
+                  <Trophy className="w-4 h-4 text-amber-200 shrink-0" />
+                  <span className="whitespace-nowrap">{t.leaderboard}</span>
+                </button>
+
+                {/* 電腦版 3D 按鈕 */}
+                <div className="hidden sm:block">
+                  <Button3D
+                    variant="amber"
+                    size="md"
+                    onClick={onOpenLeaderboard}
+                    icon={Trophy}
+                    className="shadow-md text-xs sm:text-sm py-2 sm:py-2.5 whitespace-nowrap"
+                  >
+                    {t.leaderboard}
+                  </Button3D>
+                </div>
               </div>
             )}
           </div>
@@ -116,146 +130,121 @@ export const Portal = ({
 
         {/* ══════════════════════════════════════════════════════════ */}
         {/* 📱 1. 手機專屬極精簡版面 (Mobile Ultra-Compact Mode, < 640px) */}
-        {/* 去除冗長文字與多層標籤，以 4 個俐落高回饋的大按鈕卡片呈現，單手輕鬆滑動 */}
+        {/* 順序：RPG ➔ 單字 ➔ 發音 ➔ QnA ➔ 課本 (拔除冗餘小字，扁平元素化，一屏全覽) */}
         {/* ══════════════════════════════════════════════════════════ */}
-        <div className="block sm:hidden space-y-2.5">
-          {/* 手機模組 1：單字學習館 */}
-          <div
-            onClick={() => onNavigate('lobby')}
-            className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent dark:from-emerald-950/60 dark:to-slate-900/60 border-2 border-emerald-400/60 dark:border-emerald-600/60 flex items-center justify-between gap-3 shadow-md active:scale-98 transition-transform cursor-pointer"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center shadow-md shadow-emerald-500/30 shrink-0">
-                <Rocket className="w-6 h-6" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading truncate">
-                    {t.vocabModuleTitle}
-                  </h3>
-                  <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-emerald-600 text-white shrink-0">
-                    多人/遊戲
-                  </span>
-                </div>
-                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                  {wordsCount > 0 ? `課綱 ${wordsCount} 字` : '課綱單字'} • 多人連線擂台 • 5大遊戲
-                </p>
-              </div>
-            </div>
-            <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-              <ArrowRight className="w-4 h-4" />
-            </div>
-          </div>
-
-          {/* 手機模組 2：自然發音練習 */}
-          <div
-            onClick={() => onNavigate('phonics')}
-            className="p-3.5 rounded-2xl bg-gradient-to-r from-indigo-500/15 via-purple-500/10 to-transparent dark:from-indigo-950/60 dark:to-slate-900/60 border-2 border-indigo-400/60 dark:border-indigo-600/60 flex items-center justify-between gap-3 shadow-md active:scale-98 transition-transform cursor-pointer"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/30 shrink-0">
-                <Volume2 className="w-6 h-6" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading truncate">
-                    {t.phonicsModuleTitle}
-                  </h3>
-                  <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-indigo-600 text-white shrink-0">
-                    CVC拼音
-                  </span>
-                </div>
-                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                  8大規則卡池 • 磁吸拼讀導軌 • 聽力評量
-                </p>
-              </div>
-            </div>
-            <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-              <ArrowRight className="w-4 h-4" />
-            </div>
-          </div>
-
-          {/* 手機模組 3：霧臺小鎮生活冒險 RPG */}
+        <div className="block sm:hidden space-y-2">
+          {/* 手機模組 1：霧臺小鎮生活冒險 RPG */}
           <div
             onClick={() => onNavigate('town')}
-            className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent dark:from-amber-950/60 dark:to-slate-900/60 border-2 border-amber-400/60 dark:border-amber-600/60 flex items-center justify-between gap-3 shadow-md active:scale-98 transition-transform cursor-pointer"
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent dark:from-amber-950/60 dark:to-slate-900/60 border-2 border-amber-400/60 dark:border-amber-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 text-white flex items-center justify-center shadow-md shadow-amber-500/30 shrink-0">
-                <Store className="w-6 h-6" />
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 text-white flex items-center justify-center shadow-md shadow-amber-500/25 shrink-0">
+                <Store className="w-5 h-5" />
               </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading truncate">
-                    {t.townModuleTitle}
-                  </h3>
-                  <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-amber-600 text-white shrink-0">
-                    生活RPG
-                  </span>
-                </div>
-                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                  9大生活地標 • 沉浸對話 • 金幣任務商店
-                </p>
+              <div className="flex items-center gap-2 min-w-0">
+                <h3 className="text-[15px] font-black text-slate-800 dark:text-slate-100 font-heading truncate">
+                  {t.townModuleTitle}
+                </h3>
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-amber-600 text-white shrink-0 tracking-wide">
+                  生活RPG
+                </span>
               </div>
             </div>
-            <div className="w-8 h-8 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-              <ArrowRight className="w-4 h-4" />
+            <div className="w-7 h-7 rounded-lg bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+
+          {/* 手機模組 2：英語單字冒險館 */}
+          <div
+            onClick={() => onNavigate('lobby')}
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent dark:from-emerald-950/60 dark:to-slate-900/60 border-2 border-emerald-400/60 dark:border-emerald-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center shadow-md shadow-emerald-500/25 shrink-0">
+                <Rocket className="w-5 h-5" />
+              </div>
+              <div className="flex items-center gap-2 min-w-0">
+                <h3 className="text-[15px] font-black text-slate-800 dark:text-slate-100 font-heading truncate">
+                  {t.vocabModuleTitle}
+                </h3>
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-emerald-600 text-white shrink-0 tracking-wide">
+                  單字冒險
+                </span>
+              </div>
+            </div>
+            <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+
+          {/* 手機模組 3：自然發音探索館 */}
+          <div
+            onClick={() => onNavigate('phonics')}
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-indigo-500/15 via-purple-500/10 to-transparent dark:from-indigo-950/60 dark:to-slate-900/60 border-2 border-indigo-400/60 dark:border-indigo-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/25 shrink-0">
+                <Volume2 className="w-5 h-5" />
+              </div>
+              <div className="flex items-center gap-2 min-w-0">
+                <h3 className="text-[15px] font-black text-slate-800 dark:text-slate-100 font-heading truncate">
+                  {t.phonicsModuleTitle}
+                </h3>
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-indigo-600 text-white shrink-0 tracking-wide">
+                  自然發音
+                </span>
+              </div>
+            </div>
+            <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
 
           {/* 手機模組 4：ClassQnA 線上互動教室 */}
           <div
             onClick={() => window.open('https://classqna.vercel.app/', '_blank', 'noopener,noreferrer')}
-            className="p-3.5 rounded-2xl bg-gradient-to-r from-sky-500/15 via-blue-500/10 to-transparent dark:from-sky-950/60 dark:to-slate-900/60 border-2 border-sky-400/60 dark:border-sky-600/60 flex items-center justify-between gap-3 shadow-md active:scale-98 transition-transform cursor-pointer"
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-sky-500/15 via-blue-500/10 to-transparent dark:from-sky-950/60 dark:to-slate-900/60 border-2 border-sky-400/60 dark:border-sky-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 via-blue-500 to-indigo-500 text-white flex items-center justify-center shadow-md shadow-sky-500/30 shrink-0">
-                <GraduationCap className="w-6 h-6" />
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-blue-500 to-indigo-500 text-white flex items-center justify-center shadow-md shadow-sky-500/25 shrink-0">
+                <GraduationCap className="w-5 h-5" />
               </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading truncate">
-                    {t.classqnaModuleTitle}
-                  </h3>
-                  <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-sky-600 text-white shrink-0">
-                    作業/問答
-                  </span>
-                </div>
-                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                  線上虛擬教室 • 即時互動 • 雲端回家作業
-                </p>
+              <div className="flex items-center gap-2 min-w-0">
+                <h3 className="text-[15px] font-black text-slate-800 dark:text-slate-100 font-heading truncate">
+                  {t.classqnaModuleTitle}
+                </h3>
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-sky-600 text-white shrink-0 tracking-wide">
+                  互動教室
+                </span>
               </div>
             </div>
-            <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-              <ExternalLink className="w-4 h-4" />
+            <div className="w-7 h-7 rounded-lg bg-sky-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <ExternalLink className="w-3.5 h-3.5" />
             </div>
           </div>
 
-          {/* 手機模組 5：自編英語電子教科書 (48頁 3D 翻頁繪本) */}
+          {/* 手機模組 5：自編英語電子教科書 */}
           <div
             onClick={() => onNavigate('textbook')}
-            className="p-3.5 rounded-2xl bg-gradient-to-r from-teal-500/15 via-emerald-500/10 to-transparent dark:from-teal-950/60 dark:to-slate-900/60 border-2 border-teal-400/60 dark:border-teal-600/60 flex items-center justify-between gap-3 shadow-md active:scale-98 transition-transform cursor-pointer"
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-teal-500/15 via-emerald-500/10 to-transparent dark:from-teal-950/60 dark:to-slate-900/60 border-2 border-teal-400/60 dark:border-teal-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-white flex items-center justify-center shadow-md shadow-teal-500/30 shrink-0">
-                <BookOpen className="w-6 h-6" />
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-white flex items-center justify-center shadow-md shadow-teal-500/25 shrink-0">
+                <BookOpen className="w-5 h-5" />
               </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading truncate">
-                    {t.textbookModuleTitle || '自編英語電子教科書'}
-                  </h3>
-                  <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-teal-600 text-white shrink-0">
-                    48頁翻頁
-                  </span>
-                </div>
-                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                  3D 擬真翻頁 • 雙指放大 • 聽力測驗隨身聽
-                </p>
+              <div className="flex items-center gap-2 min-w-0">
+                <h3 className="text-[15px] font-black text-slate-800 dark:text-slate-100 font-heading truncate">
+                  {t.textbookModuleTitle || '自編英語電子教科書'}
+                </h3>
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-teal-600 text-white shrink-0 tracking-wide">
+                  電子課本
+                </span>
               </div>
             </div>
-            <div className="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-              <ArrowRight className="w-4 h-4" />
+            <div className="w-7 h-7 rounded-lg bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
         </div>
@@ -265,7 +254,60 @@ export const Portal = ({
         {/* 舒展大氣的長方形橫幅卡片，左右通透，視覺舒適不擠壓 */}
         {/* ══════════════════════════════════════════════════════════ */}
         <div className="hidden sm:flex flex-col space-y-4 sm:space-y-5">
-          {/* ── 模組一：單字學習宇宙 (English Vocabulary Quest) ── */}
+          {/* ── 模組一：霧臺小鎮生活冒險 RPG (Wutai Town Dialogue RPG) ── */}
+          <GlassCard
+            hoverable={true}
+            onClick={() => onNavigate('town')}
+            className="relative overflow-hidden group cursor-pointer border-2 border-amber-300/80 dark:border-amber-700/60 bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-rose-500/10 dark:from-amber-950/40 dark:via-slate-900/50 dark:to-orange-950/30 p-5 sm:p-6 shadow-md hover:shadow-xl transition-all"
+          >
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 relative z-10">
+              <div className="flex items-center gap-4 sm:gap-5 flex-1 min-w-0">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 text-white flex items-center justify-center group-hover:scale-105 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-amber-500/30 shrink-0">
+                  <Store className="w-8 h-8 sm:w-10 sm:h-10" />
+                </div>
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 font-heading">
+                      {t.townModuleTitle}
+                    </h3>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-sm">
+                      {t.townModuleBadge}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                    漫步 9 大社區地標！沉浸式實景情境英語對話，使用金幣採買文具點心，完成每日探索任務。
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                      <MapPin className="w-3.5 h-3.5 text-amber-500" />
+                      9大生活地標
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                      <MessageSquare className="w-3.5 h-3.5 text-orange-500" />
+                      情境英語對話
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                      <Coins className="w-3.5 h-3.5 text-yellow-500" />
+                      金幣任務商店
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <Button3D
+                variant="amber"
+                size="lg"
+                className="shrink-0 w-full md:w-auto shadow-lg group-hover:scale-105 transition-transform"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <span>{t.townModuleEnter}</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Button3D>
+            </div>
+          </GlassCard>
+
+          {/* ── 模組二：英語單字冒險館 (English Vocabulary Quest) ── */}
           <GlassCard
             hoverable={true}
             onClick={() => onNavigate('lobby')}
@@ -318,7 +360,7 @@ export const Portal = ({
             </div>
           </GlassCard>
 
-          {/* ── 模組二：自然發音練習 (Interactive Phonics Board) ── */}
+          {/* ── 模組三：自然發音探索館 (Interactive Phonics Board) ── */}
           <GlassCard
             hoverable={true}
             onClick={() => onNavigate('phonics')}
@@ -365,59 +407,6 @@ export const Portal = ({
               >
                 <div className="flex items-center justify-center gap-2">
                   <span>{t.phonicsModuleEnter}</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Button3D>
-            </div>
-          </GlassCard>
-
-          {/* ── 模組三：霧臺小鎮生活冒險 RPG (Wutai Town Dialogue RPG) ── */}
-          <GlassCard
-            hoverable={true}
-            onClick={() => onNavigate('town')}
-            className="relative overflow-hidden group cursor-pointer border-2 border-amber-300/80 dark:border-amber-700/60 bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-rose-500/10 dark:from-amber-950/40 dark:via-slate-900/50 dark:to-orange-950/30 p-5 sm:p-6 shadow-md hover:shadow-xl transition-all"
-          >
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 relative z-10">
-              <div className="flex items-center gap-4 sm:gap-5 flex-1 min-w-0">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 text-white flex items-center justify-center group-hover:scale-105 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-amber-500/30 shrink-0">
-                  <Store className="w-8 h-8 sm:w-10 sm:h-10" />
-                </div>
-                <div className="space-y-1.5 flex-1 min-w-0">
-                  <div className="flex items-center gap-2.5 flex-wrap">
-                    <h3 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 font-heading">
-                      {t.townModuleTitle}
-                    </h3>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-sm">
-                      {t.townModuleBadge}
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-                    漫步 9 大社區地標！沉浸式實景情境英語對話，使用金幣採買文具點心，完成每日探索任務。
-                  </p>
-                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
-                      <MapPin className="w-3.5 h-3.5 text-amber-500" />
-                      9大生活地標
-                    </span>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
-                      <MessageSquare className="w-3.5 h-3.5 text-orange-500" />
-                      情境英語對話
-                    </span>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
-                      <Coins className="w-3.5 h-3.5 text-yellow-500" />
-                      金幣任務商店
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <Button3D
-                variant="amber"
-                size="lg"
-                className="shrink-0 w-full md:w-auto shadow-lg group-hover:scale-105 transition-transform"
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <span>{t.townModuleEnter}</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Button3D>
@@ -518,7 +507,7 @@ export const Portal = ({
               </div>
 
               <Button3D
-                variant="emerald"
+                variant="teal"
                 size="lg"
                 className="shrink-0 w-full md:w-auto shadow-lg group-hover:scale-105 transition-transform"
               >

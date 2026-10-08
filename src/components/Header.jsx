@@ -107,14 +107,14 @@ export const Header = ({
             title={
               currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook'
                 ? (lang === 'zh-TW' ? '返回學習宇宙首頁' : 'Back to Universe Home')
-                : (lang === 'zh-TW' ? '返回單字學習館' : 'Back to Vocab Hub')
+                : (lang === 'zh-TW' ? '返回單字冒險館' : 'Back to Vocab Hub')
             }
             className="p-2 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 flex items-center gap-1 text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer shrink-0"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             <span className="hidden sm:inline">
               {currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook'
-                ? (lang === 'zh-TW' ? '宇宙首頁' : 'Home')
+                ? (lang === 'zh-TW' ? '學習首頁' : 'Home')
                 : (lang === 'zh-TW' ? '回單字館' : 'Vocab Hub')}
             </span>
           </button>
