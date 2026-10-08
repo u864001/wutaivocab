@@ -409,3 +409,28 @@ export const speakMysteriousEnglish = (text) => {
     console.warn('TTS Error:', e);
   }
 };
+
+/**
+ * 立即停止所有密室語音播報 (附帶二次清空保護，避免 Chromium 語音殘留)
+ */
+export const stopMysteriousSpeech = () => {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    // 解決部分 Chromium / 觸控裝置 cancel 後殘留聲音或暫停態的異常
+    setTimeout(() => {
+      try {
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+          window.speechSynthesis.cancel();
+        }
+      } catch (e) {}
+    }, 40);
+    setTimeout(() => {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
+    }, 120);
+  } catch (e) {
+    console.warn('TTS Cancel Error:', e);
+  }
+};

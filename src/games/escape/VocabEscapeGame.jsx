@@ -5,7 +5,7 @@ import { useI18n } from '../../context/I18nContext';
 import { useStudent } from '../../context/StudentContext';
 import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import { soundEngine } from '../../services/audio';
-import { escapeAudio, speakMysteriousEnglish } from './escapeAudio';
+import { escapeAudio, speakMysteriousEnglish, stopMysteriousSpeech } from './escapeAudio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { getRandomFunNickname } from '../../utils/studentIdHelper';
 import { generateEscapeRoomCampaign, ESCAPE_THEMES } from './escapeData';
@@ -18,7 +18,7 @@ import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Trophy, RotateCcw, Sparkles, Key, CheckCircle2,
   X, ShieldAlert, Volume2, Heart, Award, Compass, BookOpen, Clock,
-  User, Dices, ArrowRight, DoorOpen
+  User, Dices, ArrowRight, DoorOpen, Loader2
 } from 'lucide-react';
 
 export const VocabEscapeGame = ({
@@ -48,6 +48,7 @@ export const VocabEscapeGame = ({
   const [gameState, setGameState] = useState('briefing');
   const [showChineseTranslation, setShowChineseTranslation] = useState(false);
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [preloadProgress, setPreloadProgress] = useState({ loaded: 0, total: 3 });
   const [campaignData, setCampaignData] = useState(null);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [activePuzzleId, setActivePuzzleId] = useState(null);
@@ -163,6 +164,9 @@ export const VocabEscapeGame = ({
     // 預加載當前主題 3 張房間圖片
     const curThemeChapters = campaignData?.chapters || [];
     let loadedCount = 0;
+    const totalToLoad = curThemeChapters.length || 3;
+    setPreloadProgress({ loaded: 0, total: totalToLoad });
+
     if (curThemeChapters.length === 0) {
       setImagesLoaded(true);
     } else {
@@ -171,12 +175,17 @@ export const VocabEscapeGame = ({
         const img = new Image();
         img.onload = img.onerror = () => {
           loadedCount++;
+          setPreloadProgress({ loaded: loadedCount, total: totalToLoad });
           if (loadedCount >= curThemeChapters.length) {
             setImagesLoaded(true);
           }
         };
         img.src = chap.bg;
       });
+      // 容錯防禦：若有網路壅塞，至多 6 秒後必定解鎖，避免玩家永久卡頓
+      setTimeout(() => {
+        setImagesLoaded(true);
+      }, 6000);
     }
 
     // 沉浸神秘英語外師誦讀序章文字
@@ -186,14 +195,10 @@ export const VocabEscapeGame = ({
     }
   };
 
-  // 點擊「立即進入密室」或跳過序章：無縫切入第一室
+  // 點擊「立即進入密室」或跳過序章：無縫切入第一室 (立即停止前言外師誦讀)
   const handleProceedToFirstChamber = () => {
     soundEngine.click();
-    try {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    } catch (e) {}
+    stopMysteriousSpeech();
 
     try {
       window.history.pushState({ escapeStage: 'playing' }, '');
@@ -217,11 +222,7 @@ export const VocabEscapeGame = ({
   // 1. 在密室遊戲中 (intro / playing / transition / victory) 點擊退回：返回「密室逃脫大廳」
   const handleExitToEscapeLobby = () => {
     soundEngine.click();
-    try {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    } catch (e) {}
+    stopMysteriousSpeech();
     if (timerRef.current) clearInterval(timerRef.current);
     escapeAudio.stopCurrentMusic();
     exitFullscreen();
@@ -231,11 +232,7 @@ export const VocabEscapeGame = ({
   // 2. 在「密室逃脫大廳」(briefing) 點擊返回：回到「單字冒險大廳 (單字館)」
   const handleQuitGameToVocabLobby = () => {
     soundEngine.click();
-    try {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-    } catch (e) {}
+    stopMysteriousSpeech();
     if (timerRef.current) clearInterval(timerRef.current);
     escapeAudio.stopCurrentMusic();
     exitFullscreen();
@@ -246,11 +243,7 @@ export const VocabEscapeGame = ({
   useEffect(() => {
     const handlePopState = () => {
       if (gameState !== 'briefing') {
-        try {
-          if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-          }
-        } catch (e) {}
+        stopMysteriousSpeech();
         if (timerRef.current) clearInterval(timerRef.current);
         escapeAudio.stopCurrentMusic();
         exitFullscreen();
@@ -622,14 +615,23 @@ export const VocabEscapeGame = ({
 
           {/* 進入第一室 / 載入狀態按鈕 */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button3D
-              variant="amber"
-              size="lg"
-              onClick={handleProceedToFirstChamber}
-              className="w-full sm:w-auto px-8 py-3 text-base sm:text-lg animate-pulse"
-            >
-              <span>{imagesLoaded ? '立即進入密室 (Skip) 🗝️' : '探索準備就緒，點擊進入 🗝️'}</span>
-            </Button3D>
+            {imagesLoaded ? (
+              <Button3D
+                variant="amber"
+                size="lg"
+                onClick={handleProceedToFirstChamber}
+                className="w-full sm:w-auto px-8 py-3 text-base sm:text-lg animate-fadeIn cursor-pointer"
+              >
+                <span>立即進入密室 (Skip) 🗝️</span>
+              </Button3D>
+            ) : (
+              <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-black/60 border border-amber-500/30 text-amber-300/90 text-sm font-bold shadow-lg shadow-black/50 backdrop-blur-md">
+                <Loader2 className="w-5 h-5 animate-spin text-amber-400 shrink-0" />
+                <span>
+                  密室場景喚醒中... ({preloadProgress.loaded} / {preloadProgress.total})
+                </span>
+              </div>
+            )}
 
             <button
               type="button"
