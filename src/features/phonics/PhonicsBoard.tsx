@@ -164,11 +164,10 @@ export function PhonicsBoard({
   }, [allCards]);
 
   const stagingCards = useMemo(() => {
-    // 依使用者需求：子音/候用區不要再重複出現已有無限取用區的基礎短母音 (a, e, i, o, u)
+    // 嚴格將母音家族（短母音、雙母音、複合音、魔術e、捲舌R）交由左側專屬母音百寶箱；右側子音字卡專區只展示子音家族
+    const vowelCategories = new Set(['short_vowels', 'silent_e', 'vowel_teams', 'r_controlled']);
     return allCards.filter(
-      (c) =>
-        selectedCardIds.has(c.id) &&
-        !(c.category === 'short_vowels' && ['a', 'e', 'i', 'o', 'u'].includes(c.grapheme))
+      (c) => selectedCardIds.has(c.id) && !vowelCategories.has(c.category)
     );
   }, [allCards, selectedCardIds]);
 
@@ -275,8 +274,9 @@ export function PhonicsBoard({
               }
             />
 
-            {/* Bottom Staging Area with Infinite Dispenser + Selected Tray */}
+            {/* Bottom Staging Area with Infinite Vowel Hub + Consonant Tray */}
             <StagingArea
+              allCards={allCards}
               infiniteVowels={infiniteVowels}
               stagingCards={stagingCards}
               onPlaceCard={handlePlaceCard}
