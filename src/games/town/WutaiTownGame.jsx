@@ -48,6 +48,7 @@ export const WutaiTownGame = ({ onBack }) => {
   const [teacherBonusToast, setTeacherBonusToast] = useState(null);
   const [hoveredLocation, setHoveredLocation] = useState(null);
   const [isTownBgmActive, setIsTownBgmActive] = useState(true);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   // 領取外師每日彩蛋積分處理 (提升至 10 ~ 20 探索積分，尊榮外師每日限定)
   const handleTeacherBonusClaimed = async () => {
@@ -293,26 +294,26 @@ export const WutaiTownGame = ({ onBack }) => {
         />
 
         {/* ── 頂部懸浮超輕薄毛玻璃導航橫幅 (Floating Top Glass HUD) ── */}
-        <div className="absolute top-3 left-3 right-3 z-30 px-3.5 sm:px-5 py-2.5 rounded-2xl bg-slate-950/45 backdrop-blur-md border border-white/20 text-white flex items-center justify-between gap-3 shadow-lg pointer-events-auto">
+        <div className="absolute top-1.5 left-1.5 right-1.5 sm:top-3 sm:left-3 sm:right-3 z-30 px-2 sm:px-5 py-1.5 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-950/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-between gap-1.5 sm:gap-3 shadow-lg pointer-events-auto">
           
-          {/* 左側：返回學習宇宙與標題 */}
-          <div className="flex items-center gap-2.5 shrink-0">
-            <Button3D variant="slate" size="sm" onClick={handleBackToGalaxy} icon={ArrowLeft}>
-              {lang === 'zh-TW' ? '回學習宇宙' : 'Back'}
-            </Button3D>
+          {/* 左側：返回學習宇宙與標題 (手機版極精簡圖示) */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            <button
+              onClick={handleBackToGalaxy}
+              title={lang === 'zh-TW' ? '回學習宇宙' : 'Back'}
+              className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4 text-emerald-400" />
+              <span className="hidden sm:inline">{lang === 'zh-TW' ? '回學習宇宙' : 'Back'}</span>
+            </button>
 
-            <div className="flex items-center gap-1.5">
-              <span className="text-base sm:text-lg font-black font-heading text-white drop-shadow">
-                🏔️ 霧臺小鎮
-              </span>
-              <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30 hidden sm:inline">
-                Wutai Town RPG
-              </span>
-            </div>
+            <span className="text-xs sm:text-lg font-black font-heading text-white drop-shadow hidden xs:inline sm:inline">
+              🏔️ 霧臺小鎮
+            </span>
           </div>
 
-          {/* 🌟 中央核心：滑鼠移到建築上方時，即時於頂部橫幅中央優雅顯示地點資訊 (取代突兀的浮動字) ── */}
-          <div className="flex-1 text-center px-2 min-w-0">
+          {/* 🌟 中央核心：僅在平板與電腦寬螢幕顯示地點資訊 (手機版隱藏，徹底避免被擠成 6 行) ── */}
+          <div className="hidden md:flex flex-1 text-center px-2 min-w-0 justify-center">
             {hoveredLocation ? (
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-emerald-950/60 border border-emerald-400/60 backdrop-blur-md shadow-md animate-scaleUp">
                 <span className="text-base sm:text-lg">{hoveredLocation.npcAvatar}</span>
@@ -331,7 +332,7 @@ export const WutaiTownGame = ({ onBack }) => {
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] font-bold text-slate-300 hidden md:block">
+                  <div className="text-[10px] font-bold text-slate-300 hidden lg:block">
                     {hoveredLocation.npcName}
                   </div>
                 </div>
@@ -344,17 +345,17 @@ export const WutaiTownGame = ({ onBack }) => {
             )}
           </div>
 
-          {/* 右側：音樂切換 + 金幣 + 積分 + 背包 + 任務快捷 */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* 🎵 霧臺小鎮晨曦冒險音樂開關 */}
+          {/* 右側：音樂切換 + 金幣 + 榮譽積分 + 背包 + 任務 (手機版純圖示單行排版) */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* 🎵 音樂開關 */}
             <button
               onClick={handleToggleTownBgm}
-              className={`px-2.5 py-1 rounded-xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 ${
+              className={`p-1.5 sm:px-2.5 sm:py-1 rounded-xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 ${
                 isTownBgmActive
                   ? 'bg-emerald-500/30 hover:bg-emerald-500/40 text-emerald-200 border-emerald-400/50'
                   : 'bg-white/15 hover:bg-white/25 text-slate-300 border-white/20'
               }`}
-              title={isTownBgmActive ? '點擊暫停小鎮背景音樂' : '點擊播放小鎮背景音樂'}
+              title={isTownBgmActive ? '暫停背景音樂' : '播放背景音樂'}
             >
               {isTownBgmActive ? (
                 <>
@@ -370,15 +371,15 @@ export const WutaiTownGame = ({ onBack }) => {
             </button>
 
             {/* 金幣計數器 */}
-            <div className="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-300/40 backdrop-blur-md flex items-center gap-1 text-amber-200 text-xs font-black shadow-sm">
+            <div className="px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-xl bg-amber-500/20 border border-amber-300/40 backdrop-blur-md flex items-center gap-1 text-amber-200 text-xs font-black shadow-sm">
               <Coins className="w-3.5 h-3.5 text-amber-400" />
-              <span className="font-mono text-sm">{coins}</span>
+              <span className="font-mono text-xs sm:text-sm">{coins}</span>
             </div>
 
-            {/* 探索積分 */}
-            <div className="px-2.5 py-1 rounded-xl bg-indigo-500/20 border border-indigo-300/40 backdrop-blur-md flex items-center gap-1 text-indigo-200 text-xs font-black shadow-sm hidden sm:flex">
+            {/* 探索積分 (榮譽) */}
+            <div className="px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-xl bg-indigo-500/20 border border-indigo-300/40 backdrop-blur-md flex items-center gap-1 text-indigo-200 text-xs font-black shadow-sm">
               <Trophy className="w-3.5 h-3.5 text-indigo-400" />
-              <span className="font-mono text-sm">{questPoints}</span>
+              <span className="font-mono text-xs sm:text-sm">{questPoints}</span>
             </div>
 
             {/* 我的房間 / 背包 */}
@@ -392,12 +393,12 @@ export const WutaiTownGame = ({ onBack }) => {
                 soundEngine.startHomeBgm();
                 setIsHomeOpen(true);
               }}
-              className="px-2.5 py-1 rounded-xl bg-lime-600 hover:bg-lime-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
-              title="回到溫馨的家 • 聆聽音樂並整理背包"
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-lime-600 hover:bg-lime-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
+              title="回到溫馨的家 • 整理背包"
             >
               <Package className="w-3.5 h-3.5" />
               <span className="hidden md:inline">我的房間</span>
-              <span>({inventory?.length || 0})</span>
+              <span className="text-[11px] sm:text-xs font-mono">({inventory?.length || 0})</span>
             </button>
 
             {/* 每日任務 */}
@@ -406,7 +407,7 @@ export const WutaiTownGame = ({ onBack }) => {
                 soundEngine.click();
                 setIsQuestBoardOpen(true);
               }}
-              className="px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
               title="查看每日任務"
             >
               <ScrollText className="w-3.5 h-3.5" />
@@ -455,8 +456,8 @@ export const WutaiTownGame = ({ onBack }) => {
           })}
         </div>
 
-        {/* ── 底部超薄透明快捷切換列 (Minimalist Floating Bottom Dock) ── */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 px-3 py-1.5 rounded-2xl bg-slate-950/45 backdrop-blur-md border border-white/20 text-white shadow-lg flex items-center gap-1.5 max-w-[94vw] overflow-x-auto pointer-events-auto">
+        {/* ── 電腦版底部超薄快捷切換列 (Minimalist Floating Bottom Dock) ── */}
+        <div className="hidden sm:flex absolute bottom-3 left-1/2 -translate-x-1/2 z-30 px-3 py-1.5 rounded-2xl bg-slate-950/45 backdrop-blur-md border border-white/20 text-white shadow-lg items-center gap-1.5 max-w-[94vw] overflow-x-auto pointer-events-auto">
           {TOWN_LOCATIONS.map((loc) => {
             const isTeacherHere = (loc.id === teacherInfo.locationId && !hasMetTeacherToday);
             const isHovered = hoveredLocation?.id === loc.id;
@@ -481,7 +482,80 @@ export const WutaiTownGame = ({ onBack }) => {
             );
           })}
         </div>
+
+        {/* ── 手機版底部收折按鈕 (不佔用地圖畫面，點擊滑出抽屜選單) ── */}
+        <div className="sm:hidden absolute bottom-2 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
+          <button
+            onClick={() => setIsMobileNavOpen(true)}
+            className="px-3.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-emerald-400/60 text-white text-[11px] font-black flex items-center gap-1.5 shadow-lg active:scale-95 cursor-pointer"
+          >
+            <Compass className="w-3.5 h-3.5 text-emerald-400 animate-spin-slow" />
+            <span>9 大地標導覽</span>
+            <span className="text-[9px] text-emerald-300 bg-emerald-500/25 px-1.5 py-0.5 rounded-full">展開</span>
+          </button>
+        </div>
       </div>
+
+      {/* ── 手機版 9 大地標底部滑出抽屜選單 (Mobile Location Drawer) ── */}
+      {isMobileNavOpen && (
+        <div className="sm:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-end animate-fadeIn pointer-events-auto">
+          <div
+            className="w-full bg-slate-900 border-t-2 border-emerald-500/50 rounded-t-3xl p-4 max-h-[75vh] overflow-y-auto animate-slideUp text-white shadow-2xl"
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-slate-700/60">
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-heading font-black text-sm text-emerald-300">
+                  霧臺小鎮 9 大生活地標
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsMobileNavOpen(false)}
+                className="w-7 h-7 rounded-full bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center text-xs font-black cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-3">
+              {TOWN_LOCATIONS.map((loc) => {
+                const isTeacherHere = (loc.id === teacherInfo.locationId && !hasMetTeacherToday);
+                return (
+                  <button
+                    key={loc.id}
+                    onClick={() => {
+                      setIsMobileNavOpen(false);
+                      handleOpenLocation(loc);
+                    }}
+                    className={`p-2.5 rounded-2xl border text-left flex items-center gap-2.5 transition-all active:scale-95 cursor-pointer ${
+                      isTeacherHere
+                        ? 'bg-amber-950/60 border-amber-400/80 shadow-md'
+                        : 'bg-slate-800/80 border-slate-700/80 hover:border-emerald-400/60'
+                    }`}
+                  >
+                    <span className="text-2xl shrink-0">{loc.npcAvatar}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs font-black text-white truncate font-heading">
+                          {loc.nameZh}
+                        </span>
+                        {isTeacherHere && (
+                          <span className="text-[9px] bg-amber-500 text-white px-1 py-0.2 rounded font-black shrink-0">
+                            外師
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[10px] font-mono text-slate-400 truncate">
+                        {loc.nameEn}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── 外師每日彩蛋獎勵提示 Toast ── */}
       {teacherBonusToast && (
