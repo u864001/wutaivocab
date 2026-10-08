@@ -52,11 +52,11 @@ export const PhonicsCardView: React.FC<PhonicsCardViewProps> = ({
     }
   };
 
-  // Dimensions based on size
+  // Dimensions based on size (lg 自動依手機螢幕縮放，維持單一行不折行)
   const sizeClasses = {
-    sm: 'w-14 h-16 text-2xl',
-    md: 'w-20 h-24 text-3xl sm:w-22 sm:h-28 sm:text-4xl',
-    lg: 'w-24 h-28 text-4xl sm:w-28 sm:h-32 sm:text-5xl',
+    sm: 'w-13 h-15 text-xl sm:w-14 sm:h-16 sm:text-2xl',
+    md: 'w-18 h-22 text-2xl sm:w-22 sm:h-28 sm:text-4xl',
+    lg: 'w-[70px] h-[90px] text-3xl sm:w-24 sm:h-28 sm:text-4xl md:w-28 md:h-32 md:text-5xl',
   }[size];
 
   // Check if it's a split digraph like a_e

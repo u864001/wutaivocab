@@ -441,9 +441,9 @@ export const PRESET_DECKS: DeckPreset[] = [
     id: 'starter_cvc',
     nameZh: '幼兒 CVC 基礎拼讀包',
     nameEn: 'Starter CVC Short Vowels',
-    descriptionZh: '5 個基礎短母音 + 12 個高頻單子音，適合初次接觸自然發音',
-    descriptionEn: '5 short vowels + high-frequency single consonants for beginners',
-    cardIds: ['v_a', 'v_e', 'v_i', 'v_o', 'v_u', 'bc_b', 'bc_c', 'bc_d', 'bc_f', 'bc_g', 'bc_h', 'bc_m', 'bc_n', 'bc_p', 'bc_r', 'bc_s', 'bc_t'],
+    descriptionZh: '12 個高頻單子音（搭配母音無限區），適合初次接觸自然發音',
+    descriptionEn: 'High-frequency single consonants for beginners (paired with infinite vowels)',
+    cardIds: ['bc_b', 'bc_c', 'bc_d', 'bc_f', 'bc_g', 'bc_h', 'bc_m', 'bc_n', 'bc_p', 'bc_r', 'bc_s', 'bc_t'],
   },
   {
     id: 'digraph_power',
@@ -451,7 +451,7 @@ export const PRESET_DECKS: DeckPreset[] = [
     nameEn: 'Digraph Power Pack',
     descriptionZh: '聚焦常見的雙子音組合，學習兩個字母發一個音的概念',
     descriptionEn: 'Focus on consonant digraphs that make a unique single sound',
-    cardIds: ['v_a', 'v_i', 'v_o', 'cd_ch', 'cd_sh', 'cd_th_u', 'cd_ck', 'cd_ng', 'bc_f', 'bc_r', 'bc_s', 'bc_d', 'bc_k', 'bc_p'],
+    cardIds: ['cd_ch', 'cd_sh', 'cd_th_u', 'cd_ck', 'cd_ng', 'bc_f', 'bc_r', 'bc_s', 'bc_d', 'bc_k', 'bc_p'],
   },
   {
     id: 'magic_e_adventure',

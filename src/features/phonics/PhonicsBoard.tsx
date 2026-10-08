@@ -164,7 +164,12 @@ export function PhonicsBoard({
   }, [allCards]);
 
   const stagingCards = useMemo(() => {
-    return allCards.filter((c) => selectedCardIds.has(c.id));
+    // 依使用者需求：子音/候用區不要再重複出現已有無限取用區的基礎短母音 (a, e, i, o, u)
+    return allCards.filter(
+      (c) =>
+        selectedCardIds.has(c.id) &&
+        !(c.category === 'short_vowels' && ['a', 'e', 'i', 'o', 'u'].includes(c.grapheme))
+    );
   }, [allCards, selectedCardIds]);
 
   const handleToggleCard = (cardId: string) => {
