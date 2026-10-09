@@ -19,7 +19,7 @@ import { QuestBoardModal } from './QuestBoardModal';
 import { soundEngine, stopSpeech } from '../../services/audio';
 import {
   ArrowLeft, Coins, Trophy, Package, ScrollText, Sparkles,
-  Compass, ChevronRight, Gift, Music, VolumeX
+  Compass, ChevronRight, Gift, Music, VolumeX, MessageSquare
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -31,7 +31,9 @@ export const WutaiTownGame = ({ onBack }) => {
     questPoints,
     inventory,
     updateDailyQuest,
-    claimTeacherBonus
+    claimTeacherBonus,
+    addCoins,
+    addQuestPoints
   } = useStudent();
 
   // 計算今日客座外師巡迴狀態
@@ -49,6 +51,114 @@ export const WutaiTownGame = ({ onBack }) => {
   const [hoveredLocation, setHoveredLocation] = useState(null);
   const [isTownBgmActive, setIsTownBgmActive] = useState(true);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [townDialogueToast, setTownDialogueToast] = useState(null);
+
+  // 今日生活對話完成紀錄 (防刷防通膨：每地標每日限領 1 金幣，每日小鎮上限 6 枚金幣)
+  const [dailyDialogueRecord, setDailyDialogueRecord] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`wutai_town_dialogues_${todayStr}`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed.coinsEarned === 'number' && Array.isArray(parsed.completedLocations)) {
+          return parsed;
+        }
+      }
+    } catch (e) {}
+    return { date: todayStr, coinsEarned: 0, completedLocations: [] };
+  });
+
+  // 完成生活對話結算 (Anti-Inflation Dialogue Reward System)
+  const handleDialogueComplete = useCallback(async (locationId) => {
+    if (!locationId) return;
+
+    let currentRecord = dailyDialogueRecord;
+    try {
+      const saved = localStorage.getItem(`wutai_town_dialogues_${todayStr}`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed.coinsEarned === 'number' && Array.isArray(parsed.completedLocations)) {
+          currentRecord = parsed;
+        }
+      }
+    } catch (e) {}
+
+    const isFirstTimeAtLocationToday = !currentRecord.completedLocations.includes(locationId);
+    const hasReachedDailyCoinCap = currentRecord.coinsEarned >= 6;
+
+    let toastInfo = null;
+
+    if (isFirstTimeAtLocationToday && !hasReachedDailyCoinCap) {
+      // 1. 今日首次在該地標完成對話且未達上限：+1 金幣
+      const newCoinsEarned = currentRecord.coinsEarned + 1;
+      const updated = {
+        date: todayStr,
+        coinsEarned: newCoinsEarned,
+        completedLocations: [...currentRecord.completedLocations, locationId]
+      };
+      setDailyDialogueRecord(updated);
+      try {
+        localStorage.setItem(`wutai_town_dialogues_${todayStr}`, JSON.stringify(updated));
+      } catch (e) {}
+
+      if (addCoins) {
+        await addCoins(1);
+      }
+      soundEngine.win();
+      try {
+        confetti({ particleCount: 55, spread: 65, origin: { y: 0.6 } });
+      } catch (e) {}
+
+      toastInfo = {
+        icon: '🪙',
+        title: '完成生活英語對話！',
+        desc: `獲得宇宙金幣 +1！(今日小鎮金幣: ${newCoinsEarned}/6)`,
+        type: 'coin'
+      };
+    } else if (isFirstTimeAtLocationToday && hasReachedDailyCoinCap) {
+      // 2. 今日首次在該地標，但已達小鎮 6 金幣每日上限：+10 探索積分 (零金幣防通膨)
+      const updated = {
+        date: todayStr,
+        coinsEarned: currentRecord.coinsEarned,
+        completedLocations: [...currentRecord.completedLocations, locationId]
+      };
+      setDailyDialogueRecord(updated);
+      try {
+        localStorage.setItem(`wutai_town_dialogues_${todayStr}`, JSON.stringify(updated));
+      } catch (e) {}
+
+      if (addQuestPoints) {
+        await addQuestPoints(10);
+      }
+      soundEngine.correct();
+
+      toastInfo = {
+        icon: '🌟',
+        title: '今日小鎮金幣已達上限 (6/6)',
+        desc: '持續自主生活英語探索，獲得榮譽探索積分 +10！',
+        type: 'points'
+      };
+    } else {
+      // 3. 今日已在該地標對話過 (重複練習同一地標)：+5 探索積分 (零金幣防通膨)
+      if (addQuestPoints) {
+        await addQuestPoints(5);
+      }
+      soundEngine.correct();
+
+      toastInfo = {
+        icon: '💬',
+        title: '溫故知新，練習生活美語！',
+        desc: '今日該地標已完成領取金幣，獲得探索積分 +5！',
+        type: 'points'
+      };
+    }
+
+    if (toastInfo) {
+      setTownDialogueToast(toastInfo);
+      setTimeout(() => {
+        setTownDialogueToast(null);
+      }, 4200);
+    }
+  }, [todayStr, dailyDialogueRecord, addCoins, addQuestPoints]);
 
   // 領取外師每日彩蛋積分處理 (提升至 10 ~ 20 探索積分，尊榮外師每日限定)
   const handleTeacherBonusClaimed = async () => {
@@ -382,6 +492,15 @@ export const WutaiTownGame = ({ onBack }) => {
               <span className="font-mono text-xs sm:text-sm">{questPoints}</span>
             </div>
 
+            {/* 今日生活對話完成進度 (上限 6 枚金幣) */}
+            <div
+              className="px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-xl bg-teal-500/20 border border-teal-300/40 backdrop-blur-md flex items-center gap-1 text-teal-200 text-xs font-black shadow-sm"
+              title={`今日小鎮生活對話：已在 ${dailyDialogueRecord?.completedLocations?.length || 0} 個地標完成交談（每日上限 6 枚金幣）`}
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-teal-300" />
+              <span className="font-mono text-xs sm:text-sm">{dailyDialogueRecord?.completedLocations?.length || 0}/6</span>
+            </div>
+
             {/* 我的房間 / 背包 */}
             <button
               onClick={() => {
@@ -557,6 +676,21 @@ export const WutaiTownGame = ({ onBack }) => {
         </div>
       )}
 
+      {/* ── 小鎮生活對話獎勵提示 Toast (防刷防通膨經濟系統) ── */}
+      {townDialogueToast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-4 py-3 sm:px-6 sm:py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white flex items-center gap-3 shadow-2xl animate-bounce border-2 border-white/40 max-w-[90vw]">
+          <span className="p-2 rounded-xl bg-white/20 text-2xl shrink-0">{townDialogueToast.icon}</span>
+          <div>
+            <h4 className="font-black text-sm sm:text-base font-heading">
+              {townDialogueToast.title}
+            </h4>
+            <p className="text-xs sm:text-sm font-bold text-white/95">
+              {townDialogueToast.desc}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ── 外師每日彩蛋獎勵提示 Toast ── */}
       {teacherBonusToast && (
         <div className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white flex items-center gap-3 shadow-2xl animate-bounce">
@@ -600,6 +734,7 @@ export const WutaiTownGame = ({ onBack }) => {
           isVisitingTeacher={isTeacherAtActiveLocation}
           visitingTeacher={teacherInfo.teacher}
           onTeacherBonusClaimed={handleTeacherBonusClaimed}
+          onDialogueComplete={handleDialogueComplete}
         />
       )}
 

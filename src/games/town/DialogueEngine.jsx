@@ -15,7 +15,8 @@ export const DialogueEngine = ({
   onQuestProgress,
   isVisitingTeacher = false,
   visitingTeacher = null,
-  onTeacherBonusClaimed
+  onTeacherBonusClaimed,
+  onDialogueComplete
 }) => {
   // 智慧決定當前對話樹
   const tree = useMemo(() => {
@@ -126,6 +127,9 @@ export const DialogueEngine = ({
     }
 
     if (opt.target_id === 'END') {
+      if (onDialogueComplete) {
+        onDialogueComplete(location.id);
+      }
       handleClose();
       return;
     }
