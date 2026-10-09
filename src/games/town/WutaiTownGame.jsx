@@ -115,7 +115,7 @@ export const WutaiTownGame = ({ onBack }) => {
         type: 'coin'
       };
     } else if (isFirstTimeAtLocationToday && hasReachedDailyCoinCap) {
-      // 2. 今日首次在該地標，但已達小鎮 6 金幣每日上限：+10 探索積分 (零金幣防通膨)
+      // 2. 今日首次在該地標，但已達小鎮 6 金幣每日上限：+1 探索積分 (防通膨標準)
       const updated = {
         date: todayStr,
         coinsEarned: currentRecord.coinsEarned,
@@ -127,27 +127,27 @@ export const WutaiTownGame = ({ onBack }) => {
       } catch (e) {}
 
       if (addQuestPoints) {
-        await addQuestPoints(10);
+        await addQuestPoints(1);
       }
       soundEngine.correct();
 
       toastInfo = {
         icon: '🌟',
         title: '今日小鎮金幣已達上限 (6/6)',
-        desc: '持續自主生活英語探索，獲得榮譽探索積分 +10！',
+        desc: '持續自主生活英語探索，獲得榮譽探索積分 +1！',
         type: 'points'
       };
     } else {
-      // 3. 今日已在該地標對話過 (重複練習同一地標)：+5 探索積分 (零金幣防通膨)
+      // 3. 今日已在該地標對話過 (反覆練習同一地標)：+1 探索積分 (可重複刷取標準 +1)
       if (addQuestPoints) {
-        await addQuestPoints(5);
+        await addQuestPoints(1);
       }
       soundEngine.correct();
 
       toastInfo = {
         icon: '💬',
         title: '溫故知新，練習生活美語！',
-        desc: '今日該地標已完成領取金幣，獲得探索積分 +5！',
+        desc: '今日該地標已領取金幣，反覆自主練習獲得探索積分 +1！',
         type: 'points'
       };
     }
