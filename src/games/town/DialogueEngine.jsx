@@ -4,8 +4,9 @@ import { speakEnglish, stopSpeech, soundEngine } from '../../services/audio';
 import {
   Volume2, X, MessageSquare, Sparkles, ShoppingBag,
   ScrollText, Gift, ChevronRight, ArrowLeft, LogOut,
-  Music, VolumeX, Eye, EyeOff, RotateCcw
+  Music, VolumeX, Eye, EyeOff, RotateCcw, Film
 } from 'lucide-react';
+import { CinemaTheaterModal } from './CinemaTheaterModal';
 
 export const DialogueEngine = ({
   location,
@@ -35,6 +36,7 @@ export const DialogueEngine = ({
   const [bgError, setBgError] = useState(false);
   const [isDialogueReady, setIsDialogueReady] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isTheaterOpen, setIsTheaterOpen] = useState(false);
 
   // 決定當前發言人物的專屬語音指紋 (Persona Key: mario, ibu, school, supermarket, etc.)
   const activeVoicePersonaKey = useMemo(() => {
@@ -236,6 +238,20 @@ export const DialogueEngine = ({
             >
               <ShoppingBag className="w-3.5 h-3.5" />
               <span>商店目錄</span>
+            </button>
+          )}
+
+          {location.id === 'cinema' && (
+            <button
+              onClick={() => {
+                stopSpeech();
+                setIsTheaterOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-black text-xs shadow-md border border-amber-300/40 transition-all cursor-pointer animate-pulse"
+              title="進入放映廳觀看完整微電影"
+            >
+              <Film className="w-3.5 h-3.5 text-yellow-300" />
+              <span>🎬 進入放映廳看全片</span>
             </button>
           )}
 
@@ -466,6 +482,13 @@ export const DialogueEngine = ({
           </div>
         </div>
       </div>
+
+      {/* 🎬 山豬影城放映廳全片播映彈窗 */}
+      {isTheaterOpen && (
+        <CinemaTheaterModal
+          onClose={() => setIsTheaterOpen(false)}
+        />
+      )}
     </div>
   );
 };

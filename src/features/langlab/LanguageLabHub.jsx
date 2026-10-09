@@ -11,10 +11,12 @@ import {
 } from '../../services/hereWeGoQuestionBank';
 import confetti from 'canvas-confetti';
 import {
-  ArrowLeft, Volume2, Mic, MicOff, CheckCircle2, XCircle,
+  ArrowLeft, Volume2, Mic, MicOff, CheckCircle2, XCircle, X,
   Trophy, Sparkles, BookOpen, ChevronLeft, ChevronRight,
-  RotateCcw, Star, Headphones, Disc, Award
+  RotateCcw, Star, Headphones, Disc, Award, Film, Settings, Play, Video
 } from 'lucide-react';
+import { UNIT_VIDEO_LIBRARY } from '../../data/unitVideoQuestionData';
+import { YouTubeClipPlayer } from '../../components/common/YouTubeClipPlayer';
 
 const BG_IMAGE = '/assets/langlab/bg_language_lab.jpg';
 const MENTOR_OWL = '/assets/langlab/mentor_owl.jpg';
@@ -29,8 +31,15 @@ export const LanguageLabHub = ({ onBack }) => {
   const [selectedUnitTitle, setSelectedUnitTitle] = useState('Unit 1 What’s Your Name?');
   const [isBookshelfOpen, setIsBookshelfOpen] = useState(false);
 
-  // 模式切換：'listening' (聽力實驗台) | 'speaking' (口說錄音台)
+  // 模式切換：'listening' (聽力實驗台) | 'speaking' (口說錄音台) | 'video' (影片選句台)
   const [activeMode, setActiveMode] = useState('listening');
+
+  // 自訂 YouTube 測試彈窗狀態
+  const [isCustomVideoModalOpen, setIsCustomVideoModalOpen] = useState(false);
+  const [customYtInput, setCustomYtInput] = useState('');
+  const [customStart, setCustomStart] = useState(5);
+  const [customEnd, setCustomEnd] = useState(12);
+  const [customSentence, setCustomSentence] = useState('Where did you go last weekend?');
 
   // 題目資料與當前題號
   const [questions, setQuestions] = useState([]);
@@ -62,9 +71,22 @@ export const LanguageLabHub = ({ onBack }) => {
     if (mode === 'listening') {
       const q = getUnitListeningQuestions(book, unitId, 15);
       setQuestions(q);
-    } else {
+    } else if (mode === 'speaking') {
       const q = getUnitSpeakingQuestions(book, unitId, 10);
       setQuestions(q);
+    } else if (mode === 'video') {
+      const videoMatch = UNIT_VIDEO_LIBRARY.find(v => v.book === Number(book)) || UNIT_VIDEO_LIBRARY[0];
+      const videoQuestions = (videoMatch.clips || []).map((clip) => ({
+        ...clip,
+        youtubeId: videoMatch.youtubeId,
+        videoTitle: videoMatch.title,
+        options: (clip.choices || []).map(c => ({
+          key: c.key,
+          textEn: c.text,
+          isCorrect: c.isCorrect
+        }))
+      }));
+      setQuestions(videoQuestions);
     }
   }, []);
 
@@ -75,9 +97,9 @@ export const LanguageLabHub = ({ onBack }) => {
 
   const currentQ = questions[currentIndex] || null;
 
-  // 進入題目時自動播放示範語音
+  // 進入題目時自動播放示範語音 (影片模式不播放，避免與影片語音衝突)
   useEffect(() => {
-    if (currentQ && !isFinished) {
+    if (currentQ && !isFinished && activeMode !== 'video') {
       const textToSpeak = currentQ.audioText || currentQ.targetEn || currentQ.en;
       if (textToSpeak) {
         const timer = setTimeout(() => {
@@ -86,7 +108,7 @@ export const LanguageLabHub = ({ onBack }) => {
         return () => clearTimeout(timer);
       }
     }
-  }, [currentQ, currentIndex, isFinished]);
+  }, [currentQ, currentIndex, isFinished, activeMode]);
 
   // 重新朗讀
   const handleReplay = useCallback(() => {
@@ -96,6 +118,40 @@ export const LanguageLabHub = ({ onBack }) => {
       speakEnglish(textToSpeak);
     }
   }, [currentQ]);
+
+  // 應用老師自訂 YouTube 影片測試題
+  const handleApplyCustomVideo = () => {
+    if (!customYtInput.trim()) return;
+    soundEngine.correct();
+    let extractedId = customYtInput.trim();
+    const match = extractedId.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+    if (match && match[1]) {
+      extractedId = match[1];
+    }
+
+    const customQ = [{
+      id: 'custom_1',
+      start: Number(customStart) || 0,
+      end: Number(customEnd) || 10,
+      promptZh: '老師自訂 YouTube 影片測試：請看影片選出正確句子！',
+      targetEn: customSentence,
+      youtubeId: extractedId,
+      videoTitle: '自訂 YouTube 影片即時測驗',
+      options: [
+        { key: 'A', textEn: customSentence, isCorrect: true },
+        { key: 'B', textEn: 'What are you doing today?', isCorrect: false },
+        { key: 'C', textEn: 'Nice to meet you too.', isCorrect: false },
+        { key: 'D', textEn: 'I like apples and bananas.', isCorrect: false }
+      ]
+    }];
+
+    setActiveMode('video');
+    setQuestions(customQ);
+    setCurrentIndex(0);
+    setFeedback(null);
+    setSelectedChoiceKey(null);
+    setIsCustomVideoModalOpen(false);
+  };
 
   // 切換上一題
   const handlePrevQuestion = () => {
@@ -273,14 +329,14 @@ export const LanguageLabHub = ({ onBack }) => {
             </span>
           </div>
 
-          {/* 中：模式膠囊切換 [🎧 聽力實驗台 | 🎙️ 口說錄音台] */}
+          {/* 中：模式膠囊切換 [🎧 聽力台 | 🎙️ 口說台 | 🎬 影片台] */}
           <div className="flex p-1 rounded-xl bg-black/40 border border-white/15">
             <button
               onClick={() => {
                 soundEngine.click();
                 setActiveMode('listening');
               }}
-              className={`px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 transition-all cursor-pointer ${
                 activeMode === 'listening'
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white'
@@ -294,7 +350,7 @@ export const LanguageLabHub = ({ onBack }) => {
                 soundEngine.click();
                 setActiveMode('speaking');
               }}
-              className={`px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 transition-all cursor-pointer ${
                 activeMode === 'speaking'
                   ? 'bg-rose-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white'
@@ -303,10 +359,38 @@ export const LanguageLabHub = ({ onBack }) => {
               <Mic className="w-3.5 h-3.5" />
               <span>口說台</span>
             </button>
+            <button
+              onClick={() => {
+                soundEngine.click();
+                setActiveMode('video');
+              }}
+              className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 transition-all cursor-pointer ${
+                activeMode === 'video'
+                  ? 'bg-amber-600 text-white shadow-md ring-1 ring-amber-300'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              <Film className="w-3.5 h-3.5" />
+              <span>影片台</span>
+            </button>
           </div>
 
-          {/* 右：影音書籍櫃按鈕 + 金幣與積分 */}
+          {/* 右：影音書籍櫃按鈕 + 自訂影片測試 */}
           <div className="flex items-center gap-2">
+            {activeMode === 'video' && (
+              <button
+                onClick={() => {
+                  soundEngine.click();
+                  setIsCustomVideoModalOpen(true);
+                }}
+                className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-amber-300 text-xs font-black flex items-center gap-1 border border-amber-500/40 cursor-pointer shadow-sm active:scale-95 transition-all"
+                title="輸入任意 YouTube 網址自訂測試題"
+              >
+                <Settings className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">自訂影片</span>
+              </button>
+            )}
+
             <button
               onClick={() => {
                 soundEngine.click();
@@ -393,9 +477,80 @@ export const LanguageLabHub = ({ onBack }) => {
 
             {/* 2. 黑板中央內容區 */}
             {currentQ && !isFinished ? (
-              <GlassCard className="w-full flex-1 my-2 p-4 sm:p-6 text-center flex flex-col items-center justify-center relative overflow-hidden bg-slate-900/85 border-2 border-emerald-500/40 shadow-2xl">
+              <GlassCard className="w-full flex-1 my-2 p-3 sm:p-5 text-center flex flex-col items-center justify-center relative overflow-hidden bg-slate-900/85 border-2 border-emerald-500/40 shadow-2xl">
                 
-                {activeMode === 'listening' ? (
+                {activeMode === 'video' ? (
+                  /* ── 🎬 影片片段選句介面 ── */
+                  <div className="w-full flex flex-col items-center max-w-xl">
+                    <div className="w-full mb-1.5 flex items-center justify-between text-xs">
+                      <span className="text-amber-300 font-bold flex items-center gap-1">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                        <span>{currentQ.promptZh || '請觀看影片片段，選出劇中正確對話句：'}</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400 truncate max-w-[180px]">
+                        {currentQ.videoTitle}
+                      </span>
+                    </div>
+
+                    {/* YouTube 裁剪區間播放器 */}
+                    <div className="w-full mb-2.5">
+                      <YouTubeClipPlayer
+                        key={`${currentQ.youtubeId}_${currentQ.start}_${currentQ.end}`}
+                        youtubeId={currentQ.youtubeId}
+                        startSeconds={currentQ.start}
+                        endSeconds={currentQ.end}
+                        autoplay={true}
+                      />
+                    </div>
+
+                    {/* 4 大實體觸控卡片 (A, B, C, D) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                      {(currentQ.options || []).map((opt) => {
+                        const isSelected = selectedChoiceKey === opt.key;
+                        const isCorrect = opt.isCorrect;
+                        const showCorrect = feedback === 'correct' && isCorrect;
+                        const showWrong = feedback === 'wrong' && isSelected;
+                        const showReveal = feedback === 'wrong' && isCorrect;
+
+                        return (
+                          <button
+                            key={opt.key}
+                            type="button"
+                            onClick={() => handleSelectChoice(opt)}
+                            disabled={feedback !== null}
+                            className={`p-2.5 sm:p-3 rounded-2xl border-2 text-left transition-all flex items-start gap-2 cursor-pointer shadow-md active:scale-98 ${
+                              showCorrect || showReveal
+                                ? 'bg-emerald-500 text-white border-emerald-400 ring-2 ring-emerald-300'
+                                : showWrong
+                                ? 'bg-rose-500 text-white border-rose-400'
+                                : 'bg-slate-800/90 border-slate-700 hover:border-amber-400 text-slate-100'
+                            }`}
+                          >
+                            <span className={`w-6 h-6 rounded-lg font-mono font-black text-xs flex items-center justify-center shrink-0 ${
+                              showCorrect || showReveal
+                                ? 'bg-white text-emerald-700'
+                                : showWrong
+                                ? 'bg-white text-rose-700'
+                                : 'bg-slate-700 text-slate-200'
+                            }`}>
+                              {opt.key}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs sm:text-sm font-black leading-snug break-words">
+                                {opt.textEn}
+                              </p>
+                              {opt.textZh && (
+                                <p className="text-[10px] opacity-80 mt-0.5">
+                                  {opt.textZh}
+                                </p>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : activeMode === 'listening' ? (
                   /* ── 聽力施測介面 ── */
                   <div className="w-full flex flex-col items-center">
                     {/* 提示與重播大喇叭按鈕 */}
@@ -567,6 +722,99 @@ export const LanguageLabHub = ({ onBack }) => {
           onSelectUnit={handleSelectUnitFromBookshelf}
           onClose={() => setIsBookshelfOpen(false)}
         />
+      )}
+
+      {/* ── ⚙️ 自訂 YouTube 測試設定彈窗 ── */}
+      {isCustomVideoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn select-none">
+          <div className="w-full max-w-lg bg-gradient-to-b from-stone-900 via-stone-950 to-stone-900 border-2 border-amber-500 rounded-3xl p-5 sm:p-6 text-white shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-stone-700/80 pb-3">
+              <h3 className="text-base font-black font-heading text-amber-300 flex items-center gap-2">
+                <Settings className="w-5 h-5 text-amber-400" />
+                <span>老師自訂 YouTube 影片題目測試</span>
+              </h3>
+              <button
+                onClick={() => setIsCustomVideoModalOpen(false)}
+                className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center cursor-pointer active:scale-95 transition-all"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold text-amber-200 mb-1">
+                  YouTube 影片網址或 11 碼 ID：
+                </label>
+                <input
+                  type="text"
+                  value={customYtInput}
+                  onChange={(e) => setCustomYtInput(e.target.value)}
+                  placeholder="例如: https://youtu.be/bO8-Q_9sV1E 或 bO8-Q_9sV1E"
+                  className="w-full px-3 py-2 rounded-xl bg-stone-800 border border-stone-700 text-white font-mono placeholder:text-stone-500 focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-amber-200 mb-1">
+                    起始播放秒數 (Start):
+                  </label>
+                  <input
+                    type="number"
+                    value={customStart}
+                    onChange={(e) => setCustomStart(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-stone-800 border border-stone-700 text-white font-mono focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-amber-200 mb-1">
+                    結束暫停秒數 (End):
+                  </label>
+                  <input
+                    type="number"
+                    value={customEnd}
+                    onChange={(e) => setCustomEnd(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-stone-800 border border-stone-700 text-white font-mono focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-amber-200 mb-1">
+                  目標正確句子 (Target Sentence):
+                </label>
+                <input
+                  type="text"
+                  value={customSentence}
+                  onChange={(e) => setCustomSentence(e.target.value)}
+                  placeholder="例如: Where did you go last weekend?"
+                  className="w-full px-3 py-2 rounded-xl bg-stone-800 border border-stone-700 text-white font-bold placeholder:text-stone-500 focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div className="bg-amber-950/40 p-3 rounded-2xl border border-amber-800/50 text-amber-300 text-[11px] leading-relaxed">
+                💡 <strong>零流量原理說明：</strong>
+                YouTube 的所有視訊檔案與 CDN 流量皆由 Google 免費承擔，無論多少位學生同時看，都不會耗損 Vercel 的 100GB 伺服器頻寬額度！
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-stone-700/80">
+              <button
+                onClick={() => setIsCustomVideoModalOpen(false)}
+                className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-slate-300 font-bold text-xs cursor-pointer active:scale-95 transition-all"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleApplyCustomVideo}
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-amber-950 font-black text-xs cursor-pointer shadow-md active:scale-95 transition-all"
+              >
+                立即載入測驗
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
