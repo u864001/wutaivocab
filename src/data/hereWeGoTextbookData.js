@@ -6813,7 +6813,7 @@ export const HERE_WE_GO_TEXTBOOKS = [
   },
   {
     "book": 9,
-    "title": "Here We Go 第 9 冊",
+    "title": "Here We Go 第 9 冊 (國一先修)",
     "units": [
       {
         "unitId": "b9_u0",

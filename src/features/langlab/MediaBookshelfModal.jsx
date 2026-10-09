@@ -12,7 +12,7 @@ const GRADE_SUBTITLES = {
   6: '國小五年級下學期 (症狀、餐點與所有格)',
   7: '國小六年級上學期 (國家、交通與休閒)',
   8: '國小六年級下學期 (過去式、購物與季節)',
-  9: '國小進階銜接 (過去式進階與節慶)'
+  9: '🎓 國一先修／國中銜接 (過去式進階、世博建築與節慶)'
 };
 
 const BOOK_PALETTES = [
@@ -113,9 +113,16 @@ export const MediaBookshelfModal = ({
                       B{b.book}
                     </span>
                     <div className="min-w-0">
-                      <h4 className="text-xs sm:text-sm font-black truncate font-heading text-white">
-                        {b.title}
-                      </h4>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <h4 className="text-xs sm:text-sm font-black truncate font-heading text-white">
+                          {b.title}
+                        </h4>
+                        {b.book === 9 && (
+                          <span className="px-1.5 py-0.2 rounded-md text-[9px] font-black bg-rose-600 text-white border border-rose-400 shrink-0 shadow-xs">
+                            國一先修
+                          </span>
+                        )}
+                      </div>
                       <p className="text-[10px] text-white/70 truncate">
                         {GRADE_SUBTITLES[b.book] || '官方精選教材'}
                       </p>

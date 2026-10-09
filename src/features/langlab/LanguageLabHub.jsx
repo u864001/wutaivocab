@@ -358,6 +358,11 @@ export const LanguageLabHub = ({ onBack }) => {
                 <span className="px-2 py-0.5 rounded-md bg-amber-500/30 text-amber-300 font-mono font-black text-xs">
                   B{selectedBook}
                 </span>
+                {selectedBook === 9 && (
+                  <span className="px-2 py-0.5 rounded-md bg-rose-600/90 text-white font-black text-[10px] tracking-wide border border-rose-400/50 shadow-xs">
+                    國一先修
+                  </span>
+                )}
                 <span className="text-xs sm:text-sm font-black font-heading truncate max-w-[200px] sm:max-w-xs text-slate-100">
                   {selectedUnitTitle}
                 </span>
