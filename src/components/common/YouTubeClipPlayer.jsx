@@ -3,7 +3,7 @@ import { Play, RotateCcw, Volume2, Film, Sparkles, Maximize2, Minimize2 } from '
 import { soundEngine } from '../../services/audio';
 
 export const YouTubeClipPlayer = ({
-  youtubeId = '3AOPZk_QjDk',
+  youtubeId = 'zMdq9jSaNLg',
   startSeconds = 0,
   endSeconds = 10,
   autoplay = true,

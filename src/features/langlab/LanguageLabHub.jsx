@@ -849,7 +849,7 @@ export const LanguageLabHub = ({ onBack }) => {
                   type="text"
                   value={customYtInput}
                   onChange={(e) => setCustomYtInput(e.target.value)}
-                  placeholder="例如: https://youtu.be/bO8-Q_9sV1E 或 bO8-Q_9sV1E"
+                  placeholder="例如: https://youtu.be/zMdq9jSaNLg 或 zMdq9jSaNLg"
                   className="w-full px-3 py-2 rounded-xl bg-stone-800 border border-stone-700 text-white font-mono placeholder:text-stone-500 focus:outline-none focus:border-amber-400"
                 />
               </div>
@@ -893,8 +893,8 @@ export const LanguageLabHub = ({ onBack }) => {
               </div>
 
               <div className="bg-amber-950/40 p-3 rounded-2xl border border-amber-800/50 text-amber-300 text-[11px] leading-relaxed">
-                💡 <strong>零流量原理說明：</strong>
-                YouTube 的所有視訊檔案與 CDN 流量皆由 Google 免費承擔，無論多少位學生同時看，都不會耗損 Vercel 的 100GB 伺服器頻寬額度！
+                💡 <strong>零伺服器流量負擔：</strong>
+                YouTube 的所有視訊檔案與 CDN 流量皆由 Google 免費承擔，無論多少位學生同時看，都不會耗損主機頻寬額度！
               </div>
             </div>
 
