@@ -228,7 +228,7 @@ export const Portal = ({
 
           {/* 手機模組 5：ClassQnA 線上互動教室 */}
           <div
-            onClick={() => window.open('https://classqna.vercel.app/', '_blank', 'noopener,noreferrer')}
+            onClick={() => window.open('https://classqna.pages.dev/', '_blank', 'noopener,noreferrer')}
             className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-sky-500/15 via-blue-500/10 to-transparent dark:from-sky-950/60 dark:to-slate-900/60 border-2 border-sky-400/60 dark:border-sky-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2.5 min-w-0">
@@ -467,7 +467,7 @@ export const Portal = ({
                     </span>
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
                       <Headphones className="w-3.5 h-3.5 text-amber-500" />
-                      四選一聽力測驗
+                      三選一聽力測驗
                     </span>
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-indigo-200 dark:border-indigo-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
                       <Mic className="w-3.5 h-3.5 text-indigo-500" />
@@ -493,7 +493,7 @@ export const Portal = ({
           {/* ── 模組五：ClassQnA 線上互動教室與回家作業 (Virtual Classroom & Homework) ── */}
           <GlassCard
             hoverable={true}
-            onClick={() => window.open('https://classqna.vercel.app/', '_blank', 'noopener,noreferrer')}
+            onClick={() => window.open('https://classqna.pages.dev/', '_blank', 'noopener,noreferrer')}
             className="relative overflow-hidden group cursor-pointer border-2 border-sky-300/80 dark:border-sky-700/60 bg-gradient-to-r from-sky-500/10 via-blue-500/5 to-cyan-500/10 dark:from-sky-950/40 dark:via-slate-900/50 dark:to-cyan-950/30 p-5 sm:p-6 shadow-md hover:shadow-xl transition-all"
           >
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 relative z-10">
@@ -620,7 +620,7 @@ export const Portal = ({
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(
                     typeof window !== 'undefined' && window.location.origin && !window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1')
                       ? window.location.origin
-                      : 'https://wutaivocab.vercel.app'
+                      : 'https://wutaivocab.pages.dev'
                   )}`}
                   alt="QR Code"
                   className="w-20 h-20 sm:w-22 sm:h-22 object-contain"
@@ -631,7 +631,9 @@ export const Portal = ({
                 {t.scanToJoin}
               </p>
               <span className="text-[10px] font-mono text-slate-400 mt-0.5">
-                wutaivocab.vercel.app
+                {typeof window !== 'undefined' && window.location.host && !window.location.host.includes('localhost')
+                  ? window.location.host
+                  : 'wutaivocab.pages.dev'}
               </span>
             </GlassCard>
           </div>

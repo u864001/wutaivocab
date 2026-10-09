@@ -793,7 +793,7 @@ export const Lobby = ({
               src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
                 typeof window !== 'undefined' && window.location.origin && !window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1')
                   ? window.location.origin
-                  : 'https://wutaivocab.vercel.app'
+                  : 'https://wutaivocab.pages.dev'
               )}`}
               alt="QR Code"
               className="w-24 h-24 object-contain"
@@ -806,7 +806,7 @@ export const Lobby = ({
           <span className="text-[11px] font-mono text-slate-400 mt-1">
             {typeof window !== 'undefined' && window.location.host && !window.location.host.includes('localhost')
               ? window.location.host
-              : 'wutaivocab.vercel.app'}
+              : 'wutaivocab.pages.dev'}
           </span>
         </GlassCard>
         <p
