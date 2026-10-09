@@ -28,3 +28,5 @@ dist-ssr
 .env.production
 legacy-v1/
 scratch/
+textbook_docx/
+textbook_txt/

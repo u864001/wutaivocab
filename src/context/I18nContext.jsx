@@ -39,6 +39,10 @@ const DICTIONARY = {
     textbookModuleBadge: '48頁全彩・3D翻頁・聽力隨身聽',
     textbookModuleDesc: '收錄國小雙語校本教材全 5 單元！支援 3D 擬真翻頁、雙指放大鏡、章節快速跳轉與聽力測驗即時語音朗讀輔助。',
     textbookModuleEnter: '翻閱電子書',
+    langlabModuleTitle: '雙語聽說探險館',
+    langlabModuleBadge: '視聽教室・翰林全冊・AI發音辨識',
+    langlabModuleDesc: '走進吉卜力風視聽語言教室！收錄翰林 Here We Go 1~9 全冊課文與情境對話，支援卡帶書櫃選書、聽力測驗與免流量即時語音口說辨識！',
+    langlabModuleEnter: '進入聽說探險館',
 
     // 大廳區塊
     rangeTitle: '1. 設定複習範圍',
@@ -274,6 +278,10 @@ const DICTIONARY = {
     textbookModuleBadge: '48 Full-Color Pages • 3D Flip • Audio Aid',
     textbookModuleDesc: 'Browse all 5 units of our school-based English textbook! Features 3D realistic page-flipping, pinch-to-zoom, quick chapter navigation, and live text-to-speech audio assistant.',
     textbookModuleEnter: 'Open E-Textbook',
+    langlabModuleTitle: 'Bilingual Language Lab Hub',
+    langlabModuleBadge: 'Media Lab • Here We Go 1-9 • AI Speech Recognition',
+    langlabModuleDesc: 'Step into the Ghibli-style language classroom! Features Here We Go Books 1-9 dialogue pairs, cassette bookshelf unit selector, listening drills, and zero-cost client-side speech recognition!',
+    langlabModuleEnter: 'Enter Language Lab',
 
     // Lobby
     rangeTitle: '1. Select Review Range',

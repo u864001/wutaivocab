@@ -14,6 +14,7 @@ import {
   Layers,
   Gamepad2,
   Headphones,
+  Mic,
   QrCode,
   GraduationCap,
   Users,
@@ -202,7 +203,30 @@ export const Portal = ({
             </div>
           </div>
 
-          {/* 手機模組 4：ClassQnA 線上互動教室 */}
+          {/* 手機模組 4：雙語聽說探險館 (視聽語言教室) */}
+          <div
+            onClick={() => onNavigate('langlab')}
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-rose-500/15 via-pink-500/10 to-transparent dark:from-rose-950/60 dark:to-slate-900/60 border-2 border-rose-400/60 dark:border-rose-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 via-pink-500 to-indigo-500 text-white flex items-center justify-center shadow-md shadow-rose-500/25 shrink-0">
+                <Headphones className="w-5 h-5" />
+              </div>
+              <div className="flex items-center gap-2 min-w-0">
+                <h3 className="text-[15px] font-black text-slate-800 dark:text-slate-100 font-heading truncate">
+                  {t.langlabModuleTitle || '雙語聽說探險館'}
+                </h3>
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-rose-600 text-white shrink-0 tracking-wide">
+                  聽說探險
+                </span>
+              </div>
+            </div>
+            <div className="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+
+          {/* 手機模組 5：ClassQnA 線上互動教室 */}
           <div
             onClick={() => window.open('https://classqna.vercel.app/', '_blank', 'noopener,noreferrer')}
             className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-sky-500/15 via-blue-500/10 to-transparent dark:from-sky-950/60 dark:to-slate-900/60 border-2 border-sky-400/60 dark:border-sky-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
@@ -225,7 +249,7 @@ export const Portal = ({
             </div>
           </div>
 
-          {/* 手機模組 5：自編英語電子教科書 */}
+          {/* 手機模組 6：自編英語電子教科書 */}
           <div
             onClick={() => onNavigate('textbook')}
             className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-teal-500/15 via-emerald-500/10 to-transparent dark:from-teal-950/60 dark:to-slate-900/60 border-2 border-teal-400/60 dark:border-teal-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
@@ -413,7 +437,60 @@ export const Portal = ({
             </div>
           </GlassCard>
 
-          {/* ── 模組四：ClassQnA 線上互動教室與回家作業 (Virtual Classroom & Homework) ── */}
+          {/* ── 模組四：雙語聽說探險館 (Language Lab Hub - 視聽語言教室) ── */}
+          <GlassCard
+            hoverable={true}
+            onClick={() => onNavigate('langlab')}
+            className="relative overflow-hidden group cursor-pointer border-2 border-rose-300/80 dark:border-rose-700/60 bg-gradient-to-r from-rose-500/10 via-amber-500/5 to-indigo-500/10 dark:from-rose-950/40 dark:via-slate-900/50 dark:to-indigo-950/30 p-5 sm:p-6 shadow-md hover:shadow-xl transition-all"
+          >
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6 relative z-10">
+              <div className="flex items-center gap-4 sm:gap-5 flex-1 min-w-0">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-rose-500 via-amber-500 to-indigo-500 text-white flex items-center justify-center group-hover:scale-105 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-rose-500/30 shrink-0">
+                  <Headphones className="w-8 h-8 sm:w-10 sm:h-10" />
+                </div>
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 font-heading">
+                      {t.langlabModuleTitle || '雙語聽說探險館'}
+                    </h3>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-gradient-to-r from-rose-600 via-amber-600 to-indigo-600 text-white shadow-sm">
+                      {t.langlabModuleBadge || '視聽教室・翰林全冊・AI發音辨識'}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                    {t.langlabModuleDesc || '走進吉卜力風視聽語言教室！收錄翰林 Here We Go 1~9 全冊課文與情境對話，支援卡帶書櫃選書、聽力測驗與免流量即時語音口說辨識！'}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-rose-200 dark:border-rose-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                      <BookOpen className="w-3.5 h-3.5 text-rose-500" />
+                      翰林 1~9 全冊對話
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-amber-200 dark:border-amber-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                      <Headphones className="w-3.5 h-3.5 text-amber-500" />
+                      四選一聽力測驗
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-slate-800/70 border border-indigo-200 dark:border-indigo-800/60 text-slate-700 dark:text-slate-200 text-xs font-black">
+                      <Mic className="w-3.5 h-3.5 text-indigo-500" />
+                      AI 即時口說錄音 (0流量)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <Button3D
+                variant="rose"
+                size="lg"
+                className="shrink-0 w-full md:w-auto shadow-lg group-hover:scale-105 transition-transform"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <span>{t.langlabModuleEnter || '進入聽說探險館'}</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Button3D>
+            </div>
+          </GlassCard>
+
+          {/* ── 模組五：ClassQnA 線上互動教室與回家作業 (Virtual Classroom & Homework) ── */}
           <GlassCard
             hoverable={true}
             onClick={() => window.open('https://classqna.vercel.app/', '_blank', 'noopener,noreferrer')}
@@ -466,7 +543,7 @@ export const Portal = ({
             </div>
           </GlassCard>
 
-          {/* ── 模組五：自編英語電子教科書 (Bilingual Textbook Flipbook) ── */}
+          {/* ── 模組六：自編英語電子教科書 (Bilingual Textbook Flipbook) ── */}
           <GlassCard
             hoverable={true}
             onClick={() => onNavigate('textbook')}

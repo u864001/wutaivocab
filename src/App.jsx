@@ -17,6 +17,7 @@ import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
 import { WutaiTownGame } from './games/town/WutaiTownGame';
 import { TextbookViewer } from './components/TextbookViewer';
+import { LanguageLabHub } from './features/langlab/LanguageLabHub';
 import { TeacherAuthModal } from './components/TeacherAuthModal';
 import { StudentProfileModal } from './components/StudentProfileModal';
 import { useI18n } from './context/I18nContext';
@@ -102,6 +103,9 @@ export function App() {
       if (path === '/textbook' || urlParams.get('view') === 'textbook') {
         return 'textbook';
       }
+      if (path === '/langlab' || urlParams.get('view') === 'langlab') {
+        return 'langlab';
+      }
       if (path === '/escape' || urlParams.get('view') === 'escape') {
         return 'escape';
       }
@@ -163,6 +167,12 @@ export function App() {
           setCurrentView('phonics');
         } else if (path === '/vocab' || path === '/lobby') {
           setCurrentView('lobby');
+        } else if (path === '/town' || path.endsWith('/town')) {
+          setCurrentView('town');
+        } else if (path === '/textbook' || path.endsWith('/textbook')) {
+          setCurrentView('textbook');
+        } else if (path === '/langlab' || path.endsWith('/langlab')) {
+          setCurrentView('langlab');
         } else {
           setCurrentView('portal');
         }
@@ -220,6 +230,14 @@ export function App() {
         if (window.location.pathname !== '/town') {
           window.history.pushState({ view: 'town' }, '', '/town');
         }
+      } else if (view === 'textbook') {
+        if (window.location.pathname !== '/textbook') {
+          window.history.pushState({ view: 'textbook' }, '', '/textbook');
+        }
+      } else if (view === 'langlab') {
+        if (window.location.pathname !== '/langlab') {
+          window.history.pushState({ view: 'langlab' }, '', '/langlab');
+        }
       } else if (view === 'escape') {
         if (window.location.pathname !== '/escape') {
           window.history.pushState({ view: 'escape' }, '', '/escape');
@@ -256,7 +274,7 @@ export function App() {
   }, []);
 
   // 當處於單字學習遊戲或大廳且單字尚未同步完成時顯示輕量載入動畫
-  if (isLoading && words.length === 0 && currentView !== 'portal' && currentView !== 'phonics') {
+  if (isLoading && words.length === 0 && currentView !== 'portal' && currentView !== 'phonics' && currentView !== 'textbook' && currentView !== 'langlab' && currentView !== 'town') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
         <div className="w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin mb-4" />
@@ -272,8 +290,8 @@ export function App() {
 
   const handleGoParent = () => {
     // 依層級關係精確返回上一層：
-    // 若當前在單字學習館大廳 (lobby)、自然發音 (phonics)、小鎮 (town) 或電子書 (textbook)，上一層為學習宇宙首頁 (portal)
-    if (currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook') {
+    // 若當前在單字學習館大廳 (lobby)、自然發音 (phonics)、小鎮 (town)、電子書 (textbook) 或聽說館 (langlab)，上一層為學習宇宙首頁 (portal)
+    if (currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab') {
       handleNavigate('portal');
     } else if (currentView !== 'portal') {
       // 若當前在任何單字遊戲、字母迷宮、排行榜或教師後台，上一層為單字學習館 (lobby)
@@ -437,6 +455,12 @@ export function App() {
 
           {currentView === 'textbook' && (
             <TextbookViewer
+              onBack={() => handleNavigate('portal')}
+            />
+          )}
+
+          {currentView === 'langlab' && (
+            <LanguageLabHub
               onBack={() => handleNavigate('portal')}
             />
           )}
