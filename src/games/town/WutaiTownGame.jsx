@@ -43,6 +43,7 @@ export const WutaiTownGame = ({ onBack }) => {
 
   // 畫面模態與地標狀態
   const [activeDialogueLocation, setActiveDialogueLocation] = useState(null);
+  const [activeDialogueIsTeacher, setActiveDialogueIsTeacher] = useState(false);
   const [activeShopLocationId, setActiveShopLocationId] = useState(null);
   const [isHomeOpen, setIsHomeOpen] = useState(false);
   const [isBackpackOpen, setIsBackpackOpen] = useState(false);
@@ -162,6 +163,11 @@ export const WutaiTownGame = ({ onBack }) => {
 
   // 領取外師每日彩蛋積分處理 (提升至 10 ~ 20 探索積分，尊榮外師每日限定)
   const handleTeacherBonusClaimed = async () => {
+    // 立即安全關閉外師對話視窗，避免在淡出動畫期間閃爍切換至原場景角色
+    stopSpeech();
+    setActiveDialogueLocation(null);
+    setActiveDialogueIsTeacher(false);
+
     const bonus = Math.floor(Math.random() * 11) + 10; // 隨機 10 ~ 20 探索積分
     soundEngine.win();
     try {
@@ -375,6 +381,8 @@ export const WutaiTownGame = ({ onBack }) => {
       setIsHomeOpen(true);
       return;
     }
+    const isTeacher = Boolean(loc.id === teacherInfo.locationId && !hasMetTeacherToday);
+    setActiveDialogueIsTeacher(isTeacher);
     setActiveDialogueLocation(loc);
   };
 
@@ -383,12 +391,6 @@ export const WutaiTownGame = ({ onBack }) => {
     soundEngine.stopSceneBgm();
     if (onBack) onBack();
   };
-
-  const isTeacherAtActiveLocation = Boolean(
-    activeDialogueLocation &&
-    activeDialogueLocation.id === teacherInfo.locationId &&
-    !hasMetTeacherToday
-  );
 
   return (
     <div className="w-full max-w-[1720px] mx-auto px-2 sm:px-4 py-2 animate-fadeIn flex flex-col items-center">
@@ -716,11 +718,12 @@ export const WutaiTownGame = ({ onBack }) => {
       {/* ── 全螢幕 2D 視覺小說冒險對話場景 (Visual Novel Scene Stage) ── */}
       {activeDialogueLocation && activeDialogueLocation.id !== 'home' && (
         <DialogueEngine
-          key={activeDialogueLocation.id + (isTeacherAtActiveLocation ? '_teacher' : '')}
+          key={activeDialogueLocation.id + (activeDialogueIsTeacher ? '_teacher' : '')}
           location={activeDialogueLocation}
           onClose={() => {
             stopSpeech();
             setActiveDialogueLocation(null);
+            setActiveDialogueIsTeacher(false);
           }}
           onOpenShop={(shopId) => {
             stopSpeech();
@@ -731,7 +734,7 @@ export const WutaiTownGame = ({ onBack }) => {
             setIsQuestBoardOpen(true);
           }}
           onQuestProgress={handleQuestProgress}
-          isVisitingTeacher={isTeacherAtActiveLocation}
+          isVisitingTeacher={activeDialogueIsTeacher}
           visitingTeacher={teacherInfo.teacher}
           onTeacherBonusClaimed={handleTeacherBonusClaimed}
           onDialogueComplete={handleDialogueComplete}
