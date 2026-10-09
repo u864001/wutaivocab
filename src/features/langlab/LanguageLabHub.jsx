@@ -13,14 +13,15 @@ import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Volume2, Mic, MicOff, CheckCircle2, XCircle, X,
   Trophy, Sparkles, BookOpen, ChevronLeft, ChevronRight,
-  RotateCcw, Star, Headphones, Disc, Award, Film, Settings, Play, Video
+  RotateCcw, Star, Headphones, Disc, Award, Film, Settings, Play, Video,
+  Music, VolumeX, Eye, EyeOff
 } from 'lucide-react';
 import { UNIT_VIDEO_LIBRARY } from '../../data/unitVideoQuestionData';
 import { YouTubeClipPlayer } from '../../components/common/YouTubeClipPlayer';
 
 const BG_IMAGE = '/assets/langlab/bg_language_lab.jpg';
-const MENTOR_OWL = '/assets/langlab/mentor_owl.jpg';
-const STUDENT_BEAR = '/assets/langlab/student_bear.jpg';
+const MENTOR_OWL = '/assets/langlab/mentor_owl_standee.webp';
+const STUDENT_BEAR = '/assets/langlab/student_bear_standee.webp';
 
 export const LanguageLabHub = ({ onBack }) => {
   const { coins, questPoints, addCoins, addQuestPoints } = useStudent();
@@ -33,6 +34,27 @@ export const LanguageLabHub = ({ onBack }) => {
 
   // 模式切換：'listening' (聽力實驗台) | 'speaking' (口說錄音台) | 'video' (影片選句台)
   const [activeMode, setActiveMode] = useState('listening');
+
+  // 中文翻譯提示開關 (預設不開啟中文，專注純英語情境訓練)
+  const [showChinese, setShowChinese] = useState(false);
+
+  // 教室背景音樂狀態
+  const [isBgmPlaying, setIsBgmPlaying] = useState(() => soundEngine.isSceneBgmActive());
+
+  // 進入教室自動啟動校園環境 BGM，退出時停止
+  useEffect(() => {
+    soundEngine.startSceneBgm('school');
+    setIsBgmPlaying(soundEngine.isSceneBgmActive());
+    return () => {
+      stopSpeech();
+      soundEngine.stopSceneBgm();
+    };
+  }, []);
+
+  const handleToggleBgm = () => {
+    const active = soundEngine.toggleSceneBgm('school');
+    setIsBgmPlaying(active);
+  };
 
   // 自訂 YouTube 測試彈窗狀態
   const [isCustomVideoModalOpen, setIsCustomVideoModalOpen] = useState(false);
@@ -242,6 +264,7 @@ export const LanguageLabHub = ({ onBack }) => {
         setIsRecording(true);
         setSpeechResult(null);
         setRecordedText('');
+        soundEngine.pauseSceneBgm();
       };
 
       rec.onresult = (event) => {
@@ -273,10 +296,12 @@ export const LanguageLabHub = ({ onBack }) => {
       rec.onerror = (e) => {
         console.warn('SpeechRecognition error:', e);
         setIsRecording(false);
+        soundEngine.resumeSceneBgm();
       };
 
       rec.onend = () => {
         setIsRecording(false);
+        soundEngine.resumeSceneBgm();
       };
 
       recognitionRef.current = rec;
@@ -298,18 +323,19 @@ export const LanguageLabHub = ({ onBack }) => {
   return (
     <div className="relative w-full max-w-[1720px] mx-auto px-2 sm:px-4 py-2 animate-fadeIn flex flex-col items-center select-none">
       
-      {/* ── 16:9 全景視聽語言教室舞台容器 (Widescreen 16:9 Stage) ── */}
-      <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-600/60 bg-slate-950">
+      {/* ── 全景視聽語言教室舞台容器 (Widescreen Stage) ── */}
+      <div className="relative w-full min-h-[580px] md:min-h-[660px] md:aspect-[16/9] rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-600/60 bg-slate-950 flex flex-col">
         
         {/* 教室全景底圖 */}
         <img
           src={BG_IMAGE}
           alt="視聽語言教室"
-          className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.95] contrast-[1.03]"
+          className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.88] contrast-[1.03]"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/50 pointer-events-none" />
 
         {/* 頂部輕量化懸浮導航 HUD */}
-        <div className="absolute top-2 left-2 right-2 sm:top-3 sm:left-3 sm:right-3 z-30 px-3 sm:px-5 py-2 rounded-2xl bg-slate-950/70 backdrop-blur-md border border-white/20 text-white flex items-center justify-between gap-2 shadow-lg">
+        <div className="relative z-30 px-3 sm:px-5 py-2.5 rounded-none sm:rounded-b-2xl bg-slate-950/75 backdrop-blur-md border-b sm:border border-white/20 text-white flex items-center justify-between gap-2 shadow-lg shrink-0">
           
           {/* 左：返回鍵與標題 */}
           <div className="flex items-center gap-2">
@@ -319,7 +345,7 @@ export const LanguageLabHub = ({ onBack }) => {
                 soundEngine.click();
                 if (onBack) onBack();
               }}
-              className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 cursor-pointer"
+              className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 cursor-pointer border border-white/10"
             >
               <ArrowLeft className="w-4 h-4 text-emerald-400" />
               <span className="hidden sm:inline">回首頁</span>
@@ -330,7 +356,7 @@ export const LanguageLabHub = ({ onBack }) => {
           </div>
 
           {/* 中：模式膠囊切換 [🎧 聽力台 | 🎙️ 口說台 | 🎬 影片台] */}
-          <div className="flex p-1 rounded-xl bg-black/40 border border-white/15">
+          <div className="flex p-1 rounded-xl bg-black/50 border border-white/15">
             <button
               onClick={() => {
                 soundEngine.click();
@@ -375,7 +401,7 @@ export const LanguageLabHub = ({ onBack }) => {
             </button>
           </div>
 
-          {/* 右：影音書籍櫃按鈕 + 自訂影片測試 */}
+          {/* 右：背景音樂開關 + 影音書籍櫃按鈕 + 自訂影片測試 */}
           <div className="flex items-center gap-2">
             {activeMode === 'video' && (
               <button
@@ -383,13 +409,30 @@ export const LanguageLabHub = ({ onBack }) => {
                   soundEngine.click();
                   setIsCustomVideoModalOpen(true);
                 }}
-                className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-amber-300 text-xs font-black flex items-center gap-1 border border-amber-500/40 cursor-pointer shadow-sm active:scale-95 transition-all"
+                className="px-2 sm:px-2.5 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-amber-300 text-xs font-black flex items-center gap-1 border border-amber-500/40 cursor-pointer shadow-sm active:scale-95 transition-all"
                 title="輸入任意 YouTube 網址自訂測試題"
               >
                 <Settings className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">自訂影片</span>
+                <span className="hidden md:inline">自訂影片</span>
               </button>
             )}
+
+            {/* 背景音樂開關 */}
+            <button
+              onClick={handleToggleBgm}
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 ${
+                isBgmPlaying
+                  ? 'bg-amber-500/25 text-amber-200 border-amber-400/40'
+                  : 'bg-white/15 text-slate-300 border-white/20'
+              }`}
+              title={isBgmPlaying ? '暫停教室音樂' : '播放教室音樂'}
+            >
+              {isBgmPlaying ? (
+                <Music className="w-3.5 h-3.5 animate-bounce text-amber-300" />
+              ) : (
+                <VolumeX className="w-3.5 h-3.5 text-slate-400" />
+              )}
+            </button>
 
             <button
               onClick={() => {
@@ -405,39 +448,52 @@ export const LanguageLabHub = ({ onBack }) => {
           </div>
         </div>
 
-        {/* ── 核心教學互動舞台 (黑板投影區 + 人物立牌 + 觸控控制台) ── */}
-        <div className="absolute inset-0 pt-16 sm:pt-20 pb-4 px-3 sm:px-8 flex items-center justify-between gap-4">
+        {/* ── 核心教學互動舞台 (左側立繪 + 右側互動卡片區) ── */}
+        <div className="relative flex-1 w-full max-w-[1440px] mx-auto flex flex-col md:flex-row items-end justify-between px-3 sm:px-6 md:px-10 pb-3 sm:pb-6 gap-3 md:gap-8 overflow-hidden z-20">
           
-          {/* 左側：人物立牌滑入滑出展示 (貓頭鷹助教 vs 台灣黑熊學伴) */}
-          <div className="hidden lg:flex flex-col items-center justify-end w-72 h-full pb-2 shrink-0 transition-transform duration-500 transform">
-            <div className="relative group animate-slideUp">
-              {/* 人物語音對話氣泡 */}
-              <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-64 p-2.5 rounded-2xl bg-slate-900/90 border border-amber-400/80 text-white text-xs font-bold shadow-xl text-center backdrop-blur-md">
+          {/* 左側：人物立牌展示 (小鎮風格：膝以上半身、去背透明、陰影、底部身分徽章膠囊) */}
+          <div className="hidden md:flex flex-col items-center justify-end shrink-0 z-10 transition-transform duration-500 transform animate-slide-in-left">
+            <div className="relative group flex flex-col items-center">
+              {/* 人物語言對話氣泡 */}
+              <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-60 p-2 rounded-2xl bg-slate-950/85 border border-amber-400/80 text-white text-xs font-bold shadow-xl text-center backdrop-blur-md z-20">
                 <span className="text-amber-300 font-black">
-                  {activeMode === 'listening' ? '🦉 貓頭鷹助教：' : '🐻 黑熊學伴：'}
+                  {activeMode === 'listening' ? '🦉 貓頭鷹導師：' : '🐻 黑熊學伴：'}
                 </span>
                 <p className="text-[11px] text-slate-200 mt-0.5">
                   {activeMode === 'listening'
                     ? '戴好耳機，仔細聽發音，選出正確的卡片！'
                     : '跟著我大聲說出來！點擊麥克風開始錄音！'}
                 </p>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-slate-900/90" />
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-slate-950/85" />
               </div>
 
-              {/* 人物立牌圖像 */}
+              {/* 人物立繪圖像 (去背透光、原畫尺寸、小鎮規範) */}
               <img
                 src={activeMode === 'listening' ? MENTOR_OWL : STUDENT_BEAR}
-                alt="導師立牌"
-                className="w-56 h-auto max-h-[50vh] object-contain drop-shadow-2xl transition-all duration-300 hover:scale-105"
+                alt={activeMode === 'listening' ? '貓頭鷹導師' : '黑熊學伴'}
+                className="h-56 sm:h-72 md:h-[460px] lg:h-[500px] max-h-[62vh] object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.7)] select-none transition-transform duration-300 group-hover:scale-102"
               />
+
+              {/* 小鎮標準身分立牌膠囊 */}
+              <div className="mt-1 px-4 py-1.5 rounded-full bg-slate-950/85 backdrop-blur-md border border-white/30 shadow-xl flex items-center gap-2 pointer-events-auto">
+                <span className="text-xl">{activeMode === 'listening' ? '🦉' : '🐻'}</span>
+                <div className="text-left">
+                  <div className="text-xs sm:text-sm font-black text-white font-heading leading-tight">
+                    {activeMode === 'listening' ? '貓頭鷹導師' : '黑熊學伴'}
+                  </div>
+                  <div className="text-[10px] font-bold text-amber-300">
+                    {activeMode === 'listening' ? '視聽語言教室 • 聽力導師' : '視聽語言教室 • 口說學伴'}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* 中央/主要區域：大黑板題目投影幕 + 答題控制台 */}
-          <div className="flex-1 max-w-3xl h-full flex flex-col justify-between py-1 sm:py-2">
+          {/* 右側/中央：測驗題目區 (毛玻璃擬真透明、精巧不佔版面、預設不開中文、三選一) */}
+          <div className="flex-1 w-full max-w-2xl h-full flex flex-col justify-end py-1 sm:py-2 z-20">
             
-            {/* 1. 黑板頂部資訊：當前冊次、單元、進度、上下題 */}
-            <div className="w-full flex items-center justify-between px-4 py-2 rounded-2xl bg-slate-950/80 backdrop-blur-md border border-amber-500/40 text-white shadow-md">
+            {/* 1. 黑板頂部資訊條：冊次、單元、進度、上下題 */}
+            <div className="w-full mb-2 flex items-center justify-between px-3.5 py-1.5 rounded-2xl bg-slate-950/70 backdrop-blur-md border border-amber-500/40 text-white shadow-md">
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded-md bg-amber-500/30 text-amber-300 font-mono font-black text-xs">
                   B{selectedBook}
@@ -447,7 +503,7 @@ export const LanguageLabHub = ({ onBack }) => {
                     國一先修
                   </span>
                 )}
-                <span className="text-xs sm:text-sm font-black font-heading truncate max-w-[200px] sm:max-w-xs text-slate-100">
+                <span className="text-xs sm:text-sm font-black font-heading truncate max-w-[180px] sm:max-w-xs text-slate-100">
                   {selectedUnitTitle}
                 </span>
               </div>
@@ -460,14 +516,14 @@ export const LanguageLabHub = ({ onBack }) => {
                 <button
                   onClick={handlePrevQuestion}
                   disabled={currentIndex === 0}
-                  className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-white cursor-pointer"
+                  className="p-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-white cursor-pointer"
                   title="上一題"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={handleNextQuestion}
-                  className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white cursor-pointer"
+                  className="p-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-white cursor-pointer"
                   title="下一題"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -475,24 +531,34 @@ export const LanguageLabHub = ({ onBack }) => {
               </div>
             </div>
 
-            {/* 2. 黑板中央內容區 */}
+            {/* 2. 測驗內容區 (毛玻璃擬真半透明) */}
             {currentQ && !isFinished ? (
-              <GlassCard className="w-full flex-1 my-2 p-3 sm:p-5 text-center flex flex-col items-center justify-center relative overflow-hidden bg-slate-900/85 border-2 border-emerald-500/40 shadow-2xl">
+              <div className="w-full p-3 sm:p-5 text-center flex flex-col items-center justify-center relative overflow-hidden rounded-3xl bg-slate-950/50 backdrop-blur-md border border-white/20 shadow-2xl">
                 
                 {activeMode === 'video' ? (
                   /* ── 🎬 影片片段選句介面 ── */
-                  <div className="w-full flex flex-col items-center max-w-xl">
+                  <div className="w-full flex flex-col items-center max-w-xl mx-auto">
                     <div className="w-full mb-1.5 flex items-center justify-between text-xs">
                       <span className="text-amber-300 font-bold flex items-center gap-1">
                         <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                         <span>{currentQ.promptZh || '請觀看影片片段，選出劇中正確對話句：'}</span>
                       </span>
-                      <span className="text-[10px] font-mono text-slate-400 truncate max-w-[180px]">
-                        {currentQ.videoTitle}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowChinese(prev => !prev)}
+                        className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                          showChinese 
+                            ? 'bg-amber-500/30 text-amber-200 border-amber-400/50' 
+                            : 'bg-white/10 text-slate-300 border-white/20 hover:text-white'
+                        }`}
+                        title="切換中文翻譯提示"
+                      >
+                        {showChinese ? <Eye className="w-3 h-3 text-amber-300" /> : <EyeOff className="w-3 h-3 text-slate-400" />}
+                        <span>{showChinese ? '中文已開啟' : '預設不開中文'}</span>
+                      </button>
                     </div>
 
-                    {/* YouTube 裁剪區間播放器 */}
+                    {/* YouTube 裁剪區間播放器 (支援全螢幕 & 自動背景音暫停) */}
                     <div className="w-full mb-2.5">
                       <YouTubeClipPlayer
                         key={`${currentQ.youtubeId}_${currentQ.start}_${currentQ.end}`}
@@ -503,9 +569,9 @@ export const LanguageLabHub = ({ onBack }) => {
                       />
                     </div>
 
-                    {/* 4 大實體觸控卡片 (A, B, C, D) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
-                      {(currentQ.options || []).map((opt) => {
+                    {/* 三選一 擬真毛玻璃卡片 (A, B, C) */}
+                    <div className="flex flex-col gap-2 w-full">
+                      {(currentQ.options || []).slice(0, 3).map((opt) => {
                         const isSelected = selectedChoiceKey === opt.key;
                         const isCorrect = opt.isCorrect;
                         const showCorrect = feedback === 'correct' && isCorrect;
@@ -518,29 +584,29 @@ export const LanguageLabHub = ({ onBack }) => {
                             type="button"
                             onClick={() => handleSelectChoice(opt)}
                             disabled={feedback !== null}
-                            className={`p-2.5 sm:p-3 rounded-2xl border-2 text-left transition-all flex items-start gap-2 cursor-pointer shadow-md active:scale-98 ${
+                            className={`px-3.5 py-2.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer backdrop-blur-md shadow-lg active:scale-98 ${
                               showCorrect || showReveal
-                                ? 'bg-emerald-500 text-white border-emerald-400 ring-2 ring-emerald-300'
+                                ? 'bg-emerald-600/85 text-white border-emerald-400 ring-2 ring-emerald-300'
                                 : showWrong
-                                ? 'bg-rose-500 text-white border-rose-400'
-                                : 'bg-slate-800/90 border-slate-700 hover:border-amber-400 text-slate-100'
+                                ? 'bg-rose-600/85 text-white border-rose-400'
+                                : 'bg-slate-950/45 hover:bg-slate-900/60 border-white/20 hover:border-amber-400/70 text-slate-100'
                             }`}
                           >
-                            <span className={`w-6 h-6 rounded-lg font-mono font-black text-xs flex items-center justify-center shrink-0 ${
+                            <span className={`w-7 h-7 rounded-xl font-mono font-black text-xs flex items-center justify-center shrink-0 border ${
                               showCorrect || showReveal
-                                ? 'bg-white text-emerald-700'
+                                ? 'bg-white text-emerald-700 border-white'
                                 : showWrong
-                                ? 'bg-white text-rose-700'
-                                : 'bg-slate-700 text-slate-200'
+                                ? 'bg-white text-rose-700 border-white'
+                                : 'bg-white/10 text-amber-300 border-white/20'
                             }`}>
                               {opt.key}
                             </span>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs sm:text-sm font-black leading-snug break-words">
+                              <p className="text-sm font-black leading-snug break-words">
                                 {opt.textEn}
                               </p>
-                              {opt.textZh && (
-                                <p className="text-[10px] opacity-80 mt-0.5">
+                              {showChinese && opt.textZh && (
+                                <p className="text-[11px] text-amber-200/90 mt-0.5">
                                   {opt.textZh}
                                 </p>
                               )}
@@ -551,26 +617,41 @@ export const LanguageLabHub = ({ onBack }) => {
                     </div>
                   </div>
                 ) : activeMode === 'listening' ? (
-                  /* ── 聽力施測介面 ── */
-                  <div className="w-full flex flex-col items-center">
-                    {/* 提示與重播大喇叭按鈕 */}
-                    <p className="text-xs text-amber-300 font-bold mb-3 flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>{currentQ.promptZh}</span>
-                    </p>
+                  /* ── 🎧 聽力施測介面 (精巧圓形播放鈕 + 三選一毛玻璃卡片 + 預設無中文) ── */
+                  <div className="w-full flex flex-col items-center justify-center max-w-xl mx-auto">
+                    {/* 圓形播放鈕 + 提示 */}
+                    <div className="flex flex-col items-center mb-3">
+                      <button
+                        type="button"
+                        onClick={handleReplay}
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white flex items-center justify-center shadow-[0_0_25px_rgba(59,130,246,0.6)] active:scale-95 transition-all cursor-pointer border-2 border-white/40 group"
+                        title="點擊重聽發音"
+                      >
+                        <Volume2 className="w-8 h-8 sm:w-10 sm:h-10 group-hover:scale-110 transition-transform animate-pulse" />
+                      </button>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-xs font-bold text-amber-300/95 tracking-wide drop-shadow">
+                          {currentQ.promptZh || '請仔細聆聽發音，選出正確句子：'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setShowChinese(prev => !prev)}
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                            showChinese 
+                              ? 'bg-amber-500/30 text-amber-200 border-amber-400/50' 
+                              : 'bg-white/10 text-slate-300 border-white/20 hover:text-white'
+                          }`}
+                          title="切換中文翻譯提示"
+                        >
+                          {showChinese ? <Eye className="w-3 h-3 text-amber-300" /> : <EyeOff className="w-3 h-3 text-slate-400" />}
+                          <span>{showChinese ? '中文已開啟' : '預設不開中文'}</span>
+                        </button>
+                      </div>
+                    </div>
 
-                    <button
-                      type="button"
-                      onClick={handleReplay}
-                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 hover:from-blue-500 hover:to-indigo-400 text-white flex items-center justify-center shadow-xl active:scale-95 transition-transform cursor-pointer mb-4"
-                      title="點擊重聽發音"
-                    >
-                      <Volume2 className="w-8 h-8 sm:w-10 sm:h-10 animate-pulse" />
-                    </button>
-
-                    {/* 4 大實體觸控卡片 (A, B, C, D) */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-xl">
-                      {(currentQ.options || []).map((opt) => {
+                    {/* 三選一 擬真毛玻璃卡片 (A, B, C) */}
+                    <div className="flex flex-col gap-2 w-full">
+                      {(currentQ.options || []).slice(0, 3).map((opt) => {
                         const isSelected = selectedChoiceKey === opt.key;
                         const isCorrect = opt.isCorrect;
                         const showCorrect = feedback === 'correct' && isCorrect;
@@ -583,29 +664,29 @@ export const LanguageLabHub = ({ onBack }) => {
                             type="button"
                             onClick={() => handleSelectChoice(opt)}
                             disabled={feedback !== null}
-                            className={`p-3 rounded-2xl border-2 text-left transition-all flex items-start gap-2.5 cursor-pointer shadow-md ${
+                            className={`px-3.5 py-2.5 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer backdrop-blur-md shadow-lg active:scale-98 ${
                               showCorrect || showReveal
-                                ? 'bg-emerald-500 text-white border-emerald-400 ring-2 ring-emerald-300'
+                                ? 'bg-emerald-600/85 text-white border-emerald-400 ring-2 ring-emerald-300'
                                 : showWrong
-                                ? 'bg-rose-500 text-white border-rose-400'
-                                : 'bg-slate-800/90 border-slate-700 hover:border-blue-400 text-slate-100'
+                                ? 'bg-rose-600/85 text-white border-rose-400'
+                                : 'bg-slate-950/45 hover:bg-slate-900/60 border-white/20 hover:border-amber-400/70 text-slate-100 hover:text-white'
                             }`}
                           >
-                            <span className={`w-7 h-7 rounded-xl font-mono font-black text-xs flex items-center justify-center shrink-0 ${
+                            <span className={`w-7 h-7 rounded-xl font-mono font-black text-xs flex items-center justify-center shrink-0 border ${
                               showCorrect || showReveal
-                                ? 'bg-white text-emerald-700'
+                                ? 'bg-white text-emerald-700 border-white'
                                 : showWrong
-                                ? 'bg-white text-rose-700'
-                                : 'bg-slate-700 text-slate-200'
+                                ? 'bg-white text-rose-700 border-white'
+                                : 'bg-white/10 text-amber-300 border-white/20'
                             }`}>
                               {opt.key}
                             </span>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs sm:text-sm font-black leading-snug break-words">
+                              <p className="text-sm sm:text-base font-black leading-snug break-words drop-shadow-sm">
                                 {opt.textEn}
                               </p>
-                              {opt.textZh && (
-                                <p className="text-[11px] opacity-80 mt-0.5">
+                              {showChinese && opt.textZh && (
+                                <p className="text-[11px] text-amber-200/90 mt-0.5 drop-shadow-sm font-medium">
                                   {opt.textZh}
                                 </p>
                               )}
@@ -616,24 +697,42 @@ export const LanguageLabHub = ({ onBack }) => {
                     </div>
                   </div>
                 ) : (
-                  /* ── 口說施測介面 ── */
-                  <div className="w-full flex flex-col items-center">
-                    <span className="text-xs font-mono font-bold text-rose-300 mb-1">
-                      {currentQ.speaker && currentQ.speaker !== 'Character' ? `${currentQ.speaker} 說：` : '跟讀目標句：'}
-                    </span>
-                    <h3 className="text-xl sm:text-2xl font-black text-white font-heading mb-1 text-center px-4">
+                  /* ── 🎙️ 口說施測介面 ── */
+                  <div className="w-full flex flex-col items-center justify-center max-w-xl mx-auto py-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-mono font-bold text-rose-300">
+                        {currentQ.speaker && currentQ.speaker !== 'Character' ? `${currentQ.speaker} 說：` : '跟讀目標句：'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setShowChinese(prev => !prev)}
+                        className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                          showChinese 
+                            ? 'bg-amber-500/30 text-amber-200 border-amber-400/50' 
+                            : 'bg-white/10 text-slate-300 border-white/20 hover:text-white'
+                        }`}
+                        title="切換中文翻譯提示"
+                      >
+                        {showChinese ? <Eye className="w-3 h-3 text-amber-300" /> : <EyeOff className="w-3 h-3 text-slate-400" />}
+                        <span>{showChinese ? '中文已開啟' : '預設不開中文'}</span>
+                      </button>
+                    </div>
+
+                    <h3 className="text-xl sm:text-2xl font-black text-white font-heading mb-1 text-center px-4 drop-shadow">
                       {currentQ.targetEn || currentQ.en}
                     </h3>
-                    <p className="text-xs sm:text-sm font-bold text-amber-300/90 mb-4">
-                      {currentQ.targetZh || currentQ.zh}
-                    </p>
+                    {showChinese && (currentQ.targetZh || currentQ.zh) && (
+                      <p className="text-xs sm:text-sm font-bold text-amber-300/90 mb-3 text-center">
+                        {currentQ.targetZh || currentQ.zh}
+                      </p>
+                    )}
 
                     {/* 聽示範與錄音按鈕 */}
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center gap-3 my-3">
                       <button
                         type="button"
                         onClick={handleReplay}
-                        className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-xs font-black flex items-center gap-1.5 cursor-pointer active:scale-95"
+                        className="px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-600 text-white text-xs font-black flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-md"
                       >
                         <Volume2 className="w-4 h-4 text-blue-400" />
                         <span>示範發音</span>
@@ -681,10 +780,10 @@ export const LanguageLabHub = ({ onBack }) => {
                     )}
                   </div>
                 )}
-              </GlassCard>
+              </div>
             ) : isFinished ? (
               /* ── 完成測驗結算畫面 ── */
-              <GlassCard className="w-full flex-1 my-2 p-6 text-center flex flex-col items-center justify-center bg-slate-900/90 border-2 border-amber-500/50">
+              <div className="w-full flex-1 my-2 p-6 text-center flex flex-col items-center justify-center rounded-3xl bg-slate-950/70 backdrop-blur-md border-2 border-amber-500/50 shadow-2xl">
                 <Trophy className="w-16 h-16 text-amber-400 mb-2 animate-bounce" />
                 <h3 className="text-2xl font-black text-white font-heading">
                   恭喜完成本單元雙語聽說特訓！
@@ -708,7 +807,7 @@ export const LanguageLabHub = ({ onBack }) => {
                     選擇下一單元
                   </Button3D>
                 </div>
-              </GlassCard>
+              </div>
             ) : null}
           </div>
         </div>

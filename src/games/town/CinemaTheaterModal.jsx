@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Film, Sparkles, Popcorn, Play, ChevronDown, Award } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Film, Sparkles, Popcorn, Play, ChevronDown, Award, Maximize2, Minimize2 } from 'lucide-react';
 import { UNIT_VIDEO_LIBRARY } from '../../data/unitVideoQuestionData';
 import { soundEngine } from '../../services/audio';
 import { useStudent } from '../../context/StudentContext';
@@ -7,7 +7,25 @@ import { useStudent } from '../../context/StudentContext';
 export const CinemaTheaterModal = ({ onClose }) => {
   const { addQuestPoints, addCoins } = useStudent();
   const [selectedMovieId, setSelectedMovieId] = useState(UNIT_VIDEO_LIBRARY[0].id);
-  const [claimedReward, setClaimedReward] = useState(false);
+  const theaterRef = useRef(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const [claimedReward, setClaimedReward] = useState(() => {
+    try {
+      return localStorage.getItem(`wutai_cinema_popcorn_${todayStr}`) === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+
+  // 進入放映廳時自動暫停背景音樂，離開時自動恢復
+  useEffect(() => {
+    soundEngine.pauseSceneBgm();
+    return () => {
+      soundEngine.resumeSceneBgm();
+    };
+  }, []);
 
   const activeMovie = UNIT_VIDEO_LIBRARY.find(m => m.id === selectedMovieId) || UNIT_VIDEO_LIBRARY[0];
 
@@ -15,8 +33,21 @@ export const CinemaTheaterModal = ({ onClose }) => {
     if (claimedReward) return;
     soundEngine.win();
     setClaimedReward(true);
+    try {
+      localStorage.setItem(`wutai_cinema_popcorn_${todayStr}`, 'true');
+    } catch (e) {}
     if (addQuestPoints) await addQuestPoints(2);
     if (addCoins) await addCoins(1);
+  };
+
+  const handleToggleFullscreen = () => {
+    soundEngine.click();
+    if (!theaterRef.current) return;
+    if (!document.fullscreenElement) {
+      theaterRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+    } else {
+      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+    }
   };
 
   return (
@@ -103,15 +134,28 @@ export const CinemaTheaterModal = ({ onClose }) => {
 
         {/* 影廳主螢幕 (16:9 YouTube 完整連續放映) */}
         <div className="flex-1 p-3 sm:p-5 flex flex-col items-center justify-center bg-black/80 overflow-y-auto">
-          <div className="w-full max-w-4xl aspect-video rounded-2xl overflow-hidden border-2 border-amber-500/50 shadow-2xl bg-black">
+          <div
+            ref={theaterRef}
+            className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden border-2 border-amber-500/50 shadow-2xl bg-black group"
+          >
             <iframe
               key={activeMovie.youtubeId}
               src={`https://www.youtube-nocookie.com/embed/${activeMovie.youtubeId}?autoplay=1&rel=0&modestbranding=1&controls=1`}
               title={activeMovie.title}
               className="w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               allowFullScreen
             />
+
+            {/* 懸浮全螢幕切換按鈕 */}
+            <button
+              onClick={handleToggleFullscreen}
+              className="absolute top-3 right-3 z-10 px-3 py-1.5 rounded-xl bg-black/70 hover:bg-black/90 text-amber-300 hover:text-white border border-amber-400/50 text-xs font-black flex items-center gap-1.5 shadow-lg active:scale-95 transition-all cursor-pointer backdrop-blur-md"
+              title="切換全螢幕觀看"
+            >
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              <span>{isFullscreen ? '離開全螢幕' : '⛶ 全螢幕觀賞'}</span>
+            </button>
           </div>
 
           {/* 影廳座位與售票員溫馨提示 */}

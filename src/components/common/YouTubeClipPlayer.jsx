@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, RotateCcw, Volume2, Film, Sparkles } from 'lucide-react';
+import { Play, RotateCcw, Volume2, Film, Sparkles, Maximize2, Minimize2 } from 'lucide-react';
 import { soundEngine } from '../../services/audio';
 
 export const YouTubeClipPlayer = ({
-  youtubeId = 'bO8-Q_9sV1E',
+  youtubeId = '3AOPZk_QjDk',
   startSeconds = 0,
   endSeconds = 10,
   autoplay = true,
@@ -13,13 +13,24 @@ export const YouTubeClipPlayer = ({
   const [playCount, setPlayCount] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [progressPercent, setProgressPercent] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = useRef(null);
   const timerRef = useRef(null);
   const duration = Math.max(1, endSeconds - startSeconds);
+
+  // 播放影片時自動暫停背景音樂，結束後恢復
+  useEffect(() => {
+    soundEngine.pauseSceneBgm();
+    return () => {
+      soundEngine.resumeSceneBgm();
+    };
+  }, []);
 
   // 當秒數或影片改變時，啟動進度倒數與完成回調
   useEffect(() => {
     setIsPlaying(true);
     setProgressPercent(0);
+    soundEngine.pauseSceneBgm();
 
     const startTime = Date.now();
     const totalMs = duration * 1000;
@@ -34,6 +45,7 @@ export const YouTubeClipPlayer = ({
       if (elapsed >= totalMs) {
         clearInterval(timerRef.current);
         setIsPlaying(false);
+        soundEngine.resumeSceneBgm();
         if (onClipFinished) {
           onClipFinished();
         }
@@ -44,6 +56,16 @@ export const YouTubeClipPlayer = ({
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [youtubeId, startSeconds, endSeconds, playCount, duration, onClipFinished]);
+
+  const handleToggleFullscreen = () => {
+    soundEngine.click();
+    if (!containerRef.current) return;
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+    } else {
+      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+    }
+  };
 
   const handleReplay = () => {
     soundEngine.click();

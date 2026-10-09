@@ -259,9 +259,19 @@ class VoiceManager {
       utterance.pitch = pitch;
       utterance.rate = rate;
 
+      utterance.onstart = () => {
+        bgmManager.pauseBgm();
+      };
+      utterance.onend = () => {
+        bgmManager.resumeBgm();
+      };
+      utterance.onerror = () => {
+        bgmManager.resumeBgm();
+      };
+
       window.speechSynthesis.speak(utterance);
     } catch (e) {
-      // Safe catch
+      bgmManager.resumeBgm();
     }
   }
 
@@ -271,6 +281,7 @@ class VoiceManager {
         window.speechSynthesis.cancel();
       } catch (e) {}
     }
+    bgmManager.resumeBgm();
   }
 }
 
@@ -437,6 +448,20 @@ class BgmManager {
         this.playScene(this.currentScene);
       }
       return true; // 現在播放中
+    }
+  }
+
+  pauseBgm() {
+    if (this.currentAudio && !this.currentAudio.paused) {
+      this.currentAudio.pause();
+      this.wasPlayingBeforePause = true;
+    }
+  }
+
+  resumeBgm() {
+    if (this.wasPlayingBeforePause && !this.isMuted && this.currentAudio) {
+      this.wasPlayingBeforePause = false;
+      this.currentAudio.play().catch(() => {});
     }
   }
 
@@ -622,6 +647,16 @@ class SoundEngine {
   isHomeBgmActive() {
     return bgmManager.isBgmActive();
   }
+
+  pauseSceneBgm() {
+    bgmManager.pauseBgm();
+  }
+
+  resumeSceneBgm() {
+    bgmManager.resumeBgm();
+  }
 }
 
 export const soundEngine = new SoundEngine();
+export const pauseBgm = () => bgmManager.pauseBgm();
+export const resumeBgm = () => bgmManager.resumeBgm();

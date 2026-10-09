@@ -63,7 +63,8 @@ export function getUnitListeningQuestions(bookNum = 1, unitId = null, count = 15
 
   return selected.map((item, idx) => {
     const others = allSentences.filter(s => s.en.toLowerCase() !== item.en.toLowerCase());
-    const distractors = shuffle(others).slice(0, 3);
+    // 改為三選一 (1 個正確選項 + 2 個干擾選項，大幅節省畫面空間並呈現精美半透明卡牌)
+    const distractors = shuffle(others).slice(0, 2);
 
     const rawOptions = [
       { textEn: item.en, textZh: item.zh, isCorrect: true },
