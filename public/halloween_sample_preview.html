@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mia & Ben Halloween School Day - S01~S03 27秒樣片與聲線試聽</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes kenburns {
+      0% { transform: scale(1) translate(0, 0); }
+      50% { transform: scale(1.05) translate(-1%, -0.5%); }
+      100% { transform: scale(1.08) translate(1%, -1%); }
+    }
+    .kenburns-active {
+      animation: kenburns 27s ease-in-out infinite alternate;
+    }
+  </style>
+</head>
+<body class="bg-stone-950 text-white min-h-screen flex flex-col items-center justify-center p-4 select-none font-sans">
+  
+  <div class="w-full max-w-4xl bg-stone-900 border-2 border-amber-500/70 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+    
+    <!-- 頂部標題列 -->
+    <div class="px-6 py-4 bg-gradient-to-r from-amber-950 via-stone-900 to-amber-950 border-b border-amber-500/40 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🎃</span>
+        <div>
+          <h1 class="text-lg sm:text-xl font-black text-amber-300 tracking-wide">
+            Mia & Ben Halloween School Day
+          </h1>
+          <p class="text-xs text-amber-200/70 font-medium">
+            S01～S03（27秒樣片）• 微軟神經自然美語試聽 • 關鍵影格切換
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="badgeState" class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-400/30">
+          待機中
+        </span>
+      </div>
+    </div>
+
+    <!-- 16:9 核心放映舞台 -->
+    <div class="relative w-full aspect-video bg-black overflow-hidden flex items-center justify-center group">
+      <!-- 畫面底層（3張關鍵影格切換） -->
+      <img id="stageImg" 
+           src="/assets/langlab/halloween/s01_s03_both_idle.jpg" 
+           alt="Animation Stage" 
+           class="w-full h-full object-cover transition-opacity duration-300" />
+
+      <!-- 輕微晨光與暗角效果 -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none"></div>
+
+      <!-- 畫面頂部鏡頭提示 -->
+      <div class="absolute top-4 left-4 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/20 text-xs font-mono font-bold text-amber-300 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span id="sceneIndicator">S01: 校園清晨 (晨光推近)</span>
+      </div>
+
+      <!-- 外掛字幕區 (Subtitle Overlay) -->
+      <div id="subtitleBox" class="absolute bottom-6 left-1/2 -translate-x-1/2 w-11/12 max-w-xl text-center pointer-events-none opacity-0 transition-opacity duration-300">
+        <div class="inline-block px-5 py-2.5 rounded-2xl bg-black/75 backdrop-blur-md border border-amber-400/50 shadow-xl">
+          <p id="subEn" class="text-base sm:text-xl font-black text-white font-mono tracking-wide drop-shadow"></p>
+          <p id="subZh" class="text-xs sm:text-sm font-bold text-amber-300 mt-0.5 drop-shadow"></p>
+        </div>
+      </div>
+
+      <!-- 說話者動態標記 (Speaker Tag) -->
+      <div id="speakerTag" class="absolute bottom-6 left-6 px-3 py-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-white/20 text-xs font-black text-amber-200 opacity-0 transition-opacity duration-300">
+        <span id="speakerName">MIA</span>
+      </div>
+    </div>
+
+    <!-- 進度條 -->
+    <div class="w-full bg-stone-800 h-2 cursor-pointer relative overflow-hidden" id="progressBarContainer">
+      <div id="progressBar" class="h-full bg-gradient-to-r from-amber-500 to-rose-500 w-0 transition-all duration-100"></div>
+    </div>
+
+    <!-- 底部控制面板 -->
+    <div class="p-4 sm:p-6 bg-stone-900/95 flex flex-col gap-4">
+      
+      <!-- 主播放控制 -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <button id="btnPlayAll" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black text-sm flex items-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer">
+            <span>▶</span>
+            <span>播放 27 秒完整樣片</span>
+          </button>
+          <button id="btnStop" class="px-4 py-2.5 rounded-2xl bg-stone-800 hover:bg-stone-700 text-white font-bold text-sm active:scale-95 transition-all cursor-pointer border border-stone-700">
+            ⏹ 重置
+          </button>
+          <span id="timeDisplay" class="text-xs font-mono font-bold text-amber-300">00:00 / 00:27</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-stone-400 font-bold flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" id="chkSubtitle" checked class="rounded accent-amber-500">
+            <span>顯示中英字幕</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 角色聲線試聽區（單句隨選） -->
+      <div class="p-4 rounded-2xl bg-stone-950/70 border border-amber-900/40 flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+            <span>🎙️</span>
+            <span>微軟神經自然美語（Neural Voice）單句獨立試聽：</span>
+          </span>
+          <span class="text-[11px] text-stone-400">已自動生成並加載至本地</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+          <!-- Mia 試聽 1 -->
+          <button onclick="playSingle('/audio/halloween/S02_L01_MIA.mp3', 'Mia (9歲女童音): Good morning!', 'IMG_MIA')" 
+                  class="p-2.5 rounded-xl bg-stone-800/80 hover:bg-stone-750 border border-stone-750 hover:border-amber-400/50 text-left transition-all active:scale-98">
+            <div class="font-bold text-rose-300 flex items-center justify-between">
+              <span>Mia (en-US-Ana)</span>
+              <span>🔊</span>
+            </div>
+            <div class="text-slate-300 text-[11px] mt-0.5 font-mono truncate">S02: "Good morning!"</div>
+          </button>
+
+          <!-- Ben 試聽 1 -->
+          <button onclick="playSingle('/audio/halloween/S02_L02_BEN.mp3', 'Ben (10歲男童音): Good morning!', 'IMG_BEN')"
+                  class="p-2.5 rounded-xl bg-stone-800/80 hover:bg-stone-750 border border-stone-750 hover:border-amber-400/50 text-left transition-all active:scale-98">
+            <div class="font-bold text-blue-300 flex items-center justify-between">
+              <span>Ben (en-US-Christopher)</span>
+              <span>🔊</span>
+            </div>
+            <div class="text-slate-300 text-[11px] mt-0.5 font-mono truncate">S02: "Good morning!"</div>
+          </button>
+
+          <!-- Mia 試聽 2 -->
+          <button onclick="playSingle('/audio/halloween/S03_L01_MIA.mp3', 'Mia: Hi! My name is Mia. What\'s your name?', 'IMG_MIA')"
+                  class="p-2.5 rounded-xl bg-stone-800/80 hover:bg-stone-750 border border-stone-750 hover:border-amber-400/50 text-left transition-all active:scale-98">
+            <div class="font-bold text-rose-300 flex items-center justify-between">
+              <span>Mia (en-US-Ana)</span>
+              <span>🔊</span>
+            </div>
+            <div class="text-slate-300 text-[11px] mt-0.5 font-mono truncate">S03: "What's your name?"</div>
+          </button>
+
+          <!-- Ben 試聽 2 -->
+          <button onclick="playSingle('/audio/halloween/S03_L02_BEN.mp3', 'Ben: I\'m Ben.', 'IMG_BEN')"
+                  class="p-2.5 rounded-xl bg-stone-800/80 hover:bg-stone-750 border border-stone-750 hover:border-amber-400/50 text-left transition-all active:scale-98">
+            <div class="font-bold text-blue-300 flex items-center justify-between">
+              <span>Ben (en-US-Christopher)</span>
+              <span>🔊</span>
+            </div>
+            <div class="text-slate-300 text-[11px] mt-0.5 font-mono truncate">S03: "I'm Ben."</div>
+          </button>
+
+          <!-- Mia 試聽 3 -->
+          <button onclick="playSingle('/audio/halloween/S03_L03_MIA.mp3', 'Mia: Hello, Ben!', 'IMG_MIA')"
+                  class="p-2.5 rounded-xl bg-stone-800/80 hover:bg-stone-750 border border-stone-750 hover:border-amber-400/50 text-left transition-all active:scale-98">
+            <div class="font-bold text-rose-300 flex items-center justify-between">
+              <span>Mia (en-US-Ana)</span>
+              <span>🔊</span>
+            </div>
+            <div class="text-slate-300 text-[11px] mt-0.5 font-mono truncate">S03: "Hello, Ben!"</div>
+          </button>
+
+          <!-- 關鍵影格狀態說明 -->
+          <div class="p-2.5 rounded-xl bg-amber-950/40 border border-amber-800/40 text-[11px] text-amber-200 flex items-center">
+            💡 點擊上方任意語音，舞台將自動對齊該角色的發話影格！
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 圖片路徑
+    const IMG_MIA = '/assets/langlab/halloween/s01_s03_mia_wave.jpg';
+    const IMG_IDLE = '/assets/langlab/halloween/s01_s03_both_idle.jpg';
+    const IMG_BEN = '/assets/langlab/halloween/s01_s03_ben_wave.jpg';
+
+    // 27 秒樣片時間軸 (分鏡劇本 S01~S03 精確時間排程)
+    const TIMELINE = [
+      // S01: 00:00 ~ 00:03 (校園清晨，無對白，推近)
+      { start: 0, end: 3, scene: 'S01: 校園清晨 (推近鏡頭)', img: IMG_IDLE, speaker: '', en: '', zh: '', audio: null },
+      
+      // S02 L01: Mia: Good morning! (00:03 ~ 00:06)
+      { start: 3, end: 6.5, scene: 'S02: 早安問候', img: IMG_MIA, speaker: 'MIA', en: 'Good morning!', zh: '早安！', audio: '/audio/halloween/S02_L01_MIA.mp3' },
+      
+      // 呼吸留白 (00:06.5 ~ 00:07.5)
+      { start: 6.5, end: 7.5, scene: 'S02: 眼神交流', img: IMG_IDLE, speaker: '', en: '', zh: '', audio: null },
+      
+      // S02 L02: Ben: Good morning! (00:07.5 ~ 00:11)
+      { start: 7.5, end: 11, scene: 'S02: 早安回應', img: IMG_BEN, speaker: 'BEN', en: 'Good morning!', zh: '早安！', audio: '/audio/halloween/S02_L02_BEN.mp3' },
+
+      // S03 緩衝 (00:11 ~ 00:12.5)
+      { start: 11, end: 12.5, scene: 'S03: 認識新朋友', img: IMG_IDLE, speaker: '', en: '', zh: '', audio: null },
+
+      // S03 L01: Mia: Hi! My name is Mia. What's your name? (00:12.5 ~ 00:18.5)
+      { start: 12.5, end: 18.5, scene: 'S03: 自我介紹與問名', img: IMG_MIA, speaker: 'MIA', en: "Hi! My name is Mia. What's your name?", zh: '嗨！我的名字是 Mia。你叫什麼名字？', audio: '/audio/halloween/S03_L01_MIA.mp3' },
+
+      // 呼吸留白 (00:18.5 ~ 00:19.5)
+      { start: 18.5, end: 19.5, scene: 'S03: 聆聽反應', img: IMG_IDLE, speaker: '', en: '', zh: '', audio: null },
+
+      // S03 L02: Ben: I'm Ben. (00:19.5 ~ 00:23)
+      { start: 19.5, end: 23, scene: 'S03: 回應姓名', img: IMG_BEN, speaker: 'BEN', en: "I'm Ben.", zh: '我是 Ben。', audio: '/audio/halloween/S03_L02_BEN.mp3' },
+
+      // S03 L03: Mia: Hello, Ben! (00:23 ~ 00:27)
+      { start: 23, end: 27, scene: 'S03: 友好致意', img: IMG_MIA, speaker: 'MIA', en: "Hello, Ben!", zh: '你好，Ben！', audio: '/audio/halloween/S03_L03_MIA.mp3' }
+    ];
+
+    let currentAudio = null;
+    let isPlaying = false;
+    let currentTime = 0;
+    let timerId = null;
+
+    const stageImg = document.getElementById('stageImg');
+    const sceneIndicator = document.getElementById('sceneIndicator');
+    const subtitleBox = document.getElementById('subtitleBox');
+    const subEn = document.getElementById('subEn');
+    const subZh = document.getElementById('subZh');
+    const speakerTag = document.getElementById('speakerTag');
+    const speakerName = document.getElementById('speakerName');
+    const badgeState = document.getElementById('badgeState');
+    const progressBar = document.getElementById('progressBar');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const chkSubtitle = document.getElementById('chkSubtitle');
+
+    function stopAll() {
+      isPlaying = false;
+      if (timerId) clearInterval(timerId);
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+      currentTime = 0;
+      updateUI(0);
+      badgeState.textContent = '待機中';
+      badgeState.className = 'px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-400/30';
+      stageImg.classList.remove('kenburns-active');
+    }
+
+    function playSingle(audioSrc, label, imgKey) {
+      stopAll();
+      badgeState.textContent = '試聽中';
+      badgeState.className = 'px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30';
+      
+      if (imgKey === 'IMG_MIA') stageImg.src = IMG_MIA;
+      else if (imgKey === 'IMG_BEN') stageImg.src = IMG_BEN;
+      else stageImg.src = IMG_IDLE;
+
+      sceneIndicator.textContent = label;
+      currentAudio = new Audio(audioSrc);
+      currentAudio.play();
+      currentAudio.onended = () => {
+        stageImg.src = IMG_IDLE;
+        badgeState.textContent = '待機中';
+      };
+    }
+
+    function playFullSample() {
+      stopAll();
+      isPlaying = true;
+      badgeState.textContent = '樣片放映中 (27s)';
+      badgeState.className = 'px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-400/30 animate-pulse';
+      stageImg.classList.add('kenburns-active');
+
+      let lastPlayedClip = null;
+
+      timerId = setInterval(() => {
+        if (!isPlaying) return;
+        currentTime += 0.1;
+
+        if (currentTime >= 27) {
+          stopAll();
+          stageImg.src = IMG_IDLE;
+          sceneIndicator.textContent = 'S01~S03 樣片放映完成！';
+          return;
+        }
+
+        updateUI(currentTime);
+
+        // 查找當前時間對應的片段
+        const clip = TIMELINE.find(c => currentTime >= c.start && currentTime < c.end);
+        if (clip) {
+          if (clip !== lastPlayedClip) {
+            lastPlayedClip = clip;
+            stageImg.src = clip.img;
+            sceneIndicator.textContent = clip.scene;
+
+            // 播放音訊
+            if (clip.audio) {
+              if (currentAudio) currentAudio.pause();
+              currentAudio = new Audio(clip.audio);
+              currentAudio.play().catch(() => {});
+            }
+
+            // 更新字幕與標籤
+            if (clip.en && chkSubtitle.checked) {
+              subtitleBox.style.opacity = '1';
+              subEn.textContent = clip.en;
+              subZh.textContent = clip.zh;
+              speakerTag.style.opacity = '1';
+              speakerName.textContent = clip.speaker;
+            } else {
+              subtitleBox.style.opacity = '0';
+              speakerTag.style.opacity = '0';
+            }
+          }
+        } else {
+          subtitleBox.style.opacity = '0';
+          speakerTag.style.opacity = '0';
+        }
+      }, 100);
+    }
+
+    function updateUI(t) {
+      const pct = (t / 27) * 100;
+      progressBar.style.width = pct + '%';
+      const sec = Math.floor(t);
+      timeDisplay.textContent = '00:' + (sec < 10 ? '0' + sec : sec) + ' / 00:27';
+    }
+
+    document.getElementById('btnPlayAll').onclick = playFullSample;
+    document.getElementById('btnStop').onclick = stopAll;
+  </script>
+</body>
+</html>
