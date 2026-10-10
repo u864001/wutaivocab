@@ -3,16 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mia & Ben Halloween School Day - S01~S03 27秒樣片與聲線試聽</title>
+  <title>Mia & Ben Halloween School Day - S01~S03 27秒樣片（升級男童音與雙軌外掛字幕）</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @keyframes kenburns {
-      0% { transform: scale(1) translate(0, 0); }
-      50% { transform: scale(1.05) translate(-1%, -0.5%); }
-      100% { transform: scale(1.08) translate(1%, -1%); }
+    /* 多軸多鏡頭電影級運鏡動畫 */
+    .cam-s01 {
+      animation: camDollyIn 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     }
-    .kenburns-active {
-      animation: kenburns 27s ease-in-out infinite alternate;
+    .cam-mia {
+      animation: camPanMia 4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+    .cam-ben {
+      animation: camPanBen 4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+    .cam-both {
+      animation: camBoth 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes camDollyIn {
+      0% { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.06) translate(0, -1%); }
+    }
+    @keyframes camPanMia {
+      0% { transform: scale(1.05) translate(0, 0); }
+      100% { transform: scale(1.10) translate(2.5%, -1.5%); }
+    }
+    @keyframes camPanBen {
+      0% { transform: scale(1.05) translate(0, 0); }
+      100% { transform: scale(1.10) translate(-2.5%, -1.5%); }
+    }
+    @keyframes camBoth {
+      0% { transform: scale(1.04) translate(0, 0); }
+      100% { transform: scale(1.07) translate(0, -0.8%); }
     }
   </style>
 </head>
@@ -29,7 +51,7 @@
             Mia & Ben Halloween School Day
           </h1>
           <p class="text-xs text-amber-200/70 font-medium">
-            S01～S03（27秒樣片）• 微軟神經自然美語試聽 • 關鍵影格切換
+            S01～S03（27秒樣片）• 美國自然男童音（Steffan）• 系統動態外掛字幕（英ON/中OFF）
           </p>
         </div>
       </div>
@@ -42,14 +64,14 @@
 
     <!-- 16:9 核心放映舞台 -->
     <div class="relative w-full aspect-video bg-black overflow-hidden flex items-center justify-center group">
-      <!-- 畫面底層（3張關鍵影格切換） -->
+      <!-- 畫面底層（3張關鍵影格切換 + 多軸運鏡） -->
       <img id="stageImg" 
            src="/assets/langlab/halloween/s01_s03_both_idle.jpg" 
            alt="Animation Stage" 
-           class="w-full h-full object-cover transition-opacity duration-300" />
+           class="w-full h-full object-cover transition-transform duration-700 ease-out" />
 
       <!-- 輕微晨光與暗角效果 -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none"></div>
 
       <!-- 畫面頂部鏡頭提示 -->
       <div class="absolute top-4 left-4 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/20 text-xs font-mono font-bold text-amber-300 flex items-center gap-2">
@@ -57,14 +79,11 @@
         <span id="sceneIndicator">S01: 校園清晨 (晨光推近)</span>
       </div>
 
-      <!-- 錯誤/提示訊息條 -->
-      <div id="debugAlert" class="hidden absolute top-4 right-4 px-3 py-1.5 rounded-xl bg-rose-600/90 text-white text-xs font-bold shadow-lg"></div>
-
-      <!-- 外掛字幕區 (Subtitle Overlay) -->
+      <!-- 系統動態外掛字幕區 (獨立英/中動態渲染，非影片內嵌，隨時可完全隱藏) -->
       <div id="subtitleBox" class="absolute bottom-6 left-1/2 -translate-x-1/2 w-11/12 max-w-xl text-center pointer-events-none opacity-0 transition-opacity duration-300">
-        <div class="inline-block px-5 py-2.5 rounded-2xl bg-black/80 backdrop-blur-md border border-amber-400/50 shadow-xl">
+        <div class="inline-block px-5 py-2.5 rounded-2xl bg-black/85 backdrop-blur-md border border-amber-400/50 shadow-2xl">
           <p id="subEn" class="text-base sm:text-xl font-black text-white font-mono tracking-wide drop-shadow"></p>
-          <p id="subZh" class="text-xs sm:text-sm font-bold text-amber-300 mt-0.5 drop-shadow"></p>
+          <p id="subZh" class="text-xs sm:text-sm font-bold text-amber-300 mt-0.5 drop-shadow hidden"></p>
         </div>
       </div>
 
@@ -80,94 +99,111 @@
     </div>
 
     <!-- 底部控制面板 -->
-    <div class="p-4 sm:p-5 bg-stone-900/95 flex flex-col gap-3">
+    <div class="p-4 sm:p-5 bg-stone-900/95 flex flex-col gap-3.5">
       
-      <!-- 主播放控制 -->
+      <!-- 主播放控制與字幕獨立開關 -->
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5">
           <button id="btnPlayAll" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black text-sm flex items-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer">
             <span>▶</span>
             <span>播放 27 秒完整樣片</span>
           </button>
-          <button id="btnStop" class="px-4 py-2.5 rounded-2xl bg-stone-800 hover:bg-stone-700 text-white font-bold text-sm active:scale-95 transition-all cursor-pointer border border-stone-700">
+          <button id="btnStop" class="px-4 py-2.5 rounded-2xl bg-stone-800 hover:bg-stone-750 text-white font-bold text-sm active:scale-95 transition-all cursor-pointer border border-stone-700">
             ⏹ 停止重置
           </button>
-          <span id="timeDisplay" class="text-xs font-mono font-bold text-amber-300">00:00 / 00:27</span>
+          <span id="timeDisplay" class="text-xs font-mono font-bold text-amber-300 ml-1">00:00 / 00:27</span>
         </div>
 
-        <div class="flex items-center gap-3">
+        <!-- 獨立雙字幕開關 (英文字幕預設 ON、中文字幕預設 OFF) + 背景音樂開關 -->
+        <div class="flex items-center gap-3 bg-stone-950/80 px-3.5 py-2 rounded-2xl border border-stone-800">
+          <label class="text-xs text-amber-300 font-bold flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" id="chkEn" checked class="rounded accent-amber-500">
+            <span>🔤 英文字幕 (預設開啟)</span>
+          </label>
+          <div class="w-px h-4 bg-stone-700"></div>
           <label class="text-xs text-stone-300 font-bold flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="chkSubtitle" checked class="rounded accent-amber-500">
-            <span>顯示中英字幕</span>
+            <input type="checkbox" id="chkZh" class="rounded accent-amber-500">
+            <span>🇹🇼 中文字幕 (預設關閉)</span>
+          </label>
+          <div class="w-px h-4 bg-stone-700"></div>
+          <label class="text-xs text-stone-300 font-bold flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" id="chkBgm" checked class="rounded accent-amber-500">
+            <span>🎵 輕柔校園配樂</span>
           </label>
         </div>
       </div>
 
-      <!-- 角色聲線試聽區（單句隨選） -->
-      <div class="p-3.5 rounded-2xl bg-stone-950/80 border border-amber-900/40 flex flex-col gap-2">
+      <!-- 角色聲線試聽區（Ben 最新男童音 Steffan vs 其他候選） -->
+      <div class="p-3.5 rounded-2xl bg-stone-950/80 border border-amber-900/40 flex flex-col gap-2.5">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
             <span>🎙️</span>
-            <span>點擊立即試聽角色自然美語（點擊下方任一按鈕，立即發聲）：</span>
+            <span>角色聲線試聽（Ben 已更換為美國自然男童音 en-US-SteffanNeural）：</span>
           </span>
-          <span id="audioStatusText" class="text-[11px] text-emerald-400 font-bold">音效引擎已就緒</span>
+          <span id="audioStatusText" class="text-[11px] text-emerald-400 font-bold">新男童音已套用</span>
         </div>
 
+        <!-- 樣片對話實測 -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
           <!-- Mia 試聽 1 -->
           <button onclick="playAudioDirect('S02_L01_MIA', 'Good morning!', 'Mia: Good morning!', 'IMG_MIA')" 
-                  class="p-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 hover:border-rose-400 text-left transition-all active:scale-95 cursor-pointer shadow-sm">
+                  class="p-2.5 rounded-xl bg-stone-800 hover:bg-stone-750 border border-stone-700 hover:border-rose-400 text-left transition-all active:scale-95 cursor-pointer shadow-sm">
             <div class="font-bold text-rose-300 flex items-center justify-between">
               <span>Mia (9歲女孩 Ana)</span>
-              <span>🔊 播放</span>
+              <span>🔊</span>
             </div>
-            <div class="text-slate-200 text-xs mt-1 font-black">"Good morning!"</div>
+            <div class="text-slate-200 text-xs mt-1 font-black">S02: "Good morning!"</div>
           </button>
 
-          <!-- Ben 試聽 1 -->
-          <button onclick="playAudioDirect('S02_L02_BEN', 'Good morning!', 'Ben: Good morning!', 'IMG_BEN')"
-                  class="p-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 hover:border-blue-400 text-left transition-all active:scale-95 cursor-pointer shadow-sm">
-            <div class="font-bold text-blue-300 flex items-center justify-between">
-              <span>Ben (10歲男孩 Chris)</span>
-              <span>🔊 播放</span>
+          <!-- Ben 新男童音 Steffan 試聽 1 -->
+          <button onclick="playAudioDirect('S02_L02_BEN', 'Good morning!', 'Ben (新男童音 Steffan): Good morning!', 'IMG_BEN')"
+                  class="p-2.5 rounded-xl bg-blue-950/40 hover:bg-blue-900/50 border border-blue-500/60 text-left transition-all active:scale-95 cursor-pointer shadow-sm">
+            <div class="font-bold text-cyan-300 flex items-center justify-between">
+              <span>Ben (10歲男童 Steffan) ✨</span>
+              <span>🔊</span>
             </div>
-            <div class="text-slate-200 text-xs mt-1 font-black">"Good morning!"</div>
+            <div class="text-slate-200 text-xs mt-1 font-black">S02: "Good morning!"</div>
           </button>
 
           <!-- Mia 試聽 2 -->
           <button onclick="playAudioDirect('S03_L01_MIA', 'Hi! My name is Mia. What\'s your name?', 'Mia: What\'s your name?', 'IMG_MIA')"
-                  class="p-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 hover:border-rose-400 text-left transition-all active:scale-95 cursor-pointer shadow-sm">
+                  class="p-2.5 rounded-xl bg-stone-800 hover:bg-stone-750 border border-stone-700 hover:border-rose-400 text-left transition-all active:scale-95 cursor-pointer shadow-sm">
             <div class="font-bold text-rose-300 flex items-center justify-between">
               <span>Mia (9歲女孩 Ana)</span>
-              <span>🔊 播放</span>
+              <span>🔊</span>
             </div>
-            <div class="text-slate-200 text-xs mt-1 font-black truncate">"Hi! My name is Mia..."</div>
+            <div class="text-slate-200 text-xs mt-1 font-black truncate">S03: "What's your name?"</div>
           </button>
 
-          <!-- Ben 試聽 2 -->
-          <button onclick="playAudioDirect('S03_L02_BEN', 'I\'m Ben.', 'Ben: I\'m Ben.', 'IMG_BEN')"
-                  class="p-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 hover:border-blue-400 text-left transition-all active:scale-95 cursor-pointer shadow-sm">
-            <div class="font-bold text-blue-300 flex items-center justify-between">
-              <span>Ben (10歲男孩 Chris)</span>
-              <span>🔊 播放</span>
+          <!-- Ben 新男童音 Steffan 試聽 2 -->
+          <button onclick="playAudioDirect('S03_L02_BEN', 'I\'m Ben.', 'Ben (新男童音 Steffan): I\'m Ben.', 'IMG_BEN')"
+                  class="p-2.5 rounded-xl bg-blue-950/40 hover:bg-blue-900/50 border border-blue-500/60 text-left transition-all active:scale-95 cursor-pointer shadow-sm">
+            <div class="font-bold text-cyan-300 flex items-center justify-between">
+              <span>Ben (10歲男童 Steffan) ✨</span>
+              <span>🔊</span>
             </div>
-            <div class="text-slate-200 text-xs mt-1 font-black">"I'm Ben."</div>
+            <div class="text-slate-200 text-xs mt-1 font-black">S03: "I'm Ben."</div>
           </button>
 
           <!-- Mia 試聽 3 -->
           <button onclick="playAudioDirect('S03_L03_MIA', 'Hello, Ben!', 'Mia: Hello, Ben!', 'IMG_MIA')"
-                  class="p-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 hover:border-rose-400 text-left transition-all active:scale-95 cursor-pointer shadow-sm">
+                  class="p-2.5 rounded-xl bg-stone-800 hover:bg-stone-750 border border-stone-700 hover:border-rose-400 text-left transition-all active:scale-95 cursor-pointer shadow-sm">
             <div class="font-bold text-rose-300 flex items-center justify-between">
               <span>Mia (9歲女孩 Ana)</span>
-              <span>🔊 播放</span>
+              <span>🔊</span>
             </div>
-            <div class="text-slate-200 text-xs mt-1 font-black">"Hello, Ben!"</div>
+            <div class="text-slate-200 text-xs mt-1 font-black">S03: "Hello, Ben!"</div>
           </button>
 
-          <!-- 說明 -->
-          <div class="p-2.5 rounded-xl bg-amber-950/40 border border-amber-800/40 text-[11px] text-amber-200 flex items-center">
-            💡 若裝置處於靜音模式，請確認喇叭已開啟！
-          </div>
+          <!-- Ben 其他候選人語音比對 -->
+          <button onclick="playAudioDirect('BEN_ANDREW', 'Good morning! I am Ben. Nice to meet you!', 'Ben 候選 B (Andrew 青年音)', 'IMG_BEN')"
+                  class="p-2.5 rounded-xl bg-stone-800/80 hover:bg-stone-750 border border-stone-750 text-left transition-all active:scale-95 cursor-pointer">
+            <div class="font-bold text-slate-300 flex items-center justify-between">
+              <span>Ben 候選 B (Andrew)</span>
+              <span>🔊</span>
+            </div>
+            <div class="text-stone-400 text-[11px] mt-1 truncate">比對：陽光青年感</div>
+          </button>
         </div>
       </div>
     </div>
@@ -179,26 +215,32 @@
     const IMG_IDLE = '/assets/langlab/halloween/s01_s03_both_idle.jpg';
     const IMG_BEN = '/assets/langlab/halloween/s01_s03_ben_wave.jpg';
 
-    // 預先實體化 Audio 物件，保證解鎖音訊且快速即時播放
+    // 輕柔校園背景音樂
+    const bgmAudio = new Audio('/audio/bgm/school.mp3');
+    bgmAudio.loop = true;
+    bgmAudio.volume = 0.12;
+
+    // 預先實體化 Audio 物件（Ben 已換為 en-US-SteffanNeural）
     const AUDIO_REGISTRY = {
       'S02_L01_MIA': new Audio('/audio/halloween/S02_L01_MIA.mp3'),
       'S02_L02_BEN': new Audio('/audio/halloween/S02_L02_BEN.mp3'),
       'S03_L01_MIA': new Audio('/audio/halloween/S03_L01_MIA.mp3'),
       'S03_L02_BEN': new Audio('/audio/halloween/S03_L02_BEN.mp3'),
-      'S03_L03_MIA': new Audio('/audio/halloween/S03_L03_MIA.mp3')
+      'S03_L03_MIA': new Audio('/audio/halloween/S03_L03_MIA.mp3'),
+      'BEN_ANDREW': new Audio('/audio/halloween/ben_andrew_intro.mp3')
     };
 
-    // 27 秒樣片時間軸 (分鏡劇本 S01~S03 精確時間排程)
+    // 27 秒樣片時間軸 (含鏡頭運鏡模式：cam-s01, cam-mia, cam-ben, cam-both)
     const TIMELINE = [
-      { start: 0, end: 3, scene: 'S01: 校園清晨 (推近鏡頭)', img: IMG_IDLE, speaker: '', en: '', zh: '', audioKey: null },
-      { start: 3, end: 6.5, scene: 'S02: 早安問候', img: IMG_MIA, speaker: 'MIA', en: 'Good morning!', zh: '早安！', audioKey: 'S02_L01_MIA' },
-      { start: 6.5, end: 7.5, scene: 'S02: 眼神交流', img: IMG_IDLE, speaker: '', en: '', zh: '', audioKey: null },
-      { start: 7.5, end: 11, scene: 'S02: 早安回應', img: IMG_BEN, speaker: 'BEN', en: 'Good morning!', zh: '早安！', audioKey: 'S02_L02_BEN' },
-      { start: 11, end: 12.5, scene: 'S03: 認識新朋友', img: IMG_IDLE, speaker: '', en: '', zh: '', audioKey: null },
-      { start: 12.5, end: 18.5, scene: 'S03: 自我介紹與問名', img: IMG_MIA, speaker: 'MIA', en: "Hi! My name is Mia. What's your name?", zh: '嗨！我的名字是 Mia。你叫什麼名字？', audioKey: 'S03_L01_MIA' },
-      { start: 18.5, end: 19.5, scene: 'S03: 聆聽反應', img: IMG_IDLE, speaker: '', en: '', zh: '', audioKey: null },
-      { start: 19.5, end: 23, scene: 'S03: 回應姓名', img: IMG_BEN, speaker: 'BEN', en: "I'm Ben.", zh: '我是 Ben。', audioKey: 'S03_L02_BEN' },
-      { start: 23, end: 27, scene: 'S03: 友好致意', img: IMG_MIA, speaker: 'MIA', en: "Hello, Ben!", zh: '你好，Ben！', audioKey: 'S03_L03_MIA' }
+      { start: 0, end: 3, scene: 'S01: 校園清晨 (推近鏡頭)', img: IMG_IDLE, camClass: 'cam-s01', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 3, end: 6.5, scene: 'S02: 早安問候', img: IMG_MIA, camClass: 'cam-mia', speaker: 'MIA', en: 'Good morning!', zh: '早安！', audioKey: 'S02_L01_MIA' },
+      { start: 6.5, end: 7.5, scene: 'S02: 眼神交流', img: IMG_IDLE, camClass: 'cam-both', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 7.5, end: 11, scene: 'S02: 早安回應', img: IMG_BEN, camClass: 'cam-ben', speaker: 'BEN', en: 'Good morning!', zh: '早安！', audioKey: 'S02_L02_BEN' },
+      { start: 11, end: 12.5, scene: 'S03: 認識新朋友', img: IMG_IDLE, camClass: 'cam-both', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 12.5, end: 18.5, scene: 'S03: 自我介紹與問名', img: IMG_MIA, camClass: 'cam-mia', speaker: 'MIA', en: "Hi! My name is Mia. What's your name?", zh: '嗨！我的名字是 Mia。你叫什麼名字？', audioKey: 'S03_L01_MIA' },
+      { start: 18.5, end: 19.5, scene: 'S03: 聆聽反應', img: IMG_IDLE, camClass: 'cam-both', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 19.5, end: 23, scene: 'S03: 回應姓名', img: IMG_BEN, camClass: 'cam-ben', speaker: 'BEN', en: "I'm Ben.", zh: '我是 Ben。', audioKey: 'S03_L02_BEN' },
+      { start: 23, end: 27, scene: 'S03: 友好致意', img: IMG_MIA, camClass: 'cam-mia', speaker: 'MIA', en: "Hello, Ben!", zh: '你好，Ben！', audioKey: 'S03_L03_MIA' }
     ];
 
     let currentPlayingAudio = null;
@@ -216,22 +258,27 @@
     const badgeState = document.getElementById('badgeState');
     const progressBar = document.getElementById('progressBar');
     const timeDisplay = document.getElementById('timeDisplay');
-    const chkSubtitle = document.getElementById('chkSubtitle');
+    const chkEn = document.getElementById('chkEn');
+    const chkZh = document.getElementById('chkZh');
+    const chkBgm = document.getElementById('chkBgm');
     const audioStatusText = document.getElementById('audioStatusText');
 
-    // 瀏覽器發音備援 (Web Speech API)
+    function applyCameraClass(cls) {
+      stageImg.className = 'w-full h-full object-cover transition-transform duration-700 ease-out ' + (cls || '');
+    }
+
+    // 瀏覽器發音備援
     function fallbackSpeak(text, isGirl = true) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'en-US';
         u.rate = 0.95;
-        u.pitch = isGirl ? 1.3 : 0.95;
+        u.pitch = isGirl ? 1.3 : 1.1; // 男童音拉高音調
         window.speechSynthesis.speak(u);
       }
     }
 
-    // 停止所有聲音與計時器
     function stopAll() {
       isPlaying = false;
       if (timerId) clearInterval(timerId);
@@ -240,6 +287,8 @@
         currentPlayingAudio.currentTime = 0;
         currentPlayingAudio = null;
       }
+      bgmAudio.pause();
+      bgmAudio.currentTime = 0;
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
@@ -247,18 +296,26 @@
       updateUI(0);
       badgeState.textContent = '待機中';
       badgeState.className = 'px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-400/30';
-      stageImg.classList.remove('kenburns-active');
+      applyCameraClass('');
+      subtitleBox.style.opacity = '0';
+      speakerTag.style.opacity = '0';
     }
 
-    // 單句直接播放（使用者手動點擊保證觸發音訊權限）
     function playAudioDirect(key, fallbackText, label, imgKey) {
       stopAll();
       badgeState.textContent = '播放發音中';
       badgeState.className = 'px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30 animate-pulse';
 
-      if (imgKey === 'IMG_MIA') stageImg.src = IMG_MIA;
-      else if (imgKey === 'IMG_BEN') stageImg.src = IMG_BEN;
-      else stageImg.src = IMG_IDLE;
+      if (imgKey === 'IMG_MIA') {
+        stageImg.src = IMG_MIA;
+        applyCameraClass('cam-mia');
+      } else if (imgKey === 'IMG_BEN') {
+        stageImg.src = IMG_BEN;
+        applyCameraClass('cam-ben');
+      } else {
+        stageImg.src = IMG_IDLE;
+        applyCameraClass('cam-both');
+      }
 
       sceneIndicator.textContent = label;
       audioStatusText.textContent = '正在播放：' + key;
@@ -272,33 +329,34 @@
           playPromise.then(() => {
             audioStatusText.textContent = '播放成功：' + key;
           }).catch(err => {
-            console.warn('MP3 play blocked, using Web Speech API fallback:', err);
-            audioStatusText.textContent = 'MP3 解碼中，啟用語音合成發音';
+            console.warn('MP3 play blocked, using fallback:', err);
             fallbackSpeak(fallbackText, imgKey === 'IMG_MIA');
           });
         }
         audio.onended = () => {
           stageImg.src = IMG_IDLE;
+          applyCameraClass('');
           badgeState.textContent = '待機中';
-          audioStatusText.textContent = '發音完成';
         };
       } else {
         fallbackSpeak(fallbackText, imgKey === 'IMG_MIA');
       }
     }
 
-    // 27 秒完整樣片放映
     function playFullSample() {
       stopAll();
       isPlaying = true;
       badgeState.textContent = '樣片放映中 (27s)';
       badgeState.className = 'px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-400/30 animate-pulse';
-      stageImg.classList.add('kenburns-active');
 
-      // 預解鎖所有音訊
-      Object.values(AUDIO_REGISTRY).forEach(a => {
-        a.load();
-      });
+      // 啟動 BGM (若勾選)
+      if (chkBgm.checked) {
+        bgmAudio.currentTime = 0;
+        bgmAudio.volume = 0.12;
+        bgmAudio.play().catch(() => {});
+      }
+
+      Object.values(AUDIO_REGISTRY).forEach(a => a.load());
 
       let lastPlayedClip = null;
 
@@ -321,6 +379,7 @@
           if (clip !== lastPlayedClip) {
             lastPlayedClip = clip;
             stageImg.src = clip.img;
+            applyCameraClass(clip.camClass);
             sceneIndicator.textContent = clip.scene;
 
             if (clip.audioKey) {
@@ -332,20 +391,49 @@
                 }
                 audio.currentTime = 0;
                 currentPlayingAudio = audio;
+                
+                // 音量閃避：人物說話時，BGM 柔和微降
+                if (chkBgm.checked) bgmAudio.volume = 0.05;
+
                 audio.play().catch(e => {
                   console.warn('Playback error:', e);
                   fallbackSpeak(clip.en, clip.speaker === 'MIA');
                 });
+
+                audio.onended = () => {
+                  if (chkBgm.checked) bgmAudio.volume = 0.12;
+                };
               }
+            } else {
+              // 無人說話時，恢復 BGM 原音量
+              if (chkBgm.checked) bgmAudio.volume = 0.12;
             }
 
-            if (clip.en && chkSubtitle.checked) {
+            // 系統外掛動態字幕邏輯：英文字幕開關 / 中文字幕開關
+            const showEn = chkEn.checked && clip.en;
+            const showZh = chkZh.checked && clip.zh;
+
+            if (showEn || showZh) {
               subtitleBox.style.opacity = '1';
-              subEn.textContent = clip.en;
-              subZh.textContent = clip.zh;
+              
+              if (showEn) {
+                subEn.textContent = clip.en;
+                subEn.classList.remove('hidden');
+              } else {
+                subEn.classList.add('hidden');
+              }
+
+              if (showZh) {
+                subZh.textContent = clip.zh;
+                subZh.classList.remove('hidden');
+              } else {
+                subZh.classList.add('hidden');
+              }
+
               speakerTag.style.opacity = '1';
               speakerName.textContent = clip.speaker;
             } else {
+              // 聽力模式：字幕完全隱藏
               subtitleBox.style.opacity = '0';
               speakerTag.style.opacity = '0';
             }
