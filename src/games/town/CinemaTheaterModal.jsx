@@ -138,14 +138,25 @@ export const CinemaTheaterModal = ({ onClose }) => {
             ref={theaterRef}
             className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden border-2 border-amber-500/50 shadow-2xl bg-black group"
           >
-            <iframe
-              key={activeMovie.youtubeId}
-              src={`https://www.youtube-nocookie.com/embed/${activeMovie.youtubeId}?autoplay=1&rel=0&modestbranding=1&controls=1`}
-              title={activeMovie.title}
-              className="w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-              allowFullScreen
-            />
+            {activeMovie.isLocalPlayer ? (
+              <iframe
+                key={activeMovie.id}
+                src={activeMovie.localUrl}
+                title={activeMovie.title}
+                className="w-full h-full border-0"
+                allow="autoplay; fullscreen"
+                allowFullScreen
+              />
+            ) : (
+              <iframe
+                key={activeMovie.youtubeId}
+                src={`https://www.youtube-nocookie.com/embed/${activeMovie.youtubeId}?autoplay=1&rel=0&modestbranding=1&controls=1`}
+                title={activeMovie.title}
+                className="w-full h-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                allowFullScreen
+              />
+            )}
 
             {/* 懸浮全螢幕切換按鈕 */}
             <button

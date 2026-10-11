@@ -149,6 +149,88 @@ export const UNIT_VIDEO_LIBRARY = [
         ]
       }
     ]
+  },
+  {
+    id: 'halloween_movie',
+    title: '🎃 Mia & Ben Halloween School Day (全劇微電影)',
+    book: 1,
+    unit: 'Halloween Special',
+    description: '30 張原生插圖電影級運鏡 • 美語情境會話 • 獨立外掛字幕與純聽力特訓。',
+    isLocalPlayer: true,
+    localUrl: '/halloween/index.html',
+    totalDuration: 214,
+    clips: [
+      {
+        id: 'hw_1',
+        start: 4,
+        end: 12,
+        promptZh: '在校門口遇見同學時，Mia 和 Ben 互相說了什麼問候語？',
+        targetEn: 'Good morning!',
+        targetZh: '早安！',
+        speaker: 'Mia & Ben',
+        choices: [
+          { key: 'A', text: 'Good morning!', isCorrect: true },
+          { key: 'B', text: 'Good night!', isCorrect: false },
+          { key: 'C', text: 'Goodbye!', isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_2',
+        start: 38,
+        end: 51,
+        promptZh: 'Ben 問 Mia 幾歲時，Mia 是怎麼回答的？',
+        targetEn: "I'm nine. How old are you?",
+        targetZh: '我九歲。你幾歲？',
+        speaker: 'Mia',
+        choices: [
+          { key: 'A', text: "I'm seven years old.", isCorrect: false },
+          { key: 'B', text: "I'm nine. How old are you?", isCorrect: true },
+          { key: 'C', text: "I'm fine, thank you.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_3',
+        start: 97,
+        end: 111,
+        promptZh: 'Mia 問桌上的尺是什麼顏色？Ben 拿著尺回答：',
+        targetEn: "It's blue.",
+        targetZh: '它是藍色的。',
+        speaker: 'Ben',
+        choices: [
+          { key: 'A', text: "It's red.", isCorrect: false },
+          { key: 'B', text: "It's green.", isCorrect: false },
+          { key: 'C', text: "It's blue.", isCorrect: true }
+        ]
+      },
+      {
+        id: 'hw_4',
+        start: 124,
+        end: 138,
+        promptZh: 'Mia 發現她遺失的彩色筆是什麼顏色？',
+        targetEn: "It's black.",
+        targetZh: '它是黑色的。',
+        speaker: 'Mia',
+        choices: [
+          { key: 'A', text: "It's black.", isCorrect: true },
+          { key: 'B', text: "It's yellow.", isCorrect: false },
+          { key: 'C', text: "It's blue.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_5',
+        start: 178,
+        end: 190,
+        promptZh: '海報貼紙數一數，Ben 數了哪些數字？',
+        targetEn: "Six, seven, eight, nine, ten!",
+        targetZh: '六、七、八、九、十！',
+        speaker: 'Ben',
+        choices: [
+          { key: 'A', text: "One, two, three, four, five.", isCorrect: false },
+          { key: 'B', text: "Six, seven, eight, nine, ten!", isCorrect: true },
+          { key: 'C', text: "Ten, nine, eight, seven, six.", isCorrect: false }
+        ]
+      }
+    ]
   }
 ];
 

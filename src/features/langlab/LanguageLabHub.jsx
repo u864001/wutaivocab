@@ -101,6 +101,8 @@ export const LanguageLabHub = ({ onBack }) => {
       const videoQuestions = (videoMatch.clips || []).map((clip) => ({
         ...clip,
         youtubeId: videoMatch.youtubeId,
+        localUrl: videoMatch.localUrl,
+        isLocalPlayer: videoMatch.isLocalPlayer,
         videoTitle: videoMatch.title,
         options: (clip.choices || []).map(c => ({
           key: c.key,
@@ -401,8 +403,20 @@ export const LanguageLabHub = ({ onBack }) => {
             </button>
           </div>
 
-          {/* 右：背景音樂開關 + 影音書籍櫃按鈕 + 自訂影片測試 */}
+          {/* 右：萬聖節微電影 + 背景音樂開關 + 影音書籍櫃按鈕 + 自訂影片測試 */}
           <div className="flex items-center gap-2">
+            {/* 🎃 萬聖節微電影專屬放映廳按鈕 */}
+            <a
+              href="/halloween/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-amber-100 text-xs font-black flex items-center gap-1.5 border border-amber-400/60 cursor-pointer shadow-md active:scale-95 transition-all"
+              title="在新分頁開啟 Mia & Ben Halloween School Day 全劇電影級微電影放映廳"
+            >
+              <span className="text-sm">🎃</span>
+              <span className="hidden sm:inline">萬聖節微電影</span>
+            </a>
+
             {activeMode === 'video' && (
               <button
                 onClick={() => {
@@ -558,15 +572,27 @@ export const LanguageLabHub = ({ onBack }) => {
                       </button>
                     </div>
 
-                    {/* YouTube 裁剪區間播放器 (支援全螢幕 & 自動背景音暫停) */}
+                    {/* 影片裁剪區間播放器 (支援全螢幕 & 自動背景音暫停) */}
                     <div className="w-full mb-2.5">
-                      <YouTubeClipPlayer
-                        key={`${currentQ.youtubeId}_${currentQ.start}_${currentQ.end}`}
-                        youtubeId={currentQ.youtubeId}
-                        startSeconds={currentQ.start}
-                        endSeconds={currentQ.end}
-                        autoplay={true}
-                      />
+                      {currentQ.isLocalPlayer ? (
+                        <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-amber-500/50 shadow-lg bg-black">
+                          <iframe
+                            src={`${currentQ.localUrl}?t=${currentQ.start}`}
+                            title={currentQ.videoTitle}
+                            className="w-full h-full border-0"
+                            allow="autoplay; fullscreen"
+                            allowFullScreen
+                          />
+                        </div>
+                      ) : (
+                        <YouTubeClipPlayer
+                          key={`${currentQ.youtubeId}_${currentQ.start}_${currentQ.end}`}
+                          youtubeId={currentQ.youtubeId}
+                          startSeconds={currentQ.start}
+                          endSeconds={currentQ.end}
+                          autoplay={true}
+                        />
+                      )}
                     </div>
 
                     {/* 三選一 擬真毛玻璃卡片 (A, B, C) */}
