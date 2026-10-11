@@ -579,6 +579,14 @@
         if (!isPlaying) return;
         currentTime += 0.1;
 
+        if (window.clipEndLimit && currentTime >= window.clipEndLimit) {
+          stopAll();
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'CLIP_FINISHED' }, '*');
+          }
+          return;
+        }
+
         if (currentTime >= TOTAL_DURATION) {
           stopAll();
           stageImg.src = '/assets/langlab/halloween/full_frames/S18_B_treats_received.png';
@@ -702,6 +710,45 @@
     };
 
     btnStop.onclick = stopAll;
+
+    // === 嵌入式視聽教室題庫測驗 (Clip Quiz Mode) 支援 ===
+    const urlParams = new URLSearchParams(window.location.search);
+    const clipStartParam = urlParams.get('start') || urlParams.get('t');
+    const clipEndParam = urlParams.get('end');
+    const isCompact = urlParams.get('compact') === '1';
+    const captionParam = urlParams.get('caption');
+
+    if (isCompact) {
+      document.querySelector('header')?.classList.add('hidden');
+      document.querySelector('footer')?.classList.add('hidden');
+      if (advancedDrawer) advancedDrawer.classList.add('hidden');
+    }
+
+    if (captionParam === '0') {
+      chkEn.checked = false;
+      chkZh.checked = false;
+    } else if (captionParam === '1') {
+      chkEn.checked = true;
+    }
+
+    if (clipStartParam !== null && clipStartParam !== undefined) {
+      const s = parseFloat(clipStartParam) || 0;
+      const e = clipEndParam ? parseFloat(clipEndParam) : (s + 10);
+      window.clipEndLimit = e;
+      setTimeout(() => {
+        startPlayback(s);
+      }, 350);
+    }
+
+    window.addEventListener('message', (ev) => {
+      if (ev.data?.type === 'REPLAY_CLIP') {
+        const s = ev.data.start !== undefined ? ev.data.start : (parseFloat(clipStartParam) || 0);
+        window.clipEndLimit = ev.data.end !== undefined ? ev.data.end : (clipEndParam ? parseFloat(clipEndParam) : (s + 10));
+        startPlayback(s);
+      } else if (ev.data?.type === 'REVEAL_CAPTION') {
+        chkEn.checked = true;
+      }
+    });
   </script>
 </body>
 </html>

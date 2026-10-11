@@ -94,8 +94,11 @@ export const LanguageLabHub = ({ onBack }) => {
   // 完成結算狀態
   const [isFinished, setIsFinished] = useState(false);
 
-  // 載入題庫
-  const loadQuestionBank = useCallback((book, unitId, mode) => {
+  // 當前選定的題庫影片 ID (預設萬聖節原生微電影)
+  const [selectedVideoId, setSelectedVideoId] = useState('halloween_movie');
+
+  // 載入題庫 (支援隨機抽題與選項打散)
+  const loadQuestionBank = useCallback((book, unitId, mode, videoId) => {
     setCurrentIndex(0);
     setFeedback(null);
     setSelectedChoiceKey(null);
@@ -110,27 +113,50 @@ export const LanguageLabHub = ({ onBack }) => {
       const q = getUnitSpeakingQuestions(book, unitId, 10);
       setQuestions(q);
     } else if (mode === 'video') {
-      const videoMatch = UNIT_VIDEO_LIBRARY.find(v => v.book === Number(book)) || UNIT_VIDEO_LIBRARY[0];
-      const videoQuestions = (videoMatch.clips || []).map((clip) => ({
-        ...clip,
-        youtubeId: videoMatch.youtubeId,
-        localUrl: videoMatch.localUrl,
-        isLocalPlayer: videoMatch.isLocalPlayer,
-        videoTitle: videoMatch.title,
-        options: (clip.choices || []).map(c => ({
-          key: c.key,
+      const targetVideoId = videoId || selectedVideoId;
+      const videoMatch = UNIT_VIDEO_LIBRARY.find(v => v.id === targetVideoId)
+        || UNIT_VIDEO_LIBRARY.find(v => v.book === Number(book))
+        || UNIT_VIDEO_LIBRARY[0];
+
+      // 順序隨機洗牌題目 (Fisher-Yates shuffle)
+      const rawClips = [...(videoMatch.clips || [])];
+      for (let i = rawClips.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [rawClips[i], rawClips[j]] = [rawClips[j], rawClips[i]];
+      }
+
+      const videoQuestions = rawClips.map((clip) => {
+        // 洗牌選項並隨機對應 A, B, C
+        const rawChoices = [...(clip.choices || [])];
+        for (let i = rawChoices.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [rawChoices[i], rawChoices[j]] = [rawChoices[j], rawChoices[i]];
+        }
+
+        const optionsWithKeys = rawChoices.map((c, idx) => ({
+          key: String.fromCharCode(65 + idx), // 'A', 'B', 'C'
           textEn: c.text,
+          textZh: c.textZh,
           isCorrect: c.isCorrect
-        }))
-      }));
+        }));
+
+        return {
+          ...clip,
+          youtubeId: videoMatch.youtubeId,
+          localUrl: videoMatch.localUrl,
+          isLocalPlayer: videoMatch.isLocalPlayer,
+          videoTitle: videoMatch.title,
+          options: optionsWithKeys
+        };
+      });
       setQuestions(videoQuestions);
     }
-  }, []);
+  }, [selectedVideoId]);
 
-  // 當冊次、單元或模式切換時，重新載入題目
+  // 當冊次、單元、模式或題庫影片切換時，重新載入題目
   useEffect(() => {
-    loadQuestionBank(selectedBook, selectedUnitId, activeMode);
-  }, [selectedBook, selectedUnitId, activeMode, loadQuestionBank]);
+    loadQuestionBank(selectedBook, selectedUnitId, activeMode, selectedVideoId);
+  }, [selectedBook, selectedUnitId, activeMode, selectedVideoId, loadQuestionBank]);
 
   const currentQ = questions[currentIndex] || null;
 
@@ -663,26 +689,62 @@ export const LanguageLabHub = ({ onBack }) => {
                     </div>
                   </button>
 
-                  {/* 4. 萬聖節特選微電影 */}
-                  <a
-                    href="/halloween/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group p-3.5 rounded-2xl bg-gradient-to-br from-orange-950/70 to-amber-950/80 hover:from-orange-900/80 hover:to-amber-900/90 border-2 border-orange-500/40 hover:border-orange-400 text-left transition-all active:scale-98 cursor-pointer shadow-lg flex items-center gap-3"
-                  >
-                    <div className="w-11 h-11 rounded-2xl bg-orange-600/30 border border-orange-400/40 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
-                      🎃
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-black text-orange-200 font-heading">萬聖節微電影</span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 font-mono">全劇 18 幕</span>
+                  {/* 4. 萬聖節微電影特訓卡片 (支援原生原畫 14 題 & YouTube 6 題快速測驗) */}
+                  <div className="group p-3.5 rounded-2xl bg-gradient-to-br from-orange-950/70 to-amber-950/80 hover:from-orange-900/80 hover:to-amber-900/90 border-2 border-orange-500/40 hover:border-orange-400 text-left transition-all shadow-lg flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-2xl bg-orange-600/30 border border-orange-400/40 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
+                        🎃
                       </div>
-                      <p className="text-[11px] text-slate-300 font-bold mt-1 leading-snug">
-                        Mia & Ben Halloween School Day (30 原生原畫 • 雙字幕)
-                      </p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-black text-orange-200 font-heading">萬聖節微電影特訓</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 font-mono">雙版本題庫</span>
+                        </div>
+                        <p className="text-[11px] text-slate-300 font-bold mt-0.5 leading-snug">
+                          Mia & Ben Halloween：聽情境完整對話，挑戰隨機選答題！
+                        </p>
+                      </div>
                     </div>
-                  </a>
+
+                    {/* 題庫快速啟動列 */}
+                    <div className="flex items-center gap-1.5 pt-1 border-t border-orange-500/20 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundEngine.click();
+                          setActiveMode('video');
+                          setSelectedVideoId('halloween_movie');
+                          setViewState('quiz');
+                        }}
+                        className="flex-1 py-1 px-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-black text-[11px] text-center shadow-md active:scale-95 transition-all cursor-pointer"
+                        title="挑戰 30 幕原生微電影完整情境題 (14 題隨機)"
+                      >
+                        🎯 原生原畫 (14題)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundEngine.click();
+                          setActiveMode('video');
+                          setSelectedVideoId('halloween_movie_yt');
+                          setViewState('quiz');
+                        }}
+                        className="flex-1 py-1 px-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-black text-[11px] text-center shadow-md active:scale-95 transition-all cursor-pointer"
+                        title="挑戰 ChatGPT YouTube 動畫短片題 (6 題隨機)"
+                      >
+                        🎬 YouTube (6題)
+                      </button>
+                      <a
+                        href="/halloween/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-1 px-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-amber-300 font-bold text-[11px] text-center border border-amber-500/30 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+                        title="開啟全片放映廳觀看完整微電影"
+                      >
+                        ▶ 全片
+                      </a>
+                    </div>
+                  </div>
 
                 </div>
               </div>
@@ -735,6 +797,32 @@ export const LanguageLabHub = ({ onBack }) => {
                 {activeMode === 'video' ? (
                   /* ── 🎬 影片片段選句介面 ── */
                   <div className="w-full flex flex-col items-center max-w-xl mx-auto">
+                    {/* 影片題庫切換選擇器 (萬聖節原生微電影 / ChatGPT 動畫版 / 課文影片) */}
+                    <div className="w-full flex items-center gap-1.5 overflow-x-auto pb-1.5 mb-2 shrink-0">
+                      <span className="text-[11px] font-black text-amber-300 shrink-0 flex items-center gap-1">
+                        <Film className="w-3.5 h-3.5 text-amber-400" />
+                        <span>題庫：</span>
+                      </span>
+                      {UNIT_VIDEO_LIBRARY.map((v) => (
+                        <button
+                          key={v.id}
+                          type="button"
+                          onClick={() => {
+                            soundEngine.click();
+                            setSelectedVideoId(v.id);
+                          }}
+                          className={`px-2.5 py-1 rounded-xl text-[11px] font-black transition-all shrink-0 cursor-pointer flex items-center gap-1 ${
+                            selectedVideoId === v.id
+                              ? 'bg-amber-500 text-stone-950 shadow-md ring-1 ring-amber-300 font-black'
+                              : 'bg-stone-900/80 hover:bg-stone-800 text-slate-300 border border-white/10'
+                          }`}
+                        >
+                          <span>{v.title.split('(')[0].trim()}</span>
+                          <span className="opacity-75 text-[10px] font-mono">({v.clips?.length || 0}題)</span>
+                        </button>
+                      ))}
+                    </div>
+
                     <div className="w-full mb-1.5 flex items-center justify-between text-xs">
                       <span className="text-amber-300 font-bold flex items-center gap-1">
                         <Sparkles className="w-3.5 h-3.5 text-amber-400" />
@@ -758,14 +846,55 @@ export const LanguageLabHub = ({ onBack }) => {
                     {/* 影片裁剪區間播放器 (支援全螢幕 & 自動背景音暫停) */}
                     <div className="w-full mb-2.5">
                       {currentQ.isLocalPlayer ? (
-                        <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-amber-500/50 shadow-lg bg-black">
-                          <iframe
-                            src={`${currentQ.localUrl}?t=${currentQ.start}`}
-                            title={currentQ.videoTitle}
-                            className="w-full h-full border-0"
-                            allow="autoplay; fullscreen"
-                            allowFullScreen
-                          />
+                        <div className="relative flex flex-col rounded-2xl overflow-hidden bg-slate-950 border-2 border-amber-500/60 shadow-xl w-full">
+                          {/* 頂部播放片段狀態條 */}
+                          <div className="px-3 py-1.5 bg-gradient-to-r from-stone-900 via-amber-950/80 to-stone-900 flex items-center justify-between text-xs text-amber-200 border-b border-amber-500/30 font-mono">
+                            <div className="flex items-center gap-1.5 font-bold">
+                              <Film className="w-3.5 h-3.5 text-amber-400" />
+                              <span>微電影原畫片段: {Math.floor(currentQ.start / 60)}:{String(Math.floor(currentQ.start % 60)).padStart(2, '0')} ～ {Math.floor(currentQ.end / 60)}:{String(Math.floor(currentQ.end % 60)).padStart(2, '0')}</span>
+                              <span className="text-slate-400 font-normal">({(currentQ.end - currentQ.start).toFixed(0)} 秒)</span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                soundEngine.click();
+                                const iframe = document.getElementById('localMovieIframe');
+                                if (iframe && iframe.contentWindow) {
+                                  iframe.contentWindow.postMessage({ type: 'REPLAY_CLIP', start: currentQ.start, end: currentQ.end }, '*');
+                                }
+                              }}
+                              className="px-2.5 py-0.5 rounded-lg bg-amber-500/30 hover:bg-amber-500/50 text-amber-200 font-black text-[11px] flex items-center gap-1 cursor-pointer active:scale-95 transition-all"
+                              title="重新播放這段微電影"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                              <span>重播片段</span>
+                            </button>
+                          </div>
+
+                          <div className="relative w-full aspect-video bg-black overflow-hidden">
+                            <iframe
+                              id="localMovieIframe"
+                              key={`${currentQ.localUrl}_${currentQ.start}_${currentQ.end}`}
+                              src={`${currentQ.localUrl}?start=${currentQ.start}&end=${currentQ.end}&compact=1&caption=${feedback !== null ? 1 : 0}`}
+                              title={currentQ.videoTitle}
+                              className="w-full h-full border-0"
+                              allow="autoplay; fullscreen"
+                              allowFullScreen
+                            />
+
+                            {/* 🎧 原生繪本版智能聽力特訓遮罩/徽章 */}
+                            <div
+                              className={`absolute bottom-0 left-0 right-0 h-[22%] bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent flex items-center justify-center pointer-events-none z-10 transition-all duration-500 ease-out ${
+                                feedback === null ? 'opacity-100 backdrop-blur-[2px]' : 'opacity-0 backdrop-blur-0'
+                              }`}
+                            >
+                              <div className="px-3.5 py-1 rounded-full bg-slate-900/90 border border-amber-400/50 text-[10px] sm:text-[11px] font-black text-amber-200 shadow-xl flex items-center gap-2 backdrop-blur-md">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                                <span>🎧 聽力專注特訓中 • 字幕已遮蔽 (選答後自動揭曉)</span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       ) : (
                         <YouTubeClipPlayer

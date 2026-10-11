@@ -164,70 +164,196 @@ export const UNIT_VIDEO_LIBRARY = [
         id: 'hw_1',
         start: 4,
         end: 12,
-        promptZh: '在校門口遇見同學時，Mia 和 Ben 互相說了什麼問候語？',
+        promptZh: 'Mia 在校門口說了 "Good morning!"，Ben 的回答是：',
         targetEn: 'Good morning!',
         targetZh: '早安！',
-        speaker: 'Mia & Ben',
+        speaker: 'Ben',
         choices: [
-          { key: 'A', text: 'Good morning!', isCorrect: true },
-          { key: 'B', text: 'Good night!', isCorrect: false },
-          { key: 'C', text: 'Goodbye!', isCorrect: false }
+          { text: 'Good morning!', isCorrect: true },
+          { text: 'Good night!', isCorrect: false },
+          { text: 'Goodbye!', isCorrect: false }
         ]
       },
       {
         id: 'hw_2',
-        start: 38,
-        end: 51,
-        promptZh: 'Ben 問 Mia 幾歲時，Mia 是怎麼回答的？',
-        targetEn: "I'm nine. How old are you?",
-        targetZh: '我九歲。你幾歲？',
-        speaker: 'Mia',
+        start: 13,
+        end: 25,
+        promptZh: 'Mia 詢問 "What\'s your name?"，Ben 的回答是：',
+        targetEn: "I'm Ben.",
+        targetZh: '我是 Ben。',
+        speaker: 'Ben',
         choices: [
-          { key: 'A', text: "I'm seven years old.", isCorrect: false },
-          { key: 'B', text: "I'm nine. How old are you?", isCorrect: true },
-          { key: 'C', text: "I'm fine, thank you.", isCorrect: false }
+          { text: 'My name is Ben.', isCorrect: false },
+          { text: "I'm Ben.", isCorrect: true },
+          { text: "I'm fine.", isCorrect: false }
         ]
       },
       {
         id: 'hw_3',
-        start: 97,
-        end: 111,
-        promptZh: 'Mia 問桌上的尺是什麼顏色？Ben 拿著尺回答：',
-        targetEn: "It's blue.",
-        targetZh: '它是藍色的。',
+        start: 29,
+        end: 37,
+        promptZh: 'Mia 在走廊問候 "How are you?"，Ben 的回答是：',
+        targetEn: "I'm fine. How are you?",
+        targetZh: '我很好。那你呢？',
         speaker: 'Ben',
         choices: [
-          { key: 'A', text: "It's red.", isCorrect: false },
-          { key: 'B', text: "It's green.", isCorrect: false },
-          { key: 'C', text: "It's blue.", isCorrect: true }
+          { text: "I'm fine. How are you?", isCorrect: true },
+          { text: "I'm ten years old.", isCorrect: false },
+          { text: 'Nice to meet you.', isCorrect: false }
         ]
       },
       {
         id: 'hw_4',
-        start: 124,
-        end: 138,
-        promptZh: 'Mia 發現她遺失的彩色筆是什麼顏色？',
-        targetEn: "It's black.",
-        targetZh: '它是黑色的。',
+        start: 39,
+        end: 47,
+        promptZh: 'Ben 詢問 Mia 的年齡，Mia 的回答是：',
+        targetEn: "I'm nine. How old are you?",
+        targetZh: '我九歲。你幾歲？',
         speaker: 'Mia',
         choices: [
-          { key: 'A', text: "It's black.", isCorrect: true },
-          { key: 'B', text: "It's yellow.", isCorrect: false },
-          { key: 'C', text: "It's blue.", isCorrect: false }
+          { text: "I'm seven years old.", isCorrect: false },
+          { text: "I'm nine. How old are you?", isCorrect: true },
+          { text: "I'm fine, thank you.", isCorrect: false }
         ]
       },
       {
         id: 'hw_5',
-        start: 178,
+        start: 42,
+        end: 51,
+        promptZh: 'Mia 反問 Ben 幾歲，Ben 的回答是：',
+        targetEn: "I'm ten years old.",
+        targetZh: '我十歲。',
+        speaker: 'Ben',
+        choices: [
+          { text: "I'm ten years old.", isCorrect: true },
+          { text: "I'm nine years old.", isCorrect: false },
+          { text: "I'm eight years old.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_6',
+        start: 51,
+        end: 60,
+        promptZh: 'Ms. Lin 在教室門口迎接學生，說了什麼排隊指令？',
+        targetEn: 'Line up, please.',
+        targetZh: '請排好隊。',
+        speaker: 'Ms. Lin',
+        choices: [
+          { text: 'Line up, please.', isCorrect: true },
+          { text: 'Sit down, please.', isCorrect: false },
+          { text: 'Open your book, please.', isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_7',
+        start: 72,
+        end: 79,
+        promptZh: 'Mia 指著桌上的文具問 "What\'s this?"，Ben 的回答是：',
+        targetEn: "It's a pencil.",
+        targetZh: '這是一枝鉛筆。',
+        speaker: 'Ben',
+        choices: [
+          { text: "It's a pencil.", isCorrect: true },
+          { text: "It's an eraser.", isCorrect: false },
+          { text: "It's a ruler.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_8',
+        start: 79,
+        end: 86,
+        promptZh: 'Ben 指著遠處桌面的文具問 "What\'s that?"，Mia 的回答是：',
+        targetEn: "It's an eraser.",
+        targetZh: '那是一個橡皮擦。',
+        speaker: 'Mia',
+        choices: [
+          { text: "It's a pen.", isCorrect: false },
+          { text: "It's a book.", isCorrect: false },
+          { text: "It's an eraser.", isCorrect: true }
+        ]
+      },
+      {
+        id: 'hw_9',
+        start: 104,
+        end: 111,
+        promptZh: 'Mia 詢問 "What color is it?"，Ben 拿著尺的回答是：',
+        targetEn: "It's blue.",
+        targetZh: '它是藍色的。',
+        speaker: 'Ben',
+        choices: [
+          { text: "It's red.", isCorrect: false },
+          { text: "It's blue.", isCorrect: true },
+          { text: "It's green.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_10',
+        start: 128,
+        end: 138,
+        promptZh: 'Ben 詢問遺失的彩色筆是什麼顏色，Mia 的回答是：',
+        targetEn: "It's black.",
+        targetZh: '它是黑色的。',
+        speaker: 'Mia',
+        choices: [
+          { text: "It's yellow.", isCorrect: false },
+          { text: "It's black.", isCorrect: true },
+          { text: "It's red.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_11',
+        start: 157,
+        end: 164,
+        promptZh: 'Mia 找到彩色筆向 Ben 道謝 "Thanks!"，Ben 的禮貌回答是：',
+        targetEn: "You're welcome.",
+        targetZh: '不客氣。',
+        speaker: 'Ben',
+        choices: [
+          { text: "You're welcome.", isCorrect: true },
+          { text: "Good job.", isCorrect: false },
+          { text: "I'm sorry.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_12',
+        start: 184,
         end: 190,
-        promptZh: '海報貼紙數一數，Ben 數了哪些數字？',
+        promptZh: '聽影片中 Ben 數海報上的貼紙，他數出了哪些數字？',
         targetEn: "Six, seven, eight, nine, ten!",
         targetZh: '六、七、八、九、十！',
         speaker: 'Ben',
         choices: [
-          { key: 'A', text: "One, two, three, four, five.", isCorrect: false },
-          { key: 'B', text: "Six, seven, eight, nine, ten!", isCorrect: true },
-          { key: 'C', text: "Ten, nine, eight, seven, six.", isCorrect: false }
+          { text: "Six, seven, eight, nine, ten!", isCorrect: true },
+          { text: "One, two, three, four, five.", isCorrect: false },
+          { text: "Ten, nine, eight, seven, six.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_13',
+        start: 192,
+        end: 200,
+        promptZh: 'Mia 說她是女巫 (a witch)，Ben 穿上披風說了什麼？',
+        targetEn: "I'm a vampire!",
+        targetZh: '我是吸血鬼！',
+        speaker: 'Ben',
+        choices: [
+          { text: "I'm a ghost!", isCorrect: false },
+          { text: "I'm a vampire!", isCorrect: true },
+          { text: "I'm a monster!", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_14',
+        start: 204,
+        end: 211,
+        promptZh: '全班萬聖節慶祝領糖果時，Ben 說了哪一句經典名句？',
+        targetEn: "Trick or treat!",
+        targetZh: '不給糖就搗蛋！',
+        speaker: 'Ben',
+        choices: [
+          { text: "Trick or treat!", isCorrect: true },
+          { text: "Happy New Year!", isCorrect: false },
+          { text: "Line up, please!", isCorrect: false }
         ]
       }
     ]
@@ -244,57 +370,85 @@ export const UNIT_VIDEO_LIBRARY = [
       {
         id: 'hw_yt_1',
         start: 2,
-        end: 15,
-        promptZh: '在影片開頭，Mia 和 Ben 互相說了什麼問候？',
+        end: 11,
+        promptZh: 'Mia 在校門口說了 "Good morning!"，Ben 的回答是：',
         targetEn: 'Good morning!',
         targetZh: '早安！',
-        speaker: 'Mia & Ben',
+        speaker: 'Ben',
         choices: [
-          { key: 'A', text: 'Good morning!', isCorrect: true },
-          { key: 'B', text: 'Good night!', isCorrect: false },
-          { key: 'C', text: 'Goodbye!', isCorrect: false }
+          { text: 'Good morning!', isCorrect: true },
+          { text: 'Goodbye!', isCorrect: false },
+          { text: 'Good night!', isCorrect: false }
         ]
       },
       {
         id: 'hw_yt_2',
-        start: 15,
-        end: 28,
-        promptZh: '詢問年齡時，Mia 是如何回答 Ben 的？',
-        targetEn: "I'm nine. How old are you?",
-        targetZh: '我九歲。你幾歲？',
-        speaker: 'Mia',
+        start: 11,
+        end: 22,
+        promptZh: 'Mia 詢問 "What\'s your name?"，Ben 的回答是：',
+        targetEn: "I'm Ben.",
+        targetZh: '我是 Ben。',
+        speaker: 'Ben',
         choices: [
-          { key: 'A', text: "I'm seven years old.", isCorrect: false },
-          { key: 'B', text: "I'm nine. How old are you?", isCorrect: true },
-          { key: 'C', text: "I'm fine, thank you.", isCorrect: false }
+          { text: 'My name is Ben.', isCorrect: false },
+          { text: "I'm Ben.", isCorrect: true },
+          { text: "I'm fine.", isCorrect: false }
         ]
       },
       {
         id: 'hw_yt_3',
-        start: 29,
-        end: 45,
-        promptZh: '影片中在教室找到文具時，說了什麼顏色？',
-        targetEn: "It's blue.",
-        targetZh: '它是藍色的。',
-        speaker: 'Ben',
+        start: 22,
+        end: 32,
+        promptZh: 'Ben 問 Mia 幾歲時，Mia 的回答是：',
+        targetEn: "I'm nine. How old are you?",
+        targetZh: '我九歲。你幾歲？',
+        speaker: 'Mia',
         choices: [
-          { key: 'A', text: "It's red.", isCorrect: false },
-          { key: 'B', text: "It's green.", isCorrect: false },
-          { key: 'C', text: "It's blue.", isCorrect: true }
+          { text: "I'm seven years old.", isCorrect: false },
+          { text: "I'm nine. How old are you?", isCorrect: true },
+          { text: "I'm ten years old.", isCorrect: false }
         ]
       },
       {
         id: 'hw_yt_4',
+        start: 33,
+        end: 45,
+        promptZh: '詢問教室文具是什麼顏色時，Ben 的回答是：',
+        targetEn: "It's blue.",
+        targetZh: '它是藍色的。',
+        speaker: 'Ben',
+        choices: [
+          { text: "It's red.", isCorrect: false },
+          { text: "It's blue.", isCorrect: true },
+          { text: "It's green.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_yt_5',
         start: 46,
-        end: 63,
-        promptZh: '最後大家數貼紙或南瓜時，數了哪些數字？',
+        end: 56,
+        promptZh: '在海報前練習數數時，數出了哪些數字？',
         targetEn: "Six, seven, eight, nine, ten!",
         targetZh: '六、七、八、九、十！',
-        speaker: 'Mia & Ben',
+        speaker: 'Ben',
         choices: [
-          { key: 'A', text: "One, two, three, four, five.", isCorrect: false },
-          { key: 'B', text: "Six, seven, eight, nine, ten!", isCorrect: true },
-          { key: 'C', text: "Ten, nine, eight, seven, six.", isCorrect: false }
+          { text: "Six, seven, eight, nine, ten!", isCorrect: true },
+          { text: "One, two, three, four, five.", isCorrect: false },
+          { text: "Ten, nine, eight, seven, six.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_yt_6',
+        start: 56,
+        end: 65,
+        promptZh: '萬聖節領糖果慶祝時，Ben 說了哪一句話？',
+        targetEn: "Trick or treat!",
+        targetZh: '不給糖就搗蛋！',
+        speaker: 'Ben',
+        choices: [
+          { text: "Trick or treat!", isCorrect: true },
+          { text: "Happy New Year!", isCorrect: false },
+          { text: "Line up, please!", isCorrect: false }
         ]
       }
     ]
