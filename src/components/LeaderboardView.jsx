@@ -17,7 +17,7 @@ import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
   Swords, X, ChevronRight, Compass, Flame, Coins, Award,
-  Users, Crown, Zap, School, KeyRound, Eye
+  Users, Crown, Zap, School, KeyRound, Eye, Headphones, Mic, Volume2
 } from 'lucide-react';
 
 export const GRADE_LEADERBOARD_TABS = [
@@ -30,14 +30,44 @@ export const GRADE_LEADERBOARD_TABS = [
   { id: 'all', zh: '全校大亂鬥', en: 'All School', books: null, isAllSchool: true, descZh: '全校1~6年級跨冊別、跨模式巔峰大亂鬥與大富翁榮譽榜' }
 ];
 
+export const DOMAIN_CATEGORIES = [
+  { id: 'all', zh: '🌟 全部項目', en: 'All Arenas', descZh: '全校所有學習與競技模式一覽' },
+  { id: 'langlab', zh: '🎧🎙️ 雙語聽說專區', en: 'Language Lab', descZh: '敏銳英聽特訓 ＆ 勇敢開口說演說家榜' },
+  { id: 'arcade', zh: '🕹️ 英語街機與探索', en: 'Arcade & Puzzles', descZh: '主題密室、鷹眼找不同、字母迷宮、貪食蛇與隕石挑戰' },
+  { id: 'campus', zh: '👑 校園榮譽殿堂', en: 'Campus Glory', descZh: '四大經典測驗、連線對戰、大富翁財富榜與小鎮探索' }
+];
+
 export const CONSOLIDATED_GAME_MODES = [
-  // ── 第一排：沉浸解謎與主題探索館 ──
+  // ── 雙語聽說專區 (Language Lab) ──
+  {
+    id: 'listening_lab',
+    label: '雙語聽力神耳朵榜',
+    icon: Headphones,
+    color: 'text-sky-500',
+    unit: '題',
+    category: 'langlab',
+    modeKeys: ['listening_lab'],
+    subModes: [{ key: 'listening_lab', label: '聽力特訓' }]
+  },
+  {
+    id: 'speaking_lab',
+    label: '雙語口說演說家榜',
+    icon: Mic,
+    color: 'text-rose-500',
+    unit: '題',
+    category: 'langlab',
+    modeKeys: ['speaking_lab'],
+    subModes: [{ key: 'speaking_lab', label: '口說跟讀' }]
+  },
+
+  // ── 沉浸解謎與主題探索館 (Arcade & Puzzles) ──
   {
     id: 'escape',
     label: '神祕密室大脫逃',
     icon: KeyRound,
     color: 'text-amber-500',
     unit: '秒',
+    category: 'arcade',
     modeKeys: ['escape'],
     subModes: [{ key: 'escape', label: '三連環脫逃' }]
   },
@@ -47,6 +77,7 @@ export const CONSOLIDATED_GAME_MODES = [
     icon: Eye,
     color: 'text-amber-500',
     unit: '秒',
+    category: 'arcade',
     modeKeys: ['spotter'],
     subModes: [{ key: 'spotter', label: '鷹眼搜查' }]
   },
@@ -56,6 +87,7 @@ export const CONSOLIDATED_GAME_MODES = [
     icon: Compass,
     color: 'text-violet-500',
     unit: '秒',
+    category: 'arcade',
     modeKeys: ['maze-upper', 'maze-lower', 'maze-master'],
     subModes: [
       { key: 'maze-upper', label: '大寫巡航' },
@@ -68,17 +100,19 @@ export const CONSOLIDATED_GAME_MODES = [
     icon: Puzzle,
     color: 'text-pink-500',
     unit: '分',
+    category: 'arcade',
     modeKeys: ['spelling'],
     subModes: [{ key: 'spelling', label: '標準拼字' }]
   },
 
-  // ── 第二排：極速反應與街機挑戰館 ──
+  // ── 極速反應與街機挑戰館 ──
   {
     id: 'swipe',
     label: '極速是非滑牌',
     icon: Flame,
     color: 'text-rose-500',
     unit: '分',
+    category: 'arcade',
     modeKeys: ['swipe-vocab', 'swipe-abc'],
     subModes: [
       { key: 'swipe-vocab', label: '30秒單字' },
@@ -91,6 +125,7 @@ export const CONSOLIDATED_GAME_MODES = [
     icon: Sparkles,
     color: 'text-emerald-500',
     unit: '分',
+    category: 'arcade',
     modeKeys: ['snake-normal', 'snake-survival', 'snake-easy'],
     subModes: [
       { key: 'snake-normal', label: '競速挑戰' },
@@ -104,6 +139,7 @@ export const CONSOLIDATED_GAME_MODES = [
     icon: Rocket,
     color: 'text-indigo-500',
     unit: '分',
+    category: 'arcade',
     modeKeys: ['meteor-zh-en', 'meteor-en-zh', 'meteor-abc'],
     subModes: [
       { key: 'meteor-zh-en', label: '中選英' },
@@ -117,17 +153,19 @@ export const CONSOLIDATED_GAME_MODES = [
     icon: Trophy,
     color: 'text-cyan-500',
     unit: '分',
+    category: 'arcade',
     modeKeys: ['memory-single'],
     subModes: [{ key: 'memory-single', label: '標準翻牌' }]
   },
 
-  // ── 經典測驗、多人競技與探索特區 ──
+  // ── 經典測驗、多人競技與探索特區 (Campus Glory) ──
   {
     id: 'quiz',
     label: '四大經典測驗',
     icon: Keyboard,
     color: 'text-blue-500',
     unit: '分',
+    category: 'campus',
     modeKeys: ['quiz-zh-en', 'quiz-en-zh', 'quiz-listening', 'quiz-hard'],
     subModes: [
       { key: 'quiz-zh-en', label: '中選英' },
@@ -142,6 +180,7 @@ export const CONSOLIDATED_GAME_MODES = [
     icon: Swords,
     color: 'text-amber-500',
     unit: '勝',
+    category: 'campus',
     modeKeys: ['battle-wins'],
     subModes: [{ key: 'battle-wins', label: '勝場累積' }]
   },
@@ -151,6 +190,7 @@ export const CONSOLIDATED_GAME_MODES = [
     icon: Coins,
     color: 'text-amber-400',
     unit: '金幣',
+    category: 'campus',
     isSpecial: 'monopoly',
     modeKeys: ['monopoly'],
     subModes: [{ key: 'monopoly', label: '金幣總資產' }]
@@ -161,6 +201,7 @@ export const CONSOLIDATED_GAME_MODES = [
     icon: Award,
     color: 'text-indigo-400',
     unit: '積分',
+    category: 'campus',
     isSpecial: 'quest',
     modeKeys: ['town-quest'],
     subModes: [{ key: 'town-quest', label: '任務積分' }]
@@ -182,6 +223,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
   });
 
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
+  const [selectedDomain, setSelectedDomain] = useState('all'); // 'all' | 'langlab' | 'arcade' | 'campus'
   const [boardData, setBoardData] = useState({}); // { [modeId]: items[] }
   const [isLoading, setIsLoading] = useState(false);
   const [modalModeId, setModalModeId] = useState(null); // 當前展開 Top 50 的遊戲模式 ID
@@ -230,10 +272,10 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
           } else if (m.isSpecial === 'quest') {
             fetchedList = await fetchQuestPointsLeaderboard(isAll ? null : selectedGrade, 50);
           } else {
-            // 一、二年級字母模式：若為字母遊戲模式，不限冊別（包含 abc 與基礎冊別）；若為全校大亂鬥則不限冊別
+            // 一、二年級字母模式：若為字母遊戲模式或聽說測驗，不限冊別（包含 abc 與基礎冊別）；若為全校大亂鬥則不限冊別
             const queryBooks = isAll
               ? null
-              : (isAlphabetGrade && (m.id === 'maze' || m.id === 'swipe' || m.id === 'meteor' || m.id === 'memory'))
+              : (isAlphabetGrade && (m.id === 'maze' || m.id === 'swipe' || m.id === 'meteor' || m.id === 'memory' || m.id === 'listening_lab' || m.id === 'speaking_lab'))
               ? null
               : books;
             fetchedList = await fetchLeaderboard(selectedWeek, m.modeKeys, queryBooks, 50);
@@ -258,9 +300,6 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
     loadGradeBoards();
   }, [selectedGrade, selectedWeek]);
 
-  // 全校各年級（1~6 年級與全校大亂鬥）保持完全一致的九宮格固定順序，跨年級切換不跳位
-  const displayModes = CONSOLIDATED_GAME_MODES;
-
   // 彈窗詳細資料
   const activeModalMode = useMemo(() => {
     if (!modalModeId) return null;
@@ -283,6 +322,13 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
       const bookLabel = row.book ? `B${row.book}` : '';
       const heartsLabel = row.score ? `❤️x${row.score}` : '';
       return [bookLabel, heartsLabel].filter(Boolean).join(' • ');
+    }
+
+    if (modeObj.id === 'listening_lab' || modeObj.id === 'speaking_lab') {
+      const bookLabel = row.book === 'abc' ? 'ABC字母' : (row.book ? `B${row.book}` : '');
+      const sm = modeObj.subModes?.find(s => s.key === row.mode);
+      const modeLabel = sm?.label || (modeObj.id === 'listening_lab' ? '聽力特訓' : '口說跟讀');
+      return [bookLabel, modeLabel].filter(Boolean).join(' • ');
     }
 
     const sm = modeObj.subModes?.find(s => s.key === row.mode);
@@ -410,16 +456,49 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
         </div>
       </GlassCard>
 
-      {/* ── Tier 1: 10 大遊戲模式 Top 5 風雲英雄小卡網格 (Bento Grid) ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-        {displayModes.map((mode) => {
+      {/* ── 四大領域館別切換膠囊導覽列 (解決擁擠感，聽說專區獨立大卡) ── */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {DOMAIN_CATEGORIES.map((cat) => {
+            const isSelected = selectedDomain === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  soundEngine.click();
+                  setSelectedDomain(cat.id);
+                }}
+                className={`px-3.5 sm:px-4 py-2 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-sm border ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-400 shadow-emerald-500/20 scale-102 ring-2 ring-emerald-400/30'
+                    : 'bg-white/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 hover:text-slate-900'
+                }`}
+              >
+                <span>{lang === 'zh-TW' ? cat.zh : cat.en}</span>
+                {cat.id === 'langlab' && (
+                  <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-stone-950 text-[10px] font-black animate-pulse">
+                    雙榜分立
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── 榜單內容展示區 ── */}
+      {(() => {
+        // 渲染個別模式的風雲小卡 (Top 5 預覽 ＋ 點擊查看 Top 50)
+        const renderModeCard = (mode, isWide = false) => {
           const Icon = mode.icon;
           const ranks = (boardData[mode.id] || []).slice(0, 5);
 
           return (
             <GlassCard
               key={mode.id}
-              className="flex flex-col justify-between p-4 sm:p-5 relative overflow-hidden group hover:border-emerald-400/80 transition-all shadow-sm"
+              className={`flex flex-col justify-between p-4 sm:p-5 relative overflow-hidden group hover:border-emerald-400/80 transition-all shadow-sm ${
+                isWide ? 'border-2 border-sky-400/40 bg-gradient-to-br from-sky-950/20 to-slate-900/40' : ''
+              }`}
             >
               <div>
                 {/* 卡片標題與圖標 */}
@@ -428,9 +507,16 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                     <div className={`w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center ${mode.color}`}>
                       <Icon className="w-4 h-4" />
                     </div>
-                    <h3 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-slate-100">
-                      {mode.label}
-                    </h3>
+                    <div>
+                      <h3 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                        <span>{mode.label}</span>
+                        {mode.category === 'langlab' && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-400 text-stone-950 font-black">
+                            15題特訓
+                          </span>
+                        )}
+                      </h3>
+                    </div>
                   </div>
 
                   <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-mono">
@@ -520,8 +606,139 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
               </button>
             </GlassCard>
           );
-        })}
-      </div>
+        };
+
+        if (selectedDomain === 'langlab') {
+          return (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-sky-950/70 to-indigo-950/70 border border-sky-400/40 shadow-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-sky-500/25 text-sky-300 flex items-center justify-center font-black shrink-0">
+                    <Headphones className="w-5 h-5 text-sky-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm sm:text-base font-black text-white font-heading flex items-center gap-2">
+                      <span>雙語聽說探險專區 (Language Lab)</span>
+                      <span className="px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 text-[10px] font-bold">
+                        聽說分立
+                      </span>
+                    </h4>
+                    <p className="text-xs text-sky-200/90 font-bold mt-0.5">
+                      敏銳英聽 15 題特訓 ＆ 勇敢開口 15 題跟讀，雙榜獨立榮譽留名！
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'langlab').map(m => renderModeCard(m, true))}
+              </div>
+            </div>
+          );
+        }
+
+        if (selectedDomain === 'arcade') {
+          return (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-fadeIn">
+              {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'arcade').map(m => renderModeCard(m))}
+            </div>
+          );
+        }
+
+        if (selectedDomain === 'campus') {
+          return (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-fadeIn">
+              {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'campus').map(m => renderModeCard(m))}
+            </div>
+          );
+        }
+
+        // 預設全部模式：依三大專區層次化整齊排列
+        return (
+          <div className="space-y-8 animate-fadeIn">
+            {/* 1. 雙語聽說專區 */}
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-1 border-b border-sky-500/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🎧🎙️</span>
+                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-sky-300">
+                    雙語聽說專區 (Language Lab)
+                  </h4>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 font-bold">
+                    核心學力
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    soundEngine.click();
+                    setSelectedDomain('langlab');
+                  }}
+                  className="text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>聚焦此專區 ➔</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'langlab').map(m => renderModeCard(m, true))}
+              </div>
+            </div>
+
+            {/* 2. 英語街機與探索 */}
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-1 border-b border-emerald-500/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🕹️</span>
+                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-emerald-300">
+                    英語街機與主題探索 (Arcade & Puzzles)
+                  </h4>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
+                    8 大趣味關卡
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    soundEngine.click();
+                    setSelectedDomain('arcade');
+                  }}
+                  className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>聚焦此專區 ➔</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'arcade').map(m => renderModeCard(m))}
+              </div>
+            </div>
+
+            {/* 3. 校園榮譽殿堂 */}
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-1 border-b border-indigo-500/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">👑</span>
+                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-indigo-300">
+                    校園測驗與總榮譽 (Campus Prestige)
+                  </h4>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 font-bold">
+                    競技與財富榜
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    soundEngine.click();
+                    setSelectedDomain('campus');
+                  }}
+                  className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>聚焦此專區 ➔</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'campus').map(m => renderModeCard(m))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Tier 2: 完整 Top 50 英雄榜彈窗 (Expandable Modal) ── */}
       {activeModalMode && (

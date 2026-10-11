@@ -24,6 +24,8 @@ const TEACHERS = ['Mario', 'Ibu', 'Vanessa', 'Mark', 'Official'];
 
 const GAME_MODES = [
   { id: 'all', name: '全部模式' },
+  { id: 'listening_lab', name: '🎧 雙語聽力特訓' },
+  { id: 'speaking_lab', name: '🎙️ 雙語口說跟讀' },
   { id: 'zh-en', name: '標準測驗 (中選英)' },
   { id: 'en-zh', name: '標準測驗 (英選中)' },
   { id: 'spelling', name: '拖曳拼字大冒險' },

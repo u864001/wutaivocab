@@ -1147,13 +1147,37 @@ export const LanguageLabHub = ({ onBack }) => {
 
                 {/* 榮譽榜提交組件 */}
                 <div className="w-full mb-4">
-                  <HonorSubmissionCard
-                    mode="listening_lab"
-                    book={selectedBook}
-                    score={scoreStats.correct}
-                    totalCount={questions.length}
-                    rangeText={currentChallengeInfo.title}
-                  />
+                  {(() => {
+                    const submissionMode = activeMode === 'speaking' ? 'speaking_lab' : 'listening_lab';
+                    let submissionBook = 'abc';
+                    const cid = currentChallengeInfo?.id || '';
+                    if (cid.startsWith('alpha_')) {
+                      submissionBook = 'abc';
+                    } else if (cid === 'grade_g3') {
+                      submissionBook = '1';
+                    } else if (cid === 'grade_g4') {
+                      submissionBook = '3';
+                    } else if (cid === 'grade_g5') {
+                      submissionBook = '5';
+                    } else if (cid === 'grade_g6') {
+                      submissionBook = '7';
+                    } else if (cid === 'grade_jh') {
+                      submissionBook = '9';
+                    } else if (cid === 'custom_unit') {
+                      submissionBook = String(selectedBook || '1');
+                    }
+                    const submissionTitle = `${activeMode === 'speaking' ? '🎙️ 口說挑戰' : '🎧 聽力特訓'} • ${currentChallengeInfo?.title || '雙語聽說探險'}`;
+
+                    return (
+                      <HonorSubmissionCard
+                        mode={submissionMode}
+                        book={submissionBook}
+                        score={scoreStats.correct}
+                        totalCount={questions.length}
+                        rangeText={submissionTitle}
+                      />
+                    );
+                  })()}
                 </div>
 
                 {/* 底部導航按鈕 */}

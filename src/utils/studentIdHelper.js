@@ -120,7 +120,8 @@ export const isAlphabetGameMode = (mode, book) => {
     m.startsWith('maze') ||
     m === 'swipe-abc' ||
     m === 'meteor-abc' ||
-    m === 'memory-single'
+    m === 'memory-single' ||
+    ((m === 'listening_lab' || m === 'speaking_lab') && (!book || book === 'abc'))
   );
 };
 
