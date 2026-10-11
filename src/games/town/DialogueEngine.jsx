@@ -304,44 +304,7 @@ export const DialogueEngine = ({
       {/* ── 3. 舞臺主體內容區 (置中對稱、左右留白一致、自適應各種螢幕) ── */}
       <div className="relative flex-1 w-full max-w-[1380px] mx-auto flex flex-col md:flex-row items-end justify-between px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20 pb-3 sm:pb-5 gap-4 md:gap-8 lg:gap-12 overflow-hidden pointer-events-none">
         
-        {/* 🎬 山豬影城專屬：A 廳 (左側拱門) & B 廳 (右側拱門) 入口互動標籤 */}
-        {location.id === 'cinema' && (
-          <>
-            {/* 左側：A 廳 (黑熊巨幕廳) 入口 */}
-            <div className="absolute top-[28%] sm:top-[26%] left-[3%] sm:left-[8%] md:left-[14%] z-20 pointer-events-auto">
-              <button
-                onClick={() => {
-                  stopSpeech();
-                  setTheaterInitialHall('A');
-                  setTheaterInitialMovieId(null);
-                  setIsTheaterOpen(true);
-                }}
-                className="px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl bg-stone-950/85 hover:bg-stone-900 border-2 border-amber-400 text-amber-200 text-xs sm:text-sm font-black shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 backdrop-blur-md animate-pulse cursor-pointer"
-                title="進入 A 廳：黑熊巨幕廳 (萬聖節微電影特映)"
-              >
-                <span>🏛️</span>
-                <span>A 廳 • 黑熊巨幕廳</span>
-              </button>
-            </div>
 
-            {/* 右側：B 廳 (百步蛇音樂廳) 入口 */}
-            <div className="absolute top-[28%] sm:top-[26%] right-[3%] sm:right-[8%] md:right-[14%] z-20 pointer-events-auto">
-              <button
-                onClick={() => {
-                  stopSpeech();
-                  setTheaterInitialHall('B');
-                  setTheaterInitialMovieId(null);
-                  setIsTheaterOpen(true);
-                }}
-                className="px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl bg-stone-950/85 hover:bg-stone-900 border-2 border-indigo-400 text-indigo-200 text-xs sm:text-sm font-black shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 backdrop-blur-md animate-pulse cursor-pointer"
-                title="進入 B 廳：百步蛇音樂廳 (課文歌曲與生活美語)"
-              >
-                <span>🎪</span>
-                <span>B 廳 • 百步蛇音樂廳</span>
-              </button>
-            </div>
-          </>
-        )}
 
         {/* ── 角色立繪層 (Left/Right 立繪自螢幕兩側邊緣滑入/滑出動效) ── */}
         <div className={`w-full md:w-auto shrink-0 flex flex-col justify-end z-10 ${
