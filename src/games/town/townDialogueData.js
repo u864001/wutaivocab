@@ -1914,9 +1914,9 @@ export const DIALOGUE_VARIANTS = {
           "zh": "歡迎光臨山豬影城！你想看電影嗎？",
           "options": [
             {
-              "text_en": "Yes! What movie do you have today?",
-              "text_zh": "想！今天有什麼電影呢？",
-              "target_id": "movie_leopard"
+              "text_en": "Yes! Can I see today's movie showtimes?",
+              "text_zh": "想！我可以看今日放映時刻表嗎？",
+              "action": "OPEN_THEATER"
             },
             {
               "text_en": "Can I buy movie tickets in the shop?",
@@ -1933,13 +1933,13 @@ export const DIALOGUE_VARIANTS = {
         "movie_leopard": {
           "id": "movie_leopard",
           "speaker": "山豬售票員 (Clerk Boar)",
-          "en": "We have 'The Fast Cloud Leopard'! It is a 3D animal adventure.",
-          "zh": "我們有《奔跑的雲豹》！這是一部 3D 動物冒險電影。",
+          "en": "We have 'Mia & Ben Halloween at School'! It is a Halloween school day animation.",
+          "zh": "我們有《Mia & Ben 萬聖節校園微電影》！這是一部萬聖節生活美語情境動畫。",
           "options": [
             {
-              "text_en": "Open shop to buy tickets!",
-              "text_zh": "開啟商店購買電影票！",
-              "action": "OPEN_SHOP"
+              "text_en": "I want to see the showtimes and enter the hall!",
+              "text_zh": "我想看放映時刻表並入場！",
+              "action": "OPEN_THEATER"
             }
           ]
         },

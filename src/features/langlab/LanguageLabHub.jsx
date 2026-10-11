@@ -94,8 +94,8 @@ export const LanguageLabHub = ({ onBack }) => {
   // 完成結算狀態
   const [isFinished, setIsFinished] = useState(false);
 
-  // 當前選定的題庫影片 ID (預設萬聖節原生微電影)
-  const [selectedVideoId, setSelectedVideoId] = useState('halloween_movie');
+  // 當前選定的題庫影片 ID (預設 YouTube 動畫短片 cEO7iS9LNew)
+  const [selectedVideoId, setSelectedVideoId] = useState('halloween_movie_yt');
 
   // 載入題庫 (支援隨機抽題與選項打散)
   const loadQuestionBank = useCallback((book, unitId, mode, videoId) => {
@@ -798,8 +798,8 @@ export const LanguageLabHub = ({ onBack }) => {
                   /* ── 🎬 影片片段選句介面 ── */
                   <div className="w-full flex flex-col items-center max-w-xl mx-auto">
                     {/* 影片題庫切換選擇器 (萬聖節原生微電影 / ChatGPT 動畫版 / 課文影片) */}
-                    <div className="w-full flex items-center gap-1.5 overflow-x-auto pb-1.5 mb-2 shrink-0">
-                      <span className="text-[11px] font-black text-amber-300 shrink-0 flex items-center gap-1">
+                    <div className="w-full flex flex-wrap items-center gap-1.5 pb-2 mb-2">
+                      <span className="text-[11px] font-black text-amber-300 shrink-0 flex items-center gap-1 mr-1">
                         <Film className="w-3.5 h-3.5 text-amber-400" />
                         <span>題庫：</span>
                       </span>
@@ -811,13 +811,13 @@ export const LanguageLabHub = ({ onBack }) => {
                             soundEngine.click();
                             setSelectedVideoId(v.id);
                           }}
-                          className={`px-2.5 py-1 rounded-xl text-[11px] font-black transition-all shrink-0 cursor-pointer flex items-center gap-1 ${
+                          className={`px-2.5 py-1 rounded-xl text-[11px] font-black transition-all cursor-pointer flex items-center gap-1 ${
                             selectedVideoId === v.id
-                              ? 'bg-amber-500 text-stone-950 shadow-md ring-1 ring-amber-300 font-black'
+                              ? 'bg-amber-500 text-stone-950 shadow-md ring-2 ring-amber-300 font-black'
                               : 'bg-stone-900/80 hover:bg-stone-800 text-slate-300 border border-white/10'
                           }`}
                         >
-                          <span>{v.title.split('(')[0].trim()}</span>
+                          <span>{v.shortTitle || v.title.split('(')[0].trim()}</span>
                           <span className="opacity-75 text-[10px] font-mono">({v.clips?.length || 0}題)</span>
                         </button>
                       ))}

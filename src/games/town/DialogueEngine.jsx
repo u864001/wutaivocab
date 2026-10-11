@@ -37,6 +37,8 @@ export const DialogueEngine = ({
   const [isDialogueReady, setIsDialogueReady] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isTheaterOpen, setIsTheaterOpen] = useState(false);
+  const [theaterInitialHall, setTheaterInitialHall] = useState('ALL');
+  const [theaterInitialMovieId, setTheaterInitialMovieId] = useState(null);
 
   // 決定當前發言人物的專屬語音指紋 (Persona Key: mario, ibu, school, supermarket, etc.)
   const activeVoicePersonaKey = useMemo(() => {
@@ -125,6 +127,15 @@ export const DialogueEngine = ({
     if (opt.action === 'OPEN_QUESTS') {
       stopSpeech();
       if (onOpenQuests) onOpenQuests();
+      return;
+    }
+
+    // 開啟山豬影城時刻表
+    if (opt.action === 'OPEN_THEATER') {
+      stopSpeech();
+      setTheaterInitialHall(opt.hall || 'ALL');
+      setTheaterInitialMovieId(opt.movieId || null);
+      setIsTheaterOpen(true);
       return;
     }
 
@@ -245,13 +256,15 @@ export const DialogueEngine = ({
             <button
               onClick={() => {
                 stopSpeech();
+                setTheaterInitialHall('ALL');
+                setTheaterInitialMovieId(null);
                 setIsTheaterOpen(true);
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-black text-xs shadow-md border border-amber-300/40 transition-all cursor-pointer animate-pulse"
-              title="進入放映廳觀看完整微電影"
+              title="查看山豬影城今日放映時刻表並選片"
             >
               <Film className="w-3.5 h-3.5 text-yellow-300" />
-              <span>🎬 進入放映廳看全片</span>
+              <span>🎬 今日放映時刻表</span>
             </button>
           )}
 
@@ -291,6 +304,45 @@ export const DialogueEngine = ({
       {/* ── 3. 舞臺主體內容區 (置中對稱、左右留白一致、自適應各種螢幕) ── */}
       <div className="relative flex-1 w-full max-w-[1380px] mx-auto flex flex-col md:flex-row items-end justify-between px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20 pb-3 sm:pb-5 gap-4 md:gap-8 lg:gap-12 overflow-hidden pointer-events-none">
         
+        {/* 🎬 山豬影城專屬：A 廳 (左側拱門) & B 廳 (右側拱門) 入口互動標籤 */}
+        {location.id === 'cinema' && (
+          <>
+            {/* 左側：A 廳 (黑熊巨幕廳) 入口 */}
+            <div className="absolute top-[28%] sm:top-[26%] left-[3%] sm:left-[8%] md:left-[14%] z-20 pointer-events-auto">
+              <button
+                onClick={() => {
+                  stopSpeech();
+                  setTheaterInitialHall('A');
+                  setTheaterInitialMovieId(null);
+                  setIsTheaterOpen(true);
+                }}
+                className="px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl bg-stone-950/85 hover:bg-stone-900 border-2 border-amber-400 text-amber-200 text-xs sm:text-sm font-black shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 backdrop-blur-md animate-pulse cursor-pointer"
+                title="進入 A 廳：黑熊巨幕廳 (萬聖節微電影特映)"
+              >
+                <span>🏛️</span>
+                <span>A 廳 • 黑熊巨幕廳</span>
+              </button>
+            </div>
+
+            {/* 右側：B 廳 (百步蛇音樂廳) 入口 */}
+            <div className="absolute top-[28%] sm:top-[26%] right-[3%] sm:right-[8%] md:right-[14%] z-20 pointer-events-auto">
+              <button
+                onClick={() => {
+                  stopSpeech();
+                  setTheaterInitialHall('B');
+                  setTheaterInitialMovieId(null);
+                  setIsTheaterOpen(true);
+                }}
+                className="px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl bg-stone-950/85 hover:bg-stone-900 border-2 border-indigo-400 text-indigo-200 text-xs sm:text-sm font-black shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 backdrop-blur-md animate-pulse cursor-pointer"
+                title="進入 B 廳：百步蛇音樂廳 (課文歌曲與生活美語)"
+              >
+                <span>🎪</span>
+                <span>B 廳 • 百步蛇音樂廳</span>
+              </button>
+            </div>
+          </>
+        )}
+
         {/* ── 角色立繪層 (Left/Right 立繪自螢幕兩側邊緣滑入/滑出動效) ── */}
         <div className={`w-full md:w-auto shrink-0 flex flex-col justify-end z-10 ${
           isLeft 
@@ -486,6 +538,8 @@ export const DialogueEngine = ({
       {/* 🎬 山豬影城放映廳全片播映彈窗 */}
       {isTheaterOpen && (
         <CinemaTheaterModal
+          initialHall={theaterInitialHall}
+          initialMovieId={theaterInitialMovieId}
           onClose={() => setIsTheaterOpen(false)}
         />
       )}
