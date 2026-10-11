@@ -360,11 +360,11 @@ export const UNIT_VIDEO_LIBRARY = [
   },
   {
     id: 'halloween_movie_yt',
-    title: '🎬 Mia & Ben Halloween (ChatGPT 動畫短片)',
+    title: '🎬 Mia & Ben Halloween at School (ChatGPT 動畫短片)',
     book: 1,
     unit: 'Halloween Special',
     description: '老師上傳之 ChatGPT 動畫微電影（片長 66 秒）• YouTube 零伺服器頻寬放映。',
-    youtubeId: 'QS0GDxK81pY',
+    youtubeId: 'cEO7iS9LNew',
     totalDuration: 66,
     clips: [
       {
