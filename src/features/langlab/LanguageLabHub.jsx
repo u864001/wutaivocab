@@ -368,7 +368,7 @@ export const LanguageLabHub = ({ onBack }) => {
     <div className="relative w-full max-w-[1720px] mx-auto px-2 sm:px-4 py-2 animate-fadeIn flex flex-col items-center select-none">
       
       {/* ── 全景視聽語言教室主舞台容器 ── */}
-      <div className="relative w-full min-h-[580px] md:min-h-[660px] md:aspect-[16/9] rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-600/60 bg-slate-950 flex flex-col">
+      <div className="relative w-full min-h-[600px] md:min-h-[700px] lg:min-h-[740px] max-h-[92vh] md:aspect-[16/9] rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-600/60 bg-slate-950 flex flex-col">
         
         {/* 教室全景底圖 */}
         <img
@@ -440,36 +440,54 @@ export const LanguageLabHub = ({ onBack }) => {
         </div>
 
         {/* ── 舞臺核心互動區 ── */}
-        <div className="relative z-10 flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 py-4 flex flex-col justify-center items-center overflow-y-auto">
+        <div className="relative z-10 flex-1 w-full max-w-[1380px] mx-auto px-4 sm:px-8 md:px-12 pb-2 sm:pb-4 flex flex-col justify-end items-center overflow-y-auto overflow-x-hidden">
 
           {/* ════════════════════════════════════════════════════════════════
-              【狀態一：主選單 (main_menu)】貓頭鷹引導 + 由上而下三大功能
+              【狀態一：主選單 (main_menu)】貓頭鷹導師迎接 + 由上而下三大功能
              ════════════════════════════════════════════════════════════════ */}
           {viewState === 'main_menu' && (
-            <div className="w-full flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 animate-fadeIn my-auto">
+            <div className="w-full flex flex-col md:flex-row items-center md:items-end justify-between gap-4 md:gap-8 lg:gap-12 animate-fadeIn pb-1 pointer-events-none">
               
-              {/* 貓頭鷹導師立繪與問候 */}
-              <div className="flex flex-col items-center shrink-0">
-                <img
-                  src={MENTOR_OWL}
-                  alt="Mentor Owl"
-                  className="w-36 h-36 sm:w-48 sm:h-48 md:w-60 md:h-60 object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] animate-float"
-                />
-                <div className="mt-2 px-4 py-1.5 rounded-full bg-slate-900/90 border border-amber-400/40 text-amber-200 text-xs sm:text-sm font-black shadow-lg flex items-center gap-2">
-                  <span>🦉</span>
-                  <span>貓頭鷹導師 (Mentor Owl)</span>
+              {/* ── 角色立繪層 (比照小鎮 DialogueEngine 標準立繪設定：膝上半身、佔螢幕高度 60~70%、腳踩地面) ── */}
+              <div className="w-full md:w-auto shrink-0 flex flex-col justify-end z-10 items-center md:items-start animate-slide-in-left pointer-events-auto">
+                <div className="relative group flex flex-col items-center">
+                  <img
+                    src={MENTOR_OWL}
+                    alt="貓頭鷹導師"
+                    className="h-56 sm:h-72 md:h-[480px] lg:h-[540px] xl:h-[580px] max-h-[68vh] object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.85)] select-none transition-transform duration-300 group-hover:scale-102"
+                  />
+                  {/* 小鎮標準身分銘牌 */}
+                  <div className="mt-1 px-4 py-1.5 rounded-full bg-slate-950/85 backdrop-blur-md border border-white/30 shadow-xl flex items-center gap-2 pointer-events-auto">
+                    <span className="text-xl">🦉</span>
+                    <div className="text-left">
+                      <div className="text-xs sm:text-sm font-black text-white font-heading leading-tight">
+                        貓頭鷹導師 (Mentor Owl)
+                      </div>
+                      <div className="text-[10px] font-bold text-amber-300">
+                        視聽語言教室 • 首席導師
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* 右側：由上而下清爽三大主入口 */}
-              <div className="w-full max-w-md flex flex-col gap-3 sm:gap-4">
+              {/* ── 右側：由上而下三大主入口 (比照 DialogueEngine 對話與選單排版) ── */}
+              <div className="w-full md:flex-1 max-w-[560px] md:max-w-[580px] lg:max-w-[620px] flex flex-col justify-end space-y-3 pb-1 z-20 pointer-events-auto">
                 
                 {/* 導師對話氣泡 */}
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/85 backdrop-blur-md border-2 border-amber-400/40 text-white shadow-xl">
-                  <p className="text-xs sm:text-sm text-amber-300 font-bold leading-relaxed">
+                <div className="p-4 rounded-3xl bg-slate-900/85 backdrop-blur-md border-2 border-amber-400/50 text-white shadow-2xl relative space-y-1.5 animate-fadeIn">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-amber-300">
+                      🦉 Mentor Owl 說：
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 font-bold">
+                      Today's Mission
+                    </span>
+                  </div>
+                  <p className="text-sm sm:text-base font-black text-amber-200 leading-snug">
                     "Welcome! What would you like to practice today?"
                   </p>
-                  <p className="text-xs sm:text-sm font-black text-white mt-1">
+                  <p className="text-xs sm:text-sm font-bold text-slate-200">
                     歡迎來到雙語聽說探險館！請選擇今天的學習項目：
                   </p>
                 </div>
@@ -482,9 +500,9 @@ export const LanguageLabHub = ({ onBack }) => {
                     setActiveMode('listening');
                     setViewState('grade_select');
                   }}
-                  className="group w-full p-4 rounded-2xl bg-gradient-to-r from-blue-900/85 to-indigo-900/85 hover:from-blue-800 hover:to-indigo-800 border-2 border-blue-400/50 hover:border-blue-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-4 active:scale-98"
+                  className="group w-full p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-blue-900/90 to-indigo-900/90 hover:from-blue-800 hover:to-indigo-800 border-2 border-blue-400/50 hover:border-blue-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 sm:gap-4 active:scale-98"
                 >
-                  <div className="w-13 h-13 rounded-2xl bg-blue-600/30 border border-blue-400/50 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform shrink-0">
+                  <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-blue-600/30 border border-blue-400/50 flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition-transform shrink-0">
                     🎧
                   </div>
                   <div className="flex-1 min-w-0">
@@ -496,7 +514,7 @@ export const LanguageLabHub = ({ onBack }) => {
                         15 題特訓
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 font-bold mt-1">
+                    <p className="text-xs text-slate-300 font-bold mt-0.5 line-clamp-1 sm:line-clamp-none">
                       包含低年級字母聽音、中高年級生活會話，訓練敏銳英語耳！
                     </p>
                   </div>
@@ -511,9 +529,9 @@ export const LanguageLabHub = ({ onBack }) => {
                     setActiveMode('speaking');
                     setViewState('grade_select');
                   }}
-                  className="group w-full p-4 rounded-2xl bg-gradient-to-r from-rose-900/85 to-pink-900/85 hover:from-rose-800 hover:to-pink-800 border-2 border-rose-400/50 hover:border-rose-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-4 active:scale-98"
+                  className="group w-full p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-rose-900/90 to-pink-900/90 hover:from-rose-800 hover:to-pink-800 border-2 border-rose-400/50 hover:border-rose-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 sm:gap-4 active:scale-98"
                 >
-                  <div className="w-13 h-13 rounded-2xl bg-rose-600/30 border border-rose-400/50 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform shrink-0">
+                  <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-rose-600/30 border border-rose-400/50 flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition-transform shrink-0">
                     🎙️
                   </div>
                   <div className="flex-1 min-w-0">
@@ -525,7 +543,7 @@ export const LanguageLabHub = ({ onBack }) => {
                         AI 即時評測
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 font-bold mt-1">
+                    <p className="text-xs text-slate-300 font-bold mt-0.5 line-clamp-1 sm:line-clamp-none">
                       大聲開口念出字母與句子，黑熊學伴與 AI 星級即時評分！
                     </p>
                   </div>
@@ -539,9 +557,9 @@ export const LanguageLabHub = ({ onBack }) => {
                     soundEngine.click();
                     setViewState('video_room');
                   }}
-                  className="group w-full p-4 rounded-2xl bg-gradient-to-r from-amber-900/85 to-orange-900/85 hover:from-amber-800 hover:to-orange-800 border-2 border-amber-400/50 hover:border-amber-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-4 active:scale-98"
+                  className="group w-full p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-900/90 to-orange-900/90 hover:from-amber-800 hover:to-orange-800 border-2 border-amber-400/50 hover:border-amber-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 sm:gap-4 active:scale-98"
                 >
-                  <div className="w-13 h-13 rounded-2xl bg-amber-600/30 border border-amber-400/50 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform shrink-0">
+                  <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-amber-600/30 border border-amber-400/50 flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition-transform shrink-0">
                     🎬
                   </div>
                   <div className="flex-1 min-w-0">
@@ -553,7 +571,7 @@ export const LanguageLabHub = ({ onBack }) => {
                         微電影放映
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 font-bold mt-1">
+                    <p className="text-xs text-slate-300 font-bold mt-0.5 line-clamp-1 sm:line-clamp-none">
                       萬聖節微電影與課文動畫短片，全片播放與情境對話選答！
                     </p>
                   </div>
