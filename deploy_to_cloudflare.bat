@@ -11,7 +11,7 @@ echo.
 echo ========================================================
 echo   [2/2] Deploying to Cloudflare Pages (wutaivocab)...
 echo ========================================================
-call npx wrangler pages deploy dist --project-name=wutaivocab
+call npx wrangler pages deploy dist --project-name=wutaivocab --branch=main --commit-dirty=true
 
 echo.
 echo ========================================================
