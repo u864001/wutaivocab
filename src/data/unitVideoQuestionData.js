@@ -60,53 +60,53 @@ export const UNIT_VIDEO_LIBRARY = [
   },
   {
     id: 'demo_hwg_daily',
-    title: '情境英語生活會話：Daily Conversation for Kids',
-    book: 4,
+    title: 'Here We Go 第 1 冊：Hello! How Are You?',
+    book: 2,
     unit: 'Unit 2',
-    description: '兒童常用生活英語：打招呼、問候心情、學校日常與禮貌用語（山豬影城 & 聽說館放映）。',
-    youtubeId: 'OH7dusC7P2U',
-    totalDuration: 180,
+    description: '兒童常用生活英語：打招呼、問候心情與感受（Super Simple Songs 純正美語情境）。',
+    youtubeId: 'tVlcKp3bWH8', // Super Simple Songs: Hello!
+    totalDuration: 85,
     clips: [
       {
         id: 'c2_1',
-        start: 4,
+        start: 3,
         end: 14,
-        promptZh: '看影片主角親切問候，選出劇中的正確會話問句：',
-        targetEn: 'Hello, how are you today?',
-        targetZh: '哈囉，你今天好嗎？',
-        speaker: 'Emma',
+        promptZh: '看影片主角歡樂問候，選出問候朋友的問句：',
+        targetEn: 'Hello, hello, hello, how are you?',
+        targetZh: '哈囉，你好嗎？',
+        speaker: 'Super Simple Puppets',
         choices: [
-          { key: 'A', text: 'Hello, how are you today?', isCorrect: true },
-          { key: 'B', text: 'What time is it now?', isCorrect: false },
-          { key: 'C', text: 'Where is my school bag?', isCorrect: false }
+          { key: 'A', text: 'Hello, hello, hello, how are you?', isCorrect: true },
+          { key: 'B', text: 'Good night, see you tomorrow!', isCorrect: false },
+          { key: 'C', text: 'Where are my crayons?', isCorrect: false }
         ]
       },
       {
         id: 'c2_2',
-        start: 15,
+        start: 14,
         end: 25,
-        promptZh: '聆聽這段影片對話，主角熱情回答了什麼？選出正確答句：',
-        targetEn: 'I am doing great, thank you!',
-        targetZh: '我很好，謝謝你！',
-        speaker: 'Alex',
+        promptZh: '主角精神飽滿地回答自己心情如何？選出正確答句：',
+        targetEn: "I'm good! I'm great! I'm wonderful!",
+        targetZh: '我很好！我很棒！我太棒了！',
+        speaker: 'Super Simple Puppets',
         choices: [
-          { key: 'A', text: 'I am doing great, thank you!', isCorrect: true },
-          { key: 'B', text: 'She is eating an apple.', isCorrect: false },
-          { key: 'C', text: 'It is rainy and cold.', isCorrect: false }
+          { key: 'A', text: "I'm good! I'm great! I'm wonderful!", isCorrect: true },
+          { key: 'B', text: "I have five red apples.", isCorrect: false },
+          { key: 'C', text: "No, I can't swim.", isCorrect: false }
         ]
       },
       {
         id: 'c2_3',
-        start: 26,
-        end: 36,
-        promptZh: '主角向朋友禮貌道別時，說了哪一句最標準的祝福語？',
-        targetEn: 'See you later, have a nice day!',
-        targetZh: '待會見，祝你有美好的一天！',
-        speaker: 'Emma',
+        start: 40,
+        end: 53,
+        promptZh: '主角換成疲累與肚子餓時，唱出了哪句心情回答？',
+        targetEn: "I'm tired. I'm hungry. I'm not so good.",
+        targetZh: '我累了。我肚子餓。我不太好。',
+        speaker: 'Super Simple Puppets',
         choices: [
-          { key: 'A', text: 'See you later, have a nice day!', isCorrect: true },
-          { key: 'B', text: 'I don’t want to go.', isCorrect: false },
-          { key: 'C', text: 'They are my best friends.', isCorrect: false }
+          { key: 'A', text: "I'm tired. I'm hungry. I'm not so good.", isCorrect: true },
+          { key: 'B', text: "Yes, I like pizza very much.", isCorrect: false },
+          { key: 'C', text: "She is my English teacher.", isCorrect: false }
         ]
       }
     ]

@@ -19,13 +19,23 @@ export const CinemaTheaterModal = ({ onClose }) => {
     }
   });
 
-  // 進入放映廳時自動暫停背景音樂，離開時自動恢復
+  // 進入放映廳時自動暫停背景音樂，離開時自動恢復；並監聽 iframe 回上頁訊號
   useEffect(() => {
     soundEngine.pauseSceneBgm();
+
+    const handleMessage = (event) => {
+      if (event.data?.type === 'CLOSE_CINEMA') {
+        soundEngine.click();
+        if (onClose) onClose();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+
     return () => {
+      window.removeEventListener('message', handleMessage);
       soundEngine.resumeSceneBgm();
     };
-  }, []);
+  }, [onClose]);
 
   const activeMovie = UNIT_VIDEO_LIBRARY.find(m => m.id === selectedMovieId) || UNIT_VIDEO_LIBRARY[0];
 

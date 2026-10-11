@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mia & Ben Halloween School Day - 全劇 S01～S18 完整電影級微電影放映廳</title>
+  <title>Mia & Ben Halloween School Day - 電影級微電影放映廳</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* 多軸多鏡頭電影級運鏡 (Ken Burns / Dynamic 2.5D Camera Moves) */
@@ -70,198 +70,205 @@
     }
   </style>
 </head>
-<body class="bg-stone-950 text-white min-h-screen flex flex-col items-center justify-center p-2 sm:p-5 select-none font-sans">
-  
-  <div class="w-full max-w-5xl bg-stone-900 border-2 border-amber-500/70 rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto">
-    
-    <!-- 頂部導覽列 -->
-    <div class="px-4 sm:px-6 py-3.5 bg-gradient-to-r from-amber-950 via-stone-900 to-amber-950 border-b border-amber-500/40 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-3">
-        <span class="text-3xl">🎃</span>
-        <div>
-          <h1 class="text-base sm:text-xl font-black text-amber-300 tracking-wide flex items-center gap-2">
-            <span>Mia & Ben Halloween School Day</span>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">全劇 18 幕 3分34秒</span>
-          </h1>
-          <p class="text-xs text-amber-200/70 font-medium">
-            30 張原生高畫質繪本插畫 • 微軟神經配音 (Ana / Steffan / Jenny) • 雙軌外掛字幕 (英 ON / 中 OFF)
-          </p>
-        </div>
-      </div>
+<body class="bg-black text-white w-screen h-screen overflow-hidden flex flex-col justify-between font-sans select-none relative">
+
+  <!-- 頂部精簡浮動列 (左上回上頁 + 劇名 + 狀態徽章) -->
+  <header class="absolute top-0 left-0 right-0 z-30 px-3 sm:px-5 py-2.5 bg-gradient-to-b from-black/85 via-black/40 to-transparent flex items-center justify-between pointer-events-none">
+    <div class="flex items-center gap-2.5 pointer-events-auto">
+      <!-- 回上頁按鈕 -->
+      <button id="btnBack" onclick="handleGoBack()" 
+              class="px-3 py-1.5 rounded-xl bg-stone-900/80 hover:bg-stone-800 text-amber-300 hover:text-white border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer backdrop-blur-md"
+              title="返回上一頁或關閉放映廳">
+        <span>←</span>
+        <span>回上頁</span>
+      </button>
+
       <div class="flex items-center gap-2">
-        <span id="badgeState" class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-400/30">
-          待機中
-        </span>
+        <span class="text-xl">🎃</span>
+        <h1 class="text-xs sm:text-sm font-black text-amber-200 tracking-wide drop-shadow truncate max-w-[200px] sm:max-w-md">
+          Mia & Ben Halloween School Day (全劇 3分34秒)
+        </h1>
       </div>
     </div>
 
-    <!-- 16:9 電影級主放映舞台 -->
-    <div class="relative w-full aspect-video bg-black overflow-hidden flex items-center justify-center group">
+    <div class="flex items-center gap-2 pointer-events-auto">
+      <span id="badgeState" class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-bold border border-amber-400/30 backdrop-blur-md">
+        待機中
+      </span>
+    </div>
+  </header>
+
+  <!-- 16:9 核心微電影自適應舞台 (填滿中央，不捲動) -->
+  <main class="flex-1 w-full h-full relative flex items-center justify-center overflow-hidden bg-black">
+    <div class="relative w-full h-full max-w-[1920px] max-h-full aspect-video flex items-center justify-center overflow-hidden group">
+      
       <!-- 畫面底層（30 張高畫質原畫影格切換 + 多軸鏡頭運鏡） -->
       <img id="stageImg" 
            src="/assets/langlab/halloween/full_frames/S01_A_arrival.png" 
-           alt="Animation Stage" 
-           class="w-full h-full object-cover transition-transform duration-700 ease-out" />
+           alt="Halloween Animation Stage" 
+           class="w-full h-full object-cover sm:object-contain transition-transform duration-700 ease-out" />
 
       <!-- 晨光/教室環境光與暗角效果 -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/25 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none"></div>
 
-      <!-- 畫面左上角鏡頭與場景提示 -->
-      <div class="absolute top-4 left-4 px-3.5 py-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-white/20 text-xs font-mono font-bold text-amber-300 flex items-center gap-2 shadow-lg">
-        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+      <!-- 畫面左上角鏡頭場景標籤 -->
+      <div class="absolute top-12 sm:top-14 left-3 sm:left-5 px-3 py-1 rounded-xl bg-black/70 backdrop-blur-md border border-white/20 text-[11px] font-mono font-bold text-amber-300 flex items-center gap-1.5 shadow-lg pointer-events-none">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
         <span id="sceneIndicator">S01: 校園清晨 (推近鏡頭)</span>
       </div>
 
-      <!-- 畫面右上角章節段落標籤 -->
-      <div id="sectionBadge" class="absolute top-4 right-4 px-3 py-1 rounded-xl bg-black/70 backdrop-blur-md border border-amber-500/30 text-xs font-bold text-amber-200 shadow-lg">
-        章節 1 / 4：相遇與問候
-      </div>
-
-      <!-- 系統動態外掛字幕區 (不烙印、可隨時切換、支援純聽力模式) -->
-      <div id="subtitleBox" class="absolute bottom-6 left-1/2 -translate-x-1/2 w-11/12 max-w-2xl text-center pointer-events-none opacity-0 transition-opacity duration-300">
-        <div class="inline-block px-6 py-2.5 rounded-2xl bg-black/85 backdrop-blur-md border border-amber-400/50 shadow-2xl">
-          <p id="subEn" class="text-base sm:text-2xl font-black text-white font-mono tracking-wide drop-shadow"></p>
-          <p id="subZh" class="text-xs sm:text-base font-bold text-amber-300 mt-1 drop-shadow hidden"></p>
+      <!-- 系統動態外掛字幕區 (不烙印、可獨立開關、支援純聽力模式) -->
+      <div id="subtitleBox" class="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 w-11/12 max-w-2xl text-center pointer-events-none opacity-0 transition-opacity duration-300 z-10">
+        <div class="inline-block px-5 py-2 sm:px-6 sm:py-2.5 rounded-2xl bg-black/85 backdrop-blur-md border border-amber-400/50 shadow-2xl">
+          <p id="subEn" class="text-sm sm:text-xl font-black text-white font-mono tracking-wide drop-shadow"></p>
+          <p id="subZh" class="text-[11px] sm:text-xs font-bold text-amber-300 mt-0.5 drop-shadow hidden"></p>
         </div>
       </div>
 
       <!-- 說話者動態標記 (Speaker Tag) -->
-      <div id="speakerTag" class="absolute bottom-6 left-6 px-3.5 py-1.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/20 text-xs font-black text-amber-200 opacity-0 transition-opacity duration-300 shadow-lg">
+      <div id="speakerTag" class="absolute bottom-4 sm:bottom-6 left-3 sm:left-5 px-3 py-1 rounded-xl bg-black/80 backdrop-blur-md border border-white/20 text-[11px] font-black text-amber-200 opacity-0 transition-opacity duration-300 shadow-lg pointer-events-none z-10">
         <span id="speakerName">MIA</span>
       </div>
     </div>
+  </main>
 
+  <!-- 底部精簡控制列 (高僅 ~54px，極簡清爽，單一畫面不超頁) -->
+  <footer class="w-full bg-stone-950/95 border-t border-amber-500/40 px-3 sm:px-5 py-2.5 z-20 flex flex-col gap-1.5 shrink-0">
+    
     <!-- 互動進度條 (支援點擊跳轉任意秒數) -->
-    <div class="w-full bg-stone-800 h-2.5 cursor-pointer relative overflow-hidden group" id="progressBarContainer" title="點擊跳轉時間">
+    <div class="w-full bg-stone-800 h-1.5 hover:h-2.5 transition-all rounded-full cursor-pointer relative overflow-hidden group" id="progressBarContainer" title="點擊跳轉播放時間">
       <div id="progressBar" class="h-full bg-gradient-to-r from-amber-500 via-rose-500 to-amber-400 w-0 transition-all duration-100"></div>
     </div>
 
-    <!-- 控制面板主區 -->
-    <div class="p-3.5 sm:p-5 bg-stone-900/95 flex flex-col gap-3">
+    <!-- 控制按鈕列 -->
+    <div class="flex items-center justify-between gap-2 pt-0.5">
       
-      <!-- 主播放控制列與字幕切換 -->
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-2">
-          <button id="btnPlayAll" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black text-sm flex items-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer">
-            <span id="playIcon">▶</span>
-            <span id="playLabel">播放 S01～S18 全劇微電影 (3分34秒)</span>
-          </button>
-          <button id="btnStop" class="px-4 py-2.5 rounded-2xl bg-stone-800 hover:bg-stone-750 text-white font-bold text-sm active:scale-95 transition-all cursor-pointer border border-stone-700">
-            ⏹ 重置
-          </button>
-          <span id="timeDisplay" class="text-xs sm:text-sm font-mono font-bold text-amber-300 ml-1">00:00 / 03:34</span>
-        </div>
+      <!-- 左側：播放/暫停 + 停止 + 時間 -->
+      <div class="flex items-center gap-2">
+        <button id="btnPlayAll" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer">
+          <span id="playIcon">▶</span>
+          <span id="playLabel">播放全劇</span>
+        </button>
+        
+        <button id="btnStop" class="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-slate-200 hover:text-white font-bold text-xs active:scale-95 transition-all cursor-pointer border border-stone-700">
+          ⏹ 停止
+        </button>
 
-        <!-- 獨立雙字幕開關 (英ON/中OFF) + 聽力模式快捷鈕 + BGM -->
-        <div class="flex flex-wrap items-center gap-2.5 bg-stone-950/80 px-3.5 py-2 rounded-2xl border border-stone-800 text-xs font-bold">
-          <label class="text-amber-300 flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="chkEn" checked class="rounded accent-amber-500 cursor-pointer">
-            <span>🔤 英文字幕 (預設開啟)</span>
-          </label>
-          <div class="w-px h-4 bg-stone-700"></div>
-          <label class="text-stone-300 flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="chkZh" class="rounded accent-amber-500 cursor-pointer">
-            <span>🇹🇼 中文字幕 (預設關閉)</span>
-          </label>
-          <div class="w-px h-4 bg-stone-700"></div>
-          <button id="btnListeningMode" class="px-2.5 py-1 rounded-xl bg-purple-950/60 hover:bg-purple-900 border border-purple-500/50 text-purple-200 active:scale-95 transition-all cursor-pointer">
-            🎧 聽力特訓 (全關)
-          </button>
-          <div class="w-px h-4 bg-stone-700"></div>
-          <label class="text-stone-300 flex items-center gap-1.5 cursor-pointer">
-            <input type="checkbox" id="chkBgm" checked class="rounded accent-amber-500 cursor-pointer">
-            <span>🎵 智慧閃避配樂</span>
-          </label>
-        </div>
+        <span id="timeDisplay" class="text-xs font-mono font-bold text-amber-300 ml-1">00:00 / 03:34</span>
       </div>
 
-      <!-- 場景快速跳轉選單 (18 幕快速跳選) -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
-        <span class="text-xs font-bold text-amber-400 whitespace-nowrap">📍 分幕跳選：</span>
-        <select id="sceneSelect" class="bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-xs font-bold text-amber-200 focus:outline-none focus:border-amber-400 cursor-pointer max-w-xs sm:max-w-md">
-          <option value="0">S01: 清晨校園 (00:00)</option>
-          <option value="4">S02: 早安問候 (00:04)</option>
-          <option value="12">S03: 認識彼此 (00:12)</option>
-          <option value="28">S04: 走廊同行 (00:28)</option>
-          <option value="38">S05: 詢問年齡 (00:38)</option>
-          <option value="51">S06: 門口排隊 (00:51)</option>
-          <option value="60">S07: 海報任務 (01:00)</option>
-          <option value="72">S08: 鉛筆與橡皮擦 (01:12)</option>
-          <option value="86">S09: 書與原子筆 (01:26)</option>
-          <option value="97">S10: 藍色尺與遞尺 (01:37)</option>
-          <option value="111">S11: 綠筆與紙盒伏筆 (01:51)</option>
-          <option value="124">S12: 尋找黑色筆 (02:04)</option>
-          <option value="138">S13: 紅筆與黃筆 (02:18)</option>
-          <option value="150">S14: 盒內找到黑筆 (02:30)</option>
-          <option value="164">S15: 欣賞海報完成 (02:44)</option>
-          <option value="177">S16: 數蝙蝠貼紙 1~10 (02:57)</option>
-          <option value="190">S17: 換上女巫與吸血鬼道具 (03:10)</option>
-          <option value="200">S18: 班級萬聖節討糖慶祝 (03:20)</option>
-        </select>
-        <button id="btnJumpScene" class="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-bold text-amber-300 border border-stone-600 active:scale-95 cursor-pointer whitespace-nowrap">
-          跳轉播放
+      <!-- 右側：英文字幕開關 (預設開啟) + 展開進階功能選單 -->
+      <div class="flex items-center gap-2.5">
+        <!-- 英文字幕獨立開關 (預設 ON) -->
+        <label class="text-xs font-bold text-amber-300 flex items-center gap-1.5 bg-stone-900/90 px-3 py-1.5 rounded-xl border border-stone-800 cursor-pointer hover:border-amber-500/50 transition-all">
+          <input type="checkbox" id="chkEn" checked class="rounded accent-amber-500 cursor-pointer">
+          <span>🔤 英文字幕</span>
+        </label>
+
+        <!-- 展開進階功能按鈕 -->
+        <button id="btnToggleDrawer" class="px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 hover:border-amber-400 text-stone-300 hover:text-amber-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-sm">
+          <span>⚙️</span>
+          <span>進階功能</span>
+          <span id="drawerArrow">▴</span>
         </button>
       </div>
 
-      <!-- 四大核心單元與發音試聽快捷區 -->
-      <div class="p-3 rounded-2xl bg-stone-950/80 border border-amber-900/40 flex flex-col gap-2">
-        <div class="flex items-center justify-between text-xs">
-          <span class="font-bold text-amber-400 flex items-center gap-1.5">
-            <span>🎙️</span>
-            <span>教學句型點播試聽（Mia 9歲美語女童、Ben 10歲美語男童、Ms. Lin 溫柔女教師）：</span>
-          </span>
-          <span id="audioStatusText" class="text-[11px] text-emerald-400 font-bold">全 18 幕 57 句音訊已到位</span>
-        </div>
+    </div>
+  </footer>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 text-xs">
-          <!-- S08 鉛筆 -->
-          <button onclick="playClipDirect('S08_L01_MIA', 'What\'s this?', 'Mia: What\'s this?', '/assets/langlab/halloween/full_frames/S08_A_pencil.png', 'cam-item-focus')" 
-                  class="p-2 rounded-xl bg-stone-800 hover:bg-stone-750 border border-stone-700 hover:border-rose-400 text-left transition-all active:scale-95 cursor-pointer">
-            <div class="text-[11px] text-rose-300 font-bold">Mia (鉛筆)</div>
-            <div class="text-white text-xs font-bold truncate">"What's this?"</div>
-          </button>
-
-          <!-- S08 橡皮擦 -->
-          <button onclick="playClipDirect('S08_L04_MIA', 'It\'s an eraser.', 'Mia: It\'s an eraser.', '/assets/langlab/halloween/full_frames/S08_B_eraser.png', 'cam-item-focus')"
-                  class="p-2 rounded-xl bg-stone-800 hover:bg-stone-750 border border-stone-700 hover:border-rose-400 text-left transition-all active:scale-95 cursor-pointer">
-            <div class="text-[11px] text-rose-300 font-bold">Mia (橡皮擦)</div>
-            <div class="text-white text-xs font-bold truncate">"It's an eraser."</div>
-          </button>
-
-          <!-- S10 尺與顏色 -->
-          <button onclick="playClipDirect('S10_L04_BEN', 'It\'s blue.', 'Ben: It\'s blue.', '/assets/langlab/halloween/full_frames/S10_B_ruler_handoff.png', 'cam-handoff')"
-                  class="p-2 rounded-xl bg-blue-950/50 hover:bg-blue-900 border border-blue-500/50 text-left transition-all active:scale-95 cursor-pointer">
-            <div class="text-[11px] text-cyan-300 font-bold">Ben (藍色)</div>
-            <div class="text-white text-xs font-bold truncate">"It's blue."</div>
-          </button>
-
-          <!-- S11 綠筆 -->
-          <button onclick="playClipDirect('S11_L04_BEN', 'It\'s green.', 'Ben: It\'s green.', '/assets/langlab/halloween/full_frames/S11_A_green_marker.png', 'cam-item-focus')"
-                  class="p-2 rounded-xl bg-blue-950/50 hover:bg-blue-900 border border-blue-500/50 text-left transition-all active:scale-95 cursor-pointer">
-            <div class="text-[11px] text-cyan-300 font-bold">Ben (綠色)</div>
-            <div class="text-white text-xs font-bold truncate">"It's green."</div>
-          </button>
-
-          <!-- S16 數貼紙 Mia 1~5 -->
-          <button onclick="playClipDirect('S16_L01_MIA', 'One, two, three, four, five.', 'Mia: 1 to 5', '/assets/langlab/halloween/full_frames/S16_B_count_five_v2.png', 'cam-count')"
-                  class="p-2 rounded-xl bg-stone-800 hover:bg-stone-750 border border-stone-700 hover:border-rose-400 text-left transition-all active:scale-95 cursor-pointer">
-            <div class="text-[11px] text-rose-300 font-bold">Mia (數 1~5)</div>
-            <div class="text-white text-xs font-bold truncate">"One, two, 3, 4, 5"</div>
-          </button>
-
-          <!-- S16 數貼紙 Ben 6~10 -->
-          <button onclick="playClipDirect('S16_L02_BEN', 'Six, seven, eight, nine, ten!', 'Ben: 6 to 10', '/assets/langlab/halloween/full_frames/S16_C_count_ten.png', 'cam-count')"
-                  class="p-2 rounded-xl bg-blue-950/50 hover:bg-blue-900 border border-blue-500/50 text-left transition-all active:scale-95 cursor-pointer">
-            <div class="text-[11px] text-cyan-300 font-bold">Ben (數 6~10)</div>
-            <div class="text-white text-xs font-bold truncate">"Six, 7, 8, 9, 10!"</div>
-          </button>
-        </div>
+  <!-- 彈性收合式進階功能抽屜 (預設隱藏收起，點擊展開) -->
+  <div id="advancedDrawer" class="absolute bottom-14 left-3 right-3 sm:left-auto sm:right-5 sm:w-[480px] bg-stone-900/95 border-2 border-amber-500/70 rounded-2xl shadow-2xl p-3.5 backdrop-blur-md z-40 flex flex-col gap-3 transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-none">
+    <div class="flex items-center justify-between border-b border-amber-500/30 pb-2">
+      <div class="flex items-center gap-1.5 text-xs font-black text-amber-300">
+        <span>⚙️</span>
+        <span>進階播放與教學設定</span>
       </div>
+      <button id="btnCloseDrawer" class="text-xs text-stone-400 hover:text-white px-2 py-0.5 rounded-lg bg-stone-800 cursor-pointer">
+        ✕ 收合
+      </button>
+    </div>
 
+    <!-- 字幕與音樂控制組 -->
+    <div class="flex flex-wrap items-center gap-2 text-xs">
+      <!-- 中文字幕開關 (預設 OFF) -->
+      <label class="text-stone-300 flex items-center gap-1.5 bg-stone-950/80 px-2.5 py-1 rounded-xl border border-stone-800 cursor-pointer">
+        <input type="checkbox" id="chkZh" class="rounded accent-amber-500 cursor-pointer">
+        <span>🇹🇼 中文字幕 (預設關閉)</span>
+      </label>
+
+      <!-- 聽力特訓模式快捷鈕 -->
+      <button id="btnListeningMode" class="px-2.5 py-1 rounded-xl bg-purple-950/60 hover:bg-purple-900 border border-purple-500/50 text-purple-200 font-bold active:scale-95 transition-all cursor-pointer">
+        🎧 聽力特訓 (全關)
+      </button>
+
+      <!-- 智慧閃避配樂開關 -->
+      <label class="text-stone-300 flex items-center gap-1.5 bg-stone-950/80 px-2.5 py-1 rounded-xl border border-stone-800 cursor-pointer">
+        <input type="checkbox" id="chkBgm" checked class="rounded accent-amber-500 cursor-pointer">
+        <span>🎵 智慧閃避配樂</span>
+      </label>
+    </div>
+
+    <!-- 18 幕分段跳選下拉選單 -->
+    <div class="flex items-center gap-2 text-xs">
+      <span class="text-amber-400 font-bold whitespace-nowrap">📍 分幕跳選：</span>
+      <select id="sceneSelect" class="flex-1 bg-stone-800 border border-stone-700 rounded-xl px-2.5 py-1 text-xs font-bold text-amber-200 focus:outline-none focus:border-amber-400 cursor-pointer">
+        <option value="0">S01: 清晨校園 (00:00)</option>
+        <option value="4">S02: 早安問候 (00:04)</option>
+        <option value="12">S03: 認識彼此 (00:12)</option>
+        <option value="28">S04: 走廊同行 (00:28)</option>
+        <option value="38">S05: 詢問年齡 (00:38)</option>
+        <option value="51">S06: 門口排隊 (00:51)</option>
+        <option value="60">S07: 海報任務 (01:00)</option>
+        <option value="72">S08: 鉛筆與橡皮擦 (01:12)</option>
+        <option value="86">S09: 書與原子筆 (01:26)</option>
+        <option value="97">S10: 藍色尺與遞尺 (01:37)</option>
+        <option value="111">S11: 綠筆與紙盒伏筆 (01:51)</option>
+        <option value="124">S12: 尋找黑色筆 (02:04)</option>
+        <option value="138">S13: 紅筆與黃筆 (02:18)</option>
+        <option value="150">S14: 盒內找到黑筆 (02:30)</option>
+        <option value="164">S15: 欣賞海報完成 (02:44)</option>
+        <option value="177">S16: 數蝙蝠貼紙 1~10 (02:57)</option>
+        <option value="190">S17: 換上女巫與吸血鬼道具 (03:10)</option>
+        <option value="200">S18: 班級萬聖節討糖慶祝 (03:20)</option>
+      </select>
+      <button id="btnJumpScene" class="px-2.5 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold border border-amber-400/40 active:scale-95 cursor-pointer whitespace-nowrap">
+        跳轉
+      </button>
+    </div>
+
+    <!-- 句型試聽快捷按鈕 -->
+    <div class="flex flex-col gap-1 text-[11px]">
+      <span class="text-amber-400 font-bold">🎙️ 重點句型快速試聽：</span>
+      <div class="grid grid-cols-3 gap-1.5">
+        <button onclick="playClipDirect('S08_L01_MIA', 'What\'s this?', 'Mia: What\'s this?', '/assets/langlab/halloween/full_frames/S08_A_pencil.png', 'cam-item-focus')"
+                class="p-1.5 rounded-lg bg-stone-800 hover:bg-stone-750 text-left border border-stone-700 truncate cursor-pointer text-rose-300">
+          Mia (鉛筆)
+        </button>
+        <button onclick="playClipDirect('S10_L04_BEN', 'It\'s blue.', 'Ben: It\'s blue.', '/assets/langlab/halloween/full_frames/S10_B_ruler_handoff.png', 'cam-handoff')"
+                class="p-1.5 rounded-lg bg-stone-800 hover:bg-stone-750 text-left border border-stone-700 truncate cursor-pointer text-cyan-300">
+          Ben (藍色尺)
+        </button>
+        <button onclick="playClipDirect('S16_L01_MIA', 'One to five', 'Mia: 1 to 5', '/assets/langlab/halloween/full_frames/S16_B_count_five_v2.png', 'cam-count')"
+                class="p-1.5 rounded-lg bg-stone-800 hover:bg-stone-750 text-left border border-stone-700 truncate cursor-pointer text-amber-300">
+          Mia (數 1~5)
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
+    // 回上頁邏輯：支援 iframe postMessage 與瀏覽器原生跳轉
+    function handleGoBack() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'CLOSE_CINEMA' }, '*');
+      }
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '/';
+      }
+    }
+
     // 背景音樂
     const bgmAudio = new Audio('/audio/bgm/school.mp3');
     bgmAudio.loop = true;
@@ -350,101 +357,101 @@
     // S01~S18 完整電影級時間軸
     const TIMELINE = [
       // === 第一單元：相遇、走廊同行與年齡 (S01 ~ S05) ===
-      { start: 0, end: 4, section: '章節 1：相遇與問候', scene: 'S01: 校園清晨 (晨光推近)', img: '/assets/langlab/halloween/full_frames/S01_A_arrival.png', camClass: 'cam-s01', speaker: '', en: '', zh: '', audioKey: null },
-      { start: 4, end: 7.5, section: '章節 1：相遇與問候', scene: 'S02: Mia 早安問候', img: '/assets/langlab/halloween/full_frames/S02_A_mia_wave.png', camClass: 'cam-mia', speaker: 'MIA', en: 'Good morning!', zh: '早安！', audioKey: 'S02_L01_MIA' },
-      { start: 7.5, end: 8.5, section: '章節 1：相遇與問候', scene: 'S02: 眼神交流', img: '/assets/langlab/halloween/full_frames/S02_B_listening.png', camClass: 'cam-both', speaker: '', en: '', zh: '', audioKey: null },
-      { start: 8.5, end: 12, section: '章節 1：相遇與問候', scene: 'S02: Ben 早安回應', img: '/assets/langlab/halloween/full_frames/S02_C_ben_wave.png', camClass: 'cam-ben', speaker: 'BEN', en: 'Good morning!', zh: '早安！', audioKey: 'S02_L02_BEN' },
+      { start: 0, end: 4, scene: 'S01: 校園清晨 (推近鏡頭)', img: '/assets/langlab/halloween/full_frames/S01_A_arrival.png', camClass: 'cam-s01', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 4, end: 7.5, scene: 'S02: Mia 早安問候', img: '/assets/langlab/halloween/full_frames/S02_A_mia_wave.png', camClass: 'cam-mia', speaker: 'MIA', en: 'Good morning!', zh: '早安！', audioKey: 'S02_L01_MIA' },
+      { start: 7.5, end: 8.5, scene: 'S02: 眼神交流', img: '/assets/langlab/halloween/full_frames/S02_B_listening.png', camClass: 'cam-both', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 8.5, end: 12, scene: 'S02: Ben 早安回應', img: '/assets/langlab/halloween/full_frames/S02_C_ben_wave.png', camClass: 'cam-ben', speaker: 'BEN', en: 'Good morning!', zh: '早安！', audioKey: 'S02_L02_BEN' },
 
-      { start: 12, end: 13.5, section: '章節 1：相遇與問候', scene: 'S03: 走近校門', img: '/assets/langlab/halloween/full_frames/S02_B_listening.png', camClass: 'cam-both', speaker: '', en: '', zh: '', audioKey: null },
-      { start: 13.5, end: 19.5, section: '章節 1：相遇與問候', scene: 'S03: Mia 自我介紹', img: '/assets/langlab/halloween/full_frames/S03_A_introductions.png', camClass: 'cam-mia', speaker: 'MIA', en: "Hi! My name is Mia. What's your name?", zh: '嗨！我的名字是 Mia。你叫什麼名字？', audioKey: 'S03_L01_MIA' },
-      { start: 19.5, end: 20.5, section: '章節 1：相遇與問候', scene: 'S03: 聆聽反應', img: '/assets/langlab/halloween/full_frames/S03_A_introductions.png', camClass: 'cam-both', speaker: '', en: '', zh: '', audioKey: null },
-      { start: 20.5, end: 24, section: '章節 1：相遇與問候', scene: 'S03: Ben 回答名字', img: '/assets/langlab/halloween/full_frames/S03_A_introductions.png', camClass: 'cam-ben', speaker: 'BEN', en: "I'm Ben.", zh: '我是 Ben。', audioKey: 'S03_L02_BEN' },
-      { start: 24, end: 28, section: '章節 1：相遇與問候', scene: 'S03: 友好致意', img: '/assets/langlab/halloween/full_frames/S03_A_introductions.png', camClass: 'cam-mia', speaker: 'MIA', en: "Hello, Ben!", zh: '你好，Ben！', audioKey: 'S03_L03_MIA' },
+      { start: 12, end: 13.5, scene: 'S03: 走近校門', img: '/assets/langlab/halloween/full_frames/S02_B_listening.png', camClass: 'cam-both', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 13.5, end: 19.5, scene: 'S03: Mia 自我介紹', img: '/assets/langlab/halloween/full_frames/S03_A_introductions.png', camClass: 'cam-mia', speaker: 'MIA', en: "Hi! My name is Mia. What's your name?", zh: '嗨！我的名字是 Mia。你叫什麼名字？', audioKey: 'S03_L01_MIA' },
+      { start: 19.5, end: 20.5, scene: 'S03: 聆聽反應', img: '/assets/langlab/halloween/full_frames/S03_A_introductions.png', camClass: 'cam-both', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 20.5, end: 24, scene: 'S03: Ben 回答名字', img: '/assets/langlab/halloween/full_frames/S03_A_introductions.png', camClass: 'cam-ben', speaker: 'BEN', en: "I'm Ben.", zh: '我是 Ben。', audioKey: 'S03_L02_BEN' },
+      { start: 24, end: 28, scene: 'S03: 友好致意', img: '/assets/langlab/halloween/full_frames/S03_A_introductions.png', camClass: 'cam-mia', speaker: 'MIA', en: "Hello, Ben!", zh: '你好，Ben！', audioKey: 'S03_L03_MIA' },
 
-      { start: 28, end: 29, section: '章節 1：相遇與問候', scene: 'S04: 走向走廊', img: '/assets/langlab/halloween/full_frames/S04_A_corridor_walk.png', camClass: 'cam-walk', speaker: '', en: '', zh: '', audioKey: null },
-      { start: 29, end: 32, section: '章節 1：相遇與問候', scene: 'S04: 關心問候', img: '/assets/langlab/halloween/full_frames/S04_A_corridor_walk.png', camClass: 'cam-walk', speaker: 'MIA', en: 'How are you?', zh: '你今天好嗎？', audioKey: 'S04_L01_MIA' },
-      { start: 32, end: 35.5, section: '章節 1：相遇與問候', scene: 'S04: 回應問候', img: '/assets/langlab/halloween/full_frames/S04_A_corridor_walk.png', camClass: 'cam-walk', speaker: 'BEN', en: "I'm fine. How are you?", zh: '我很好。那你呢？', audioKey: 'S04_L02_BEN' },
-      { start: 35.5, end: 38, section: '章節 1：相遇與問候', scene: 'S04: 友善附和', img: '/assets/langlab/halloween/full_frames/S04_A_corridor_walk.png', camClass: 'cam-walk', speaker: 'MIA', en: "I'm fine, too.", zh: '我也很好。', audioKey: 'S04_L03_MIA' },
+      { start: 28, end: 29, scene: 'S04: 走向走廊', img: '/assets/langlab/halloween/full_frames/S04_A_corridor_walk.png', camClass: 'cam-walk', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 29, end: 32, scene: 'S04: 關心問候', img: '/assets/langlab/halloween/full_frames/S04_A_corridor_walk.png', camClass: 'cam-walk', speaker: 'MIA', en: 'How are you?', zh: '你今天好嗎？', audioKey: 'S04_L01_MIA' },
+      { start: 32, end: 35.5, scene: 'S04: 回應問候', img: '/assets/langlab/halloween/full_frames/S04_A_corridor_walk.png', camClass: 'cam-walk', speaker: 'BEN', en: "I'm fine. How are you?", zh: '我很好。那你呢？', audioKey: 'S04_L02_BEN' },
+      { start: 35.5, end: 38, scene: 'S04: 友善附和', img: '/assets/langlab/halloween/full_frames/S04_A_corridor_walk.png', camClass: 'cam-walk', speaker: 'MIA', en: "I'm fine, too.", zh: '我也很好。', audioKey: 'S04_L03_MIA' },
 
-      { start: 38, end: 39, section: '章節 1：相遇與問候', scene: 'S05: 窗邊駐足', img: '/assets/langlab/halloween/full_frames/S05_A_corridor_age.png', camClass: 'cam-window', speaker: '', en: '', zh: '', audioKey: null },
-      { start: 39, end: 42, section: '章節 1：相遇與問候', scene: 'S05: 詢問年齡', img: '/assets/langlab/halloween/full_frames/S05_A_corridor_age.png', camClass: 'cam-window', speaker: 'BEN', en: 'How old are you?', zh: '你幾歲？', audioKey: 'S05_L01_BEN' },
-      { start: 42, end: 47, section: '章節 1：相遇與問候', scene: 'S05: 回答九歲並反問', img: '/assets/langlab/halloween/full_frames/S05_A_corridor_age.png', camClass: 'cam-window', speaker: 'MIA', en: "I'm nine. How old are you?", zh: '我九歲。你幾歲？', audioKey: 'S05_L02_MIA' },
-      { start: 47, end: 51, section: '章節 1：相遇與問候', scene: 'S05: 回答十歲', img: '/assets/langlab/halloween/full_frames/S05_A_corridor_age.png', camClass: 'cam-window', speaker: 'BEN', en: "I'm ten years old.", zh: '我十歲。', audioKey: 'S05_L03_BEN' },
+      { start: 38, end: 39, scene: 'S05: 窗邊駐足', img: '/assets/langlab/halloween/full_frames/S05_A_corridor_age.png', camClass: 'cam-window', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 39, end: 42, scene: 'S05: 詢問年齡', img: '/assets/langlab/halloween/full_frames/S05_A_corridor_age.png', camClass: 'cam-window', speaker: 'BEN', en: 'How old are you?', zh: '你幾歲？', audioKey: 'S05_L01_BEN' },
+      { start: 42, end: 47, scene: 'S05: 回答九歲並反問', img: '/assets/langlab/halloween/full_frames/S05_A_corridor_age.png', camClass: 'cam-window', speaker: 'MIA', en: "I'm nine. How old are you?", zh: '我九歲。你幾歲？', audioKey: 'S05_L02_MIA' },
+      { start: 47, end: 51, scene: 'S05: 回答十歲', img: '/assets/langlab/halloween/full_frames/S05_A_corridor_age.png', camClass: 'cam-window', speaker: 'BEN', en: "I'm ten years old.", zh: '我十歲。', audioKey: 'S05_L03_BEN' },
 
-      // === 第二單元：進教室與文具互動 (S06 ~ S11) ===
-      { start: 51, end: 56, section: '章節 2：教室與文具探索', scene: 'S06: 老師引導排隊', img: '/assets/langlab/halloween/full_frames/S06_A_teacher_door.png', camClass: 'cam-door', speaker: 'MS_LIN', en: 'Good morning! Line up, please.', zh: '早安！請排好隊。', audioKey: 'S06_L01_MS_LIN' },
-      { start: 56, end: 60, section: '章節 2：教室與文具探索', scene: 'S06: 招呼好友進門', img: '/assets/langlab/halloween/full_frames/S06_A_teacher_door.png', camClass: 'cam-door', speaker: 'MIA', en: 'Come on, Ben.', zh: '來吧，Ben。', audioKey: 'S06_L02_MIA' },
+      // === 第二單元：進教室與文具探索 (S06 ~ S11) ===
+      { start: 51, end: 56, scene: 'S06: 老師引導排隊', img: '/assets/langlab/halloween/full_frames/S06_A_teacher_door.png', camClass: 'cam-door', speaker: 'MS_LIN', en: 'Good morning! Line up, please.', zh: '早安！請排好隊。', audioKey: 'S06_L01_MS_LIN' },
+      { start: 56, end: 60, scene: 'S06: 招呼好友進門', img: '/assets/langlab/halloween/full_frames/S06_A_teacher_door.png', camClass: 'cam-door', speaker: 'MIA', en: 'Come on, Ben.', zh: '來吧，Ben。', audioKey: 'S06_L02_MIA' },
 
-      { start: 60, end: 63.5, section: '章節 2：教室與文具探索', scene: 'S07: 發現南瓜海報', img: '/assets/langlab/halloween/full_frames/S07_A_poster_task.png', camClass: 'cam-poster', speaker: 'MIA', en: 'Look! A pumpkin!', zh: '看！一個大南瓜！', audioKey: 'S07_L01_MIA' },
-      { start: 63.5, end: 67, section: '章節 2：教室與文具探索', scene: 'S07: 讚嘆海報', img: '/assets/langlab/halloween/full_frames/S07_A_poster_task.png', camClass: 'cam-poster', speaker: 'BEN', en: 'Wow! Cool!', zh: '哇！太酷了！', audioKey: 'S07_L02_BEN' },
-      { start: 67, end: 72, section: '章節 2：教室與文具探索', scene: 'S07: 發布任務', img: '/assets/langlab/halloween/full_frames/S07_A_poster_task.png', camClass: 'cam-poster', speaker: 'MS_LIN', en: "Let's make a Halloween poster.", zh: '我們來製作萬聖節海報吧。', audioKey: 'S07_L03_MS_LIN' },
+      { start: 60, end: 63.5, scene: 'S07: 發現南瓜海報', img: '/assets/langlab/halloween/full_frames/S07_A_poster_task.png', camClass: 'cam-poster', speaker: 'MIA', en: 'Look! A pumpkin!', zh: '看！一個大南瓜！', audioKey: 'S07_L01_MIA' },
+      { start: 63.5, end: 67, scene: 'S07: 讚嘆海報', img: '/assets/langlab/halloween/full_frames/S07_A_poster_task.png', camClass: 'cam-poster', speaker: 'BEN', en: 'Wow! Cool!', zh: '哇！太酷了！', audioKey: 'S07_L02_BEN' },
+      { start: 67, end: 72, scene: 'S07: 發布任務', img: '/assets/langlab/halloween/full_frames/S07_A_poster_task.png', camClass: 'cam-poster', speaker: 'MS_LIN', en: "Let's make a Halloween poster.", zh: '我們來製作萬聖節海報吧。', audioKey: 'S07_L03_MS_LIN' },
 
-      { start: 72, end: 75.5, section: '章節 2：教室與文具探索', scene: 'S08: Mia 拿鉛筆', img: '/assets/langlab/halloween/full_frames/S08_A_pencil.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What's this?", zh: '這是什麼？', audioKey: 'S08_L01_MIA' },
-      { start: 75.5, end: 79, section: '章節 2：教室與文具探索', scene: 'S08: Ben 回答鉛筆', img: '/assets/langlab/halloween/full_frames/S08_A_pencil.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's a pencil.", zh: '這是一枝鉛筆。', audioKey: 'S08_L02_BEN' },
-      { start: 79, end: 82.5, section: '章節 2：教室與文具探索', scene: 'S08: Ben 指向遠處橡皮擦', img: '/assets/langlab/halloween/full_frames/S08_B_eraser.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "What's that?", zh: '那是什麼？', audioKey: 'S08_L03_BEN' },
-      { start: 82.5, end: 86, section: '章節 2：教室與文具探索', scene: 'S08: Mia 回答橡皮擦', img: '/assets/langlab/halloween/full_frames/S08_B_eraser.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "It's an eraser.", zh: '那是一個橡皮擦。', audioKey: 'S08_L04_MIA' },
+      { start: 72, end: 75.5, scene: 'S08: Mia 拿鉛筆', img: '/assets/langlab/halloween/full_frames/S08_A_pencil.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What's this?", zh: '這是什麼？', audioKey: 'S08_L01_MIA' },
+      { start: 75.5, end: 79, scene: 'S08: Ben 回答鉛筆', img: '/assets/langlab/halloween/full_frames/S08_A_pencil.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's a pencil.", zh: '這是一枝鉛筆。', audioKey: 'S08_L02_BEN' },
+      { start: 79, end: 82.5, scene: 'S08: Ben 指向遠處橡皮擦', img: '/assets/langlab/halloween/full_frames/S08_B_eraser.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "What's that?", zh: '那是什麼？', audioKey: 'S08_L03_BEN' },
+      { start: 82.5, end: 86, scene: 'S08: Mia 回答橡皮擦', img: '/assets/langlab/halloween/full_frames/S08_B_eraser.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "It's an eraser.", zh: '那是一個橡皮擦。', audioKey: 'S08_L04_MIA' },
 
-      { start: 86, end: 89, section: '章節 2：教室與文具探索', scene: 'S09: Mia 指向書本', img: '/assets/langlab/halloween/full_frames/S09_A_book.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What's this?", zh: '這是什麼？', audioKey: 'S09_L01_MIA' },
-      { start: 89, end: 92, section: '章節 2：教室與文具探索', scene: 'S09: Ben 回答書本', img: '/assets/langlab/halloween/full_frames/S09_A_book.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's a book.", zh: '這是一本書。', audioKey: 'S09_L02_BEN' },
-      { start: 92, end: 94.5, section: '章節 2：教室與文具探索', scene: 'S09: Mia 指向原子筆', img: '/assets/langlab/halloween/full_frames/S09_B_pen.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "And this?", zh: '那這個呢？', audioKey: 'S09_L03_MIA' },
-      { start: 94.5, end: 97, section: '章節 2：教室與文具探索', scene: 'S09: Ben 回答原子筆', img: '/assets/langlab/halloween/full_frames/S09_B_pen.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's a pen.", zh: '這是一枝原子筆。', audioKey: 'S09_L04_BEN' },
+      { start: 86, end: 89, scene: 'S09: Mia 指向書本', img: '/assets/langlab/halloween/full_frames/S09_A_book.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What's this?", zh: '這是什麼？', audioKey: 'S09_L01_MIA' },
+      { start: 89, end: 92, scene: 'S09: Ben 回答書本', img: '/assets/langlab/halloween/full_frames/S09_A_book.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's a book.", zh: '這是一本書。', audioKey: 'S09_L02_BEN' },
+      { start: 92, end: 94.5, scene: 'S09: Mia 指向原子筆', img: '/assets/langlab/halloween/full_frames/S09_B_pen.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "And this?", zh: '那這個呢？', audioKey: 'S09_L03_MIA' },
+      { start: 94.5, end: 97, scene: 'S09: Ben 回答原子筆', img: '/assets/langlab/halloween/full_frames/S09_B_pen.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's a pen.", zh: '這是一枝原子筆。', audioKey: 'S09_L04_BEN' },
 
-      { start: 97, end: 100.5, section: '章節 2：教室與文具探索', scene: 'S10: Mia 指向桌上的尺', img: '/assets/langlab/halloween/full_frames/S10_A_blue_ruler.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What's that?", zh: '那是什麼？', audioKey: 'S10_L01_MIA' },
-      { start: 100.5, end: 104, section: '章節 2：教室與文具探索', scene: 'S10: Ben 回答是尺', img: '/assets/langlab/halloween/full_frames/S10_A_blue_ruler.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's a ruler.", zh: '那是一把尺。', audioKey: 'S10_L02_BEN' },
-      { start: 104, end: 107.5, section: '章節 2：教室與文具探索', scene: 'S10: Mia 詢問顏色', img: '/assets/langlab/halloween/full_frames/S10_A_blue_ruler.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What color is it?", zh: '它是什麼顏色？', audioKey: 'S10_L03_MIA' },
-      { start: 107.5, end: 111, section: '章節 2：教室與文具探索', scene: 'S10: Ben 遞出藍色尺', img: '/assets/langlab/halloween/full_frames/S10_B_ruler_handoff.png', camClass: 'cam-handoff', speaker: 'BEN', en: "It's blue.", zh: '它是藍色的。', audioKey: 'S10_L04_BEN' },
+      { start: 97, end: 100.5, scene: 'S10: Mia 指向桌上的尺', img: '/assets/langlab/halloween/full_frames/S10_A_blue_ruler.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What's that?", zh: '那是什麼？', audioKey: 'S10_L01_MIA' },
+      { start: 100.5, end: 104, scene: 'S10: Ben 回答是尺', img: '/assets/langlab/halloween/full_frames/S10_A_blue_ruler.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's a ruler.", zh: '那是一把尺。', audioKey: 'S10_L02_BEN' },
+      { start: 104, end: 107.5, scene: 'S10: Mia 詢問顏色', img: '/assets/langlab/halloween/full_frames/S10_A_blue_ruler.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What color is it?", zh: '它是什麼顏色？', audioKey: 'S10_L03_MIA' },
+      { start: 107.5, end: 111, scene: 'S10: Ben 遞出藍色尺', img: '/assets/langlab/halloween/full_frames/S10_B_ruler_handoff.png', camClass: 'cam-handoff', speaker: 'BEN', en: "It's blue.", zh: '它是藍色的。', audioKey: 'S10_L04_BEN' },
 
-      { start: 111, end: 114, section: '章節 2：教室與文具探索', scene: 'S11: Mia 拿彩色筆', img: '/assets/langlab/halloween/full_frames/S11_A_green_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What's this?", zh: '這是什麼？', audioKey: 'S11_L01_MIA' },
-      { start: 114, end: 117, section: '章節 2：教室與文具探索', scene: 'S11: Ben 回答彩色筆', img: '/assets/langlab/halloween/full_frames/S11_A_green_marker.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's a marker.", zh: '這是一枝彩色筆。', audioKey: 'S11_L02_BEN' },
-      { start: 117, end: 120, section: '章節 2：教室與文具探索', scene: 'S11: Mia 詢問綠筆顏色', img: '/assets/langlab/halloween/full_frames/S11_A_green_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What color is it?", zh: '它是什麼顏色？', audioKey: 'S11_L03_MIA' },
-      { start: 120, end: 122.5, section: '章節 2：教室與文具探索', scene: 'S11: Ben 回答綠色', img: '/assets/langlab/halloween/full_frames/S11_A_green_marker.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's green.", zh: '它是綠色的。', audioKey: 'S11_L04_BEN' },
-      { start: 122.5, end: 124, section: '章節 2：教室與文具探索', scene: 'S11: 黑筆滾進紙盒 (伏筆特寫)', img: '/assets/langlab/halloween/full_frames/S11_B_black_marker_in_box.png', camClass: 'cam-item-focus', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 111, end: 114, scene: 'S11: Mia 拿彩色筆', img: '/assets/langlab/halloween/full_frames/S11_A_green_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What's this?", zh: '這是什麼？', audioKey: 'S11_L01_MIA' },
+      { start: 114, end: 117, scene: 'S11: Ben 回答彩色筆', img: '/assets/langlab/halloween/full_frames/S11_A_green_marker.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's a marker.", zh: '這是一枝彩色筆。', audioKey: 'S11_L02_BEN' },
+      { start: 117, end: 120, scene: 'S11: Mia 詢問綠筆顏色', img: '/assets/langlab/halloween/full_frames/S11_A_green_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "What color is it?", zh: '它是什麼顏色？', audioKey: 'S11_L03_MIA' },
+      { start: 120, end: 122.5, scene: 'S11: Ben 回答綠色', img: '/assets/langlab/halloween/full_frames/S11_A_green_marker.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "It's green.", zh: '它是綠色的。', audioKey: 'S11_L04_BEN' },
+      { start: 122.5, end: 124, scene: 'S11: 黑筆滾進紙盒 (伏筆特寫)', img: '/assets/langlab/halloween/full_frames/S11_B_black_marker_in_box.png', camClass: 'cam-item-focus', speaker: '', en: '', zh: '', audioKey: null },
 
       // === 第三單元：尋找黑色筆與互助 (S12 ~ S14) ===
-      { start: 124, end: 128, section: '章節 3：尋找失蹤的黑筆', scene: 'S12: Mia 發現黑筆遺失', img: '/assets/langlab/halloween/full_frames/S12_A_missing_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "Oh, no! My marker!", zh: '糟糕！我的彩色筆！', audioKey: 'S12_L01_MIA' },
-      { start: 128, end: 132, section: '章節 3：尋找失蹤的黑筆', scene: 'S12: Ben 詢問顏色', img: '/assets/langlab/halloween/full_frames/S12_A_missing_marker.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "What color is it?", zh: '它是什麼顏色？', audioKey: 'S12_L02_BEN' },
-      { start: 132, end: 138, section: '章節 3：尋找失蹤的黑筆', scene: 'S12: Mia 回答是黑色', img: '/assets/langlab/halloween/full_frames/S12_A_missing_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "It's black.", zh: '它是黑色的。', audioKey: 'S12_L03_MIA' },
+      { start: 124, end: 128, scene: 'S12: Mia 發現黑筆遺失', img: '/assets/langlab/halloween/full_frames/S12_A_missing_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "Oh, no! My marker!", zh: '糟糕！我的彩色筆！', audioKey: 'S12_L01_MIA' },
+      { start: 128, end: 132, scene: 'S12: Ben 詢問顏色', img: '/assets/langlab/halloween/full_frames/S12_A_missing_marker.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "What color is it?", zh: '它是什麼顏色？', audioKey: 'S12_L02_BEN' },
+      { start: 132, end: 138, scene: 'S12: Mia 回答是黑色', img: '/assets/langlab/halloween/full_frames/S12_A_missing_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "It's black.", zh: '它是黑色的。', audioKey: 'S12_L03_MIA' },
 
-      { start: 138, end: 140.5, section: '章節 3：尋找失蹤的黑筆', scene: 'S13: Ben 遞出紅筆', img: '/assets/langlab/halloween/full_frames/S13_A_red_marker.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "Red?", zh: '紅色的嗎？', audioKey: 'S13_L01_BEN' },
-      { start: 140.5, end: 144, section: '章節 3：尋找失蹤的黑筆', scene: 'S13: Mia 搖頭指明', img: '/assets/langlab/halloween/full_frames/S13_A_red_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "No, that's red.", zh: '不是，那是紅色的。', audioKey: 'S13_L02_MIA' },
-      { start: 144, end: 146.5, section: '章節 3：尋找失蹤的黑筆', scene: 'S13: Ben 遞出黃筆', img: '/assets/langlab/halloween/full_frames/S13_B_yellow_marker.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "Yellow?", zh: '黃色的嗎？', audioKey: 'S13_L03_BEN' },
-      { start: 146.5, end: 150, section: '章節 3：尋找失蹤的黑筆', scene: 'S13: Mia 再次說明', img: '/assets/langlab/halloween/full_frames/S13_B_yellow_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "No, that's yellow. It's black.", zh: '不是，那是黃色的。它是黑色的。', audioKey: 'S13_L04_MIA' },
+      { start: 138, end: 140.5, scene: 'S13: Ben 遞出紅筆', img: '/assets/langlab/halloween/full_frames/S13_A_red_marker.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "Red?", zh: '紅色的嗎？', audioKey: 'S13_L01_BEN' },
+      { start: 140.5, end: 144, scene: 'S13: Mia 搖頭指明', img: '/assets/langlab/halloween/full_frames/S13_A_red_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "No, that's red.", zh: '不是，那是紅色的。', audioKey: 'S13_L02_MIA' },
+      { start: 144, end: 146.5, scene: 'S13: Ben 遞出黃筆', img: '/assets/langlab/halloween/full_frames/S13_B_yellow_marker.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "Yellow?", zh: '黃色的嗎？', audioKey: 'S13_L03_BEN' },
+      { start: 146.5, end: 150, scene: 'S13: Mia 再次說明', img: '/assets/langlab/halloween/full_frames/S13_B_yellow_marker.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "No, that's yellow. It's black.", zh: '不是，那是黃色的。它是黑色的。', audioKey: 'S13_L04_MIA' },
 
-      { start: 150, end: 152.5, section: '章節 3：尋找失蹤的黑筆', scene: 'S14: Ben 指向紙盒', img: '/assets/langlab/halloween/full_frames/S14_A_found_in_box.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "What's that?", zh: '那是什麼？', audioKey: 'S14_L01_BEN' },
-      { start: 152.5, end: 155.5, section: '章節 3：尋找失蹤的黑筆', scene: 'S14: Mia 回答是紙盒', img: '/assets/langlab/halloween/full_frames/S14_A_found_in_box.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "It's a box.", zh: '那是一個紙盒。', audioKey: 'S14_L02_MIA' },
-      { start: 155.5, end: 157.5, section: '章節 3：尋找失蹤的黑筆', scene: 'S14: Ben 驚喜發現', img: '/assets/langlab/halloween/full_frames/S14_A_found_in_box.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "Look!", zh: '你看！', audioKey: 'S14_L03_BEN' },
-      { start: 157.5, end: 161, section: '章節 3：尋找失蹤的黑筆', scene: 'S14: Mia 感謝拿回黑筆', img: '/assets/langlab/halloween/full_frames/S14_B_marker_return.png', camClass: 'cam-handoff', speaker: 'MIA', en: "That's my marker! Thanks!", zh: '那就是我的彩色筆！謝謝你！', audioKey: 'S14_L04_MIA' },
-      { start: 161, end: 164, section: '章節 3：尋找失蹤的黑筆', scene: 'S14: Ben 禮貌回應', img: '/assets/langlab/halloween/full_frames/S14_B_marker_return.png', camClass: 'cam-handoff', speaker: 'BEN', en: "You're welcome.", zh: '不客氣。', audioKey: 'S14_L05_BEN' },
+      { start: 150, end: 152.5, scene: 'S14: Ben 指向紙盒', img: '/assets/langlab/halloween/full_frames/S14_A_found_in_box.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "What's that?", zh: '那是什麼？', audioKey: 'S14_L01_BEN' },
+      { start: 152.5, end: 155.5, scene: 'S14: Mia 回答是紙盒', img: '/assets/langlab/halloween/full_frames/S14_A_found_in_box.png', camClass: 'cam-item-focus', speaker: 'MIA', en: "It's a box.", zh: '那是一個紙盒。', audioKey: 'S14_L02_MIA' },
+      { start: 155.5, end: 157.5, scene: 'S14: Ben 驚喜發現', img: '/assets/langlab/halloween/full_frames/S14_A_found_in_box.png', camClass: 'cam-item-focus', speaker: 'BEN', en: "Look!", zh: '你看！', audioKey: 'S14_L03_BEN' },
+      { start: 157.5, end: 161, scene: 'S14: Mia 感謝拿回黑筆', img: '/assets/langlab/halloween/full_frames/S14_B_marker_return.png', camClass: 'cam-handoff', speaker: 'MIA', en: "That's my marker! Thanks!", zh: '那就是我的彩色筆！謝謝你！', audioKey: 'S14_L04_MIA' },
+      { start: 161, end: 164, scene: 'S14: Ben 禮貌回應', img: '/assets/langlab/halloween/full_frames/S14_B_marker_return.png', camClass: 'cam-handoff', speaker: 'BEN', en: "You're welcome.", zh: '不客氣。', audioKey: 'S14_L05_BEN' },
 
       // === 第四單元：成果創作、數數字與萬聖節慶祝 (S15 ~ S18) ===
-      { start: 164, end: 167, section: '章節 4：海報完成與萬聖狂歡', scene: 'S15: Mia 發現幽靈', img: '/assets/langlab/halloween/full_frames/S15_A_poster_art_v2.png', camClass: 'cam-poster', speaker: 'MIA', en: "A ghost!", zh: '一隻幽靈！', audioKey: 'S15_L01_MIA' },
-      { start: 167, end: 170, section: '章節 4：海報完成與萬聖狂歡', scene: 'S15: Ben 發現蝙蝠', img: '/assets/langlab/halloween/full_frames/S15_A_poster_art_v2.png', camClass: 'cam-poster', speaker: 'BEN', en: "A bat!", zh: '一隻蝙蝠！', audioKey: 'S15_L02_BEN' },
-      { start: 170, end: 174, section: '章節 4：海報完成與萬聖狂歡', scene: 'S15: 老師稱讚蜘蛛', img: '/assets/langlab/halloween/full_frames/S15_A_poster_art_v2.png', camClass: 'cam-poster', speaker: 'MS_LIN', en: "And a spider. Good job!", zh: '還有一隻蜘蛛。做得太棒了！', audioKey: 'S15_L03_MS_LIN' },
-      { start: 174, end: 177, section: '章節 4：海報完成與萬聖狂歡', scene: 'S15: 致謝老師', img: '/assets/langlab/halloween/full_frames/S15_A_poster_art_v2.png', camClass: 'cam-poster', speaker: 'MIA', en: "Thank you!", zh: '謝謝老師！', audioKey: 'S15_L04_MIA' },
+      { start: 164, end: 167, scene: 'S15: Mia 發現幽靈', img: '/assets/langlab/halloween/full_frames/S15_A_poster_art_v2.png', camClass: 'cam-poster', speaker: 'MIA', en: "A ghost!", zh: '一隻幽靈！', audioKey: 'S15_L01_MIA' },
+      { start: 167, end: 170, scene: 'S15: Ben 發現蝙蝠', img: '/assets/langlab/halloween/full_frames/S15_A_poster_art_v2.png', camClass: 'cam-poster', speaker: 'BEN', en: "A bat!", zh: '一隻蝙蝠！', audioKey: 'S15_L02_BEN' },
+      { start: 170, end: 174, scene: 'S15: 老師稱讚蜘蛛', img: '/assets/langlab/halloween/full_frames/S15_A_poster_art_v2.png', camClass: 'cam-poster', speaker: 'MS_LIN', en: "And a spider. Good job!", zh: '還有一隻蜘蛛。做得太棒了！', audioKey: 'S15_L03_MS_LIN' },
+      { start: 174, end: 177, scene: 'S15: 致謝老師', img: '/assets/langlab/halloween/full_frames/S15_A_poster_art_v2.png', camClass: 'cam-poster', speaker: 'MIA', en: "Thank you!", zh: '謝謝老師！', audioKey: 'S15_L04_MIA' },
 
-      { start: 177, end: 178.5, section: '章節 4：海報完成與萬聖狂歡', scene: 'S16: 準備貼紙特寫', img: '/assets/langlab/halloween/full_frames/S16_A_count_zero_v2.png', camClass: 'cam-count', speaker: '', en: '', zh: '', audioKey: null },
-      { start: 178.5, end: 184, section: '章節 4：海報完成與萬聖狂歡', scene: 'S16: Mia 數貼紙 1 到 5', img: '/assets/langlab/halloween/full_frames/S16_B_count_five_v2.png', camClass: 'cam-count', speaker: 'MIA', en: "One, two, three, four, five.", zh: '一、二、三、四、五。', audioKey: 'S16_L01_MIA' },
-      { start: 184, end: 190, section: '章節 4：海報完成與萬聖狂歡', scene: 'S16: Ben 數貼紙 6 到 10', img: '/assets/langlab/halloween/full_frames/S16_C_count_ten.png', camClass: 'cam-count', speaker: 'BEN', en: "Six, seven, eight, nine, ten!", zh: '六、七、八、九、十！', audioKey: 'S16_L02_BEN' },
+      { start: 177, end: 178.5, scene: 'S16: 準備貼紙特寫', img: '/assets/langlab/halloween/full_frames/S16_A_count_zero_v2.png', camClass: 'cam-count', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 178.5, end: 184, scene: 'S16: Mia 數貼紙 1 到 5', img: '/assets/langlab/halloween/full_frames/S16_B_count_five_v2.png', camClass: 'cam-count', speaker: 'MIA', en: "One, two, three, four, five.", zh: '一、二、三、四、五。', audioKey: 'S16_L01_MIA' },
+      { start: 184, end: 190, scene: 'S16: Ben 數貼紙 6 到 10', img: '/assets/langlab/halloween/full_frames/S16_C_count_ten.png', camClass: 'cam-count', speaker: 'BEN', en: "Six, seven, eight, nine, ten!", zh: '六、七、八、九、十！', audioKey: 'S16_L02_BEN' },
 
-      { start: 190, end: 192.5, section: '章節 4：海報完成與萬聖狂歡', scene: 'S17: 挑選萬聖變裝道具', img: '/assets/langlab/halloween/full_frames/S17_A_costume_props.png', camClass: 'cam-item-focus', speaker: '', en: '', zh: '', audioKey: null },
-      { start: 192.5, end: 196, section: '章節 4：海報完成與萬聖狂歡', scene: 'S17: Mia 變身女巫', img: '/assets/langlab/halloween/full_frames/S17_B_costumes_on.png', camClass: 'cam-celebrate', speaker: 'MIA', en: "Look! I'm a witch!", zh: '看！我是女巫！', audioKey: 'S17_L01_MIA' },
-      { start: 196, end: 200, section: '章節 4：海報完成與萬聖狂歡', scene: 'S17: Ben 變身吸血鬼', img: '/assets/langlab/halloween/full_frames/S17_B_costumes_on.png', camClass: 'cam-celebrate', speaker: 'BEN', en: "I'm a vampire!", zh: '我是吸血鬼！', audioKey: 'S17_L02_BEN' },
+      { start: 190, end: 192.5, scene: 'S17: 挑選萬聖變裝道具', img: '/assets/langlab/halloween/full_frames/S17_A_costume_props.png', camClass: 'cam-item-focus', speaker: '', en: '', zh: '', audioKey: null },
+      { start: 192.5, end: 196, scene: 'S17: Mia 變身女巫', img: '/assets/langlab/halloween/full_frames/S17_B_costumes_on.png', camClass: 'cam-celebrate', speaker: 'MIA', en: "Look! I'm a witch!", zh: '看！我是女巫！', audioKey: 'S17_L01_MIA' },
+      { start: 196, end: 200, scene: 'S17: Ben 變身吸血鬼', img: '/assets/langlab/halloween/full_frames/S17_B_costumes_on.png', camClass: 'cam-celebrate', speaker: 'BEN', en: "I'm a vampire!", zh: '我是吸血鬼！', audioKey: 'S17_L02_BEN' },
 
-      { start: 200, end: 203.5, section: '章節 4：海報完成與萬聖狂歡', scene: 'S18: 老師祝賀萬聖節', img: '/assets/langlab/halloween/full_frames/S18_A_treats_ready_v2.png', camClass: 'cam-celebrate', speaker: 'MS_LIN', en: "Happy Halloween!", zh: '萬聖節快樂！', audioKey: 'S18_L01_MS_LIN' },
-      { start: 203.5, end: 206, section: '章節 4：海報完成與萬聖狂歡', scene: 'S18: Mia 祝賀萬聖節', img: '/assets/langlab/halloween/full_frames/S18_B_treats_received.png', camClass: 'cam-celebrate', speaker: 'MIA', en: "Happy Halloween!", zh: '萬聖節快樂！', audioKey: 'S18_L02_MIA' },
-      { start: 206, end: 209, section: '章節 4：海報完成與萬聖狂歡', scene: 'S18: Ben 討糖慶祝', img: '/assets/langlab/halloween/full_frames/S18_B_treats_received.png', camClass: 'cam-celebrate', speaker: 'BEN', en: "Trick or treat!", zh: '不給糖就搗蛋！', audioKey: 'S18_L03_BEN' },
-      { start: 209, end: 211.5, section: '章節 4：海報完成與萬聖狂歡', scene: 'S18: Mia 領糖致謝', img: '/assets/langlab/halloween/full_frames/S18_B_treats_received.png', camClass: 'cam-celebrate', speaker: 'MIA', en: "Thank you!", zh: '謝謝老師！', audioKey: 'S18_L04_MIA' },
-      { start: 211.5, end: 214, section: '章節 4：海報完成與萬聖狂歡', scene: 'S18: 老師溫暖回禮', img: '/assets/langlab/halloween/full_frames/S18_B_treats_received.png', camClass: 'cam-celebrate', speaker: 'MS_LIN', en: "You're welcome.", zh: '不客氣。', audioKey: 'S18_L05_MS_LIN' }
+      { start: 200, end: 203.5, scene: 'S18: 老師祝賀萬聖節', img: '/assets/langlab/halloween/full_frames/S18_A_treats_ready_v2.png', camClass: 'cam-celebrate', speaker: 'MS_LIN', en: "Happy Halloween!", zh: '萬聖節快樂！', audioKey: 'S18_L01_MS_LIN' },
+      { start: 203.5, end: 206, scene: 'S18: Mia 祝賀萬聖節', img: '/assets/langlab/halloween/full_frames/S18_B_treats_received.png', camClass: 'cam-celebrate', speaker: 'MIA', en: "Happy Halloween!", zh: '萬聖節快樂！', audioKey: 'S18_L02_MIA' },
+      { start: 206, end: 209, scene: 'S18: Ben 討糖慶祝', img: '/assets/langlab/halloween/full_frames/S18_B_treats_received.png', camClass: 'cam-celebrate', speaker: 'BEN', en: "Trick or treat!", zh: '不給糖就搗蛋！', audioKey: 'S18_L03_BEN' },
+      { start: 209, end: 211.5, scene: 'S18: Mia 領糖致謝', img: '/assets/langlab/halloween/full_frames/S18_B_treats_received.png', camClass: 'cam-celebrate', speaker: 'MIA', en: "Thank you!", zh: '謝謝老師！', audioKey: 'S18_L04_MIA' },
+      { start: 211.5, end: 214, scene: 'S18: 老師溫暖回禮', img: '/assets/langlab/halloween/full_frames/S18_B_treats_received.png', camClass: 'cam-celebrate', speaker: 'MS_LIN', en: "You're welcome.", zh: '不客氣。', audioKey: 'S18_L05_MS_LIN' }
     ];
 
     let currentPlayingAudio = null;
     let isPlaying = false;
     let currentTime = 0;
     let timerId = null;
+    let isDrawerOpen = false;
 
     const stageImg = document.getElementById('stageImg');
     const sceneIndicator = document.getElementById('sceneIndicator');
-    const sectionBadge = document.getElementById('sectionBadge');
     const subtitleBox = document.getElementById('subtitleBox');
     const subEn = document.getElementById('subEn');
     const subZh = document.getElementById('subZh');
@@ -456,7 +463,6 @@
     const chkEn = document.getElementById('chkEn');
     const chkZh = document.getElementById('chkZh');
     const chkBgm = document.getElementById('chkBgm');
-    const audioStatusText = document.getElementById('audioStatusText');
     const btnPlayAll = document.getElementById('btnPlayAll');
     const playIcon = document.getElementById('playIcon');
     const playLabel = document.getElementById('playLabel');
@@ -464,9 +470,29 @@
     const btnJumpScene = document.getElementById('btnJumpScene');
     const btnListeningMode = document.getElementById('btnListeningMode');
     const progressBarContainer = document.getElementById('progressBarContainer');
+    const advancedDrawer = document.getElementById('advancedDrawer');
+    const btnToggleDrawer = document.getElementById('btnToggleDrawer');
+    const btnCloseDrawer = document.getElementById('btnCloseDrawer');
+    const drawerArrow = document.getElementById('drawerArrow');
+
+    // 抽屜展開/收合開關
+    function toggleDrawer(open) {
+      isDrawerOpen = (open !== undefined) ? open : !isDrawerOpen;
+      if (isDrawerOpen) {
+        advancedDrawer.classList.remove('translate-y-4', 'opacity-0', 'pointer-events-none');
+        advancedDrawer.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        drawerArrow.textContent = '▾';
+      } else {
+        advancedDrawer.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        advancedDrawer.classList.add('translate-y-4', 'opacity-0', 'pointer-events-none');
+        drawerArrow.textContent = '▴';
+      }
+    }
+    btnToggleDrawer.onclick = () => toggleDrawer();
+    btnCloseDrawer.onclick = () => toggleDrawer(false);
 
     function applyCameraClass(cls) {
-      stageImg.className = 'w-full h-full object-cover transition-transform duration-700 ease-out ' + (cls || '');
+      stageImg.className = 'w-full h-full object-cover sm:object-contain transition-transform duration-700 ease-out ' + (cls || '');
     }
 
     function stopAll() {
@@ -482,9 +508,9 @@
       currentTime = 0;
       updateUI(0);
       badgeState.textContent = '待機中';
-      badgeState.className = 'px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-400/30';
+      badgeState.className = 'px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-bold border border-amber-400/30 backdrop-blur-md';
       playIcon.textContent = '▶';
-      playLabel.textContent = '播放 S01～S18 全劇微電影 (3分34秒)';
+      playLabel.textContent = '播放全劇';
       applyCameraClass('');
       subtitleBox.style.opacity = '0';
       speakerTag.style.opacity = '0';
@@ -492,13 +518,12 @@
 
     function playClipDirect(key, fallbackText, label, imgSrc, camClass) {
       stopAll();
-      badgeState.textContent = '播放示範發音';
-      badgeState.className = 'px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-400/30 animate-pulse';
+      badgeState.textContent = '播放單句';
+      badgeState.className = 'px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[11px] font-bold border border-blue-400/30 animate-pulse backdrop-blur-md';
 
       stageImg.src = imgSrc;
       applyCameraClass(camClass);
       sceneIndicator.textContent = label;
-      audioStatusText.textContent = '正在播放：' + key;
 
       const audio = AUDIO_REGISTRY[key];
       if (audio) {
@@ -507,8 +532,7 @@
         audio.play().catch(e => console.warn(e));
         audio.onended = () => {
           badgeState.textContent = '待機中';
-          badgeState.className = 'px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-400/30';
-          audioStatusText.textContent = '發音完成';
+          badgeState.className = 'px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-bold border border-amber-400/30 backdrop-blur-md';
         };
       }
     }
@@ -535,9 +559,9 @@
       currentTime = fromSecond;
       isPlaying = true;
       badgeState.textContent = '放映中 (3m 34s)';
-      badgeState.className = 'px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-400/30 animate-pulse';
+      badgeState.className = 'px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-bold border border-emerald-400/30 animate-pulse backdrop-blur-md';
       playIcon.textContent = '⏸';
-      playLabel.textContent = '暫停微電影';
+      playLabel.textContent = '暫停';
 
       if (chkBgm.checked) {
         bgmAudio.volume = 0.12;
@@ -558,8 +582,7 @@
         if (currentTime >= TOTAL_DURATION) {
           stopAll();
           stageImg.src = '/assets/langlab/halloween/full_frames/S18_B_treats_received.png';
-          sceneIndicator.textContent = 'S01～S18 全劇微電影放映圓滿結束！';
-          audioStatusText.textContent = '全劇放映結束';
+          sceneIndicator.textContent = 'S01～S18 放映圓滿結束！';
           return;
         }
 
@@ -572,7 +595,6 @@
             stageImg.src = clip.img;
             applyCameraClass(clip.camClass);
             sceneIndicator.textContent = clip.scene;
-            sectionBadge.textContent = clip.section;
 
             if (clip.audioKey) {
               const audio = AUDIO_REGISTRY[clip.audioKey];
@@ -590,7 +612,6 @@
                 audio.play().catch(e => console.warn(e));
 
                 audio.onended = () => {
-                  // 對話結束後 BGM 自然恢復至 0.12
                   if (chkBgm.checked) bgmAudio.volume = 0.12;
                 };
               }
@@ -660,7 +681,7 @@
       } else {
         chkEn.checked = true;
         chkZh.checked = false;
-        btnListeningMode.className = 'px-2.5 py-1 rounded-xl bg-purple-950/60 hover:bg-purple-900 border border-purple-500/50 text-purple-200 active:scale-95 transition-all cursor-pointer';
+        btnListeningMode.className = 'px-2.5 py-1 rounded-xl bg-purple-950/60 hover:bg-purple-900 border border-purple-500/50 text-purple-200 font-bold active:scale-95 transition-all cursor-pointer';
         btnListeningMode.textContent = '🎧 聽力特訓 (全關)';
       }
     });
@@ -668,6 +689,7 @@
     // 場景跳轉
     btnJumpScene.addEventListener('click', () => {
       const targetSec = parseFloat(sceneSelect.value);
+      toggleDrawer(false);
       startPlayback(targetSec);
     });
 

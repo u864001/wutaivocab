@@ -32,6 +32,9 @@ export const LanguageLabHub = ({ onBack }) => {
   const [selectedUnitTitle, setSelectedUnitTitle] = useState('Unit 1 What’s Your Name?');
   const [isBookshelfOpen, setIsBookshelfOpen] = useState(false);
 
+  // 畫面狀態：'welcome' (進入打招呼 Small Talk 大廳) | 'quiz' (測驗實施台)
+  const [viewState, setViewState] = useState('welcome');
+
   // 模式切換：'listening' (聽力實驗台) | 'speaking' (口說錄音台) | 'video' (影片選句台)
   const [activeMode, setActiveMode] = useState('listening');
 
@@ -50,6 +53,16 @@ export const LanguageLabHub = ({ onBack }) => {
       soundEngine.stopSceneBgm();
     };
   }, []);
+
+  // 進入視聽教室時播放導師 Small Talk 打招呼
+  useEffect(() => {
+    if (viewState === 'welcome') {
+      const timer = setTimeout(() => {
+        speakEnglish("Welcome to the Language Lab! What would you like to practice today?");
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [viewState]);
 
   const handleToggleBgm = () => {
     const active = soundEngine.toggleSceneBgm('school');
@@ -121,9 +134,9 @@ export const LanguageLabHub = ({ onBack }) => {
 
   const currentQ = questions[currentIndex] || null;
 
-  // 進入題目時自動播放示範語音 (影片模式不播放，避免與影片語音衝突)
+  // 進入題目時自動播放示範語音 (僅在測驗進行中，且非影片模式)
   useEffect(() => {
-    if (currentQ && !isFinished && activeMode !== 'video') {
+    if (viewState === 'quiz' && currentQ && !isFinished && activeMode !== 'video') {
       const textToSpeak = currentQ.audioText || currentQ.targetEn || currentQ.en;
       if (textToSpeak) {
         const timer = setTimeout(() => {
@@ -132,7 +145,7 @@ export const LanguageLabHub = ({ onBack }) => {
         return () => clearTimeout(timer);
       }
     }
-  }, [currentQ, currentIndex, isFinished, activeMode]);
+  }, [viewState, currentQ, currentIndex, isFinished, activeMode]);
 
   // 重新朗讀
   const handleReplay = useCallback(() => {
@@ -355,6 +368,20 @@ export const LanguageLabHub = ({ onBack }) => {
             <span className="text-xs sm:text-base font-black font-heading text-amber-200 drop-shadow">
               🏫 視聽語言教室
             </span>
+            {viewState === 'quiz' && (
+              <button
+                onClick={() => {
+                  soundEngine.click();
+                  stopSpeech();
+                  setViewState('welcome');
+                }}
+                className="px-2 sm:px-2.5 py-1 rounded-xl bg-amber-500/25 hover:bg-amber-500/40 text-amber-200 text-xs font-black border border-amber-400/40 flex items-center gap-1 active:scale-95 transition-all cursor-pointer shadow-sm ml-1"
+                title="返回導師問候大廳選擇其他測驗"
+              >
+                <span>💬</span>
+                <span className="hidden sm:inline">回大廳</span>
+              </button>
+            )}
           </div>
 
           {/* 中：模式膠囊切換 [🎧 聽力台 | 🎙️ 口說台 | 🎬 影片台] */}
@@ -363,9 +390,10 @@ export const LanguageLabHub = ({ onBack }) => {
               onClick={() => {
                 soundEngine.click();
                 setActiveMode('listening');
+                setViewState('quiz');
               }}
               className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 transition-all cursor-pointer ${
-                activeMode === 'listening'
+                activeMode === 'listening' && viewState === 'quiz'
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white'
               }`}
@@ -377,9 +405,10 @@ export const LanguageLabHub = ({ onBack }) => {
               onClick={() => {
                 soundEngine.click();
                 setActiveMode('speaking');
+                setViewState('quiz');
               }}
               className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 transition-all cursor-pointer ${
-                activeMode === 'speaking'
+                activeMode === 'speaking' && viewState === 'quiz'
                   ? 'bg-rose-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white'
               }`}
@@ -391,9 +420,10 @@ export const LanguageLabHub = ({ onBack }) => {
               onClick={() => {
                 soundEngine.click();
                 setActiveMode('video');
+                setViewState('quiz');
               }}
               className={`px-2.5 sm:px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1 transition-all cursor-pointer ${
-                activeMode === 'video'
+                activeMode === 'video' && viewState === 'quiz'
                   ? 'bg-amber-600 text-white shadow-md ring-1 ring-amber-300'
                   : 'text-slate-300 hover:text-white'
               }`}
@@ -469,45 +499,198 @@ export const LanguageLabHub = ({ onBack }) => {
           <div className="hidden md:flex flex-col items-center justify-end shrink-0 z-10 transition-transform duration-500 transform animate-slide-in-left">
             <div className="relative group flex flex-col items-center">
               {/* 人物語言對話氣泡 */}
-              <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-60 p-2 rounded-2xl bg-slate-950/85 border border-amber-400/80 text-white text-xs font-bold shadow-xl text-center backdrop-blur-md z-20">
+              <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-64 p-2 rounded-2xl bg-slate-950/85 border border-amber-400/80 text-white text-xs font-bold shadow-xl text-center backdrop-blur-md z-20">
                 <span className="text-amber-300 font-black">
-                  {activeMode === 'listening' ? '🦉 貓頭鷹導師：' : '🐻 黑熊學伴：'}
+                  {viewState === 'welcome'
+                    ? '🦉 貓頭鷹導師：'
+                    : (activeMode === 'listening' ? '🦉 貓頭鷹導師：' : '🐻 黑熊學伴：')}
                 </span>
                 <p className="text-[11px] text-slate-200 mt-0.5">
-                  {activeMode === 'listening'
-                    ? '戴好耳機，仔細聽發音，選出正確的卡片！'
-                    : '跟著我大聲說出來！點擊麥克風開始錄音！'}
+                  {viewState === 'welcome'
+                    ? 'Welcome! 歡迎來到視聽教室！想進行哪一項英語挑戰？'
+                    : (activeMode === 'listening'
+                        ? '戴好耳機，仔細聽發音，選出正確的卡片！'
+                        : '跟著我大聲說出來！點擊麥克風開始錄音！')}
                 </p>
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent border-t-8 border-t-slate-950/85" />
               </div>
 
               {/* 人物立繪圖像 (去背透光、原畫尺寸、小鎮規範) */}
               <img
-                src={activeMode === 'listening' ? MENTOR_OWL : STUDENT_BEAR}
-                alt={activeMode === 'listening' ? '貓頭鷹導師' : '黑熊學伴'}
+                src={viewState === 'welcome' || activeMode === 'listening' ? MENTOR_OWL : STUDENT_BEAR}
+                alt={viewState === 'welcome' || activeMode === 'listening' ? '貓頭鷹導師' : '黑熊學伴'}
                 className="h-56 sm:h-72 md:h-[460px] lg:h-[500px] max-h-[62vh] object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.7)] select-none transition-transform duration-300 group-hover:scale-102"
               />
 
               {/* 小鎮標準身分立牌膠囊 */}
               <div className="mt-1 px-4 py-1.5 rounded-full bg-slate-950/85 backdrop-blur-md border border-white/30 shadow-xl flex items-center gap-2 pointer-events-auto">
-                <span className="text-xl">{activeMode === 'listening' ? '🦉' : '🐻'}</span>
+                <span className="text-xl">{viewState === 'welcome' || activeMode === 'listening' ? '🦉' : '🐻'}</span>
                 <div className="text-left">
                   <div className="text-xs sm:text-sm font-black text-white font-heading leading-tight">
-                    {activeMode === 'listening' ? '貓頭鷹導師' : '黑熊學伴'}
+                    {viewState === 'welcome' || activeMode === 'listening' ? '貓頭鷹導師' : '黑熊學伴'}
                   </div>
                   <div className="text-[10px] font-bold text-amber-300">
-                    {activeMode === 'listening' ? '視聽語言教室 • 聽力導師' : '視聽語言教室 • 口說學伴'}
+                    {viewState === 'welcome'
+                      ? '視聽語言教室 • 首席導師'
+                      : (activeMode === 'listening' ? '視聽語言教室 • 聽力導師' : '視聽語言教室 • 口說學伴')}
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 右側/中央：測驗題目區 (毛玻璃擬真透明、精巧不佔版面、預設不開中文、三選一) */}
+          {/* 右側/中央：大廳 Small Talk 導覽 or 測驗題目區 */}
           <div className="flex-1 w-full max-w-2xl h-full flex flex-col justify-end py-1 sm:py-2 z-20">
-            
-            {/* 1. 黑板頂部資訊條：冊次、單元、進度、上下題 */}
-            <div className="w-full mb-2 flex items-center justify-between px-3.5 py-1.5 rounded-2xl bg-slate-950/70 backdrop-blur-md border border-amber-500/40 text-white shadow-md">
+            {viewState === 'welcome' ? (
+              /* ── 🦉 導師打招呼 Small Talk & 測驗入口卡片 ── */
+              <div className="w-full my-auto p-4 sm:p-6 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-amber-500/50 shadow-2xl flex flex-col gap-3 sm:gap-4 animate-scaleUp">
+                {/* 歡迎小語 */}
+                <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                  <div className="flex items-center gap-3">
+                    <span className="p-2 sm:p-2.5 rounded-2xl bg-amber-500/20 text-amber-300 text-2xl sm:text-3xl border border-amber-400/30">
+                      🦉
+                    </span>
+                    <div>
+                      <h2 className="text-base sm:text-xl font-black text-amber-200 font-heading">
+                        Welcome to the Language Lab!
+                      </h2>
+                      <p className="text-xs text-slate-300 font-bold mt-0.5">
+                        歡迎來到視聽語言教室！今天想進行哪一項英語挑戰呢？
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => speakEnglish("Welcome to the Language Lab! What would you like to practice today?")}
+                    className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-amber-300 text-xs font-bold border border-white/20 active:scale-95 transition-all cursor-pointer"
+                    title="重新朗讀導師問候語"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* 當前選定冊次顯示與快速更換 */}
+                <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-300">目前學習單元：</span>
+                    <span className="px-2 py-0.5 rounded-md bg-amber-500/30 text-amber-300 font-mono font-black">
+                      B{selectedBook}
+                    </span>
+                    <span className="font-black text-white truncate max-w-[180px] sm:max-w-xs">
+                      {selectedUnitTitle}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      soundEngine.click();
+                      setIsBookshelfOpen(true);
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-[11px] flex items-center gap-1 cursor-pointer transition-all active:scale-95 shadow-sm"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>換單元</span>
+                  </button>
+                </div>
+
+                {/* 4 大挑戰入口卡片 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                  
+                  {/* 1. 聽力探險台 */}
+                  <button
+                    onClick={() => {
+                      soundEngine.click();
+                      setActiveMode('listening');
+                      setViewState('quiz');
+                    }}
+                    className="group p-3.5 rounded-2xl bg-gradient-to-br from-blue-950/70 to-slate-900/80 hover:from-blue-900/80 hover:to-slate-800/90 border-2 border-blue-500/40 hover:border-blue-400 text-left transition-all active:scale-98 cursor-pointer shadow-lg flex items-center gap-3"
+                  >
+                    <div className="w-11 h-11 rounded-2xl bg-blue-600/30 border border-blue-400/40 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
+                      🎧
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-black text-blue-200 font-heading">聽力探險台</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-mono">15 題</span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 font-bold mt-1 leading-snug">
+                        聆聽純正發音，選出正確的課文問答卡片。
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* 2. 口說錄音台 */}
+                  <button
+                    onClick={() => {
+                      soundEngine.click();
+                      setActiveMode('speaking');
+                      setViewState('quiz');
+                    }}
+                    className="group p-3.5 rounded-2xl bg-gradient-to-br from-rose-950/70 to-slate-900/80 hover:from-rose-900/80 hover:to-slate-800/90 border-2 border-rose-500/40 hover:border-rose-400 text-left transition-all active:scale-98 cursor-pointer shadow-lg flex items-center gap-3"
+                  >
+                    <div className="w-11 h-11 rounded-2xl bg-rose-600/30 border border-rose-400/40 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
+                      🎙️
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-black text-rose-200 font-heading">口說錄音台</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono">10 題</span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 font-bold mt-1 leading-snug">
+                        大聲開口念句子，黑熊學伴與 AI 即時評測星級！
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* 3. 影片選句台 */}
+                  <button
+                    onClick={() => {
+                      soundEngine.click();
+                      setActiveMode('video');
+                      setViewState('quiz');
+                    }}
+                    className="group p-3.5 rounded-2xl bg-gradient-to-br from-amber-950/70 to-slate-900/80 hover:from-amber-900/80 hover:to-slate-800/90 border-2 border-amber-500/40 hover:border-amber-400 text-left transition-all active:scale-98 cursor-pointer shadow-lg flex items-center gap-3"
+                  >
+                    <div className="w-11 h-11 rounded-2xl bg-amber-600/30 border border-amber-400/40 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
+                      🎬
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-black text-amber-200 font-heading">影片選句台</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono">微秒選答</span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 font-bold mt-1 leading-snug">
+                        觀賞情境影片片段，按秒數挑戰聽力正確答句！
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* 4. 萬聖節特選微電影 */}
+                  <a
+                    href="/halloween/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group p-3.5 rounded-2xl bg-gradient-to-br from-orange-950/70 to-amber-950/80 hover:from-orange-900/80 hover:to-amber-900/90 border-2 border-orange-500/40 hover:border-orange-400 text-left transition-all active:scale-98 cursor-pointer shadow-lg flex items-center gap-3"
+                  >
+                    <div className="w-11 h-11 rounded-2xl bg-orange-600/30 border border-orange-400/40 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
+                      🎃
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-black text-orange-200 font-heading">萬聖節微電影</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 font-mono">全劇 18 幕</span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 font-bold mt-1 leading-snug">
+                        Mia & Ben Halloween School Day (30 原生原畫 • 雙字幕)
+                      </p>
+                    </div>
+                  </a>
+
+                </div>
+              </div>
+            ) : (
+              /* ── 測驗進行中黑板與互動介面 ── */
+              <>
+                {/* 1. 黑板頂部資訊條：冊次、單元、進度、上下題 */}
+                <div className="w-full mb-2 flex items-center justify-between px-3.5 py-1.5 rounded-2xl bg-slate-950/70 backdrop-blur-md border border-amber-500/40 text-white shadow-md">
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded-md bg-amber-500/30 text-amber-300 font-mono font-black text-xs">
                   B{selectedBook}
@@ -835,7 +1018,9 @@ export const LanguageLabHub = ({ onBack }) => {
                 </div>
               </div>
             ) : null}
-          </div>
+            </>
+          )}
+        </div>
         </div>
       </div>
 
