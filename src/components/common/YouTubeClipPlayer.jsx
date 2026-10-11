@@ -128,13 +128,17 @@ export const YouTubeClipPlayer = ({
           allowFullScreen
         />
 
-        {/* 🎧 聽力特訓遮罩（遮蔽 YouTube 底部字幕區，答題完畢自動揭曉） */}
-        {captionShield && !isAnswered && (
-          <div className="absolute bottom-0 left-0 right-0 h-[22%] bg-gradient-to-t from-black via-black/95 to-transparent flex items-center justify-center pointer-events-none z-10 transition-opacity duration-300">
-            <span className="px-3 py-1 rounded-full bg-purple-950/85 border border-purple-400/50 text-[10px] sm:text-[11px] font-black text-purple-200 shadow-lg flex items-center gap-1.5 backdrop-blur-md">
-              <span>🎧</span>
-              <span>聽力測驗中 • 字幕已遮蔽 (選答後揭曉)</span>
-            </span>
+        {/* 🎧 聽力特訓智能防作弊遮罩（遮蔽 YouTube 底部字幕區，答題完畢平滑淡出揭曉） */}
+        {captionShield && (
+          <div
+            className={`absolute bottom-0 left-0 right-0 h-[22%] bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent flex items-center justify-center pointer-events-none z-10 transition-all duration-500 ease-out ${
+              !isAnswered ? 'opacity-100 backdrop-blur-[2px]' : 'opacity-0 backdrop-blur-0'
+            }`}
+          >
+            <div className="px-3.5 py-1 rounded-full bg-slate-900/90 border border-amber-400/50 text-[10px] sm:text-[11px] font-black text-amber-200 shadow-xl flex items-center gap-2 backdrop-blur-md">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+              <span>🎧 聽力專注特訓中 • 字幕已遮蔽 (選答後自動揭曉)</span>
+            </div>
           </div>
         )}
       </div>

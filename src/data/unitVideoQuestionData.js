@@ -231,6 +231,73 @@ export const UNIT_VIDEO_LIBRARY = [
         ]
       }
     ]
+  },
+  {
+    id: 'halloween_movie_yt',
+    title: '🎬 Mia & Ben Halloween (ChatGPT 動畫短片)',
+    book: 1,
+    unit: 'Halloween Special',
+    description: '老師上傳之 ChatGPT 動畫微電影（片長 66 秒）• YouTube 零伺服器頻寬放映。',
+    youtubeId: 'QS0GDxK81pY',
+    totalDuration: 66,
+    clips: [
+      {
+        id: 'hw_yt_1',
+        start: 2,
+        end: 15,
+        promptZh: '在影片開頭，Mia 和 Ben 互相說了什麼問候？',
+        targetEn: 'Good morning!',
+        targetZh: '早安！',
+        speaker: 'Mia & Ben',
+        choices: [
+          { key: 'A', text: 'Good morning!', isCorrect: true },
+          { key: 'B', text: 'Good night!', isCorrect: false },
+          { key: 'C', text: 'Goodbye!', isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_yt_2',
+        start: 15,
+        end: 28,
+        promptZh: '詢問年齡時，Mia 是如何回答 Ben 的？',
+        targetEn: "I'm nine. How old are you?",
+        targetZh: '我九歲。你幾歲？',
+        speaker: 'Mia',
+        choices: [
+          { key: 'A', text: "I'm seven years old.", isCorrect: false },
+          { key: 'B', text: "I'm nine. How old are you?", isCorrect: true },
+          { key: 'C', text: "I'm fine, thank you.", isCorrect: false }
+        ]
+      },
+      {
+        id: 'hw_yt_3',
+        start: 29,
+        end: 45,
+        promptZh: '影片中在教室找到文具時，說了什麼顏色？',
+        targetEn: "It's blue.",
+        targetZh: '它是藍色的。',
+        speaker: 'Ben',
+        choices: [
+          { key: 'A', text: "It's red.", isCorrect: false },
+          { key: 'B', text: "It's green.", isCorrect: false },
+          { key: 'C', text: "It's blue.", isCorrect: true }
+        ]
+      },
+      {
+        id: 'hw_yt_4',
+        start: 46,
+        end: 63,
+        promptZh: '最後大家數貼紙或南瓜時，數了哪些數字？',
+        targetEn: "Six, seven, eight, nine, ten!",
+        targetZh: '六、七、八、九、十！',
+        speaker: 'Mia & Ben',
+        choices: [
+          { key: 'A', text: "One, two, three, four, five.", isCorrect: false },
+          { key: 'B', text: "Six, seven, eight, nine, ten!", isCorrect: true },
+          { key: 'C', text: "Ten, nine, eight, seven, six.", isCorrect: false }
+        ]
+      }
+    ]
   }
 ];
 
