@@ -8,6 +8,9 @@ export const YouTubeClipPlayer = ({
   endSeconds = 10,
   autoplay = true,
   onClipFinished = null,
+  captionShield = false,
+  isAnswered = false,
+  hideControls = false,
   className = ''
 }) => {
   const [playCount, setPlayCount] = useState(0);
@@ -78,8 +81,8 @@ export const YouTubeClipPlayer = ({
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  // YouTube 官方防追蹤無干擾嵌入網址 (含精確 start 與 end)
-  const embedUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}?start=${startSeconds}&end=${endSeconds}&autoplay=1&rel=0&modestbranding=1&controls=1&enablejsapi=1`;
+  // YouTube 官方防追蹤無干擾嵌入網址 (含精確 start 與 end，強制預設不載入 CC 字幕)
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}?start=${startSeconds}&end=${endSeconds}&autoplay=1&rel=0&modestbranding=1&controls=${hideControls ? 0 : 1}&cc_load_policy=0&iv_load_policy=3&enablejsapi=1`;
 
   return (
     <div className={`relative flex flex-col rounded-2xl overflow-hidden bg-slate-950 border-2 border-amber-500/60 shadow-xl ${className}`}>
@@ -124,6 +127,16 @@ export const YouTubeClipPlayer = ({
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
+
+        {/* 🎧 聽力特訓遮罩（遮蔽 YouTube 底部字幕區，答題完畢自動揭曉） */}
+        {captionShield && !isAnswered && (
+          <div className="absolute bottom-0 left-0 right-0 h-[22%] bg-gradient-to-t from-black via-black/95 to-transparent flex items-center justify-center pointer-events-none z-10 transition-opacity duration-300">
+            <span className="px-3 py-1 rounded-full bg-purple-950/85 border border-purple-400/50 text-[10px] sm:text-[11px] font-black text-purple-200 shadow-lg flex items-center gap-1.5 backdrop-blur-md">
+              <span>🎧</span>
+              <span>聽力測驗中 • 字幕已遮蔽 (選答後揭曉)</span>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* 底部時間進度動態光軌 */}

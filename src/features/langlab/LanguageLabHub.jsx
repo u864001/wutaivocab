@@ -774,6 +774,9 @@ export const LanguageLabHub = ({ onBack }) => {
                           startSeconds={currentQ.start}
                           endSeconds={currentQ.end}
                           autoplay={true}
+                          captionShield={true}
+                          isAnswered={feedback !== null}
+                          hideControls={true}
                         />
                       )}
                     </div>
