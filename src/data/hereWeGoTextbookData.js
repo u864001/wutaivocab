@@ -1557,10 +1557,10 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b2_u4_s28",
             "speaker": "Character",
-            "en": "Cool! It’s a hreat.",
-            "zh": "涼爽的！這是一個威脅。",
-            "fullEn": "Character: Cool! It’s a hreat.",
-            "fullZh": "Character：涼爽的！這是一個威脅。"
+            "en": "Cool! It’s a heart.",
+            "zh": "太棒了！這是一顆愛心。",
+            "fullEn": "Character: Cool! It’s a heart.",
+            "fullZh": "Character：太棒了！這是一顆愛心。"
           },
           {
             "id": "b2_u4_s29",

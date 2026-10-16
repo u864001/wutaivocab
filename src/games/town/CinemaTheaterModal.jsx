@@ -83,12 +83,12 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
         <div className="px-4 py-3 bg-gradient-to-r from-red-950 via-stone-900 to-red-950 border-b-2 border-amber-500/40 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-amber-500/20 text-amber-300 text-xl border border-amber-500/30">
-              🐗
+              🐻🎬
             </span>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base sm:text-lg font-black font-heading text-amber-200">
-                  {viewMode === 'schedule' ? '山豬影城 • 今日放映時刻表' : `山豬影城 • ${activeMovie.hallName || '放映廳'}`}
+                  {viewMode === 'schedule' ? '黑熊巨幕影城 • 今日放映時刻表' : `黑熊巨幕影城 • ${activeMovie.hallName || '放映廳'}`}
                 </h3>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
                   viewMode === 'schedule' ? 'bg-amber-600 text-stone-950' : 'bg-rose-600 text-white animate-pulse'
@@ -98,7 +98,7 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
               </div>
               <p className="text-xs text-amber-300/70 font-bold hidden sm:block">
                 {viewMode === 'schedule'
-                  ? '野豬售票員為您剪票！點選下方放映廳與時段，即可取票入場觀看全片'
+                  ? '黑熊與野豬售票員為您剪票！點選下方放映廳與時段，即可取票入場觀看全片'
                   : `正在放映：${activeMovie.title}（片長約 ${activeMovie.totalDuration} 秒）`}
               </p>
             </div>
@@ -156,10 +156,10 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
             {/* 野豬售票員親切提示與廳別篩選列 */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-stone-900/80 border border-amber-500/30 backdrop-blur-md">
               <div className="flex items-center gap-2 text-xs text-amber-200">
-                <span className="text-xl">🐗</span>
+                <span className="text-xl">🐻</span>
                 <span>
-                  <strong className="text-amber-300 font-heading">野豬售票員：</strong>
-                  「歡迎光臨山豬影城！點擊想看的場次票根，即可剪票入場觀看全片喔！」
+                  <strong className="text-amber-300 font-heading">影城售票員：</strong>
+                  「歡迎光臨黑熊巨幕影城！點擊想看的場次票根，即可剪票入場觀看全片喔！」
                 </span>
               </div>
 

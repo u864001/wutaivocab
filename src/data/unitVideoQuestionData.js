@@ -7,6 +7,137 @@
 export const UNIT_VIDEO_LIBRARY = [
   // ── 🏛️ A 廳：黑熊巨幕微電影特映場 (優先首位，開屏即見) ──
   {
+    id: 'mothers_day_card_yt',
+    title: '💐 A Card for Mom (Book 2 母親節溫馨動畫微電影)',
+    shortTitle: '母親節微電影：A Card for Mom (B2)',
+    book: 2,
+    unit: "Mother's Day Special",
+    hall: 'A',
+    hallName: 'A 廳 (黑熊巨幕廳)',
+    showtime: '15:30',
+    showtimeLabel: '最新特映 15:30',
+    description: '老師最新原創 AI 動畫微電影（片長 138 秒）• 結合 Book 2 課綱句型 (Can you draw/write? & Mother\'s Day) • YouTube 官方串流放映。',
+    youtubeId: '0U2pdw4NC10',
+    thumbnail: 'https://i.ytimg.com/vi/0U2pdw4NC10/hqdefault.jpg',
+    badge: '最新首映 • Book 2',
+    genre: '家庭節慶英語微電影',
+    totalDuration: 138,
+    clips: [
+      {
+        id: 'md_yt_1',
+        start: 53,
+        end: 61,
+        promptZh: 'Nina 發現送給媽媽的卡片不小心弄濕了，她著急地說了哪句話？',
+        targetEn: 'Oh no, the card is wet. What can we do?',
+        targetZh: '糟了，卡片濕掉了。我們該怎麼辦？',
+        speaker: 'Nina',
+        choices: [
+          { text: 'Oh no, the card is wet. What can we do?', isCorrect: true },
+          { text: 'Look! It is a big red dog.', isCorrect: false },
+          { text: 'No, I cannot swim today.', isCorrect: false }
+        ]
+      },
+      {
+        id: 'md_yt_2',
+        start: 61,
+        end: 69,
+        promptZh: 'Leo 詢問 "Ava, can you draw?"（妳會畫畫嗎？），Ava 的回答是：',
+        targetEn: 'Yes, I can. I can draw a flower.',
+        targetZh: '是的，我會。我會畫一朵花。',
+        speaker: 'Ava',
+        choices: [
+          { text: 'Yes, I can. I can draw a flower.', isCorrect: true },
+          { text: "No, I can't. I can jump.", isCorrect: false },
+          { text: 'She is my English teacher.', isCorrect: false }
+        ]
+      },
+      {
+        id: 'md_yt_3',
+        start: 69,
+        end: 77,
+        promptZh: 'Ava 接著詢問 Nina 會不會寫卡片，請問兩人的問答是：',
+        targetEn: 'Nina, can you write? — Yes, I can.',
+        targetZh: 'Nina，妳會寫字嗎？——是的，我會。',
+        speaker: 'Ava & Nina',
+        choices: [
+          { text: 'Nina, can you write? — Yes, I can.', isCorrect: true },
+          { text: 'Can you dance? — No, I cannot.', isCorrect: false },
+          { text: 'Is he a doctor? — Yes, he is.', isCorrect: false }
+        ]
+      },
+      {
+        id: 'md_yt_4',
+        start: 77,
+        end: 83,
+        promptZh: '得知大家都會畫畫與寫字後，主廚哥哥 Leo 開心地提議做什麼？',
+        targetEn: "Great! Let's make a new card.",
+        targetZh: '太棒了！我們來做一張新卡片吧。',
+        speaker: 'Leo',
+        choices: [
+          { text: "Great! Let's make a new card.", isCorrect: true },
+          { text: 'Good afternoon, Grandma!', isCorrect: false },
+          { text: 'It is a small yellow eraser.', isCorrect: false }
+        ]
+      },
+      {
+        id: 'md_yt_5',
+        start: 91,
+        end: 100,
+        promptZh: '姊妹倆合力完成了新卡片，卡片上有什麼圖案且 Ava 說了什麼？',
+        targetEn: 'A flower and a heart. Perfect! The card is ready.',
+        targetZh: '一朵花和一顆愛心。太完美了！卡片準備好了。',
+        speaker: 'Ava',
+        choices: [
+          { text: 'A flower and a heart. Perfect! The card is ready.', isCorrect: true },
+          { text: 'Two cats and three birds on the bed.', isCorrect: false },
+          { text: 'How old are you? I am eight years old.', isCorrect: false }
+        ]
+      },
+      {
+        id: 'md_yt_6',
+        start: 100,
+        end: 111,
+        promptZh: '媽媽走出電梯抵達餐廳 ("Mom is here.")，大家一起對媽媽說了哪句祝福？',
+        targetEn: "Happy Mother's Day!",
+        targetZh: '母親節快樂！',
+        speaker: 'Ava & Nina',
+        choices: [
+          { text: "Happy Mother's Day!", isCorrect: true },
+          { text: 'Trick or treat!', isCorrect: false },
+          { text: 'Who is he? He is my brother.', isCorrect: false }
+        ]
+      },
+      {
+        id: 'md_yt_7',
+        start: 111,
+        end: 119,
+        promptZh: '遞上禮物說 "This is for you, Mom." 後，媽媽說 "Thank you. I love you."，大家接著回答：',
+        targetEn: 'We love you, too.',
+        targetZh: '我們也愛您。',
+        speaker: 'Ava, Nina & Leo',
+        choices: [
+          { text: 'We love you, too.', isCorrect: true },
+          { text: "I don't know. Try again.", isCorrect: false },
+          { text: 'Goodbye! See you tomorrow.', isCorrect: false }
+        ]
+      },
+      {
+        id: 'md_yt_8',
+        start: 119,
+        end: 128,
+        promptZh: '詢問媽媽餓不餓 ("Are you hungry, Mom?") 並聽到 "Yes, I am." 後，主廚 Leo 說了哪句話？',
+        targetEn: "Dinner is ready. Let's eat!",
+        targetZh: '晚餐準備好了。我們開動吧！',
+        speaker: 'Leo',
+        choices: [
+          { text: "Dinner is ready. Let's eat!", isCorrect: true },
+          { text: 'Are you a nurse? No, I am not.', isCorrect: false },
+          { text: 'Look! I can sing and dance.', isCorrect: false }
+        ]
+      }
+    ]
+  },
+  {
     id: 'halloween_movie_yt',
     title: '🎬 Mia & Ben Halloween at School (ChatGPT 動畫短片)',
     shortTitle: '萬聖節動畫短片 (YouTube)',
@@ -507,7 +638,7 @@ export const CINEMA_HALL_SCHEDULES = [
     tag: '微電影旗艦',
     themeColor: 'from-amber-950/90 via-stone-900 to-rose-950/80',
     accentBorder: 'border-amber-500/60',
-    movieIds: ['halloween_movie_yt', 'halloween_movie'],
+    movieIds: ['mothers_day_card_yt', 'halloween_movie_yt', 'halloween_movie'],
     comingSoon: [
       {
         id: 'cs_a_1',

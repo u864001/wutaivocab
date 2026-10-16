@@ -97,7 +97,7 @@ export const LanguageLabHub = ({ onBack }) => {
 
   // 影音專區狀態
   const [videoPlayMode, setVideoPlayMode] = useState('full'); // 'full' (全片觀賞) | 'clips' (微秒挑戰)
-  const [selectedVideoId, setSelectedVideoId] = useState('halloween_movie_yt');
+  const [selectedVideoId, setSelectedVideoId] = useState('mothers_day_card_yt');
 
   const currentQ = questions[currentIndex] || null;
 
@@ -111,15 +111,16 @@ export const LanguageLabHub = ({ onBack }) => {
     }
   }, [viewState]);
 
-  // 切換到新題目時自動播放發音 (若在聽力模式)
+  // 切換到新題目時自動播放發音 (若在聽力模式且非影片剪輯題)
   useEffect(() => {
     if (viewState === 'quiz' && activeMode === 'listening' && currentQ) {
+      if (currentQ.youtubeId || currentQ.isLocalPlayer) return;
       const timer = setTimeout(() => {
         speakEnglish(currentQ.audioText || currentQ.correctEn);
       }, 400);
       return () => clearTimeout(timer);
     }
-  }, [currentIndex, viewState, activeMode]);
+  }, [currentIndex, viewState, activeMode, currentQ]);
 
   // 清除倒數計時器
   const clearAutoNextTimer = useCallback(() => {
@@ -565,14 +566,14 @@ export const LanguageLabHub = ({ onBack }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <h3 className="text-base sm:text-lg font-black text-amber-200 font-heading">
-                        影音播放 (Video Screening Room)
+                        影音放映專區 (Video Screening Room)
                       </h3>
                       <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold">
-                        微電影放映
+                        Book 2 最新首映
                       </span>
                     </div>
                     <p className="text-xs text-slate-300 font-bold mt-0.5 line-clamp-1 sm:line-clamp-none">
-                      萬聖節微電影與課文動畫短片，全片播放與情境對話選答！
+                      《A Card for Mom》Book 2 母親節微電影全片觀賞與 8 道微秒情境聽力選答！
                     </p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-amber-300 group-hover:translate-x-1 transition-transform shrink-0" />
