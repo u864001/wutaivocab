@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Film, Sparkles, Popcorn, Play, ChevronRight, Award, Maximize2, Minimize2, Clock, Calendar, ArrowLeft, Ticket } from 'lucide-react';
+import { X, Film, Sparkles, Popcorn, Play, ChevronRight, Award, Maximize2, Minimize2, Clock, Calendar, ArrowLeft, Ticket, CheckCircle2, RotateCcw } from 'lucide-react';
 import { UNIT_VIDEO_LIBRARY, CINEMA_HALL_SCHEDULES } from '../../data/unitVideoQuestionData';
 import { soundEngine } from '../../services/audio';
 import { useStudent } from '../../context/StudentContext';
+import { YouTubeClipPlayer } from '../../components/common/YouTubeClipPlayer';
+import confetti from 'canvas-confetti';
 
 export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall = 'ALL' }) => {
   const { addQuestPoints, addCoins } = useStudent();
@@ -70,6 +72,54 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
     setViewMode('player');
   };
 
+  // ── 影城原音微秒測驗狀態 ──
+  const [quizIndex, setQuizIndex] = useState(0);
+  const [quizScore, setQuizScore] = useState(0);
+  const [selectedChoiceKey, setSelectedChoiceKey] = useState(null);
+  const [quizFeedback, setQuizFeedback] = useState(null);
+  const [isQuizCompleted, setIsQuizCompleted] = useState(false);
+
+  const handleStartCinemaQuiz = (movieId) => {
+    soundEngine.win();
+    setSelectedMovieId(movieId);
+    setQuizIndex(0);
+    setQuizScore(0);
+    setSelectedChoiceKey(null);
+    setQuizFeedback(null);
+    setIsQuizCompleted(false);
+    setViewMode('quiz');
+  };
+
+  const handleSelectQuizChoice = (choice, key) => {
+    if (quizFeedback !== null) return;
+    setSelectedChoiceKey(key);
+    if (choice.isCorrect) {
+      soundEngine.correct();
+      setQuizFeedback('correct');
+      setQuizScore(s => s + 1);
+    } else {
+      soundEngine.wrong();
+      setQuizFeedback('wrong');
+    }
+  };
+
+  const handleNextQuizQuestion = async () => {
+    const clips = activeMovie.clips || [];
+    if (quizIndex + 1 < clips.length) {
+      soundEngine.click();
+      setQuizIndex(prev => prev + 1);
+      setSelectedChoiceKey(null);
+      setQuizFeedback(null);
+    } else {
+      // 測驗結束
+      soundEngine.win();
+      setIsQuizCompleted(true);
+      try { confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } }); } catch (e) {}
+      if (addCoins) await addCoins(2);
+      if (addQuestPoints) await addQuestPoints(3);
+    }
+  };
+
   const displayedHalls = hallFilter === 'ALL'
     ? CINEMA_HALL_SCHEDULES
     : CINEMA_HALL_SCHEDULES.filter(h => h.hallId === hallFilter);
@@ -88,17 +138,19 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base sm:text-lg font-black font-heading text-amber-200">
-                  {viewMode === 'schedule' ? '黑熊巨幕影城 • 今日放映時刻表' : `黑熊巨幕影城 • ${activeMovie.hallName || '放映廳'}`}
+                  {viewMode === 'schedule' ? '黑熊巨幕影城 • 今日放映時刻表' : viewMode === 'quiz' ? `黑熊巨幕影城 • ${activeMovie.shortTitle} 原音測驗` : `黑熊巨幕影城 • ${activeMovie.hallName || '放映廳'}`}
                 </h3>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                  viewMode === 'schedule' ? 'bg-amber-600 text-stone-950' : 'bg-rose-600 text-white animate-pulse'
+                  viewMode === 'schedule' ? 'bg-amber-600 text-stone-950' : viewMode === 'quiz' ? 'bg-purple-600 text-white' : 'bg-rose-600 text-white animate-pulse'
                 }`}>
-                  {viewMode === 'schedule' ? '場次時刻表' : '放映中'}
+                  {viewMode === 'schedule' ? '場次時刻表' : viewMode === 'quiz' ? '原音測驗中' : '放映中'}
                 </span>
               </div>
               <p className="text-xs text-amber-300/70 font-bold hidden sm:block">
                 {viewMode === 'schedule'
                   ? '黑熊與野豬售票員為您剪票！點選下方放映廳與時段，即可取票入場觀看全片'
+                  : viewMode === 'quiz'
+                  ? `看影片選句子：播放真實動畫微秒片段，仔細聽角色台詞選出正確答案！`
                   : `正在放映：${activeMovie.title}（片長約 ${activeMovie.totalDuration} 秒）`}
               </p>
             </div>
@@ -106,7 +158,7 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
 
           <div className="flex items-center gap-2">
             {/* 放映中隨時切換回時刻表按鈕 */}
-            {viewMode === 'player' && (
+            {(viewMode === 'player' || viewMode === 'quiz') && (
               <button
                 onClick={() => {
                   soundEngine.click();
@@ -116,7 +168,7 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
                 title="返回時刻表挑選其他電影"
               >
                 <Calendar className="w-3.5 h-3.5" />
-                <span>換看其他場次</span>
+                <span>返回時刻表</span>
               </button>
             )}
 
@@ -274,14 +326,23 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
                             </p>
                           </div>
 
-                          <div className="pt-2">
+                          <div className="pt-2 flex items-center gap-2">
                             <button
                               onClick={() => handleSelectMovieAndPlay(movie.id)}
-                              className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-600 hover:from-yellow-400 hover:to-amber-500 text-stone-950 font-black text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-yellow-300"
+                              className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-600 hover:from-yellow-400 hover:to-amber-500 text-stone-950 font-black text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-yellow-300"
                             >
                               <Ticket className="w-4 h-4 text-stone-900" />
-                              <span>🎟️ 剪票入場 (Watch Now)</span>
+                              <span>🎟️ 全片放映</span>
                             </button>
+                            {movie.clips && movie.clips.length > 0 && (
+                              <button
+                                onClick={() => handleStartCinemaQuiz(movie.id)}
+                                className="py-2 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-black text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-1 cursor-pointer border border-rose-300 shrink-0"
+                                title="看影片片段選句子"
+                              >
+                                <span>🎯 原音測驗 ({movie.clips.length}題)</span>
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -325,7 +386,7 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
             })}
 
           </div>
-        ) : (
+        ) : viewMode === 'player' ? (
           /* ── 模式二：影廳主螢幕全片播放 (Theater Player Screen) ── */
           <div className="flex-1 p-3 sm:p-5 flex flex-col items-center justify-center bg-black/80 overflow-y-auto">
             <div
@@ -369,17 +430,176 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
                 <span className="text-xl">🐗</span>
                 <span>
                   <strong className="text-amber-300 font-heading">野豬售票員：</strong>
-                  「這部片涵蓋了完整課文的情境對話！看完後可以去
-                  <strong className="text-rose-400">【視聽語言教室】</strong>
-                  挑戰分段選答句喔！」
+                  「這部片涵蓋了完整課文的情境對話！看完後可以點擊下方挑戰
+                  <strong className="text-rose-400">【看影片選句子】</strong>
+                  微秒聽力測驗喔！」
                 </span>
               </div>
               <span className="font-mono text-amber-400 hidden sm:inline">
                 片長約 {activeMovie.totalDuration} 秒
               </span>
             </div>
+
+            {/* 🎯 播放器下方醒目的微秒測驗按鈕 */}
+            {activeMovie.clips && activeMovie.clips.length > 0 && (
+              <div className="w-full max-w-4xl mt-3 p-3.5 rounded-2xl bg-gradient-to-r from-amber-950/90 via-rose-950/85 to-stone-900 border-2 border-amber-400/80 shadow-2xl flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-2xl animate-bounce">🎬</span>
+                  <div>
+                    <h5 className="text-sm font-black text-amber-200">
+                      看完了？立刻挑戰本片【看影片選句子】微秒原音測驗 ({activeMovie.clips.length} 題)！
+                    </h5>
+                    <p className="text-xs text-slate-300">
+                      播放本片微秒動畫片段，看真實畫面並聽 Ava、Nina 原音選答！
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleStartCinemaQuiz(activeMovie.id)}
+                  className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-yellow-400 via-amber-400 to-yellow-500 hover:from-yellow-300 hover:to-amber-300 text-stone-950 font-black text-xs shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer border border-yellow-200 shrink-0"
+                >
+                  <span>立即挑戰微秒測驗 ➔</span>
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        ) : viewMode === 'quiz' ? (
+          /* ── 模式三：影城微秒原音測驗 (Cinema Micro-Clip Quiz) ── */
+          <div className="flex-1 p-3 sm:p-5 flex flex-col items-center justify-start bg-black/90 overflow-y-auto">
+            {(() => {
+              const clips = activeMovie.clips || [];
+              const currentClip = clips[quizIndex];
+              if (!currentClip) return null;
+
+              if (isQuizCompleted) {
+                return (
+                  <div className="w-full max-w-md p-6 rounded-3xl bg-slate-950/90 border-2 border-amber-400 shadow-2xl text-center flex flex-col items-center my-auto">
+                    <div className="text-5xl animate-bounce mb-3">🏆</div>
+                    <h3 className="text-xl font-black text-amber-200 font-heading">
+                      微電影聽力挑戰完成！
+                    </h3>
+                    <p className="text-xs text-slate-300 mt-1">
+                      {activeMovie.title}
+                    </p>
+                    <div className="my-4 p-3 rounded-2xl bg-slate-900 border border-white/10 w-full flex items-center justify-around">
+                      <div>
+                        <span className="text-xs text-slate-400 block">答對題數</span>
+                        <span className="text-2xl font-black text-emerald-400 font-mono">{quizScore} / {clips.length}</span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-slate-400 block">獲得獎勵</span>
+                        <span className="text-sm font-black text-amber-300">🪙 +2 金幣 • 💎 +3 積分</span>
+                      </div>
+                    </div>
+                    <div className="w-full flex items-center gap-2">
+                      <button
+                        onClick={() => handleStartCinemaQuiz(activeMovie.id)}
+                        className="flex-1 py-2.5 rounded-xl bg-amber-500 text-stone-950 font-black text-xs flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-all shadow"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        <span>再測一次</span>
+                      </button>
+                      <button
+                        onClick={() => setViewMode('schedule')}
+                        className="flex-1 py-2.5 rounded-xl bg-stone-800 text-white font-black text-xs flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-all border border-white/20"
+                      >
+                        <span>返回時刻表</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="w-full max-w-2xl flex flex-col items-center animate-fadeIn">
+                  {/* 頂部進度列 */}
+                  <div className="w-full flex items-center justify-between text-xs text-amber-300 font-black mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                        第 {quizIndex + 1} / {clips.length} 題
+                      </span>
+                      <span className="text-emerald-400">✓ 答對: {quizScore}</span>
+                    </div>
+                    <button
+                      onClick={() => setViewMode('schedule')}
+                      className="px-2.5 py-1 rounded-lg bg-stone-800 text-slate-300 hover:text-white text-[11px] border border-white/10 cursor-pointer"
+                    >
+                      返回時刻表
+                    </button>
+                  </div>
+
+                  {/* 影片微秒播放器 */}
+                  <div className="w-full aspect-video rounded-2xl overflow-hidden border-2 border-amber-400 shadow-xl bg-black mb-3">
+                    <YouTubeClipPlayer
+                      youtubeId={activeMovie.youtubeId}
+                      startSeconds={currentClip.start}
+                      endSeconds={currentClip.end}
+                      autoplay={true}
+                      captionShield={true}
+                      isAnswered={quizFeedback !== null}
+                      hideControls={false}
+                    />
+                  </div>
+
+                  {/* 題目提示語句 */}
+                  <p className="text-sm font-black text-white text-center mb-3">
+                    {currentClip.promptZh}
+                  </p>
+
+                  {/* 選項卡片 */}
+                  <div className="w-full flex flex-col gap-2 mb-3">
+                    {(currentClip.choices || []).map((choice, cIdx) => {
+                      const key = String.fromCharCode(65 + cIdx);
+                      const isSelected = selectedChoiceKey === key;
+                      const isCorrect = choice.isCorrect;
+                      const isAnswered = quizFeedback !== null;
+
+                      const showCorrect = isAnswered && isCorrect;
+                      const showWrong = isAnswered && isSelected && !isCorrect;
+                      const isDimmed = isAnswered && !isCorrect && !isSelected;
+
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => handleSelectQuizChoice(choice, key)}
+                          disabled={isAnswered}
+                          className={`w-full p-3 rounded-xl border-2 text-left transition-all duration-200 flex items-center gap-3 cursor-pointer shadow ${
+                            showCorrect
+                              ? 'bg-emerald-600 text-white border-emerald-300 scale-101 ring-2 ring-emerald-300'
+                              : showWrong
+                              ? 'bg-rose-600 text-white border-rose-300 ring-2 ring-rose-300'
+                              : isDimmed
+                              ? 'bg-stone-900/40 text-slate-500 border-white/5 opacity-40'
+                              : 'bg-stone-900/80 hover:bg-stone-800 text-white border-white/20 hover:border-amber-400/60'
+                          }`}
+                        >
+                          <span className={`w-7 h-7 rounded-lg font-mono font-black text-xs flex items-center justify-center shrink-0 border ${
+                            showCorrect ? 'bg-white text-emerald-700' : showWrong ? 'bg-white text-rose-700' : 'bg-white/10 text-amber-300'
+                          }`}>
+                            {showCorrect ? '✓' : showWrong ? '✗' : key}
+                          </span>
+                          <span className="font-bold text-sm text-white">
+                            {choice.text}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* 下一題按鈕 */}
+                  {quizFeedback !== null && (
+                    <button
+                      onClick={handleNextQuizQuestion}
+                      className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-stone-950 font-black text-sm shadow-xl active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5 border border-amber-200"
+                    >
+                      <span>{quizIndex + 1 < clips.length ? '下一題 ➔ (Next Question)' : '🏆 查看成績結算'}</span>
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+        ) : null}
 
       </div>
     </div>

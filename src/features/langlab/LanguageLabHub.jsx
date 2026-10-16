@@ -154,7 +154,22 @@ export const LanguageLabHub = ({ onBack }) => {
     let qList = [];
     const count = 15;
 
-    if (challengeId === 'alpha_upper') {
+    const vMatch = UNIT_VIDEO_LIBRARY.find(v => v.id === challengeId);
+    if (vMatch) {
+      const clips = vMatch.clips || [];
+      qList = clips.map((clip) => ({
+        ...clip,
+        youtubeId: vMatch.youtubeId,
+        localUrl: vMatch.localUrl,
+        isLocalPlayer: vMatch.isLocalPlayer,
+        videoTitle: vMatch.title,
+        options: (clip.choices || []).map((c, cIdx) => ({
+          key: String.fromCharCode(65 + cIdx),
+          textEn: c.text,
+          isCorrect: c.isCorrect
+        }))
+      }));
+    } else if (challengeId === 'alpha_upper') {
       qList = mode === 'listening' ? getAlphabetListeningQuestions('upper', count) : getAlphabetSpeakingQuestions('upper', count);
     } else if (challengeId === 'alpha_lower') {
       qList = mode === 'listening' ? getAlphabetListeningQuestions('lower', count) : getAlphabetSpeakingQuestions('lower', count);
@@ -566,14 +581,14 @@ export const LanguageLabHub = ({ onBack }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <h3 className="text-base sm:text-lg font-black text-amber-200 font-heading">
-                        影音放映專區 (Video Screening Room)
+                        🎬 影音館 • 原音原片測驗與放映
                       </h3>
-                      <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold">
-                        Book 2 最新首映
+                      <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-mono font-bold animate-pulse">
+                        看影片選句子
                       </span>
                     </div>
                     <p className="text-xs text-slate-300 font-bold mt-0.5 line-clamp-1 sm:line-clamp-none">
-                      《A Card for Mom》Book 2 母親節微電影全片觀賞與 8 道微秒情境聽力選答！
+                      播放 YouTube 原片畫面與角色母語原音剪輯，進行微秒聽力選答特訓！
                     </p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-amber-300 group-hover:translate-x-1 transition-transform shrink-0" />
@@ -592,8 +607,45 @@ export const LanguageLabHub = ({ onBack }) => {
               <div className="w-full p-3.5 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-white/20 text-center mb-4 flex items-center justify-center gap-3">
                 <span className="text-2xl">🦉</span>
                 <span className="text-sm sm:text-base font-black text-amber-200">
-                  {activeMode === 'listening' ? '🎧 聽力測驗' : '🎙️ 口說測驗'}：請選擇年級程度或自選單元，系統將隨機抽 15 題開始挑戰！
+                  {activeMode === 'listening' ? '🎧 聽力測驗' : '🎙️ 口說測驗'}：請選擇年級程度、微電影特訓或自選單元開始挑戰！
                 </span>
+              </div>
+
+              {/* 🌟 推薦焦點：微電影原音原片聽力特訓專區 (看影片選句子) */}
+              <div className="w-full mb-4 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-950/95 via-rose-950/90 to-purple-950/95 border-2 border-amber-400/90 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="flex items-center gap-3.5 sm:gap-4 relative z-10">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center text-3xl shadow-lg border border-amber-300/40 shrink-0">
+                    🎬
+                  </div>
+                  <div className="text-left">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-black tracking-wide uppercase shadow">
+                        ★ 首頁推薦 • 原音原片
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold border border-amber-400/30">
+                        Book 2 母親節
+                      </span>
+                    </div>
+                    <h3 className="text-base sm:text-xl font-black text-white font-heading mt-1">
+                      《A Card for Mom》原音微秒聽力特訓（看影片選句子）
+                    </h3>
+                    <p className="text-xs sm:text-sm font-bold text-amber-200/90 mt-0.5">
+                      🎥 播放 YouTube 真實動畫微秒片段（53s～128s），邊看原片畫面邊聽母語對白選句子！
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full md:w-auto relative z-10 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => startChallenge('listening', 'mothers_day_card_yt', '母親節微電影：A Card for Mom (B2)', '原音選句')}
+                    className="w-full md:w-auto py-3 px-5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-black text-sm shadow-xl active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 border-2 border-amber-200"
+                  >
+                    <span>▶️ 立即開始原音原片測驗 (8題)</span>
+                  </button>
+                </div>
               </div>
 
               {/* 四大年級程度區塊 */}
@@ -793,20 +845,39 @@ export const LanguageLabHub = ({ onBack }) => {
                 {activeMode === 'listening' && (
                   <div className="w-full flex flex-col items-center">
                     
-                    {/* 播放發音大按鈕 */}
-                    <div className="my-2 flex flex-col items-center">
-                      <button
-                        type="button"
-                        onClick={handlePlayCurrentAudio}
-                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-amber-300 ring-4 ring-amber-400/20 group"
-                        title="點擊播放或重聽發音"
-                      >
-                        <Volume2 className="w-10 h-10 sm:w-12 sm:h-12 group-hover:scale-110 transition-transform" />
-                      </button>
-                      <span className="text-xs text-amber-300 font-black mt-2 flex items-center gap-1">
-                        <span>🔊 點擊重聽發音</span>
-                      </span>
-                    </div>
+                    {/* 影片微秒播放器 OR 播放發音大按鈕 */}
+                    {currentQ.youtubeId ? (
+                      <div className="w-full my-2 flex flex-col items-center">
+                        <div className="w-full max-w-lg aspect-video rounded-2xl overflow-hidden border-2 border-amber-400 shadow-xl bg-black">
+                          <YouTubeClipPlayer
+                            youtubeId={currentQ.youtubeId}
+                            startSeconds={currentQ.start || 0}
+                            endSeconds={currentQ.end || 10}
+                            autoplay={true}
+                            captionShield={true}
+                            isAnswered={feedback !== null}
+                            hideControls={false}
+                          />
+                        </div>
+                        <span className="text-xs text-amber-300 font-black mt-2 flex items-center gap-1">
+                          <span>🎬 聽力微秒剪輯 • 仔細聽影片中說了什麼</span>
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="my-2 flex flex-col items-center">
+                        <button
+                          type="button"
+                          onClick={handlePlayCurrentAudio}
+                          className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-amber-300 ring-4 ring-amber-400/20 group"
+                          title="點擊播放或重聽發音"
+                        >
+                          <Volume2 className="w-10 h-10 sm:w-12 sm:h-12 group-hover:scale-110 transition-transform" />
+                        </button>
+                        <span className="text-xs text-amber-300 font-black mt-2 flex items-center gap-1">
+                          <span>🔊 點擊重聽發音</span>
+                        </span>
+                      </div>
+                    )}
 
                     {/* 題目提示語句 */}
                     <p className="text-sm sm:text-base font-black text-white text-center mb-4 mt-1">
@@ -1164,6 +1235,10 @@ export const LanguageLabHub = ({ onBack }) => {
                       submissionBook = '7';
                     } else if (cid === 'grade_jh') {
                       submissionBook = '9';
+                    } else if (cid === 'mothers_day_card_yt') {
+                      submissionBook = '2';
+                    } else if (cid === 'halloween_movie_yt') {
+                      submissionBook = '1';
                     } else if (cid === 'custom_unit') {
                       submissionBook = String(selectedBook || '1');
                     }
