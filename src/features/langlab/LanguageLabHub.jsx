@@ -95,20 +95,29 @@ export const LanguageLabHub = ({ onBack }) => {
   const [speechResult, setSpeechResult] = useState(null); // { stars: 1|2|3, feedbackText: string, matchScore: number }
   const recognitionRef = useRef(null);
 
-  // 影音專區狀態
-  const [videoPlayMode, setVideoPlayMode] = useState('full'); // 'full' (全片觀賞) | 'clips' (微秒挑戰)
+  // 影音專區狀態：分類分頁 ('original': 老師原創微電影 | 'songs': 精選生活美語歌謠)
+  const [videoCategory, setVideoCategory] = useState('original');
   const [selectedVideoId, setSelectedVideoId] = useState('mothers_day_card_yt');
 
   const currentQ = questions[currentIndex] || null;
 
-  // 進入主選單時貓頭鷹語音問候
+  // 進入主選單時貓頭鷹語音問候；離開主選單或切換任何館別/狀態時立即停止語音 (不可在後台持續播放)
   useEffect(() => {
+    let timer = null;
     if (viewState === 'main_menu') {
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         speakEnglish("Welcome to the Language Lab! What would you like to practice today?");
       }, 500);
-      return () => clearTimeout(timer);
     }
+    return () => {
+      if (timer) clearTimeout(timer);
+      stopSpeech();
+    };
+  }, [viewState]);
+
+  // 切換 viewState 時無條件中斷所有背景語音發音
+  useEffect(() => {
+    stopSpeech();
   }, [viewState]);
 
   // 切換到新題目時自動播放發音 (若在聽力模式且非影片剪輯題)
@@ -118,7 +127,10 @@ export const LanguageLabHub = ({ onBack }) => {
       const timer = setTimeout(() => {
         speakEnglish(currentQ.audioText || currentQ.correctEn);
       }, 400);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        stopSpeech();
+      };
     }
   }, [currentIndex, viewState, activeMode, currentQ]);
 
@@ -496,9 +508,32 @@ export const LanguageLabHub = ({ onBack }) => {
                     <span className="text-xs font-mono font-bold text-amber-300">
                       🦉 Mentor Owl 說：
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 font-bold">
-                      Today's Mission
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          stopSpeech();
+                          soundEngine.click();
+                        }}
+                        className="px-2 py-0.5 rounded-full bg-slate-850 hover:bg-slate-700 text-slate-300 hover:text-white border border-white/20 text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                        title="停止貓頭鷹說話"
+                      >
+                        <span>⏹️ 停止說話</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          stopSpeech();
+                          soundEngine.click();
+                          speakEnglish("Welcome to the Language Lab! What would you like to practice today?");
+                        }}
+                        className="px-2 py-0.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/30 text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                        title="重聽貓頭鷹說話"
+                      >
+                        <Volume2 className="w-3 h-3" />
+                        <span>重聽</span>
+                      </button>
+                    </div>
                   </div>
                   <p className="text-sm sm:text-base font-black text-amber-200 leading-snug">
                     "Welcome! What would you like to practice today?"
@@ -512,6 +547,7 @@ export const LanguageLabHub = ({ onBack }) => {
                 <button
                   type="button"
                   onClick={() => {
+                    stopSpeech();
                     soundEngine.click();
                     setActiveMode('listening');
                     setViewState('grade_select');
@@ -541,6 +577,7 @@ export const LanguageLabHub = ({ onBack }) => {
                 <button
                   type="button"
                   onClick={() => {
+                    stopSpeech();
                     soundEngine.click();
                     setActiveMode('speaking');
                     setViewState('grade_select');
@@ -570,6 +607,7 @@ export const LanguageLabHub = ({ onBack }) => {
                 <button
                   type="button"
                   onClick={() => {
+                    stopSpeech();
                     soundEngine.click();
                     setViewState('video_room');
                   }}
@@ -611,42 +649,80 @@ export const LanguageLabHub = ({ onBack }) => {
                 </span>
               </div>
 
-              {/* 🌟 推薦焦點：微電影原音原片聽力特訓專區 (看影片選句子) */}
-              <div className="w-full mb-4 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-950/95 via-rose-950/90 to-purple-950/95 border-2 border-amber-400/90 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+              {/* 🌟 推薦焦點：依模式智能切換（聽力：微電影原音原片聽力特訓 / 口說：微電影角色配音與跟讀挑戰） */}
+              {activeMode === 'listening' ? (
+                <div className="w-full mb-4 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-950/95 via-rose-950/90 to-purple-950/95 border-2 border-amber-400/90 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-                <div className="flex items-center gap-3.5 sm:gap-4 relative z-10">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center text-3xl shadow-lg border border-amber-300/40 shrink-0">
-                    🎬
-                  </div>
-                  <div className="text-left">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-black tracking-wide uppercase shadow">
-                        ★ 首頁推薦 • 原音原片
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold border border-amber-400/30">
-                        Book 2 母親節
-                      </span>
+                  <div className="flex items-center gap-3.5 sm:gap-4 relative z-10">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center text-3xl shadow-lg border border-amber-300/40 shrink-0">
+                      🎬
                     </div>
-                    <h3 className="text-base sm:text-xl font-black text-white font-heading mt-1">
-                      《A Card for Mom》原音微秒聽力特訓（看影片選句子）
-                    </h3>
-                    <p className="text-xs sm:text-sm font-bold text-amber-200/90 mt-0.5">
-                      🎥 播放 YouTube 真實動畫微秒片段（53s～128s），邊看原片畫面邊聽母語對白選句子！
-                    </p>
+                    <div className="text-left">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-black tracking-wide uppercase shadow">
+                          ★ 首頁推薦 • 原音原片聽力
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold border border-amber-400/30">
+                          Book 2 母親節
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-xl font-black text-white font-heading mt-1">
+                        《A Card for Mom》原音微秒聽力特訓（看影片選句子）
+                      </h3>
+                      <p className="text-xs sm:text-sm font-bold text-amber-200/90 mt-0.5">
+                        🎥 播放 YouTube 真實動畫微秒片段（53s～128s），邊看原片畫面邊聽母語對白選句子！
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full md:w-auto relative z-10 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => startChallenge('listening', 'mothers_day_card_yt', '母親節微電影：A Card for Mom (B2)', '原音選句')}
+                      className="w-full md:w-auto py-3 px-5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-black text-sm shadow-xl active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 border-2 border-amber-200"
+                    >
+                      <span>▶️ 立即開始原音原片測驗 (8題)</span>
+                    </button>
                   </div>
                 </div>
+              ) : (
+                <div className="w-full mb-4 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-rose-950/95 via-pink-950/90 to-purple-950/95 border-2 border-rose-400/90 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
 
-                <div className="flex items-center gap-2 w-full md:w-auto relative z-10 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => startChallenge('listening', 'mothers_day_card_yt', '母親節微電影：A Card for Mom (B2)', '原音選句')}
-                    className="w-full md:w-auto py-3 px-5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-black text-sm shadow-xl active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 border-2 border-amber-200"
-                  >
-                    <span>▶️ 立即開始原音原片測驗 (8題)</span>
-                  </button>
+                  <div className="flex items-center gap-3.5 sm:gap-4 relative z-10">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-rose-500 via-pink-500 to-purple-600 text-white flex items-center justify-center text-3xl shadow-lg border border-rose-300/40 shrink-0">
+                      🎙️
+                    </div>
+                    <div className="text-left">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-black tracking-wide uppercase shadow">
+                          ★ 首頁推薦 • 角色配音跟讀
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-mono font-bold border border-rose-400/30">
+                          Book 2 母親節
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-xl font-black text-white font-heading mt-1">
+                        《A Card for Mom》微電影角色配音與跟讀挑戰
+                      </h3>
+                      <p className="text-xs sm:text-sm font-bold text-rose-200/90 mt-0.5">
+                        🎭 化身 Ava、Nina、Leo 說英語！看微電影畫面與台詞字幕，自己念出角色的英文對白，AI 語音辨識即時評分！
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full md:w-auto relative z-10 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => startChallenge('speaking', 'mothers_day_card_yt', '母親節微電影：A Card for Mom (B2)', '角色配音')}
+                      className="w-full md:w-auto py-3 px-5 rounded-2xl bg-gradient-to-r from-rose-400 via-pink-400 to-rose-300 hover:from-rose-300 hover:to-pink-300 text-stone-950 font-black text-sm shadow-xl active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 border-2 border-rose-200"
+                    >
+                      <span>🎙️ 立即開始角色配音挑戰 (8題)</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* 四大年級程度區塊 */}
               <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
@@ -978,36 +1054,96 @@ export const LanguageLabHub = ({ onBack }) => {
                 {activeMode === 'speaking' && (
                   <div className="w-full flex flex-col items-center">
                     
-                    {/* 目標字卡 */}
-                    <div className="w-full p-4 sm:p-6 rounded-2xl bg-stone-900/90 border-2 border-rose-500/40 my-3 text-center flex flex-col items-center">
-                      <p className="text-xs text-rose-300 font-bold mb-2">
-                        {currentQ.promptZh || '請聆聽標準發音，並大聲開口念出：'}
-                      </p>
-                      
-                      <div className="flex items-center justify-center gap-3">
-                        <span className={`font-black text-white font-heading ${
-                          currentQ.isAlphabet ? 'text-4xl sm:text-6xl text-amber-300' : 'text-lg sm:text-2xl'
-                        }`}>
-                          {currentQ.targetEn}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={handlePlayCurrentAudio}
-                          className="p-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-400/30 transition-all cursor-pointer"
-                          title="聽示範發音"
-                        >
-                          <Volume2 className="w-5 h-5" />
-                        </button>
+                    {/* 微電影角色台詞題 vs 一般課文/字母發音題 */}
+                    {currentQ.youtubeId ? (
+                      <div className="w-full flex flex-col items-center">
+                        {/* 角色配音標籤 */}
+                        <div className="w-full flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/40 text-xs font-black flex items-center gap-1.5 shadow">
+                              <span>🎭 角色配音挑戰</span>
+                              <span>•</span>
+                              <span className="text-amber-300 font-bold">請化身為【{currentQ.speaker || '角色'}】</span>
+                            </span>
+                          </div>
+                          <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">
+                            {currentQ.videoTitle || '微電影動畫'}
+                          </span>
+                        </div>
+
+                        {/* 影片微秒畫面播放器 (不遮蔽字幕，可清楚看角色神情與場景) */}
+                        <div className="w-full max-w-lg aspect-video rounded-2xl overflow-hidden border-2 border-rose-400/80 shadow-2xl bg-black my-2">
+                          <YouTubeClipPlayer
+                            youtubeId={currentQ.youtubeId}
+                            startSeconds={currentQ.start || 0}
+                            endSeconds={currentQ.end || 10}
+                            autoplay={true}
+                            captionShield={false}
+                            isAnswered={speechResult !== null}
+                            hideControls={false}
+                          />
+                        </div>
+
+                        {/* 大字幕卡片：顯示該角色台詞 */}
+                        <div className="w-full p-4 sm:p-5 rounded-2xl bg-stone-950/85 border-2 border-amber-400/70 shadow-xl my-2 text-center flex flex-col items-center">
+                          <div className="flex items-center justify-between w-full mb-1.5">
+                            <span className="text-xs font-black text-amber-300 flex items-center gap-1">
+                              <span>💬 請看台詞念出【{currentQ.speaker || '角色'}】的這句話：</span>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={handlePlayCurrentAudio}
+                              className="px-2.5 py-1 rounded-xl bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 text-xs font-bold border border-amber-400/40 flex items-center gap-1 transition-all cursor-pointer active:scale-95"
+                              title="聽示範發音"
+                            >
+                              <Volume2 className="w-3.5 h-3.5" />
+                              <span>聽示範音</span>
+                            </button>
+                          </div>
+
+                          <div className="text-xl sm:text-2xl md:text-3xl font-black text-white font-heading tracking-wide leading-relaxed">
+                            "{currentQ.targetEn}"
+                          </div>
+
+                          {currentQ.targetZh && (
+                            <p className="text-xs sm:text-sm text-slate-300 font-bold mt-1.5">
+                              {currentQ.targetZh}
+                            </p>
+                          )}
+                        </div>
                       </div>
-
-                      {currentQ.targetZh && (
-                        <p className="text-xs text-slate-300 mt-2 font-bold">
-                          {currentQ.targetZh}
+                    ) : (
+                      /* 一般單元字卡 / 字母目標卡片 */
+                      <div className="w-full p-4 sm:p-6 rounded-2xl bg-stone-900/90 border-2 border-rose-500/40 my-3 text-center flex flex-col items-center">
+                        <p className="text-xs text-rose-300 font-bold mb-2">
+                          {currentQ.promptZh || '請聆聽標準發音，並大聲開口念出：'}
                         </p>
-                      )}
-                    </div>
+                        
+                        <div className="flex items-center justify-center gap-3">
+                          <span className={`font-black text-white font-heading ${
+                            currentQ.isAlphabet ? 'text-4xl sm:text-6xl text-amber-300' : 'text-lg sm:text-2xl'
+                          }`}>
+                            {currentQ.targetEn}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={handlePlayCurrentAudio}
+                            className="p-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-400/30 transition-all cursor-pointer active:scale-95"
+                            title="聽示範發音"
+                          >
+                            <Volume2 className="w-5 h-5" />
+                          </button>
+                        </div>
 
-                    {/* 錄音按鈕 */}
+                        {currentQ.targetZh && (
+                          <p className="text-xs text-slate-300 mt-2 font-bold">
+                            {currentQ.targetZh}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* 錄音麥克風大按鈕 */}
                     <div className="my-2 flex flex-col items-center">
                       <button
                         type="button"
@@ -1018,17 +1154,18 @@ export const LanguageLabHub = ({ onBack }) => {
                             ? 'bg-red-600 text-white border-red-300 animate-ping ring-8 ring-red-500/40'
                             : 'bg-gradient-to-br from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white border-rose-300 ring-4 ring-rose-400/20'
                         }`}
+                        title="點擊開始錄音說英語"
                       >
                         {isRecording ? <MicOff className="w-10 h-10" /> : <Mic className="w-10 h-10 sm:w-12 sm:h-12" />}
                       </button>
                       <span className="text-xs text-rose-300 font-black mt-2">
-                        {isRecording ? '🎙️ 正在聆聽中，請大聲念...' : '點擊麥克風開始錄音'}
+                        {isRecording ? '🎙️ 正在聆聽中，請大聲念...' : '點擊麥克風開始錄音評測'}
                       </span>
                     </div>
 
                     {/* 學生辨識文字與評分星級 */}
                     {recordedText && (
-                      <div className="w-full mt-3 p-3.5 rounded-2xl bg-black/60 border border-white/20 text-center">
+                      <div className="w-full mt-3 p-3.5 rounded-2xl bg-black/60 border border-white/20 text-center animate-fadeIn">
                         <span className="text-xs text-slate-400">你念出的是：</span>
                         <p className="text-base sm:text-lg font-black text-amber-200 mt-0.5">
                           "{recordedText}"
@@ -1037,6 +1174,9 @@ export const LanguageLabHub = ({ onBack }) => {
                           <div className="mt-2 flex flex-col items-center">
                             <span className="text-base sm:text-lg font-black text-yellow-300 animate-bounce">
                               {speechResult.feedbackText}
+                            </span>
+                            <span className="text-xs text-slate-300 mt-0.5">
+                              匹配度評分：{speechResult.matchScore}%
                             </span>
                           </div>
                         )}
@@ -1048,7 +1188,7 @@ export const LanguageLabHub = ({ onBack }) => {
                       <button
                         type="button"
                         onClick={handleStartSpeaking}
-                        className="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black text-sm flex items-center justify-center gap-1.5 border border-white/20 transition-all cursor-pointer"
+                        className="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black text-sm flex items-center justify-center gap-1.5 border border-white/20 transition-all cursor-pointer active:scale-95"
                       >
                         <RotateCcw className="w-4 h-4 text-amber-400" />
                         <span>不滿意？重念一次</span>
@@ -1056,9 +1196,9 @@ export const LanguageLabHub = ({ onBack }) => {
                       <button
                         type="button"
                         onClick={handleNextQuestion}
-                        className="flex-1 py-3 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-400 hover:to-pink-400 text-white font-black text-sm flex items-center justify-center gap-1.5 shadow-lg active:scale-95 transition-all cursor-pointer border border-rose-300"
+                        className="flex-1 py-3 rounded-xl bg-gradient-to-r from-rose-500 via-rose-400 to-pink-500 hover:from-rose-400 hover:to-pink-400 text-white font-black text-sm sm:text-base flex items-center justify-center gap-1.5 shadow-xl active:scale-95 transition-all cursor-pointer border border-rose-300"
                       >
-                        <span>{currentIndex + 1 < questions.length ? '下一題 ➔' : '查看結算 🏆'}</span>
+                        <span>{currentIndex + 1 < questions.length ? '下一句 ➔ (Next Line)' : '查看結算 🏆'}</span>
                       </button>
                     </div>
 
@@ -1070,111 +1210,175 @@ export const LanguageLabHub = ({ onBack }) => {
           )}
 
           {/* ════════════════════════════════════════════════════════════════
-              【狀態四：影音播放專區 (video_room)】微電影全片與片段挑戰
+              【狀態四：影音放映廳 (video_room)】全片高清放映與清晰選單
              ════════════════════════════════════════════════════════════════ */}
-          {viewState === 'video_room' && (
-            <div className="w-full max-w-4xl flex flex-col items-center animate-fadeIn my-auto">
-              
-              {/* 頂部選片列 */}
-              <div className="w-full flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-slate-900/90 border border-white/20 mb-3 text-xs">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-amber-300 font-black flex items-center gap-1 mr-1">
-                    <Film className="w-4 h-4 text-amber-400" />
-                    <span>放映片單：</span>
-                  </span>
-                  {UNIT_VIDEO_LIBRARY.map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => {
-                        soundEngine.click();
-                        setSelectedVideoId(v.id);
-                      }}
-                      className={`px-3 py-1.5 rounded-xl font-black transition-all cursor-pointer flex items-center gap-1.5 ${
-                        selectedVideoId === v.id
-                          ? 'bg-amber-500 text-stone-950 shadow-md ring-2 ring-amber-300'
-                          : 'bg-stone-800 text-slate-300 hover:text-white border border-white/10'
-                      }`}
-                    >
-                      <span>{v.shortTitle || v.title}</span>
-                    </button>
-                  ))}
+          {viewState === 'video_room' && (() => {
+            const originalVideos = UNIT_VIDEO_LIBRARY.filter(v => v.id === 'mothers_day_card_yt' || v.id === 'halloween_movie_yt');
+            const songVideos = UNIT_VIDEO_LIBRARY.filter(v => v.id !== 'mothers_day_card_yt' && v.id !== 'halloween_movie_yt' && !v.isLocalPlayer);
+            const currentList = videoCategory === 'original' ? originalVideos : songVideos;
+
+            return (
+              <div className="w-full max-w-4xl flex flex-col items-center animate-fadeIn my-auto">
+                
+                {/* 頂部分類選單分頁 (Tabs) */}
+                <div className="w-full p-2.5 rounded-2xl bg-slate-900/90 border border-white/20 mb-3 flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundEngine.click();
+                          setVideoCategory('original');
+                          if (!originalVideos.some(v => v.id === selectedVideoId)) {
+                            setSelectedVideoId('mothers_day_card_yt');
+                          }
+                        }}
+                        className={`py-2 px-3.5 sm:px-5 rounded-xl font-black text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer ${
+                          videoCategory === 'original'
+                            ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-stone-950 shadow-lg ring-2 ring-amber-300 scale-102'
+                            : 'bg-stone-800 text-slate-300 hover:text-white border border-white/10'
+                        }`}
+                      >
+                        <span>🌟 老師自製原創微電影</span>
+                        <span className="px-1.5 py-0.2 rounded-full bg-black/20 text-[10px] font-mono">
+                          {originalVideos.length} 部
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          soundEngine.click();
+                          setVideoCategory('songs');
+                          if (!songVideos.some(v => v.id === selectedVideoId)) {
+                            setSelectedVideoId('demo_hwg_g3');
+                          }
+                        }}
+                        className={`py-2 px-3.5 sm:px-5 rounded-xl font-black text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer ${
+                          videoCategory === 'songs'
+                            ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-stone-950 shadow-lg ring-2 ring-amber-300 scale-102'
+                            : 'bg-stone-800 text-slate-300 hover:text-white border border-white/10'
+                        }`}
+                      >
+                        <span>🎵 精選主題生活歌謠</span>
+                        <span className="px-1.5 py-0.2 rounded-full bg-black/20 text-[10px] font-mono">
+                          {songVideos.length} 首
+                        </span>
+                      </button>
+                    </div>
+
+                    <span className="text-[11px] text-amber-300 font-bold hidden md:inline">
+                      🎬 點擊下方卡片切換全片放映
+                    </span>
+                  </div>
+
+                  {/* 影片卡片清單 (水平滾動或網格) */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 w-full">
+                    {currentList.map((v) => {
+                      const isSelected = selectedVideoId === v.id;
+                      return (
+                        <div
+                          key={v.id}
+                          onClick={() => {
+                            soundEngine.click();
+                            setSelectedVideoId(v.id);
+                          }}
+                          className={`p-2 rounded-xl transition-all cursor-pointer flex flex-col gap-1.5 border-2 text-left relative overflow-hidden active:scale-98 ${
+                            isSelected
+                              ? 'bg-amber-950/70 border-amber-400 ring-2 ring-amber-400/50 shadow-xl'
+                              : 'bg-stone-900/80 hover:bg-stone-800/90 border-white/15 hover:border-amber-400/50'
+                          }`}
+                        >
+                          {/* 封面縮圖 */}
+                          <div className="w-full aspect-video rounded-lg overflow-hidden relative bg-black">
+                            <img
+                              src={v.thumbnail}
+                              alt={v.title}
+                              className="w-full h-full object-cover"
+                            />
+                            <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-black/75 text-[10px] font-mono text-white font-bold">
+                              {Math.floor((v.totalDuration || 60) / 60)}:{(v.totalDuration || 60) % 60 < 10 ? '0' : ''}{(v.totalDuration || 60) % 60}
+                            </span>
+                            {isSelected && (
+                              <span className="absolute top-1 left-1 px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-black shadow flex items-center gap-1 animate-pulse">
+                                <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                                放映中
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold font-mono shrink-0">
+                                {v.badge}
+                              </span>
+                            </div>
+                            <h4 className="text-xs font-black text-white truncate mt-1">
+                              {v.shortTitle || v.title}
+                            </h4>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* 觀影模式：全片觀賞 vs 片段題目 */}
-                <div className="flex items-center gap-1 bg-black/50 p-1 rounded-xl border border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => setVideoPlayMode('full')}
-                    className={`px-2.5 py-1 rounded-lg font-black text-[11px] transition-all cursor-pointer ${
-                      videoPlayMode === 'full' ? 'bg-amber-500 text-stone-950' : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    🎥 全片觀賞
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setVideoPlayMode('clips');
-                      // 載入該片題目並進作答
-                      const clips = activeVideo.clips || [];
-                      const formatted = clips.map((clip, idx) => ({
-                        ...clip,
-                        youtubeId: activeVideo.youtubeId,
-                        localUrl: activeVideo.localUrl,
-                        isLocalPlayer: activeVideo.isLocalPlayer,
-                        videoTitle: activeVideo.title,
-                        options: (clip.choices || []).map((c, cIdx) => ({
-                          key: String.fromCharCode(65 + cIdx),
-                          textEn: c.text,
-                          isCorrect: c.isCorrect
-                        }))
-                      }));
-                      setQuestions(formatted);
-                      setCurrentIndex(0);
-                      setFeedback(null);
-                      setSelectedChoiceKey(null);
-                      setCurrentChallengeInfo({ id: activeVideo.id, title: activeVideo.shortTitle, badge: '影片選句' });
-                      setActiveMode('listening');
-                      setViewState('quiz');
-                    }}
-                    className={`px-2.5 py-1 rounded-lg font-black text-[11px] transition-all cursor-pointer ${
-                      videoPlayMode === 'clips' ? 'bg-amber-500 text-stone-950' : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    🎯 微秒測驗 ({activeVideo.clips?.length || 0}題)
-                  </button>
-                </div>
-              </div>
-
-              {/* 影片播放主體 (全片播放模式) */}
-              <div className="w-full rounded-3xl overflow-hidden bg-black border-2 border-amber-500/60 shadow-2xl relative aspect-video">
-                {activeVideo.isLocalPlayer ? (
+                {/* 劇院規格全片播放器 (YouTube controls=1，提供完整控制項、調音量、進度條與全螢幕) */}
+                <div className="w-full rounded-3xl overflow-hidden bg-black border-2 border-amber-500/80 shadow-2xl relative aspect-video">
                   <iframe
-                    src={`${activeVideo.localUrl}?start=0&caption=1`}
+                    key={activeVideo.youtubeId}
+                    src={`https://www.youtube-nocookie.com/embed/${activeVideo.youtubeId}?autoplay=1&rel=0&modestbranding=1&controls=1&enablejsapi=1`}
                     title={activeVideo.title}
                     className="w-full h-full border-0"
-                    allow="autoplay; fullscreen"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
-                ) : (
-                  <YouTubeClipPlayer
-                    youtubeId={activeVideo.youtubeId}
-                    startSeconds={0}
-                    endSeconds={activeVideo.totalDuration || 66}
-                    autoplay={true}
-                    captionShield={false}
-                    hideControls={false}
-                  />
-                )}
-              </div>
+                </div>
 
-              <div className="w-full mt-3 p-3 rounded-2xl bg-slate-900/80 border border-white/10 flex items-center justify-between text-xs text-slate-300">
-                <span className="font-bold">{activeVideo.description}</span>
-                <span className="font-mono text-amber-300 font-black">{activeVideo.badge}</span>
+                {/* 影片介紹與測驗快捷入口 */}
+                <div className="w-full mt-3 p-3.5 rounded-2xl bg-slate-900/90 border border-white/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <div className="text-left flex-1 min-w-0">
+                    <h3 className="text-sm font-black text-white font-heading truncate">
+                      {activeVideo.title}
+                    </h3>
+                    <p className="text-slate-300 font-bold mt-0.5 line-clamp-1">
+                      {activeVideo.description}
+                    </p>
+                  </div>
+
+                  {/* 快捷挑戰按鈕 */}
+                  <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        stopSpeech();
+                        soundEngine.click();
+                        startChallenge('listening', activeVideo.id, activeVideo.shortTitle || activeVideo.title, '原音選句');
+                      }}
+                      className="flex-1 sm:flex-none py-2 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer border border-blue-400/50"
+                    >
+                      <Headphones className="w-3.5 h-3.5" />
+                      <span>🎧 挑戰本片微秒選句 ({activeVideo.clips?.length || 0}題)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        stopSpeech();
+                        soundEngine.click();
+                        startChallenge('speaking', activeVideo.id, activeVideo.shortTitle || activeVideo.title, '角色跟讀');
+                      }}
+                      className="flex-1 sm:flex-none py-2 px-3.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer border border-rose-400/50"
+                    >
+                      <Mic className="w-3.5 h-3.5" />
+                      <span>🎙️ 挑戰本片角色跟讀 ({activeVideo.clips?.length || 0}題)</span>
+                    </button>
+                  </div>
+                </div>
+
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* ════════════════════════════════════════════════════════════════
               【狀態五：結算成績與榮譽榜 (settlement)】
