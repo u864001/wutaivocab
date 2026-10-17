@@ -9,8 +9,15 @@ import {
   KeyRound, Eye, Compass, Puzzle, Flame, Rocket,
   Sparkles, Keyboard, BookOpen, Volume2, Swords,
   Store, RotateCcw, Check, CheckCircle2, ChevronRight,
-  Sun, Moon, VolumeX, ShieldCheck, Layers, HelpCircle
+  Sun, Moon, VolumeX, ShieldCheck, Layers, HelpCircle,
+  X, Zap
 } from 'lucide-react';
+
+const POSTER_EXPLORE = '/assets/lobby/theme_explore.jpg';
+const POSTER_SPEED = '/assets/lobby/theme_speed.jpg';
+const POSTER_QUIZ = '/assets/lobby/theme_quiz.jpg';
+const POSTER_BATTLE = '/assets/lobby/theme_battle.jpg';
+const POSTER_TOWN = '/assets/lobby/theme_town.jpg';
 
 export const Lobby = ({
   words = [],
@@ -60,100 +67,110 @@ export const Lobby = ({
     return 3;
   }, [currentStudent]);
 
-  // ── 五大欄位定義與子遊戲資料 ──
+  // ── 五大欄位定義（專屬海報底圖、雕刻字體樣式與高質感子遊戲徽章） ──
   const COLUMNS = useMemo(() => [
     {
       id: 'explore',
       title: '探索解謎',
+      enTitle: 'EXPLORE & PUZZLES',
       icon: KeyRound,
-      emoji: '🔍',
-      tag: '4 款遊戲',
+      bgImage: POSTER_EXPLORE,
+      tag: '4 款挑戰',
       colorName: 'emerald',
-      gradient: 'from-emerald-900/90 via-teal-950/80 to-slate-950',
-      activeBorder: 'border-emerald-400',
-      activeRing: 'ring-emerald-400/50',
-      badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40',
-      spineText: '探索解謎 • 密室 鷹眼 迷宮 記憶',
-      summary: '逃脫 • 鷹眼 • 迷宮 • 記憶',
+      titleGlow: 'bg-gradient-to-b from-emerald-100 via-emerald-200 to-teal-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_16px_rgba(16,185,129,0.7)]',
+      spineTextColor: 'text-emerald-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]',
+      borderClass: 'border-emerald-500/60 hover:border-emerald-400',
+      activeRingClass: 'ring-emerald-400/60 border-emerald-300',
+      tagBadge: 'bg-emerald-950/80 text-emerald-300 border-emerald-400/50',
+      plaqueBg: 'bg-emerald-950/75 border-emerald-400/40 shadow-emerald-950/50',
+      summary: '古老遺跡 • 神廟機關 • 秘境尋寶',
       isDirectJump: false,
       games: [
-        { id: 'escape', name: '神祕密室逃脫', icon: '🗝️', badge: '沉浸解謎' },
-        { id: 'spotter', name: '鷹眼神探找不同', icon: '👁️', badge: '視覺辨析' },
-        { id: 'maze', name: '字母巡航迷宮', icon: '🧭', badge: '字母連線' },
-        { id: 'memory', name: '翻牌記憶對決', icon: '🃏', badge: '記憶配對' }
+        { id: 'escape', name: '神祕密室逃脫', iconComp: KeyRound, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/25 border-emerald-400/40', badge: '機關解謎' },
+        { id: 'spotter', name: '鷹眼神探找不同', iconComp: Eye, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '視覺辨析' },
+        { id: 'maze', name: '字母巡航迷宮', iconComp: Compass, iconColor: 'text-teal-400', iconBg: 'bg-teal-500/25 border-teal-400/40', badge: '字母航線' },
+        { id: 'memory', name: '翻牌記憶對決', iconComp: Sparkles, iconColor: 'text-cyan-400', iconBg: 'bg-cyan-500/25 border-cyan-400/40', badge: '記憶配對' }
       ]
     },
     {
       id: 'speed',
       title: '極速反應',
+      enTitle: 'SPEED & ARCADE',
       icon: Flame,
-      emoji: '⚡',
-      tag: '4 款遊戲',
+      bgImage: POSTER_SPEED,
+      tag: '4 款挑戰',
       colorName: 'amber',
-      gradient: 'from-amber-900/90 via-orange-950/80 to-slate-950',
-      activeBorder: 'border-amber-400',
-      activeRing: 'ring-amber-400/50',
-      badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-400/40',
-      spineText: '極速反應 • 是非 隕石 拖曳 貪蛇',
-      summary: '是非 • 隕石 • 拖曳 • 貪蛇',
+      titleGlow: 'bg-gradient-to-b from-yellow-100 via-amber-300 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_18px_rgba(245,158,11,0.8)]',
+      spineTextColor: 'text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]',
+      borderClass: 'border-amber-500/60 hover:border-amber-400',
+      activeRingClass: 'ring-amber-400/60 border-amber-300',
+      tagBadge: 'bg-amber-950/80 text-amber-300 border-amber-400/50',
+      plaqueBg: 'bg-amber-950/75 border-amber-400/40 shadow-amber-950/50',
+      summary: '熔岩競技 • 隕石突擊 • 閃電手速',
       isDirectJump: false,
       games: [
-        { id: 'swipe', name: '極速是非滑牌', icon: '⚡', badge: '手速比拼' },
-        { id: 'meteor', name: '3D 隕石防衛戰', icon: '🚀', badge: '打字擊墜' },
-        { id: 'spelling', name: '單字拖曳拼裝', icon: '🧩', badge: '積木拼字' },
-        { id: 'snake', name: '叢林神山貪蛇', icon: '🐍', badge: '百步蛇' }
+        { id: 'swipe', name: '極速是非滑牌', iconComp: Flame, iconColor: 'text-rose-400', iconBg: 'bg-rose-500/25 border-rose-400/40', badge: '30秒對決' },
+        { id: 'meteor', name: '3D 隕石防衛戰', iconComp: Rocket, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '打字擊墜' },
+        { id: 'spelling', name: '單字拖曳拼裝', iconComp: Puzzle, iconColor: 'text-yellow-400', iconBg: 'bg-yellow-500/25 border-yellow-400/40', badge: '方塊拼字' },
+        { id: 'snake', name: '叢林神山貪蛇', iconComp: Zap, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/25 border-emerald-400/40', badge: '百步蛇' }
       ]
     },
     {
       id: 'quiz',
       title: '經典測驗',
+      enTitle: 'CLASSIC ARENA',
       icon: Keyboard,
-      emoji: '📝',
-      tag: '4 款遊戲',
+      bgImage: POSTER_QUIZ,
+      tag: '4 款挑戰',
       colorName: 'blue',
-      gradient: 'from-blue-900/90 via-indigo-950/80 to-slate-950',
-      activeBorder: 'border-blue-400',
-      activeRing: 'ring-blue-400/50',
-      badgeBg: 'bg-blue-500/20 text-blue-300 border-blue-400/40',
-      spineText: '經典測驗 • 中翻英 英翻中 聽力 綜合',
-      summary: '中翻英 • 英翻中 • 聽力 • 綜合',
+      titleGlow: 'bg-gradient-to-b from-white via-sky-200 to-indigo-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_18px_rgba(56,189,248,0.7)]',
+      spineTextColor: 'text-sky-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]',
+      borderClass: 'border-blue-500/60 hover:border-blue-400',
+      activeRingClass: 'ring-blue-400/60 border-blue-300',
+      tagBadge: 'bg-blue-950/80 text-blue-300 border-blue-400/50',
+      plaqueBg: 'bg-blue-950/75 border-blue-400/40 shadow-blue-950/50',
+      summary: '星空書閣 • 智慧結晶 • 全能評測',
       isDirectJump: false,
       games: [
-        { id: 'quiz-zh-en', name: '看中選英', icon: '🔤', badge: '中文選英文' },
-        { id: 'quiz-en-zh', name: '看英選中', icon: '📖', badge: '英文選中文' },
-        { id: 'quiz-listening', name: '英語聽力', icon: '🎧', badge: '聽音辨字' },
-        { id: 'quiz-mixed', name: '綜合全能測驗', icon: '🎯', badge: '隨機挑戰' }
+        { id: 'quiz-zh-en', name: '看中選英', iconComp: Keyboard, iconColor: 'text-sky-400', iconBg: 'bg-sky-500/25 border-sky-400/40', badge: '中選英' },
+        { id: 'quiz-en-zh', name: '看英選中', iconComp: BookOpen, iconColor: 'text-indigo-400', iconBg: 'bg-indigo-500/25 border-indigo-400/40', badge: '英選中' },
+        { id: 'quiz-listening', name: '英語聽力', iconComp: Volume2, iconColor: 'text-cyan-400', iconBg: 'bg-cyan-500/25 border-cyan-400/40', badge: '聽音辨字' },
+        { id: 'quiz-mixed', name: '綜合全能測驗', iconComp: Trophy, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '隨機挑戰' }
       ]
     },
     {
       id: 'battle',
       title: '多人連線',
+      enTitle: 'LIVE BATTLE',
       icon: Swords,
-      emoji: '🌐',
+      bgImage: POSTER_BATTLE,
       tag: 'LIVE 對戰',
       colorName: 'purple',
-      gradient: 'from-purple-900/90 via-fuchsia-950/80 to-slate-950',
-      activeBorder: 'border-purple-400',
-      activeRing: 'ring-purple-400/50',
-      badgeBg: 'bg-purple-500/20 text-purple-300 border-purple-400/40',
-      spineText: '多人連線 • 烈焰 翡翠 星空',
-      summary: '烈焰 • 翡翠 • 星空',
+      titleGlow: 'bg-gradient-to-b from-white via-purple-200 to-fuchsia-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_18px_rgba(217,70,239,0.8)]',
+      spineTextColor: 'text-purple-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]',
+      borderClass: 'border-purple-500/60 hover:border-purple-400',
+      activeRingClass: 'ring-purple-400/60 border-purple-300',
+      tagBadge: 'bg-purple-950/80 text-purple-300 border-purple-400/50',
+      plaqueBg: 'bg-purple-950/75 border-purple-400/40 shadow-purple-950/50',
+      summary: '星際擂台 • 雙人交鋒 • 榮譽爭霸',
       isDirectJump: true,
       jumpTarget: 'battle'
     },
     {
       id: 'town',
       title: '霧臺小鎮',
+      enTitle: 'WUTAI TOWN',
       icon: Store,
-      emoji: '🏛️',
+      bgImage: POSTER_TOWN,
       tag: '部落探索',
       colorName: 'yellow',
-      gradient: 'from-amber-950/90 via-stone-900/90 to-slate-950',
-      activeBorder: 'border-yellow-400',
-      activeRing: 'ring-yellow-400/50',
-      badgeBg: 'bg-yellow-500/20 text-yellow-300 border-yellow-400/40',
-      spineText: '霧臺小鎮 • 漫步主街 族人學伴',
-      summary: '漫步主街 • 拜訪族人',
+      titleGlow: 'bg-gradient-to-b from-amber-100 via-amber-200 to-yellow-500 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_18px_rgba(234,179,8,0.7)]',
+      spineTextColor: 'text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]',
+      borderClass: 'border-yellow-600/60 hover:border-yellow-400',
+      activeRingClass: 'ring-yellow-400/60 border-yellow-300',
+      tagBadge: 'bg-amber-950/80 text-yellow-300 border-yellow-500/50',
+      plaqueBg: 'bg-amber-950/75 border-yellow-500/40 shadow-amber-950/50',
+      summary: '夕陽百岳 • 石板屋舍 • 族人學伴',
       isDirectJump: true,
       jumpTarget: 'town'
     }
@@ -246,7 +263,6 @@ export const Lobby = ({
       return;
     }
     if (activeCol === col.id) {
-      // 再次點擊展開中的欄位：選中第一個子遊戲
       return;
     }
     setActiveCol(col.id);
@@ -266,10 +282,10 @@ export const Lobby = ({
     for (const c of COLUMNS) {
       if (c.games) {
         const found = c.games.find(g => g.id === selectedGame);
-        if (found) return { ...found, categoryTitle: c.title, colorName: c.colorName };
+        if (found) return { ...found, categoryTitle: c.title, colorName: c.colorName, bgImage: c.bgImage };
       }
     }
-    return { id: 'escape', name: '神祕密室逃脫', icon: '🗝️', categoryTitle: '探索解謎' };
+    return { id: 'escape', name: '神祕密室逃脫', iconComp: KeyRound, categoryTitle: '探索解謎', bgImage: POSTER_EXPLORE };
   }, [COLUMNS, selectedGame]);
 
   // ── 上一步 ──
@@ -289,7 +305,6 @@ export const Lobby = ({
     soundEngine.click();
     if (step === 'game') {
       if (!selectedGame) return;
-      // 字母迷宮遊戲直接啟動，其他遊戲進入選範圍
       if (selectedGame === 'maze') {
         onNavigate('maze');
         return;
@@ -297,7 +312,6 @@ export const Lobby = ({
       setStep('scope');
     } else if (step === 'scope') {
       if (studentGradeNum <= 2) {
-        // 低年級特殊轉導：若選了字母迷宮直接進，其他依字母出題
         onNavigate(selectedGame);
       } else {
         if (selectedWordsCount === 0) return;
@@ -307,17 +321,17 @@ export const Lobby = ({
   };
 
   return (
-    <div className="fixed inset-0 w-full h-[100dvh] bg-slate-950 text-white flex flex-col justify-between overflow-hidden select-none z-10 animate-fadeIn">
+    <div className="fixed inset-0 w-full h-[100dvh] bg-slate-950 text-white flex flex-col justify-between overflow-hidden select-none z-10 animate-fadeIn font-sans">
       
-      {/* ── 背景星空環境光暈 ── */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950 pointer-events-none" />
+      {/* ── 背景星空環境微光 ── */}
+      <div className="absolute inset-0 bg-slate-950 pointer-events-none" />
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* ════════════════════════════════════════════════════════════════
           【固定頂部 HUD】左上回首頁 • 上中英雄榜 • 右上個人資訊通行證
          ════════════════════════════════════════════════════════════════ */}
-      <header className="relative z-30 w-full px-3 sm:px-6 py-2.5 sm:py-3.5 bg-slate-900/90 backdrop-blur-md border-b border-white/10 flex items-center justify-between shadow-lg shrink-0">
+      <header className="relative z-30 w-full px-3 sm:px-6 py-2.5 sm:py-3 bg-slate-950/85 backdrop-blur-md border-b border-white/10 flex items-center justify-between shadow-xl shrink-0">
         
         {/* 左上角：回首頁 */}
         <button
@@ -326,7 +340,7 @@ export const Lobby = ({
             soundEngine.click();
             onNavigate('portal');
           }}
-          className="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-white/15 text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
+          className="px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-white/15 text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
           title="返回英語學習宇宙首頁"
         >
           <Home className="w-4 h-4 text-emerald-400" />
@@ -340,59 +354,57 @@ export const Lobby = ({
             soundEngine.click();
             onOpenLeaderboard();
           }}
-          className="px-3.5 py-1.5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/30 to-amber-500/20 hover:from-amber-500/30 hover:to-yellow-500/40 border border-amber-400/50 text-amber-300 font-heading text-xs sm:text-sm font-black flex items-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer"
+          className="px-4 py-1.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/35 hover:to-yellow-500/45 border-2 border-amber-400/60 text-amber-200 font-heading text-xs sm:text-sm font-black flex items-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer"
           title="查看全校與年級英雄榜"
         >
           <Trophy className="w-4 h-4 text-amber-400 animate-bounce" />
-          <span>🏆 英雄榜</span>
+          <span className="tracking-wide">🏆 英雄榜</span>
           <span className="hidden md:inline text-[11px] text-amber-300/80 font-mono">
             (看{studentGradeNum}年級排行)
           </span>
         </button>
 
         {/* 右上角：個人資訊通行證 */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              soundEngine.click();
-              if (openModal) openModal();
-            }}
-            className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white border border-white/20 text-xs font-black flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
-            title="點擊修改個人身分/座號"
-          >
-            <User className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="max-w-[120px] truncate">
-              {formatStudentBadge(currentStudent, lang) || '設置個人身分'}
+        <button
+          type="button"
+          onClick={() => {
+            soundEngine.click();
+            if (openModal) openModal();
+          }}
+          className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white border border-white/20 text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+          title="點擊修改個人身分/座號"
+        >
+          <User className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="max-w-[120px] truncate">
+            {formatStudentBadge(currentStudent, lang) || '設置個人身分'}
+          </span>
+          {currentStudent?.coins !== undefined && (
+            <span className="text-amber-400 font-mono font-bold flex items-center gap-0.5 ml-1">
+              🪙 {currentStudent.coins}
             </span>
-            {currentStudent?.coins !== undefined && (
-              <span className="text-amber-400 font-mono font-bold flex items-center gap-0.5 ml-1">
-                🪙 {currentStudent.coins}
-              </span>
-            )}
-          </button>
-        </div>
+          )}
+        </button>
 
       </header>
 
       {/* ════════════════════════════════════════════════════════════════
           【中央主舞台】Step 1: 五欄彈性手風琴選遊戲 / Step 2: 範圍選取
          ════════════════════════════════════════════════════════════════ */}
-      <main className="relative z-20 flex-1 w-full max-w-7xl mx-auto p-2.5 sm:p-4 md:p-6 flex flex-col justify-center overflow-hidden">
+      <main className="relative z-20 flex-1 w-full max-w-7xl mx-auto p-2 sm:p-3 md:p-5 flex flex-col justify-center overflow-hidden">
         
         {/* ────────────────────────────────────────────────────────
             【步驟一：選遊戲】iPad/電腦橫向 5 欄手風琴，手機縱向 5 列手風琴
            ──────────────────────────────────────────────────────── */}
         {step === 'game' && (
-          <div className="w-full h-full max-h-[82vh] flex flex-col md:flex-row items-stretch gap-2.5 sm:gap-3.5 md:gap-4 overflow-hidden">
-            {COLUMNS.map((col, idx) => {
+          <div className="w-full h-full max-h-[82vh] flex flex-col md:flex-row items-stretch gap-2.5 sm:gap-3 md:gap-3.5 overflow-hidden">
+            {COLUMNS.map((col) => {
               const isSelectedCol = activeCol === col.id;
               const isCompressed = activeCol !== null && !isSelectedCol;
 
               // 彈性比例 (Flex Ratio)：
-              // 未點選時均為 1；選中該欄時該欄為 6.2 (佔約 65%)，其餘壓縮為 0.8 (佔約 8%)
+              // 未點選時均為 1；選中該欄時該欄為 6.5 (佔約 65%)，其餘壓縮為 0.85 (佔約 8%)
               const flexStyle = {
-                flex: isSelectedCol ? (window.innerWidth >= 768 ? 6.2 : 5) : isCompressed ? 0.85 : 1
+                flex: isSelectedCol ? (window.innerWidth >= 768 ? 6.5 : 5.5) : isCompressed ? 0.85 : 1
               };
 
               return (
@@ -400,40 +412,74 @@ export const Lobby = ({
                   key={col.id}
                   style={flexStyle}
                   onClick={() => !isSelectedCol && handleColumnClick(col)}
-                  className={`relative rounded-3xl overflow-hidden border-2 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col cursor-pointer ${
+                  className={`relative rounded-3xl overflow-hidden border-2 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col cursor-pointer group shadow-2xl ${
                     isSelectedCol
-                      ? `bg-gradient-to-br ${col.gradient} ${col.activeBorder} ring-4 ${col.activeRing} shadow-2xl`
+                      ? `${col.activeRingClass} ring-4 shadow-[0_0_35px_rgba(0,0,0,0.8)]`
                       : isCompressed
-                      ? 'bg-slate-900/90 border-white/10 hover:border-white/30 opacity-75 hover:opacity-100'
-                      : `bg-gradient-to-b ${col.gradient} border-white/20 hover:border-white/40 hover:scale-[1.01] shadow-lg`
+                      ? 'border-white/10 hover:border-white/30 opacity-75 hover:opacity-100'
+                      : `${col.borderClass} hover:scale-[1.01]`
                   }`}
                 >
                   
-                  {/* ── 狀態 A：壓縮狀態 (細條書脊) ── */}
-                  {isCompressed ? (
-                    <div className="w-full h-full flex md:flex-col items-center justify-between p-2.5 sm:p-3 text-center animate-fadeIn">
-                      <span className="text-xl sm:text-2xl">{col.emoji}</span>
-                      
-                      {/* 直排標籤文字 (書脊) */}
-                      <span className="text-xs sm:text-sm font-black text-slate-300 font-heading md:[writing-mode:vertical-rl] md:rotate-180 tracking-widest truncate">
-                        {col.title}
-                      </span>
+                  {/* ── 專屬電影級插畫背景圖層 ── */}
+                  <img
+                    src={col.bgImage}
+                    alt={col.title}
+                    className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-700 ease-out select-none pointer-events-none ${
+                      isSelectedCol
+                        ? 'brightness-[0.45] contrast-[1.08] scale-102'
+                        : isCompressed
+                        ? 'brightness-[0.3] contrast-[1.1]'
+                        : 'brightness-[0.7] contrast-[1.05] group-hover:scale-105'
+                    }`}
+                  />
 
-                      <span className="w-2 h-2 rounded-full bg-white/40" />
+                  {/* 融入環境的主題光影漸層遮罩 */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-slate-950/30 pointer-events-none" />
+
+                  {/* ── 狀態 A：壓縮狀態 (細條書脊 - 漢字正立縱排，徹底杜絕倒立旋轉) ── */}
+                  {isCompressed ? (
+                    <div className="relative z-10 w-full h-full flex md:flex-col items-center justify-between p-2.5 sm:p-3 text-center animate-fadeIn">
+                      {/* 頂部主題發光圓章 */}
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
+                        <col.icon className="w-4 h-4 text-white drop-shadow" />
+                      </div>
+                      
+                      {/* 正立漢字縱向排列 (由上而下，字距適中，極易閱讀) */}
+                      <div className="flex md:flex-col items-center justify-center gap-1 sm:gap-2 my-auto select-none">
+                        {col.title.split('').map((char, cIdx) => (
+                          <span
+                            key={cIdx}
+                            className={`text-sm sm:text-base font-black font-serif ${col.spineTextColor} tracking-widest`}
+                          >
+                            {char}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* 底部微光指示燈 */}
+                      <span className="w-2 h-2 rounded-full bg-white/40 group-hover:bg-white animate-pulse" />
                     </div>
                   ) : isSelectedCol ? (
-                    /* ── 狀態 B：展開狀態 (約佔 65%，展示子遊戲 2×2 大格子) ── */
-                    <div className="w-full h-full p-4 sm:p-6 flex flex-col justify-between overflow-y-auto animate-fadeIn">
+                    /* ── 狀態 B：展開狀態 (約佔 65%，展示子遊戲 2×2 玻璃擬態大卡片) ── */
+                    <div className="relative z-10 w-full h-full p-4 sm:p-6 flex flex-col justify-between overflow-y-auto animate-fadeIn">
                       
-                      {/* 展開頂部欄 */}
-                      <div className="flex items-center justify-between pb-2 border-b border-white/15 shrink-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl sm:text-3xl">{col.emoji}</span>
+                      {/* 展開頂部：深度融入背景的雕刻銘牌 */}
+                      <div className={`p-3 sm:p-4 rounded-2xl backdrop-blur-md border shadow-xl flex items-center justify-between shrink-0 ${col.plaqueBg}`}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-black/40 border border-white/20 flex items-center justify-center shadow-inner">
+                            <col.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow" />
+                          </div>
                           <div>
-                            <h3 className="text-lg sm:text-2xl font-black text-white font-heading">
-                              {col.title}
-                            </h3>
-                            <p className="text-xs text-slate-300 font-bold hidden sm:block">
+                            <div className="flex items-center gap-2">
+                              <h3 className={`text-xl sm:text-2xl font-black font-serif tracking-wider ${col.titleGlow}`}>
+                                {col.title}
+                              </h3>
+                              <span className="text-[10px] font-mono tracking-widest text-white/60 uppercase hidden sm:inline">
+                                {col.enTitle}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-200/90 font-bold mt-0.5">
                               {col.summary}
                             </p>
                           </div>
@@ -446,17 +492,19 @@ export const Lobby = ({
                             soundEngine.click();
                             setActiveCol(null);
                           }}
-                          className="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white text-xs font-bold border border-white/20 transition-all cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl bg-black/40 hover:bg-black/60 text-slate-300 hover:text-white text-xs font-bold border border-white/20 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
                           title="還原所有欄位"
                         >
-                          ✕ 還原
+                          <X className="w-3.5 h-3.5" />
+                          <span>還原</span>
                         </button>
                       </div>
 
-                      {/* 2×2 子遊戲卡片清單 */}
-                      <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5 my-auto py-2">
+                      {/* 2×2 子遊戲卡片清單 (全面淘汰 Emoji，採用發光主題徽章) */}
+                      <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5 my-auto py-3">
                         {col.games?.map((g) => {
                           const isGameActive = selectedGame === g.id;
+                          const IconComp = g.iconComp;
                           return (
                             <div
                               key={g.id}
@@ -464,31 +512,36 @@ export const Lobby = ({
                                 e.stopPropagation();
                                 handleSelectGame(g.id);
                               }}
-                              className={`p-3 sm:p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center text-center relative group active:scale-95 ${
+                              className={`p-3.5 sm:p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center text-center relative group active:scale-95 backdrop-blur-md ${
                                 isGameActive
-                                  ? 'bg-amber-400 text-stone-950 border-amber-200 ring-4 ring-amber-300/60 shadow-xl scale-102'
-                                  : 'bg-slate-900/80 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                                  ? 'bg-amber-400 text-stone-950 border-amber-200 ring-4 ring-amber-300/60 shadow-2xl scale-102'
+                                  : 'bg-slate-950/70 hover:bg-slate-900/80 text-white border-white/20 hover:border-amber-400/60 shadow-lg'
                               }`}
                             >
                               {/* 勾選徽章 */}
                               {isGameActive && (
-                                <span className="absolute top-2 right-2 w-5 h-5 rounded-full bg-stone-950 text-amber-300 flex items-center justify-center text-xs font-black">
+                                <span className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-stone-950 text-amber-300 flex items-center justify-center text-xs font-black shadow">
                                   ✓
                                 </span>
                               )}
 
-                              <span className="text-3xl sm:text-4xl mb-1.5 transition-transform group-hover:scale-110">
-                                {g.icon}
-                              </span>
+                              {/* 高質感專屬圖示徽章 (非 Emoji) */}
+                              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-2 transition-transform group-hover:scale-110 shadow-md ${
+                                isGameActive
+                                  ? 'bg-stone-950/15 border border-stone-950/20 text-stone-950'
+                                  : `${g.iconBg} ${g.iconColor}`
+                              }`}>
+                                <IconComp className="w-6 h-6 sm:w-7 sm:h-7 drop-shadow" />
+                              </div>
                               
-                              <h4 className="text-sm sm:text-base font-black font-heading leading-tight">
+                              <h4 className="text-sm sm:text-base font-black font-heading leading-tight tracking-wide">
                                 {g.name}
                               </h4>
 
-                              <span className={`text-[10px] sm:text-xs font-bold mt-1 px-2 py-0.5 rounded-full ${
+                              <span className={`text-[10px] sm:text-xs font-bold mt-1 px-2.5 py-0.5 rounded-full ${
                                 isGameActive
                                   ? 'bg-stone-950/20 text-stone-950'
-                                  : 'bg-white/10 text-slate-300'
+                                  : 'bg-white/10 text-slate-300 border border-white/10'
                               }`}>
                                 {g.badge}
                               </span>
@@ -504,28 +557,32 @@ export const Lobby = ({
 
                     </div>
                   ) : (
-                    /* ── 狀態 C：均分 20% 預設狀態 (大圖示、大標題、精練說明) ── */
-                    <div className="w-full h-full p-4 sm:p-5 flex flex-col items-center justify-between text-center group">
+                    /* ── 狀態 C：均分 20% 預設狀態 (大插畫背景 + 雕刻字體牌匾) ── */
+                    <div className="relative z-10 w-full h-full p-4 sm:p-5 flex flex-col items-center justify-between text-center group">
+                      
+                      {/* 頂部標籤與圖章 */}
                       <div className="w-full flex items-center justify-between">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${col.badgeBg}`}>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border backdrop-blur-md ${col.tagBadge}`}>
                           {col.tag}
                         </span>
-                        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-4 h-4 text-white/70 group-hover:translate-x-1 transition-transform" />
                       </div>
 
+                      {/* 中央雕刻字型與專屬圖示 */}
                       <div className="my-auto flex flex-col items-center">
-                        <span className="text-4xl sm:text-5xl md:text-6xl mb-3 drop-shadow transition-transform duration-300 group-hover:scale-115">
-                          {col.emoji}
-                        </span>
-                        <h3 className="text-lg sm:text-xl md:text-2xl font-black text-white font-heading">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-950/70 backdrop-blur-md border border-white/20 flex items-center justify-center mb-3 shadow-xl transition-transform duration-300 group-hover:scale-110">
+                          <col.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white drop-shadow" />
+                        </div>
+                        <h3 className={`text-xl sm:text-2xl md:text-3xl font-black font-serif tracking-wider ${col.titleGlow}`}>
                           {col.title}
                         </h3>
-                        <p className="text-xs sm:text-sm font-bold text-slate-300 mt-1 line-clamp-2">
+                        <p className="text-xs sm:text-sm font-bold text-slate-200 mt-1 line-clamp-1 drop-shadow">
                           {col.summary}
                         </p>
                       </div>
 
-                      <div className="w-full py-1.5 rounded-xl bg-white/10 group-hover:bg-white/20 text-white font-black text-xs transition-colors">
+                      {/* 底部操作引導鈕 */}
+                      <div className="w-full py-2 rounded-xl bg-black/50 backdrop-blur-md group-hover:bg-black/70 text-white font-black text-xs transition-colors border border-white/15 shadow">
                         {col.isDirectJump ? '點擊直通 ➔' : '點擊展開 ➔'}
                       </div>
                     </div>
@@ -541,12 +598,22 @@ export const Lobby = ({
             【步驟二：選範圍】單一視窗零滾動，直出該年級所屬範圍與「其他」
            ──────────────────────────────────────────────────────── */}
         {step === 'scope' && (
-          <div className="w-full h-full max-h-[82vh] p-4 sm:p-6 rounded-3xl bg-slate-900/90 border-2 border-amber-400/60 backdrop-blur-md shadow-2xl flex flex-col justify-between overflow-hidden animate-fadeIn">
+          <div className="relative w-full h-full max-h-[82vh] p-4 sm:p-6 rounded-3xl overflow-hidden border-2 border-amber-400/60 shadow-2xl flex flex-col justify-between animate-fadeIn">
             
+            {/* 範圍頁背景插畫 (帶入所選遊戲主題背景) */}
+            <img
+              src={currentGameObj.bgImage}
+              alt={currentGameObj.name}
+              className="absolute inset-0 w-full h-full object-cover filter brightness-[0.35] contrast-[1.1] pointer-events-none select-none"
+            />
+            <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md pointer-events-none" />
+
             {/* 範圍頂部資訊欄 */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-white/15 shrink-0">
+            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-white/15 shrink-0">
               <div className="flex items-center gap-3">
-                <span className="text-3xl">{currentGameObj.icon}</span>
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center">
+                  <currentGameObj.iconComp className="w-6 h-6 text-amber-300" />
+                </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-lg sm:text-xl font-black text-white font-heading">
@@ -557,7 +624,7 @@ export const Lobby = ({
                     </span>
                   </div>
                   <p className="text-xs text-slate-300 font-bold mt-0.5">
-                    請確認挑戰範圍（已自動錨定【{studentGradeNum}年級】教材範圍）：
+                    已自動錨定【{studentGradeNum}年級】教材範圍，點選單元即可開始：
                   </p>
                 </div>
               </div>
@@ -581,7 +648,7 @@ export const Lobby = ({
             </div>
 
             {/* ── 核心範圍膠囊區 (依年級直出) ── */}
-            <div className="flex-1 my-3 overflow-y-auto pr-1">
+            <div className="relative z-10 flex-1 my-3 overflow-y-auto pr-1">
               
               {/* 【低年級 1~2 年級】直出三大字母膠囊，不出現冊次 */}
               {studentGradeNum <= 2 && !showAllBooks ? (
@@ -597,9 +664,9 @@ export const Lobby = ({
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-xl">
                     {[
-                      { key: 'upper', title: '🔠 大寫字母', sub: 'A ~ Z 認知辨析' },
-                      { key: 'lower', title: '🔡 小寫字母', sub: 'a ~ z 認知辨析' },
-                      { key: 'mixed', title: '🔀 大小寫混合', sub: 'A-z 全能綜合' }
+                      { key: 'upper', title: '大寫字母', en: 'UPPERCASE', sub: 'A ~ Z 認知辨析' },
+                      { key: 'lower', title: '小寫字母', en: 'LOWERCASE', sub: 'a ~ z 認知辨析' },
+                      { key: 'mixed', title: '大小寫混合', en: 'MIXED (A-z)', sub: 'A-z 全能綜合' }
                     ].map((mode) => {
                       const isActive = alphaMode === mode.key;
                       return (
@@ -616,8 +683,11 @@ export const Lobby = ({
                               : 'bg-slate-800/80 hover:bg-slate-700 text-slate-200 border-white/20'
                           }`}
                         >
-                          <span className="text-xl sm:text-2xl font-black font-heading mb-1">
+                          <span className="text-lg sm:text-xl font-black font-heading mb-0.5">
                             {mode.title}
+                          </span>
+                          <span className="text-[10px] font-mono text-emerald-200 uppercase tracking-widest mb-1">
+                            {mode.en}
                           </span>
                           <span className="text-xs opacity-80 font-bold">
                             {mode.sub}
@@ -639,7 +709,7 @@ export const Lobby = ({
                     return (
                       <div
                         key={bKey}
-                        className="p-3.5 rounded-2xl bg-slate-800/70 border border-white/10 flex flex-col gap-2.5"
+                        className="p-3.5 rounded-2xl bg-slate-900/80 border border-white/10 flex flex-col gap-2.5 backdrop-blur-md"
                       >
                         {/* 冊次標題列與全選按鈕 */}
                         <div className="flex items-center justify-between">
@@ -673,7 +743,7 @@ export const Lobby = ({
                                 className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 border ${
                                   isSelected
                                     ? 'bg-emerald-500 text-white border-emerald-300 shadow-md ring-2 ring-emerald-400/40 scale-102'
-                                    : 'bg-slate-900/90 text-slate-300 hover:text-white border-white/15'
+                                    : 'bg-slate-950/80 text-slate-300 hover:text-white border-white/15'
                                 }`}
                               >
                                 <span>{isSelected ? '✓' : '•'}</span>
@@ -691,7 +761,7 @@ export const Lobby = ({
             </div>
 
             {/* 範圍底部摘要 */}
-            <div className="flex items-center justify-between pt-2 border-t border-white/15 text-xs text-slate-300 shrink-0">
+            <div className="relative z-10 flex items-center justify-between pt-2 border-t border-white/15 text-xs text-slate-300 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="font-bold">已挑選單元：</span>
                 <span className="text-emerald-400 font-mono font-black">
@@ -718,13 +788,13 @@ export const Lobby = ({
       {/* ════════════════════════════════════════════════════════════════
           【固定底部導航列】左下上一頁 • 右下下一步 / 🚀 開始遊戲
          ════════════════════════════════════════════════════════════════ */}
-      <footer className="relative z-30 w-full px-3 sm:px-6 py-2.5 sm:py-3.5 bg-slate-900/90 backdrop-blur-md border-t border-white/10 flex items-center justify-between shadow-lg shrink-0">
+      <footer className="relative z-30 w-full px-3 sm:px-6 py-2.5 sm:py-3.5 bg-slate-950/85 backdrop-blur-md border-t border-white/10 flex items-center justify-between shadow-xl shrink-0">
         
         {/* 左下角：上一頁 */}
         <button
           type="button"
           onClick={handleGoBack}
-          className="px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white text-xs sm:text-sm font-black flex items-center gap-1.5 border border-white/20 shadow-md active:scale-95 transition-all cursor-pointer"
+          className="px-4 py-2 rounded-2xl bg-slate-800/90 hover:bg-slate-700 text-white text-xs sm:text-sm font-black flex items-center gap-1.5 border border-white/20 shadow-md active:scale-95 transition-all cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4 text-emerald-400" />
           <span>{step === 'scope' ? '回選遊戲' : activeCol !== null ? '還原選單' : '回首頁'}</span>
