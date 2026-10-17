@@ -358,7 +358,7 @@ export const Lobby = ({
           title="查看全校與年級英雄榜"
         >
           <Trophy className="w-4 h-4 text-amber-400 animate-bounce" />
-          <span className="tracking-wide">🏆 英雄榜</span>
+          <span className="tracking-wide">英雄榜</span>
           <span className="hidden md:inline text-[11px] text-amber-300/80 font-mono">
             (看{studentGradeNum}年級排行)
           </span>
@@ -379,8 +379,9 @@ export const Lobby = ({
             {formatStudentBadge(currentStudent, lang) || '設置個人身分'}
           </span>
           {currentStudent?.coins !== undefined && (
-            <span className="text-amber-400 font-mono font-bold flex items-center gap-0.5 ml-1">
-              🪙 {currentStudent.coins}
+            <span className="text-amber-400 font-mono font-bold flex items-center gap-1 ml-1 text-xs">
+              <Sparkles className="w-3 h-3 text-amber-400" />
+              <span>{currentStudent.coins}</span>
             </span>
           )}
         </button>
@@ -390,13 +391,13 @@ export const Lobby = ({
       {/* ════════════════════════════════════════════════════════════════
           【中央主舞台】Step 1: 五欄彈性手風琴選遊戲 / Step 2: 範圍選取
          ════════════════════════════════════════════════════════════════ */}
-      <main className="relative z-20 flex-1 w-full max-w-7xl mx-auto p-2 sm:p-3 md:p-5 flex flex-col justify-center overflow-hidden">
+      <main className="relative z-20 flex-1 w-full max-w-7xl mx-auto p-2 sm:p-3 md:p-4 flex flex-col justify-center overflow-hidden">
         
         {/* ────────────────────────────────────────────────────────
             【步驟一：選遊戲】iPad/電腦橫向 5 欄手風琴，手機縱向 5 列手風琴
            ──────────────────────────────────────────────────────── */}
         {step === 'game' && (
-          <div className="w-full h-full max-h-[82vh] flex flex-col md:flex-row items-stretch gap-2.5 sm:gap-3 md:gap-3.5 overflow-hidden">
+          <div className="w-full h-full flex flex-col md:flex-row items-stretch gap-2 sm:gap-2.5 md:gap-3 overflow-hidden">
             {COLUMNS.map((col) => {
               const isSelectedCol = activeCol === col.id;
               const isCompressed = activeCol !== null && !isSelectedCol;
@@ -421,32 +422,30 @@ export const Lobby = ({
                   }`}
                 >
                   
-                  {/* ── 專屬電影級插畫背景圖層 ── */}
+                  {/* ── 專屬電影級插畫背景圖層 (保持極高清晰度，移除遮蓋) ── */}
                   <img
                     src={col.bgImage}
                     alt={col.title}
                     className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-700 ease-out select-none pointer-events-none ${
                       isSelectedCol
-                        ? 'brightness-[0.45] contrast-[1.08] scale-102'
+                        ? 'brightness-[0.6] contrast-[1.05]'
                         : isCompressed
-                        ? 'brightness-[0.3] contrast-[1.1]'
-                        : 'brightness-[0.7] contrast-[1.05] group-hover:scale-105'
+                        ? 'brightness-[0.35] contrast-[1.1]'
+                        : 'brightness-[0.85] contrast-[1.05] group-hover:brightness-[0.95] group-hover:scale-105'
                     }`}
                   />
 
-                  {/* 融入環境的主題光影漸層遮罩 */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-slate-950/30 pointer-events-none" />
+                  {/* 融入環境的主題光影漸層遮罩：上方與中央幾近透明，下方有舒適暗漸層供文字判讀 */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/25 to-slate-950/20 pointer-events-none" />
 
-                  {/* ── 狀態 A：壓縮狀態 (細條書脊 - 漢字正立縱排，徹底杜絕倒立旋轉) ── */}
+                  {/* ── 狀態 A：壓縮狀態 (細條書脊 - 正立漢字縱排，徹底杜絕倒立旋轉) ── */}
                   {isCompressed ? (
-                    <div className="relative z-10 w-full h-full flex md:flex-col items-center justify-between p-2.5 sm:p-3 text-center animate-fadeIn">
-                      {/* 頂部主題發光圓章 */}
-                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
-                        <col.icon className="w-4 h-4 text-white drop-shadow" />
-                      </div>
+                    <div className="relative z-10 w-full h-full flex md:flex-col items-center justify-between p-2 sm:p-2.5 text-center animate-fadeIn select-none">
+                      {/* 頂部細緻光標 */}
+                      <span className="w-1.5 h-1.5 rounded-full bg-white/40 mt-1" />
                       
-                      {/* 正立漢字縱向排列 (由上而下，字距適中，極易閱讀) */}
-                      <div className="flex md:flex-col items-center justify-center gap-1 sm:gap-2 my-auto select-none">
+                      {/* 正立漢字縱向排列 (由上而下，字距適中，極易閱讀，純中文字) */}
+                      <div className="flex md:flex-col items-center justify-center gap-1.5 sm:gap-2 my-auto select-none">
                         {col.title.split('').map((char, cIdx) => (
                           <span
                             key={cIdx}
@@ -458,31 +457,24 @@ export const Lobby = ({
                       </div>
 
                       {/* 底部微光指示燈 */}
-                      <span className="w-2 h-2 rounded-full bg-white/40 group-hover:bg-white animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-white animate-pulse mb-1" />
                     </div>
                   ) : isSelectedCol ? (
-                    /* ── 狀態 B：展開狀態 (約佔 65%，展示子遊戲 2×2 玻璃擬態大卡片) ── */
-                    <div className="relative z-10 w-full h-full p-4 sm:p-6 flex flex-col justify-between overflow-y-auto animate-fadeIn">
+                    /* ── 狀態 B：展開狀態 (約佔 65%，中央完全留空展示精美大圖，底部小尺寸 2×2 精煉無滑動卡片) ── */
+                    <div className="relative z-10 w-full h-full p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden animate-fadeIn select-none">
                       
-                      {/* 展開頂部：深度融入背景的雕刻銘牌 */}
-                      <div className={`p-3 sm:p-4 rounded-2xl backdrop-blur-md border shadow-xl flex items-center justify-between shrink-0 ${col.plaqueBg}`}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-black/40 border border-white/20 flex items-center justify-center shadow-inner">
-                            <col.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow" />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className={`text-xl sm:text-2xl font-black font-serif tracking-wider ${col.titleGlow}`}>
-                                {col.title}
-                              </h3>
-                              <span className="text-[10px] font-mono tracking-widest text-white/60 uppercase hidden sm:inline">
-                                {col.enTitle}
-                              </span>
-                            </div>
-                            <p className="text-xs text-slate-200/90 font-bold mt-0.5">
-                              {col.summary}
-                            </p>
-                          </div>
+                      {/* 展開頂部：精簡半透明銘牌，高度僅約 36px，無遮擋大圖示 */}
+                      <div className={`px-3 py-1.5 sm:py-2 rounded-xl backdrop-blur-md border shadow-lg flex items-center justify-between shrink-0 ${col.plaqueBg}`}>
+                        <div className="flex items-center gap-2">
+                          <h3 className={`text-base sm:text-xl font-black font-serif tracking-wider ${col.titleGlow}`}>
+                            {col.title}
+                          </h3>
+                          <span className="text-[10px] font-mono tracking-widest text-white/60 uppercase hidden sm:inline">
+                            {col.enTitle}
+                          </span>
+                          <span className="text-xs text-slate-300 font-bold hidden md:inline ml-1">
+                            • {col.summary}
+                          </span>
                         </div>
 
                         <button
@@ -492,99 +484,98 @@ export const Lobby = ({
                             soundEngine.click();
                             setActiveCol(null);
                           }}
-                          className="px-3 py-1.5 rounded-xl bg-black/40 hover:bg-black/60 text-slate-300 hover:text-white text-xs font-bold border border-white/20 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+                          className="px-2.5 py-1 rounded-lg bg-black/50 hover:bg-black/70 text-slate-300 hover:text-white text-xs font-bold border border-white/20 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
                           title="還原所有欄位"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <X className="w-3 h-3" />
                           <span>還原</span>
                         </button>
                       </div>
 
-                      {/* 2×2 子遊戲卡片清單 (全面淘汰 Emoji，採用發光主題徽章) */}
-                      <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5 my-auto py-3">
-                        {col.games?.map((g) => {
-                          const isGameActive = selectedGame === g.id;
-                          const IconComp = g.iconComp;
-                          return (
-                            <div
-                              key={g.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSelectGame(g.id);
-                              }}
-                              className={`p-3.5 sm:p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center text-center relative group active:scale-95 backdrop-blur-md ${
-                                isGameActive
-                                  ? 'bg-amber-400 text-stone-950 border-amber-200 ring-4 ring-amber-300/60 shadow-2xl scale-102'
-                                  : 'bg-slate-950/70 hover:bg-slate-900/80 text-white border-white/20 hover:border-amber-400/60 shadow-lg'
-                              }`}
-                            >
-                              {/* 勾選徽章 */}
-                              {isGameActive && (
-                                <span className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-stone-950 text-amber-300 flex items-center justify-center text-xs font-black shadow">
-                                  ✓
-                                </span>
-                              )}
+                      {/* 中央舞台：完全留空，讓原畫震撼視野完整展現！ */}
+                      <div className="flex-1 min-h-[30px]" />
 
-                              {/* 高質感專屬圖示徽章 (非 Emoji) */}
-                              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-2 transition-transform group-hover:scale-110 shadow-md ${
-                                isGameActive
-                                  ? 'bg-stone-950/15 border border-stone-950/20 text-stone-950'
-                                  : `${g.iconBg} ${g.iconColor}`
-                              }`}>
-                                <IconComp className="w-6 h-6 sm:w-7 sm:h-7 drop-shadow" />
+                      {/* 展開底部：縮小版 2×2 子區塊，完全避免捲軸滑動，極致精練 */}
+                      <div className="w-full max-w-2xl mx-auto flex flex-col gap-1.5 shrink-0">
+                        <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+                          {col.games?.map((g) => {
+                            const isGameActive = selectedGame === g.id;
+                            const IconComp = g.iconComp;
+                            return (
+                              <div
+                                key={g.id}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSelectGame(g.id);
+                                }}
+                                className={`px-3 py-2 sm:py-2.5 rounded-xl border transition-all duration-150 cursor-pointer flex items-center justify-between gap-2 relative group active:scale-98 backdrop-blur-md ${
+                                  isGameActive
+                                    ? 'bg-amber-400 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 shadow-lg font-black'
+                                    : 'bg-slate-950/80 hover:bg-slate-900/90 text-white/95 border-white/20 hover:border-amber-400/60 shadow-md'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2 min-w-0">
+                                  {/* 微型小圖示，體積僅 14px，絕不喧賓奪主 */}
+                                  <IconComp className={`w-3.5 h-3.5 shrink-0 ${
+                                    isGameActive ? 'text-stone-950' : 'text-amber-300'
+                                  }`} />
+                                  <h4 className="text-xs sm:text-sm font-black tracking-wide truncate">
+                                    {g.name}
+                                  </h4>
+                                </div>
+
+                                <div className="flex items-center gap-1 shrink-0">
+                                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                                    isGameActive
+                                      ? 'bg-stone-950/20 text-stone-950'
+                                      : 'bg-white/10 text-slate-300'
+                                  }`}>
+                                    {g.badge}
+                                  </span>
+                                  {isGameActive && (
+                                    <Check className="w-3.5 h-3.5 stroke-[3] text-stone-950" />
+                                  )}
+                                </div>
                               </div>
-                              
-                              <h4 className="text-sm sm:text-base font-black font-heading leading-tight tracking-wide">
-                                {g.name}
-                              </h4>
+                            );
+                          })}
+                        </div>
 
-                              <span className={`text-[10px] sm:text-xs font-bold mt-1 px-2.5 py-0.5 rounded-full ${
-                                isGameActive
-                                  ? 'bg-stone-950/20 text-stone-950'
-                                  : 'bg-white/10 text-slate-300 border border-white/10'
-                              }`}>
-                                {g.badge}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      {/* 底部小提示 */}
-                      <div className="text-center text-xs font-bold text-amber-200/90 pt-1 border-t border-white/10 shrink-0">
-                        點選好遊戲後，請點擊右下角「下一步 ➔」挑選範圍！
+                        {/* 底部小提示：極簡一行 */}
+                        <div className="text-center text-[11px] font-bold text-amber-200/90 pt-0.5 shrink-0">
+                          已選定「{currentGameObj.name}」，請點右下角「下一步 ➔」
+                        </div>
                       </div>
 
                     </div>
                   ) : (
-                    /* ── 狀態 C：均分 20% 預設狀態 (大插畫背景 + 雕刻字體牌匾) ── */
-                    <div className="relative z-10 w-full h-full p-4 sm:p-5 flex flex-col items-center justify-between text-center group">
+                    /* ── 狀態 C：均分 20% 預設狀態 (大插畫完整通透展現，完全拿掉中央遮擋，僅保留底部純中文字) ── */
+                    <div className="relative z-10 w-full h-full p-3 sm:p-4 flex flex-col justify-between text-center group select-none">
                       
-                      {/* 頂部標籤與圖章 */}
+                      {/* 頂部精緻小標籤 (無任何 emoji) */}
                       <div className="w-full flex items-center justify-between">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border backdrop-blur-md ${col.tagBadge}`}>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border backdrop-blur-md ${col.tagBadge}`}>
                           {col.tag}
                         </span>
-                        <ChevronRight className="w-4 h-4 text-white/70 group-hover:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-3.5 h-3.5 text-white/70 group-hover:translate-x-1 transition-transform" />
                       </div>
 
-                      {/* 中央雕刻字型與專屬圖示 */}
-                      <div className="my-auto flex flex-col items-center">
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-950/70 backdrop-blur-md border border-white/20 flex items-center justify-center mb-3 shadow-xl transition-transform duration-300 group-hover:scale-110">
-                          <col.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white drop-shadow" />
-                        </div>
-                        <h3 className={`text-xl sm:text-2xl md:text-3xl font-black font-serif tracking-wider ${col.titleGlow}`}>
+                      {/* 中央完全留空！讓原畫的遺跡、熔岩、星空書閣、競技場、大武山全景 100% 盡收眼底！ */}
+                      <div className="flex-1" />
+
+                      {/* 底部文字匾額：純中文字，雕刻字型深度融入，絕不遮掩全圖 */}
+                      <div className="w-full flex flex-col items-center pb-1">
+                        <h3 className={`text-xl sm:text-2xl md:text-2xl lg:text-3xl font-black font-serif tracking-widest ${col.titleGlow}`}>
                           {col.title}
                         </h3>
-                        <p className="text-xs sm:text-sm font-bold text-slate-200 mt-1 line-clamp-1 drop-shadow">
+                        <p className="text-[11px] sm:text-xs font-bold text-slate-200/90 mt-0.5 line-clamp-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
                           {col.summary}
                         </p>
+                        <div className="mt-2 w-full py-1.5 rounded-xl bg-black/40 hover:bg-black/60 group-hover:bg-black/70 text-white font-black text-xs transition-colors border border-white/15 shadow">
+                          {col.isDirectJump ? '點擊直通 ➔' : '點擊展開 ➔'}
+                        </div>
                       </div>
 
-                      {/* 底部操作引導鈕 */}
-                      <div className="w-full py-2 rounded-xl bg-black/50 backdrop-blur-md group-hover:bg-black/70 text-white font-black text-xs transition-colors border border-white/15 shadow">
-                        {col.isDirectJump ? '點擊直通 ➔' : '點擊展開 ➔'}
-                      </div>
                     </div>
                   )}
 
@@ -643,7 +634,7 @@ export const Lobby = ({
                 }`}
               >
                 <Layers className="w-3.5 h-3.5" />
-                <span>{showAllBooks ? '收合為本年級' : '🔄 其他年級/全冊自選'}</span>
+                <span>{showAllBooks ? '收合為本年級' : '其他年級/全冊自選'}</span>
               </button>
             </div>
 
@@ -655,7 +646,7 @@ export const Lobby = ({
                 <div className="w-full h-full flex flex-col items-center justify-center p-4">
                   <div className="text-center mb-6">
                     <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-400/40">
-                      🌱 低年級專屬 • 字母啟蒙
+                      低年級專屬 • 字母啟蒙
                     </span>
                     <h4 className="text-xl sm:text-2xl font-black text-white font-heading mt-2">
                       請選擇字母挑戰模式：
@@ -774,8 +765,9 @@ export const Lobby = ({
               </div>
 
               {qualifyingBook && (
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold hidden sm:inline">
-                  🏆 符合榮譽榜資格 (單冊選滿2單元20字)
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold hidden sm:inline flex items-center gap-1">
+                  <Trophy className="w-3 h-3 text-amber-400" />
+                  <span>符合榮譽榜資格 (單冊選滿2單元20字)</span>
                 </span>
               )}
             </div>
@@ -786,7 +778,7 @@ export const Lobby = ({
       </main>
 
       {/* ════════════════════════════════════════════════════════════════
-          【固定底部導航列】左下上一頁 • 右下下一步 / 🚀 開始遊戲
+          【固定底部導航列】左下上一頁 • 右下下一步 / 開始遊戲
          ════════════════════════════════════════════════════════════════ */}
       <footer className="relative z-30 w-full px-3 sm:px-6 py-2.5 sm:py-3.5 bg-slate-950/85 backdrop-blur-md border-t border-white/10 flex items-center justify-between shadow-xl shrink-0">
         
@@ -805,7 +797,7 @@ export const Lobby = ({
           <span>{step === 'game' ? '請點選遊戲 ➔ 點擊下一步' : '挑選完成 ➔ 立即開始！'}</span>
         </div>
 
-        {/* 右下角：下一步 ➔ / 🚀 開始遊戲 */}
+        {/* 右下角：下一步 ➔ / 開始遊戲 */}
         <button
           type="button"
           onClick={handleGoNext}
@@ -818,8 +810,8 @@ export const Lobby = ({
         >
           <span>
             {step === 'game' 
-              ? '下一步 ➔ (Next)' 
-              : `🚀 開始遊戲 (${selectedWordsCount} 字)`
+              ? '下一步 ➔' 
+              : `開始遊戲 (${selectedWordsCount} 字)`
             }
           </span>
           {step === 'scope' && <Play className="w-4 h-4 fill-stone-950" />}
