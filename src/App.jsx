@@ -301,16 +301,18 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-300">
-      {/* 全域統一導覽列 (全頁面維持一致的學校標誌、回上一層、語言與主題開關) */}
-      <Header
-        onOpenTeacherHub={handleOpenTeacherHub}
-        onOpenLeaderboard={() => handleNavigate('leaderboard')}
-        onOpenPhonics={() => handleNavigate('phonics')}
-        onGoParent={handleGoParent}
-        onGoHome={() => handleNavigate('portal')}
-        currentView={currentView}
-        isOnline={isOnline}
-      />
+      {/* 全域統一導覽列 (單字館 lobby 擁有獨立精簡無滾動 HUD，其餘頁面維持標準 Header) */}
+      {currentView !== 'lobby' && (
+        <Header
+          onOpenTeacherHub={handleOpenTeacherHub}
+          onOpenLeaderboard={() => handleNavigate('leaderboard')}
+          onOpenPhonics={() => handleNavigate('phonics')}
+          onGoParent={handleGoParent}
+          onGoHome={() => handleNavigate('portal')}
+          currentView={currentView}
+          isOnline={isOnline}
+        />
+      )}
 
       {/* 畫面路由視圖切換 (含全域安全防護熔斷) */}
       <main className="flex-1 flex flex-col">
