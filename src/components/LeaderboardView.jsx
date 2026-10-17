@@ -354,25 +354,29 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
   const currentWallpaper = THEME_WALLPAPERS[selectedDomain] || THEME_WALLPAPERS.all;
 
   return (
-    <div className="relative min-h-screen w-full select-none animate-fadeIn pb-16">
-      {/* ── 專屬主題海報全景背景層 (依點選分類平滑切換) ── */}
-      <img
-        src={currentWallpaper}
-        alt="Theme Wallpaper"
-        className="fixed inset-0 w-full h-full object-cover object-center brightness-[0.25] contrast-[1.15] transition-all duration-700 pointer-events-none select-none"
-      />
-      <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md pointer-events-none" />
+    <div className="relative min-h-screen w-full select-none animate-fadeIn pb-16 text-white">
+      {/* ── 專屬主題海報全景背景層 (依點選分類平滑切換，清晰震撼) ── */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none select-none z-0">
+        <img
+          key={currentWallpaper}
+          src={currentWallpaper}
+          alt="Theme Wallpaper"
+          className="w-full h-full object-cover object-center brightness-[0.70] contrast-[1.1] scale-100 transition-all duration-700 ease-out animate-fadeIn"
+        />
+        {/* 柔和暗度漸層：上方柔和暗化保護導覽列，中央透光顯現原畫，下方沉穩 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/40 to-slate-950/90 pointer-events-none" />
+      </div>
 
       <div className="relative z-10 w-full max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
         {/* ── 頂部導覽列 ── */}
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-4">
           <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
             {t.backLobby || '回大廳'}
           </Button3D>
 
           <h2
             onClick={handleTitleClick}
-            className="text-2xl sm:text-3xl font-black text-white font-heading flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform drop-shadow"
+            className="text-2xl sm:text-3xl font-black text-white font-heading flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
             title="連續點擊 5 次啟動管理後台"
           >
             <Trophy className="w-8 h-8 text-amber-400 animate-bounce" />
@@ -382,61 +386,60 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
           <button
             onClick={() => loadGradeBoards(true)}
             disabled={isLoading}
-            className="p-2.5 rounded-2xl bg-slate-850/80 border border-white/20 text-slate-300 hover:text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer shadow-sm"
+            className="p-2.5 rounded-2xl bg-black/60 border border-white/20 text-slate-300 hover:text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer shadow-lg backdrop-blur-md"
             title={t.refresh || '重新整理'}
           >
             <RotateCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
         </div>
 
-      {/* ── 年級分流分頁導覽列 (一到六年級 + 全校大亂鬥 共 7 大類別) ── */}
-      <div className="mb-4">
-        <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 overflow-x-auto scrollbar-none shadow-sm">
-          {GRADE_LEADERBOARD_TABS.map((tab) => {
-            const isSelected = selectedGrade === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  soundEngine.click();
-                  setSelectedGrade(tab.id);
-                }}
-                className={`flex-1 min-w-[95px] py-2 px-2 rounded-xl text-xs sm:text-sm font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer shrink-0 ${
-                  isSelected
-                    ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-md scale-102 border border-emerald-300 dark:border-emerald-600'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
-                }`}
-              >
-                <span>{lang === 'zh-TW' ? tab.zh : tab.en}</span>
-                {tab.isAlphabet ? (
-                  <span className={`text-[10px] font-bold ${isSelected ? 'text-indigo-500 dark:text-indigo-300' : 'text-slate-400'}`}>
-                    字母樂園 🔤
-                  </span>
-                ) : tab.isAllSchool ? (
-                  <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-500 dark:text-amber-300' : 'text-slate-400'}`}>
-                    綜合大亂鬥 ⚔️
-                  </span>
-                ) : (
-                  <span className={`text-[10px] font-bold ${isSelected ? 'text-emerald-500 dark:text-emerald-300' : 'text-slate-400'}`}>
-                    第 {tab.books?.join('、')} 冊
-                  </span>
-                )}
-              </button>
-            );
-          })}
+        {/* ── 年級分流分頁導覽列 (一到六年級 + 全校大亂鬥 共 7 大類別) ── */}
+        <div className="mb-4">
+          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-950/75 border border-white/20 backdrop-blur-md overflow-x-auto scrollbar-none shadow-2xl">
+            {GRADE_LEADERBOARD_TABS.map((tab) => {
+              const isSelected = selectedGrade === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    soundEngine.click();
+                    setSelectedGrade(tab.id);
+                  }}
+                  className={`flex-1 min-w-[95px] py-2 px-2 rounded-xl text-xs sm:text-sm font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer shrink-0 ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg border border-emerald-300 ring-2 ring-emerald-400/40 scale-102'
+                      : 'text-slate-300 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <span>{lang === 'zh-TW' ? tab.zh : tab.en}</span>
+                  {tab.isAlphabet ? (
+                    <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-200' : 'text-slate-400'}`}>
+                      字母樂園 🔤
+                    </span>
+                  ) : tab.isAllSchool ? (
+                    <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-200' : 'text-slate-400'}`}>
+                      綜合大亂鬥 ⚔️
+                    </span>
+                  ) : (
+                    <span className={`text-[10px] font-bold ${isSelected ? 'text-emerald-200' : 'text-slate-400'}`}>
+                      第 {tab.books?.join('、')} 冊
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* ── 篩選控制器便當卡 (當前年級資訊、學期身分 ＆ 競賽週次切換) ── */}
-      <GlassCard className="mb-6 p-4 sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-black">
-              {activeGradeObj.isAllSchool ? <Swords className="w-5 h-5 text-amber-500" /> : <Users className="w-5 h-5" />}
-            </div>
-            <div>
+        {/* ── 篩選控制器便當卡 (當前年級資訊、學期身分 ＆ 競賽週次切換) ── */}
+        <div className="mb-5 p-3.5 sm:p-4 rounded-3xl bg-slate-950/75 border border-white/20 backdrop-blur-md text-white shadow-2xl">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-2xl bg-white/10 text-emerald-400 flex items-center justify-center font-black">
+                {activeGradeObj.isAllSchool ? <Swords className="w-5 h-5 text-amber-400" /> : <Users className="w-5 h-5" />}
+              </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-black text-slate-800 dark:text-white">
+                <span className="text-sm font-black text-white">
                   {lang === 'zh-TW' ? activeGradeObj.zh : activeGradeObj.en} 榮譽競賽榜
                 </span>
                 {selectedGrade === currentStudent?.grade && (
@@ -444,194 +447,197 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                     我的年級 🎯
                   </span>
                 )}
-                {/* 當前學期標籤 */}
-                <span className="px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-400/30 text-indigo-700 dark:text-indigo-300 text-[10px] font-black flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded-full bg-indigo-500/30 border border-indigo-400/40 text-indigo-200 text-[10px] font-black flex items-center gap-1">
                   <School className="w-3 h-3" />
                   {getSemesterDisplayName()}
                 </span>
               </div>
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-0.5">
-                {activeGradeObj.descZh}
-              </p>
+            </div>
+
+            {/* 週次切換 */}
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-black text-slate-200">
+                {t.compWeekLabel || '競賽週次：'}
+              </span>
+              <select
+                value={selectedWeek}
+                onChange={(e) => setSelectedWeek(parseInt(e.target.value, 10))}
+                className="p-1.5 sm:p-2 rounded-xl bg-slate-900 border border-white/20 font-black text-xs sm:text-sm text-white outline-none focus:border-emerald-400"
+              >
+                {[...Array(6)].map((_, i) => {
+                  const w = currentWeek - i;
+                  if (w < 1) return null;
+                  return (
+                    <option key={w} value={w} className="bg-slate-900 text-white">
+                      {(t.weekN ? t.weekN.replace('{w}', w) : `第 ${w} 週`)} {w === currentWeek ? (t.currentWeekTag || '(本週)') : ''}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
           </div>
+        </div>
 
-          {/* 週次切換 */}
-          <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-xs font-black text-slate-700 dark:text-slate-200">
-              {t.compWeekLabel || '競賽週次：'}
-            </span>
-            <select
-              value={selectedWeek}
-              onChange={(e) => setSelectedWeek(parseInt(e.target.value, 10))}
-              className="p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 font-black text-xs sm:text-sm text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-600 outline-none focus:border-emerald-500"
-            >
-              {[...Array(6)].map((_, i) => {
-                const w = currentWeek - i;
-                if (w < 1) return null;
-                return (
-                  <option key={w} value={w}>
-                    {(t.weekN ? t.weekN.replace('{w}', w) : `第 ${w} 週`)} {w === currentWeek ? (t.currentWeekTag || '(本週)') : ''}
-                  </option>
-                );
-              })}
-            </select>
+        {/* ── 五大領域館別切換膠囊導覽列 ── */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {DOMAIN_CATEGORIES.map((cat) => {
+              const isSelected = selectedDomain === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    soundEngine.click();
+                    setSelectedDomain(cat.id);
+                  }}
+                  className={`px-3.5 sm:px-5 py-2 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-lg border ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-300 ring-2 ring-emerald-400/40 scale-105 shadow-emerald-500/30'
+                      : 'bg-slate-950/75 text-slate-300 border-white/20 hover:text-white hover:bg-slate-900'
+                  }`}
+                >
+                  <span>{lang === 'zh-TW' ? cat.zh : cat.en}</span>
+                  {cat.id === 'langlab' && (
+                    <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-stone-950 text-[10px] font-black animate-pulse">
+                      聽說
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
-      </GlassCard>
 
-      {/* ── 四大領域館別切換膠囊導覽列 (解決擁擠感，聽說專區獨立大卡) ── */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {DOMAIN_CATEGORIES.map((cat) => {
-            const isSelected = selectedDomain === cat.id;
+        {/* ── 榜單內容展示區 ── */}
+        {(() => {
+          // 渲染個別模式的風雲小卡 (Top 5 預覽 ＋ 點擊查看 Top 50)
+          const renderModeCard = (mode, isWide = false) => {
+            const Icon = mode.icon;
+            const ranks = (boardData[mode.id] || []).slice(0, 5);
+
             return (
-              <button
-                key={cat.id}
-                onClick={() => {
-                  soundEngine.click();
-                  setSelectedDomain(cat.id);
-                }}
-                className={`px-3.5 sm:px-4 py-2 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-sm border ${
-                  isSelected
-                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-400 shadow-emerald-500/20 scale-102 ring-2 ring-emerald-400/30'
-                    : 'bg-white/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 hover:text-slate-900'
-                }`}
+              <div
+                key={mode.id}
+                className={`flex flex-col justify-between p-4 sm:p-5 rounded-3xl relative overflow-hidden group transition-all duration-300 shadow-2xl backdrop-blur-md ${
+                  mode.category === 'explore'
+                    ? 'bg-slate-950/75 border border-emerald-500/40 hover:border-emerald-400 hover:shadow-emerald-500/20'
+                    : mode.category === 'speed'
+                    ? 'bg-slate-950/75 border border-amber-500/40 hover:border-amber-400 hover:shadow-amber-500/20'
+                    : mode.category === 'quiz'
+                    ? 'bg-slate-950/75 border border-sky-500/40 hover:border-sky-400 hover:shadow-sky-500/20'
+                    : mode.category === 'battle'
+                    ? 'bg-slate-950/75 border border-purple-500/40 hover:border-purple-400 hover:shadow-purple-500/20'
+                    : 'bg-slate-950/75 border border-rose-500/40 hover:border-rose-400 hover:shadow-rose-500/20'
+                } ${isWide ? 'border-2 ring-1 ring-sky-400/40' : ''}`}
               >
-                <span>{lang === 'zh-TW' ? cat.zh : cat.en}</span>
-                {cat.id === 'langlab' && (
-                  <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-stone-950 text-[10px] font-black animate-pulse">
-                    雙榜分立
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ── 榜單內容展示區 ── */}
-      {(() => {
-        // 渲染個別模式的風雲小卡 (Top 5 預覽 ＋ 點擊查看 Top 50)
-        const renderModeCard = (mode, isWide = false) => {
-          const Icon = mode.icon;
-          const ranks = (boardData[mode.id] || []).slice(0, 5);
-
-          return (
-            <GlassCard
-              key={mode.id}
-              className={`flex flex-col justify-between p-4 sm:p-5 relative overflow-hidden group hover:border-emerald-400/80 transition-all shadow-sm ${
-                isWide ? 'border-2 border-sky-400/40 bg-gradient-to-br from-sky-950/20 to-slate-900/40' : ''
-              }`}
-            >
-              <div>
-                {/* 卡片標題與圖標 */}
-                <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-slate-100 dark:border-slate-700/60">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center ${mode.color}`}>
-                      <Icon className="w-4 h-4" />
+                <div>
+                  {/* 卡片標題與圖標 */}
+                  <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-white/10">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center ${mode.color}`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-heading font-black text-sm sm:text-base text-white flex items-center gap-1.5">
+                          <span>{mode.label}</span>
+                          {mode.category === 'langlab' && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-400 text-stone-950 font-black">
+                              15題特訓
+                            </span>
+                          )}
+                        </h3>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
-                        <span>{mode.label}</span>
-                        {mode.category === 'langlab' && (
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-400 text-stone-950 font-black">
-                            15題特訓
-                          </span>
-                        )}
-                      </h3>
-                    </div>
+
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-white/10 text-slate-300 font-mono">
+                      {mode.unit}
+                    </span>
                   </div>
 
-                  <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-mono">
-                    {mode.unit}
-                  </span>
-                </div>
+                  {/* 前 5 名清單 */}
+                  <div className="space-y-1.5 mb-3 min-h-[160px]">
+                    {isLoading && !boardData[mode.id] ? (
+                      <div className="h-full flex items-center justify-center text-xs font-bold text-slate-400 py-10">
+                        <RotateCw className="w-4 h-4 animate-spin mr-1.5 text-emerald-400" />
+                        載入中...
+                      </div>
+                    ) : ranks.length === 0 ? (
+                      <div className="h-full flex flex-col items-center justify-center text-xs font-bold text-slate-400 py-10 gap-1">
+                        <Sparkles className="w-5 h-5 text-slate-500" />
+                        <span>{t.noContenders || '尚無挑戰者'}</span>
+                      </div>
+                    ) : (
+                      ranks.map((entry, idx) => {
+                        const isFirst = idx === 0;
+                        const isSecond = idx === 1;
+                        const isThird = idx === 2;
 
-                {/* 前 5 名清單 */}
-                <div className="space-y-1.5 mb-3 min-h-[160px]">
-                  {isLoading && !boardData[mode.id] ? (
-                    <div className="h-full flex items-center justify-center text-xs font-bold text-slate-400 py-10">
-                      <RotateCw className="w-4 h-4 animate-spin mr-1.5 text-emerald-500" />
-                      載入中...
-                    </div>
-                  ) : ranks.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-xs font-bold text-slate-400 py-10 gap-1">
-                      <Sparkles className="w-5 h-5 text-slate-300 dark:text-slate-600" />
-                      <span>{t.noContenders || '尚無挑戰者'}</span>
-                    </div>
-                  ) : (
-                    ranks.map((entry, idx) => {
-                      const isFirst = idx === 0;
-                      const isSecond = idx === 1;
-                      const isThird = idx === 2;
+                        const studentName = entry.nickname || entry.name || '同學';
+                        const scoreValue = mode.isSpecial === 'monopoly'
+                          ? (entry.coins ?? 0)
+                          : mode.isSpecial === 'quest'
+                          ? (entry.quest_points ?? 0)
+                          : (mode.id === 'escape' || mode.id === 'spotter')
+                          ? (entry.time > 1000 ? (entry.time / 1000).toFixed(1) : (entry.time ?? entry.score))
+                          : entry.score;
 
-                      const studentName = entry.nickname || entry.name || '同學';
-                      const scoreValue = mode.isSpecial === 'monopoly'
-                        ? (entry.coins ?? 0)
-                        : mode.isSpecial === 'quest'
-                        ? (entry.quest_points ?? 0)
-                        : (mode.id === 'escape' || mode.id === 'spotter')
-                        ? (entry.time > 1000 ? (entry.time / 1000).toFixed(1) : (entry.time ?? entry.score))
-                        : entry.score;
+                        const badgeText = getSubModeBadge(entry, mode);
 
-                      const badgeText = getSubModeBadge(entry, mode);
-
-                      return (
-                        <div
-                          key={entry.id || entry.student_id || idx}
-                          className={`flex items-center justify-between p-2 rounded-xl text-xs transition-colors ${
-                            isFirst
-                              ? 'bg-amber-500/15 border border-amber-300 dark:border-amber-700 font-black text-amber-950 dark:text-amber-200'
-                              : isSecond
-                              ? 'bg-slate-100 dark:bg-slate-800 font-black text-slate-800 dark:text-slate-200'
-                              : isThird
-                              ? 'bg-amber-700/10 dark:bg-amber-950/20 font-black text-amber-900 dark:text-amber-300'
-                              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 truncate pr-2">
-                            <span className="w-5 text-center font-black shrink-0 font-mono">
-                              {isFirst ? '🥇' : isSecond ? '🥈' : isThird ? '🥉' : `${idx + 1}.`}
-                            </span>
-                            <span className="truncate max-w-[90px] font-bold">
-                              {studentName}
-                            </span>
-                            {badgeText && (
-                              <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-slate-200/80 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 shrink-0">
-                                {badgeText}
+                        return (
+                          <div
+                            key={entry.id || entry.student_id || idx}
+                            className={`flex items-center justify-between p-2 rounded-xl text-xs transition-colors ${
+                              isFirst
+                                ? 'bg-amber-400/20 border border-amber-300/80 font-black text-amber-200'
+                                : isSecond
+                                ? 'bg-white/10 border border-white/10 font-bold text-slate-100'
+                                : isThird
+                                ? 'bg-amber-700/20 border border-amber-700/40 font-bold text-amber-300'
+                                : 'text-slate-300 hover:bg-white/5'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 truncate pr-2">
+                              <span className="w-5 text-center font-black shrink-0 font-mono">
+                                {isFirst ? '🥇' : isSecond ? '🥈' : isThird ? '🥉' : `${idx + 1}.`}
                               </span>
-                            )}
-                          </div>
+                              <span className="truncate max-w-[90px] font-bold">
+                                {studentName}
+                              </span>
+                              {badgeText && (
+                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/15 text-slate-200 shrink-0">
+                                  {badgeText}
+                                </span>
+                              )}
+                            </div>
 
-                          <div className="font-mono font-black shrink-0 text-right">
-                            {scoreValue}
-                            <span className="text-[10px] font-normal ml-0.5 text-slate-400">
-                              {mode.unit}
-                            </span>
+                            <div className="font-mono font-black shrink-0 text-right text-emerald-400">
+                              {scoreValue}
+                              <span className="text-[10px] font-normal ml-0.5 text-slate-400">
+                                {mode.unit}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })
-                  )}
+                        );
+                      })
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* 展開完整 Top 50 3D 按鈕 */}
-              <button
-                onClick={() => {
-                  soundEngine.click();
-                  setModalModeId(mode.id);
-                }}
-                className="w-full py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/50 text-slate-700 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95"
-              >
-                <span>{t.viewTop50Btn || '查看完整前 50 名'}</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </GlassCard>
-          );
-        };
+                {/* 展開完整 Top 50 3D 按鈕 */}
+                <button
+                  onClick={() => {
+                    soundEngine.click();
+                    setModalModeId(mode.id);
+                  }}
+                  className="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95 shadow-sm"
+                >
+                  <span>{t.viewTop50Btn || '查看完整前 50 名'}</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            );
+          };
 
         if (selectedDomain === 'langlab') {
           return (

@@ -306,8 +306,8 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-300">
-      {/* 全域統一導覽列 (單字館 lobby 擁有獨立精簡無滾動 HUD，其餘頁面維持標準 Header) */}
-      {currentView !== 'lobby' && (
+      {/* 全域統一導覽列 (大廳、排行榜與打地鼠擁有沉浸式 HUD，其餘頁面維持標準 Header) */}
+      {currentView !== 'lobby' && currentView !== 'leaderboard' && currentView !== 'mole' && (
         <Header
           onOpenTeacherHub={handleOpenTeacherHub}
           onOpenLeaderboard={() => handleNavigate('leaderboard')}

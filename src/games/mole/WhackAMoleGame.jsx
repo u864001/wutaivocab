@@ -3,6 +3,7 @@ import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { soundEngine, speakEnglish } from '../../services/audio';
+import { FALLBACK_WORDS } from '../../services/supabase';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Heart, Timer, Trophy, Sparkles, RefreshCw,
@@ -39,7 +40,7 @@ export const WhackAMoleGame = ({
     return settings?.alphaMode || (settings?.selectedUnits && settings.selectedUnits.includes('abc'));
   }, [settings]);
 
-  // 單字池建置
+  // 單字池建置 (嚴謹支援 en / zh / word / meaning 相容提取)
   const activeWordPool = useMemo(() => {
     if (isAlphabetMode) {
       const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -50,13 +51,19 @@ export const WhackAMoleGame = ({
       }));
     }
 
-    if (words && words.length > 0) {
-      // 依勾選之單元範圍篩選
-      const filtered = settings?.selectedUnits?.length
-        ? words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`))
-        : words;
-      if (filtered.length >= 4) return filtered;
+    const rawList = (!words || words.length === 0) ? FALLBACK_WORDS : words;
+    let filtered = rawList;
+    if (settings?.selectedUnits && settings.selectedUnits.length > 0) {
+      const subset = rawList.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
+      if (subset.length >= 4) filtered = subset;
     }
+
+    const normalized = filtered.map(w => ({
+      word: (w.en || w.word || '').trim(),
+      wordZh: (w.zh || w.meaning || w.wordZh || '').trim()
+    })).filter(w => w.word && w.wordZh);
+
+    if (normalized.length >= 4) return normalized;
 
     // 預設三年級文具備援單字
     return [
@@ -336,20 +343,25 @@ export const WhackAMoleGame = ({
 
         {/* 中央出題儀表（顯著目標單字 + 語音播音） */}
         {targetWordObj && (
-          <div className="flex items-center gap-2 sm:gap-3 px-4 py-1.5 rounded-2xl bg-black/75 border-2 border-emerald-400/80 shadow-2xl backdrop-blur-md animate-bounce">
-            <span className="text-xs font-black text-emerald-300 hidden md:inline">
-              🎯 目標：
+          <div className="flex items-center gap-2 sm:gap-3 px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-2xl bg-black/85 border-2 border-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.5)] backdrop-blur-md">
+            <span className="text-xs sm:text-sm font-black text-emerald-300">
+              🎯 尋找目標：
             </span>
-            <span className="text-base sm:text-xl font-heading font-black text-white tracking-wide">
+            <span className="text-base sm:text-2xl font-heading font-black text-amber-300 tracking-wide drop-shadow">
               {targetWordObj.wordZh}
             </span>
+            {!isAlphabetMode && (
+              <span className="text-xs sm:text-sm text-slate-300 font-mono font-bold hidden sm:inline">
+                ({targetWordObj.word})
+              </span>
+            )}
             <button
               type="button"
               onClick={() => speakEnglish(targetWordObj.word)}
-              className="p-1 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/50 text-emerald-200 transition-colors cursor-pointer"
+              className="p-1 sm:p-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/60 text-emerald-200 transition-colors cursor-pointer"
               title="重聽發音"
             >
-              <Volume2 className="w-4 h-4" />
+              <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         )}
@@ -417,19 +429,8 @@ export const WhackAMoleGame = ({
                 
                 {/* ── 地鼠實體角色（從洞中冒出） ── */}
                 {isMoleActive && (
-                  <div className="relative flex flex-col items-center justify-end animate-in fade-in slide-in-from-bottom-8 duration-200">
+                  <div className="relative w-28 sm:w-36 md:w-44 flex flex-col items-center justify-end animate-in fade-in slide-in-from-bottom-8 duration-200">
                     
-                    {/* 地鼠高舉的單字木牌 */}
-                    <div className={`px-2.5 sm:px-3 py-1 rounded-lg border-2 shadow-2xl font-black text-xs sm:text-sm md:text-base tracking-wider mb-[-10px] z-20 backdrop-blur-md select-none transition-transform group-hover:scale-105 ${
-                      mole.isGold
-                        ? 'bg-amber-300 text-stone-950 border-amber-100 ring-4 ring-yellow-400/60 shadow-yellow-500/50'
-                        : mole.isPrank
-                        ? 'bg-rose-600 text-white border-rose-300 shadow-rose-900/50'
-                        : 'bg-stone-900/90 text-amber-300 border-amber-400/80'
-                    }`}>
-                      {mole.word}
-                    </div>
-
                     {/* 地鼠精工透明立體角色圖 */}
                     <img
                       src={
@@ -442,14 +443,45 @@ export const WhackAMoleGame = ({
                           : MOLE_NORMAL
                       }
                       alt="Mole"
-                      className={`w-24 sm:w-28 md:w-36 h-auto object-contain transition-transform select-none pointer-events-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] ${
+                      className={`w-full h-auto object-contain transition-transform select-none pointer-events-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] ${
                         mole.status === 'hit' ? 'scale-90 rotate-12 duration-150' : 'scale-100'
                       }`}
                     />
 
+                    {/* 地鼠手舉木牌 / 金牌上的清晰單字 (完全嵌入木牌中央) */}
+                    {mole.status !== 'hit' && !mole.isPrank && (
+                      <div className="absolute left-[10%] right-[10%] top-[53%] bottom-[19%] flex items-center justify-center pointer-events-none z-10 px-1">
+                        <span className={`font-heading font-black text-center tracking-wide select-none leading-none drop-shadow ${
+                          mole.isGold
+                            ? 'text-amber-950 text-xs sm:text-base md:text-lg font-black'
+                            : 'text-[#3e2712] text-xs sm:text-base md:text-lg font-black drop-shadow-[0_1px_1px_rgba(255,248,220,0.85)]'
+                        }`}>
+                          {mole.word}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* 搗蛋炸彈蜂特別提示標籤 */}
+                    {mole.isPrank && mole.status !== 'hit' && (
+                      <div className="absolute left-[20%] right-[20%] top-[54%] flex items-center justify-center pointer-events-none z-10">
+                        <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px] sm:text-xs shadow-lg animate-pulse border border-rose-300">
+                          ⚠️ 炸彈蜂
+                        </span>
+                      </div>
+                    )}
+
+                    {/* 被敲擊命中時的得分動畫 */}
+                    {mole.status === 'hit' && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                        <span className="text-xl sm:text-3xl font-black text-yellow-300 drop-shadow-[0_0_10px_rgba(234,179,8,1)] animate-bounce font-heading">
+                          {mole.isTarget ? (mole.isGold ? '+60 🌟' : '+10 💥') : '-10 ❌'}
+                        </span>
+                      </div>
+                    )}
+
                     {/* 彩蛋黃金星芒微光 */}
                     {mole.isGold && (
-                      <Sparkles className="absolute -top-3 -right-2 w-6 h-6 text-yellow-300 animate-spin" />
+                      <Sparkles className="absolute top-0 right-2 w-7 h-7 text-yellow-300 animate-spin" />
                     )}
 
                   </div>
