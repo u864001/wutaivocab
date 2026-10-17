@@ -3,7 +3,7 @@ import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { SpotterScene } from './SpotterScene';
 import { SpotterWordBank } from './SpotterWordBank';
-import { SPOTTER_SCENES, DIFFERENCE_CATEGORIES, generateSpotterRound } from './spotterData';
+import { SPOTTER_SCENES, SPOTTER_SCENES_BY_BOOK, DIFFERENCE_CATEGORIES, generateSpotterRound } from './spotterData';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { soundEngine } from '../../services/audio';
 import confetti from 'canvas-confetti';
@@ -18,11 +18,21 @@ export const VocabSpotterGame = ({
   qualifyingBook,
   onBack
 }) => {
-  const currentScene = SPOTTER_SCENES[0];
+  // 依據選取的冊次動態匹配場景（預設為三年級第一冊 Here We Go Book 1 彩虹文具與創意課室）
+  const selectedBook = useMemo(() => {
+    if (qualifyingBook) return String(qualifyingBook);
+    if (settings?.selectedUnits && settings.selectedUnits.length > 0) {
+      const b = String(settings.selectedUnits[0]).split('-')[0];
+      if (b && SPOTTER_SCENES_BY_BOOK[b]) return b;
+    }
+    return '1';
+  }, [qualifyingBook, settings?.selectedUnits]);
+
+  const currentScene = SPOTTER_SCENES_BY_BOOK[selectedBook] || SPOTTER_SCENES_BY_BOOK['1'];
 
   // 每一局動態隨機抽取 5 個目標單字並指定樣態
   const [roundSeed, setRoundSeed] = useState(() => Date.now());
-  const roundData = useMemo(() => generateSpotterRound(5), [roundSeed]);
+  const roundData = useMemo(() => generateSpotterRound(currentScene, 5), [currentScene, roundSeed]);
 
   const { activeDifferences, itemStateMap, wordBankOptions, totalCount } = roundData;
 
@@ -218,7 +228,7 @@ export const VocabSpotterGame = ({
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xl">🦅</span>
+              <Search className="w-5 h-5 text-amber-500" />
               <h2 className="text-base sm:text-lg font-black text-slate-800 dark:text-white font-heading">
                 鷹眼神探 • 單字找不同
               </h2>
@@ -227,7 +237,7 @@ export const VocabSpotterGame = ({
               </span>
             </div>
             <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
-              {currentScene.titleZh} • 20大單字隨機組合 • 找出本局 5 處相異處！
+              {currentScene.titleZh} • 找出本局 5 處相異處並配對正確單字！
             </p>
           </div>
         </div>
@@ -366,6 +376,7 @@ export const VocabSpotterGame = ({
       <div className={`grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 transition-transform ${shakeScene ? 'animate-headShake' : ''}`}>
         {/* 左圖 */}
         <SpotterScene
+          scene={currentScene}
           itemStateMap={itemStateMap}
           activeDifferences={activeDifferences}
           isLeft={true}
@@ -383,6 +394,7 @@ export const VocabSpotterGame = ({
 
         {/* 右圖 */}
         <SpotterScene
+          scene={currentScene}
           itemStateMap={itemStateMap}
           activeDifferences={activeDifferences}
           isLeft={false}

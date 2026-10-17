@@ -3,6 +3,7 @@ import { SPRITE_RENDERERS } from './spotterSprites';
 import { TARGET_ITEMS_POOL } from './spotterData';
 
 export const SpotterScene = ({
+  scene,
   itemStateMap = {},
   activeDifferences = [],
   isLeft = true,
@@ -194,31 +195,15 @@ export const SpotterScene = ({
           )}
         </defs>
 
-        {/* ── 1. 3D 立體紙雕基底全景圖（左右圖共用乾淨無瑕底圖，保證非相異物 100% 相同） ── */}
+        {/* ── 1. 3D 立體紙雕精繪場景全景圖（左圖為基準圖，右圖為專屬成對相異圖） ── */}
         <image
-          href="/assets/spotter/scene_papercraft_left.webp"
+          href={isLeft ? (scene?.baseImage || '/assets/spotter/book1_base.jpg') : (scene?.diffImage || '/assets/spotter/book1_diff.jpg')}
           x="0"
           y="0"
           width="1376"
           height="768"
           preserveAspectRatio="xMidYMid slice"
         />
-
-        {/* ── 2. 動態相異點局部圖層（僅在右側圖、且僅渲染本局隨機選中之 5 處相異目標，其餘未選中物件左右圖完全相同） ── */}
-        {!isLeft && activeDifferences.map(diff => {
-          if (!diff.patch) return null;
-          return (
-            <image
-              key={diff.id}
-              href={diff.patch.url}
-              x={diff.patch.x}
-              y={diff.patch.y}
-              width={diff.patch.width}
-              height={diff.patch.height}
-              preserveAspectRatio="none"
-            />
-          );
-        })}
 
         {/* ── 5. 聚光燈遮罩特效 (Phase 2 Spotlight Effect) ── */}
         {spotlightPos && (
