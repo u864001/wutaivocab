@@ -13,6 +13,7 @@ import { AlphabetMazeGame } from './games/maze/AlphabetMazeGame';
 import { SwipeCardGame } from './games/swipe/SwipeCardGame';
 import { VocabEscapeGame } from './games/escape/VocabEscapeGame';
 import { VocabSpotterGame } from './games/spotter/VocabSpotterGame';
+import { WhackAMoleGame } from './games/mole/WhackAMoleGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
 import { WutaiTownGame } from './games/town/WutaiTownGame';
@@ -246,6 +247,10 @@ export function App() {
         if (window.location.pathname !== '/spotter') {
           window.history.pushState({ view: 'spotter' }, '', '/spotter');
         }
+      } else if (view === 'mole') {
+        if (window.location.pathname !== '/mole') {
+          window.history.pushState({ view: 'mole' }, '', '/mole');
+        }
       } else if (view === 'portal') {
         if (window.location.pathname !== '/') {
           window.history.pushState({ view: 'portal' }, '', '/');
@@ -430,6 +435,15 @@ export function App() {
 
           {currentView === 'spotter' && (
             <VocabSpotterGame
+              settings={settings}
+              words={words}
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
+
+          {currentView === 'mole' && (
+            <WhackAMoleGame
               settings={settings}
               words={words}
               qualifyingBook={qualifyingBook}

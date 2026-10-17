@@ -21,73 +21,62 @@ import {
 } from 'lucide-react';
 
 export const GRADE_LEADERBOARD_TABS = [
-  { id: '01', zh: '一年級', en: 'Grade 1', books: ['abc', '1'], isAlphabet: true, descZh: '字母啟蒙樂園 (字母是非、字母迷宮、字母隕石、記憶翻牌)' },
-  { id: '02', zh: '二年級', en: 'Grade 2', books: ['abc', '2'], isAlphabet: true, descZh: '字母進階樂園 (字母是非、字母迷宮、字母隕石、記憶翻牌)' },
-  { id: '03', zh: '三年級', en: 'Grade 3', books: ['1', '2'], descZh: '第1~2冊綜合競賽' },
-  { id: '04', zh: '四年級', en: 'Grade 4', books: ['3', '4'], descZh: '第3~4冊進階挑戰' },
-  { id: '05', zh: '五年級', en: 'Grade 5', books: ['5', '6'], descZh: '第5~6冊高年級挑戰' },
-  { id: '06', zh: '六年級', en: 'Grade 6', books: ['7', '8'], descZh: '第7~8冊畢業大會考' },
-  { id: 'all', zh: '全校大亂鬥', en: 'All School', books: null, isAllSchool: true, descZh: '全校1~6年級跨冊別、跨模式巔峰大亂鬥與大富翁榮譽榜' }
+  { id: '01', zh: '一年級', en: 'Grade 1', books: ['abc', '1'], isAlphabet: true },
+  { id: '02', zh: '二年級', en: 'Grade 2', books: ['abc', '2'], isAlphabet: true },
+  { id: '03', zh: '三年級', en: 'Grade 3', books: ['1', '2'] },
+  { id: '04', zh: '四年級', en: 'Grade 4', books: ['3', '4'] },
+  { id: '05', zh: '五年級', en: 'Grade 5', books: ['5', '6'] },
+  { id: '06', zh: '六年級', en: 'Grade 6', books: ['7', '8'] },
+  { id: 'all', zh: '全校大亂鬥', en: 'All School', books: null, isAllSchool: true }
 ];
 
+const THEME_WALLPAPERS = {
+  all: '/assets/lobby/theme_explore.jpg',
+  explore: '/assets/lobby/theme_explore.jpg',
+  speed: '/assets/lobby/theme_speed.jpg',
+  quiz: '/assets/lobby/theme_quiz.jpg',
+  battle: '/assets/lobby/theme_battle.jpg',
+  langlab: '/assets/lobby/theme_town.jpg'
+};
+
 export const DOMAIN_CATEGORIES = [
-  { id: 'all', zh: '🌟 全部項目', en: 'All Arenas', descZh: '全校所有學習與競技模式一覽' },
-  { id: 'langlab', zh: '🎧🎙️ 雙語聽說專區', en: 'Language Lab', descZh: '敏銳英聽特訓 ＆ 勇敢開口說演說家榜' },
-  { id: 'arcade', zh: '🕹️ 英語街機與探索', en: 'Arcade & Puzzles', descZh: '主題密室、鷹眼找不同、字母迷宮、貪食蛇與隕石挑戰' },
-  { id: 'campus', zh: '👑 校園榮譽殿堂', en: 'Campus Glory', descZh: '四大經典測驗、連線對戰、大富翁財富榜與小鎮探索' }
+  { id: 'all', zh: '全部項目', en: 'All' },
+  { id: 'explore', zh: '探索解謎', en: 'Explore' },
+  { id: 'speed', zh: '極速反應', en: 'Speed' },
+  { id: 'quiz', zh: '經典測驗', en: 'Quiz' },
+  { id: 'battle', zh: '多人對戰', en: 'Battle' },
+  { id: 'langlab', zh: '雙語聽說', en: 'Language Lab' }
 ];
 
 export const CONSOLIDATED_GAME_MODES = [
-  // ── 雙語聽說專區 (Language Lab) ──
-  {
-    id: 'listening_lab',
-    label: '雙語聽力神耳朵榜',
-    icon: Headphones,
-    color: 'text-sky-500',
-    unit: '題',
-    category: 'langlab',
-    modeKeys: ['listening_lab'],
-    subModes: [{ key: 'listening_lab', label: '聽力特訓' }]
-  },
-  {
-    id: 'speaking_lab',
-    label: '雙語口說演說家榜',
-    icon: Mic,
-    color: 'text-rose-500',
-    unit: '題',
-    category: 'langlab',
-    modeKeys: ['speaking_lab'],
-    subModes: [{ key: 'speaking_lab', label: '口說跟讀' }]
-  },
-
-  // ── 沉浸解謎與主題探索館 (Arcade & Puzzles) ──
+  // ── 探索解謎 (Explore) ──
   {
     id: 'escape',
-    label: '神祕密室大脫逃',
+    label: '密室逃脫',
     icon: KeyRound,
-    color: 'text-amber-500',
+    color: 'text-amber-400',
     unit: '秒',
-    category: 'arcade',
+    category: 'explore',
     modeKeys: ['escape'],
     subModes: [{ key: 'escape', label: '三連環脫逃' }]
   },
   {
     id: 'spotter',
-    label: '鷹眼神探找不同',
+    label: '神探找不同',
     icon: Eye,
-    color: 'text-amber-500',
+    color: 'text-amber-400',
     unit: '秒',
-    category: 'arcade',
+    category: 'explore',
     modeKeys: ['spotter'],
     subModes: [{ key: 'spotter', label: '鷹眼搜查' }]
   },
   {
     id: 'maze',
-    label: '字母巡航迷宮',
+    label: '字母迷宮',
     icon: Compass,
-    color: 'text-violet-500',
+    color: 'text-teal-400',
     unit: '秒',
-    category: 'arcade',
+    category: 'explore',
     modeKeys: ['maze-upper', 'maze-lower', 'maze-master'],
     subModes: [
       { key: 'maze-upper', label: '大寫巡航' },
@@ -95,24 +84,37 @@ export const CONSOLIDATED_GAME_MODES = [
     ]
   },
   {
-    id: 'spelling',
-    label: '拖曳拼字大師',
-    icon: Puzzle,
-    color: 'text-pink-500',
+    id: 'memory',
+    label: '記憶翻牌',
+    icon: Trophy,
+    color: 'text-cyan-400',
     unit: '分',
-    category: 'arcade',
-    modeKeys: ['spelling'],
-    subModes: [{ key: 'spelling', label: '標準拼字' }]
+    category: 'explore',
+    modeKeys: ['memory-single'],
+    subModes: [{ key: 'memory-single', label: '標準翻牌' }]
   },
 
-  // ── 極速反應與街機挑戰館 ──
+  // ── 極速反應 (Speed) ──
+  {
+    id: 'mole',
+    label: '單字打地鼠',
+    icon: Zap,
+    color: 'text-amber-400',
+    unit: '分',
+    category: 'speed',
+    modeKeys: ['mole-vocab', 'mole-abc'],
+    subModes: [
+      { key: 'mole-vocab', label: '單字地穴' },
+      { key: 'mole-abc', label: '字母地穴' }
+    ]
+  },
   {
     id: 'swipe',
-    label: '極速是非滑牌',
+    label: '是非滑牌',
     icon: Flame,
-    color: 'text-rose-500',
+    color: 'text-rose-400',
     unit: '分',
-    category: 'arcade',
+    category: 'speed',
     modeKeys: ['swipe-vocab', 'swipe-abc'],
     subModes: [
       { key: 'swipe-vocab', label: '30秒單字' },
@@ -120,26 +122,12 @@ export const CONSOLIDATED_GAME_MODES = [
     ]
   },
   {
-    id: 'snake',
-    label: '叢林貪食蛇',
-    icon: Sparkles,
-    color: 'text-emerald-500',
-    unit: '分',
-    category: 'arcade',
-    modeKeys: ['snake-normal', 'snake-survival', 'snake-easy'],
-    subModes: [
-      { key: 'snake-normal', label: '競速挑戰' },
-      { key: 'snake-survival', label: '生存挑戰' },
-      { key: 'snake-easy', label: '新手引導' }
-    ]
-  },
-  {
     id: 'meteor',
-    label: '隕石防衛戰',
+    label: '隕石防衛',
     icon: Rocket,
-    color: 'text-indigo-500',
+    color: 'text-amber-400',
     unit: '分',
-    category: 'arcade',
+    category: 'speed',
     modeKeys: ['meteor-zh-en', 'meteor-en-zh', 'meteor-abc'],
     subModes: [
       { key: 'meteor-zh-en', label: '中選英' },
@@ -148,24 +136,37 @@ export const CONSOLIDATED_GAME_MODES = [
     ]
   },
   {
-    id: 'memory',
-    label: '星際記憶翻牌',
-    icon: Trophy,
-    color: 'text-cyan-500',
+    id: 'snake',
+    label: '百步貪蛇',
+    icon: Zap,
+    color: 'text-emerald-400',
     unit: '分',
-    category: 'arcade',
-    modeKeys: ['memory-single'],
-    subModes: [{ key: 'memory-single', label: '標準翻牌' }]
+    category: 'speed',
+    modeKeys: ['snake-normal', 'snake-survival', 'snake-easy'],
+    subModes: [
+      { key: 'snake-normal', label: '競速挑戰' },
+      { key: 'snake-survival', label: '生存挑戰' }
+    ]
+  },
+  {
+    id: 'spelling',
+    label: '拖曳拼字',
+    icon: Puzzle,
+    color: 'text-yellow-400',
+    unit: '分',
+    category: 'speed',
+    modeKeys: ['spelling'],
+    subModes: [{ key: 'spelling', label: '標準拼字' }]
   },
 
-  // ── 經典測驗、多人競技與探索特區 (Campus Glory) ──
+  // ── 經典測驗 (Quiz) ──
   {
     id: 'quiz',
     label: '四大經典測驗',
     icon: Keyboard,
-    color: 'text-blue-500',
+    color: 'text-sky-400',
     unit: '分',
-    category: 'campus',
+    category: 'quiz',
     modeKeys: ['quiz-zh-en', 'quiz-en-zh', 'quiz-listening', 'quiz-hard'],
     subModes: [
       { key: 'quiz-zh-en', label: '中選英' },
@@ -174,37 +175,50 @@ export const CONSOLIDATED_GAME_MODES = [
       { key: 'quiz-hard', label: '魔王綜合' }
     ]
   },
+
+  // ── 多人對戰 (Battle) ──
   {
     id: 'battle',
-    label: '連線對戰之王',
+    label: '多人連線',
     icon: Swords,
-    color: 'text-amber-500',
+    color: 'text-purple-400',
     unit: '勝',
-    category: 'campus',
+    category: 'battle',
     modeKeys: ['battle-wins'],
     subModes: [{ key: 'battle-wins', label: '勝場累積' }]
   },
   {
     id: 'monopoly',
-    label: '大富翁財富榜',
+    label: '大富翁財富',
     icon: Coins,
     color: 'text-amber-400',
     unit: '金幣',
-    category: 'campus',
+    category: 'battle',
     isSpecial: 'monopoly',
     modeKeys: ['monopoly'],
     subModes: [{ key: 'monopoly', label: '金幣總資產' }]
   },
+
+  // ── 雙語聽說 (Language Lab) ──
   {
-    id: 'town-quest',
-    label: '小鎮探索榮譽榜',
-    icon: Award,
-    color: 'text-indigo-400',
-    unit: '積分',
-    category: 'campus',
-    isSpecial: 'quest',
-    modeKeys: ['town-quest'],
-    subModes: [{ key: 'town-quest', label: '任務積分' }]
+    id: 'listening_lab',
+    label: '聽力特訓',
+    icon: Headphones,
+    color: 'text-sky-400',
+    unit: '題',
+    category: 'langlab',
+    modeKeys: ['listening_lab'],
+    subModes: [{ key: 'listening_lab', label: '聽力特訓' }]
+  },
+  {
+    id: 'speaking_lab',
+    label: '口說跟讀',
+    icon: Mic,
+    color: 'text-rose-400',
+    unit: '題',
+    category: 'langlab',
+    modeKeys: ['speaking_lab'],
+    subModes: [{ key: 'speaking_lab', label: '口說跟讀' }]
   }
 ];
 
@@ -337,32 +351,43 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
     return [bookLabel, modeLabel].filter(Boolean).join(' • ');
   };
 
+  const currentWallpaper = THEME_WALLPAPERS[selectedDomain] || THEME_WALLPAPERS.all;
+
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-4 sm:py-6 animate-fadeIn pb-16">
-      {/* ── 頂部導覽列 ── */}
-      <div className="flex items-center justify-between mb-5">
-        <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
-          {t.backLobby || '回大廳'}
-        </Button3D>
+    <div className="relative min-h-screen w-full select-none animate-fadeIn pb-16">
+      {/* ── 專屬主題海報全景背景層 (依點選分類平滑切換) ── */}
+      <img
+        src={currentWallpaper}
+        alt="Theme Wallpaper"
+        className="fixed inset-0 w-full h-full object-cover object-center brightness-[0.25] contrast-[1.15] transition-all duration-700 pointer-events-none select-none"
+      />
+      <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md pointer-events-none" />
 
-        <h2
-          onClick={handleTitleClick}
-          className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 font-heading flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform"
-          title="連續點擊 5 次啟動管理後台"
-        >
-          <Trophy className="w-8 h-8 text-amber-500 animate-bounce" />
-          {t.heroHallTitle || '全校英雄榮譽榜'}
-        </h2>
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+        {/* ── 頂部導覽列 ── */}
+        <div className="flex items-center justify-between mb-5">
+          <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
+            {t.backLobby || '回大廳'}
+          </Button3D>
 
-        <button
-          onClick={() => loadGradeBoards(true)}
-          disabled={isLoading}
-          className="p-2.5 rounded-2xl bg-white/80 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:scale-105 active:scale-95 transition-transform cursor-pointer shadow-sm"
-          title={t.refresh || '重新整理'}
-        >
-          <RotateCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-        </button>
-      </div>
+          <h2
+            onClick={handleTitleClick}
+            className="text-2xl sm:text-3xl font-black text-white font-heading flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform drop-shadow"
+            title="連續點擊 5 次啟動管理後台"
+          >
+            <Trophy className="w-8 h-8 text-amber-400 animate-bounce" />
+            {t.heroHallTitle || '全校英雄榮譽榜'}
+          </h2>
+
+          <button
+            onClick={() => loadGradeBoards(true)}
+            disabled={isLoading}
+            className="p-2.5 rounded-2xl bg-slate-850/80 border border-white/20 text-slate-300 hover:text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer shadow-sm"
+            title={t.refresh || '重新整理'}
+          >
+            <RotateCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
 
       {/* ── 年級分流分頁導覽列 (一到六年級 + 全校大亂鬥 共 7 大類別) ── */}
       <div className="mb-4">
@@ -610,62 +635,141 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
 
         if (selectedDomain === 'langlab') {
           return (
-            <div className="space-y-4 animate-fadeIn">
-              <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-sky-950/70 to-indigo-950/70 border border-sky-400/40 shadow-lg">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-sky-500/25 text-sky-300 flex items-center justify-center font-black shrink-0">
-                    <Headphones className="w-5 h-5 text-sky-400" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm sm:text-base font-black text-white font-heading flex items-center gap-2">
-                      <span>雙語聽說探險專區 (Language Lab)</span>
-                      <span className="px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 text-[10px] font-bold">
-                        聽說分立
-                      </span>
-                    </h4>
-                    <p className="text-xs text-sky-200/90 font-bold mt-0.5">
-                      敏銳英聽 15 題特訓 ＆ 勇敢開口 15 題跟讀，雙榜獨立榮譽留名！
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'langlab').map(m => renderModeCard(m, true))}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 animate-fadeIn">
+              {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'langlab').map(m => renderModeCard(m, true))}
             </div>
           );
         }
 
-        if (selectedDomain === 'arcade') {
+        if (selectedDomain !== 'all') {
           return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-fadeIn">
-              {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'arcade').map(m => renderModeCard(m))}
+              {CONSOLIDATED_GAME_MODES.filter(m => m.category === selectedDomain).map(m => renderModeCard(m))}
             </div>
           );
         }
 
-        if (selectedDomain === 'campus') {
-          return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-fadeIn">
-              {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'campus').map(m => renderModeCard(m))}
-            </div>
-          );
-        }
-
-        // 預設全部模式：依三大專區層次化整齊排列
+        // 預設全部項目：依五大主題分類整齊呈現
         return (
           <div className="space-y-8 animate-fadeIn">
-            {/* 1. 雙語聽說專區 */}
+            {/* 1. 探索解謎 */}
             <div>
-              <div className="flex items-center justify-between mb-3 pb-1 border-b border-sky-500/30">
+              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-emerald-500/30">
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">🎧🎙️</span>
+                  <span className="text-lg">🧭</span>
+                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-emerald-300">
+                    探索解謎 (Explore)
+                  </h4>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
+                    4 大關卡
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    soundEngine.click();
+                    setSelectedDomain('explore');
+                  }}
+                  className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>聚焦此主題 ➔</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'explore').map(m => renderModeCard(m))}
+              </div>
+            </div>
+
+            {/* 2. 極速反應 */}
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-amber-500/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">⚡</span>
+                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-amber-300">
+                    極速反應 (Speed)
+                  </h4>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-bold">
+                    5 大關卡
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    soundEngine.click();
+                    setSelectedDomain('speed');
+                  }}
+                  className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>聚焦此主題 ➔</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'speed').map(m => renderModeCard(m))}
+              </div>
+            </div>
+
+            {/* 3. 經典測驗 */}
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-sky-500/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">📖</span>
                   <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-sky-300">
-                    雙語聽說專區 (Language Lab)
+                    經典測驗 (Quiz)
                   </h4>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 font-bold">
-                    核心學力
+                    4 大題型
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    soundEngine.click();
+                    setSelectedDomain('quiz');
+                  }}
+                  className="text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>聚焦此主題 ➔</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'quiz').map(m => renderModeCard(m))}
+              </div>
+            </div>
+
+            {/* 4. 多人對戰 */}
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-purple-500/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">⚔️</span>
+                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-purple-300">
+                    多人對戰 (Battle)
+                  </h4>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400 font-bold">
+                    連線與財富
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    soundEngine.click();
+                    setSelectedDomain('battle');
+                  }}
+                  className="text-xs font-bold text-purple-400 hover:text-purple-300 flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>聚焦此主題 ➔</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'battle').map(m => renderModeCard(m))}
+              </div>
+            </div>
+
+            {/* 5. 雙語聽說 */}
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-rose-500/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🎧</span>
+                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-rose-300">
+                    雙語聽說 (Language Lab)
+                  </h4>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 font-bold">
+                    聽說分立
                   </span>
                 </div>
                 <button
@@ -673,67 +777,13 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                     soundEngine.click();
                     setSelectedDomain('langlab');
                   }}
-                  className="text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-0.5 cursor-pointer"
+                  className="text-xs font-bold text-rose-400 hover:text-rose-300 flex items-center gap-0.5 cursor-pointer"
                 >
-                  <span>聚焦此專區 ➔</span>
+                  <span>聚焦此主題 ➔</span>
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                 {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'langlab').map(m => renderModeCard(m, true))}
-              </div>
-            </div>
-
-            {/* 2. 英語街機與探索 */}
-            <div>
-              <div className="flex items-center justify-between mb-3 pb-1 border-b border-emerald-500/30">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">🕹️</span>
-                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-emerald-300">
-                    英語街機與主題探索 (Arcade & Puzzles)
-                  </h4>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
-                    8 大趣味關卡
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    soundEngine.click();
-                    setSelectedDomain('arcade');
-                  }}
-                  className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>聚焦此專區 ➔</span>
-                </button>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'arcade').map(m => renderModeCard(m))}
-              </div>
-            </div>
-
-            {/* 3. 校園榮譽殿堂 */}
-            <div>
-              <div className="flex items-center justify-between mb-3 pb-1 border-b border-indigo-500/30">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">👑</span>
-                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-indigo-300">
-                    校園測驗與總榮譽 (Campus Prestige)
-                  </h4>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 font-bold">
-                    競技與財富榜
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    soundEngine.click();
-                    setSelectedDomain('campus');
-                  }}
-                  className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>聚焦此專區 ➔</span>
-                </button>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'campus').map(m => renderModeCard(m))}
               </div>
             </div>
           </div>
@@ -870,6 +920,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
