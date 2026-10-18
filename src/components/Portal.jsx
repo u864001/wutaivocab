@@ -56,49 +56,6 @@ export const Portal = ({
       </div>
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-3 sm:px-4 py-3 sm:py-6 space-y-4 sm:space-y-6 animate-fadeIn pb-14">
-        {/* ── 頂部歡迎便當塊 ── */}
-        <GlassCard className="relative overflow-hidden bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border-2 border-emerald-300/60 dark:border-emerald-700/60 p-3 sm:p-7 shadow-lg">
-          {/* 背景裝飾：遠處大武山晨嵐微光 */}
-          <div className="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-emerald-500/15 dark:bg-emerald-500/10 blur-3xl pointer-events-none" />
-
-          <div className="flex items-center justify-between gap-3 sm:gap-4 relative z-10">
-            <div className="flex items-center gap-3 sm:gap-5 min-w-0 flex-1">
-              {/* 霧臺學習宇宙徽章圖示 (連續點選 5 次直通後台) */}
-              <div
-                onClick={handleAdminTrigger}
-                className="w-12 h-12 sm:w-18 sm:h-18 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 cursor-pointer select-none active:scale-95 transition-transform shrink-0"
-                title="霧臺國小 英語學習宇宙"
-              >
-                <Sparkles className="w-6 h-6 sm:w-10 sm:h-10 animate-pulse pointer-events-none" />
-              </div>
-
-              <div className="flex-1 min-w-0">
-                {/* 魯凱文化標籤 */}
-                <div className="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-400/20 text-emerald-800 dark:text-emerald-300 text-[10px] sm:text-xs font-black mb-0.5 sm:mb-1">
-                  <span>🌿</span>
-                  <span className="truncate">
-                    {lang === 'zh-TW' ? '霧臺國小 • 魯凱雙語學習宇宙' : 'Wutai Elementary Bilingual Hub'}
-                  </span>
-                </div>
-
-                {/* 主標題 */}
-                <div className="flex items-center gap-2">
-                  <h2
-                    onClick={handleAdminTrigger}
-                    className="text-lg sm:text-3xl font-black text-slate-800 dark:text-white font-heading cursor-pointer select-none tracking-wide truncate"
-                  >
-                    {t.portalTitle}
-                  </h2>
-                </div>
-
-                {/* 精簡副標題 (手機版隱藏以省下垂直高度，電腦版正常顯示) */}
-                <p className="hidden sm:block text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mt-0.5 truncate">
-                  {lang === 'zh-TW' ? '教育部課綱教材與部落情境英語探險' : 'Curriculum & Tribal Adventure'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </GlassCard>
 
         {/* ══════════════════════════════════════════════════════════ */}
         {/* 📱 1. 手機專屬極精簡版面 (Mobile Ultra-Compact Mode, < 640px) */}

@@ -16,20 +16,20 @@ const MOLE_DIZZY = '/assets/mole/mole_dizzy.png';
 const MOLE_GOLD = '/assets/mole/mole_gold.png';
 const MOLE_PRANK = '/assets/mole/mole_prank.png';
 
-// 9 個自然地洞精準幾何透視座標百分比 (3x3 自然弧形排列，互不交疊)
+// 9 個自然地洞精準幾何座標百分比 (與 stage_bg.jpg 背景石圈 100% 貼合，上中下三排柱狀感應區完全獨立互不交疊)
 const HOLE_POSITIONS = [
-  // 上排（遠景 3 洞：scale 0.86, z-index 10）
-  { id: 0, x: 26, y: 53, scale: 0.86, zIndex: 10 },
-  { id: 1, x: 50, y: 51, scale: 0.84, zIndex: 10 },
-  { id: 2, x: 74, y: 53, scale: 0.86, zIndex: 10 },
-  // 中排（中景 3 洞：scale 0.96, z-index 20）
-  { id: 3, x: 21, y: 69, scale: 0.96, zIndex: 20 },
-  { id: 4, x: 50, y: 67, scale: 0.94, zIndex: 20 },
-  { id: 5, x: 79, y: 69, scale: 0.96, zIndex: 20 },
-  // 下排（近景 3 洞：scale 1.08, z-index 30）
-  { id: 6, x: 17, y: 86, scale: 1.08, zIndex: 30 },
-  { id: 7, x: 50, y: 84, scale: 1.06, zIndex: 30 },
-  { id: 8, x: 83, y: 86, scale: 1.08, zIndex: 30 }
+  // 上排（遠景 3 洞：y: 50.5%, height: 12.5%, zIndex: 10）
+  { id: 0, x: 37.8, y: 50.8, width: 13, height: 12.5, zIndex: 10 },
+  { id: 1, x: 50.0, y: 50.2, width: 13, height: 12.5, zIndex: 10 },
+  { id: 2, x: 62.5, y: 50.8, width: 13, height: 12.5, zIndex: 10 },
+  // 中排（中景 3 洞：y: 61.5%, height: 11.2%, zIndex: 20）
+  { id: 3, x: 34.6, y: 61.2, width: 15, height: 11.2, zIndex: 20 },
+  { id: 4, x: 50.0, y: 61.8, width: 15, height: 11.2, zIndex: 20 },
+  { id: 5, x: 65.4, y: 61.2, width: 15, height: 11.2, zIndex: 20 },
+  // 下排（近景 3 洞：y: 76.5%, height: 14.0%, zIndex: 30）
+  { id: 6, x: 31.6, y: 75.8, width: 17, height: 14.0, zIndex: 30 },
+  { id: 7, x: 50.0, y: 76.5, width: 17, height: 14.0, zIndex: 30 },
+  { id: 8, x: 68.4, y: 75.8, width: 17, height: 14.0, zIndex: 30 }
 ];
 
 export const WhackAMoleGame = ({
@@ -111,6 +111,15 @@ export const WhackAMoleGame = ({
   // 全場換題鎖定標誌（防止多指同時點擊誤觸）
   const isTransitioningRef = useRef(false);
 
+  // 即時剩餘秒數參照（供地鼠派發讀取難度，絕不放入 useCallback 依賴以防每秒連鎖重抽換題）
+  const timeLeftRef = useRef(60);
+
+  // 換題發動函數參照
+  const startNextQuestionRef = useRef(null);
+
+  // 是否已初次載入啟動
+  const hasStartedRef = useRef(false);
+
   // 當前地鼠計時器群組參照
   const moleTimersRef = useRef([]);
 
@@ -133,7 +142,7 @@ export const WhackAMoleGame = ({
     }
   }, [isBerserk]);
 
-  // 元件卸載時務必重設音樂播放速率
+  // 元件卸載時務必重設音樂播放速率與清除所有地鼠計時器
   useEffect(() => {
     return () => {
       bgmManager.setPlaybackRate(1.0);
@@ -141,17 +150,19 @@ export const WhackAMoleGame = ({
     };
   }, [clearAllMoleTimers]);
 
-  // ── 5. 倒數 60 秒計時器 ──
+  // ── 5. 倒數 60 秒計時器（僅更新倒數數值，不影響題目生命週期） ──
   useEffect(() => {
     if (gameState !== 'playing') return;
+    timeLeftRef.current = 60;
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 1) {
+        const nextVal = prev <= 1 ? 0 : prev - 1;
+        timeLeftRef.current = nextVal;
+        if (nextVal === 0) {
           clearInterval(timer);
           triggerGameOver('timeup');
-          return 0;
         }
-        return prev - 1;
+        return nextVal;
       });
     }, 1000);
     return () => clearInterval(timer);
@@ -173,22 +184,47 @@ export const WhackAMoleGame = ({
     return untestedQueueRef.current.pop() || rawWordPool[0];
   }, [rawWordPool]);
 
-  // ── 7. 派發地鼠核心機制（依時間推進動態難度） ──
+  // ── 7. 正解超時未點擊處理 (Miss Timeout) ──
+  const handleMissTimeout = useCallback((missedTarget) => {
+    if (isTransitioningRef.current || gameState !== 'playing') return;
+    isTransitioningRef.current = true;
+    clearAllMoleTimers();
+
+    // 中斷連擊
+    setCombo(0);
+
+    // 將該錯過題目沉入錯題複習池
+    if (!retryPoolRef.current.some(w => w.word === missedTarget.word)) {
+      retryPoolRef.current.push(missedTarget);
+    }
+
+    // 全場所有活動地鼠平滑下沉
+    setHoles(curr => curr.map(h => h ? { ...h, status: 'retreating' } : null));
+
+    setTimeout(() => {
+      setHoles(Array(9).fill(null));
+      setRoundIndex(r => r + 1);
+      startNextQuestionRef.current?.();
+    }, 450);
+  }, [gameState, clearAllMoleTimers]);
+
+  // ── 8. 派發地鼠核心機制（依時間推進動態難度，不綁定每秒更新） ──
   const spawnMolesForTarget = useCallback((targetWord) => {
     if (gameState !== 'playing' || !targetWord) return;
 
     clearAllMoleTimers();
     isTransitioningRef.current = false;
 
-    // 難度參數計算（大幅放慢節奏，時間充裕，符合 4.5~6 秒不等）：
-    // 前 25 秒：2 隻（1正解 + 1誘答），停留 5.0 ~ 5.6 秒
-    // 25~50 秒：3 隻（1正解 + 2誘答/炸彈），停留 4.2 ~ 4.8 秒
+    // 難度參數計算（透過 timeLeftRef 讀取即時秒數，避免每秒觸發 hook 重新建立）：
+    // 前 25 秒：2 隻（1正解 + 1誘答），停留 4.8 ~ 5.4 秒
+    // 25~50 秒：3 隻（1正解 + 2誘答/炸彈），停留 4.0 ~ 4.6 秒
     // 最後 10 秒（狂暴期）：3 ~ 4 隻，停留 3.0 ~ 3.4 秒
-    const isLateGame = timeLeft <= 35;
-    const isLastBurst = timeLeft <= 10;
+    const currentSecs = timeLeftRef.current;
+    const isLateGame = currentSecs <= 35;
+    const isLastBurst = currentSecs <= 10;
 
     const moleCount = isLastBurst ? (Math.random() < 0.5 ? 4 : 3) : isLateGame ? 3 : 2;
-    const baseDuration = isLastBurst ? 3200 : isLateGame ? 4400 : 5200;
+    const baseDuration = isLastBurst ? 3200 : isLateGame ? 4200 : 5000;
 
     // 隨機選取不重複的洞穴索引
     const shuffledHoles = [0, 1, 2, 3, 4, 5, 6, 7, 8].sort(() => 0.5 - Math.random());
@@ -205,12 +241,12 @@ export const WhackAMoleGame = ({
 
     // 皇冠彩蛋鼠（8% 機率）與 蜂巢搗蛋鼠（前 15 秒不出現，之後 15% 機率）
     const isGoldSpawn = Math.random() < 0.08;
-    const isPrankSpawn = !isGoldSpawn && timeLeft <= 45 && Math.random() < 0.18;
+    const isPrankSpawn = !isGoldSpawn && currentSecs <= 45 && Math.random() < 0.18;
 
     // 組裝初始地鼠狀態（進入 'emerging' 狀態）
     const nextHoles = Array(9).fill(null);
 
-    // 正解地鼠（停留約 4.8 ~ 5.6 秒）
+    // 正解地鼠（停留約 4.8 ~ 5.5 秒）
     const targetDuration = baseDuration + Math.floor(Math.random() * 450);
     nextHoles[targetHoleIdx] = {
       word: targetWord.word,
@@ -248,7 +284,7 @@ export const WhackAMoleGame = ({
     moleTimersRef.current.push(emergeTimer);
 
     // 為每隻誘答地鼠設定各自獨立的超時縮回時間（帶有些許隨機秒數差距）
-    distractorHoleIndices.forEach((hIdx, idx) => {
+    distractorHoleIndices.forEach((hIdx) => {
       const indepDuration = baseDuration - 300 + Math.floor(Math.random() * 600);
       const distTimer = setTimeout(() => {
         setHoles(curr => {
@@ -276,47 +312,28 @@ export const WhackAMoleGame = ({
     }, targetDuration);
     moleTimersRef.current.push(targetExpireTimer);
 
-  }, [gameState, timeLeft, rawWordPool, clearAllMoleTimers]);
+  }, [gameState, rawWordPool, clearAllMoleTimers, handleMissTimeout]);
 
-  // ── 8. 初始化與換題發動 ──
+  // ── 9. 初始化與換題發動 ──
   const startNextQuestion = useCallback(() => {
+    if (gameState !== 'playing') return;
     const nextTarget = getNextWord();
     setCurrentTarget(nextTarget);
     if (nextTarget?.word) {
       speakEnglish(nextTarget.word);
     }
     spawnMolesForTarget(nextTarget);
-  }, [getNextWord, spawnMolesForTarget]);
+  }, [gameState, getNextWord, spawnMolesForTarget]);
 
-  // 初始化啟動
+  startNextQuestionRef.current = startNextQuestion;
+
+  // 初始化啟動 (嚴格只在初次載入或重玩時執行一次，絕不受每秒計時器干擾)
   useEffect(() => {
+    if (hasStartedRef.current) return;
+    hasStartedRef.current = true;
     initQueues();
     startNextQuestion();
   }, [initQueues, startNextQuestion]);
-
-  // ── 9. 正解超時未點擊處理 (Miss Timeout) ──
-  const handleMissTimeout = (missedTarget) => {
-    if (isTransitioningRef.current || gameState !== 'playing') return;
-    isTransitioningRef.current = true;
-    clearAllMoleTimers();
-
-    // 中斷連擊
-    setCombo(0);
-
-    // 將該錯過題目沉入錯題複習池
-    if (!retryPoolRef.current.some(w => w.word === missedTarget.word)) {
-      retryPoolRef.current.push(missedTarget);
-    }
-
-    // 全場所有活動地鼠平滑下沉
-    setHoles(curr => curr.map(h => h ? { ...h, status: 'retreating' } : null));
-
-    setTimeout(() => {
-      setHoles(Array(9).fill(null));
-      setRoundIndex(r => r + 1);
-      startNextQuestion();
-    }, 400);
-  };
 
   // ── 10. 點擊判定處理 (Once-per-spawn 全局鎖定與全場平滑縮回) ──
   const handleWhack = (holeId) => {
@@ -465,13 +482,14 @@ export const WhackAMoleGame = ({
     setMaxCombo(0);
     setLives(3);
     setTimeLeft(60);
+    timeLeftRef.current = 60;
     setRoundIndex(0);
     setHoles(Array(9).fill(null));
     initQueues();
     setGameState('playing');
     setTimeout(() => {
       startNextQuestion();
-    }, 100);
+    }, 120);
   };
 
   return (
@@ -613,7 +631,7 @@ export const WhackAMoleGame = ({
             const holeMole = holes[holePos.id];
             const hasActiveMole = holeMole !== null && holeMole.status !== 'hidden';
 
-            // 動態垂直位移：emerging/visible/hit 為 0 (探出)，retreating 為 115% (沉沒)
+            // 動態垂直位移：emerging/visible/hit 為 0 (探出)，retreating 為 full (沉入地洞)
             const isEmerged = hasActiveMole && (holeMole.status === 'emerging' || holeMole.status === 'visible' || holeMole.status === 'hit');
 
             return (
@@ -622,33 +640,34 @@ export const WhackAMoleGame = ({
                 style={{
                   left: `${holePos.x}%`,
                   top: `${holePos.y}%`,
-                  transform: `translate(-50%, -100%) scale(${holePos.scale})`,
-                  zIndex: holePos.zIndex
+                  transform: 'translate(-50%, -96%)',
+                  zIndex: holePos.zIndex,
+                  width: `${holePos.width}%`,
+                  height: `${holePos.height}%`
                 }}
                 /* 
                    【核心架構：獨立柱狀 Hitbox】
-                   只要該洞有安排老鼠，整根垂直柱狀區域均可點擊（即使老鼠剛探頭亦可敲擊），
-                   垂直高度嚴格限制在 14%，上排、中排、下排各自完全獨立，前後排 100% 絕不交疊遮蔽！
+                   只要該洞有安排老鼠，整根垂直柱狀區域均為唯一獨立點擊區（剛露頭亦可點擊），
+                   垂直高度依景深分區完全獨立（上排、中排、下排完全不相交），前後左右 100% 絕不交疊遮蔽！
                    無老鼠時 pointer-events: none 完全穿透。
                 */
                 onClick={() => hasActiveMole && handleWhack(holePos.id)}
-                className={`absolute w-[20%] sm:w-[17%] md:w-[15%] h-[14%] sm:h-[14.5%] flex flex-col justify-end items-center cursor-pointer select-none ${
+                className={`absolute flex flex-col justify-end items-center cursor-pointer select-none ${
                   hasActiveMole ? 'pointer-events-auto' : 'pointer-events-none'
                 }`}
               >
-                
-                {/* ── 地穴垂直升降井道（overflow-hidden 實現真物理鑽出／沒入，老鼠頂多探出上半身 1/3 ~ 1/2） ── */}
-                <div className="relative w-full h-[90%] overflow-hidden flex flex-col justify-end items-center pointer-events-none">
+                {/* ── 地穴垂直升降井道（overflow-hidden 實現真物理鑽出／沉入） ── */}
+                <div className="relative w-full h-full overflow-hidden flex flex-col justify-end items-center pointer-events-none">
                   
-                  {/* 地鼠實體角色（平滑 translateY 垂直動畫，露出頭部、臉部與木牌，腹部在洞內） */}
                   {hasActiveMole && (
                     <div
-                      className={`relative w-full flex flex-col items-center justify-end transform transition-transform ${
-                        isEmerged ? 'translate-y-[12%] duration-[450ms] ease-out' : 'translate-y-[115%] duration-[450ms] ease-in'
+                      className={`relative w-full h-full flex flex-col items-center justify-end transform transition-transform ${
+                        isEmerged
+                          ? 'translate-y-0 duration-[450ms] ease-out'
+                          : 'translate-y-full duration-[450ms] ease-in'
                       }`}
                     >
-                      
-                      {/* 地鼠精工透明立體角色圖 */}
+                      {/* 地鼠精工半身透明立體角色圖（頭頂安全帽、眼睛、鼻子、捧牌 100% 完整無裁切） */}
                       <img
                         src={
                           holeMole.status === 'hit'
@@ -660,28 +679,28 @@ export const WhackAMoleGame = ({
                             : MOLE_NORMAL
                         }
                         alt="Mole"
-                        className={`w-[92%] sm:w-[88%] h-auto object-contain select-none pointer-events-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] ${
-                          holeMole.status === 'hit' ? 'scale-90 rotate-12 duration-150' : 'scale-100'
+                        className={`h-full w-auto object-contain object-bottom select-none pointer-events-none drop-shadow-[0_6px_12px_rgba(0,0,0,0.6)] ${
+                          holeMole.status === 'hit' ? 'scale-95 duration-150' : 'scale-100'
                         }`}
                       />
 
-                      {/* 地鼠手舉木牌 / 金牌上的清晰單字 (完全嵌入木牌中央) */}
+                      {/* 地鼠手舉木牌 / 金牌上的清晰單字 (字牌位置在精靈圖下半部 60% ~ 96%) */}
                       {holeMole.status !== 'hit' && !holeMole.isPrank && (
-                        <div className="absolute left-[8%] right-[8%] top-[53%] bottom-[20%] flex items-center justify-center pointer-events-none z-10 px-1">
-                          <span className={`font-heading font-black text-center tracking-wide select-none leading-none drop-shadow ${
+                        <div className="absolute left-[10%] right-[10%] top-[60%] bottom-[5%] flex items-center justify-center pointer-events-none z-10 px-1">
+                          <span className={`font-heading font-black text-center tracking-tight select-none leading-none drop-shadow truncate ${
                             holeMole.isGold
-                              ? 'text-amber-950 text-xs sm:text-base md:text-lg font-black'
-                              : 'text-[#3e2712] text-xs sm:text-base md:text-lg font-black drop-shadow-[0_1px_1px_rgba(255,248,220,0.85)]'
+                              ? 'text-amber-950 text-xs sm:text-sm md:text-base font-black'
+                              : 'text-[#36200d] text-xs sm:text-sm md:text-base font-black drop-shadow-[0_1px_1px_rgba(255,248,220,0.85)]'
                           }`}>
                             {holeMole.word}
                           </span>
                         </div>
                       )}
 
-                      {/* 蜂巢搗蛋鼠：蜜蜂已繪於身體兩側，手舉蜂巢本體即為視覺警示 */}
+                      {/* 蜂巢搗蛋鼠：手舉蜂巢警示 */}
                       {holeMole.isPrank && holeMole.status !== 'hit' && (
-                        <div className="absolute left-[15%] right-[15%] top-[54%] flex items-center justify-center pointer-events-none z-10">
-                          <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px] sm:text-xs shadow-lg animate-pulse border border-rose-300">
+                        <div className="absolute left-[8%] right-[8%] top-[64%] flex items-center justify-center pointer-events-none z-10">
+                          <span className="px-1.5 py-0.5 rounded-full bg-rose-600 text-white font-black text-[9px] sm:text-xs shadow-lg animate-pulse border border-rose-300 whitespace-nowrap">
                             ⚠️ 搗蛋蜂
                           </span>
                         </div>
@@ -690,7 +709,7 @@ export const WhackAMoleGame = ({
                       {/* 被擊中時的跳出反饋（眼冒金星 ＋ 飄字） */}
                       {holeMole.status === 'hit' && holeMole.hitResult && (
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
-                          <span className={`text-xl sm:text-3xl font-black font-heading animate-bounce drop-shadow-[0_0_12px_rgba(0,0,0,0.9)] ${
+                          <span className={`text-base sm:text-2xl font-black font-heading animate-bounce drop-shadow-[0_0_10px_rgba(0,0,0,0.9)] ${
                             holeMole.hitResult.includes('+') ? 'text-yellow-300' : 'text-rose-400'
                           }`}>
                             {holeMole.hitResult}
@@ -700,16 +719,13 @@ export const WhackAMoleGame = ({
 
                       {/* 皇冠彩蛋鼠的金色星芒光環 */}
                       {holeMole.isGold && (
-                        <Sparkles className="absolute top-1 right-2 w-7 h-7 text-yellow-300 animate-spin" />
+                        <Sparkles className="absolute top-0 right-1 w-5 h-5 sm:w-6 sm:h-6 text-yellow-300 animate-spin" />
                       )}
 
                     </div>
                   )}
 
                 </div>
-
-                {/* ── 洞口前唇遮蔽泥土與青苔石塊立體邊緣遮擋層（z-index 25 蓋在地鼠井道下緣） ── */}
-                <div className="w-[94%] h-5 sm:h-7 md:h-9 rounded-[50%] bg-gradient-to-t from-stone-950 via-stone-900/60 to-transparent border-b-2 border-stone-800/90 shadow-2xl pointer-events-none -mt-3 z-25" />
 
               </div>
             );
