@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
-import { soundEngine, speakEnglish, bgmManager } from '../../services/audio';
+import { soundEngine, speakEnglish } from '../../services/audio';
+import { moleBgm } from '../../services/moleBgm';
 import { FALLBACK_WORDS } from '../../services/supabase';
 import confetti from 'canvas-confetti';
 import {
@@ -120,6 +121,12 @@ export const WhackAMoleGame = ({
   // 是否已初次載入啟動
   const hasStartedRef = useRef(false);
 
+  // 題目序號參照 (第 1 題開始計數)
+  const questionCountRef = useRef(0);
+
+  // 黃金鼠累積機率參照 (第 6 題起從 10% 開始，每題 +3%)
+  const goldPityRateRef = useRef(0.10);
+
   // 當前地鼠計時器群組參照
   const moleTimersRef = useRef([]);
 
@@ -133,19 +140,20 @@ export const WhackAMoleGame = ({
     return timeLeft <= 10 && timeLeft > 0 && gameState === 'playing';
   }, [timeLeft, gameState]);
 
-  // 狂暴期音樂加速連動
+  // 啟動純前端 Web Audio 地鼠背景音樂，並連動狂暴期加速
   useEffect(() => {
-    if (isBerserk) {
-      bgmManager.setPlaybackRate(1.28);
+    if (gameState === 'playing') {
+      moleBgm.start();
+      moleBgm.setBerserk(isBerserk);
     } else {
-      bgmManager.setPlaybackRate(1.0);
+      moleBgm.stop();
     }
-  }, [isBerserk]);
+  }, [gameState, isBerserk]);
 
-  // 元件卸載時務必重設音樂播放速率與清除所有地鼠計時器
+  // 元件卸載時停止背景音樂並清除所有計時器
   useEffect(() => {
     return () => {
-      bgmManager.setPlaybackRate(1.0);
+      moleBgm.stop();
       clearAllMoleTimers();
     };
   }, [clearAllMoleTimers]);
@@ -239,8 +247,33 @@ export const WhackAMoleGame = ({
       .sort(() => 0.5 - Math.random())
       .slice(0, distractorHoleIndices.length);
 
-    // 皇冠彩蛋鼠（8% 機率）與 蜂巢搗蛋鼠（前 15 秒不出現，之後 15% 機率）
-    const isGoldSpawn = Math.random() < 0.08;
+    // 題目序號遞增
+    questionCountRef.current += 1;
+    const currentQ = questionCountRef.current;
+
+    // ── 黃金鼠動態機率階梯計算 ──
+    // 第 1 ~ 4 題：0%
+    // 第 5 題：100% 必出
+    // 第 6 題起：基準 10%，每題遞增 +3% (10%, 13%, 16%, 19%...)
+    // 出現後立即重置回 10% 重新累加
+    let isGoldSpawn = false;
+    if (currentQ < 5) {
+      isGoldSpawn = false;
+    } else if (currentQ === 5) {
+      isGoldSpawn = true;
+      goldPityRateRef.current = 0.10; // 第 5 題保底後重置
+    } else {
+      const chance = Math.min(1.0, goldPityRateRef.current);
+      if (Math.random() < chance) {
+        isGoldSpawn = true;
+        goldPityRateRef.current = 0.10; // 出現後下一題重置回 10%
+      } else {
+        isGoldSpawn = false;
+        goldPityRateRef.current = Math.min(1.0, goldPityRateRef.current + 0.03); // 未出現則累加 3%
+      }
+    }
+
+    // 蜂巢搗蛋鼠（前 15 秒不出現，非黃金鼠時 18% 機率）
     const isPrankSpawn = !isGoldSpawn && currentSecs <= 45 && Math.random() < 0.18;
 
     // 組裝初始地鼠狀態（進入 'emerging' 狀態）
@@ -460,7 +493,7 @@ export const WhackAMoleGame = ({
   // ── 11. 遊戲結束判定 ──
   const triggerGameOver = (reason) => {
     clearAllMoleTimers();
-    bgmManager.setPlaybackRate(1.0);
+    moleBgm.stop();
     setGameState('gameover');
     soundEngine.wrong();
 
@@ -476,7 +509,8 @@ export const WhackAMoleGame = ({
   const handleRestart = () => {
     soundEngine.click();
     clearAllMoleTimers();
-    bgmManager.setPlaybackRate(1.0);
+    questionCountRef.current = 0;
+    goldPityRateRef.current = 0.10;
     setScore(0);
     setCombo(0);
     setMaxCombo(0);
@@ -508,17 +542,31 @@ export const WhackAMoleGame = ({
         .animate-shake {
           animation: shake 0.45s ease-in-out;
         }
+
+        @keyframes goldAuraPulse {
+          0%, 100% {
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8)) drop-shadow(0 0 24px rgba(245, 158, 11, 0.6));
+            transform: scale(1);
+          }
+          50% {
+            filter: drop-shadow(0 0 20px rgba(251, 191, 36, 1)) drop-shadow(0 0 38px rgba(245, 158, 11, 0.85));
+            transform: scale(1.02);
+          }
+        }
+        .animate-gold-aura {
+          animation: goldAuraPulse 1.2s ease-in-out infinite;
+        }
       `}</style>
 
-      {/* ── 2D 實景手繪森林地穴舞台背景 ── */}
+      {/* ── 2D 實景手繪森林全螢幕大氣氛圍底圖（加強虛化景深，凸顯中央 16:9 核心舞台） ── */}
       <img
         src={STAGE_BG}
-        alt="Whack-a-Mole Stage"
-        className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none brightness-[0.92] contrast-[1.05]"
+        alt="Whack-a-Mole Ambient Background"
+        className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none brightness-[0.55] blur-[12px] scale-105"
       />
 
       {/* 景深暗化遮罩 */}
-      <div className="absolute inset-0 bg-slate-950/20 pointer-events-none" />
+      <div className="absolute inset-0 bg-slate-950/60 pointer-events-none" />
 
       {/* ════════════════════════════════════════════════════════════════
           【最後 10 秒狂暴期：向內血紅色霓虹呼吸燈暈】
@@ -621,12 +669,24 @@ export const WhackAMoleGame = ({
       )}
 
       {/* ════════════════════════════════════════════════════════════════
-          【主舞台：9 個自然地穴實景 ＆ 固定柱狀獨立 Hitbox】
+          【主舞台：16:9 比例地穴實景 ＆ 固定柱狀獨立 Hitbox (背景圖與地穴 1:1 絕對鎖定)】
          ════════════════════════════════════════════════════════════════ */}
       <main className="relative z-10 flex-1 w-full max-w-5xl mx-auto p-2 sm:p-4 flex items-center justify-center overflow-hidden">
         
-        {/* 16:9 比例地穴互動舞台 */}
-        <div className="relative w-full aspect-[16/9] max-h-[78vh]">
+        {/* 16:9 比例地穴互動舞台 (背景圖與 9 穴嚴格綁定在同一容器，任何螢幕都不移位) */}
+        <div className="relative w-full aspect-[16/9] max-h-[78vh] rounded-3xl overflow-hidden shadow-[0_12px_45px_rgba(0,0,0,0.85)] border-2 border-emerald-500/30">
+          
+          {/* 舞台背景實景手繪圖 (100% 絕對鋪滿容器，石圈孔洞與地鼠 100% 錨定) */}
+          <img
+            src={STAGE_BG}
+            alt="Whack-a-Mole Stage"
+            className="absolute inset-0 w-full h-full object-fill pointer-events-none select-none brightness-[0.94] contrast-[1.05]"
+          />
+
+          {/* 景深暗化柔光遮罩 */}
+          <div className="absolute inset-0 bg-slate-950/15 pointer-events-none" />
+
+          {/* 9 個固定自然地穴柱狀互動區域 */}
           {HOLE_POSITIONS.map((holePos) => {
             const holeMole = holes[holePos.id];
             const hasActiveMole = holeMole !== null && holeMole.status !== 'hidden';
@@ -667,29 +727,35 @@ export const WhackAMoleGame = ({
                           : 'translate-y-full duration-[450ms] ease-in'
                       }`}
                     >
-                      {/* 地鼠精工半身透明立體角色圖（頭頂安全帽、眼睛、鼻子、捧牌 100% 完整無裁切） */}
+                      {/* 
+                          地鼠精工半身透明立體角色圖：
+                          黃金鼠保留經典高辨識度棕色毛皮與清晰木牌，套用向外擴散金色霓虹光暈與皇冠光環，
+                          徹底解決金黃背景吃掉文字的問題，保證單字 100% 清晰易讀！
+                      */}
                       <img
                         src={
                           holeMole.status === 'hit'
                             ? MOLE_DIZZY
-                            : holeMole.isGold
-                            ? MOLE_GOLD
                             : holeMole.isPrank
                             ? MOLE_PRANK
                             : MOLE_NORMAL
                         }
                         alt="Mole"
-                        className={`h-full w-auto object-contain object-bottom select-none pointer-events-none drop-shadow-[0_6px_12px_rgba(0,0,0,0.6)] ${
+                        className={`h-full w-auto object-contain object-bottom select-none pointer-events-none ${
+                          holeMole.isGold && holeMole.status !== 'hit'
+                            ? 'animate-gold-aura ring-2 ring-amber-400/80 rounded-full'
+                            : 'drop-shadow-[0_6px_12px_rgba(0,0,0,0.6)]'
+                        } ${
                           holeMole.status === 'hit' ? 'scale-95 duration-150' : 'scale-100'
                         }`}
                       />
 
-                      {/* 地鼠手舉木牌 / 金牌上的清晰單字 (字牌位置在精靈圖下半部 60% ~ 96%) */}
+                      {/* 地鼠手舉木牌上的清晰單字 (字牌位置在精靈圖下半部 60% ~ 96%，黑字清晰高對比) */}
                       {holeMole.status !== 'hit' && !holeMole.isPrank && (
                         <div className="absolute left-[10%] right-[10%] top-[60%] bottom-[5%] flex items-center justify-center pointer-events-none z-10 px-1">
-                          <span className={`font-heading font-black text-center tracking-tight select-none leading-none drop-shadow truncate ${
+                          <span className={`font-heading font-black text-center tracking-tight select-none leading-none truncate ${
                             holeMole.isGold
-                              ? 'text-amber-950 text-xs sm:text-sm md:text-base font-black'
+                              ? 'text-[#2b1704] text-xs sm:text-sm md:text-base font-black drop-shadow-[0_1px_2px_rgba(251,191,36,0.95)]'
                               : 'text-[#36200d] text-xs sm:text-sm md:text-base font-black drop-shadow-[0_1px_1px_rgba(255,248,220,0.85)]'
                           }`}>
                             {holeMole.word}
@@ -717,9 +783,14 @@ export const WhackAMoleGame = ({
                         </div>
                       )}
 
-                      {/* 皇冠彩蛋鼠的金色星芒光環 */}
+                      {/* 皇冠彩蛋鼠的金色皇冠與星芒光環 */}
                       {holeMole.isGold && (
-                        <Sparkles className="absolute top-0 right-1 w-5 h-5 sm:w-6 sm:h-6 text-yellow-300 animate-spin" />
+                        <>
+                          <div className="absolute -top-1 sm:-top-2 left-1/2 -translate-x-1/2 text-base sm:text-xl filter drop-shadow-[0_0_8px_rgba(251,191,36,0.9)]">
+                            👑
+                          </div>
+                          <Sparkles className="absolute top-0 right-1 w-5 h-5 sm:w-6 sm:h-6 text-yellow-300 animate-spin" />
+                        </>
                       )}
 
                     </div>
