@@ -66,15 +66,15 @@ const UNIVERSAL_UNITS = [
   { id: 'festival', label: 'Festival' }
 ];
 
-// ── 各遊戲左下角真實精彩遊戲截圖瞬間 (羽化融景) ──
+// ── 各遊戲左下角真實精彩遊戲截圖瞬間 (羽化融景 • 輕量化 WebP) ──
 const GAME_SPOTLIGHT_ART = {
-  mole: '/assets/screenshots/screenshot_mole.jpg',
-  meteor: '/assets/screenshots/screenshot_meteor.jpg',
-  snake: '/assets/screenshots/screenshot_snake.jpg',
+  mole: '/assets/screenshots/screenshot_mole.webp',
+  meteor: '/assets/screenshots/screenshot_meteor.webp',
+  snake: '/assets/screenshots/screenshot_snake.webp',
   spotter: '/assets/spotter/book1_base.jpg',
   escape: '/assets/escape/bg_temple.webp',
-  maze: '/assets/screenshots/screenshot_snake.jpg',
-  swipe: '/assets/screenshots/screenshot_meteor.jpg',
+  maze: '/assets/screenshots/screenshot_snake.webp',
+  swipe: '/assets/screenshots/screenshot_meteor.webp',
   memory: '/assets/lobby/theme_explore.jpg',
   'quiz-zh-en': '/assets/lobby/theme_quiz.jpg',
   'quiz-en-zh': '/assets/lobby/theme_quiz.jpg',
@@ -340,7 +340,26 @@ export const Lobby = ({
   // ── 是否為僅支援全冊的遊戲 (如鷹眼神探找不同) ──
   const isWholeBookOnlyGame = selectedGame === 'spotter';
 
-  // ── 當冊次或單元變更時，自動配置 settings.selectedUnits 確保上榜資格 ──
+  // ── 四碼膠囊代碼轉換器 (例: 2-3 -> B2U3, 4-festival -> B4Fe, 2-0 -> B2St, abc -> Aa) ──
+  const formatUnitToShortCode = (unitKey) => {
+    if (!unitKey) return '';
+    if (unitKey === 'abc') {
+      if (alphaMode === 'lower') return 'az';
+      if (alphaMode === 'mixed') return 'Aa';
+      return 'AZ';
+    }
+    const [bPart, lPartRaw] = unitKey.split('-');
+    const bStr = `B${bPart}`;
+    const lPart = (lPartRaw || '').toLowerCase();
+    if (lPart === '0' || lPart.includes('starter')) return `${bStr}St`;
+    if (lPart.includes('fest')) return `${bStr}Fe`;
+    if (lPart.includes('rev')) return `${bStr}Re`;
+    const numMatch = lPart.match(/\d+/);
+    if (numMatch) return `${bStr}U${numMatch[0]}`;
+    return `${bStr}U1`;
+  };
+
+  // ── 當冊次或字母模式變更時，初始化/同步預設單元 ──
   useEffect(() => {
     if (currentOptionData.isAlpha) {
       setSettings(prev => ({
@@ -354,36 +373,124 @@ export const Lobby = ({
       if (bData && bData.lessons) {
         const allUnits = Array.from(bData.lessons).map(l => `${bKey}-${l}`);
         
-        if (selectedUnitFilter === 'all' || isWholeBookOnlyGame) {
-          setSettings(prev => ({
-            ...prev,
-            alphaMode: null,
-            selectedUnits: allUnits
-          }));
-        } else {
-          // 對應指定單元
-          let targetLessonNum = '1';
-          if (selectedUnitFilter === 'starter') targetLessonNum = '0';
-          else if (selectedUnitFilter === 'unit1') targetLessonNum = '1';
-          else if (selectedUnitFilter === 'unit2') targetLessonNum = '2';
-          else if (selectedUnitFilter === 'unit3') targetLessonNum = '3';
-          else if (selectedUnitFilter === 'unit4') targetLessonNum = '4';
-          else if (selectedUnitFilter === 'festival') targetLessonNum = 'festival';
-
-          const matchedUnits = allUnits.filter(u => {
-            const lessonPart = u.split('-')[1]?.toLowerCase() || '';
-            return lessonPart.includes(targetLessonNum) || lessonPart === targetLessonNum;
-          });
-
-          setSettings(prev => ({
-            ...prev,
-            alphaMode: null,
-            selectedUnits: matchedUnits.length > 0 ? matchedUnits : allUnits
-          }));
-        }
+        // 若當前所選的單元不包含本冊任何單元，預設選取本冊全部單元
+        setSettings(prev => {
+          const currentUnits = prev.selectedUnits || [];
+          const hasCurrentBookUnit = currentUnits.some(u => u.startsWith(`${bKey}-`));
+          if (!hasCurrentBookUnit || isWholeBookOnlyGame) {
+            return {
+              ...prev,
+              alphaMode: null,
+              selectedUnits: allUnits
+            };
+          }
+          return prev;
+        });
       }
     }
-  }, [currentOptionData, alphaMode, selectedUnitFilter, isWholeBookOnlyGame, groupedUnits, setSettings]);
+  }, [currentOptionData, alphaMode, isWholeBookOnlyGame, groupedUnits, setSettings]);
+
+  // ── 判斷特定通用單元是否已在當前冊次中全選 ──
+  const isUniversalUnitSelected = (unitId) => {
+    if (currentOptionData.isAlpha) return true;
+    const bKey = currentOptionData.book;
+    const bData = groupedUnits[bKey];
+    if (!bData || !bData.lessons) return false;
+    const allBookUnits = Array.from(bData.lessons).map(l => `${bKey}-${l}`);
+    const selected = settings.selectedUnits || [];
+
+    if (unitId === 'all') {
+      return allBookUnits.length > 0 && allBookUnits.every(u => selected.includes(u));
+    }
+
+    let targetNum = '1';
+    if (unitId === 'starter') targetNum = '0';
+    else if (unitId === 'unit1') targetNum = '1';
+    else if (unitId === 'unit2') targetNum = '2';
+    else if (unitId === 'unit3') targetNum = '3';
+    else if (unitId === 'unit4') targetNum = '4';
+    else if (unitId === 'festival') targetNum = 'festival';
+
+    const matchedBookUnits = allBookUnits.filter(u => {
+      const lessonPart = u.split('-')[1]?.toLowerCase() || '';
+      return lessonPart.includes(targetNum) || lessonPart === targetNum;
+    });
+
+    if (matchedBookUnits.length === 0) return false;
+    return matchedBookUnits.every(u => selected.includes(u));
+  };
+
+  // ── 切換單元複選 (點擊亮起，再點歸暗) ──
+  const handleToggleUniversalUnit = (unitId) => {
+    soundEngine.click();
+    const bKey = currentOptionData.book;
+    const bData = groupedUnits[bKey];
+    if (!bData || !bData.lessons) return;
+    const allBookUnits = Array.from(bData.lessons).map(l => `${bKey}-${l}`);
+
+    setSettings(prev => {
+      const currentSelected = new Set(prev.selectedUnits || []);
+
+      if (unitId === 'all') {
+        const allSelected = allBookUnits.every(u => currentSelected.has(u));
+        if (allSelected) {
+          // 若本冊已全選，點全選則只保留其他冊（或至少保留一個單元不致空）
+          allBookUnits.forEach(u => currentSelected.delete(u));
+          if (currentSelected.size === 0 && allBookUnits.length > 0) {
+            currentSelected.add(allBookUnits[0]);
+          }
+        } else {
+          // 全部加入
+          allBookUnits.forEach(u => currentSelected.add(u));
+        }
+      } else {
+        let targetNum = '1';
+        if (unitId === 'starter') targetNum = '0';
+        else if (unitId === 'unit1') targetNum = '1';
+        else if (unitId === 'unit2') targetNum = '2';
+        else if (unitId === 'unit3') targetNum = '3';
+        else if (unitId === 'unit4') targetNum = '4';
+        else if (unitId === 'festival') targetNum = 'festival';
+
+        const matched = allBookUnits.filter(u => {
+          const lessonPart = u.split('-')[1]?.toLowerCase() || '';
+          return lessonPart.includes(targetNum) || lessonPart === targetNum;
+        });
+
+        const targets = matched.length > 0 ? matched : [allBookUnits[0]];
+        const isCurrentlyActive = targets.every(u => currentSelected.has(u));
+
+        if (isCurrentlyActive) {
+          // 取消選取 (如果剩餘大於1個，否則不允許完全清空)
+          if (currentSelected.size > targets.length) {
+            targets.forEach(u => currentSelected.delete(u));
+          }
+        } else {
+          // 加入選取
+          targets.forEach(u => currentSelected.add(u));
+        }
+      }
+
+      return {
+        ...prev,
+        alphaMode: null,
+        selectedUnits: Array.from(currentSelected)
+      };
+    });
+  };
+
+  // ── 從底部已選托盤移除特定單元 ──
+  const handleRemoveSelectedUnit = (unitKey) => {
+    soundEngine.click();
+    setSettings(prev => {
+      const current = prev.selectedUnits || [];
+      if (current.length <= 1) return prev; // 至少保留一單元
+      return {
+        ...prev,
+        selectedUnits: current.filter(u => u !== unitKey)
+      };
+    });
+  };
 
   // ── 已選單字總數 ──
   const selectedWordsCount = useMemo(() => {
@@ -859,175 +966,246 @@ export const Lobby = ({
                   </span>
                 </div>
 
-                {/* ── 核心舞台：左下角靈魂剪影 + 右側/中央 5 欄 × 2 列上下配對網格 ── */}
-                <div className="relative flex-1 w-full my-1 sm:my-2 flex items-center justify-between gap-4 overflow-hidden">
+                {/* ── 核心舞台：左側 1/4 靈魂大圖 (右側漸層完全透明融合) + 右側專屬三層選單 ── */}
+                <div className="relative flex-1 w-full my-1 sm:my-2 flex items-stretch justify-between overflow-hidden">
                   
-                  {/* 左下角：真實遊戲截圖瞬間 (雙重漸變極致透明羽化) */}
-                  <div className="hidden lg:block absolute -left-4 -bottom-4 w-72 h-72 pointer-events-none select-none z-0">
+                  {/* 左側 1/4 遊戲真實動作瞬間原畫 (約佔 24%，右側邊緣逐漸透明融入，絕不遮擋任何膠囊) */}
+                  <div className="hidden md:block absolute left-0 top-0 bottom-0 w-[24%] min-w-[190px] max-w-[270px] h-full pointer-events-none select-none z-0">
                     <img
                       src={GAME_SPOTLIGHT_ART[selectedGame] || GAME_SPOTLIGHT_ART.mole}
                       alt="Game Action Spotlight"
-                      className="w-full h-full object-cover rounded-3xl filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] brightness-95 contrast-105"
+                      className="w-full h-full object-cover rounded-2xl filter brightness-95 contrast-105"
                       style={{
-                        maskImage: 'linear-gradient(to top right, black 35%, transparent 85%), radial-gradient(circle at bottom left, black 50%, transparent 80%)',
-                        WebkitMaskImage: 'linear-gradient(to top right, black 35%, transparent 85%), radial-gradient(circle at bottom left, black 50%, transparent 80%)'
+                        maskImage: 'linear-gradient(to right, black 40%, rgba(0,0,0,0.6) 65%, transparent 100%), linear-gradient(to bottom, black 85%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to right, black 40%, rgba(0,0,0,0.6) 65%, transparent 100%), linear-gradient(to bottom, black 85%, transparent 100%)'
                       }}
                     />
                   </div>
 
-                  {/* 右側 / 中央面板：【位置偏上】5 欄 × 2 列上下排列 + 【下方預留】專屬單元彈出區 (零跳動) */}
-                  <div className="relative z-10 w-full lg:max-w-4xl lg:ml-auto h-full flex flex-col justify-between py-1">
+                  {/* 右側專屬三層式結構面板：冊數置頂、待選範圍置中(支援複選)、目前已選範圍置底 */}
+                  <div className="relative z-10 w-full md:w-[76%] md:ml-auto h-full flex flex-col justify-between py-1 gap-2">
                     
-                    {/* ── 【冊別偏上】5 欄 × 2 列網格 (一年級二年級上下、三上三下上下、四上四下上下、五上五下上下、六上六下上下) ── */}
-                    <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 w-full shrink-0">
-                      {GRADE_COLUMNS.map((col) => {
-                        const isTopSelected = selectedOptionId === col.top.id;
-                        const isBottomSelected = selectedOptionId === col.bottom.id;
-                        const isTopRecommended = studentGradeNum === col.top.grade;
-                        const isBottomRecommended = studentGradeNum === col.bottom.grade;
+                    {/* ═══ 【第一層：冊數置頂】5 欄 × 2 列上下排列 (由左至右：一二年級、三上三下、四上四下、五上五下、六上六下) ═══ */}
+                    <div className="w-full shrink-0">
+                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                        <span className="flex items-center gap-1">
+                          <Layers className="w-3.5 h-3.5 text-amber-400" />
+                          <span>1. 選擇年級冊次：</span>
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-normal hidden sm:inline">
+                          點選切換冊次，右下方可複選跨冊單元
+                        </span>
+                      </div>
 
-                        return (
-                          <div key={col.colId} className="flex flex-col gap-1.5 sm:gap-2">
-                            
-                            {/* 上排按鈕 (一年級、三上、四上、五上、六上) */}
-                            <button
-                              type="button"
-                              onClick={() => handleSelectBookOption(col.top.id)}
-                              className={`p-2 sm:p-2.5 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
-                                isTopSelected
-                                  ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-4 ring-amber-300/80 scale-102 font-black shadow-[0_0_20px_rgba(245,158,11,0.6)]'
-                                  : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
-                              }`}
-                            >
-                              {isTopRecommended && (
-                                <span className={`absolute -top-2 px-1.5 py-0.2 rounded-full text-[8px] sm:text-[9px] font-black flex items-center gap-0.5 shadow ${
+                      <div className="grid grid-cols-5 gap-1.5 sm:gap-2 w-full">
+                        {GRADE_COLUMNS.map((col) => {
+                          const isTopSelected = selectedOptionId === col.top.id;
+                          const isBottomSelected = selectedOptionId === col.bottom.id;
+                          const isTopRecommended = studentGradeNum === col.top.grade;
+                          const isBottomRecommended = studentGradeNum === col.bottom.grade;
+
+                          return (
+                            <div key={col.colId} className="flex flex-col gap-1.5">
+                              
+                              {/* 上排按鈕 (一年級、三上、四上、五上、六上) */}
+                              <button
+                                type="button"
+                                onClick={() => handleSelectBookOption(col.top.id)}
+                                className={`p-1.5 sm:p-2 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
                                   isTopSelected
-                                    ? 'bg-stone-950 text-amber-300 border border-amber-400'
-                                    : 'bg-amber-500 text-stone-950 border border-amber-300 animate-pulse'
-                                }`}>
-                                  <Star className="w-2 h-2 fill-current" />
-                                  <span>推薦</span>
+                                    ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 scale-102 font-black shadow-[0_0_15px_rgba(245,158,11,0.5)]'
+                                    : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                                }`}
+                              >
+                                {isTopRecommended && (
+                                  <span className={`absolute -top-2 px-1.5 py-0.2 rounded-full text-[8px] font-black flex items-center gap-0.5 shadow ${
+                                    isTopSelected
+                                      ? 'bg-stone-950 text-amber-300 border border-amber-400'
+                                      : 'bg-amber-500 text-stone-950 border border-amber-300 animate-pulse'
+                                  }`}>
+                                    <Star className="w-2 h-2 fill-current" />
+                                    <span>推薦</span>
+                                  </span>
+                                )}
+
+                                <span className="text-xs sm:text-sm md:text-base font-black font-heading tracking-wide">
+                                  {col.top.label}
                                 </span>
-                              )}
+                                <span className={`text-[8px] sm:text-[9px] font-bold truncate max-w-full ${
+                                  isTopSelected ? 'text-stone-950/80' : 'text-slate-300'
+                                }`}>
+                                  {col.top.desc}
+                                </span>
 
-                              <span className="text-sm sm:text-base md:text-lg font-black font-heading tracking-wide">
-                                {col.top.label}
-                              </span>
-                              <span className={`text-[9px] sm:text-[10px] font-bold mt-0.5 truncate max-w-full ${
-                                isTopSelected ? 'text-stone-950/80' : 'text-slate-300'
-                              }`}>
-                                {col.top.desc}
-                              </span>
+                                {isTopSelected && (
+                                  <CheckCircle2 className="w-3 h-3 text-stone-950 absolute top-1 right-1 stroke-[2.5]" />
+                                )}
+                              </button>
 
-                              {isTopSelected && (
-                                <CheckCircle2 className="w-3.5 h-3.5 text-stone-950 absolute top-1 right-1 stroke-[2.5]" />
-                              )}
-                            </button>
-
-                            {/* 下排按鈕 (二年級、三下、四下、五下、六下) */}
-                            <button
-                              type="button"
-                              onClick={() => handleSelectBookOption(col.bottom.id)}
-                              className={`p-2 sm:p-2.5 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
-                                isBottomSelected
-                                  ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-4 ring-amber-300/80 scale-102 font-black shadow-[0_0_20px_rgba(245,158,11,0.6)]'
-                                  : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
-                              }`}
-                            >
-                              {isBottomRecommended && (
-                                <span className={`absolute -top-2 px-1.5 py-0.2 rounded-full text-[8px] sm:text-[9px] font-black flex items-center gap-0.5 shadow ${
+                              {/* 下排按鈕 (二年級、三下、四下、五下、六下) */}
+                              <button
+                                type="button"
+                                onClick={() => handleSelectBookOption(col.bottom.id)}
+                                className={`p-1.5 sm:p-2 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
                                   isBottomSelected
-                                    ? 'bg-stone-950 text-amber-300 border border-amber-400'
-                                    : 'bg-amber-500 text-stone-950 border border-amber-300 animate-pulse'
-                                }`}>
-                                  <Star className="w-2 h-2 fill-current" />
-                                  <span>推薦</span>
+                                    ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 scale-102 font-black shadow-[0_0_15px_rgba(245,158,11,0.5)]'
+                                    : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                                }`}
+                              >
+                                {isBottomRecommended && (
+                                  <span className={`absolute -top-2 px-1.5 py-0.2 rounded-full text-[8px] font-black flex items-center gap-0.5 shadow ${
+                                    isBottomSelected
+                                      ? 'bg-stone-950 text-amber-300 border border-amber-400'
+                                      : 'bg-amber-500 text-stone-950 border border-amber-300 animate-pulse'
+                                  }`}>
+                                    <Star className="w-2 h-2 fill-current" />
+                                    <span>推薦</span>
+                                  </span>
+                                )}
+
+                                <span className="text-xs sm:text-sm md:text-base font-black font-heading tracking-wide">
+                                  {col.bottom.label}
                                 </span>
-                              )}
+                                <span className={`text-[8px] sm:text-[9px] font-bold truncate max-w-full ${
+                                  isBottomSelected ? 'text-stone-950/80' : 'text-slate-300'
+                                }`}>
+                                  {col.bottom.desc}
+                                </span>
 
-                              <span className="text-sm sm:text-base md:text-lg font-black font-heading tracking-wide">
-                                {col.bottom.label}
-                              </span>
-                              <span className={`text-[9px] sm:text-[10px] font-bold mt-0.5 truncate max-w-full ${
-                                isBottomSelected ? 'text-stone-950/80' : 'text-slate-300'
-                              }`}>
-                                {col.bottom.desc}
-                              </span>
+                                {isBottomSelected && (
+                                  <CheckCircle2 className="w-3 h-3 text-stone-950 absolute top-1 right-1 stroke-[2.5]" />
+                                )}
+                              </button>
 
-                              {isBottomSelected && (
-                                <CheckCircle2 className="w-3.5 h-3.5 text-stone-950 absolute top-1 right-1 stroke-[2.5]" />
-                              )}
-                            </button>
-
-                          </div>
-                        );
-                      })}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
 
-                    {/* ── 【單元別偏下】預留專屬固定高度彈出區 (徹底解決任何跳動) ── */}
-                    <div className="w-full min-h-[68px] sm:min-h-[76px] flex items-center justify-center p-2 rounded-2xl bg-slate-900/90 border border-white/20 backdrop-blur-md shrink-0 mt-2">
-                      
-                      {/* 若選【一年級 / 二年級】：彈出大寫、小寫、混合三大模式 */}
-                      {currentOptionData.isAlpha ? (
-                        <div className="w-full flex items-center justify-between gap-2 animate-fadeIn">
-                          <span className="text-xs font-black text-emerald-300 flex items-center gap-1.5 shrink-0">
-                            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                            <span>字母規格：</span>
-                          </span>
+                    {/* ═══ 【第二層：待選範圍置中 • 支援單元複選】(點選亮起，再點歸暗) ═══ */}
+                    <div className="w-full shrink-0">
+                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                        <span className="flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>2. 點選單元膠囊 (可複選，點擊亮起 / 再次點擊取消)：</span>
+                        </span>
+                        <span className="text-[10px] text-emerald-300 font-bold">
+                          {currentOptionData.isAlpha ? '低年級字母規格' : `目前所選冊次：${currentOptionData.label}`}
+                        </span>
+                      </div>
 
-                          <div className="grid grid-cols-3 gap-2 flex-1 max-w-md">
-                            {[
-                              { id: 'upper', label: '🔠 大寫 A-Z' },
-                              { id: 'lower', label: '🔡 小寫 a-z' },
-                              { id: 'mixed', label: '🔤 混合 Aa-Zz' }
-                            ].map((m) => {
-                              const isModeActive = alphaMode === m.id;
+                      <div className="w-full min-h-[52px] sm:min-h-[58px] flex items-center justify-center p-2 rounded-2xl bg-slate-900/90 border border-white/20 backdrop-blur-md">
+                        {currentOptionData.isAlpha ? (
+                          /* 低年級字母模式三大選項 */
+                          <div className="w-full flex items-center justify-between gap-2 animate-fadeIn">
+                            <span className="text-xs font-black text-emerald-300 flex items-center gap-1.5 shrink-0">
+                              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                              <span>字母模式：</span>
+                            </span>
+
+                            <div className="grid grid-cols-3 gap-2 flex-1 max-w-md">
+                              {[
+                                { id: 'upper', label: '🔠 大寫 A-Z' },
+                                { id: 'lower', label: '🔡 小寫 a-z' },
+                                { id: 'mixed', label: '🔤 混合 Aa-Zz' }
+                              ].map((m) => {
+                                const isModeActive = alphaMode === m.id;
+                                return (
+                                  <button
+                                    key={m.id}
+                                    type="button"
+                                    onClick={() => handleSelectAlphaMode(m.id)}
+                                    className={`py-1.5 px-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                                      isModeActive
+                                        ? 'bg-emerald-400 text-stone-950 border-emerald-200 ring-2 ring-emerald-300/80 shadow'
+                                        : 'bg-slate-800 text-slate-100 hover:text-white border-white/20'
+                                    }`}
+                                  >
+                                    {m.label}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ) : isWholeBookOnlyGame ? (
+                          /* 全冊專屬遊戲提示 */
+                          <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-amber-300 animate-fadeIn">
+                            <Eye className="w-4 h-4 text-amber-400 animate-pulse" />
+                            <span>✨ 鷹眼神探採全冊 3D 紙雕全景尋寶 • 點擊右下角立即出征！</span>
+                          </div>
+                        ) : (
+                          /* 三到六年級通用單元膠囊 (可複選！點擊亮起/歸暗) */
+                          <div className="w-full flex items-center justify-between gap-1.5 sm:gap-2 overflow-x-auto py-0.5 animate-fadeIn">
+                            {UNIVERSAL_UNITS.map((u) => {
+                              const isUnitActive = isUniversalUnitSelected(u.id);
                               return (
                                 <button
-                                  key={m.id}
+                                  key={u.id}
                                   type="button"
-                                  onClick={() => handleSelectAlphaMode(m.id)}
-                                  className={`py-1.5 px-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
-                                    isModeActive
-                                      ? 'bg-emerald-400 text-stone-950 border-emerald-200 ring-2 ring-emerald-300/80 shadow'
-                                      : 'bg-slate-800 text-slate-100 hover:text-white border-white/20'
+                                  onClick={() => handleToggleUniversalUnit(u.id)}
+                                  className={`py-1.5 px-2.5 sm:px-3 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer border flex items-center gap-1 active:scale-95 ${
+                                    isUnitActive
+                                      ? 'bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 border-amber-200 ring-2 ring-amber-300 shadow font-black'
+                                      : 'bg-slate-800/90 text-slate-300 hover:text-white border-white/15 hover:border-amber-400/50'
                                   }`}
                                 >
-                                  {m.label}
+                                  {isUnitActive ? (
+                                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                                  ) : (
+                                    <span className="w-2 h-2 rounded-full bg-slate-500" />
+                                  )}
+                                  <span>{u.label}</span>
                                 </button>
                               );
                             })}
                           </div>
-                        </div>
-                      ) : isWholeBookOnlyGame ? (
-                        /* 若為鷹眼神探等全冊專屬遊戲：直接提示已鎖定全景 */
-                        <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-amber-300 animate-fadeIn">
-                          <Eye className="w-4 h-4 text-amber-400 animate-pulse" />
-                          <span>✨ 鷹眼神探採全冊 3D 紙雕全景尋寶 • 點擊右下角立即出征！</span>
-                        </div>
-                      ) : (
-                        /* 若為三到六年級：彈出通用單元順序 starter unit1 unit2 unit3 unit4 festival (由左至右順序固定) */
-                        <div className="w-full flex items-center justify-between gap-1.5 sm:gap-2 overflow-x-auto py-1 animate-fadeIn">
-                          {UNIVERSAL_UNITS.map((u) => {
-                            const isUnitActive = selectedUnitFilter === u.id;
+                        )}
+                      </div>
+                    </div>
+
+                    {/* ═══ 【第三層：目前已選範圍置底托盤】4 碼膠囊即時呈現 (例: B2U3, B4Fe, B2St, AZ) ═══ */}
+                    <div className="w-full shrink-0">
+                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                        <span className="flex items-center gap-1">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          <span>3. 目前已選出征範圍 (點擊下方四碼膠囊可移除)：</span>
+                        </span>
+                        <span className="text-[10px] text-amber-300 font-mono font-bold">
+                          共選取 {(settings.selectedUnits || []).length} 個單元 • 合計 {selectedWordsCount} 字
+                        </span>
+                      </div>
+
+                      <div className="w-full min-h-[42px] max-h-[58px] overflow-y-auto p-1.5 sm:p-2 rounded-2xl bg-slate-950/80 border border-white/20 backdrop-blur-md flex flex-wrap items-center gap-1.5">
+                        {currentOptionData.isAlpha ? (
+                          <span className="px-2.5 py-1 rounded-xl bg-emerald-500/25 border border-emerald-400/50 text-emerald-300 font-mono font-black text-xs flex items-center gap-1 shadow">
+                            <span>{formatUnitToShortCode('abc')}</span>
+                            <span className="text-[10px] font-sans text-emerald-200 font-bold">
+                              ({alphaMode === 'upper' ? '大寫全套' : alphaMode === 'lower' ? '小寫全套' : '混合全套'})
+                            </span>
+                          </span>
+                        ) : (settings.selectedUnits || []).length === 0 ? (
+                          <span className="text-xs text-slate-400 font-bold px-2 py-0.5">
+                            尚未選取單元，請點擊上方單元膠囊
+                          </span>
+                        ) : (
+                          (settings.selectedUnits || []).map((uKey) => {
+                            const shortCode = formatUnitToShortCode(uKey);
                             return (
                               <button
-                                key={u.id}
+                                key={uKey}
                                 type="button"
-                                onClick={() => handleSelectUnit(u.id)}
-                                className={`py-1.5 px-2.5 sm:px-3 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer border ${
-                                  isUnitActive
-                                    ? 'bg-amber-400 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 font-black shadow'
-                                    : 'bg-slate-800 text-slate-200 hover:text-white border-white/20 hover:border-amber-400/50'
-                                }`}
+                                onClick={() => handleRemoveSelectedUnit(uKey)}
+                                className="px-2.5 py-0.5 rounded-lg bg-slate-800 hover:bg-rose-950/80 text-amber-300 hover:text-rose-200 border border-amber-400/40 hover:border-rose-400/60 font-mono font-black text-xs flex items-center gap-1 transition-all cursor-pointer shadow group"
+                                title="點擊移除此單元"
                               >
-                                {u.label}
+                                <span>{shortCode}</span>
+                                <X className="w-3 h-3 text-slate-400 group-hover:text-rose-300 transition-colors" />
                               </button>
                             );
-                          })}
-                        </div>
-                      )}
-
+                          })
+                        )}
+                      </div>
                     </div>
 
                   </div>
@@ -1037,12 +1215,12 @@ export const Lobby = ({
                 {/* 整備室底部：狀態摘要與出征按鈕 */}
                 <div className="pt-2 border-t border-white/15 flex items-center justify-between shrink-0">
                   <div className="flex items-center gap-2 text-xs text-slate-200 font-bold">
-                    <span>已就緒：</span>
+                    <span>出征整備：</span>
                     <span className="text-amber-300 font-black">
-                      {currentOptionData.label} ({currentOptionData.isAlpha ? '26 字母全套' : selectedUnitFilter === 'all' ? `${selectedWordsCount} 字全冊` : `${selectedUnitFilter.toUpperCase()}`})
+                      {currentOptionData.isAlpha ? '26 字母全套' : `${(settings.selectedUnits || []).length} 個單元 (${selectedWordsCount} 字)`}
                     </span>
                     <span className="text-emerald-400 font-black hidden sm:inline ml-1">
-                      • 榮譽榜資格已鎖定
+                      • 英雄榜榮譽資格已啟用
                     </span>
                   </div>
 

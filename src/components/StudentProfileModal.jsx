@@ -114,145 +114,176 @@ export const StudentProfileModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md animate-fadeIn overflow-y-auto">
-      <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-2 border-emerald-400/80 dark:border-emerald-600/80 overflow-hidden relative my-auto animate-scaleUp">
-        {/* 頂部裝飾條與關閉按鈕 */}
-        <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 p-4 sm:p-5 text-white flex items-center justify-between relative">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner">
-              <User className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-lg sm:text-xl font-heading font-black tracking-wide">
-                {t.studentPassportTitle}
-              </h3>
-              <p className="text-[11px] sm:text-xs text-emerald-100 font-bold">
-                {t.studentPassportSubtitle}
-              </p>
-            </div>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/80 backdrop-blur-lg animate-fadeIn overflow-y-auto">
+      {/* 浮動式無邊框高質感【霧臺勇士探險執照】卡片主體 */}
+      <div className="w-full max-w-xl relative my-auto animate-scaleUp">
+        
+        {/* 模式 A：已登入且未點選切換 ── 顯示精美【霧臺勇士探險執照】原畫質證件 */}
+        {isLoggedIn && !isSwitching ? (
+          <div className="relative rounded-3xl overflow-hidden border-2 border-amber-400/80 shadow-[0_0_50px_rgba(245,158,11,0.45)] text-white p-5 sm:p-7 space-y-4">
+            {/* 執照實景原畫背景 (已最佳化 WebP) */}
+            <img
+              src="/assets/pass/warrior_pass_bg.webp"
+              alt="Warrior Adventure Pass"
+              className="absolute inset-0 w-full h-full object-cover filter brightness-[0.7] contrast-[1.15] pointer-events-none select-none"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-slate-950/35 backdrop-blur-[0.5px] pointer-events-none" />
 
-          <button
-            onClick={closeModal}
-            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors cursor-pointer"
-            title="關閉"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="p-4 sm:p-6 space-y-5 max-h-[80vh] overflow-y-auto">
-          {/* 模式 A：已登入且未點選切換 ── 顯示精美【霧臺勇士探險執照】名片 */}
-          {isLoggedIn && !isSwitching ? (
-            <div className="space-y-4 animate-fadeIn">
-              <div className="relative rounded-3xl overflow-hidden border-2 border-amber-400/80 shadow-[0_0_35px_rgba(245,158,11,0.35)] p-5 sm:p-6 text-white space-y-3.5">
-                {/* 執照實景原畫背景 */}
-                <img
-                  src="/assets/pass/warrior_pass_bg.jpg"
-                  alt="Warrior Adventure Pass"
-                  className="absolute inset-0 w-full h-full object-cover filter brightness-[0.75] contrast-[1.1] pointer-events-none select-none"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/45 to-slate-950/30 backdrop-blur-[1px] pointer-events-none" />
-
-                <div className="relative z-10 flex items-center justify-between">
-                  <span className="text-xs font-black px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 flex items-center gap-1.5 shadow-md">
-                    <Sparkles className="w-3.5 h-3.5 text-stone-950" />
-                    <span>霧臺勇士探險執照</span>
-                  </span>
-                  <span className="font-mono text-xs font-black text-amber-300 bg-slate-950/85 px-3 py-1 rounded-xl border border-amber-400/50 shadow">
-                    ID: {currentStudent.student_id}
-                  </span>
-                </div>
-
-                <div className="relative z-10 flex items-center gap-4 pt-1">
-                  <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 text-stone-950 flex items-center justify-center font-heading font-black text-2xl shadow-xl ring-4 ring-amber-400/70 shrink-0">
-                    {formatStudentBadge(currentStudent, lang).substring(0, 2)}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-xl sm:text-2xl font-heading font-black text-white truncate drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                        {currentStudent.nickname}
-                      </h4>
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-400/50 text-[10px] font-bold">
-                        {currentStudent.grade} 年級勇士
-                      </span>
-                    </div>
-                    <p className="text-xs sm:text-sm font-bold text-amber-200/90 mt-0.5">
-                      {formatStudentDisplayName(currentStudent, lang)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* 經濟與進度數據列 */}
-                <div className="relative z-10 grid grid-cols-3 gap-2.5 pt-1">
-                  <div className="p-2.5 rounded-2xl bg-slate-950/80 border border-amber-400/40 text-center backdrop-blur-md shadow">
-                    <div className="flex items-center justify-center gap-1 text-amber-300 text-xs font-black">
-                      <Coins className="w-3.5 h-3.5 text-amber-400" />
-                      <span>{t.coins}</span>
-                    </div>
-                    <div className="text-lg sm:text-xl font-black text-amber-300 font-mono mt-0.5">
-                      {currentStudent.coins ?? 0}
-                    </div>
-                  </div>
-
-                  <div className="p-2.5 rounded-2xl bg-slate-950/80 border border-indigo-400/40 text-center backdrop-blur-md shadow">
-                    <div className="flex items-center justify-center gap-1 text-indigo-300 text-xs font-black">
-                      <Trophy className="w-3.5 h-3.5 text-indigo-400" />
-                      <span>{t.questPoints}</span>
-                    </div>
-                    <div className="text-lg sm:text-xl font-black text-indigo-300 font-mono mt-0.5">
-                      {currentStudent.quest_points ?? 0}
-                    </div>
-                  </div>
-
-                  <div className="p-2.5 rounded-2xl bg-slate-950/80 border border-teal-400/40 text-center backdrop-blur-md shadow">
-                    <div className="flex items-center justify-center gap-1 text-teal-300 text-xs font-black">
-                      <Package className="w-3.5 h-3.5 text-teal-400" />
-                      <span>{t.backpackItems}</span>
-                    </div>
-                    <div className="text-lg font-black text-teal-300 font-mono mt-0.5">
-                      {currentStudent.inventory?.length ?? 0}
-                    </div>
-                  </div>
-                </div>
+            {/* 浮動頂部：執照徽章、6 碼 ID、關閉按鈕 */}
+            <div className="relative z-10 flex items-center justify-between pb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs sm:text-sm font-black px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-stone-950 flex items-center gap-1.5 shadow-lg border border-amber-200">
+                  <Sparkles className="w-3.5 h-3.5 text-stone-950" />
+                  <span>霧臺勇士探險執照</span>
+                </span>
+                <span className="hidden sm:inline text-[10px] text-amber-200/90 font-mono tracking-widest uppercase">
+                  ADVENTURER PASS
+                </span>
               </div>
 
-              {/* 操作按鈕群 */}
-              <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
-                <Button3D
-                  variant="slate"
-                  size="md"
-                  onClick={() => setIsSwitching(true)}
-                  icon={RefreshCw}
-                  className="flex-1"
-                >
-                  {t.switchSeatBtn}
-                </Button3D>
-
-                <Button3D
-                  variant="emerald"
-                  size="md"
-                  onClick={closeModal}
-                  icon={Check}
-                  className="flex-1"
-                >
-                  {t.enterUniverseBtn}
-                </Button3D>
-              </div>
-
-              <div className="text-center pt-1">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-black text-amber-300 bg-slate-950/90 px-3 py-1 rounded-xl border border-amber-400/60 shadow">
+                  ID: {currentStudent.student_id}
+                </span>
                 <button
-                  onClick={logoutStudent}
-                  className="text-xs text-rose-500 hover:text-rose-600 font-bold inline-flex items-center gap-1 py-1"
+                  onClick={closeModal}
+                  className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-slate-200 hover:text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 active:scale-95"
+                  title="關閉"
                 >
-                  <LogOut className="w-3.5 h-3.5" />
-                  {t.signOutBtn}
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
-          ) : (
-            /* 模式 B：選擇身分與 6 碼漫遊綁定表單 */
-            <form onSubmit={handleConfirmLogin} className="space-y-4 animate-fadeIn">
+
+            {/* 學生核心身份無框線資訊區 */}
+            <div className="relative z-10 flex items-center gap-4 pt-1 sm:pt-2">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 text-stone-950 flex items-center justify-center font-heading font-black text-2xl sm:text-3xl shadow-2xl ring-4 ring-amber-400/80 shrink-0">
+                {formatStudentBadge(currentStudent, lang).substring(0, 2)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-xl sm:text-2xl md:text-3xl font-heading font-black text-white truncate drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                    {currentStudent.nickname}
+                  </h4>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 border border-emerald-400/60 text-[10px] font-bold">
+                    {currentStudent.grade} 年級勇士
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm font-bold text-amber-200/90 mt-0.5">
+                  {formatStudentDisplayName(currentStudent, lang)}
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[11px] font-bold text-slate-300 flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>大武山守護者認證勇士</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 經濟與進度數據列 (無粗黑框線、純透水晶浮動版型) */}
+            <div className="relative z-10 grid grid-cols-3 gap-2.5 pt-2">
+              <div className="p-3 rounded-2xl bg-slate-950/75 border border-amber-400/40 text-center backdrop-blur-md shadow-lg">
+                <div className="flex items-center justify-center gap-1 text-amber-300 text-xs font-black">
+                  <Coins className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{t.coins}</span>
+                </div>
+                <div className="text-xl sm:text-2xl font-black text-amber-300 font-mono mt-0.5">
+                  {currentStudent.coins ?? 0}
+                </div>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-950/75 border border-indigo-400/40 text-center backdrop-blur-md shadow-lg">
+                <div className="flex items-center justify-center gap-1 text-indigo-300 text-xs font-black">
+                  <Trophy className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>{t.questPoints}</span>
+                </div>
+                <div className="text-xl sm:text-2xl font-black text-indigo-300 font-mono mt-0.5">
+                  {currentStudent.quest_points ?? 0}
+                </div>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-950/75 border border-teal-400/40 text-center backdrop-blur-md shadow-lg">
+                <div className="flex items-center justify-center gap-1 text-teal-300 text-xs font-black">
+                  <Package className="w-3.5 h-3.5 text-teal-400" />
+                  <span>{t.backpackItems}</span>
+                </div>
+                <div className="text-xl sm:text-2xl font-black text-teal-300 font-mono mt-0.5">
+                  {currentStudent.inventory?.length ?? 0}
+                </div>
+              </div>
+            </div>
+
+            {/* 操作按鈕群 */}
+            <div className="relative z-10 flex flex-col sm:flex-row gap-2.5 pt-3">
+              <Button3D
+                variant="slate"
+                size="md"
+                onClick={() => setIsSwitching(true)}
+                icon={RefreshCw}
+                className="flex-1"
+              >
+                {t.switchSeatBtn}
+              </Button3D>
+
+              <Button3D
+                variant="emerald"
+                size="md"
+                onClick={closeModal}
+                icon={Check}
+                className="flex-1"
+              >
+                {t.enterUniverseBtn}
+              </Button3D>
+            </div>
+
+            <div className="relative z-10 text-center pt-1">
+              <button
+                onClick={logoutStudent}
+                className="text-xs text-rose-400 hover:text-rose-300 font-bold inline-flex items-center gap-1 py-1 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                {t.signOutBtn}
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* 模式 B：選擇身分與 6 碼漫遊綁定表單 (無框線高透水晶原畫風格) */
+          <div className="relative rounded-3xl overflow-hidden border-2 border-emerald-400/80 shadow-[0_0_50px_rgba(16,185,129,0.35)] text-white p-5 sm:p-7 space-y-4">
+            <img
+              src="/assets/pass/warrior_pass_bg.webp"
+              alt="Warrior Adventure Pass"
+              className="absolute inset-0 w-full h-full object-cover filter brightness-[0.55] contrast-[1.2] pointer-events-none select-none"
+            />
+            <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-sm pointer-events-none" />
+
+            {/* 頂部標題與關閉按鈕 */}
+            <div className="relative z-10 flex items-center justify-between pb-2 border-b border-white/15">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-emerald-500/30 border border-emerald-400/50 flex items-center justify-center">
+                  <User className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-heading font-black text-white">
+                    {t.studentPassportTitle}
+                  </h3>
+                  <p className="text-[11px] text-emerald-300 font-bold">
+                    {t.studentPassportSubtitle}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={closeModal}
+                className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-slate-200 hover:text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 active:scale-95"
+                title="關閉"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* 模式 B 選擇身分與 6 碼漫遊綁定表單 */}
+            <form onSubmit={handleConfirmLogin} className="relative z-10 space-y-4 animate-fadeIn">
               {/* 步驟 1: 選擇年級 */}
               <div className="space-y-1.5">
                 <label className="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center justify-between">
@@ -427,8 +458,8 @@ export const StudentProfileModal = () => {
                 </p>
               </div>
             </form>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
