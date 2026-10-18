@@ -689,10 +689,21 @@ export const Lobby = ({
             soundEngine.click();
             if (openModal) openModal();
           }}
-          className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white border border-white/25 text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
-          title="點擊修改個人身分/座號"
+          className="px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white border border-emerald-400/30 text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer backdrop-blur-md"
+          title="點擊開啟勇士探險通行證"
         >
-          <User className="w-3.5 h-3.5 text-emerald-400" />
+          {currentStudent?.avatar_id ? (
+            <div className="w-5 h-5 rounded-full overflow-hidden ring-1 ring-emerald-400 shrink-0 relative bg-slate-950">
+              <img
+                src={`/assets/avatars/${currentStudent.avatar_id}.webp`}
+                alt="avatar"
+                className="w-full h-full object-cover"
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+            </div>
+          ) : (
+            <User className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          )}
           <span className="max-w-[120px] truncate">
             {formatStudentBadge(currentStudent, lang) || '設置身分'}
           </span>

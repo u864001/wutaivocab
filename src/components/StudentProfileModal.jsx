@@ -12,6 +12,7 @@ import {
   getRandomFunNickname,
   pad2
 } from '../utils/studentIdHelper';
+import { AVATAR_LIST, AVATAR_FRAMES, getAvatarById, getAvatarFrameById } from '../data/avatars';
 import { getProfanityError } from '../services/profanityFilter';
 import { fetchLeaderboard, getWeekNumber } from '../services/supabase';
 import {
@@ -42,12 +43,28 @@ export const StudentProfileModal = () => {
     closeModal,
     loginStudent,
     logoutStudent,
+    updateAvatar,
+    avatarId,
+    avatarFrame,
     isLoading
   } = useStudent();
   const { t, lang } = useI18n();
 
   // 內部狀態：是否正在切換/編輯身分
   const [isSwitching, setIsSwitching] = useState(false);
+
+  // 勇士頭像立繪與外框更換選單狀態
+  const [isAvatarSelectorOpen, setIsAvatarSelectorOpen] = useState(false);
+  const [avatarSubTab, setAvatarSubTab] = useState('avatars'); // 'avatars' | 'frames'
+  const [avatarGenderFilter, setAvatarGenderFilter] = useState('all'); // 'all' | 'boy' | 'girl'
+
+  const currentAvatar = useMemo(() => {
+    return getAvatarById(currentStudent?.avatar_id || avatarId);
+  }, [currentStudent?.avatar_id, avatarId]);
+
+  const currentFrame = useMemo(() => {
+    return getAvatarFrameById(currentStudent?.avatar_frame || avatarFrame);
+  }, [currentStudent?.avatar_frame, avatarFrame]);
 
   // 表單狀態
   const [selectedGrade, setSelectedGrade] = useState('04'); // 預設 4 年級
@@ -223,18 +240,46 @@ export const StudentProfileModal = () => {
               </div>
 
               {/* ═══ 槽位 1：左上學生頭像槽 (Left: 9.5%, Top: 12.8%, W: 30%, H: 22.5%) ═══ */}
-              <div className="absolute left-[9.5%] top-[12.8%] w-[30%] h-[22.5%] flex flex-col items-center justify-center p-1.5 z-20">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-amber-300 text-stone-950 flex flex-col items-center justify-center font-heading font-black shadow-xl ring-2 ring-emerald-300/80 relative group">
-                  <span className="text-xl sm:text-2xl tracking-tighter">
-                    {formatStudentBadge(currentStudent, lang).substring(0, 2)}
-                  </span>
-                  <span className="text-[9px] font-mono text-stone-950/90 font-bold -mt-0.5">
-                    {pad2(currentStudent.seat)}號
-                  </span>
-                  <div className="absolute -bottom-1.5 px-2 py-0.2 rounded-full bg-slate-950/90 border border-amber-400/60 text-amber-300 text-[8px] font-black shadow">
-                    LV.{currentStudent.grade || 4}
+              <div className="absolute left-[9.5%] top-[12.8%] w-[30%] h-[22.5%] flex flex-col items-center justify-center p-1 z-20">
+                <button
+                  type="button"
+                  onClick={() => {
+                    try {
+                      confetti({ particleCount: 20, spread: 40, origin: { y: 0.3 } });
+                    } catch (e) {}
+                    setIsAvatarSelectorOpen(true);
+                  }}
+                  className="group relative flex flex-col items-center justify-center focus:outline-none cursor-pointer active:scale-95 transition-transform"
+                  title="點擊更換勇士立繪與石板神槽外框"
+                >
+                  {/* 槽位靈氣呼吸光暈 (Aura pulse) */}
+                  <div className={`absolute -inset-2 rounded-2xl bg-gradient-to-tr ${currentFrame.auraClass} blur-md animate-aura-pulse pointer-events-none`} />
+
+                  {/* 頭像實體圓角容器 + 鑲嵌外框 */}
+                  <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden relative ${currentFrame.ringClass} bg-slate-950 shadow-2xl transition-all duration-300`}>
+                    {/* 2.5D 頭像立繪 + 輕柔呼吸微動效 */}
+                    <img
+                      src={currentAvatar.image}
+                      alt={currentAvatar.name}
+                      className="w-full h-full object-cover object-center animate-avatar-breathe select-none"
+                    />
+
+                    {/* 鏡面微光掠過 (Shimmer sweep) */}
+                    <div className="absolute inset-0 w-[50%] h-[200%] -top-[50%] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-shimmer-sweep" />
+
+                    {/* Hover 浮動提示「換造型」 */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[10px] font-bold backdrop-blur-[2px]">
+                      <Sparkles className="w-4 h-4 text-amber-300 animate-spin" />
+                      <span>換造型</span>
+                    </div>
                   </div>
-                </div>
+
+                  {/* 槽位下方等級/座號標籤 */}
+                  <div className={`absolute -bottom-2 px-2 py-0.5 rounded-full border text-[9px] font-black shadow-md flex items-center gap-1 ${currentFrame.badgeColor} z-10`}>
+                    <span>LV.{currentStudent.grade || 4}</span>
+                    <span className="text-[8px] opacity-80 hidden sm:inline">({pad2(currentStudent.seat)}號)</span>
+                  </div>
+                </button>
               </div>
 
               {/* ═══ 槽位 2：右上姓名與 6 碼 ID 槽 (Left: 42.5%, Top: 12.8%, W: 48%, H: 10%) ═══ */}
@@ -365,6 +410,210 @@ export const StudentProfileModal = () => {
                   <span className="text-emerald-400 font-bold">● ONLINE ACTIVE</span>
                 </div>
               </div>
+
+              {/* ═══ 🪞 勇士神殿立繪鏡像 (Avatar & Frame Mirror Overlay) ═══ */}
+              {isAvatarSelectorOpen && (
+                <div className="absolute inset-0 z-40 bg-slate-950/95 backdrop-blur-md rounded-3xl p-3 sm:p-4 flex flex-col justify-between animate-fadeIn select-none border-2 border-emerald-400/40 shadow-2xl">
+                  {/* 頂部 Header */}
+                  <div className="flex items-center justify-between pb-2 border-b border-emerald-500/20 shrink-0">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+                      <h3 className="text-sm sm:text-base font-heading font-black text-white">
+                        勇士立繪與神槽更換
+                      </h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsAvatarSelectorOpen(false)}
+                      className="w-7 h-7 rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* 子分頁切換：👤 探險者頭像 (8款) vs 🛡️ 神槽雕紋外框 (4款) */}
+                  <div className="flex items-center gap-1.5 p-1 bg-black/50 rounded-xl border border-white/10 my-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setAvatarSubTab('avatars')}
+                      className={`flex-1 py-1.5 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        avatarSubTab === 'avatars'
+                          ? 'bg-emerald-500 text-stone-950 shadow-md font-extrabold'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      <span>👤 勇士立繪</span>
+                      <span className="text-[10px] opacity-80">(8款)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setAvatarSubTab('frames')}
+                      className={`flex-1 py-1.5 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        avatarSubTab === 'frames'
+                          ? 'bg-amber-400 text-stone-950 shadow-md font-extrabold'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      <span>🛡️ 神槽外框</span>
+                      <span className="text-[10px] opacity-80">(4款)</span>
+                    </button>
+                  </div>
+
+                  {/* 分頁內容 */}
+                  <div className="flex-1 overflow-y-auto pr-1 space-y-2">
+                    {avatarSubTab === 'avatars' ? (
+                      <>
+                        {/* 性別/類型微篩選 */}
+                        <div className="flex items-center justify-between text-[11px] px-1 font-bold">
+                          <span className="text-emerald-300/80">選擇專屬神山探險立繪：</span>
+                          <div className="flex gap-1">
+                            {['all', 'boy', 'girl'].map((filterKey) => (
+                              <button
+                                key={filterKey}
+                                type="button"
+                                onClick={() => setAvatarGenderFilter(filterKey)}
+                                className={`px-2 py-0.5 rounded-lg text-[10px] font-mono cursor-pointer transition-all ${
+                                  avatarGenderFilter === filterKey
+                                    ? 'bg-emerald-500/30 text-emerald-300 border border-emerald-400/50'
+                                    : 'text-slate-500 hover:text-slate-300'
+                                }`}
+                              >
+                                {filterKey === 'all' ? '全部' : filterKey === 'boy' ? '👦 男孩' : '👧 女孩'}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* 8 款頭像網格 */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                          {AVATAR_LIST
+                            .filter(a => avatarGenderFilter === 'all' || a.gender === avatarGenderFilter)
+                            .map((item) => {
+                              const isSelected = (currentStudent?.avatar_id || avatarId) === item.id;
+                              return (
+                                <button
+                                  key={item.id}
+                                  type="button"
+                                  onClick={() => {
+                                    updateAvatar(item.id, null);
+                                    try {
+                                      confetti({ particleCount: 25, spread: 45, origin: { y: 0.5 } });
+                                    } catch (e) {}
+                                  }}
+                                  className={`group relative p-1.5 rounded-2xl flex flex-col items-center gap-1.5 transition-all text-center cursor-pointer border ${
+                                    isSelected
+                                      ? 'bg-emerald-950/80 border-emerald-400 ring-2 ring-emerald-300/60 shadow-[0_0_15px_rgba(16,185,129,0.4)] scale-[1.02]'
+                                      : 'bg-slate-900/60 hover:bg-slate-900 border-white/10 hover:border-white/25'
+                                  }`}
+                                >
+                                  {/* 頭像圓角 */}
+                                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden relative bg-slate-950 shadow-inner">
+                                    <img
+                                      src={item.image}
+                                      alt={item.name}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                      loading="lazy"
+                                    />
+                                    {isSelected && (
+                                      <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-emerald-400 text-stone-950 flex items-center justify-center shadow">
+                                        <Check className="w-3 h-3 stroke-[3]" />
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  <div className="w-full">
+                                    <h4 className="text-[11px] font-black text-white truncate">
+                                      {item.name}
+                                    </h4>
+                                    <p className="text-[9px] text-emerald-300/80 truncate">
+                                      {item.title}
+                                    </p>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-[11px] text-amber-300/90 px-1 font-bold">
+                          石板頭像槽外框（自然鑲嵌於神石、絕無浮動貼紙感）：
+                        </p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                          {AVATAR_FRAMES.map((f) => {
+                            const isSelected = (currentStudent?.avatar_frame || avatarFrame) === f.id;
+                            return (
+                              <button
+                                key={f.id}
+                                type="button"
+                                onClick={() => {
+                                  updateAvatar(null, f.id);
+                                  try {
+                                    confetti({ particleCount: 30, spread: 50, origin: { y: 0.5 } });
+                                  } catch (e) {}
+                                }}
+                                className={`p-2.5 rounded-2xl flex items-center gap-3 transition-all text-left cursor-pointer border ${
+                                  isSelected
+                                    ? 'bg-amber-950/70 border-amber-400 ring-2 ring-amber-300/60 shadow-[0_0_15px_rgba(245,158,11,0.35)]'
+                                    : 'bg-slate-900/60 hover:bg-slate-900 border-white/10 hover:border-white/25'
+                                }`}
+                              >
+                                {/* 外框即時預覽小頭像 */}
+                                <div className="relative shrink-0 flex items-center justify-center p-1">
+                                  <div className={`w-12 h-12 rounded-xl overflow-hidden relative ${f.ringClass} bg-slate-950 shadow`}>
+                                    <img
+                                      src={currentAvatar.image}
+                                      alt="Preview"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between gap-1">
+                                    <h4 className="text-xs font-black text-white truncate">
+                                      {f.name}
+                                    </h4>
+                                    {isSelected ? (
+                                      <span className="px-1.5 py-0.5 rounded-full bg-amber-400 text-stone-950 text-[9px] font-black flex items-center gap-0.5">
+                                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                        已鑲嵌
+                                      </span>
+                                    ) : (
+                                      <span className="text-[10px] font-mono font-bold text-amber-400">
+                                        {f.price === 0 ? '預設解鎖' : `🪙 ${f.price}`}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-[10px] text-slate-400 truncate mt-0.5">
+                                    {f.desc}
+                                  </p>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* 底部確認按鈕 */}
+                  <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-2 shrink-0">
+                    <span className="text-[10px] text-slate-400">
+                      已即時銘刻至您的神石通行證
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setIsAvatarSelectorOpen(false)}
+                      className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-300 text-stone-950 text-xs font-black shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                    >
+                      完成更換
+                    </button>
+                  </div>
+                </div>
+              )}
 
             </div>
 

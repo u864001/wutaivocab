@@ -273,6 +273,44 @@ vercel-live-feedback,
   animation: teacherBeaconPulse 1.8s infinite;
 }
 
+/* ── 🌟 探險者通行證頭像槽微動效 (呼吸、神石靈氣與鏡面微光) ── */
+@keyframes avatarBreathe {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-2.5px) scale(1.018);
+  }
+}
 
+@keyframes auraPulse {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.06);
+  }
+}
 
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-160%) rotate(25deg);
+  }
+  25%, 100% {
+    transform: translateX(220%) rotate(25deg);
+  }
+}
 
+.animate-avatar-breathe {
+  animation: avatarBreathe 3.6s ease-in-out infinite;
+}
+
+.animate-aura-pulse {
+  animation: auraPulse 3.6s ease-in-out infinite;
+}
+
+.animate-shimmer-sweep {
+  animation: shimmerSweep 5s ease-in-out infinite;
+}

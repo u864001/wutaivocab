@@ -39,7 +39,10 @@ export const StudentProvider = ({ children }) => {
         if (lastId && lastId.length === 6) {
           const profile = await fetchStudentProfile(lastId);
           if (!isCancelled && profile) {
-            setCurrentStudent(profile);
+            const avatarId = localStorage.getItem(`wutai_avatar_${lastId}`) || profile.avatar_id || 'boy_scout';
+            const frameId = localStorage.getItem(`wutai_frame_${lastId}`) || profile.avatar_frame || 'frame_slate';
+            const enriched = { ...profile, avatar_id: avatarId, avatar_frame: frameId };
+            setCurrentStudent(enriched);
             if (profile.has_just_reset_semester) {
               setSemesterNotice(profile.last_reset_notice || '🎉 歡迎進入新學期！全新學期競賽已開跑！');
             }
@@ -52,10 +55,13 @@ export const StudentProvider = ({ children }) => {
           try {
             const parsed = JSON.parse(guestSaved);
             const checked = checkAndApplySemesterReset(parsed);
-            setCurrentStudent(checked);
+            const avatarId = localStorage.getItem('wutai_avatar_guest') || checked.avatar_id || 'boy_scout';
+            const frameId = localStorage.getItem('wutai_frame_guest') || checked.avatar_frame || 'frame_slate';
+            const enriched = { ...checked, avatar_id: avatarId, avatar_frame: frameId };
+            setCurrentStudent(enriched);
             if (checked.has_just_reset_semester) {
               setSemesterNotice(checked.last_reset_notice);
-              try { localStorage.setItem('wutai_guest_student', JSON.stringify(checked)); } catch (e) {}
+              try { localStorage.setItem('wutai_guest_student', JSON.stringify(enriched)); } catch (e) {}
             }
           } catch (e) {}
         }
@@ -89,12 +95,16 @@ export const StudentProvider = ({ children }) => {
       // 先嘗試自雲端或快取取得既有資料
       const existing = await fetchStudentProfile(studentId);
       const currentSem = getCurrentSemesterId();
+      const localAvatar = localStorage.getItem(`wutai_avatar_${studentId}`) || existing?.avatar_id || 'boy_scout';
+      const localFrame = localStorage.getItem(`wutai_frame_${studentId}`) || existing?.avatar_frame || 'frame_slate';
       const profileToSave = {
         student_id: studentId,
         grade: String(grade).padStart(2, '0'),
         class: String(classNum).padStart(2, '0'),
         seat: String(seat).padStart(2, '0'),
         nickname: cleanNick,
+        avatar_id: localAvatar,
+        avatar_frame: localFrame,
         coins: existing?.coins ?? 0,
         quest_points: existing?.quest_points ?? 0,
         semester_id: existing?.semester_id || currentSem,
@@ -310,6 +320,41 @@ export const StudentProvider = ({ children }) => {
     return isBookInOwnGrade(book, currentStudent.grade, mode);
   }, [currentStudent]);
 
+  /**
+   * 切換自訂勇士頭像立繪與石板神槽外框
+   */
+  const updateAvatar = useCallback(async (avatarId, frameId = null) => {
+    if (!currentStudent) return;
+    const nextAvatar = avatarId || currentStudent.avatar_id || 'boy_scout';
+    const nextFrame = frameId || currentStudent.avatar_frame || 'frame_slate';
+    const studentId = currentStudent.student_id || 'guest';
+
+    const updated = {
+      ...currentStudent,
+      avatar_id: nextAvatar,
+      avatar_frame: nextFrame
+    };
+
+    setCurrentStudent(updated);
+
+    try {
+      localStorage.setItem(`wutai_avatar_${studentId}`, nextAvatar);
+      localStorage.setItem(`wutai_frame_${studentId}`, nextFrame);
+      if (!currentStudent.student_id || currentStudent.student_id === 'guest') {
+        localStorage.setItem('wutai_guest_student', JSON.stringify(updated));
+      }
+    } catch (e) {}
+
+    if (currentStudent.student_id && currentStudent.student_id !== 'guest') {
+      try {
+        await upsertStudentProfile(updated);
+      } catch (e) {
+        console.warn('更新頭像雲端同步暫緩:', e);
+      }
+    }
+    return updated;
+  }, [currentStudent]);
+
   const value = {
     currentStudent,
     isLoggedIn: Boolean(currentStudent),
@@ -319,6 +364,9 @@ export const StudentProvider = ({ children }) => {
     closeModal: () => setIsModalOpen(false),
     loginStudent,
     logoutStudent,
+    updateAvatar,
+    avatarId: currentStudent?.avatar_id || 'boy_scout',
+    avatarFrame: currentStudent?.avatar_frame || 'frame_slate',
     addCoins,
     spendCoins,
     addQuestPoints,
