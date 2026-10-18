@@ -162,6 +162,27 @@ export const Lobby = ({
   // ── 密室逃脫選定主題 ──
   const [escapeThemeId, setEscapeThemeId] = useState('temple');
 
+  // ── 記住我的選擇核選狀態 ──
+  const [rememberSelection, setRememberSelection] = useState(() => {
+    try {
+      return localStorage.getItem('wutai_remember_unit_selection') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+
+  // ── 切換「記住我的選擇」 ──
+  const handleToggleRememberSelection = () => {
+    soundEngine.click();
+    setRememberSelection(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('wutai_remember_unit_selection', String(next));
+      } catch (e) {}
+      return next;
+    });
+  };
+
   // ── 首次進入若未設置個人身分，自動喚起通行證設置 ──
   useEffect(() => {
     try {
@@ -359,40 +380,35 @@ export const Lobby = ({
     return `${bStr}U1`;
   };
 
-  // ── 當冊次或字母模式變更時，初始化/同步預設單元 ──
+  // ── 當冊次或字母模式變更時，僅在全冊專用遊戲中自動鎖定全冊，可選單元遊戲嚴格保持使用者現有清單不亂跳 ──
   useEffect(() => {
-    if (currentOptionData.isAlpha) {
-      setSettings(prev => ({
-        ...prev,
-        alphaMode: alphaMode,
-        selectedUnits: ['abc']
-      }));
-    } else {
-      const bKey = currentOptionData.book;
-      const bData = groupedUnits[bKey];
-      if (bData && bData.lessons) {
-        const allUnits = Array.from(bData.lessons).map(l => `${bKey}-${l}`);
-        
-        // 若當前所選的單元不包含本冊任何單元，預設選取本冊全部單元
-        setSettings(prev => {
-          const currentUnits = prev.selectedUnits || [];
-          const hasCurrentBookUnit = currentUnits.some(u => u.startsWith(`${bKey}-`));
-          if (!hasCurrentBookUnit || isWholeBookOnlyGame) {
-            return {
-              ...prev,
-              alphaMode: null,
-              selectedUnits: allUnits
-            };
-          }
-          return prev;
-        });
+    if (isWholeBookOnlyGame) {
+      if (currentOptionData.isAlpha) {
+        setSettings(prev => ({
+          ...prev,
+          alphaMode: alphaMode,
+          selectedUnits: ['abc']
+        }));
+      } else {
+        const bKey = currentOptionData.book;
+        const bData = groupedUnits[bKey];
+        if (bData && bData.lessons) {
+          const allUnits = Array.from(bData.lessons).map(l => `${bKey}-${l}`);
+          setSettings(prev => ({
+            ...prev,
+            alphaMode: null,
+            selectedUnits: allUnits
+          }));
+        }
       }
     }
   }, [currentOptionData, alphaMode, isWholeBookOnlyGame, groupedUnits, setSettings]);
 
   // ── 判斷特定通用單元是否已在當前冊次中全選 ──
   const isUniversalUnitSelected = (unitId) => {
-    if (currentOptionData.isAlpha) return true;
+    if (currentOptionData.isAlpha) {
+      return (settings.selectedUnits || []).includes('abc');
+    }
     const bKey = currentOptionData.book;
     const bData = groupedUnits[bKey];
     if (!bData || !bData.lessons) return false;
@@ -420,7 +436,7 @@ export const Lobby = ({
     return matchedBookUnits.every(u => selected.includes(u));
   };
 
-  // ── 切換單元複選 (點擊亮起，再點歸暗) ──
+  // ── 切換單元複選 (點擊亮起，再點歸暗，支援可完全取消清空) ──
   const handleToggleUniversalUnit = (unitId) => {
     soundEngine.click();
     const bKey = currentOptionData.book;
@@ -430,15 +446,14 @@ export const Lobby = ({
 
     setSettings(prev => {
       const currentSelected = new Set(prev.selectedUnits || []);
+      // 若先前有 abc 字母模式且現在選的是冊次，清除 abc
+      currentSelected.delete('abc');
 
       if (unitId === 'all') {
-        const allSelected = allBookUnits.every(u => currentSelected.has(u));
+        const allSelected = allBookUnits.length > 0 && allBookUnits.every(u => currentSelected.has(u));
         if (allSelected) {
-          // 若本冊已全選，點全選則只保留其他冊（或至少保留一個單元不致空）
+          // 本冊全部取消選取
           allBookUnits.forEach(u => currentSelected.delete(u));
-          if (currentSelected.size === 0 && allBookUnits.length > 0) {
-            currentSelected.add(allBookUnits[0]);
-          }
         } else {
           // 全部加入
           allBookUnits.forEach(u => currentSelected.add(u));
@@ -461,10 +476,8 @@ export const Lobby = ({
         const isCurrentlyActive = targets.every(u => currentSelected.has(u));
 
         if (isCurrentlyActive) {
-          // 取消選取 (如果剩餘大於1個，否則不允許完全清空)
-          if (currentSelected.size > targets.length) {
-            targets.forEach(u => currentSelected.delete(u));
-          }
+          // 取消選取該單元
+          targets.forEach(u => currentSelected.delete(u));
         } else {
           // 加入選取
           targets.forEach(u => currentSelected.add(u));
@@ -479,12 +492,12 @@ export const Lobby = ({
     });
   };
 
-  // ── 從底部已選托盤移除特定單元 ──
+  // ── 從底部已選托盤移除特定單元 (支援點叉叉完全移除) ──
   const handleRemoveSelectedUnit = (unitKey) => {
+    if (isWholeBookOnlyGame) return; // 全冊遊戲不允許移除單元
     soundEngine.click();
     setSettings(prev => {
       const current = prev.selectedUnits || [];
-      if (current.length <= 1) return prev; // 至少保留一單元
       return {
         ...prev,
         selectedUnits: current.filter(u => u !== unitKey)
@@ -494,9 +507,10 @@ export const Lobby = ({
 
   // ── 已選單字總數 ──
   const selectedWordsCount = useMemo(() => {
-    if (currentOptionData.isAlpha) return 26;
-    return words.filter(w => (settings.selectedUnits || []).includes(`${w.book}-${w.lesson}`)).length;
-  }, [currentOptionData, words, settings?.selectedUnits]);
+    const sel = settings.selectedUnits || [];
+    if (sel.includes('abc')) return 26;
+    return words.filter(w => sel.includes(`${w.book}-${w.lesson}`)).length;
+  }, [words, settings?.selectedUnits]);
 
   // ── 點擊外層欄位 ──
   const handleColumnClick = (col) => {
@@ -515,13 +529,55 @@ export const Lobby = ({
   const handleSelectGame = (gameId) => {
     soundEngine.click();
     setSelectedGame(gameId);
+    
+    // 若該遊戲為全冊專用 (spotter)，直接鎖定當前冊次
+    if (gameId === 'spotter') {
+      const bKey = currentOptionData.book;
+      const bData = groupedUnits[bKey];
+      const allUnits = bData && bData.lessons ? Array.from(bData.lessons).map(l => `${bKey}-${l}`) : [];
+      setSettings(prev => ({
+        ...prev,
+        alphaMode: null,
+        selectedUnits: allUnits
+      }));
+    } else if (!rememberSelection) {
+      // 若玩家未勾選「記住我的選擇」，強制清空全部已選清單
+      setSettings(prev => ({
+        ...prev,
+        alphaMode: null,
+        selectedUnits: []
+      }));
+    }
+    
     setStep('scope');
   };
 
-  // ── 點選冊次 ──
+  // ── 點選冊次 (若為全冊遊戲，換冊直接切換該冊全部單元；若為可選單元遊戲，換冊僅切換當前視野，不更動/不重置底層已選清單) ──
   const handleSelectBookOption = (optId) => {
     soundEngine.click();
     setSelectedOptionId(optId);
+
+    const optData = ALL_GRADE_OPTIONS.find(o => o.id === optId);
+    if (!optData) return;
+
+    if (isWholeBookOnlyGame) {
+      if (optData.isAlpha) {
+        setSettings(prev => ({
+          ...prev,
+          alphaMode: alphaMode,
+          selectedUnits: ['abc']
+        }));
+      } else {
+        const bKey = optData.book;
+        const bData = groupedUnits[bKey];
+        const allUnits = bData && bData.lessons ? Array.from(bData.lessons).map(l => `${bKey}-${l}`) : [];
+        setSettings(prev => ({
+          ...prev,
+          alphaMode: null,
+          selectedUnits: allUnits
+        }));
+      }
+    }
   };
 
   // ── 點選字母模式 ──
@@ -992,9 +1048,25 @@ export const Lobby = ({
                           <Layers className="w-3.5 h-3.5 text-amber-400" />
                           <span>1. 選擇年級冊次：</span>
                         </span>
-                        <span className="text-[10px] text-slate-400 font-normal hidden sm:inline">
-                          點選切換冊次，右下方可複選跨冊單元
-                        </span>
+
+                        {/* 功能核選框：記住我的選擇 (未勾選則每次進遊戲重設清空) */}
+                        {!isWholeBookOnlyGame && (
+                          <label
+                            onClick={handleToggleRememberSelection}
+                            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-white/20 text-[11px] font-bold text-slate-200 hover:text-white cursor-pointer select-none transition-all active:scale-95 shadow"
+                            title="勾選後將保留您的單元選取設定；未勾選則每次重新出征時自動清空"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={rememberSelection}
+                              onChange={() => {}} // handled by parent onClick
+                              className="w-3.5 h-3.5 rounded accent-amber-400 cursor-pointer"
+                            />
+                            <span className={rememberSelection ? 'text-amber-300 font-black' : 'text-slate-300'}>
+                              記住我的選擇
+                            </span>
+                          </label>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-5 gap-1.5 sm:gap-2 w-full">
@@ -1216,22 +1288,47 @@ export const Lobby = ({
                 <div className="pt-2 border-t border-white/15 flex items-center justify-between shrink-0">
                   <div className="flex items-center gap-2 text-xs text-slate-200 font-bold">
                     <span>出征整備：</span>
-                    <span className="text-amber-300 font-black">
-                      {currentOptionData.isAlpha ? '26 字母全套' : `${(settings.selectedUnits || []).length} 個單元 (${selectedWordsCount} 字)`}
-                    </span>
-                    <span className="text-emerald-400 font-black hidden sm:inline ml-1">
-                      • 英雄榜榮譽資格已啟用
-                    </span>
+                    {isWholeBookOnlyGame ? (
+                      <span className="text-amber-300 font-black">
+                        {currentOptionData.label} (全冊 3D 紙雕尋寶)
+                      </span>
+                    ) : (settings.selectedUnits || []).length > 0 ? (
+                      <span className="text-amber-300 font-black">
+                        {currentOptionData.isAlpha ? '26 字母全套' : `${(settings.selectedUnits || []).length} 個單元 (${selectedWordsCount} 字)`}
+                      </span>
+                    ) : (
+                      <span className="text-rose-400 font-bold flex items-center gap-1 animate-pulse">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>尚未選取單元，請點選上方單元膠囊</span>
+                      </span>
+                    )}
+
+                    {(isWholeBookOnlyGame || (settings.selectedUnits || []).length > 0) && (
+                      <span className="text-emerald-400 font-black hidden sm:inline ml-1">
+                        • 英雄榜榮譽資格已啟用
+                      </span>
+                    )}
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleStartGame}
-                    className="px-7 sm:px-9 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-heading font-black text-sm sm:text-base flex items-center gap-2 shadow-[0_0_25px_rgba(245,158,11,0.6)] active:scale-95 transition-all cursor-pointer border-2 border-amber-200 animate-pulse"
-                  >
-                    <span>⚔️ 開始遊戲 START</span>
-                    <Play className="w-4 h-4 fill-stone-950" />
-                  </button>
+                  {/* 若未選取任何單元，按鈕不可點擊亦不發光 */}
+                  {(() => {
+                    const canStart = isWholeBookOnlyGame ? Boolean(selectedOptionId) : (settings.selectedUnits || []).length > 0;
+                    return (
+                      <button
+                        type="button"
+                        disabled={!canStart}
+                        onClick={handleStartGame}
+                        className={`px-7 sm:px-9 py-2.5 rounded-2xl font-heading font-black text-sm sm:text-base flex items-center gap-2 transition-all cursor-pointer border-2 ${
+                          canStart
+                            ? 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 shadow-[0_0_25px_rgba(245,158,11,0.6)] active:scale-95 border-amber-200 animate-pulse'
+                            : 'bg-slate-800 text-slate-500 border-white/10 opacity-50 cursor-not-allowed shadow-none'
+                        }`}
+                      >
+                        <span>⚔️ 開始遊戲 START</span>
+                        <Play className={`w-4 h-4 ${canStart ? 'fill-stone-950' : 'fill-slate-500'}`} />
+                      </button>
+                    );
+                  })()}
                 </div>
 
               </div>
