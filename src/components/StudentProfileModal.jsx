@@ -202,45 +202,52 @@ export const StudentProfileModal = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/85 backdrop-blur-md animate-fadeIn overflow-y-auto">
       {/* 浮動式無邊框高質感【大武山神廟古代石板通行證】 */}
-      <div className="w-full max-w-md sm:max-w-lg relative my-auto animate-scaleUp">
+      {/* 浮動式【大武山神廟古代石板通行證】 */}
+      <div className="relative my-auto flex flex-col items-center animate-scaleUp">
         
         {/* 模式 A：已登入且未點選切換 ── 顯示精美【大武山石板勇士執照】原畫質證件 */}
         {isLoggedIn && !isSwitching ? (
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-2.5">
             
-            {/* 卡片本體：嚴格 3:4 比例石板原畫，內嵌凹槽與發光符文 */}
-            <div className="relative w-full aspect-[3/4] max-h-[82vh] rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(16,185,129,0.35)] select-none">
+            {/* 卡片本體：嚴格 3:4 比例，寬高完全聯動，100% 完整呈現四邊細節與外框雕刻 (零裁切) */}
+            <div
+              className="relative select-none shadow-[0_0_50px_rgba(16,185,129,0.35)]"
+              style={{
+                width: 'min(94vw, 460px, calc((85vh - 56px) * 0.75))',
+                aspectRatio: '3 / 4'
+              }}
+            >
               
-              {/* 高解析精美神廟石板原畫背景 (已最佳化 WebP) */}
+              {/* 高解析精美神廟石板原畫背景 (100% 完整呈現，不裁剪四周) */}
               <img
                 src={cardTheme === 'dark' ? '/assets/pass/slate_pass_dark.webp' : '/assets/pass/slate_pass_parchment.webp'}
                 alt="Ancient Slate Warrior Pass"
-                className="absolute inset-0 w-full h-full object-cover filter contrast-[1.08] pointer-events-none"
+                className="absolute inset-0 w-full h-full object-fill pointer-events-none drop-shadow-2xl"
               />
 
               {/* 浮動頂部微操作鈕 (關閉與風格切換) */}
-              <div className="absolute top-3 right-4 z-30 flex items-center gap-2">
+              <div className="absolute top-[2%] right-[2.5%] z-30 flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => setCardTheme(prev => prev === 'dark' ? 'parchment' : 'dark')}
-                  className="px-2.5 py-1 rounded-xl bg-slate-950/80 hover:bg-black text-emerald-300 border border-emerald-400/40 text-[10px] font-mono font-bold flex items-center gap-1 shadow-md transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
+                  className="px-2 py-0.5 rounded-lg bg-black/75 hover:bg-black text-emerald-300 border border-emerald-400/40 text-[9px] font-mono font-bold flex items-center gap-1 shadow-md transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
                   title="切換石板風格 (深邃墨岩 / 象牙羊皮)"
                 >
-                  <Layers className="w-3 h-3" />
-                  <span>{cardTheme === 'dark' ? '墨岩青玉' : '羊皮石雕'}</span>
+                  <Layers className="w-2.5 h-2.5" />
+                  <span>{cardTheme === 'dark' ? '墨岩' : '羊皮'}</span>
                 </button>
 
                 <button
                   onClick={closeModal}
-                  className="w-7 h-7 rounded-full bg-slate-950/80 hover:bg-black text-slate-300 hover:text-white flex items-center justify-center border border-white/20 shadow-md transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
+                  className="w-6 h-6 rounded-full bg-black/75 hover:bg-black text-slate-300 hover:text-white flex items-center justify-center border border-white/20 shadow-md transition-all active:scale-95 cursor-pointer backdrop-blur-sm"
                   title="關閉"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              {/* ═══ 槽位 1：左上學生頭像槽 (Left: 9.5%, Top: 12.8%, W: 30%, H: 22.5%) ═══ */}
-              <div className="absolute left-[9.5%] top-[12.8%] w-[30%] h-[22.5%] flex flex-col items-center justify-center p-1 z-20">
+              {/* ═══ 槽位 1：左上學生頭像槽 (Left: 9.90%, Top: 13.57%, W: 28.91%, H: 21.19%) ═══ */}
+              <div className="absolute left-[9.90%] top-[13.57%] w-[28.91%] h-[21.19%] flex flex-col items-center justify-center p-0.5 z-20">
                 <button
                   type="button"
                   onClick={() => {
@@ -249,14 +256,14 @@ export const StudentProfileModal = () => {
                     } catch (e) {}
                     setIsAvatarSelectorOpen(true);
                   }}
-                  className="group relative flex flex-col items-center justify-center focus:outline-none cursor-pointer active:scale-95 transition-transform"
+                  className="group relative flex flex-col items-center justify-center focus:outline-none cursor-pointer active:scale-95 transition-transform w-full h-full"
                   title="點擊更換勇士立繪與石板神槽外框"
                 >
                   {/* 槽位靈氣呼吸光暈 (Aura pulse) */}
-                  <div className={`absolute -inset-2 rounded-2xl bg-gradient-to-tr ${currentFrame.auraClass} blur-md animate-aura-pulse pointer-events-none`} />
+                  <div className={`absolute -inset-1.5 rounded-2xl bg-gradient-to-tr ${currentFrame.auraClass} blur-md animate-aura-pulse pointer-events-none`} />
 
                   {/* 頭像實體圓角容器 + 鑲嵌外框 */}
-                  <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden relative ${currentFrame.ringClass} bg-slate-950 shadow-2xl transition-all duration-300`}>
+                  <div className={`w-[84%] h-[84%] rounded-xl overflow-hidden relative ${currentFrame.ringClass} bg-slate-950 shadow-xl transition-all duration-300`}>
                     {/* 2.5D 頭像立繪 + 輕柔呼吸微動效 */}
                     <img
                       src={currentAvatar.image}
@@ -269,145 +276,187 @@ export const StudentProfileModal = () => {
 
                     {/* Hover 浮動提示「換造型」 */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[10px] font-bold backdrop-blur-[2px]">
-                      <Sparkles className="w-4 h-4 text-amber-300 animate-spin" />
+                      <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" />
                       <span>換造型</span>
                     </div>
                   </div>
 
                   {/* 槽位下方等級/座號標籤 */}
-                  <div className={`absolute -bottom-2 px-2 py-0.5 rounded-full border text-[9px] font-black shadow-md flex items-center gap-1 ${currentFrame.badgeColor} z-10`}>
+                  <div className={`absolute -bottom-1.5 px-2 py-0.2 rounded-full border text-[8px] font-black shadow-md flex items-center gap-1 ${currentFrame.badgeColor} z-10`}>
                     <span>LV.{currentStudent.grade || 4}</span>
-                    <span className="text-[8px] opacity-80 hidden sm:inline">({pad2(currentStudent.seat)}號)</span>
+                    <span className="opacity-80">({pad2(currentStudent.seat)}號)</span>
                   </div>
                 </button>
               </div>
 
-              {/* ═══ 槽位 2：右上姓名與 6 碼 ID 槽 (Left: 42.5%, Top: 12.8%, W: 48%, H: 10%) ═══ */}
-              <div className="absolute left-[42.5%] top-[12.8%] w-[48%] h-[10%] flex flex-col justify-center px-2.5 z-20">
+              {/* ═══ 槽位 2：右上姓名與 6 碼 ID 槽 (Left: 42.97%, Top: 14.36%, W: 46.61%, H: 8.30%) ═══ */}
+              <div className="absolute left-[42.97%] top-[14.36%] w-[46.61%] h-[8.30%] flex flex-col justify-center px-2.5 z-20">
                 <div className="flex items-center justify-between gap-1">
-                  <h4 className="text-base sm:text-lg font-heading font-black text-white truncate drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                  <h4 className={`text-sm sm:text-base font-heading font-black truncate ${
+                    cardTheme === 'dark' ? 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]' : 'text-stone-900'
+                  }`}>
                     {currentStudent.nickname}
                   </h4>
-                  <span className="font-mono text-[10px] font-black text-amber-300 bg-black/60 px-2 py-0.5 rounded-lg border border-amber-400/50 shrink-0">
+                  <span className={`font-mono text-[9px] font-black px-1.5 py-0.2 rounded-md border shrink-0 ${
+                    cardTheme === 'dark' ? 'text-amber-300 bg-black/60 border-amber-400/50' : 'text-amber-900 bg-amber-100/80 border-amber-600/50'
+                  }`}>
                     ID: {currentStudent.student_id}
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-xs font-bold text-emerald-200/90 truncate mt-0.5">
+                <p className={`text-[9px] sm:text-[10px] font-bold truncate ${
+                  cardTheme === 'dark' ? 'text-emerald-300' : 'text-emerald-800'
+                }`}>
                   {formatStudentDisplayName(currentStudent, lang)}
                 </p>
               </div>
 
-              {/* ═══ 槽位 3：右上勇士稱號與階級槽 (Left: 42.5%, Top: 24.5%, W: 48%, H: 10.5%) ═══ */}
-              <div className="absolute left-[42.5%] top-[24.5%] w-[48%] h-[10.5%] flex items-center justify-between px-2.5 z-20">
+              {/* ═══ 槽位 3：右上勇士稱號與階級槽 (Left: 43.10%, Top: 26.37%, W: 46.61%, H: 8.30%) ═══ */}
+              <div className="absolute left-[43.10%] top-[26.37%] w-[46.61%] h-[8.30%] flex items-center justify-between px-2.5 z-20">
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">
+                  <span className={`text-[8px] font-mono uppercase tracking-wider font-bold ${
+                    cardTheme === 'dark' ? 'text-slate-400' : 'text-stone-600'
+                  }`}>
                     TITLED WARRIOR
                   </span>
-                  <span className="text-xs sm:text-sm font-black text-amber-300 truncate flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span className={`text-[11px] sm:text-xs font-black truncate flex items-center gap-1 ${
+                    cardTheme === 'dark' ? 'text-amber-300' : 'text-amber-800'
+                  }`}>
+                    <ShieldCheck className="w-3 h-3 text-emerald-500 shrink-0" />
                     <span>大武山守護者</span>
                   </span>
                 </div>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400/40 text-emerald-300 text-[10px] font-bold">
+                <span className={`px-1.5 py-0.5 rounded-full border text-[9px] font-bold ${
+                  cardTheme === 'dark'
+                    ? 'bg-emerald-500/25 border-emerald-400/40 text-emerald-300'
+                    : 'bg-emerald-700/20 border-emerald-700/40 text-emerald-900'
+                }`}>
                   {currentStudent.grade} 年級勇士
                 </span>
               </div>
 
-              {/* ═══ 槽位 4：左中金幣資產槽 (Left: 9.5%, Top: 37%, W: 38.5%, H: 11%) ═══ */}
-              <div className="absolute left-[9.5%] top-[37%] w-[38.5%] h-[11%] flex items-center justify-between px-3 z-20">
-                <div className="flex items-center gap-1.5 text-amber-300 text-xs font-black">
-                  <Coins className="w-4 h-4 text-amber-400 shrink-0" />
+              {/* ═══ 槽位 4：左中金幣資產槽 (Left: 9.90%, Top: 38.18%, W: 36.98%, H: 9.47%) ═══ */}
+              <div className="absolute left-[9.90%] top-[38.18%] w-[36.98%] h-[9.47%] flex items-center justify-between px-3 z-20">
+                <div className={`flex items-center gap-1.5 text-xs font-black ${
+                  cardTheme === 'dark' ? 'text-amber-300' : 'text-amber-800'
+                }`}>
+                  <Coins className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                   <span>{t.coins}</span>
                 </div>
-                <div className="text-base sm:text-xl font-black text-amber-300 font-mono">
+                <div className={`text-sm sm:text-base font-black font-mono ${
+                  cardTheme === 'dark' ? 'text-amber-300' : 'text-amber-900'
+                }`}>
                   {currentStudent.coins ?? 0}
                 </div>
               </div>
 
-              {/* ═══ 槽位 5：右中冒險積分槽 (Left: 52%, Top: 37%, W: 38.5%, H: 11%) ═══ */}
-              <div className="absolute left-[52%] top-[37%] w-[38.5%] h-[11%] flex items-center justify-between px-3 z-20">
-                <div className="flex items-center gap-1.5 text-indigo-300 text-xs font-black">
-                  <Trophy className="w-4 h-4 text-indigo-400 shrink-0" />
+              {/* ═══ 槽位 5：右中冒險積分槽 (Left: 52.86%, Top: 38.18%, W: 37.11%, H: 9.47%) ═══ */}
+              <div className="absolute left-[52.86%] top-[38.18%] w-[37.11%] h-[9.47%] flex items-center justify-between px-3 z-20">
+                <div className={`flex items-center gap-1.5 text-xs font-black ${
+                  cardTheme === 'dark' ? 'text-cyan-300' : 'text-teal-800'
+                }`}>
+                  <Trophy className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                   <span>{t.questPoints}</span>
                 </div>
-                <div className="text-base sm:text-xl font-black text-indigo-300 font-mono">
+                <div className={`text-sm sm:text-base font-black font-mono ${
+                  cardTheme === 'dark' ? 'text-cyan-300' : 'text-teal-900'
+                }`}>
                   {currentStudent.quest_points ?? 0}
                 </div>
               </div>
 
-              {/* ═══ 槽位 6：中層道具收藏槽 (Left: 9.5%, Top: 50%, W: 81%, H: 10.5%) ═══ */}
-              <div className="absolute left-[9.5%] top-[50%] w-[81%] h-[10.5%] flex items-center justify-between px-3.5 z-20">
-                <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 text-teal-400 shrink-0" />
-                  <span className="text-xs font-black text-teal-300">
+              {/* ═══ 槽位 6：中層道具收藏槽 (Left: 9.77%, Top: 50.88%, W: 80.08%, H: 9.38%) ═══ */}
+              <div className="absolute left-[9.77%] top-[50.88%] w-[80.08%] h-[9.38%] flex items-center justify-between px-3.5 z-20">
+                <div className="flex items-center gap-1.5">
+                  <Package className="w-3.5 h-3.5 text-teal-500 shrink-0" />
+                  <span className={`text-[11px] sm:text-xs font-black ${
+                    cardTheme === 'dark' ? 'text-teal-300' : 'text-teal-900'
+                  }`}>
                     {t.backpackItems} ({(currentStudent.inventory || []).length} 件)
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 overflow-x-auto max-w-[55%] py-1">
                   {(currentStudent.inventory || []).length > 0 ? (
                     currentStudent.inventory.slice(0, 4).map((it, idx) => (
-                      <span key={idx} className="px-2 py-0.5 rounded-md bg-teal-950/80 border border-teal-400/40 text-[10px] text-teal-200 font-bold whitespace-nowrap">
+                      <span key={idx} className="px-2 py-0.5 rounded-md bg-teal-950/80 border border-teal-400/40 text-[9px] text-teal-200 font-bold whitespace-nowrap">
                         {it.name || it}
                       </span>
                     ))
                   ) : (
-                    <span className="text-[10px] text-slate-400 font-bold">
+                    <span className={`text-[9px] font-bold ${
+                      cardTheme === 'dark' ? 'text-slate-400' : 'text-stone-600'
+                    }`}>
                       前往小鎮商店收集徽章
                     </span>
                   )}
                 </div>
               </div>
 
-              {/* ═══ 槽位 7：底層榮譽榜 TOP 3 成就槽 (Left: 9.5%, Top: 62.5%, W: 81%, H: 26.5%) ═══ */}
-              <div className="absolute left-[9.5%] top-[62.5%] w-[81%] h-[26.5%] flex flex-col justify-between p-3 z-20">
-                <div className="flex items-center justify-between border-b border-white/10 pb-1 shrink-0">
+              {/* ═══ 槽位 7：底層榮譽榜 TOP 3 成就槽 (Left: 8.85%, Top: 63.38%, W: 81.90%, H: 23.83%) ═══ */}
+              <div className="absolute left-[8.85%] top-[63.38%] w-[81.90%] h-[23.83%] flex flex-col justify-between p-2.5 z-20">
+                <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-0.5 shrink-0">
                   <div className="flex items-center gap-1.5">
-                    <Crown className="w-3.5 h-3.5 text-amber-400" />
-                    <span className="text-xs font-black text-amber-300 tracking-wide">
+                    <Crown className="w-3 h-3 text-amber-500" />
+                    <span className={`text-[10px] sm:text-[11px] font-black tracking-wide ${
+                      cardTheme === 'dark' ? 'text-amber-300' : 'text-amber-900'
+                    }`}>
                       殿堂戰績 • 目前榮譽榜 TOP 3
                     </span>
                   </div>
-                  <span className="text-[9px] font-mono text-emerald-300/80">
+                  <span className={`text-[8px] font-mono ${
+                    cardTheme === 'dark' ? 'text-emerald-300/80' : 'text-emerald-900'
+                  }`}>
                     TOP 3 HONORS
                   </span>
                 </div>
 
-                <div className="flex-1 my-1 overflow-y-auto space-y-1.5 pr-1">
+                <div className="flex-1 my-1 overflow-y-auto space-y-1 pr-1">
                   {isLoadingHonors ? (
-                    <div className="flex items-center justify-center h-full text-xs text-slate-400 font-bold animate-pulse">
+                    <div className="flex items-center justify-center h-full text-[10px] text-slate-400 font-bold animate-pulse">
                       正在查核全校榮譽榜殿堂...
                     </div>
                   ) : studentTopHonors.length > 0 ? (
                     studentTopHonors.map((h, i) => (
-                      <div key={i} className="flex items-center justify-between p-1.5 rounded-xl bg-black/40 border border-amber-400/30">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-black shadow ${
-                            h.rank === 1 ? 'bg-amber-400 text-stone-950 ring-2 ring-amber-300' :
+                      <div key={i} className={`flex items-center justify-between p-1 rounded-lg border ${
+                        cardTheme === 'dark' ? 'bg-black/50 border-amber-400/30' : 'bg-stone-200/90 border-amber-800/40 text-stone-900'
+                      }`}>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black shadow ${
+                            h.rank === 1 ? 'bg-amber-400 text-stone-950 ring-1 ring-amber-300' :
                             h.rank === 2 ? 'bg-slate-300 text-stone-950' : 'bg-amber-700 text-white'
                           }`}>
                             {h.rank}
                           </span>
-                          <span className="text-xs text-white font-bold">{h.icon} {h.title}</span>
+                          <span className={`text-[10px] font-bold ${
+                            cardTheme === 'dark' ? 'text-white' : 'text-stone-900'
+                          }`}>{h.icon} {h.title}</span>
                         </div>
-                        <span className="text-xs font-mono font-black text-amber-300">{h.score}分</span>
+                        <span className={`text-[10px] font-mono font-black ${
+                          cardTheme === 'dark' ? 'text-amber-300' : 'text-amber-900'
+                        }`}>{h.score}分</span>
                       </div>
                     ))
                   ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-center py-2">
-                      <Medal className="w-5 h-5 text-slate-500 mb-1" />
-                      <p className="text-[11px] text-slate-300 font-bold">
+                    <div className="flex flex-col items-center justify-center h-full text-center py-1">
+                      <Medal className="w-4 h-4 text-slate-500 mb-0.5" />
+                      <p className={`text-[10px] font-bold ${
+                        cardTheme === 'dark' ? 'text-slate-300' : 'text-stone-800'
+                      }`}>
                         尚未進入全校 TOP 3 榜單
                       </p>
-                      <p className="text-[9px] text-slate-400 mt-0.5">
+                      <p className={`text-[8px] mt-0.5 ${
+                        cardTheme === 'dark' ? 'text-slate-400' : 'text-stone-600'
+                      }`}>
                         挑戰單人極速或密室逃脫，為年級爭光即可入榜！
                       </p>
                     </div>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between pt-1 border-t border-white/10 text-[9px] text-slate-400 font-mono shrink-0">
+                <div className={`flex items-center justify-between pt-0.5 border-t border-black/10 dark:border-white/10 text-[8px] font-mono shrink-0 ${
+                  cardTheme === 'dark' ? 'text-slate-400' : 'text-stone-600'
+                }`}>
                   <span>WUTAI TRIBAL ADVENTURER GUILD</span>
-                  <span className="text-emerald-400 font-bold">● ONLINE ACTIVE</span>
+                  <span className="text-emerald-500 font-bold">● ONLINE ACTIVE</span>
                 </div>
               </div>
 
