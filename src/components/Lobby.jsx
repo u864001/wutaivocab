@@ -19,35 +19,68 @@ const POSTER_QUIZ = '/assets/lobby/theme_quiz.jpg';
 const POSTER_BATTLE = '/assets/lobby/theme_battle.jpg';
 const POSTER_TOWN = '/assets/lobby/theme_town.jpg';
 
-// ── 10 大標準學期冊次極簡定義 (零滑動 2x5 / 5x2 網格) ──
-const GRADE_BOOK_OPTIONS = [
-  { id: 'g1', label: '一年級', book: 'abc', grade: 1, isAlpha: true, desc: '字母認讀啟蒙' },
-  { id: 'g2', label: '二年級', book: 'abc', grade: 2, isAlpha: true, desc: '自然發音與大小寫' },
-  { id: 'b1', label: '三上', book: '1', grade: 3, semester: 1, desc: '文具、課室、顏色' },
-  { id: 'b2', label: '三下', book: '2', grade: 3, semester: 2, desc: '動物、數字、家庭' },
-  { id: 'b3', label: '四上', book: '3', grade: 4, semester: 1, desc: '身體、食物、時間' },
-  { id: 'b4', label: '四下', book: '4', grade: 4, semester: 2, desc: '天氣、場所、日常' },
-  { id: 'b5', label: '五上', book: '5', grade: 5, semester: 1, desc: '餐飲、國家、交通' },
-  { id: 'b6', label: '五下', book: '6', grade: 5, semester: 2, desc: '太空、自然、生活' },
-  { id: 'b7', label: '六上', book: '7', grade: 6, semester: 1, desc: '世界、港灣、服飾' },
-  { id: 'b8', label: '六下', book: '8', grade: 6, semester: 2, desc: '四季庭園、畢業留影' }
+// ── 5 欄 × 2 列年級配對定義（由左至右：一二年級、三上三下、四上四下、五上五下、六上六下） ──
+const GRADE_COLUMNS = [
+  {
+    colId: 'g1_g2',
+    colLabel: '低年級',
+    top: { id: 'g1', label: '一年級', book: 'abc', grade: 1, isAlpha: true, desc: '字母認讀' },
+    bottom: { id: 'g2', label: '二年級', book: 'abc', grade: 2, isAlpha: true, desc: '自然發音' }
+  },
+  {
+    colId: 'b1_b2',
+    colLabel: '三年級',
+    top: { id: 'b1', label: '三上', book: '1', grade: 3, semester: 1, desc: '第 1 冊' },
+    bottom: { id: 'b2', label: '三下', book: '2', grade: 3, semester: 2, desc: '第 2 冊' }
+  },
+  {
+    colId: 'b3_b4',
+    colLabel: '四年級',
+    top: { id: 'b3', label: '四上', book: '3', grade: 4, semester: 1, desc: '第 3 冊' },
+    bottom: { id: 'b4', label: '四下', book: '4', grade: 4, semester: 2, desc: '第 4 冊' }
+  },
+  {
+    colId: 'b5_b6',
+    colLabel: '五年級',
+    top: { id: 'b5', label: '五上', book: '5', grade: 5, semester: 1, desc: '第 5 冊' },
+    bottom: { id: 'b6', label: '五下', book: '6', grade: 5, semester: 2, desc: '第 6 冊' }
+  },
+  {
+    colId: 'b7_b8',
+    colLabel: '六年級',
+    top: { id: 'b7', label: '六上', book: '7', grade: 6, semester: 1, desc: '第 7 冊' },
+    bottom: { id: 'b8', label: '六下', book: '8', grade: 6, semester: 2, desc: '第 8 冊' }
+  }
 ];
 
-// ── 各遊戲左下角專屬靈魂剪影/實景原畫 (羽化融景) ──
+const ALL_GRADE_OPTIONS = GRADE_COLUMNS.flatMap(c => [c.top, c.bottom]);
+
+// ── 三到六年級通用單元順序 (由左至右順序固定) ──
+const UNIVERSAL_UNITS = [
+  { id: 'all', label: '🏆 全冊 (All)' },
+  { id: 'starter', label: 'Starter' },
+  { id: 'unit1', label: 'Unit 1' },
+  { id: 'unit2', label: 'Unit 2' },
+  { id: 'unit3', label: 'Unit 3' },
+  { id: 'unit4', label: 'Unit 4' },
+  { id: 'festival', label: 'Festival' }
+];
+
+// ── 各遊戲左下角真實精彩遊戲截圖瞬間 (羽化融景) ──
 const GAME_SPOTLIGHT_ART = {
-  mole: '/assets/mole/mole_gold.png',
-  escape: '/assets/escape/bg_temple.webp',
+  mole: '/assets/screenshots/screenshot_mole.jpg',
+  meteor: '/assets/screenshots/screenshot_meteor.jpg',
+  snake: '/assets/screenshots/screenshot_snake.jpg',
   spotter: '/assets/spotter/book1_base.jpg',
-  maze: '/assets/lobby/theme_explore.jpg',
+  escape: '/assets/escape/bg_temple.webp',
+  maze: '/assets/screenshots/screenshot_snake.jpg',
+  swipe: '/assets/screenshots/screenshot_meteor.jpg',
   memory: '/assets/lobby/theme_explore.jpg',
-  swipe: '/assets/lobby/theme_speed.jpg',
-  meteor: '/assets/lobby/theme_speed.jpg',
-  snake: '/assets/lobby/theme_explore.jpg',
   'quiz-zh-en': '/assets/lobby/theme_quiz.jpg',
   'quiz-en-zh': '/assets/lobby/theme_quiz.jpg',
   'quiz-listening': '/assets/lobby/theme_quiz.jpg',
   'quiz-mixed': '/assets/lobby/theme_quiz.jpg',
-  town: '/assets/lobby/theme_town.jpg',
+  town: '/assets/town/town_map_panorama.webp',
   battle: '/assets/lobby/theme_battle.jpg'
 };
 
@@ -120,14 +153,14 @@ export const Lobby = ({
   // ── 選定的冊次選項 ID (預設對應學生年級) ──
   const [selectedOptionId, setSelectedOptionId] = useState('b1');
 
+  // ── 單元選取模式：'all' | 'starter' | 'unit1' | 'unit2' | 'unit3' | 'unit4' | 'festival' ──
+  const [selectedUnitFilter, setSelectedUnitFilter] = useState('all');
+
   // ── 低年級字母模式：'upper' | 'lower' | 'mixed' ──
   const [alphaMode, setAlphaMode] = useState('upper');
 
   // ── 密室逃脫選定主題 ──
   const [escapeThemeId, setEscapeThemeId] = useState('temple');
-
-  // ── 是否展開單元細節微調 ──
-  const [showUnitDetails, setShowUnitDetails] = useState(false);
 
   // ── 首次進入若未設置個人身分，自動喚起通行證設置 ──
   useEffect(() => {
@@ -182,7 +215,7 @@ export const Lobby = ({
       isDirectJump: false,
       games: [
         { id: 'escape', name: '神祕密室逃脫', iconComp: KeyRound, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/25 border-emerald-400/40', badge: '機關解謎' },
-        { id: 'spotter', name: '鷹眼神探找不同', iconComp: Eye, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '視覺辨析' },
+        { id: 'spotter', name: '鷹眼神探找不同', iconComp: Eye, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '全冊紙雕' },
         { id: 'maze', name: '字母巡航迷宮', iconComp: Compass, iconColor: 'text-teal-400', iconBg: 'bg-teal-500/25 border-teal-400/40', badge: '字母航線' },
         { id: 'memory', name: '翻牌記憶對決', iconComp: Sparkles, iconColor: 'text-cyan-400', iconBg: 'bg-cyan-500/25 border-cyan-400/40', badge: '記憶配對' }
       ]
@@ -301,10 +334,13 @@ export const Lobby = ({
 
   // ── 當前選中的冊次選項資料 ──
   const currentOptionData = useMemo(() => {
-    return GRADE_BOOK_OPTIONS.find(o => o.id === selectedOptionId) || GRADE_BOOK_OPTIONS[2];
+    return ALL_GRADE_OPTIONS.find(o => o.id === selectedOptionId) || ALL_GRADE_OPTIONS[2];
   }, [selectedOptionId]);
 
-  // ── 當冊次變更時，自動配置 settings.selectedUnits 確保上榜資格 ──
+  // ── 是否為僅支援全冊的遊戲 (如鷹眼神探找不同) ──
+  const isWholeBookOnlyGame = selectedGame === 'spotter';
+
+  // ── 當冊次或單元變更時，自動配置 settings.selectedUnits 確保上榜資格 ──
   useEffect(() => {
     if (currentOptionData.isAlpha) {
       setSettings(prev => ({
@@ -317,14 +353,37 @@ export const Lobby = ({
       const bData = groupedUnits[bKey];
       if (bData && bData.lessons) {
         const allUnits = Array.from(bData.lessons).map(l => `${bKey}-${l}`);
-        setSettings(prev => ({
-          ...prev,
-          alphaMode: null,
-          selectedUnits: allUnits
-        }));
+        
+        if (selectedUnitFilter === 'all' || isWholeBookOnlyGame) {
+          setSettings(prev => ({
+            ...prev,
+            alphaMode: null,
+            selectedUnits: allUnits
+          }));
+        } else {
+          // 對應指定單元
+          let targetLessonNum = '1';
+          if (selectedUnitFilter === 'starter') targetLessonNum = '0';
+          else if (selectedUnitFilter === 'unit1') targetLessonNum = '1';
+          else if (selectedUnitFilter === 'unit2') targetLessonNum = '2';
+          else if (selectedUnitFilter === 'unit3') targetLessonNum = '3';
+          else if (selectedUnitFilter === 'unit4') targetLessonNum = '4';
+          else if (selectedUnitFilter === 'festival') targetLessonNum = 'festival';
+
+          const matchedUnits = allUnits.filter(u => {
+            const lessonPart = u.split('-')[1]?.toLowerCase() || '';
+            return lessonPart.includes(targetLessonNum) || lessonPart === targetLessonNum;
+          });
+
+          setSettings(prev => ({
+            ...prev,
+            alphaMode: null,
+            selectedUnits: matchedUnits.length > 0 ? matchedUnits : allUnits
+          }));
+        }
       }
     }
-  }, [currentOptionData, alphaMode, groupedUnits, setSettings]);
+  }, [currentOptionData, alphaMode, selectedUnitFilter, isWholeBookOnlyGame, groupedUnits, setSettings]);
 
   // ── 已選單字總數 ──
   const selectedWordsCount = useMemo(() => {
@@ -345,14 +404,14 @@ export const Lobby = ({
     }
   };
 
-  // ── 點選具體子遊戲：【核心革新】直接絲滑展開至 100% 全螢幕選冊整備頁，無需多點下一頁！ ──
+  // ── 點選具體子遊戲：直接絲滑展開至 100% 全螢幕選冊整備頁 ──
   const handleSelectGame = (gameId) => {
     soundEngine.click();
     setSelectedGame(gameId);
     setStep('scope');
   };
 
-  // ── 點選 10 冊膠囊 ──
+  // ── 點選冊次 ──
   const handleSelectBookOption = (optId) => {
     soundEngine.click();
     setSelectedOptionId(optId);
@@ -363,6 +422,12 @@ export const Lobby = ({
     soundEngine.click();
     setAlphaMode(mode);
     setSettings(prev => ({ ...prev, alphaMode: mode }));
+  };
+
+  // ── 點選通用單元 ──
+  const handleSelectUnit = (unitId) => {
+    soundEngine.click();
+    setSelectedUnitFilter(unitId);
   };
 
   // ── 上一步 ──
@@ -403,13 +468,13 @@ export const Lobby = ({
       {/* ════════════════════════════════════════════════════════════════
           【固定頂部 HUD】左上回首頁 / 上一步 • 上中英雄榜 • 右上個人通行證
          ════════════════════════════════════════════════════════════════ */}
-      <header className="relative z-30 w-full px-3 sm:px-6 py-2.5 sm:py-3 bg-slate-950/85 backdrop-blur-md border-b border-white/10 flex items-center justify-between shadow-xl shrink-0">
+      <header className="relative z-30 w-full px-3 sm:px-6 py-2 sm:py-2.5 bg-slate-950/85 backdrop-blur-md border-b border-white/10 flex items-center justify-between shadow-xl shrink-0">
         
         {/* 左上角：上一步 / 回首頁 */}
         <button
           type="button"
           onClick={handleGoBack}
-          className="px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-white/15 text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+          className="px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-100 hover:text-white border border-white/20 text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
           title={step === 'scope' ? '返回選擇其他遊戲' : '返回英語學習宇宙首頁'}
         >
           {step === 'scope' ? (
@@ -427,12 +492,12 @@ export const Lobby = ({
 
         {/* 置上中：英雄榜 或 整備室標題 */}
         {step === 'scope' ? (
-          <div className="flex items-center gap-2 px-3.5 py-1 rounded-2xl bg-slate-900/80 border border-white/15 shadow-md">
+          <div className="flex items-center gap-2 px-3.5 py-1 rounded-2xl bg-slate-900/90 border border-white/20 shadow-md">
             <currentGameObj.iconComp className="w-4 h-4 text-amber-400" />
             <span className="font-heading font-black text-xs sm:text-sm tracking-wide text-white">
               {currentGameObj.name}
             </span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 font-bold">
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold">
               {currentGameObj.categoryTitle}
             </span>
           </div>
@@ -448,7 +513,7 @@ export const Lobby = ({
           >
             <Trophy className="w-4 h-4 text-amber-400 animate-bounce" />
             <span className="tracking-wide">英雄榜</span>
-            <span className="hidden md:inline text-[11px] text-amber-300/80 font-mono">
+            <span className="hidden md:inline text-[11px] text-amber-300 font-mono">
               (看{studentGradeNum}年級排行)
             </span>
           </button>
@@ -461,7 +526,7 @@ export const Lobby = ({
             soundEngine.click();
             if (openModal) openModal();
           }}
-          className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white border border-white/20 text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+          className="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white border border-white/25 text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
           title="點擊修改個人身分/座號"
         >
           <User className="w-3.5 h-3.5 text-emerald-400" />
@@ -480,13 +545,13 @@ export const Lobby = ({
 
       {/* ════════════════════════════════════════════════════════════════
           【中央主舞台】
-          Step 1: 五欄彈性手風琴選遊戲 (點擊直接 100% 膨脹)
-          Step 2: 零滾動 10 冊網格 + 左下角羽化融景 (或密室四大秘境手風琴)
+          Step 1: 電腦橫向 5 欄 / 手機縱向 5 列手風琴
+          Step 2: 5 欄 × 2 列上下配對網格 (位置偏上，下方預留專屬彈出區，零跳動)
          ════════════════════════════════════════════════════════════════ */}
       <main className="relative z-20 flex-1 w-full max-w-7xl mx-auto p-2 sm:p-3 md:p-4 flex flex-col justify-center overflow-hidden">
         
         {/* ────────────────────────────────────────────────────────
-            【步驟一：選遊戲】五欄手風琴
+            【步驟一：選遊戲】電腦橫向手風琴 / 手機縱向手風琴
            ──────────────────────────────────────────────────────── */}
         {step === 'game' && (
           <div className="w-full h-full flex flex-col md:flex-row items-stretch gap-2 sm:gap-2.5 md:gap-3 overflow-hidden">
@@ -494,6 +559,7 @@ export const Lobby = ({
               const isSelectedCol = activeCol === col.id;
               const isCompressed = activeCol !== null && !isSelectedCol;
 
+              // 彈性比例
               const flexStyle = {
                 flex: isSelectedCol ? (window.innerWidth >= 768 ? 6.5 : 5.5) : isCompressed ? 0.85 : 1
               };
@@ -553,10 +619,10 @@ export const Lobby = ({
                           <h3 className={`text-base sm:text-xl font-black font-serif tracking-wider ${col.titleGlow}`}>
                             {col.title}
                           </h3>
-                          <span className="text-[10px] font-mono tracking-widest text-white/60 uppercase hidden sm:inline">
+                          <span className="text-[10px] font-mono tracking-widest text-white/70 uppercase hidden sm:inline">
                             {col.enTitle}
                           </span>
-                          <span className="text-xs text-slate-300 font-bold hidden md:inline ml-1">
+                          <span className="text-xs text-slate-200 font-bold hidden md:inline ml-1">
                             • {col.summary}
                           </span>
                         </div>
@@ -568,7 +634,7 @@ export const Lobby = ({
                             soundEngine.click();
                             setActiveCol(null);
                           }}
-                          className="px-2.5 py-1 rounded-lg bg-black/50 hover:bg-black/70 text-slate-300 hover:text-white text-xs font-bold border border-white/20 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+                          className="px-2.5 py-1 rounded-lg bg-black/50 hover:bg-black/70 text-slate-200 hover:text-white text-xs font-bold border border-white/20 transition-all cursor-pointer flex items-center gap-1 active:scale-95"
                           title="還原所有欄位"
                         >
                           <X className="w-3 h-3" />
@@ -576,9 +642,9 @@ export const Lobby = ({
                         </button>
                       </div>
 
-                      <div className="flex-1 min-h-[30px]" />
+                      <div className="flex-1 min-h-[20px]" />
 
-                      {/* 展開底部：子遊戲按鈕 (點選直接絲滑進入選冊整備頁！) */}
+                      {/* 展開底部：子遊戲按鈕 */}
                       <div className="w-full max-w-2xl mx-auto flex flex-col gap-1.5 shrink-0">
                         <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
                           {col.games?.map((g) => {
@@ -595,7 +661,7 @@ export const Lobby = ({
                                 className={`px-3 py-2.5 sm:py-3 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 relative group active:scale-98 backdrop-blur-md shadow-lg ${
                                   isGameActive
                                     ? 'bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 border-amber-200 ring-4 ring-amber-300/80 font-black scale-102'
-                                    : 'bg-slate-950/85 hover:bg-slate-900/95 text-white/95 border-white/20 hover:border-amber-400/60 hover:scale-101'
+                                    : 'bg-slate-950/85 hover:bg-slate-900/95 text-white/95 border-white/25 hover:border-amber-400/60 hover:scale-101'
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
@@ -615,7 +681,7 @@ export const Lobby = ({
                                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                                     isGameActive
                                       ? 'bg-stone-950/25 text-stone-950'
-                                      : 'bg-white/10 text-slate-300'
+                                      : 'bg-white/10 text-slate-200'
                                   }`}>
                                     {g.badge}
                                   </span>
@@ -626,8 +692,8 @@ export const Lobby = ({
                           })}
                         </div>
 
-                        <div className="text-center text-[11px] font-bold text-amber-200/90 pt-1 shrink-0">
-                          點擊任一遊戲，直接開啟專屬整備出征室 ➔
+                        <div className="text-center text-[11px] font-bold text-amber-200 pt-1 shrink-0">
+                          點選任一遊戲，直通專屬整備出征室 ➔
                         </div>
                       </div>
 
@@ -670,7 +736,7 @@ export const Lobby = ({
         {/* ────────────────────────────────────────────────────────
             【步驟二：專屬整備出征室】
             A. 若為「神祕密室逃脫」：全版四大秘境手風琴 (第一室實景 WebP)
-            B. 若為其他遊戲：左下角靈魂剪影羽化融景 + 10 冊無滾動極簡網格
+            B. 若為其他遊戲：左下角靈魂剪影羽化融景 + 5 欄 × 2 列上下配對網格 (位置偏上，下方預留專屬單元彈出區，零跳動)
            ──────────────────────────────────────────────────────── */}
         {step === 'scope' && (
           <div className="relative w-full h-full rounded-3xl overflow-hidden border-2 border-amber-400/60 shadow-2xl flex flex-col justify-between animate-fadeIn">
@@ -742,7 +808,7 @@ export const Lobby = ({
                           <h4 className="text-sm sm:text-lg font-black text-white font-heading">
                             {th.name}
                           </h4>
-                          <p className="text-[10px] text-amber-200/70 font-mono tracking-wider uppercase mb-1">
+                          <p className="text-[10px] text-amber-200 font-mono tracking-wider uppercase mb-1">
                             {th.enName}
                           </p>
                           {isSelected && (
@@ -758,7 +824,7 @@ export const Lobby = ({
 
                 {/* 秘境底部開始按鈕 */}
                 <div className="pt-2 border-t border-white/15 flex items-center justify-between shrink-0">
-                  <div className="text-xs text-slate-300 font-bold">
+                  <div className="text-xs text-slate-200 font-bold">
                     已選定：<span className="text-amber-300 font-black">{ESCAPE_THEMES_PREVIEW.find(t => t.id === escapeThemeId)?.name}</span>
                   </div>
 
@@ -774,8 +840,8 @@ export const Lobby = ({
 
               </div>
             ) : (
-              /* ═══ 分流 B：全單人通用整備室 • 左下角羽化剪影 + 10 冊無滾動網格 ═══ */
-              <div className="relative z-10 w-full h-full p-3 sm:p-5 flex flex-col justify-between overflow-hidden">
+              /* ═══ 分流 B：全單人通用整備室 ═══ */
+              <div className="relative z-10 w-full h-full p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden">
                 
                 {/* 頂部引導題字 */}
                 <div className="flex items-center justify-between pb-2 border-b border-white/15 shrink-0">
@@ -793,113 +859,187 @@ export const Lobby = ({
                   </span>
                 </div>
 
-                {/* ── 核心舞台：左下角靈魂剪影 + 右側 10 冊零滾動網格 ── */}
-                <div className="relative flex-1 w-full my-2 flex items-center justify-between gap-4 overflow-hidden">
+                {/* ── 核心舞台：左下角靈魂剪影 + 右側/中央 5 欄 × 2 列上下配對網格 ── */}
+                <div className="relative flex-1 w-full my-1 sm:my-2 flex items-center justify-between gap-4 overflow-hidden">
                   
-                  {/* 左下角：專屬靈魂剪影 (雙重漸變極致透明羽化) */}
-                  <div className="hidden lg:block absolute -left-6 -bottom-6 w-72 h-72 pointer-events-none select-none z-0">
+                  {/* 左下角：真實遊戲截圖瞬間 (雙重漸變極致透明羽化) */}
+                  <div className="hidden lg:block absolute -left-4 -bottom-4 w-72 h-72 pointer-events-none select-none z-0">
                     <img
                       src={GAME_SPOTLIGHT_ART[selectedGame] || GAME_SPOTLIGHT_ART.mole}
-                      alt="Hero Art"
-                      className="w-full h-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]"
+                      alt="Game Action Spotlight"
+                      className="w-full h-full object-cover rounded-3xl filter drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] brightness-95 contrast-105"
                       style={{
-                        maskImage: 'linear-gradient(to top right, black 40%, transparent 90%), radial-gradient(circle at bottom left, black 50%, transparent 85%)',
-                        WebkitMaskImage: 'linear-gradient(to top right, black 40%, transparent 90%), radial-gradient(circle at bottom left, black 50%, transparent 85%)'
+                        maskImage: 'linear-gradient(to top right, black 35%, transparent 85%), radial-gradient(circle at bottom left, black 50%, transparent 80%)',
+                        WebkitMaskImage: 'linear-gradient(to top right, black 35%, transparent 85%), radial-gradient(circle at bottom left, black 50%, transparent 80%)'
                       }}
                     />
                   </div>
 
-                  {/* 右側 / 中央：10 冊無滾動精靈網格 (電腦/iPad: 2x5，手機: 5x2) */}
-                  <div className="relative z-10 w-full lg:max-w-4xl lg:ml-auto h-full flex flex-col justify-center gap-2 sm:gap-3">
+                  {/* 右側 / 中央面板：【位置偏上】5 欄 × 2 列上下排列 + 【下方預留】專屬單元彈出區 (零跳動) */}
+                  <div className="relative z-10 w-full lg:max-w-4xl lg:ml-auto h-full flex flex-col justify-between py-1">
                     
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5 w-full">
-                      {GRADE_BOOK_OPTIONS.map((opt) => {
-                        const isSelected = selectedOptionId === opt.id;
-                        const isRecommended = studentGradeNum === opt.grade;
+                    {/* ── 【冊別偏上】5 欄 × 2 列網格 (一年級二年級上下、三上三下上下、四上四下上下、五上五下上下、六上六下上下) ── */}
+                    <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 w-full shrink-0">
+                      {GRADE_COLUMNS.map((col) => {
+                        const isTopSelected = selectedOptionId === col.top.id;
+                        const isBottomSelected = selectedOptionId === col.bottom.id;
+                        const isTopRecommended = studentGradeNum === col.top.grade;
+                        const isBottomRecommended = studentGradeNum === col.bottom.grade;
+
                         return (
-                          <button
-                            key={opt.id}
-                            type="button"
-                            onClick={() => handleSelectBookOption(opt.id)}
-                            className={`p-2.5 sm:p-3 rounded-2xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-lg ${
-                              isSelected
-                                ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-4 ring-amber-300/80 scale-103 font-black shadow-[0_0_20px_rgba(245,158,11,0.6)]'
-                                : 'bg-slate-900/90 hover:bg-slate-850 text-white/95 border-white/20 hover:border-amber-400/60'
-                            }`}
-                          >
-                            {/* 學生所屬年級推薦金標 */}
-                            {isRecommended && (
-                              <span className={`absolute -top-2.5 px-2 py-0.5 rounded-full text-[9px] font-black flex items-center gap-0.5 shadow ${
-                                isSelected
-                                  ? 'bg-stone-950 text-amber-300 border border-amber-400'
-                                  : 'bg-amber-500 text-stone-950 border border-amber-300 animate-pulse'
-                              }`}>
-                                <Star className="w-2.5 h-2.5 fill-current" />
-                                <span>推薦</span>
+                          <div key={col.colId} className="flex flex-col gap-1.5 sm:gap-2">
+                            
+                            {/* 上排按鈕 (一年級、三上、四上、五上、六上) */}
+                            <button
+                              type="button"
+                              onClick={() => handleSelectBookOption(col.top.id)}
+                              className={`p-2 sm:p-2.5 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
+                                isTopSelected
+                                  ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-4 ring-amber-300/80 scale-102 font-black shadow-[0_0_20px_rgba(245,158,11,0.6)]'
+                                  : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                              }`}
+                            >
+                              {isTopRecommended && (
+                                <span className={`absolute -top-2 px-1.5 py-0.2 rounded-full text-[8px] sm:text-[9px] font-black flex items-center gap-0.5 shadow ${
+                                  isTopSelected
+                                    ? 'bg-stone-950 text-amber-300 border border-amber-400'
+                                    : 'bg-amber-500 text-stone-950 border border-amber-300 animate-pulse'
+                                }`}>
+                                  <Star className="w-2 h-2 fill-current" />
+                                  <span>推薦</span>
+                                </span>
+                              )}
+
+                              <span className="text-sm sm:text-base md:text-lg font-black font-heading tracking-wide">
+                                {col.top.label}
                               </span>
-                            )}
+                              <span className={`text-[9px] sm:text-[10px] font-bold mt-0.5 truncate max-w-full ${
+                                isTopSelected ? 'text-stone-950/80' : 'text-slate-300'
+                              }`}>
+                                {col.top.desc}
+                              </span>
 
-                            <span className="text-base sm:text-lg font-black font-heading tracking-wide">
-                              {opt.label}
-                            </span>
-                            <span className={`text-[10px] font-bold mt-0.5 truncate max-w-full ${
-                              isSelected ? 'text-stone-950/80' : 'text-slate-400'
-                            }`}>
-                              {opt.desc}
-                            </span>
+                              {isTopSelected && (
+                                <CheckCircle2 className="w-3.5 h-3.5 text-stone-950 absolute top-1 right-1 stroke-[2.5]" />
+                              )}
+                            </button>
 
-                            {isSelected && (
-                              <CheckCircle2 className="w-4 h-4 text-stone-950 absolute top-1.5 right-1.5 stroke-[2.5]" />
-                            )}
-                          </button>
+                            {/* 下排按鈕 (二年級、三下、四下、五下、六下) */}
+                            <button
+                              type="button"
+                              onClick={() => handleSelectBookOption(col.bottom.id)}
+                              className={`p-2 sm:p-2.5 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
+                                isBottomSelected
+                                  ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-4 ring-amber-300/80 scale-102 font-black shadow-[0_0_20px_rgba(245,158,11,0.6)]'
+                                  : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                              }`}
+                            >
+                              {isBottomRecommended && (
+                                <span className={`absolute -top-2 px-1.5 py-0.2 rounded-full text-[8px] sm:text-[9px] font-black flex items-center gap-0.5 shadow ${
+                                  isBottomSelected
+                                    ? 'bg-stone-950 text-amber-300 border border-amber-400'
+                                    : 'bg-amber-500 text-stone-950 border border-amber-300 animate-pulse'
+                                }`}>
+                                  <Star className="w-2 h-2 fill-current" />
+                                  <span>推薦</span>
+                                </span>
+                              )}
+
+                              <span className="text-sm sm:text-base md:text-lg font-black font-heading tracking-wide">
+                                {col.bottom.label}
+                              </span>
+                              <span className={`text-[9px] sm:text-[10px] font-bold mt-0.5 truncate max-w-full ${
+                                isBottomSelected ? 'text-stone-950/80' : 'text-slate-300'
+                              }`}>
+                                {col.bottom.desc}
+                              </span>
+
+                              {isBottomSelected && (
+                                <CheckCircle2 className="w-3.5 h-3.5 text-stone-950 absolute top-1 right-1 stroke-[2.5]" />
+                              )}
+                            </button>
+
+                          </div>
                         );
                       })}
                     </div>
 
-                    {/* 若點選【一年級】或【二年級】：呈現三大發光字母模式膠囊 */}
-                    {currentOptionData.isAlpha && (
-                      <div className="p-2 sm:p-3 rounded-2xl bg-emerald-950/60 border border-emerald-400/40 backdrop-blur-md flex items-center justify-between gap-2 animate-fadeIn">
-                        <span className="text-xs font-black text-emerald-300 flex items-center gap-1.5 shrink-0">
-                          <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>字母規格：</span>
-                        </span>
+                    {/* ── 【單元別偏下】預留專屬固定高度彈出區 (徹底解決任何跳動) ── */}
+                    <div className="w-full min-h-[68px] sm:min-h-[76px] flex items-center justify-center p-2 rounded-2xl bg-slate-900/90 border border-white/20 backdrop-blur-md shrink-0 mt-2">
+                      
+                      {/* 若選【一年級 / 二年級】：彈出大寫、小寫、混合三大模式 */}
+                      {currentOptionData.isAlpha ? (
+                        <div className="w-full flex items-center justify-between gap-2 animate-fadeIn">
+                          <span className="text-xs font-black text-emerald-300 flex items-center gap-1.5 shrink-0">
+                            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>字母規格：</span>
+                          </span>
 
-                        <div className="grid grid-cols-3 gap-2 flex-1 max-w-md">
-                          {[
-                            { id: 'upper', label: '🔠 大寫 A-Z' },
-                            { id: 'lower', label: '🔡 小寫 a-z' },
-                            { id: 'mixed', label: '🔤 混合 Aa-Zz' }
-                          ].map((m) => {
-                            const isModeActive = alphaMode === m.id;
+                          <div className="grid grid-cols-3 gap-2 flex-1 max-w-md">
+                            {[
+                              { id: 'upper', label: '🔠 大寫 A-Z' },
+                              { id: 'lower', label: '🔡 小寫 a-z' },
+                              { id: 'mixed', label: '🔤 混合 Aa-Zz' }
+                            ].map((m) => {
+                              const isModeActive = alphaMode === m.id;
+                              return (
+                                <button
+                                  key={m.id}
+                                  type="button"
+                                  onClick={() => handleSelectAlphaMode(m.id)}
+                                  className={`py-1.5 px-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                                    isModeActive
+                                      ? 'bg-emerald-400 text-stone-950 border-emerald-200 ring-2 ring-emerald-300/80 shadow'
+                                      : 'bg-slate-800 text-slate-100 hover:text-white border-white/20'
+                                  }`}
+                                >
+                                  {m.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ) : isWholeBookOnlyGame ? (
+                        /* 若為鷹眼神探等全冊專屬遊戲：直接提示已鎖定全景 */
+                        <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-amber-300 animate-fadeIn">
+                          <Eye className="w-4 h-4 text-amber-400 animate-pulse" />
+                          <span>✨ 鷹眼神探採全冊 3D 紙雕全景尋寶 • 點擊右下角立即出征！</span>
+                        </div>
+                      ) : (
+                        /* 若為三到六年級：彈出通用單元順序 starter unit1 unit2 unit3 unit4 festival (由左至右順序固定) */
+                        <div className="w-full flex items-center justify-between gap-1.5 sm:gap-2 overflow-x-auto py-1 animate-fadeIn">
+                          {UNIVERSAL_UNITS.map((u) => {
+                            const isUnitActive = selectedUnitFilter === u.id;
                             return (
                               <button
-                                key={m.id}
+                                key={u.id}
                                 type="button"
-                                onClick={() => handleSelectAlphaMode(m.id)}
-                                className={`py-1.5 px-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
-                                  isModeActive
-                                    ? 'bg-emerald-400 text-stone-950 border-emerald-200 ring-2 ring-emerald-300/80 shadow'
-                                    : 'bg-slate-900/80 hover:bg-slate-800 text-slate-200 border-white/15'
+                                onClick={() => handleSelectUnit(u.id)}
+                                className={`py-1.5 px-2.5 sm:px-3 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer border ${
+                                  isUnitActive
+                                    ? 'bg-amber-400 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 font-black shadow'
+                                    : 'bg-slate-800 text-slate-200 hover:text-white border-white/20 hover:border-amber-400/50'
                                 }`}
                               >
-                                {m.label}
+                                {u.label}
                               </button>
                             );
                           })}
                         </div>
-                      </div>
-                    )}
+                      )}
+
+                    </div>
 
                   </div>
 
                 </div>
 
                 {/* 整備室底部：狀態摘要與出征按鈕 */}
-                <div className="pt-2.5 border-t border-white/15 flex items-center justify-between shrink-0">
-                  <div className="flex items-center gap-2 text-xs text-slate-300 font-bold">
+                <div className="pt-2 border-t border-white/15 flex items-center justify-between shrink-0">
+                  <div className="flex items-center gap-2 text-xs text-slate-200 font-bold">
                     <span>已就緒：</span>
                     <span className="text-amber-300 font-black">
-                      {currentOptionData.label} ({currentOptionData.isAlpha ? '26 字母全套' : `${selectedWordsCount} 字全冊`})
+                      {currentOptionData.label} ({currentOptionData.isAlpha ? '26 字母全套' : selectedUnitFilter === 'all' ? `${selectedWordsCount} 字全冊` : `${selectedUnitFilter.toUpperCase()}`})
                     </span>
                     <span className="text-emerald-400 font-black hidden sm:inline ml-1">
                       • 榮譽榜資格已鎖定
@@ -909,7 +1049,7 @@ export const Lobby = ({
                   <button
                     type="button"
                     onClick={handleStartGame}
-                    className="px-7 sm:px-9 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-heading font-black text-sm sm:text-base flex items-center gap-2 shadow-[0_0_25px_rgba(245,158,11,0.6)] active:scale-95 transition-all cursor-pointer border-2 border-amber-200 animate-pulse"
+                    className="px-7 sm:px-9 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-heading font-black text-sm sm:text-base flex items-center gap-2 shadow-[0_0_25px_rgba(245,158,11,0.6)] active:scale-95 transition-all cursor-pointer border-2 border-amber-200 animate-pulse"
                   >
                     <span>⚔️ 開始遊戲 START</span>
                     <Play className="w-4 h-4 fill-stone-950" />
@@ -928,13 +1068,13 @@ export const Lobby = ({
           【固定底部簡易提示列】僅在首頁狀態下輔助說明
          ════════════════════════════════════════════════════════════════ */}
       {step === 'game' && (
-        <footer className="relative z-30 w-full px-4 py-2 bg-slate-950/85 backdrop-blur-md border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-bold shrink-0">
+        <footer className="relative z-30 w-full px-4 py-2 bg-slate-950/85 backdrop-blur-md border-t border-white/10 flex items-center justify-between text-xs text-slate-300 font-bold shrink-0">
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>五大主題 • 點選任一遊戲立即展開整備出征室</span>
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] text-amber-300/80 font-mono">
+          <div className="flex items-center gap-2 text-[11px] text-amber-300 font-mono">
             WUTAI ENGLISH ADVENTURE HALL
           </div>
         </footer>

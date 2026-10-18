@@ -142,62 +142,75 @@ export const StudentProfileModal = () => {
         </div>
 
         <div className="p-4 sm:p-6 space-y-5 max-h-[80vh] overflow-y-auto">
-          {/* 模式 A：已登入且未點選切換 ── 顯示當前通行證名片 */}
+          {/* 模式 A：已登入且未點選切換 ── 顯示精美【霧臺勇士探險執照】名片 */}
           {isLoggedIn && !isSwitching ? (
             <div className="space-y-4 animate-fadeIn">
-              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-indigo-500/10 dark:from-emerald-950/40 dark:to-slate-800/80 border-2 border-emerald-300 dark:border-emerald-700 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black px-2.5 py-1 rounded-full bg-emerald-500 text-white flex items-center gap-1 shadow-sm">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    {t.currentIdentity}
+              <div className="relative rounded-3xl overflow-hidden border-2 border-amber-400/80 shadow-[0_0_35px_rgba(245,158,11,0.35)] p-5 sm:p-6 text-white space-y-3.5">
+                {/* 執照實景原畫背景 */}
+                <img
+                  src="/assets/pass/warrior_pass_bg.jpg"
+                  alt="Warrior Adventure Pass"
+                  className="absolute inset-0 w-full h-full object-cover filter brightness-[0.75] contrast-[1.1] pointer-events-none select-none"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/45 to-slate-950/30 backdrop-blur-[1px] pointer-events-none" />
+
+                <div className="relative z-10 flex items-center justify-between">
+                  <span className="text-xs font-black px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 flex items-center gap-1.5 shadow-md">
+                    <Sparkles className="w-3.5 h-3.5 text-stone-950" />
+                    <span>霧臺勇士探險執照</span>
                   </span>
-                  <span className="font-mono text-xs font-black text-slate-500 dark:text-slate-400 bg-white/80 dark:bg-slate-800 px-2.5 py-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <span className="font-mono text-xs font-black text-amber-300 bg-slate-950/85 px-3 py-1 rounded-xl border border-amber-400/50 shadow">
                     ID: {currentStudent.student_id}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3.5 pt-1">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-400 text-amber-950 flex items-center justify-center font-heading font-black text-xl shadow-md">
+                <div className="relative z-10 flex items-center gap-4 pt-1">
+                  <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 text-stone-950 flex items-center justify-center font-heading font-black text-2xl shadow-xl ring-4 ring-amber-400/70 shrink-0">
                     {formatStudentBadge(currentStudent, lang).substring(0, 2)}
                   </div>
-                  <div>
-                    <h4 className="text-lg sm:text-xl font-heading font-black text-slate-800 dark:text-white">
-                      {currentStudent.nickname}
-                    </h4>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-xl sm:text-2xl font-heading font-black text-white truncate drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                        {currentStudent.nickname}
+                      </h4>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-400/50 text-[10px] font-bold">
+                        {currentStudent.grade} 年級勇士
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm font-bold text-amber-200/90 mt-0.5">
                       {formatStudentDisplayName(currentStudent, lang)}
                     </p>
                   </div>
                 </div>
 
                 {/* 經濟與進度數據列 */}
-                <div className="grid grid-cols-3 gap-2.5 pt-2">
-                  <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-300 dark:border-amber-700/60 text-center">
-                    <div className="flex items-center justify-center gap-1 text-amber-600 dark:text-amber-400 text-xs font-black">
-                      <Coins className="w-3.5 h-3.5" />
+                <div className="relative z-10 grid grid-cols-3 gap-2.5 pt-1">
+                  <div className="p-2.5 rounded-2xl bg-slate-950/80 border border-amber-400/40 text-center backdrop-blur-md shadow">
+                    <div className="flex items-center justify-center gap-1 text-amber-300 text-xs font-black">
+                      <Coins className="w-3.5 h-3.5 text-amber-400" />
                       <span>{t.coins}</span>
                     </div>
-                    <div className="text-lg font-black text-amber-700 dark:text-amber-300 font-mono mt-0.5">
+                    <div className="text-lg sm:text-xl font-black text-amber-300 font-mono mt-0.5">
                       {currentStudent.coins ?? 0}
                     </div>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-indigo-500/15 border border-indigo-300 dark:border-indigo-700/60 text-center">
-                    <div className="flex items-center justify-center gap-1 text-indigo-600 dark:text-indigo-400 text-xs font-black">
-                      <Trophy className="w-3.5 h-3.5" />
+                  <div className="p-2.5 rounded-2xl bg-slate-950/80 border border-indigo-400/40 text-center backdrop-blur-md shadow">
+                    <div className="flex items-center justify-center gap-1 text-indigo-300 text-xs font-black">
+                      <Trophy className="w-3.5 h-3.5 text-indigo-400" />
                       <span>{t.questPoints}</span>
                     </div>
-                    <div className="text-lg font-black text-indigo-700 dark:text-indigo-300 font-mono mt-0.5">
+                    <div className="text-lg sm:text-xl font-black text-indigo-300 font-mono mt-0.5">
                       {currentStudent.quest_points ?? 0}
                     </div>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-teal-500/15 border border-teal-300 dark:border-teal-700/60 text-center">
-                    <div className="flex items-center justify-center gap-1 text-teal-600 dark:text-teal-400 text-xs font-black">
-                      <Package className="w-3.5 h-3.5" />
+                  <div className="p-2.5 rounded-2xl bg-slate-950/80 border border-teal-400/40 text-center backdrop-blur-md shadow">
+                    <div className="flex items-center justify-center gap-1 text-teal-300 text-xs font-black">
+                      <Package className="w-3.5 h-3.5 text-teal-400" />
                       <span>{t.backpackItems}</span>
                     </div>
-                    <div className="text-lg font-black text-teal-700 dark:text-teal-300 font-mono mt-0.5">
+                    <div className="text-lg font-black text-teal-300 font-mono mt-0.5">
                       {currentStudent.inventory?.length ?? 0}
                     </div>
                   </div>

@@ -195,8 +195,16 @@ export const TextbookViewer = ({ onBack }) => {
         })}
       </div>
 
-      {/* ── 核心電子書閱讀區 (Heyzine Fullscreen Iframe) ── */}
-      <div className="flex-1 relative w-full h-full p-1.5 sm:p-2 bg-slate-950 flex flex-col min-h-0">
+      {/* ── 核心電子書閱讀區 (Heyzine Fullscreen Iframe + 典藏書架實景背景) ── */}
+      <div className="flex-1 relative w-full h-full p-1.5 sm:p-2 bg-slate-950 flex flex-col min-h-0 overflow-hidden">
+        {/* 古典石板與原木典藏書架背景 */}
+        <img
+          src="/assets/textbook/library_bookshelf_bg.jpg"
+          alt="Bookshelf Library Background"
+          className="absolute inset-0 w-full h-full object-cover filter brightness-[0.45] contrast-[1.1] pointer-events-none select-none"
+        />
+        <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-[1px] pointer-events-none" />
+
         <iframe
           ref={iframeRef}
           src="https://heyzine.com/flip-book/962c488fe3.html"
@@ -204,7 +212,7 @@ export const TextbookViewer = ({ onBack }) => {
           allow="autoplay; fullscreen; clipboard-write"
           allowFullScreen
           scrolling="no"
-          className="w-full flex-1 rounded-xl sm:rounded-2xl border border-emerald-500/20 shadow-2xl bg-slate-900"
+          className="relative z-10 w-full flex-1 rounded-xl sm:rounded-2xl border border-emerald-500/30 shadow-2xl bg-slate-900/90"
         />
 
         {/* ── 🎧 聽力測驗隨身聽滑出抽屜 (Listening Audio Assistant Drawer) ── */}
