@@ -206,31 +206,78 @@ export const Lobby = ({
   // ── 低年級字母模式狀態 ──
   const [alphaMode, setAlphaMode] = useState('mixed'); // 'upper' | 'lower' | 'mixed'
 
-  // ── 自動為所屬年級預選第一個單元 (若尚未選取) ──
+  // ── 智慧記憶機制：自動帶入學生上次的選擇，並在年級切換時安全防禦 ──
+  const STORAGE_KEY_UNITS = 'wutai_saved_selected_units';
+
+  // 當學生年級或題庫就緒時，嘗試恢復上次合法的選擇；若無或年級不符則保持預設空選取
   useEffect(() => {
-    if (studentGradeNum > 2 && (!settings.selectedUnits || settings.selectedUnits.length === 0)) {
-      const firstBook = recommendedBooks[0];
-      const bookData = groupedUnits[firstBook];
-      if (bookData && bookData.lessons.size > 0) {
-        const firstLesson = Array.from(bookData.lessons)[0];
-        setSettings(prev => ({
-          ...prev,
-          selectedUnits: [`${firstBook}-${firstLesson}`]
-        }));
+    // 低年級為字母模式，不需套用單元記憶
+    if (studentGradeNum <= 2) {
+      if (settings.selectedUnits && settings.selectedUnits.length > 0) {
+        setSettings(prev => ({ ...prev, selectedUnits: [] }));
       }
+      return;
     }
-  }, [studentGradeNum, recommendedBooks, groupedUnits, settings.selectedUnits, setSettings]);
+
+    try {
+      const savedRaw = localStorage.getItem(STORAGE_KEY_UNITS);
+      if (savedRaw) {
+        const savedData = JSON.parse(savedRaw);
+        // 防禦機制 1：檢查記憶的年級是否與當前學生完全相符
+        if (savedData && savedData.gradeNum === studentGradeNum && Array.isArray(savedData.units)) {
+          // 防禦機制 2：檢查單元是否真正存在於目前的 words 題庫中
+          const validUnits = savedData.units.filter(uKey => {
+            const [b, l] = uKey.split('-');
+            return words.some(w => String(w.book) === b && String(w.lesson) === l);
+          });
+
+          // 若當前 settings.selectedUnits 尚未設定或與已記憶不同，且有效單元大於 0，則安全帶入
+          if (validUnits.length > 0) {
+            setSettings(prev => {
+              // 避免無窮觸發
+              const prevSorted = [...(prev.selectedUnits || [])].sort().join(',');
+              const validSorted = [...validUnits].sort().join(',');
+              if (prevSorted === validSorted) return prev;
+              return { ...prev, selectedUnits: validUnits };
+            });
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('讀取單元記憶失敗:', e);
+    }
+  }, [studentGradeNum, words, setSettings]);
+
+  // 輔助函式：儲存單元選擇並更新 settings
+  const updateAndSaveUnits = (updater) => {
+    setSettings(prev => {
+      const nextUnits = typeof updater === 'function' ? updater(prev.selectedUnits || []) : updater;
+      try {
+        if (studentGradeNum > 2) {
+          localStorage.setItem(STORAGE_KEY_UNITS, JSON.stringify({
+            gradeNum: studentGradeNum,
+            studentId: currentStudent?.student_id || 'guest',
+            units: nextUnits
+          }));
+        }
+      } catch (e) {}
+      return {
+        ...prev,
+        selectedUnits: nextUnits
+      };
+    });
+  };
 
   // ── 切換單元選取 ──
   const handleToggleUnit = (book, lesson) => {
     soundEngine.click();
     const key = `${book}-${lesson}`;
-    setSettings(prev => ({
-      ...prev,
-      selectedUnits: prev.selectedUnits.includes(key)
-        ? prev.selectedUnits.filter(u => u !== key)
-        : [...prev.selectedUnits, key]
-    }));
+    updateAndSaveUnits(prevUnits => (
+      prevUnits.includes(key)
+        ? prevUnits.filter(u => u !== key)
+        : [...prevUnits, key]
+    ));
   };
 
   // ── 全選/反選該冊單元 ──
@@ -241,12 +288,11 @@ export const Lobby = ({
     const allUnits = Array.from(bookData.lessons).map(l => `${book}-${l}`);
     const isAllSelected = allUnits.every(u => settings.selectedUnits.includes(u));
 
-    setSettings(prev => ({
-      ...prev,
-      selectedUnits: isAllSelected
-        ? prev.selectedUnits.filter(u => !u.startsWith(`${book}-`))
-        : [...new Set([...prev.selectedUnits, ...allUnits])]
-    }));
+    updateAndSaveUnits(prevUnits => (
+      isAllSelected
+        ? prevUnits.filter(u => !u.startsWith(`${book}-`))
+        : [...new Set([...prevUnits, ...allUnits])]
+    ));
   };
 
   // ── 已選單字總數 ──
@@ -767,7 +813,7 @@ export const Lobby = ({
               {qualifyingBook && (
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold hidden sm:inline flex items-center gap-1">
                   <Trophy className="w-3 h-3 text-amber-400" />
-                  <span>符合榮譽榜資格 (單冊選滿2單元20字)</span>
+                  <span>符合榮譽榜資格 (同冊超過20字或選滿2單元)</span>
                 </span>
               )}
             </div>

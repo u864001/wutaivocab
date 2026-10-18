@@ -183,9 +183,12 @@ export function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // 榮譽榜資格判斷：單冊選滿 2 個單元，總字數與出題數均必須達到至少 20 題
+  // 榮譽榜資格判斷：僅能選同冊，且超過 20 字，或者包含兩個以上的正常單元 (unit1, 2, 3, 4 取至少二)
   const qualifyingBook = useMemo(() => {
+    if (!settings.selectedUnits || settings.selectedUnits.length === 0) return null;
+
     const selectedBooks = [...new Set(settings.selectedUnits.map(u => u.split('-')[0]))];
+    // 條件 1：僅能選同冊
     if (selectedBooks.length !== 1) return null;
 
     const book = selectedBooks[0];
@@ -194,14 +197,16 @@ export function App() {
       settings.selectedUnits.includes(`${w.book}-${w.lesson}`)
     ).length;
 
-    // 嚴格規定：單冊至少 2 單元、題庫至少 20 字
-    if (selectedWordsCount < 20 || selectedUnitsCount < 2) return null;
-    const playCount = settings.count === 'all' ? selectedWordsCount : parseInt(settings.count, 10);
-    // 嚴格規定：實際出題數必須 >= 20 題
-    if (playCount < 20) return null;
+    // 條件 2 (二擇一滿足即可)：
+    // A. 超過 20 字 (selectedWordsCount >= 20)
+    // B. 或者包含兩個以上的正常單元 (selectedUnitsCount >= 2)
+    const hasEnoughWords = selectedWordsCount >= 20;
+    const hasEnoughUnits = selectedUnitsCount >= 2;
+
+    if (!hasEnoughWords && !hasEnoughUnits) return null;
 
     return book;
-  }, [settings.selectedUnits, settings.count, words]);
+  }, [settings.selectedUnits, words]);
 
   const [isTeacherAuthOpen, setIsTeacherAuthOpen] = useState(false);
 
