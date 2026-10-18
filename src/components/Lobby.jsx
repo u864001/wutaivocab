@@ -10,7 +10,7 @@ import {
   Sparkles, Keyboard, BookOpen, Volume2, Swords,
   Store, RotateCcw, Check, CheckCircle2, ChevronRight,
   Sun, Moon, VolumeX, ShieldCheck, Layers, HelpCircle,
-  X, Zap
+  X, Zap, Star
 } from 'lucide-react';
 
 const POSTER_EXPLORE = '/assets/lobby/theme_explore.jpg';
@@ -18,6 +18,82 @@ const POSTER_SPEED = '/assets/lobby/theme_speed.jpg';
 const POSTER_QUIZ = '/assets/lobby/theme_quiz.jpg';
 const POSTER_BATTLE = '/assets/lobby/theme_battle.jpg';
 const POSTER_TOWN = '/assets/lobby/theme_town.jpg';
+
+// ── 10 大標準學期冊次極簡定義 (零滑動 2x5 / 5x2 網格) ──
+const GRADE_BOOK_OPTIONS = [
+  { id: 'g1', label: '一年級', book: 'abc', grade: 1, isAlpha: true, desc: '字母認讀啟蒙' },
+  { id: 'g2', label: '二年級', book: 'abc', grade: 2, isAlpha: true, desc: '自然發音與大小寫' },
+  { id: 'b1', label: '三上', book: '1', grade: 3, semester: 1, desc: '文具、課室、顏色' },
+  { id: 'b2', label: '三下', book: '2', grade: 3, semester: 2, desc: '動物、數字、家庭' },
+  { id: 'b3', label: '四上', book: '3', grade: 4, semester: 1, desc: '身體、食物、時間' },
+  { id: 'b4', label: '四下', book: '4', grade: 4, semester: 2, desc: '天氣、場所、日常' },
+  { id: 'b5', label: '五上', book: '5', grade: 5, semester: 1, desc: '餐飲、國家、交通' },
+  { id: 'b6', label: '五下', book: '6', grade: 5, semester: 2, desc: '太空、自然、生活' },
+  { id: 'b7', label: '六上', book: '7', grade: 6, semester: 1, desc: '世界、港灣、服飾' },
+  { id: 'b8', label: '六下', book: '8', grade: 6, semester: 2, desc: '四季庭園、畢業留影' }
+];
+
+// ── 各遊戲左下角專屬靈魂剪影/實景原畫 (羽化融景) ──
+const GAME_SPOTLIGHT_ART = {
+  mole: '/assets/mole/mole_gold.png',
+  escape: '/assets/escape/bg_temple.webp',
+  spotter: '/assets/spotter/book1_base.jpg',
+  maze: '/assets/lobby/theme_explore.jpg',
+  memory: '/assets/lobby/theme_explore.jpg',
+  swipe: '/assets/lobby/theme_speed.jpg',
+  meteor: '/assets/lobby/theme_speed.jpg',
+  snake: '/assets/lobby/theme_explore.jpg',
+  'quiz-zh-en': '/assets/lobby/theme_quiz.jpg',
+  'quiz-en-zh': '/assets/lobby/theme_quiz.jpg',
+  'quiz-listening': '/assets/lobby/theme_quiz.jpg',
+  'quiz-mixed': '/assets/lobby/theme_quiz.jpg',
+  town: '/assets/lobby/theme_town.jpg',
+  battle: '/assets/lobby/theme_battle.jpg'
+};
+
+// ── 密室逃脫四大秘境手風琴定義 (調用第一室實景 WebP) ──
+const ESCAPE_THEMES_PREVIEW = [
+  {
+    id: 'temple',
+    name: '大武山石板神廟',
+    enName: 'Ancient Slate Sanctuary',
+    bg: '/assets/escape/bg_temple.webp',
+    icon: '🏛️',
+    tag: '石板傳奇',
+    colorName: 'emerald',
+    desc: '大武山古老石板遺跡，千斤巨石封鎖，解開回音石廊與星象祭壇！'
+  },
+  {
+    id: 'dungeon',
+    name: '黑曜熔岩地下城',
+    enName: 'Obsidian Dungeon',
+    bg: '/assets/escape/dungeon_room1.webp',
+    icon: '⛓️',
+    tag: '黑曜熔岩',
+    colorName: 'amber',
+    desc: '封閉百年的黑曜石囚室，破譯矮人符文與煉金長廊，啟動地心升降機！'
+  },
+  {
+    id: 'tomb',
+    name: '法老古墓黃金殿',
+    enName: 'Pharaoh Gold Tomb',
+    bg: '/assets/escape/tomb_room1.webp',
+    icon: '🏺',
+    tag: '尼羅秘藏',
+    colorName: 'yellow',
+    desc: '沉睡千年的金字塔砂岩墓道，解讀聖書體符文，迎向太陽神之巔！'
+  },
+  {
+    id: 'asylum',
+    name: '雨夜殘破時鐘樓',
+    enName: 'Clockwork Asylum',
+    bg: '/assets/escape/asylum_room1.webp',
+    icon: '🕰️',
+    tag: '雨夜鐘樓',
+    colorName: 'violet',
+    desc: '暴風雨之夜廢棄維多利亞鐘樓，齒輪嘎吱作響，在十二聲鐘響前逃脫！'
+  }
+];
 
 export const Lobby = ({
   words = [],
@@ -32,7 +108,7 @@ export const Lobby = ({
   const { currentStudent, isLoggedIn, openModal } = useStudent();
   const { isDark, toggleTheme } = useTheme();
 
-  // ── 流程步驟：'game' (選遊戲手風琴) | 'scope' (選範圍) ──
+  // ── 流程步驟：'game' (選遊戲手風琴) | 'scope' (專屬整備選冊/秘境頁) ──
   const [step, setStep] = useState('game');
 
   // ── 手風琴選中展開欄位：null (均分 20%) | 'explore' | 'speed' | 'quiz' ──
@@ -41,8 +117,17 @@ export const Lobby = ({
   // ── 當前選中的遊戲 ID ──
   const [selectedGame, setSelectedGame] = useState('escape');
 
-  // ── 選範圍：是否展開「其他全部冊次與教師自創」 ──
-  const [showAllBooks, setShowAllBooks] = useState(false);
+  // ── 選定的冊次選項 ID (預設對應學生年級) ──
+  const [selectedOptionId, setSelectedOptionId] = useState('b1');
+
+  // ── 低年級字母模式：'upper' | 'lower' | 'mixed' ──
+  const [alphaMode, setAlphaMode] = useState('upper');
+
+  // ── 密室逃脫選定主題 ──
+  const [escapeThemeId, setEscapeThemeId] = useState('temple');
+
+  // ── 是否展開單元細節微調 ──
+  const [showUnitDetails, setShowUnitDetails] = useState(false);
 
   // ── 首次進入若未設置個人身分，自動喚起通行證設置 ──
   useEffect(() => {
@@ -67,7 +152,17 @@ export const Lobby = ({
     return 3;
   }, [currentStudent]);
 
-  // ── 五大欄位定義（專屬海報底圖、雕刻字體樣式與高質感子遊戲徽章） ──
+  // ── 根據學生年級自動初始化預設選項 ──
+  useEffect(() => {
+    if (studentGradeNum === 1) setSelectedOptionId('g1');
+    else if (studentGradeNum === 2) setSelectedOptionId('g2');
+    else if (studentGradeNum === 3) setSelectedOptionId('b1');
+    else if (studentGradeNum === 4) setSelectedOptionId('b3');
+    else if (studentGradeNum === 5) setSelectedOptionId('b5');
+    else if (studentGradeNum === 6) setSelectedOptionId('b7');
+  }, [studentGradeNum]);
+
+  // ── 五大欄位定義 ──
   const COLUMNS = useMemo(() => [
     {
       id: 'explore',
@@ -109,9 +204,9 @@ export const Lobby = ({
       summary: '熔岩競技 • 隕石突擊 • 閃電手速',
       isDirectJump: false,
       games: [
+        { id: 'mole', name: '單字打地鼠', iconComp: Zap, iconColor: 'text-amber-300', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '地穴手速' },
         { id: 'swipe', name: '極速是非滑牌', iconComp: Flame, iconColor: 'text-rose-400', iconBg: 'bg-rose-500/25 border-rose-400/40', badge: '30秒對決' },
         { id: 'meteor', name: '3D 隕石防衛戰', iconComp: Rocket, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '打字擊墜' },
-        { id: 'mole', name: '單字打地鼠', iconComp: Zap, iconColor: 'text-amber-300', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '地穴手速' },
         { id: 'snake', name: '叢林神山貪蛇', iconComp: Zap, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/25 border-emerald-400/40', badge: '百步蛇' }
       ]
     },
@@ -176,7 +271,18 @@ export const Lobby = ({
     }
   ], []);
 
-  // ── 單元資料分組 ──
+  // ── 當前選中的遊戲資訊 ──
+  const currentGameObj = useMemo(() => {
+    for (const c of COLUMNS) {
+      if (c.games) {
+        const found = c.games.find(g => g.id === selectedGame);
+        if (found) return { ...found, categoryTitle: c.title, colorName: c.colorName, bgImage: c.bgImage };
+      }
+    }
+    return { id: 'escape', name: '神祕密室逃脫', iconComp: KeyRound, categoryTitle: '探索解謎', bgImage: POSTER_EXPLORE };
+  }, [COLUMNS, selectedGame]);
+
+  // ── 題庫單元分組 ──
   const groupedUnits = useMemo(() => {
     const map = {};
     words.forEach(w => {
@@ -193,122 +299,44 @@ export const Lobby = ({
     return map;
   }, [words]);
 
-  // ── 年級對應預設冊次 ──
-  const recommendedBooks = useMemo(() => {
-    if (studentGradeNum <= 2) return ['abc'];
-    if (studentGradeNum === 3) return ['1', '2'];
-    if (studentGradeNum === 4) return ['3', '4'];
-    if (studentGradeNum === 5) return ['5', '6'];
-    if (studentGradeNum === 6) return ['7', '8'];
-    return ['1', '2'];
-  }, [studentGradeNum]);
+  // ── 當前選中的冊次選項資料 ──
+  const currentOptionData = useMemo(() => {
+    return GRADE_BOOK_OPTIONS.find(o => o.id === selectedOptionId) || GRADE_BOOK_OPTIONS[2];
+  }, [selectedOptionId]);
 
-  // ── 低年級字母模式狀態 ──
-  const [alphaMode, setAlphaMode] = useState('mixed'); // 'upper' | 'lower' | 'mixed'
-
-  // ── 智慧記憶機制：自動帶入學生上次的選擇，並在年級切換時安全防禦 ──
-  const STORAGE_KEY_UNITS = 'wutai_saved_selected_units';
-
-  // 當學生年級或題庫就緒時，嘗試恢復上次合法的選擇；若無或年級不符則保持預設空選取
+  // ── 當冊次變更時，自動配置 settings.selectedUnits 確保上榜資格 ──
   useEffect(() => {
-    // 低年級為字母模式，不需套用單元記憶
-    if (studentGradeNum <= 2) {
-      if (settings.selectedUnits && settings.selectedUnits.length > 0) {
-        setSettings(prev => ({ ...prev, selectedUnits: [] }));
-      }
-      return;
-    }
-
-    try {
-      const savedRaw = localStorage.getItem(STORAGE_KEY_UNITS);
-      if (savedRaw) {
-        const savedData = JSON.parse(savedRaw);
-        // 防禦機制 1：檢查記憶的年級是否與當前學生完全相符
-        if (savedData && savedData.gradeNum === studentGradeNum && Array.isArray(savedData.units)) {
-          // 防禦機制 2：檢查單元是否真正存在於目前的 words 題庫中
-          const validUnits = savedData.units.filter(uKey => {
-            const [b, l] = uKey.split('-');
-            return words.some(w => String(w.book) === b && String(w.lesson) === l);
-          });
-
-          // 若當前 settings.selectedUnits 尚未設定或與已記憶不同，且有效單元大於 0，則安全帶入
-          if (validUnits.length > 0) {
-            setSettings(prev => {
-              // 避免無窮觸發
-              const prevSorted = [...(prev.selectedUnits || [])].sort().join(',');
-              const validSorted = [...validUnits].sort().join(',');
-              if (prevSorted === validSorted) return prev;
-              return { ...prev, selectedUnits: validUnits };
-            });
-            return;
-          }
-        }
-      }
-    } catch (e) {
-      console.warn('讀取單元記憶失敗:', e);
-    }
-  }, [studentGradeNum, words, setSettings]);
-
-  // 輔助函式：儲存單元選擇並更新 settings
-  const updateAndSaveUnits = (updater) => {
-    setSettings(prev => {
-      const nextUnits = typeof updater === 'function' ? updater(prev.selectedUnits || []) : updater;
-      try {
-        if (studentGradeNum > 2) {
-          localStorage.setItem(STORAGE_KEY_UNITS, JSON.stringify({
-            gradeNum: studentGradeNum,
-            studentId: currentStudent?.student_id || 'guest',
-            units: nextUnits
-          }));
-        }
-      } catch (e) {}
-      return {
+    if (currentOptionData.isAlpha) {
+      setSettings(prev => ({
         ...prev,
-        selectedUnits: nextUnits
-      };
-    });
-  };
-
-  // ── 切換單元選取 ──
-  const handleToggleUnit = (book, lesson) => {
-    soundEngine.click();
-    const key = `${book}-${lesson}`;
-    updateAndSaveUnits(prevUnits => (
-      prevUnits.includes(key)
-        ? prevUnits.filter(u => u !== key)
-        : [...prevUnits, key]
-    ));
-  };
-
-  // ── 全選/反選該冊單元 ──
-  const handleToggleAllBook = (book) => {
-    soundEngine.click();
-    const bookData = groupedUnits[book];
-    if (!bookData) return;
-    const allUnits = Array.from(bookData.lessons).map(l => `${book}-${l}`);
-    const isAllSelected = allUnits.every(u => settings.selectedUnits.includes(u));
-
-    updateAndSaveUnits(prevUnits => (
-      isAllSelected
-        ? prevUnits.filter(u => !u.startsWith(`${book}-`))
-        : [...new Set([...prevUnits, ...allUnits])]
-    ));
-  };
+        alphaMode: alphaMode,
+        selectedUnits: ['abc']
+      }));
+    } else {
+      const bKey = currentOptionData.book;
+      const bData = groupedUnits[bKey];
+      if (bData && bData.lessons) {
+        const allUnits = Array.from(bData.lessons).map(l => `${bKey}-${l}`);
+        setSettings(prev => ({
+          ...prev,
+          alphaMode: null,
+          selectedUnits: allUnits
+        }));
+      }
+    }
+  }, [currentOptionData, alphaMode, groupedUnits, setSettings]);
 
   // ── 已選單字總數 ──
   const selectedWordsCount = useMemo(() => {
-    if (studentGradeNum <= 2) return 26;
-    return words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`)).length;
-  }, [studentGradeNum, words, settings.selectedUnits]);
+    if (currentOptionData.isAlpha) return 26;
+    return words.filter(w => (settings.selectedUnits || []).includes(`${w.book}-${w.lesson}`)).length;
+  }, [currentOptionData, words, settings?.selectedUnits]);
 
-  // ── 點擊欄位處理 ──
+  // ── 點擊外層欄位 ──
   const handleColumnClick = (col) => {
     soundEngine.click();
     if (col.isDirectJump) {
       onNavigate(col.jumpTarget);
-      return;
-    }
-    if (activeCol === col.id) {
       return;
     }
     setActiveCol(col.id);
@@ -317,22 +345,25 @@ export const Lobby = ({
     }
   };
 
-  // ── 點選具體子遊戲 ──
+  // ── 點選具體子遊戲：【核心革新】直接絲滑展開至 100% 全螢幕選冊整備頁，無需多點下一頁！ ──
   const handleSelectGame = (gameId) => {
     soundEngine.click();
     setSelectedGame(gameId);
+    setStep('scope');
   };
 
-  // ── 當前選中的遊戲資訊 ──
-  const currentGameObj = useMemo(() => {
-    for (const c of COLUMNS) {
-      if (c.games) {
-        const found = c.games.find(g => g.id === selectedGame);
-        if (found) return { ...found, categoryTitle: c.title, colorName: c.colorName, bgImage: c.bgImage };
-      }
-    }
-    return { id: 'escape', name: '神祕密室逃脫', iconComp: KeyRound, categoryTitle: '探索解謎', bgImage: POSTER_EXPLORE };
-  }, [COLUMNS, selectedGame]);
+  // ── 點選 10 冊膠囊 ──
+  const handleSelectBookOption = (optId) => {
+    soundEngine.click();
+    setSelectedOptionId(optId);
+  };
+
+  // ── 點選字母模式 ──
+  const handleSelectAlphaMode = (mode) => {
+    soundEngine.click();
+    setAlphaMode(mode);
+    setSettings(prev => ({ ...prev, alphaMode: mode }));
+  };
 
   // ── 上一步 ──
   const handleGoBack = () => {
@@ -346,23 +377,18 @@ export const Lobby = ({
     }
   };
 
-  // ── 下一步 / 開始遊戲 ──
-  const handleGoNext = () => {
+  // ── 開始遊戲 ──
+  const handleStartGame = () => {
     soundEngine.click();
-    if (step === 'game') {
-      if (!selectedGame) return;
-      if (selectedGame === 'maze') {
-        onNavigate('maze');
-        return;
-      }
-      setStep('scope');
-    } else if (step === 'scope') {
-      if (studentGradeNum <= 2) {
-        onNavigate(selectedGame);
-      } else {
-        if (selectedWordsCount === 0) return;
-        onNavigate(selectedGame);
-      }
+    if (selectedGame === 'escape') {
+      try {
+        localStorage.setItem('wutai_escape_theme', escapeThemeId);
+      } catch (e) {}
+      onNavigate('escape');
+    } else if (selectedGame === 'maze') {
+      onNavigate('maze');
+    } else {
+      onNavigate(selectedGame);
     }
   };
 
@@ -375,40 +401,58 @@ export const Lobby = ({
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* ════════════════════════════════════════════════════════════════
-          【固定頂部 HUD】左上回首頁 • 上中英雄榜 • 右上個人資訊通行證
+          【固定頂部 HUD】左上回首頁 / 上一步 • 上中英雄榜 • 右上個人通行證
          ════════════════════════════════════════════════════════════════ */}
       <header className="relative z-30 w-full px-3 sm:px-6 py-2.5 sm:py-3 bg-slate-950/85 backdrop-blur-md border-b border-white/10 flex items-center justify-between shadow-xl shrink-0">
         
-        {/* 左上角：回首頁 */}
+        {/* 左上角：上一步 / 回首頁 */}
         <button
           type="button"
-          onClick={() => {
-            soundEngine.click();
-            onNavigate('portal');
-          }}
+          onClick={handleGoBack}
           className="px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-white/15 text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
-          title="返回英語學習宇宙首頁"
+          title={step === 'scope' ? '返回選擇其他遊戲' : '返回英語學習宇宙首頁'}
         >
-          <Home className="w-4 h-4 text-emerald-400" />
-          <span>回首頁</span>
+          {step === 'scope' ? (
+            <>
+              <ArrowLeft className="w-4 h-4 text-amber-400" />
+              <span>回選遊戲</span>
+            </>
+          ) : (
+            <>
+              <Home className="w-4 h-4 text-emerald-400" />
+              <span>回首頁</span>
+            </>
+          )}
         </button>
 
-        {/* 置上中：英雄榜 */}
-        <button
-          type="button"
-          onClick={() => {
-            soundEngine.click();
-            onOpenLeaderboard();
-          }}
-          className="px-4 py-1.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/35 hover:to-yellow-500/45 border-2 border-amber-400/60 text-amber-200 font-heading text-xs sm:text-sm font-black flex items-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer"
-          title="查看全校與年級英雄榜"
-        >
-          <Trophy className="w-4 h-4 text-amber-400 animate-bounce" />
-          <span className="tracking-wide">英雄榜</span>
-          <span className="hidden md:inline text-[11px] text-amber-300/80 font-mono">
-            (看{studentGradeNum}年級排行)
-          </span>
-        </button>
+        {/* 置上中：英雄榜 或 整備室標題 */}
+        {step === 'scope' ? (
+          <div className="flex items-center gap-2 px-3.5 py-1 rounded-2xl bg-slate-900/80 border border-white/15 shadow-md">
+            <currentGameObj.iconComp className="w-4 h-4 text-amber-400" />
+            <span className="font-heading font-black text-xs sm:text-sm tracking-wide text-white">
+              {currentGameObj.name}
+            </span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 font-bold">
+              {currentGameObj.categoryTitle}
+            </span>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              soundEngine.click();
+              onOpenLeaderboard();
+            }}
+            className="px-4 py-1.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/35 hover:to-yellow-500/45 border-2 border-amber-400/60 text-amber-200 font-heading text-xs sm:text-sm font-black flex items-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer"
+            title="查看全校與年級英雄榜"
+          >
+            <Trophy className="w-4 h-4 text-amber-400 animate-bounce" />
+            <span className="tracking-wide">英雄榜</span>
+            <span className="hidden md:inline text-[11px] text-amber-300/80 font-mono">
+              (看{studentGradeNum}年級排行)
+            </span>
+          </button>
+        )}
 
         {/* 右上角：個人資訊通行證 */}
         <button
@@ -422,7 +466,7 @@ export const Lobby = ({
         >
           <User className="w-3.5 h-3.5 text-emerald-400" />
           <span className="max-w-[120px] truncate">
-            {formatStudentBadge(currentStudent, lang) || '設置個人身分'}
+            {formatStudentBadge(currentStudent, lang) || '設置身分'}
           </span>
           {currentStudent?.coins !== undefined && (
             <span className="text-amber-400 font-mono font-bold flex items-center gap-1 ml-1 text-xs">
@@ -435,12 +479,14 @@ export const Lobby = ({
       </header>
 
       {/* ════════════════════════════════════════════════════════════════
-          【中央主舞台】Step 1: 五欄彈性手風琴選遊戲 / Step 2: 範圍選取
+          【中央主舞台】
+          Step 1: 五欄彈性手風琴選遊戲 (點擊直接 100% 膨脹)
+          Step 2: 零滾動 10 冊網格 + 左下角羽化融景 (或密室四大秘境手風琴)
          ════════════════════════════════════════════════════════════════ */}
       <main className="relative z-20 flex-1 w-full max-w-7xl mx-auto p-2 sm:p-3 md:p-4 flex flex-col justify-center overflow-hidden">
         
         {/* ────────────────────────────────────────────────────────
-            【步驟一：選遊戲】iPad/電腦橫向 5 欄手風琴，手機縱向 5 列手風琴
+            【步驟一：選遊戲】五欄手風琴
            ──────────────────────────────────────────────────────── */}
         {step === 'game' && (
           <div className="w-full h-full flex flex-col md:flex-row items-stretch gap-2 sm:gap-2.5 md:gap-3 overflow-hidden">
@@ -448,8 +494,6 @@ export const Lobby = ({
               const isSelectedCol = activeCol === col.id;
               const isCompressed = activeCol !== null && !isSelectedCol;
 
-              // 彈性比例 (Flex Ratio)：
-              // 未點選時均為 1；選中該欄時該欄為 6.5 (佔約 65%)，其餘壓縮為 0.85 (佔約 8%)
               const flexStyle = {
                 flex: isSelectedCol ? (window.innerWidth >= 768 ? 6.5 : 5.5) : isCompressed ? 0.85 : 1
               };
@@ -468,7 +512,7 @@ export const Lobby = ({
                   }`}
                 >
                   
-                  {/* ── 專屬電影級插畫背景圖層 (保持極高清晰度，移除遮蓋) ── */}
+                  {/* 背景圖層 */}
                   <img
                     src={col.bgImage}
                     alt={col.title}
@@ -481,16 +525,12 @@ export const Lobby = ({
                     }`}
                   />
 
-                  {/* 融入環境的主題光影漸層遮罩：上方與中央幾近透明，下方有舒適暗漸層供文字判讀 */}
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/25 to-slate-950/20 pointer-events-none" />
 
-                  {/* ── 狀態 A：壓縮狀態 (細條書脊 - 正立漢字縱排，徹底杜絕倒立旋轉) ── */}
+                  {/* 壓縮狀態 */}
                   {isCompressed ? (
                     <div className="relative z-10 w-full h-full flex md:flex-col items-center justify-between p-2 sm:p-2.5 text-center animate-fadeIn select-none">
-                      {/* 頂部細緻光標 */}
                       <span className="w-1.5 h-1.5 rounded-full bg-white/40 mt-1" />
-                      
-                      {/* 正立漢字縱向排列 (由上而下，字距適中，極易閱讀，純中文字) */}
                       <div className="flex md:flex-col items-center justify-center gap-1.5 sm:gap-2 my-auto select-none">
                         {col.title.split('').map((char, cIdx) => (
                           <span
@@ -501,15 +541,13 @@ export const Lobby = ({
                           </span>
                         ))}
                       </div>
-
-                      {/* 底部微光指示燈 */}
                       <span className="w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-white animate-pulse mb-1" />
                     </div>
                   ) : isSelectedCol ? (
-                    /* ── 狀態 B：展開狀態 (約佔 65%，中央完全留空展示精美大圖，底部小尺寸 2×2 精煉無滑動卡片) ── */
+                    /* 展開狀態 */
                     <div className="relative z-10 w-full h-full p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden animate-fadeIn select-none">
                       
-                      {/* 展開頂部：精簡半透明銘牌，高度僅約 36px，無遮擋大圖示 */}
+                      {/* 展開頂部銘牌 */}
                       <div className={`px-3 py-1.5 sm:py-2 rounded-xl backdrop-blur-md border shadow-lg flex items-center justify-between shrink-0 ${col.plaqueBg}`}>
                         <div className="flex items-center gap-2">
                           <h3 className={`text-base sm:text-xl font-black font-serif tracking-wider ${col.titleGlow}`}>
@@ -538,90 +576,88 @@ export const Lobby = ({
                         </button>
                       </div>
 
-                      {/* 中央舞台：完全留空，讓原畫震撼視野完整展現！ */}
                       <div className="flex-1 min-h-[30px]" />
 
-                      {/* 展開底部：縮小版 2×2 子區塊，完全避免捲軸滑動，極致精練 */}
+                      {/* 展開底部：子遊戲按鈕 (點選直接絲滑進入選冊整備頁！) */}
                       <div className="w-full max-w-2xl mx-auto flex flex-col gap-1.5 shrink-0">
                         <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
                           {col.games?.map((g) => {
                             const isGameActive = selectedGame === g.id;
                             const IconComp = g.iconComp;
                             return (
-                              <div
+                              <button
                                 key={g.id}
+                                type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleSelectGame(g.id);
                                 }}
-                                className={`px-3 py-2 sm:py-2.5 rounded-xl border transition-all duration-150 cursor-pointer flex items-center justify-between gap-2 relative group active:scale-98 backdrop-blur-md ${
+                                className={`px-3 py-2.5 sm:py-3 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 relative group active:scale-98 backdrop-blur-md shadow-lg ${
                                   isGameActive
-                                    ? 'bg-amber-400 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 shadow-lg font-black'
-                                    : 'bg-slate-950/80 hover:bg-slate-900/90 text-white/95 border-white/20 hover:border-amber-400/60 shadow-md'
+                                    ? 'bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 border-amber-200 ring-4 ring-amber-300/80 font-black scale-102'
+                                    : 'bg-slate-950/85 hover:bg-slate-900/95 text-white/95 border-white/20 hover:border-amber-400/60 hover:scale-101'
                                 }`}
                               >
-                                <div className="flex items-center gap-2 min-w-0">
-                                  {/* 微型小圖示，體積僅 14px，絕不喧賓奪主 */}
-                                  <IconComp className={`w-3.5 h-3.5 shrink-0 ${
-                                    isGameActive ? 'text-stone-950' : 'text-amber-300'
-                                  }`} />
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <div className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
+                                    isGameActive ? 'bg-stone-950/20' : 'bg-amber-400/20 border border-amber-400/40'
+                                  }`}>
+                                    <IconComp className={`w-4 h-4 ${
+                                      isGameActive ? 'text-stone-950' : 'text-amber-300'
+                                    }`} />
+                                  </div>
                                   <h4 className="text-xs sm:text-sm font-black tracking-wide truncate">
                                     {g.name}
                                   </h4>
                                 </div>
 
-                                <div className="flex items-center gap-1 shrink-0">
-                                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                                     isGameActive
-                                      ? 'bg-stone-950/20 text-stone-950'
+                                      ? 'bg-stone-950/25 text-stone-950'
                                       : 'bg-white/10 text-slate-300'
                                   }`}>
                                     {g.badge}
                                   </span>
-                                  {isGameActive && (
-                                    <Check className="w-3.5 h-3.5 stroke-[3] text-stone-950" />
-                                  )}
+                                  <ChevronRight className={`w-4 h-4 ${isGameActive ? 'text-stone-950' : 'text-white/40'}`} />
                                 </div>
-                              </div>
+                              </button>
                             );
                           })}
                         </div>
 
-                        {/* 底部小提示：極簡一行 */}
-                        <div className="text-center text-[11px] font-bold text-amber-200/90 pt-0.5 shrink-0">
-                          已選定「{currentGameObj.name}」，請點右下角「下一步 ➔」
+                        <div className="text-center text-[11px] font-bold text-amber-200/90 pt-1 shrink-0">
+                          點擊任一遊戲，直接開啟專屬整備出征室 ➔
                         </div>
                       </div>
 
                     </div>
                   ) : (
-                    /* ── 狀態 C：均分 20% 預設狀態 (大插畫完整通透展現，完全拿掉中央遮擋，僅保留底部純中文字) ── */
+                    /* 均分預設狀態 */
                     <div className="relative z-10 w-full h-full p-3 sm:p-4 flex flex-col justify-between text-center group select-none">
-                      
-                      {/* 頂部精緻小標籤 (無任何 emoji) */}
-                      <div className="w-full flex items-center justify-between">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border backdrop-blur-md ${col.tagBadge}`}>
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm ${col.tagBadge}`}>
                           {col.tag}
                         </span>
-                        <ChevronRight className="w-3.5 h-3.5 text-white/70 group-hover:translate-x-1 transition-transform" />
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/40 border border-white/20 flex items-center justify-center text-white/80 group-hover:text-white group-hover:scale-110 transition-transform">
+                          <col.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300" />
+                        </div>
                       </div>
 
-                      {/* 中央完全留空！讓原畫的遺跡、熔岩、星空書閣、競技場、大武山全景 100% 盡收眼底！ */}
-                      <div className="flex-1" />
-
-                      {/* 底部文字匾額：純中文字，雕刻字型深度融入，絕不遮掩全圖 */}
-                      <div className="w-full flex flex-col items-center pb-1">
-                        <h3 className={`text-xl sm:text-2xl md:text-2xl lg:text-3xl font-black font-serif tracking-widest ${col.titleGlow}`}>
+                      <div className="my-auto flex flex-col items-center">
+                        <h3 className={`text-xl sm:text-2xl md:text-3xl font-black font-serif tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] ${col.titleGlow}`}>
                           {col.title}
                         </h3>
-                        <p className="text-[11px] sm:text-xs font-bold text-slate-200/90 mt-0.5 line-clamp-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
-                          {col.summary}
+                        <p className="text-[10px] sm:text-xs text-white/70 font-mono tracking-widest uppercase mt-1">
+                          {col.enTitle}
                         </p>
+                      </div>
+
+                      <div>
                         <div className="mt-2 w-full py-1.5 rounded-xl bg-black/40 hover:bg-black/60 group-hover:bg-black/70 text-white font-black text-xs transition-colors border border-white/15 shadow">
                           {col.isDirectJump ? '點擊直通 ➔' : '點擊展開 ➔'}
                         </div>
                       </div>
-
                     </div>
                   )}
 
@@ -632,12 +668,14 @@ export const Lobby = ({
         )}
 
         {/* ────────────────────────────────────────────────────────
-            【步驟二：選範圍】單一視窗零滾動，直出該年級所屬範圍與「其他」
+            【步驟二：專屬整備出征室】
+            A. 若為「神祕密室逃脫」：全版四大秘境手風琴 (第一室實景 WebP)
+            B. 若為其他遊戲：左下角靈魂剪影羽化融景 + 10 冊無滾動極簡網格
            ──────────────────────────────────────────────────────── */}
         {step === 'scope' && (
-          <div className="relative w-full h-full max-h-[82vh] p-4 sm:p-6 rounded-3xl overflow-hidden border-2 border-amber-400/60 shadow-2xl flex flex-col justify-between animate-fadeIn">
+          <div className="relative w-full h-full rounded-3xl overflow-hidden border-2 border-amber-400/60 shadow-2xl flex flex-col justify-between animate-fadeIn">
             
-            {/* 範圍頁背景插畫 (帶入所選遊戲主題背景) */}
+            {/* 滿版電影級背景圖層 */}
             <img
               src={currentGameObj.bgImage}
               alt={currentGameObj.name}
@@ -645,178 +683,241 @@ export const Lobby = ({
             />
             <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md pointer-events-none" />
 
-            {/* 範圍頂部資訊欄 */}
-            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-white/15 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center">
-                  <currentGameObj.iconComp className="w-6 h-6 text-amber-300" />
-                </div>
-                <div>
+            {/* ═══ 分流 A：神祕密室逃脫 • 四大秘境手風琴 ═══ */}
+            {selectedGame === 'escape' ? (
+              <div className="relative z-10 w-full h-full p-3 sm:p-5 flex flex-col justify-between">
+                
+                {/* 秘境手風琴標題列 */}
+                <div className="flex items-center justify-between pb-2 border-b border-white/15 shrink-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-lg sm:text-xl font-black text-white font-heading">
-                      {currentGameObj.name}
+                    <KeyRound className="w-5 h-5 text-emerald-400" />
+                    <h3 className="text-base sm:text-lg font-black text-white font-heading">
+                      請選擇探索秘境：
                     </h3>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-bold">
-                      {currentGameObj.categoryTitle}
-                    </span>
                   </div>
-                  <p className="text-xs text-slate-300 font-bold mt-0.5">
-                    已自動錨定【{studentGradeNum}年級】教材範圍，點選單元即可開始：
-                  </p>
+                  <span className="text-xs text-emerald-300 font-bold hidden sm:inline">
+                    大武山四大古代封印，破解三室機關重現天日
+                  </span>
                 </div>
-              </div>
 
-              {/* 切換「其他範圍 / 全冊全展開」按鈕 */}
-              <button
-                type="button"
-                onClick={() => {
-                  soundEngine.click();
-                  setShowAllBooks(prev => !prev);
-                }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer border ${
-                  showAllBooks
-                    ? 'bg-amber-400 text-stone-950 border-amber-200 shadow-md'
-                    : 'bg-slate-800 text-slate-300 hover:text-white border-white/20'
-                }`}
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>{showAllBooks ? '收合為本年級' : '其他年級/全冊自選'}</span>
-              </button>
-            </div>
-
-            {/* ── 核心範圍膠囊區 (依年級直出) ── */}
-            <div className="relative z-10 flex-1 my-3 overflow-y-auto pr-1">
-              
-              {/* 【低年級 1~2 年級】直出三大字母膠囊，不出現冊次 */}
-              {studentGradeNum <= 2 && !showAllBooks ? (
-                <div className="w-full h-full flex flex-col items-center justify-center p-4">
-                  <div className="text-center mb-6">
-                    <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-400/40">
-                      低年級專屬 • 字母啟蒙
-                    </span>
-                    <h4 className="text-xl sm:text-2xl font-black text-white font-heading mt-2">
-                      請選擇字母挑戰模式：
-                    </h4>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-xl">
-                    {[
-                      { key: 'upper', title: '大寫字母', en: 'UPPERCASE', sub: 'A ~ Z 認知辨析' },
-                      { key: 'lower', title: '小寫字母', en: 'LOWERCASE', sub: 'a ~ z 認知辨析' },
-                      { key: 'mixed', title: '大小寫混合', en: 'MIXED (A-z)', sub: 'A-z 全能綜合' }
-                    ].map((mode) => {
-                      const isActive = alphaMode === mode.key;
-                      return (
-                        <button
-                          key={mode.key}
-                          type="button"
-                          onClick={() => {
-                            soundEngine.click();
-                            setAlphaMode(mode.key);
-                          }}
-                          className={`p-5 rounded-2xl border-2 text-center transition-all cursor-pointer flex flex-col items-center justify-center active:scale-95 ${
-                            isActive
-                              ? 'bg-emerald-500 text-white border-emerald-300 ring-4 ring-emerald-400/40 shadow-xl scale-103'
-                              : 'bg-slate-800/80 hover:bg-slate-700 text-slate-200 border-white/20'
-                          }`}
-                        >
-                          <span className="text-lg sm:text-xl font-black font-heading mb-0.5">
-                            {mode.title}
-                          </span>
-                          <span className="text-[10px] font-mono text-emerald-200 uppercase tracking-widest mb-1">
-                            {mode.en}
-                          </span>
-                          <span className="text-xs opacity-80 font-bold">
-                            {mode.sub}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                /* 【中高年級 3~6 年級 或 其他全選】直出冊次與單元膠囊 */
-                <div className="space-y-4">
-                  {(showAllBooks ? Object.keys(groupedUnits).sort() : recommendedBooks).map((bKey) => {
-                    const bData = groupedUnits[bKey];
-                    if (!bData) return null;
-                    const lessonsArr = Array.from(bData.lessons);
-                    const allSelected = lessonsArr.every(l => settings.selectedUnits.includes(`${bKey}-${l}`));
-
+                {/* 四大秘境手風琴本體 */}
+                <div className="flex-1 my-2 sm:my-3 flex flex-col md:flex-row items-stretch gap-2 sm:gap-3 overflow-hidden">
+                  {ESCAPE_THEMES_PREVIEW.map((th) => {
+                    const isSelected = escapeThemeId === th.id;
                     return (
                       <div
-                        key={bKey}
-                        className="p-3.5 rounded-2xl bg-slate-900/80 border border-white/10 flex flex-col gap-2.5 backdrop-blur-md"
+                        key={th.id}
+                        onClick={() => {
+                          soundEngine.click();
+                          setEscapeThemeId(th.id);
+                        }}
+                        style={{
+                          flex: isSelected ? (window.innerWidth >= 768 ? 4.5 : 3.5) : 1
+                        }}
+                        className={`relative rounded-2xl overflow-hidden border-2 transition-all duration-500 ease-out cursor-pointer flex flex-col justify-between p-3 sm:p-4 shadow-xl ${
+                          isSelected
+                            ? 'border-amber-300 ring-4 ring-amber-400/50 shadow-[0_0_30px_rgba(245,158,11,0.5)]'
+                            : 'border-white/15 hover:border-white/40 opacity-70 hover:opacity-100'
+                        }`}
                       >
-                        {/* 冊次標題列與全選按鈕 */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="px-2.5 py-0.5 rounded-lg bg-amber-500 text-stone-950 text-xs font-black font-mono">
-                              Book {bKey}
-                            </span>
-                            <span className="text-xs sm:text-sm font-black text-amber-200">
-                              {bData.author === 'Official' ? `Here We Go 第 ${bKey} 冊` : bKey}
-                            </span>
-                          </div>
+                        <img
+                          src={th.bg}
+                          alt={th.name}
+                          className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 pointer-events-none select-none ${
+                            isSelected ? 'scale-105 brightness-[0.7]' : 'brightness-[0.4]'
+                          }`}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/30 to-slate-950/20 pointer-events-none" />
 
-                          <button
-                            type="button"
-                            onClick={() => handleToggleAllBook(bKey)}
-                            className="px-2.5 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
-                          >
-                            {allSelected ? '✓ 取消全選' : '+ 全選本冊'}
-                          </button>
+                        {/* 卡片頂部 */}
+                        <div className="relative z-10 flex items-center justify-between">
+                          <span className="text-xl sm:text-2xl">{th.icon}</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/60 text-amber-300 border border-amber-400/40 font-bold">
+                            {th.tag}
+                          </span>
                         </div>
 
-                        {/* 單元膠囊清單 */}
-                        <div className="flex flex-wrap gap-2">
-                          {lessonsArr.map((lesson) => {
-                            const isSelected = settings.selectedUnits.includes(`${bKey}-${lesson}`);
-                            return (
-                              <button
-                                key={lesson}
-                                type="button"
-                                onClick={() => handleToggleUnit(bKey, lesson)}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 border ${
-                                  isSelected
-                                    ? 'bg-emerald-500 text-white border-emerald-300 shadow-md ring-2 ring-emerald-400/40 scale-102'
-                                    : 'bg-slate-950/80 text-slate-300 hover:text-white border-white/15'
-                                }`}
-                              >
-                                <span>{isSelected ? '✓' : '•'}</span>
-                                <span>{lesson}</span>
-                              </button>
-                            );
-                          })}
+                        {/* 卡片底部資訊 */}
+                        <div className="relative z-10">
+                          <h4 className="text-sm sm:text-lg font-black text-white font-heading">
+                            {th.name}
+                          </h4>
+                          <p className="text-[10px] text-amber-200/70 font-mono tracking-wider uppercase mb-1">
+                            {th.enName}
+                          </p>
+                          {isSelected && (
+                            <p className="text-xs text-slate-200 font-bold line-clamp-2 mt-1 animate-fadeIn">
+                              {th.desc}
+                            </p>
+                          )}
                         </div>
                       </div>
                     );
                   })}
                 </div>
-              )}
 
-            </div>
+                {/* 秘境底部開始按鈕 */}
+                <div className="pt-2 border-t border-white/15 flex items-center justify-between shrink-0">
+                  <div className="text-xs text-slate-300 font-bold">
+                    已選定：<span className="text-amber-300 font-black">{ESCAPE_THEMES_PREVIEW.find(t => t.id === escapeThemeId)?.name}</span>
+                  </div>
 
-            {/* 範圍底部摘要 */}
-            <div className="relative z-10 flex items-center justify-between pt-2 border-t border-white/15 text-xs text-slate-300 shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="font-bold">已挑選單元：</span>
-                <span className="text-emerald-400 font-mono font-black">
-                  {studentGradeNum <= 2 && !showAllBooks ? '字母全套' : `${settings.selectedUnits.length} 個單元`}
-                </span>
-                <span className="font-bold ml-2">字數：</span>
-                <span className="text-amber-400 font-mono font-black">
-                  {selectedWordsCount} 字
-                </span>
+                  <button
+                    type="button"
+                    onClick={handleStartGame}
+                    className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 hover:from-emerald-300 hover:to-teal-200 text-stone-950 font-heading font-black text-sm sm:text-base flex items-center gap-2 shadow-2xl active:scale-95 transition-all cursor-pointer border-2 border-emerald-200"
+                  >
+                    <span>🚪 進入秘境 START</span>
+                    <Play className="w-4 h-4 fill-stone-950" />
+                  </button>
+                </div>
+
               </div>
+            ) : (
+              /* ═══ 分流 B：全單人通用整備室 • 左下角羽化剪影 + 10 冊無滾動網格 ═══ */
+              <div className="relative z-10 w-full h-full p-3 sm:p-5 flex flex-col justify-between overflow-hidden">
+                
+                {/* 頂部引導題字 */}
+                <div className="flex items-center justify-between pb-2 border-b border-white/15 shrink-0">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <h3 className="text-sm sm:text-base font-black text-white font-heading">
+                      請選擇挑戰年級冊次：
+                    </h3>
+                  </div>
 
-              {qualifyingBook && (
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold hidden sm:inline flex items-center gap-1">
-                  <Trophy className="w-3 h-3 text-amber-400" />
-                  <span>符合榮譽榜資格 (同冊超過20字或選滿2單元)</span>
-                </span>
-              )}
-            </div>
+                  {/* 當前上榜資質標牌 */}
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[11px] font-bold flex items-center gap-1.5 shadow">
+                    <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                    <span>選冊即可直接獲得英雄榜資格</span>
+                  </span>
+                </div>
+
+                {/* ── 核心舞台：左下角靈魂剪影 + 右側 10 冊零滾動網格 ── */}
+                <div className="relative flex-1 w-full my-2 flex items-center justify-between gap-4 overflow-hidden">
+                  
+                  {/* 左下角：專屬靈魂剪影 (雙重漸變極致透明羽化) */}
+                  <div className="hidden lg:block absolute -left-6 -bottom-6 w-72 h-72 pointer-events-none select-none z-0">
+                    <img
+                      src={GAME_SPOTLIGHT_ART[selectedGame] || GAME_SPOTLIGHT_ART.mole}
+                      alt="Hero Art"
+                      className="w-full h-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]"
+                      style={{
+                        maskImage: 'linear-gradient(to top right, black 40%, transparent 90%), radial-gradient(circle at bottom left, black 50%, transparent 85%)',
+                        WebkitMaskImage: 'linear-gradient(to top right, black 40%, transparent 90%), radial-gradient(circle at bottom left, black 50%, transparent 85%)'
+                      }}
+                    />
+                  </div>
+
+                  {/* 右側 / 中央：10 冊無滾動精靈網格 (電腦/iPad: 2x5，手機: 5x2) */}
+                  <div className="relative z-10 w-full lg:max-w-4xl lg:ml-auto h-full flex flex-col justify-center gap-2 sm:gap-3">
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5 w-full">
+                      {GRADE_BOOK_OPTIONS.map((opt) => {
+                        const isSelected = selectedOptionId === opt.id;
+                        const isRecommended = studentGradeNum === opt.grade;
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => handleSelectBookOption(opt.id)}
+                            className={`p-2.5 sm:p-3 rounded-2xl border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-lg ${
+                              isSelected
+                                ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-4 ring-amber-300/80 scale-103 font-black shadow-[0_0_20px_rgba(245,158,11,0.6)]'
+                                : 'bg-slate-900/90 hover:bg-slate-850 text-white/95 border-white/20 hover:border-amber-400/60'
+                            }`}
+                          >
+                            {/* 學生所屬年級推薦金標 */}
+                            {isRecommended && (
+                              <span className={`absolute -top-2.5 px-2 py-0.5 rounded-full text-[9px] font-black flex items-center gap-0.5 shadow ${
+                                isSelected
+                                  ? 'bg-stone-950 text-amber-300 border border-amber-400'
+                                  : 'bg-amber-500 text-stone-950 border border-amber-300 animate-pulse'
+                              }`}>
+                                <Star className="w-2.5 h-2.5 fill-current" />
+                                <span>推薦</span>
+                              </span>
+                            )}
+
+                            <span className="text-base sm:text-lg font-black font-heading tracking-wide">
+                              {opt.label}
+                            </span>
+                            <span className={`text-[10px] font-bold mt-0.5 truncate max-w-full ${
+                              isSelected ? 'text-stone-950/80' : 'text-slate-400'
+                            }`}>
+                              {opt.desc}
+                            </span>
+
+                            {isSelected && (
+                              <CheckCircle2 className="w-4 h-4 text-stone-950 absolute top-1.5 right-1.5 stroke-[2.5]" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* 若點選【一年級】或【二年級】：呈現三大發光字母模式膠囊 */}
+                    {currentOptionData.isAlpha && (
+                      <div className="p-2 sm:p-3 rounded-2xl bg-emerald-950/60 border border-emerald-400/40 backdrop-blur-md flex items-center justify-between gap-2 animate-fadeIn">
+                        <span className="text-xs font-black text-emerald-300 flex items-center gap-1.5 shrink-0">
+                          <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>字母規格：</span>
+                        </span>
+
+                        <div className="grid grid-cols-3 gap-2 flex-1 max-w-md">
+                          {[
+                            { id: 'upper', label: '🔠 大寫 A-Z' },
+                            { id: 'lower', label: '🔡 小寫 a-z' },
+                            { id: 'mixed', label: '🔤 混合 Aa-Zz' }
+                          ].map((m) => {
+                            const isModeActive = alphaMode === m.id;
+                            return (
+                              <button
+                                key={m.id}
+                                type="button"
+                                onClick={() => handleSelectAlphaMode(m.id)}
+                                className={`py-1.5 px-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                                  isModeActive
+                                    ? 'bg-emerald-400 text-stone-950 border-emerald-200 ring-2 ring-emerald-300/80 shadow'
+                                    : 'bg-slate-900/80 hover:bg-slate-800 text-slate-200 border-white/15'
+                                }`}
+                              >
+                                {m.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+
+                </div>
+
+                {/* 整備室底部：狀態摘要與出征按鈕 */}
+                <div className="pt-2.5 border-t border-white/15 flex items-center justify-between shrink-0">
+                  <div className="flex items-center gap-2 text-xs text-slate-300 font-bold">
+                    <span>已就緒：</span>
+                    <span className="text-amber-300 font-black">
+                      {currentOptionData.label} ({currentOptionData.isAlpha ? '26 字母全套' : `${selectedWordsCount} 字全冊`})
+                    </span>
+                    <span className="text-emerald-400 font-black hidden sm:inline ml-1">
+                      • 榮譽榜資格已鎖定
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleStartGame}
+                    className="px-7 sm:px-9 py-2.5 sm:py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-heading font-black text-sm sm:text-base flex items-center gap-2 shadow-[0_0_25px_rgba(245,158,11,0.6)] active:scale-95 transition-all cursor-pointer border-2 border-amber-200 animate-pulse"
+                  >
+                    <span>⚔️ 開始遊戲 START</span>
+                    <Play className="w-4 h-4 fill-stone-950" />
+                  </button>
+                </div>
+
+              </div>
+            )}
 
           </div>
         )}
@@ -824,46 +925,20 @@ export const Lobby = ({
       </main>
 
       {/* ════════════════════════════════════════════════════════════════
-          【固定底部導航列】左下上一頁 • 右下下一步 / 開始遊戲
+          【固定底部簡易提示列】僅在首頁狀態下輔助說明
          ════════════════════════════════════════════════════════════════ */}
-      <footer className="relative z-30 w-full px-3 sm:px-6 py-2.5 sm:py-3.5 bg-slate-950/85 backdrop-blur-md border-t border-white/10 flex items-center justify-between shadow-xl shrink-0">
-        
-        {/* 左下角：上一頁 */}
-        <button
-          type="button"
-          onClick={handleGoBack}
-          className="px-4 py-2 rounded-2xl bg-slate-800/90 hover:bg-slate-700 text-white text-xs sm:text-sm font-black flex items-center gap-1.5 border border-white/20 shadow-md active:scale-95 transition-all cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4 text-emerald-400" />
-          <span>{step === 'scope' ? '回選遊戲' : activeCol !== null ? '還原選單' : '回首頁'}</span>
-        </button>
+      {step === 'game' && (
+        <footer className="relative z-30 w-full px-4 py-2 bg-slate-950/85 backdrop-blur-md border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-bold shrink-0">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>五大主題 • 點選任一遊戲立即展開整備出征室</span>
+          </div>
 
-        {/* 提示訊息 (電腦版) */}
-        <div className="hidden md:flex items-center gap-2 text-xs text-slate-400 font-bold">
-          <span>{step === 'game' ? '請點選遊戲 ➔ 點擊下一步' : '挑選完成 ➔ 立即開始！'}</span>
-        </div>
-
-        {/* 右下角：下一步 ➔ / 開始遊戲 */}
-        <button
-          type="button"
-          onClick={handleGoNext}
-          disabled={step === 'scope' && studentGradeNum > 2 && selectedWordsCount === 0}
-          className={`px-5 sm:px-7 py-2.5 rounded-2xl font-heading font-black text-xs sm:text-base flex items-center gap-2 shadow-xl active:scale-95 transition-all cursor-pointer border-2 ${
-            step === 'scope' && studentGradeNum > 2 && selectedWordsCount === 0
-              ? 'bg-slate-800 text-slate-500 border-white/10 opacity-50 cursor-not-allowed'
-              : 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 border-amber-200'
-          }`}
-        >
-          <span>
-            {step === 'game' 
-              ? '下一步 ➔' 
-              : `開始遊戲 (${selectedWordsCount} 字)`
-            }
-          </span>
-          {step === 'scope' && <Play className="w-4 h-4 fill-stone-950" />}
-        </button>
-
-      </footer>
+          <div className="flex items-center gap-2 text-[11px] text-amber-300/80 font-mono">
+            WUTAI ENGLISH ADVENTURE HALL
+          </div>
+        </footer>
+      )}
 
     </div>
   );
