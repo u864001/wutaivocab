@@ -468,6 +468,14 @@ class BgmManager {
   isBgmActive() {
     return !this.isMuted && Boolean(this.currentAudio && !this.currentAudio.paused);
   }
+
+  setPlaybackRate(rate = 1.0) {
+    if (this.currentAudio) {
+      try {
+        this.currentAudio.playbackRate = rate;
+      } catch (e) {}
+    }
+  }
 }
 
 export const bgmManager = new BgmManager();
