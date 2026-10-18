@@ -4,7 +4,7 @@ import { useI18n } from '../context/I18nContext';
 import { useStudent } from '../context/StudentContext';
 import { formatStudentBadge } from '../utils/studentIdHelper';
 import { soundEngine } from '../services/audio';
-import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles, Home, ArrowLeft, User, Coins } from 'lucide-react';
+import { Sun, Moon, Volume2, VolumeX, Globe, Sparkles, Home, ArrowLeft, User, Coins, Trophy } from 'lucide-react';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 
 export const Header = ({
@@ -22,6 +22,13 @@ export const Header = ({
   const [isMuted, setIsMuted] = useState(soundEngine.isMuted);
 
   const handleAdminTrigger = useEasterEgg(onOpenTeacherHub, 5, 2000);
+
+  const handleLeaderboardClick = (e) => {
+    handleAdminTrigger(e);
+    if (onOpenLeaderboard) {
+      onOpenLeaderboard();
+    }
+  };
 
   const handleToggleSound = () => {
     const muted = soundEngine.toggleMute();
@@ -97,6 +104,18 @@ export const Header = ({
           >
             <User className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{t.loginToRoam}</span>
+          </button>
+        )}
+
+        {/* 🏆 全校排行榜圓形金盃按鈕 (與音量、日夜收在一起，放在學生資訊欄與聲音切換鈕中間；連點 5 次可開啟教師後台) */}
+        {onOpenLeaderboard && (
+          <button
+            type="button"
+            onClick={handleLeaderboardClick}
+            title={lang === 'zh-TW' ? '全校榮譽排行榜 (連續點選 5 次開啟教師後台)' : 'School Leaderboard'}
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-amber-400/20 via-yellow-400/30 to-amber-500/20 hover:from-amber-400/40 hover:to-yellow-400/50 border border-amber-400/60 dark:border-yellow-400/50 text-amber-500 dark:text-yellow-300 flex items-center justify-center shadow-sm hover:shadow-amber-400/25 active:scale-95 transition-all cursor-pointer shrink-0"
+          >
+            <Trophy className="w-4 h-4 text-amber-500 dark:text-yellow-300 fill-amber-400/30 dark:fill-yellow-400/20 drop-shadow-xs" />
           </button>
         )}
 

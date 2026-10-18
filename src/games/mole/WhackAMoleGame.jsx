@@ -180,15 +180,15 @@ export const WhackAMoleGame = ({
     clearAllMoleTimers();
     isTransitioningRef.current = false;
 
-    // 難度參數計算：
-    // 前 20 秒：2 隻（1正解 + 1誘答），停留 3.8 ~ 4.4 秒
-    // 20~50 秒：3 隻（1正解 + 2誘答/炸彈），停留 3.0 ~ 3.6 秒
-    // 最後 10 秒（狂暴）：3 ~ 4 隻，停留 2.0 ~ 2.6 秒
+    // 難度參數計算（大幅放慢節奏，時間充裕，符合 4.5~6 秒不等）：
+    // 前 25 秒：2 隻（1正解 + 1誘答），停留 5.0 ~ 5.6 秒
+    // 25~50 秒：3 隻（1正解 + 2誘答/炸彈），停留 4.2 ~ 4.8 秒
+    // 最後 10 秒（狂暴期）：3 ~ 4 隻，停留 3.0 ~ 3.4 秒
     const isLateGame = timeLeft <= 35;
     const isLastBurst = timeLeft <= 10;
 
     const moleCount = isLastBurst ? (Math.random() < 0.5 ? 4 : 3) : isLateGame ? 3 : 2;
-    const baseDuration = isLastBurst ? 2200 : isLateGame ? 3200 : 4000;
+    const baseDuration = isLastBurst ? 3200 : isLateGame ? 4400 : 5200;
 
     // 隨機選取不重複的洞穴索引
     const shuffledHoles = [0, 1, 2, 3, 4, 5, 6, 7, 8].sort(() => 0.5 - Math.random());
@@ -210,8 +210,8 @@ export const WhackAMoleGame = ({
     // 組裝初始地鼠狀態（進入 'emerging' 狀態）
     const nextHoles = Array(9).fill(null);
 
-    // 正解地鼠
-    const targetDuration = baseDuration + Math.floor(Math.random() * 400);
+    // 正解地鼠（停留約 4.8 ~ 5.6 秒）
+    const targetDuration = baseDuration + Math.floor(Math.random() * 450);
     nextHoles[targetHoleIdx] = {
       word: targetWord.word,
       wordZh: targetWord.wordZh,
@@ -239,12 +239,12 @@ export const WhackAMoleGame = ({
 
     setHoles(nextHoles);
 
-    // 動畫過渡：300ms 後由 'emerging' 進入 'visible'
+    // 平滑探頭過渡：450ms 後由 'emerging' 進入 'visible'
     const emergeTimer = setTimeout(() => {
       setHoles(curr => {
         return curr.map(h => h ? { ...h, status: 'visible' } : null);
       });
-    }, 300);
+    }, 450);
     moleTimersRef.current.push(emergeTimer);
 
     // 為每隻誘答地鼠設定各自獨立的超時縮回時間（帶有些許隨機秒數差距）
@@ -257,7 +257,7 @@ export const WhackAMoleGame = ({
           updated[hIdx] = { ...updated[hIdx], status: 'retreating' };
           return updated;
         });
-        // 350ms 平滑縮回到底後清空該洞
+        // 450ms 平滑縮回到底後清空該洞
         setTimeout(() => {
           setHoles(curr => {
             if (!curr[hIdx] || curr[hIdx].status !== 'retreating') return curr;
@@ -265,7 +265,7 @@ export const WhackAMoleGame = ({
             updated[hIdx] = null;
             return updated;
           });
-        }, 350);
+        }, 450);
       }, indepDuration);
       moleTimersRef.current.push(distTimer);
     });
@@ -490,34 +490,6 @@ export const WhackAMoleGame = ({
         .animate-shake {
           animation: shake 0.45s ease-in-out;
         }
-
-        @keyframes flutterLeft {
-          0%, 100% { transform: translate(0, 0) rotate(-6deg) scaleX(1); }
-          25% { transform: translate(18px, -20px) rotate(4deg) scaleX(0.7); }
-          50% { transform: translate(35px, -8px) rotate(-8deg) scaleX(1); }
-          75% { transform: translate(15px, -25px) rotate(6deg) scaleX(0.75); }
-        }
-        .animate-butterfly-1 {
-          animation: flutterLeft 7s ease-in-out infinite;
-        }
-
-        @keyframes flutterRight {
-          0%, 100% { transform: translate(0, 0) rotate(8deg) scaleX(1); }
-          25% { transform: translate(-22px, -15px) rotate(-5deg) scaleX(0.75); }
-          50% { transform: translate(-40px, -25px) rotate(7deg) scaleX(1); }
-          75% { transform: translate(-18px, -10px) rotate(-4deg) scaleX(0.7); }
-        }
-        .animate-butterfly-2 {
-          animation: flutterRight 8.5s ease-in-out infinite;
-        }
-
-        @keyframes frogBreathe {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.04, 0.96); }
-        }
-        .animate-frog {
-          animation: frogBreathe 3s ease-in-out infinite;
-        }
       `}</style>
 
       {/* ── 2D 實景手繪森林地穴舞台背景 ── */}
@@ -536,66 +508,6 @@ export const WhackAMoleGame = ({
       {isBerserk && (
         <div className="fixed inset-0 pointer-events-none z-40 border-[8px] sm:border-[14px] border-rose-600/80 shadow-[inset_0_0_80px_rgba(225,29,72,0.9)] animate-pulse transition-opacity duration-500" />
       )}
-
-      {/* ════════════════════════════════════════════════════════════════
-          【點綴型動態環境小生物（完全穿透點擊，絕不干擾）】
-         ════════════════════════════════════════════════════════════════ */}
-      <div className="absolute inset-0 pointer-events-none select-none z-25 overflow-hidden">
-        
-        {/* 彩蝶 1 (粉紫幻光)：最後 10 秒加速向上飛逃 */}
-        <div className={`absolute top-[18%] left-[12%] transition-all duration-700 ease-out ${
-          isBerserk ? '-translate-y-96 opacity-0' : 'animate-butterfly-1 opacity-90'
-        }`}>
-          <svg className="w-7 h-7 sm:w-9 sm:h-9 drop-shadow-[0_2px_8px_rgba(236,72,153,0.7)]" viewBox="0 0 40 40">
-            <path d="M 20 20 Q 8 6 4 16 Q 2 24 18 22 Z" fill="#ec4899" opacity="0.85" />
-            <path d="M 20 20 Q 32 6 36 16 Q 38 24 22 22 Z" fill="#ec4899" opacity="0.85" />
-            <path d="M 20 20 Q 10 32 16 36 Q 20 34 20 20 Z" fill="#a855f7" opacity="0.8" />
-            <path d="M 20 20 Q 30 32 24 36 Q 20 34 20 20 Z" fill="#a855f7" opacity="0.8" />
-            <circle cx="20" cy="20" r="1.5" fill="#fdf2f8" />
-          </svg>
-        </div>
-
-        {/* 彩蝶 2 (翡翠青綠)：最後 10 秒加速向上飛逃 */}
-        <div className={`absolute top-[22%] right-[14%] transition-all duration-700 ease-out ${
-          isBerserk ? '-translate-y-96 opacity-0' : 'animate-butterfly-2 opacity-85'
-        }`}>
-          <svg className="w-6 h-6 sm:w-8 sm:h-8 drop-shadow-[0_2px_8px_rgba(16,185,129,0.7)]" viewBox="0 0 40 40">
-            <path d="M 20 20 Q 8 6 4 16 Q 2 24 18 22 Z" fill="#10b981" opacity="0.85" />
-            <path d="M 20 20 Q 32 6 36 16 Q 38 24 22 22 Z" fill="#10b981" opacity="0.85" />
-            <path d="M 20 20 Q 10 32 16 36 Q 20 34 20 20 Z" fill="#14b8a6" opacity="0.8" />
-            <path d="M 20 20 Q 30 32 24 36 Q 20 34 20 20 Z" fill="#14b8a6" opacity="0.8" />
-            <circle cx="20" cy="20" r="1.5" fill="#f0fdf4" />
-          </svg>
-        </div>
-
-        {/* 地面小樹蛙 (左下石縫)：最後 10 秒鑽入草叢消失 */}
-        <div className={`absolute bottom-[10%] left-[5%] sm:left-[8%] transition-all duration-500 ${
-          isBerserk ? 'translate-y-12 opacity-0' : 'animate-frog opacity-90'
-        }`}>
-          <div className="w-8 h-7 sm:w-10 sm:h-8 rounded-full bg-gradient-to-t from-emerald-800 to-lime-500 border border-lime-300 shadow-md relative flex items-center justify-center">
-            {/* 蛙眼 */}
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-300 border border-stone-900 absolute -top-1 left-1 flex items-center justify-center">
-              <span className="w-1 h-1 rounded-full bg-black" />
-            </span>
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-300 border border-stone-900 absolute -top-1 right-1 flex items-center justify-center">
-              <span className="w-1 h-1 rounded-full bg-black" />
-            </span>
-          </div>
-        </div>
-
-        {/* 青苔小蝸牛 (右下石階)：最後 10 秒縮入殼中消失 */}
-        <div className={`absolute bottom-[8%] right-[6%] sm:right-[10%] transition-all duration-500 ${
-          isBerserk ? 'scale-50 opacity-0' : 'opacity-85'
-        }`}>
-          <div className="flex items-end">
-            <span className="w-6 h-5 sm:w-7 sm:h-6 rounded-full bg-gradient-to-tr from-amber-700 via-amber-600 to-amber-400 border border-amber-900 shadow-inner flex items-center justify-center text-[8px] font-mono text-amber-950 font-bold">
-              @
-            </span>
-            <span className="w-4 h-2 rounded-full bg-amber-200 border-b border-amber-400 -ml-1" />
-          </div>
-        </div>
-
-      </div>
 
       {/* ════════════════════════════════════════════════════════════════
           【頂部 HUD 一體化儀表板】
@@ -715,23 +627,24 @@ export const WhackAMoleGame = ({
                 }}
                 /* 
                    【核心架構：獨立柱狀 Hitbox】
-                   只要該洞有安排老鼠，整根垂直長方形均可點擊（即便只露出一點頭），
-                   無老鼠時 pointer-events: none 完全穿透，絕對互不交疊！
+                   只要該洞有安排老鼠，整根垂直柱狀區域均可點擊（即使老鼠剛探頭亦可敲擊），
+                   垂直高度嚴格限制在 14%，上排、中排、下排各自完全獨立，前後排 100% 絕不交疊遮蔽！
+                   無老鼠時 pointer-events: none 完全穿透。
                 */
                 onClick={() => hasActiveMole && handleWhack(holePos.id)}
-                className={`absolute w-28 sm:w-36 md:w-44 h-36 sm:h-48 md:h-56 flex flex-col justify-end items-center cursor-pointer select-none ${
+                className={`absolute w-[20%] sm:w-[17%] md:w-[15%] h-[14%] sm:h-[14.5%] flex flex-col justify-end items-center cursor-pointer select-none ${
                   hasActiveMole ? 'pointer-events-auto' : 'pointer-events-none'
                 }`}
               >
                 
-                {/* ── 地穴垂直升降井道（overflow-hidden 實現真物理鑽出／沒入） ── */}
-                <div className="relative w-full h-[88%] overflow-hidden flex flex-col justify-end items-center pointer-events-none">
+                {/* ── 地穴垂直升降井道（overflow-hidden 實現真物理鑽出／沒入，老鼠頂多探出上半身 1/3 ~ 1/2） ── */}
+                <div className="relative w-full h-[90%] overflow-hidden flex flex-col justify-end items-center pointer-events-none">
                   
-                  {/* 地鼠實體角色（平滑 translateY 垂直動畫） */}
+                  {/* 地鼠實體角色（平滑 translateY 垂直動畫，露出頭部、臉部與木牌，腹部在洞內） */}
                   {hasActiveMole && (
                     <div
                       className={`relative w-full flex flex-col items-center justify-end transform transition-transform ${
-                        isEmerged ? 'translate-y-0 duration-300 ease-out' : 'translate-y-[115%] duration-350 ease-in'
+                        isEmerged ? 'translate-y-[12%] duration-[450ms] ease-out' : 'translate-y-[115%] duration-[450ms] ease-in'
                       }`}
                     >
                       
@@ -747,14 +660,14 @@ export const WhackAMoleGame = ({
                             : MOLE_NORMAL
                         }
                         alt="Mole"
-                        className={`w-full h-auto object-contain select-none pointer-events-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] ${
+                        className={`w-[92%] sm:w-[88%] h-auto object-contain select-none pointer-events-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] ${
                           holeMole.status === 'hit' ? 'scale-90 rotate-12 duration-150' : 'scale-100'
                         }`}
                       />
 
                       {/* 地鼠手舉木牌 / 金牌上的清晰單字 (完全嵌入木牌中央) */}
                       {holeMole.status !== 'hit' && !holeMole.isPrank && (
-                        <div className="absolute left-[10%] right-[10%] top-[53%] bottom-[19%] flex items-center justify-center pointer-events-none z-10 px-1">
+                        <div className="absolute left-[8%] right-[8%] top-[53%] bottom-[20%] flex items-center justify-center pointer-events-none z-10 px-1">
                           <span className={`font-heading font-black text-center tracking-wide select-none leading-none drop-shadow ${
                             holeMole.isGold
                               ? 'text-amber-950 text-xs sm:text-base md:text-lg font-black'
@@ -767,7 +680,7 @@ export const WhackAMoleGame = ({
 
                       {/* 蜂巢搗蛋鼠：蜜蜂已繪於身體兩側，手舉蜂巢本體即為視覺警示 */}
                       {holeMole.isPrank && holeMole.status !== 'hit' && (
-                        <div className="absolute left-[20%] right-[20%] top-[54%] flex items-center justify-center pointer-events-none z-10">
+                        <div className="absolute left-[15%] right-[15%] top-[54%] flex items-center justify-center pointer-events-none z-10">
                           <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px] sm:text-xs shadow-lg animate-pulse border border-rose-300">
                             ⚠️ 搗蛋蜂
                           </span>
@@ -796,7 +709,7 @@ export const WhackAMoleGame = ({
                 </div>
 
                 {/* ── 洞口前唇遮蔽泥土與青苔石塊立體邊緣遮擋層（z-index 25 蓋在地鼠井道下緣） ── */}
-                <div className="w-[92%] h-7 sm:h-9 md:h-11 rounded-[50%] bg-gradient-to-t from-stone-950 via-stone-900/60 to-transparent border-b-2 border-stone-800/90 shadow-2xl pointer-events-none -mt-4 z-25" />
+                <div className="w-[94%] h-5 sm:h-7 md:h-9 rounded-[50%] bg-gradient-to-t from-stone-950 via-stone-900/60 to-transparent border-b-2 border-stone-800/90 shadow-2xl pointer-events-none -mt-3 z-25" />
 
               </div>
             );

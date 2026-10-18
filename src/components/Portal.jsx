@@ -97,35 +97,6 @@ export const Portal = ({
                 </p>
               </div>
             </div>
-
-            {/* 全校排行榜快速通關按鈕 (手機版金牌膠囊，電腦版立體 3D 琥珀按鈕) */}
-            {onOpenLeaderboard && (
-              <div className="shrink-0">
-                {/* 手機版純金色獎盃圖示 (直立時不帶文字，避免與校名標題遮蔽) */}
-                <button
-                  type="button"
-                  onClick={onOpenLeaderboard}
-                  className="sm:hidden w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-500 text-amber-950 flex items-center justify-center shadow-md shadow-amber-500/30 border border-amber-300/70 active:scale-95 transition-all cursor-pointer shrink-0"
-                  title={t.leaderboard}
-                  aria-label={t.leaderboard}
-                >
-                  <Trophy className="w-5 h-5 text-amber-900 fill-amber-300 dark:text-amber-100 shrink-0 drop-shadow-xs" />
-                </button>
-
-                {/* 電腦版 3D 按鈕 */}
-                <div className="hidden sm:block">
-                  <Button3D
-                    variant="amber"
-                    size="md"
-                    onClick={onOpenLeaderboard}
-                    icon={Trophy}
-                    className="shadow-md text-xs sm:text-sm py-2 sm:py-2.5 whitespace-nowrap"
-                  >
-                    {t.leaderboard}
-                  </Button3D>
-                </div>
-              </div>
-            )}
           </div>
         </GlassCard>
 

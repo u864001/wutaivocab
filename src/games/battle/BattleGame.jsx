@@ -20,31 +20,48 @@ import { RightComboDisplay } from '../meteor/RightComboDisplay';
 import { EmergencyRaidMeteor } from './EmergencyRaidMeteor';
 import { calculateMeteorDuration, calculateMeteorMotionProgress } from '../meteor/meteorPhysics';
 
+const POSTER_BATTLE = '/assets/lobby/theme_battle.jpg';
+
 // ── 全校固定三大限定擂台 (嚴格限制全校同時最多 3 場對戰，徹底防護連線數與廣播配額) ──
 const FIXED_ARENAS = [
   {
     id: 'arena-1',
     code: '1001',
     name: '🔴 烈焰擂台',
+    enName: 'Blazing Inferno Arena',
     color: 'rose',
-    bgGradient: 'from-rose-500/20 via-orange-500/20 to-rose-600/20',
-    border: 'border-rose-400 dark:border-rose-700'
+    tagline: '赤紅烈火 • 隕石突襲 • 火力全開',
+    cardGlow: 'border-rose-500/80 shadow-[0_0_30px_rgba(244,63,94,0.35)]',
+    cardBg: 'bg-gradient-to-b from-rose-950/80 via-slate-900/90 to-slate-950/95',
+    badgeClass: 'bg-rose-500/25 text-rose-300 border border-rose-400/50',
+    accentText: 'text-rose-400',
+    btnVariant: 'rose'
   },
   {
     id: 'arena-2',
     code: '1002',
     name: '🟢 翡翠擂台',
+    enName: 'Emerald Sanctuary Arena',
     color: 'emerald',
-    bgGradient: 'from-emerald-500/20 via-teal-500/20 to-emerald-600/20',
-    border: 'border-emerald-400 dark:border-emerald-700'
+    tagline: '神聖晶石 • 翡翠力場 • 極速對決',
+    cardGlow: 'border-emerald-500/80 shadow-[0_0_30px_rgba(16,185,129,0.35)]',
+    cardBg: 'bg-gradient-to-b from-emerald-950/80 via-slate-900/90 to-slate-950/95',
+    badgeClass: 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50',
+    accentText: 'text-emerald-400',
+    btnVariant: 'emerald'
   },
   {
     id: 'arena-3',
     code: '1003',
     name: '🔵 星空擂台',
+    enName: 'Celestial Nebula Arena',
     color: 'blue',
-    bgGradient: 'from-blue-500/20 via-indigo-500/20 to-blue-600/20',
-    border: 'border-blue-400 dark:border-blue-700'
+    tagline: '浩瀚星雲 • 智慧交鋒 • 跨界連線',
+    cardGlow: 'border-blue-500/80 shadow-[0_0_30px_rgba(59,130,246,0.35)]',
+    cardBg: 'bg-gradient-to-b from-blue-950/80 via-slate-900/90 to-slate-950/95',
+    badgeClass: 'bg-blue-500/25 text-blue-300 border border-blue-400/50',
+    accentText: 'text-blue-400',
+    btnVariant: 'blue'
   }
 ];
 
@@ -1093,248 +1110,269 @@ export const BattleGame = ({
   // ── 畫面 1：全校三大限定擂台大廳 (Arena Selection) ──
   if (view === 'menu') {
     return (
-      <div className="w-full max-w-4xl mx-auto px-4 py-4 animate-fadeIn pb-12">
-        <div className="flex items-center justify-between mb-4">
-          <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
-            {t.backLobby}
-          </Button3D>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setProbeCounter(c => c + 1)}
-              disabled={isProbing}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-black transition-all cursor-pointer shadow-sm active:scale-95"
-              title="重新檢查三大擂台即時狀態"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isProbing ? 'animate-spin text-rose-500' : ''}`} />
-              <span>{isProbing ? '探測中...' : '探測擂台'}</span>
-            </button>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-black">
-              <Swords className="w-4 h-4" />
-              全校限定三大即時對戰擂台
-            </div>
-          </div>
+      <div className="relative min-h-[calc(100vh-64px)] w-full overflow-hidden text-white font-sans">
+        {/* 電影級多人連線競技場海報背景 */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
+          <img
+            src={POSTER_BATTLE}
+            alt="Multiplayer Live Battle Arena"
+            className="w-full h-full object-cover object-center brightness-[0.45] contrast-[1.15]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-purple-950/35 to-slate-950/95 backdrop-blur-[1px]" />
         </div>
 
-        <GlassCard className="p-6 mb-6 text-center">
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-2">
-            ⚔️ 星際連線死鬥競技場
-          </h2>
-          <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 max-w-xl mx-auto mb-4">
-            全校最多同時開放 3 組擂台（每組 2~4 人），搭載 3D 地球防衛引擎！連對 3 題發動突襲赤紅隕石，連對 5 題施加重力壓制！
-          </p>
-
-          <div className="max-w-md mx-auto relative mb-2">
-            <input
-              type="text"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="請輸入你的戰鬥暱稱（例：501小明）"
-              className="w-full p-3.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800 text-center font-black text-slate-800 dark:text-slate-100 outline-none focus:border-rose-500 pr-20 shadow-inner"
-            />
-            {playerName && (
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 py-4 animate-fadeIn pb-14">
+          <div className="flex items-center justify-between mb-4">
+            <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
+              {t.backLobby}
+            </Button3D>
+            <div className="flex items-center gap-2">
               <button
-                type="button"
-                onClick={() => {
-                  localStorage.removeItem('wutai_player_name');
-                  setPlayerName('');
-                }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg text-xs font-black bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-300"
-                title="切換其他同學"
+                onClick={() => setProbeCounter(c => c + 1)}
+                disabled={isProbing}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-800 border border-purple-500/40 text-purple-200 text-xs font-black transition-all cursor-pointer shadow-sm active:scale-95"
+                title="重新檢查三大擂台即時狀態"
               >
-                換人
+                <RefreshCw className={`w-3.5 h-3.5 ${isProbing ? 'animate-spin text-purple-400' : 'text-purple-400'}`} />
+                <span>{isProbing ? '探測中...' : '探測擂台'}</span>
               </button>
+              <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-950/80 border border-purple-500/50 text-purple-200 text-xs font-black shadow-lg shadow-purple-500/20">
+                <Swords className="w-4 h-4 text-purple-400" />
+                <span>全校三大限定即時對戰擂台</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 sm:p-8 mb-6 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-purple-500/40 shadow-[0_0_40px_rgba(168,85,247,0.25)] text-center relative overflow-hidden">
+            <div className="absolute -top-24 -right-24 w-60 h-60 rounded-full bg-purple-600/20 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-60 h-60 rounded-full bg-pink-600/20 blur-3xl pointer-events-none" />
+
+            <h2 className="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-100 via-pink-200 to-rose-200 font-heading mb-2 drop-shadow-[0_2px_12px_rgba(217,70,239,0.7)]">
+              ⚔️ 星際連線死鬥競技場
+            </h2>
+            <p className="text-xs sm:text-sm font-bold text-purple-200/80 max-w-xl mx-auto mb-4">
+              全校最多同時開放 3 組擂台（每組 2~4 人），搭載 3D 地球防衛引擎！連對 3 題發動突襲赤紅隕石，連對 5 題施加重力壓制！
+            </p>
+
+            <div className="max-w-md mx-auto relative mb-3">
+              <input
+                type="text"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                placeholder="請輸入你的戰鬥暱稱（例：501小明）"
+                className="w-full p-3.5 rounded-2xl border-2 border-purple-400/50 bg-slate-900/90 text-center font-black text-white placeholder-purple-300/40 outline-none focus:border-pink-500 pr-20 shadow-inner"
+              />
+              {playerName && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem('wutai_player_name');
+                    setPlayerName('');
+                  }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg text-xs font-black bg-purple-900/80 hover:bg-purple-800 text-purple-200 border border-purple-400/40 cursor-pointer"
+                  title="切換其他同學"
+                >
+                  換人
+                </button>
+              )}
+            </div>
+
+            {/* 4 碼 PIN 快速輸入加入區 */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleQuickJoinByPin();
+              }}
+              className="max-w-md mx-auto p-3 rounded-2xl bg-slate-900/80 border border-purple-500/40 flex flex-col sm:flex-row items-center gap-2 shadow-inner"
+            >
+              <div className="flex-1 w-full relative">
+                <input
+                  type="text"
+                  maxLength={4}
+                  value={pinInput}
+                  onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))}
+                  placeholder="輸入房主 4 碼 PIN (例: 1001)"
+                  className="w-full py-2 px-3 rounded-xl border border-purple-400/40 bg-slate-950 text-center font-mono font-black text-sm tracking-widest text-pink-300 placeholder-purple-300/40 outline-none focus:border-pink-400"
+                />
+              </div>
+              <Button3D
+                type="submit"
+                variant="rose"
+                size="sm"
+                className="w-full sm:w-auto shrink-0 whitespace-nowrap shadow-lg shadow-rose-500/30"
+              >
+                🚀 快速加入房間
+              </Button3D>
+            </form>
+
+            {errorMsg && (
+              <div className="max-w-md mx-auto mt-3 p-2.5 rounded-xl bg-rose-950/80 border border-rose-500/60 text-xs font-black text-rose-300 flex items-center justify-center gap-1.5 animate-fadeIn">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <span>{errorMsg}</span>
+              </div>
             )}
           </div>
 
-          {/* 4 碼 PIN 快速輸入加入區 (掃碼或輸入房號即時加入) */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleQuickJoinByPin();
-            }}
-            className="max-w-md mx-auto mt-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center gap-2 shadow-inner"
-          >
-            <div className="flex-1 w-full relative">
-              <input
-                type="text"
-                maxLength={4}
-                value={pinInput}
-                onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))}
-                placeholder="輸入房主 4 碼 PIN (例: 1001)"
-                className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-center font-mono font-black text-sm tracking-widest text-slate-800 dark:text-slate-100 outline-none focus:border-rose-500"
-              />
-            </div>
-            <Button3D
-              type="submit"
-              variant="rose"
-              size="sm"
-              className="w-full sm:w-auto shrink-0 whitespace-nowrap"
-            >
-              🚀 快速加入房間
-            </Button3D>
-          </form>
-
-          {errorMsg && (
-            <div className="max-w-md mx-auto mt-2 p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-black text-rose-600 dark:text-rose-400 flex items-center justify-center gap-1.5 animate-fadeIn">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{errorMsg}</span>
+          {/* 未選取範圍提示橫幅 */}
+          {!hasSelectedUnits && (
+            <div className="mb-4 p-3.5 rounded-2xl bg-amber-950/60 border-2 border-amber-400/40 text-amber-200 text-xs font-bold flex items-center gap-2.5 animate-fadeIn backdrop-blur-md">
+              <span className="p-1.5 rounded-xl bg-amber-500 text-white shrink-0">
+                💡
+              </span>
+              <span>
+                <strong>貼心提醒：</strong>您目前尚未在首頁勾選單元範圍，因此<strong>無法開立新空房</strong>（空房呈灰色鎖定）。您可以<strong>直接加入已有人開立的房間</strong>（正常色）、<strong>輸入 4 碼 PIN</strong> 或<strong>掃描 QR Code</strong> 加入，遊戲時將直接聽從房主指定之範圍！
+              </span>
             </div>
           )}
-        </GlassCard>
 
-        {/* 未選取範圍提示橫幅 */}
-        {!hasSelectedUnits && (
-          <div className="mb-4 p-3.5 rounded-2xl bg-amber-500/10 border-2 border-amber-400/30 text-amber-800 dark:text-amber-200 text-xs font-bold flex items-center gap-2.5 animate-fadeIn">
-            <span className="p-1.5 rounded-xl bg-amber-500 text-white shrink-0">
-              💡
-            </span>
-            <span>
-              <strong>貼心提醒：</strong>您目前尚未在首頁勾選單元範圍，因此<strong>無法開立新空房</strong>（空房呈灰色鎖定）。您可以<strong>直接加入已有人開立的房間</strong>（正常色）、<strong>輸入 4 碼 PIN</strong> 或<strong>掃描 QR Code</strong> 加入，遊戲時將直接聽從房主指定之範圍！
-            </span>
-          </div>
-        )}
+          {/* 三大擂台狀態卡 (🔴 烈焰擂台、🟢 翡翠擂台、🔵 星空擂台) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {FIXED_ARENAS.map((arena) => {
+              const state = arenaStates[arena.id] || { count: 0, isBattling: false, hostName: '', playerNames: [] };
+              const isEmpty = state.count === 0 && !state.isBattling;
+              const isWaiting = state.count > 0 && state.count < 4 && !state.isBattling;
+              const isFullOrBattling = state.isBattling || state.count >= 4;
 
-        {/* 三大擂台狀態卡 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {FIXED_ARENAS.map((arena) => {
-            const state = arenaStates[arena.id] || { count: 0, isBattling: false, hostName: '', playerNames: [] };
-            const isEmpty = state.count === 0 && !state.isBattling;
-            const isWaiting = state.count > 0 && state.count < 4 && !state.isBattling;
-            const isFullOrBattling = state.isBattling || state.count >= 4;
+              const isEmptyDisabled = isEmpty && !hasSelectedUnits;
 
-            // 未選取範圍者，空房顯示為灰色且無法進入；若已選取範圍則正常亮起可開立
-            const isEmptyDisabled = isEmpty && !hasSelectedUnits;
+              return (
+                <div
+                  key={arena.id}
+                  className={`p-5 rounded-3xl flex flex-col justify-between border-2 transition-all relative overflow-hidden backdrop-blur-md shadow-2xl ${
+                    isEmptyDisabled
+                      ? 'border-slate-800 bg-slate-950/70 opacity-60 grayscale-[50%]'
+                      : isFullOrBattling
+                        ? `opacity-85 ${arena.cardBg} border-slate-700`
+                        : `${arena.cardBg} ${arena.cardGlow} hover:scale-[1.02]`
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <span className={`font-heading font-black text-lg block ${arena.accentText}`}>
+                        {arena.name}
+                      </span>
+                      <span className="text-[10px] font-bold text-slate-400 font-mono tracking-wider">
+                        {arena.enName}
+                      </span>
+                    </div>
+                    <span className="font-mono text-xs font-black px-2.5 py-1 rounded-xl bg-slate-900/90 border border-white/15 text-slate-200">
+                      PIN: {arena.code}
+                    </span>
+                  </div>
 
-            return (
-              <GlassCard
-                key={arena.id}
-                className={`p-5 flex flex-col justify-between border-2 transition-all relative overflow-hidden ${
-                  isEmptyDisabled
-                    ? 'border-slate-300 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/40 opacity-60 grayscale-[50%]'
-                    : isFullOrBattling
-                      ? 'opacity-85 ' + arena.border
-                      : arena.border + ' hover:scale-[1.02]'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`font-heading font-black text-base ${
-                    isEmptyDisabled ? 'text-slate-500 dark:text-slate-400' : 'text-slate-800 dark:text-slate-100'
-                  }`}>
-                    {arena.name}
-                  </span>
-                  <span className="font-mono text-xs font-black px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300">
-                    PIN: {arena.code}
-                  </span>
-                </div>
+                  <div className="my-1.5 text-[11px] font-bold text-slate-300/90 text-center py-1 px-2 rounded-xl bg-black/40 border border-white/10">
+                    {arena.tagline}
+                  </div>
 
-                <div className="my-3 min-h-[90px] flex flex-col justify-center">
-                  {isEmpty && (
-                    isEmptyDisabled ? (
-                      <div className="text-center">
-                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-xs font-black mb-1">
-                          <Lock className="w-3.5 h-3.5" /> 需選單元方可開房
+                  <div className="my-3 min-h-[85px] flex flex-col justify-center">
+                    {isEmpty && (
+                      isEmptyDisabled ? (
+                        <div className="text-center">
+                          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-xs font-black mb-1 border border-slate-700">
+                            <Lock className="w-3.5 h-3.5" /> 需選單元方可開房
+                          </div>
+                          <p className="text-[11px] font-bold text-slate-400 mt-1">
+                            未在首頁勾選單元，無法建立新房間。請加入已建立之房間或回首頁勾選。
+                          </p>
                         </div>
-                        <p className="text-[11px] font-bold text-slate-400 mt-1">
-                          未在首頁勾選單元，無法建立新房間。請加入已建立之房間或回首頁勾選。
+                      ) : (
+                        <div className="text-center">
+                          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-xs font-black mb-1 shadow-sm">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> 空房可開立
+                          </div>
+                          <p className="text-xs font-bold text-slate-300">目前尚無同學使用，點下方開立擂台</p>
+                        </div>
+                      )
+                    )}
+
+                    {isWaiting && (
+                      <div className="text-center">
+                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-500/40 text-amber-300 text-xs font-black mb-1">
+                          <Users className="w-3.5 h-3.5" /> 等待加入中 ({state.count}/4 人)
+                        </div>
+                        <p className="text-xs font-bold text-slate-200 mt-1">
+                          房主：<strong className="text-amber-300">{state.hostName}</strong>
+                        </p>
+                        <p className="text-[11px] text-slate-400 truncate">
+                          成員：{state.playerNames.join(', ')}
                         </p>
                       </div>
-                    ) : (
+                    )}
+
+                    {isFullOrBattling && (
                       <div className="text-center">
-                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-xs font-black mb-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> 空房可開立
+                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-950/80 border border-rose-500/40 text-rose-300 text-xs font-black mb-1">
+                          <Lock className="w-3.5 h-3.5" /> 激戰進行中 (已鎖定)
                         </div>
-                        <p className="text-xs font-bold text-slate-400">目前尚無同學使用，點下方開立擂台</p>
+                        <p className="text-[11px] font-bold text-slate-400 mt-1">
+                          對戰中：{state.playerNames.slice(0, 4).join('、')}
+                        </p>
                       </div>
-                    )
-                  )}
+                    )}
+                  </div>
 
-                  {isWaiting && (
-                    <div className="text-center">
-                      <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 text-xs font-black mb-1">
-                        <Users className="w-3.5 h-3.5" /> 等待加入中 ({state.count}/4 人)
-                      </div>
-                      <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">
-                        房主：<strong className="text-amber-600 dark:text-amber-400">{state.hostName}</strong>
-                      </p>
-                      <p className="text-[11px] text-slate-400 truncate">
-                        成員：{state.playerNames.join(', ')}
-                      </p>
-                    </div>
-                  )}
-
-                  {isFullOrBattling && (
-                    <div className="text-center">
-                      <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 text-xs font-black mb-1">
-                        <Lock className="w-3.5 h-3.5" /> 激戰進行中 (已鎖定)
-                      </div>
-                      <p className="text-[11px] font-bold text-slate-500 mt-1">
-                        對戰中：{state.playerNames.slice(0, 4).join('、')}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-3">
-                  {isConnecting === arena.id ? (
-                    <Button3D variant="slate" size="md" disabled className="w-full">
-                      <RefreshCw className="w-4 h-4 animate-spin inline mr-1" />
-                      連線確認中...
-                    </Button3D>
-                  ) : isEmpty ? (
-                    isEmptyDisabled ? (
+                  <div className="mt-3">
+                    {isConnecting === arena.id ? (
+                      <Button3D variant="slate" size="md" disabled className="w-full">
+                        <RefreshCw className="w-4 h-4 animate-spin inline mr-1" />
+                        連線確認中...
+                      </Button3D>
+                    ) : isEmpty ? (
+                      isEmptyDisabled ? (
+                        <Button3D
+                          variant="slate"
+                          size="md"
+                          disabled
+                          className="w-full cursor-not-allowed opacity-50"
+                        >
+                          🔒 未選單元無法開立
+                        </Button3D>
+                      ) : (
+                        <Button3D
+                          variant={arena.btnVariant || 'rose'}
+                          size="md"
+                          onClick={() => handleHostArena(arena)}
+                          className="w-full shadow-lg"
+                        >
+                          開立此擂台
+                        </Button3D>
+                      )
+                    ) : isWaiting ? (
+                      <Button3D
+                        variant="amber"
+                        size="md"
+                        onClick={() => handleJoinArena(arena)}
+                        className="w-full shadow-lg"
+                      >
+                        立即加入 ({state.count}/4)
+                      </Button3D>
+                    ) : (
                       <Button3D
                         variant="slate"
                         size="md"
                         disabled
-                        className="w-full cursor-not-allowed opacity-50"
+                        className="w-full cursor-not-allowed opacity-60"
                       >
-                        🔒 未選單元無法開立
+                        對戰中請稍候
                       </Button3D>
-                    ) : (
-                      <Button3D
-                        variant={arena.color === 'rose' ? 'rose' : arena.color === 'emerald' ? 'emerald' : 'blue'}
-                        size="md"
-                        onClick={() => handleHostArena(arena)}
-                        className="w-full"
-                      >
-                        開立此擂台
-                      </Button3D>
-                    )
-                  ) : isWaiting ? (
-                    <Button3D
-                      variant="amber"
-                      size="md"
-                      onClick={() => handleJoinArena(arena)}
-                      className="w-full"
-                    >
-                      立即加入 ({state.count}/4)
-                    </Button3D>
-                  ) : (
-                    <Button3D
-                      variant="slate"
-                      size="md"
-                      disabled
-                      className="w-full cursor-not-allowed opacity-60"
-                    >
-                      對戰中請稍候
-                    </Button3D>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </GlassCard>
-            );
-          })}
-        </div>
-
-        {Object.values(arenaStates).every(s => s.isBattling || s.count >= 4) && (
-          <div className="mt-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-700 text-center animate-fadeIn">
-            <p className="text-sm font-black text-amber-800 dark:text-amber-200 mb-1">
-              ⚔️ 全校三大擂台目前全數客滿激戰中 (12/12 滿員)！
-            </p>
-            <p className="text-xs font-bold text-amber-600 dark:text-amber-400">
-              建議同學先前往【星空防衛戰】單人模式熱身，稍後點擊右上角「探測擂台」搶進！
-            </p>
+              );
+            })}
           </div>
-        )}
+
+          {Object.values(arenaStates).every(s => s.isBattling || s.count >= 4) && (
+            <div className="mt-6 p-4 rounded-2xl bg-amber-950/70 border-2 border-amber-400/50 text-center animate-fadeIn">
+              <p className="text-sm font-black text-amber-300 mb-1">
+                ⚔️ 全校三大擂台目前全數客滿激戰中 (12/12 滿員)！
+              </p>
+              <p className="text-xs font-bold text-amber-400/80">
+                建議同學先前往【星空防衛戰】單人模式熱身，稍後點擊右上角「探測擂台」搶進！
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
@@ -1346,40 +1384,56 @@ export const BattleGame = ({
     )}`;
 
     return (
-      <div className="min-h-[75vh] flex items-center justify-center p-4">
-        <GlassCard className="max-w-md w-full text-center p-6 sm:p-8">
+      <div className="relative min-h-[calc(100vh-64px)] w-full flex items-center justify-center p-4 text-white font-sans overflow-hidden">
+        {/* 電影級多人連線競技場海報背景 */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
+          <img
+            src={POSTER_BATTLE}
+            alt="Multiplayer Live Battle Arena"
+            className="w-full h-full object-cover object-center brightness-[0.4] contrast-[1.15]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-purple-950/40 to-slate-950/95 backdrop-blur-[1px]" />
+        </div>
+
+        <div className="relative z-10 max-w-md w-full text-center p-6 sm:p-8 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-purple-500/50 shadow-[0_0_40px_rgba(168,85,247,0.3)]">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-black px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300">
+            <span className={`text-xs font-black px-3 py-1 rounded-full ${
+              selectedArena.color === 'rose'
+                ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                : selectedArena.color === 'emerald'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                : 'bg-blue-500/20 text-blue-300 border border-blue-500/40'
+            }`}>
               {selectedArena.name} 備戰中
             </span>
-            <span className="font-mono text-xs font-black text-slate-400">
+            <span className="font-mono text-xs font-black text-slate-300 bg-slate-900/80 px-2 py-0.5 rounded-lg border border-white/10">
               {players.length}/4 人
             </span>
           </div>
 
-          <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 font-mono tracking-widest my-1">
+          <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-200 via-purple-100 to-cyan-200 font-mono tracking-widest my-1 drop-shadow">
             {selectedArena.code}
           </h2>
-          <p className="text-xs font-bold text-slate-500 mb-3">
-            iPad 相機掃描 QR 碼或於大廳輸入 PIN 碼 <span className="font-mono font-bold text-rose-500">{selectedArena.code}</span> 直接加入
+          <p className="text-xs font-bold text-slate-300 mb-3">
+            iPad 相機掃描 QR 碼或於大廳輸入 PIN 碼 <span className="font-mono font-bold text-pink-400">{selectedArena.code}</span> 直接加入
           </p>
 
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-white rounded-2xl shadow-md border border-slate-200">
+            <div className="p-3 bg-white rounded-2xl shadow-xl border-2 border-purple-300/60">
               <img
                 src={qrUrl}
                 alt="掃描加入房間"
                 className="w-32 h-32 object-contain mx-auto"
               />
-              <span className="text-[10px] font-bold text-slate-400 block mt-1">iPad 相機掃碼直接加入</span>
+              <span className="text-[10px] font-bold text-slate-600 block mt-1">iPad 相機掃碼直接加入</span>
             </div>
           </div>
 
           {/* 對決模式選擇 (由房主指定，即時同步給全員) */}
           <div className="mb-4 text-left">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-black text-slate-600 dark:text-slate-300 flex items-center gap-1">
-                <Gamepad2 className="w-3.5 h-3.5 text-rose-500" /> 對決遊戲模式：
+              <span className="text-xs font-black text-slate-300 flex items-center gap-1">
+                <Gamepad2 className="w-3.5 h-3.5 text-pink-400" /> 對決遊戲模式：
               </span>
               <span className="text-[10px] font-bold text-slate-400">
                 {isHost ? '房主可點擊切換' : '同步房主指定模式'}
@@ -1393,8 +1447,8 @@ export const BattleGame = ({
                   onClick={() => handleSelectGameMode('meteor')}
                   className={`p-2.5 rounded-xl border-2 font-black text-xs flex flex-col items-center gap-1 transition-all cursor-pointer ${
                     gameMode === 'meteor'
-                      ? 'border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400 shadow-sm'
-                      : 'border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 text-slate-500 hover:border-slate-300'
+                      ? 'border-pink-500 bg-pink-500/20 text-pink-200 shadow-[0_0_15px_rgba(236,72,153,0.3)]'
+                      : 'border-slate-800 bg-slate-900/70 text-slate-400 hover:border-slate-700'
                   }`}
                 >
                   <span className="text-base">☄️</span>
@@ -1407,8 +1461,8 @@ export const BattleGame = ({
                   onClick={() => handleSelectGameMode('memory')}
                   className={`p-2.5 rounded-xl border-2 font-black text-xs flex flex-col items-center gap-1 transition-all cursor-pointer ${
                     gameMode === 'memory'
-                      ? 'border-purple-500 bg-purple-500/10 text-purple-600 dark:text-purple-400 shadow-sm'
-                      : 'border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 text-slate-500 hover:border-slate-300'
+                      ? 'border-purple-500 bg-purple-500/20 text-purple-200 shadow-[0_0_15px_rgba(168,85,247,0.3)]'
+                      : 'border-slate-800 bg-slate-900/70 text-slate-400 hover:border-slate-700'
                   }`}
                 >
                   <span className="text-base">🃏</span>
@@ -1417,11 +1471,11 @@ export const BattleGame = ({
                 </button>
               </div>
             ) : (
-              <div className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 flex items-center justify-between">
-                <span className="text-xs font-black text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+              <div className="p-2.5 rounded-xl border border-purple-500/30 bg-slate-900/80 flex items-center justify-between">
+                <span className="text-xs font-black text-slate-200 flex items-center gap-1.5">
                   {gameMode === 'meteor' ? '☄️ 星空防衛戰 (3D/2D 搶答突襲)' : '🃏 星際記憶翻牌 (八大功能牌對決)'}
                 </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-purple-300">
                   同步房主中
                 </span>
               </div>
@@ -1429,11 +1483,11 @@ export const BattleGame = ({
           </div>
 
           {/* 出題單元範圍指示 (加入者自動同步，無須自行選取) */}
-          <div className="mb-4 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-left">
-            <span className="text-xs font-black text-slate-600 dark:text-slate-300">
+          <div className="mb-4 p-2.5 rounded-xl bg-slate-900/80 border border-purple-500/30 flex items-center justify-between text-left">
+            <span className="text-xs font-black text-slate-300">
               📚 出題單元範圍：
             </span>
-            <span className="text-xs font-bold text-rose-600 dark:text-rose-400 truncate max-w-[200px]">
+            <span className="text-xs font-bold text-pink-400 truncate max-w-[200px]">
               {battleUnitsRef.current && battleUnitsRef.current.length > 0
                 ? `${battleUnitsRef.current.slice(0, 3).join(', ')}${battleUnitsRef.current.length > 3 ? ` 等共 ${battleUnitsRef.current.length} 單元` : ''}`
                 : '全部單元題庫'}
@@ -1442,28 +1496,28 @@ export const BattleGame = ({
 
           {/* 參賽成員清單 (依先後順序加入，支援房主剔除) */}
           <div className="space-y-2 mb-6">
-            <div className="flex items-center justify-between text-xs font-black text-slate-500 px-1">
+            <div className="flex items-center justify-between text-xs font-black text-slate-400 px-1">
               <span>參賽成員 ({players.length}/4)</span>
               <span>加入順序</span>
             </div>
             {players.map((p, idx) => (
               <div
                 key={p.deviceId || idx}
-                className="p-3 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between font-black text-sm text-slate-800 dark:text-slate-100"
+                className="p-3 rounded-xl bg-slate-900/90 border border-white/10 flex items-center justify-between font-black text-sm text-slate-100"
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 text-[11px] flex items-center justify-center font-mono">
+                  <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-400 text-[11px] flex items-center justify-center font-mono border border-slate-700">
                     {idx + 1}
                   </span>
                   <span>{p.name} {p.deviceId === myDeviceIdRef.current ? '(你)' : ''}</span>
-                  {p.isHost && <span className="text-xs text-amber-500 font-bold ml-1">👑 房主</span>}
+                  {p.isHost && <span className="text-xs text-amber-400 font-bold ml-1">👑 房主</span>}
                 </div>
 
                 {isHost && p.deviceId !== myDeviceIdRef.current && (
                   <button
                     type="button"
                     onClick={() => handleKickPlayer(p.deviceId, p.name)}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-300 transition-all cursor-pointer active:scale-95 border border-rose-200 dark:border-rose-800"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black bg-rose-950/80 hover:bg-rose-900 text-rose-300 transition-all cursor-pointer active:scale-95 border border-rose-500/40"
                     title={`剔除 ${p.name}`}
                   >
                     <UserX className="w-3.5 h-3.5" />
@@ -1481,7 +1535,7 @@ export const BattleGame = ({
               size="lg"
               disabled={players.length < 2}
               onClick={handleStartGameBroadcast}
-              className="w-full mb-3"
+              className="w-full mb-3 shadow-lg shadow-rose-500/25"
               icon={Play}
             >
               {players.length < 2
@@ -1492,7 +1546,7 @@ export const BattleGame = ({
               }
             </Button3D>
           ) : (
-            <p className="text-xs font-black text-slate-500 animate-pulse mb-4">
+            <p className="text-xs font-black text-pink-300 animate-pulse mb-4">
               ⏳ 等待房主按下開戰 (目前 {players.length} 人)...
             </p>
           )}
@@ -1500,7 +1554,7 @@ export const BattleGame = ({
           <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} className="w-full">
             退出擂台
           </Button3D>
-        </GlassCard>
+        </div>
       </div>
     );
   }
@@ -1508,14 +1562,24 @@ export const BattleGame = ({
   // ── 畫面 3：多人星際大對決終局榮譽榜 (Podium Settlement) ──
   if (view === 'result') {
     return (
-      <div className="min-h-[85vh] flex items-center justify-center p-4 animate-fadeIn">
-        <GlassCard className="max-w-xl w-full text-center p-6 sm:p-8">
-          <Trophy className="w-16 h-16 text-amber-400 mx-auto mb-2 animate-bounce drop-shadow-[0_0_20px_rgba(251,191,36,0.6)]" />
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
+      <div className="relative min-h-[calc(100vh-64px)] w-full flex items-center justify-center p-4 text-white font-sans overflow-hidden animate-fadeIn">
+        {/* 電影級多人連線競技場海報背景 */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
+          <img
+            src={POSTER_BATTLE}
+            alt="Multiplayer Live Battle Arena"
+            className="w-full h-full object-cover object-center brightness-[0.4] contrast-[1.15]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-purple-950/40 to-slate-950/95 backdrop-blur-[1px]" />
+        </div>
+
+        <div className="relative z-10 max-w-xl w-full text-center p-6 sm:p-8 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-purple-500/50 shadow-[0_0_50px_rgba(168,85,247,0.35)]">
+          <Trophy className="w-16 h-16 text-amber-400 mx-auto mb-2 animate-bounce drop-shadow-[0_0_25px_rgba(251,191,36,0.7)]" />
+          <h2 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 font-heading mb-1 drop-shadow">
             星際死鬥結算榮譽榜
           </h2>
-          <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 mb-6">
-            生還者殘存愛心每顆重賞 <strong className="text-emerald-500">+50 分</strong>！
+          <p className="text-xs sm:text-sm font-bold text-purple-200/80 mb-6">
+            生還者殘存愛心每顆重賞 <strong className="text-emerald-400 font-black">+50 分</strong>！
           </p>
 
           {/* 榮譽排列表 */}
@@ -1527,20 +1591,20 @@ export const BattleGame = ({
               const isMe = item.deviceId === myDeviceIdRef.current;
 
               let rankBadge = (
-                <span className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-black text-xs flex items-center justify-center">
+                <span className="w-7 h-7 rounded-full bg-slate-800 text-slate-300 font-black text-xs flex items-center justify-center border border-white/10">
                   #{idx + 1}
                 </span>
               );
 
               if (isFirst) {
                 rankBadge = (
-                  <span className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 text-slate-900 font-black text-sm flex items-center justify-center shadow-lg border border-yellow-200">
+                  <span className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 text-slate-950 font-black text-sm flex items-center justify-center shadow-lg border border-yellow-200">
                     🥇
                   </span>
                 );
               } else if (isSecond) {
                 rankBadge = (
-                  <span className="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-300 to-slate-100 text-slate-800 font-black text-sm flex items-center justify-center shadow-md border border-slate-300">
+                  <span className="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-300 to-slate-100 text-slate-900 font-black text-sm flex items-center justify-center shadow-md border border-slate-300">
                     🥈
                   </span>
                 );
@@ -1557,16 +1621,16 @@ export const BattleGame = ({
                   key={idx}
                   className={`p-3.5 rounded-2xl flex items-center justify-between border-2 transition-all ${
                     isFirst
-                      ? 'bg-amber-500/15 border-amber-400/80 shadow-[0_0_20px_rgba(251,191,36,0.3)]'
+                      ? 'bg-amber-500/20 border-amber-400/90 shadow-[0_0_25px_rgba(251,191,36,0.35)]'
                       : isMe
-                      ? 'bg-cyan-500/10 border-cyan-400/70'
-                      : 'bg-white/80 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700'
+                      ? 'bg-cyan-500/15 border-cyan-400/80 shadow-[0_0_15px_rgba(34,211,238,0.25)]'
+                      : 'bg-slate-900/80 border-white/10'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     {rankBadge}
                     <div className="text-left">
-                      <div className="font-black text-sm sm:text-base text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                      <div className="font-black text-sm sm:text-base text-white flex items-center gap-1.5">
                         <span>{item.name}</span>
                         {isMe && (
                           <span className="px-1.5 py-0.2 rounded bg-cyan-500 text-white text-[10px] font-black">
@@ -1574,12 +1638,12 @@ export const BattleGame = ({
                           </span>
                         )}
                         {isFirst && (
-                          <Crown className="w-4 h-4 text-amber-500 inline animate-bounce" />
+                          <Crown className="w-4 h-4 text-amber-400 inline animate-bounce" />
                         )}
                       </div>
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400 mt-0.5">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-300/80 mt-0.5">
                         {item.lives > 0 ? (
-                          <span className="text-rose-500 font-black flex items-center">
+                          <span className="text-rose-400 font-black flex items-center">
                             {'❤️'.repeat(item.lives)} ({item.lives}心生還 +{item.heartBonus})
                           </span>
                         ) : (
@@ -1593,7 +1657,7 @@ export const BattleGame = ({
                   </div>
 
                   <div className="text-right">
-                    <span className="font-mono font-black text-lg sm:text-xl text-slate-800 dark:text-slate-100">
+                    <span className="font-mono font-black text-lg sm:text-xl text-amber-300">
                       {item.finalScore}
                     </span>
                     <span className="text-xs font-bold text-slate-400 block">
@@ -1605,10 +1669,10 @@ export const BattleGame = ({
             })}
           </div>
 
-          <Button3D variant="rose" size="lg" onClick={handleLeaveRoom} className="w-full">
+          <Button3D variant="rose" size="lg" onClick={handleLeaveRoom} className="w-full shadow-lg shadow-rose-500/30">
             返回擂台大廳
           </Button3D>
-        </GlassCard>
+        </div>
       </div>
     );
   }
