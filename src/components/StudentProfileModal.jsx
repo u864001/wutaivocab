@@ -209,20 +209,22 @@ export const StudentProfileModal = () => {
         {isLoggedIn && !isSwitching ? (
           <div className="flex flex-col items-center gap-2.5">
             
-            {/* 卡片本體：嚴格 3:4 比例，寬高完全聯動，100% 完整呈現四邊細節與外框雕刻 (零裁切) */}
+            {/* 卡片本體：以底圖自然文檔流撐開真實物理高寬，100% 完美貼合，絕對不跑版 */}
             <div
               className="relative select-none shadow-[0_0_50px_rgba(16,185,129,0.35)]"
               style={{
                 width: 'min(94vw, 460px, calc((85vh - 56px) * 0.75))',
-                aspectRatio: '3 / 4'
+                maxWidth: '100%'
               }}
             >
               
-              {/* 高解析精美神廟石板原畫背景 (100% 完整呈現，不裁剪四周) */}
+              {/* 高解析精美神廟石板原畫背景 (自然流撐開父容器高寬，100% 嚴格 768:1024 物理等比) */}
               <img
                 src={cardTheme === 'dark' ? '/assets/pass/slate_pass_dark.webp' : '/assets/pass/slate_pass_parchment.webp'}
                 alt="Ancient Slate Warrior Pass"
-                className="absolute inset-0 w-full h-full object-fill pointer-events-none drop-shadow-2xl"
+                className="w-full h-auto block select-none pointer-events-none drop-shadow-2xl"
+                width={768}
+                height={1024}
               />
 
               {/* 浮動頂部微操作鈕 (關閉與風格切換) */}
