@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
+import { useStudent } from '../../context/StudentContext';
 import { soundEngine } from '../../services/audio';
 import { supabase, getDeviceId, recordBattleWin } from '../../services/supabase';
 import { generateSmartOptions } from '../../services/distractorHelper';
@@ -12,7 +13,7 @@ import {
   ArrowLeft, Swords, Users, Heart, Zap,
   Trophy, Play, RefreshCw, Lock, CheckCircle2, AlertCircle,
   Eye, Maximize2, Minimize2, Sparkles, Flame, Skull, Crown,
-  UserX, Gamepad2
+  UserX, Gamepad2, BookOpen, Check, Settings2, SlidersHorizontal, ChevronRight, X
 } from 'lucide-react';
 import { MeteorCanvas3D } from '../meteor/MeteorCanvas3D';
 import { MeteorEasterEggs2D } from '../meteor/MeteorEasterEggs2D';
@@ -23,6 +24,29 @@ import { calculateMeteorDuration, calculateMeteorMotionProgress } from '../meteo
 const POSTER_BATTLE = '/assets/lobby/theme_battle.jpg';
 
 // ── 全校固定三大限定擂台 (嚴格限制全校同時最多 3 場對戰，徹底防護連線數與廣播配額) ──
+const BATTLE_BOOKS = [
+  { id: '1', label: '三上 (第1冊)', short: 'B1 三上', grade: 3, semester: 1 },
+  { id: '2', label: '三下 (第2冊)', short: 'B2 三下', grade: 3, semester: 2 },
+  { id: '3', label: '四上 (第3冊)', short: 'B3 四上', grade: 4, semester: 1 },
+  { id: '4', label: '四下 (第4冊)', short: 'B4 四下', grade: 4, semester: 2 },
+  { id: '5', label: '五上 (第5冊)', short: 'B5 五上', grade: 5, semester: 1 },
+  { id: '6', label: '五下 (第6冊)', short: 'B6 五下', grade: 5, semester: 2 },
+  { id: '7', label: '六上 (第7冊)', short: 'B7 六上', grade: 6, semester: 1 },
+  { id: '8', label: '六下 (第8冊)', short: 'B8 六下', grade: 6, semester: 2 },
+  { id: 'abc', label: 'Aa 字母樂園', short: 'Aa 字母', isAlpha: true }
+];
+
+const getUnitsForBook = (bookId, allWords = []) => {
+  if (bookId === 'abc') return ['abc'];
+  const lessons = new Set();
+  allWords.forEach(w => {
+    if (String(w.book) === String(bookId)) {
+      lessons.add(w.lesson);
+    }
+  });
+  return Array.from(lessons).map(l => `${bookId}-${l}`);
+};
+
 const FIXED_ARENAS = [
   {
     id: 'arena-1',
@@ -80,7 +104,114 @@ export const BattleGame = ({
   const [errorMsg, setErrorMsg] = useState('');
   const [pinInput, setPinInput] = useState('');
   const [gameMode, setGameMode] = useState('meteor'); // 'meteor' | 'memory'
-  const hasSelectedUnits = Boolean(settings?.selectedUnits && settings.selectedUnits.length > 0);
+  const hasSelectedUnits = true;
+  const { currentStudent } = useStudent();
+  const [isScopeModalOpen, setIsScopeModalOpen] = useState(false);
+  const [modalBookId, setModalBookId] = useState('1');
+
+  // 若尚未選取範圍，依據學生年級（或預設第 1 冊）自動填入全冊單元，保證開房暢行無阻！
+  useEffect(() => {
+    if (!settings?.selectedUnits || settings.selectedUnits.length === 0) {
+      let defaultBook = '1';
+      const g = currentStudent?.grade;
+      if (g === '04' || g === 4) defaultBook = '3';
+      else if (g === '05' || g === 5) defaultBook = '5';
+      else if (g === '06' || g === 6) defaultBook = '7';
+      else if (g === '01' || g === '02') defaultBook = 'abc';
+
+      const defaultUnits = getUnitsForBook(defaultBook, words);
+      if (defaultUnits.length > 0) {
+        if (setSettings) {
+          setSettings(prev => ({ ...prev, selectedUnits: defaultUnits }));
+        }
+        battleUnitsRef.current = defaultUnits;
+      }
+    }
+  }, [words, currentStudent?.grade, settings?.selectedUnits, setSettings]);
+
+  // 當前選取範圍描述與字數統計
+  const selectedUnits = settings?.selectedUnits || battleUnitsRef.current || [];
+  const currentScopeInfo = useMemo(() => {
+    if (selectedUnits.includes('abc')) {
+      const matchWords = words.filter(w => w.book === 'abc' || w.isAlphabet);
+      return {
+        title: '【低年級】Aa 字母自然發音樂園',
+        bookId: 'abc',
+        count: matchWords.length || 26
+      };
+    }
+    const books = Array.from(new Set(selectedUnits.map(u => u.split('-')[0]))).filter(Boolean);
+    if (books.length === 1) {
+      const bId = books[0];
+      const bObj = BATTLE_BOOKS.find(b => b.id === bId);
+      const allBookUnits = getUnitsForBook(bId, words);
+      const isWholeBook = allBookUnits.length > 0 && allBookUnits.every(u => selectedUnits.includes(u));
+      const matchWords = words.filter(w => selectedUnits.includes(`${w.book}-${w.lesson}`));
+      return {
+        title: `【${bObj?.label || `第 ${bId} 冊`}】${isWholeBook ? '全冊單元' : `自選 ${selectedUnits.length} 單元`}`,
+        bookId: bId,
+        count: matchWords.length
+      };
+    }
+    const matchWords = words.filter(w => selectedUnits.includes(`${w.book}-${w.lesson}`));
+    return {
+      title: `跨冊選取 (${selectedUnits.length} 個單元)`,
+      bookId: books[0] || '1',
+      count: matchWords.length
+    };
+  }, [selectedUnits, words]);
+
+  // 一鍵切換指定冊次全單元
+  const handleQuickSelectBook = (bookId) => {
+    soundEngine.click();
+    const newUnits = getUnitsForBook(bookId, words);
+    battleUnitsRef.current = newUnits;
+    if (setSettings) {
+      setSettings(prev => ({ ...prev, selectedUnits: newUnits }));
+    }
+  };
+
+  // 取得特定冊次的所有可用單元清單
+  const getLessonsForBook = (bookId) => {
+    if (bookId === 'abc') return [{ id: 'abc', label: 'Aa 字母全套' }];
+    const lessons = new Set();
+    words.forEach(w => {
+      if (String(w.book) === String(bookId)) {
+        lessons.add(w.lesson);
+      }
+    });
+    return Array.from(lessons).map(l => ({
+      id: `${bookId}-${l}`,
+      label: l
+    }));
+  };
+
+  // 單元勾選切換
+  const handleToggleUnitInModal = (unitKey) => {
+    soundEngine.click();
+    const current = new Set(selectedUnits);
+    if (current.has(unitKey)) {
+      current.delete(unitKey);
+    } else {
+      current.add(unitKey);
+    }
+    const nextUnits = Array.from(current);
+    battleUnitsRef.current = nextUnits;
+    if (setSettings) {
+      setSettings(prev => ({ ...prev, selectedUnits: nextUnits }));
+    }
+  };
+
+  // 彈窗全選當前冊次所有單元
+  const handleSelectAllUnitsOfBook = (bookId) => {
+    soundEngine.click();
+    const allOfBook = getUnitsForBook(bookId, words);
+    battleUnitsRef.current = allOfBook;
+    if (setSettings) {
+      setSettings(prev => ({ ...prev, selectedUnits: allOfBook }));
+    }
+  };
+
 
   // 三大擂台全域狀態監控
   const [arenaStates, setArenaStates] = useState({
@@ -1215,17 +1346,71 @@ export const BattleGame = ({
             )}
           </div>
 
-          {/* 未選取範圍提示橫幅 */}
-          {!hasSelectedUnits && (
-            <div className="mb-4 p-3.5 rounded-2xl bg-amber-950/60 border-2 border-amber-400/40 text-amber-200 text-xs font-bold flex items-center gap-2.5 animate-fadeIn backdrop-blur-md">
-              <span className="p-1.5 rounded-xl bg-amber-500 text-white shrink-0">
-                💡
-              </span>
-              <span>
-                <strong>貼心提醒：</strong>您目前尚未在首頁勾選單元範圍，因此<strong>無法開立新空房</strong>（空房呈灰色鎖定）。您可以<strong>直接加入已有人開立的房間</strong>（正常色）、<strong>輸入 4 碼 PIN</strong> 或<strong>掃描 QR Code</strong> 加入，遊戲時將直接聽從房主指定之範圍！
-              </span>
+          {/* ── 🎯 連線對戰出題範圍整備控制台 (與單字冒險館全面連動) ── */}
+          <div className="mb-4 p-3.5 sm:p-4 rounded-3xl bg-slate-900/90 border-2 border-indigo-500/40 shadow-2xl backdrop-blur-md">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2.5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-400/40 flex items-center justify-center text-xl shadow-inner shrink-0 text-indigo-300">
+                  🎯
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono font-bold text-indigo-300 tracking-wider">
+                      BATTLE VOCABULARY SCOPE
+                    </span>
+                    <span className="text-[9px] font-black px-2 py-0.2 rounded-full bg-emerald-500 text-stone-950 shadow-sm">
+                      ● 即時連動單字範圍
+                    </span>
+                  </div>
+                  <h3 className="text-sm sm:text-base font-black text-white font-heading">
+                    出題範圍：<span className="text-amber-400 font-extrabold">{currentScopeInfo.title}</span>
+                  </h3>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <span className="px-2.5 py-1 rounded-xl bg-black/50 border border-white/10 text-xs font-mono font-black text-emerald-400 shrink-0">
+                  {currentScopeInfo.count} 個對戰單字
+                </span>
+                <Button3D
+                  variant="amber"
+                  size="sm"
+                  onClick={() => {
+                    soundEngine.click();
+                    setModalBookId(currentScopeInfo.bookId || '1');
+                    setIsScopeModalOpen(true);
+                  }}
+                  className="whitespace-nowrap shadow-md cursor-pointer text-xs"
+                >
+                  ⚙️ 更換單元範圍
+                </Button3D>
+              </div>
             </div>
-          )}
+
+            {/* 秒選冊次快速按鈕列 (Book 1 ~ 8 + 低年級字母) */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none pt-2 border-t border-white/10">
+              <span className="text-[10px] font-bold text-slate-400 shrink-0 mr-1 hidden sm:inline">
+                秒選冊次：
+              </span>
+              {BATTLE_BOOKS.map((tab) => {
+                const isActive = currentScopeInfo.bookId === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => handleQuickSelectBook(tab.id)}
+                    className={`px-2.5 py-1 rounded-xl text-xs font-black shrink-0 transition-all cursor-pointer flex items-center gap-1 border ${
+                      isActive
+                        ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-stone-950 border-amber-300 shadow-md scale-105 font-extrabold'
+                        : 'bg-black/50 text-slate-300 border-white/10 hover:border-white/30 hover:bg-slate-800'
+                    }`}
+                  >
+                    <span>{tab.short}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* 三大擂台狀態卡 (🔴 烈焰擂台、🟢 翡翠擂台、🔵 星空擂台) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1235,7 +1420,7 @@ export const BattleGame = ({
               const isWaiting = state.count > 0 && state.count < 4 && !state.isBattling;
               const isFullOrBattling = state.isBattling || state.count >= 4;
 
-              const isEmptyDisabled = isEmpty && !hasSelectedUnits;
+              const isEmptyDisabled = false;
 
               return (
                 <div

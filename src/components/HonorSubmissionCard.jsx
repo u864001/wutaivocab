@@ -7,6 +7,7 @@ import { checkIfQualifiesForTop50, uploadScore } from '../services/supabase';
 import { CertificateModal } from './CertificateModal';
 import { getAccuracyLevel } from '../services/certificateGenerator';
 import { getProfanityError } from '../services/profanityFilter';
+import { recordGrimoireStar } from '../utils/grimoireHelper';
 import confetti from 'canvas-confetti';
 import { Trophy, CheckCircle2, Sparkles, Send, Loader2, Award, UserCheck, RefreshCw, AlertCircle, Coins, ShieldCheck, User } from 'lucide-react';
 

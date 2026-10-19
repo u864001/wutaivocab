@@ -107,21 +107,28 @@ export const GRIMOIRE_BOOKS = [
   }
 ];
 
-// 前三大單元遊戲區域對應之 10 大單人遊戲模式（排除獨立特區「多人連線」與「霧臺小鎮」）
-// 每款三星通關解鎖該冊 10% 彩色進度，10 款全部三星通關達 100% 並亮起該冊星星（8冊共80項 = 八星大宗師）
+// 前三大單元學習區域對應之 12 大單人遊戲挑戰（探索 4 款 + 極速 4 款 + 經典 4 款）
+// 友善容錯機制：全冊 12 款中任選精通 10 款三星即可達到 100% 點亮該冊神印（8 冊共 80 項 = 八星大宗師）
 export const REQUIRED_MODES_FOR_MASTER = 10;
 
 export const GRIMOIRE_GAME_MODES = [
+  // ── 探索解謎 (4 款) ──
+  { id: 'escape', nameZh: '神祕密室逃脫', icon: '🗝️', category: 'explore' },
+  { id: 'spotter', nameZh: '鷹眼神探找碴', icon: '🔍', category: 'explore' },
   { id: 'maze', nameZh: '字母巡航迷宮', icon: '🌀', category: 'explore' },
-  { id: 'escape', nameZh: '密室逃脫解謎', icon: '🗝️', category: 'explore' },
-  { id: 'spelling', nameZh: '單字積木拼裝', icon: '🧱', category: 'explore' },
-  { id: 'spotter', nameZh: '鷹眼實景找碴', icon: '🔍', category: 'explore' },
+  { id: 'memory', nameZh: '翻牌記憶對決', icon: '🃏', category: 'explore' },
+
+  // ── 極速反應 (4 款) ──
+  { id: 'mole', nameZh: '單字打地鼠', icon: '🔨', category: 'speed' },
   { id: 'swipe', nameZh: '極速是非滑牌', icon: '⚡', category: 'speed' },
-  { id: 'mole', nameZh: '森林打地鼠', icon: '🔨', category: 'speed' },
-  { id: 'snake', nameZh: '叢林神山貪食蛇', icon: '🐍', category: 'speed' },
   { id: 'meteor', nameZh: '3D 隕石防衛戰', icon: '☄️', category: 'speed' },
-  { id: 'memory', nameZh: '星際記憶翻牌', icon: '🃏', category: 'explore' },
-  { id: 'quiz', nameZh: '經典星空大會考', icon: '📜', category: 'quiz' }
+  { id: 'snake', nameZh: '叢林神山貪食蛇', icon: '🐍', category: 'speed' },
+
+  // ── 經典測驗 (4 款) ──
+  { id: 'quiz-zh-en', nameZh: '看中選英測驗', icon: '⌨️', category: 'quiz' },
+  { id: 'quiz-en-zh', nameZh: '看英選中測驗', icon: '📖', category: 'quiz' },
+  { id: 'quiz-listening', nameZh: '英語聽力挑戰', icon: '🎧', category: 'quiz', note: '單字辨音/句子/問答任一三星' },
+  { id: 'spelling', nameZh: '單字積木拼裝', icon: '🧱', category: 'quiz' }
 ];
 
 const STORAGE_PREFIX = 'wutai_grimoire_progress_';
@@ -156,7 +163,17 @@ export const getBookProgress = (studentId, bookId) => {
   // 計算在該冊獲得 3 星 (或通關) 的遊戲數
   let threeStarCount = 0;
   GRIMOIRE_GAME_MODES.forEach(m => {
-    if ((bookRecord[m.id] || 0) >= 3) {
+    let star = bookRecord[m.id] || 0;
+    // 聽力三種子模式 (單字辨音/句子辨句/情境問答) 任一達三星皆代表英語聽力精通
+    if (m.id === 'quiz-listening') {
+      star = Math.max(
+        star,
+        bookRecord['quiz-listening-word'] || 0,
+        bookRecord['quiz-listening-sentence'] || 0,
+        bookRecord['quiz-listening-qa'] || 0
+      );
+    }
+    if (star >= 3) {
       threeStarCount++;
     }
   });
@@ -204,13 +221,14 @@ export const recordGrimoireStar = (studentId, bookId, gameId, stars = 3) => {
   const currentStars = allData[bKey][gameId] || 0;
   if (stars > currentStars) {
     allData[bKey][gameId] = stars;
+    // 若為聽力子模式，同步更新父級 quiz-listening
+    if (gameId.startsWith('quiz-listening')) {
+      allData[bKey]['quiz-listening'] = Math.max(allData[bKey]['quiz-listening'] || 0, stars);
+    }
     saveStudentGrimoireData(studentId, allData);
   }
 };
 
-/**
- * 依據點亮的星數 (0 ~ 8 星) 給予固定的榮譽稱號
- */
 export const getMasterTitle = (stars = 0) => {
   switch (stars) {
     case 0:
