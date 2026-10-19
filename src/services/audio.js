@@ -579,6 +579,73 @@ class SoundEngine {
     this.playTone(400, 'triangle', 0.04, 0.08);
   }
 
+  // 跨平台觸覺微脈衝 (支援 Android 實體震動 + Web Audio 超低頻 55Hz 衝擊，在 iPad/PC 上營造擊打受力感)
+  hapticPulse(strength = 'normal') {
+    if (this.isMuted) return;
+
+    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+      try {
+        if (strength === 'strong') {
+          navigator.vibrate([35, 20, 45]);
+        } else {
+          navigator.vibrate(28);
+        }
+      } catch (e) {}
+    }
+
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const now = this.ctx.currentTime;
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(strength === 'strong' ? 75 : 55, now);
+      osc.frequency.exponentialRampToValueAtTime(28, now + 0.045);
+
+      const vol = strength === 'strong' ? 0.22 : 0.14;
+      gain.gain.setValueAtTime(vol, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.05);
+    } catch (e) {}
+  }
+
+  // 最後 10 秒倒數緊張節奏鼓點 (具備 TTS 發音自動閃避 Ducking 機制，避免干擾單字朗讀)
+  countdownTensionTick(secondsLeft = 10) {
+    if (this.isMuted) return;
+    if (typeof window !== 'undefined' && window.speechSynthesis && window.speechSynthesis.speaking) {
+      return; // TTS 朗讀中自動閃避
+    }
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const pitch = 85 + (10 - Math.max(1, secondsLeft)) * 8; // 85Hz ~ 160Hz 遞增緊湊
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(pitch, now);
+      osc.frequency.exponentialRampToValueAtTime(pitch * 0.6, now + 0.06);
+
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.07);
+    } catch (e) {}
+  }
+
   // 美語發音呼叫 (代理至 voiceManager)
   speak(text, persona = 'mario') {
     if (this.isMuted) return;

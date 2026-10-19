@@ -311,7 +311,11 @@ export const SwipeCardGame = ({
 
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 1) {
+        const next = prev - 1;
+        if (next <= 10 && next > 0) {
+          soundEngine.countdownTensionTick(next);
+        }
+        if (next <= 0) {
           clearInterval(timer);
           setIsTimerRunning(false);
           soundEngine.win();
@@ -321,7 +325,7 @@ export const SwipeCardGame = ({
           } catch (e) {}
           return 0;
         }
-        return prev - 1;
+        return next;
       });
     }, 1000);
 
@@ -429,6 +433,7 @@ export const SwipeCardGame = ({
 
       setScore(s => s + earned);
       soundEngine.combo(nextStreak);
+      soundEngine.hapticPulse(nextStreak >= 5 ? 'strong' : 'normal');
       speakEnglish(topCard.word);
 
       // 浮動得分提示
@@ -761,6 +766,11 @@ export const SwipeCardGame = ({
             : 'radial-gradient(circle at 50% 30%, rgba(244, 63, 94, 0.12) 0%, rgba(15, 23, 42, 0.98) 100%)'
         }}
       >
+        {/* ── 最後 10 秒狂暴倒數：向內血紅色霓虹呼吸燈暈 ── */}
+        {timeLeft <= 10 && !isTimerFrozen && (
+          <div className="fixed inset-0 pointer-events-none z-40 border-[8px] sm:border-[12px] border-rose-600/75 shadow-[inset_0_0_60px_rgba(225,29,72,0.85)] animate-pulse transition-opacity duration-300" />
+        )}
+
         {/* ── 頂部 HUD 資訊與快捷按鈕 ── */}
         <div className="w-full max-w-md flex items-center justify-between gap-2 shrink-0 z-20">
           <div className="flex items-center gap-2">

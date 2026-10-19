@@ -1143,71 +1143,73 @@ export const BattleGame = ({
             </div>
           </div>
 
-          <div className="p-6 sm:p-8 mb-6 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-purple-500/40 shadow-[0_0_40px_rgba(168,85,247,0.25)] text-center relative overflow-hidden">
-            <div className="absolute -top-24 -right-24 w-60 h-60 rounded-full bg-purple-600/20 blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-60 h-60 rounded-full bg-pink-600/20 blur-3xl pointer-events-none" />
+          <div className="p-4 sm:p-5 mb-3 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-purple-500/40 shadow-[0_0_30px_rgba(168,85,247,0.2)] text-center relative overflow-hidden">
+            <div className="absolute -top-20 -right-20 w-48 h-48 rounded-full bg-purple-600/20 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 w-48 h-48 rounded-full bg-pink-600/20 blur-3xl pointer-events-none" />
 
-            <h2 className="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-100 via-pink-200 to-rose-200 font-heading mb-2 drop-shadow-[0_2px_12px_rgba(217,70,239,0.7)]">
+            <h2 className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-100 via-pink-200 to-rose-200 font-heading mb-1 drop-shadow-[0_2px_10px_rgba(217,70,239,0.7)]">
               ⚔️ 星際連線死鬥競技場
             </h2>
-            <p className="text-xs sm:text-sm font-bold text-purple-200/80 max-w-xl mx-auto mb-4">
-              全校最多同時開放 3 組擂台（每組 2~4 人），搭載 3D 地球防衛引擎！連對 3 題發動突襲赤紅隕石，連對 5 題施加重力壓制！
+            <p className="text-[11px] sm:text-xs font-bold text-purple-200/80 max-w-xl mx-auto mb-3">
+              全校最多同時開放 3 組擂台（每組 2~4 人），跨載具秒速連線！連對 3 題發動突襲赤紅隕石，連對 5 題施加重力壓制！
             </p>
 
-            <div className="max-w-md mx-auto relative mb-3">
-              <input
-                type="text"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                placeholder="請輸入你的戰鬥暱稱（例：501小明）"
-                className="w-full p-3.5 rounded-2xl border-2 border-purple-400/50 bg-slate-900/90 text-center font-black text-white placeholder-purple-300/40 outline-none focus:border-pink-500 pr-20 shadow-inner"
-              />
-              {playerName && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    localStorage.removeItem('wutai_player_name');
-                    setPlayerName('');
-                  }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg text-xs font-black bg-purple-900/80 hover:bg-purple-800 text-purple-200 border border-purple-400/40 cursor-pointer"
-                  title="切換其他同學"
-                >
-                  換人
-                </button>
-              )}
-            </div>
+            {/* 兩欄並排：左側暱稱輸入、右側 4 碼 PIN 快速加入 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-2xl mx-auto">
+              {/* 戰鬥暱稱 */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  placeholder="輸入戰鬥暱稱 (例: 501小明)"
+                  className="w-full py-2 px-3 rounded-xl border border-purple-400/50 bg-slate-900/90 text-center font-black text-xs sm:text-sm text-white placeholder-purple-300/40 outline-none focus:border-pink-500 pr-14 shadow-inner"
+                />
+                {playerName && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      localStorage.removeItem('wutai_player_name');
+                      setPlayerName('');
+                    }}
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded-lg text-[10px] font-black bg-purple-900/80 hover:bg-purple-800 text-purple-200 border border-purple-400/40 cursor-pointer"
+                    title="切換其他同學"
+                  >
+                    換人
+                  </button>
+                )}
+              </div>
 
-            {/* 4 碼 PIN 快速輸入加入區 */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleQuickJoinByPin();
-              }}
-              className="max-w-md mx-auto p-3 rounded-2xl bg-slate-900/80 border border-purple-500/40 flex flex-col sm:flex-row items-center gap-2 shadow-inner"
-            >
-              <div className="flex-1 w-full relative">
+              {/* 4 碼 PIN 快速輸入加入區 */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleQuickJoinByPin();
+                }}
+                className="flex items-center gap-1.5"
+              >
                 <input
                   type="text"
                   maxLength={4}
                   value={pinInput}
                   onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))}
-                  placeholder="輸入房主 4 碼 PIN (例: 1001)"
-                  className="w-full py-2 px-3 rounded-xl border border-purple-400/40 bg-slate-950 text-center font-mono font-black text-sm tracking-widest text-pink-300 placeholder-purple-300/40 outline-none focus:border-pink-400"
+                  placeholder="輸入 4 碼 PIN"
+                  className="flex-1 py-2 px-2.5 rounded-xl border border-purple-400/40 bg-slate-950 text-center font-mono font-black text-xs sm:text-sm tracking-wider text-pink-300 placeholder-purple-300/40 outline-none focus:border-pink-400"
                 />
-              </div>
-              <Button3D
-                type="submit"
-                variant="rose"
-                size="sm"
-                className="w-full sm:w-auto shrink-0 whitespace-nowrap shadow-lg shadow-rose-500/30"
-              >
-                🚀 快速加入房間
-              </Button3D>
-            </form>
+                <Button3D
+                  type="submit"
+                  variant="rose"
+                  size="sm"
+                  className="shrink-0 whitespace-nowrap shadow-md shadow-rose-500/25"
+                >
+                  🚀 加入
+                </Button3D>
+              </form>
+            </div>
 
             {errorMsg && (
-              <div className="max-w-md mx-auto mt-3 p-2.5 rounded-xl bg-rose-950/80 border border-rose-500/60 text-xs font-black text-rose-300 flex items-center justify-center gap-1.5 animate-fadeIn">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+              <div className="max-w-md mx-auto mt-2.5 p-2 rounded-xl bg-rose-950/80 border border-rose-500/60 text-xs font-black text-rose-300 flex items-center justify-center gap-1.5 animate-fadeIn">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-400" />
                 <span>{errorMsg}</span>
               </div>
             )}
@@ -1377,14 +1379,14 @@ export const BattleGame = ({
     );
   }
 
-  // ── 畫面 2：擂台等待備戰室 (Waiting Room) ──
+  // ── 畫面 2：擂台等待備戰室 (Waiting Room - 100dvh iPad 單頁全景自適應) ──
   if (view === 'lobby') {
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
       window.location.origin + '?join=' + selectedArena.code
     )}`;
 
     return (
-      <div className="relative min-h-[calc(100vh-64px)] w-full flex items-center justify-center p-4 text-white font-sans overflow-hidden">
+      <div className="fixed inset-0 w-full h-[100dvh] flex flex-col justify-between p-2.5 sm:p-3 md:p-4 text-white font-sans overflow-hidden select-none z-10 animate-fadeIn">
         {/* 電影級多人連線競技場海報背景 */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
           <img
@@ -1395,9 +1397,10 @@ export const BattleGame = ({
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-purple-950/40 to-slate-950/95 backdrop-blur-[1px]" />
         </div>
 
-        <div className="relative z-10 max-w-md w-full text-center p-6 sm:p-8 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-purple-500/50 shadow-[0_0_40px_rgba(168,85,247,0.3)]">
-          <div className="flex items-center justify-between mb-3">
-            <span className={`text-xs font-black px-3 py-1 rounded-full ${
+        {/* ── 頂部 HUD 狀態導覽列 ── */}
+        <header className="relative z-20 w-full max-w-5xl mx-auto flex items-center justify-between pb-2 border-b border-white/15 shrink-0">
+          <div className="flex items-center gap-2">
+            <span className={`text-xs sm:text-sm font-black px-3 py-1 rounded-full ${
               selectedArena.color === 'rose'
                 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
                 : selectedArena.color === 'emerald'
@@ -1406,155 +1409,220 @@ export const BattleGame = ({
             }`}>
               {selectedArena.name} 備戰中
             </span>
-            <span className="font-mono text-xs font-black text-slate-300 bg-slate-900/80 px-2 py-0.5 rounded-lg border border-white/10">
+            <span className="font-mono text-xs font-black text-slate-300 bg-slate-900/80 px-2.5 py-0.5 rounded-lg border border-white/10">
               {players.length}/4 人
             </span>
           </div>
 
-          <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-200 via-purple-100 to-cyan-200 font-mono tracking-widest my-1 drop-shadow">
-            {selectedArena.code}
-          </h2>
-          <p className="text-xs font-bold text-slate-300 mb-3">
-            iPad 相機掃描 QR 碼或於大廳輸入 PIN 碼 <span className="font-mono font-bold text-pink-400">{selectedArena.code}</span> 直接加入
-          </p>
-
-          <div className="flex justify-center mb-4">
-            <div className="p-3 bg-white rounded-2xl shadow-xl border-2 border-purple-300/60">
-              <img
-                src={qrUrl}
-                alt="掃描加入房間"
-                className="w-32 h-32 object-contain mx-auto"
-              />
-              <span className="text-[10px] font-bold text-slate-600 block mt-1">iPad 相機掃碼直接加入</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-purple-300 font-bold hidden sm:inline">
+              PIN 碼直接加入：
+            </span>
+            <span className="font-mono text-base sm:text-lg font-black text-pink-300 tracking-wider bg-purple-950/80 px-2.5 py-0.5 rounded-lg border border-purple-400/50">
+              {selectedArena.code}
+            </span>
+            <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} className="ml-2">
+              退出擂台
+            </Button3D>
           </div>
+        </header>
 
-          {/* 對決模式選擇 (由房主指定，即時同步給全員) */}
-          <div className="mb-4 text-left">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs font-black text-slate-300 flex items-center gap-1">
-                <Gamepad2 className="w-3.5 h-3.5 text-pink-400" /> 對決遊戲模式：
-              </span>
-              <span className="text-[10px] font-bold text-slate-400">
-                {isHost ? '房主可點擊切換' : '同步房主指定模式'}
-              </span>
-            </div>
-
-            {isHost ? (
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleSelectGameMode('meteor')}
-                  className={`p-2.5 rounded-xl border-2 font-black text-xs flex flex-col items-center gap-1 transition-all cursor-pointer ${
-                    gameMode === 'meteor'
-                      ? 'border-pink-500 bg-pink-500/20 text-pink-200 shadow-[0_0_15px_rgba(236,72,153,0.3)]'
-                      : 'border-slate-800 bg-slate-900/70 text-slate-400 hover:border-slate-700'
-                  }`}
-                >
-                  <span className="text-base">☄️</span>
-                  <span>星空防衛戰</span>
-                  <span className="text-[10px] font-normal text-slate-400">3D/2D 搶答突襲</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectGameMode('memory')}
-                  className={`p-2.5 rounded-xl border-2 font-black text-xs flex flex-col items-center gap-1 transition-all cursor-pointer ${
-                    gameMode === 'memory'
-                      ? 'border-purple-500 bg-purple-500/20 text-purple-200 shadow-[0_0_15px_rgba(168,85,247,0.3)]'
-                      : 'border-slate-800 bg-slate-900/70 text-slate-400 hover:border-slate-700'
-                  }`}
-                >
-                  <span className="text-base">🃏</span>
-                  <span>星際記憶翻牌</span>
-                  <span className="text-[10px] font-normal text-slate-400">八大功能牌對決</span>
-                </button>
-              </div>
-            ) : (
-              <div className="p-2.5 rounded-xl border border-purple-500/30 bg-slate-900/80 flex items-center justify-between">
-                <span className="text-xs font-black text-slate-200 flex items-center gap-1.5">
-                  {gameMode === 'meteor' ? '☄️ 星空防衛戰 (3D/2D 搶答突襲)' : '🃏 星際記憶翻牌 (八大功能牌對決)'}
+        {/* ── 核心雙欄舞台 (iPad 768px+ 與電腦水平並排，手機垂直並排，嚴格自適應 100dvh) ── */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto flex-1 min-h-0 my-2 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 items-stretch overflow-hidden">
+          
+          {/* ════ 左欄：PIN 碼、QR 碼與對決模式指定 ════ */}
+          <div className="p-3 sm:p-4 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-purple-500/40 shadow-xl flex flex-col justify-between overflow-y-auto">
+            
+            {/* 上半部：大型 PIN 與掃碼區 */}
+            <div className="flex items-center justify-between gap-3 bg-purple-950/40 p-2.5 sm:p-3 rounded-2xl border border-purple-500/30">
+              <div className="flex flex-col text-left">
+                <span className="text-[11px] font-bold text-purple-300">房間 PIN 碼</span>
+                <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-200 via-purple-100 to-cyan-200 font-mono tracking-widest my-0.5 drop-shadow">
+                  {selectedArena.code}
                 </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-purple-300">
-                  同步房主中
+                <span className="text-[10px] text-slate-300 font-medium">
+                  iPad 相機直接掃碼，或於首頁輸入 PIN 碼立即加入！
                 </span>
               </div>
-            )}
-          </div>
 
-          {/* 出題單元範圍指示 (加入者自動同步，無須自行選取) */}
-          <div className="mb-4 p-2.5 rounded-xl bg-slate-900/80 border border-purple-500/30 flex items-center justify-between text-left">
-            <span className="text-xs font-black text-slate-300">
-              📚 出題單元範圍：
-            </span>
-            <span className="text-xs font-bold text-pink-400 truncate max-w-[200px]">
-              {battleUnitsRef.current && battleUnitsRef.current.length > 0
-                ? `${battleUnitsRef.current.slice(0, 3).join(', ')}${battleUnitsRef.current.length > 3 ? ` 等共 ${battleUnitsRef.current.length} 單元` : ''}`
-                : '全部單元題庫'}
-            </span>
-          </div>
-
-          {/* 參賽成員清單 (依先後順序加入，支援房主剔除) */}
-          <div className="space-y-2 mb-6">
-            <div className="flex items-center justify-between text-xs font-black text-slate-400 px-1">
-              <span>參賽成員 ({players.length}/4)</span>
-              <span>加入順序</span>
+              {/* QR Code 緊湊高清晰框 */}
+              <div className="p-1.5 bg-white rounded-xl shadow-md border border-purple-300/80 shrink-0 text-center">
+                <img
+                  src={qrUrl}
+                  alt="掃描加入房間"
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-contain mx-auto"
+                />
+                <span className="text-[9px] font-black text-slate-700 block mt-0.5">iPad相機掃碼</span>
+              </div>
             </div>
-            {players.map((p, idx) => (
-              <div
-                key={p.deviceId || idx}
-                className="p-3 rounded-xl bg-slate-900/90 border border-white/10 flex items-center justify-between font-black text-sm text-slate-100"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-400 text-[11px] flex items-center justify-center font-mono border border-slate-700">
-                    {idx + 1}
-                  </span>
-                  <span>{p.name} {p.deviceId === myDeviceIdRef.current ? '(你)' : ''}</span>
-                  {p.isHost && <span className="text-xs text-amber-400 font-bold ml-1">👑 房主</span>}
-                </div>
 
-                {isHost && p.deviceId !== myDeviceIdRef.current && (
+            {/* 中半部：對決遊戲模式選擇 (房主可切換，成員同步) */}
+            <div className="my-2 text-left">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs font-black text-slate-200 flex items-center gap-1">
+                  <Gamepad2 className="w-3.5 h-3.5 text-pink-400" /> 對決模式：
+                </span>
+                <span className="text-[10px] font-bold text-slate-400">
+                  {isHost ? '👑 房主點擊切換' : '同步房主指定中'}
+                </span>
+              </div>
+
+              {isHost ? (
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={() => handleKickPlayer(p.deviceId, p.name)}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black bg-rose-950/80 hover:bg-rose-900 text-rose-300 transition-all cursor-pointer active:scale-95 border border-rose-500/40"
-                    title={`剔除 ${p.name}`}
+                    onClick={() => handleSelectGameMode('meteor')}
+                    className={`p-2 rounded-xl border-2 font-black text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      gameMode === 'meteor'
+                        ? 'border-pink-500 bg-pink-500/25 text-pink-200 shadow-[0_0_15px_rgba(236,72,153,0.3)] ring-1 ring-pink-400'
+                        : 'border-slate-800 bg-slate-900/70 text-slate-400 hover:border-slate-700'
+                    }`}
                   >
-                    <UserX className="w-3.5 h-3.5" />
-                    <span>剔除</span>
+                    <span className="text-lg">☄️</span>
+                    <div className="text-left">
+                      <div>星空防衛戰</div>
+                      <div className="text-[9px] font-normal text-slate-400">3D/2D 搶答突襲</div>
+                    </div>
                   </button>
-                )}
-              </div>
-            ))}
+
+                  <button
+                    type="button"
+                    onClick={() => handleSelectGameMode('memory')}
+                    className={`p-2 rounded-xl border-2 font-black text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      gameMode === 'memory'
+                        ? 'border-purple-500 bg-purple-500/25 text-purple-200 shadow-[0_0_15px_rgba(168,85,247,0.3)] ring-1 ring-purple-400'
+                        : 'border-slate-800 bg-slate-900/70 text-slate-400 hover:border-slate-700'
+                    }`}
+                  >
+                    <span className="text-lg">🃏</span>
+                    <div className="text-left">
+                      <div>星際翻牌</div>
+                      <div className="text-[9px] font-normal text-slate-400">功能道具牌對決</div>
+                    </div>
+                  </button>
+                </div>
+              ) : (
+                <div className="p-2.5 rounded-xl border border-purple-500/30 bg-slate-900/80 flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-200 flex items-center gap-1.5">
+                    {gameMode === 'meteor' ? '☄️ 星空防衛戰 (3D/2D 搶答突襲)' : '🃏 星際記憶翻牌 (八大功能牌對決)'}
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-purple-300">
+                    同步房主中
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* 下半部：出題單元範圍指示 */}
+            <div className="p-2 sm:p-2.5 rounded-xl bg-slate-900/80 border border-purple-500/30 flex items-center justify-between text-left">
+              <span className="text-xs font-black text-slate-300">
+                📚 出題範圍：
+              </span>
+              <span className="text-xs font-bold text-pink-400 truncate max-w-[220px]">
+                {battleUnitsRef.current && battleUnitsRef.current.length > 0
+                  ? `${battleUnitsRef.current.slice(0, 3).join(', ')}${battleUnitsRef.current.length > 3 ? ` 等共 ${battleUnitsRef.current.length} 單元` : ''}`
+                  : '全部單元題庫'}
+              </span>
+            </div>
+
           </div>
 
-          {/* 開戰按鈕：支援 2 人、3 人不滿員開始，或 4 人滿員開戰 */}
-          {isHost ? (
-            <Button3D
-              variant={players.length >= 2 ? "rose" : "slate"}
-              size="lg"
-              disabled={players.length < 2}
-              onClick={handleStartGameBroadcast}
-              className="w-full mb-3 shadow-lg shadow-rose-500/25"
-              icon={Play}
-            >
-              {players.length < 2
-                ? '等待同學加入 (至少 2 人)...'
-                : players.length === 4
-                  ? '開戰！(4 人滿員決戰)'
-                  : `開戰！(${players.length} 人即刻開局)`
-              }
-            </Button3D>
-          ) : (
-            <p className="text-xs font-black text-pink-300 animate-pulse mb-4">
-              ⏳ 等待房主按下開戰 (目前 {players.length} 人)...
-            </p>
-          )}
+          {/* ════ 右欄：參賽成員名單與開戰按鈕 ════ */}
+          <div className="p-3 sm:p-4 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-purple-500/40 shadow-xl flex flex-col justify-between overflow-hidden">
+            
+            {/* 上半部：成員清單 */}
+            <div className="flex-1 min-h-0 flex flex-col justify-start">
+              <div className="flex items-center justify-between text-xs font-black text-slate-300 pb-1.5 mb-1.5 border-b border-white/10 shrink-0">
+                <span className="flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5 text-purple-400" />
+                  <span>參賽成員 ({players.length}/4 人)</span>
+                </span>
+                <span className="text-[11px] text-slate-400">至少 2 人即可開戰</span>
+              </div>
 
-          <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} className="w-full">
-            退出擂台
-          </Button3D>
+              {/* 成員列表 (緊湊且不被切掉) */}
+              <div className="space-y-1.5 overflow-y-auto pr-1 flex-1">
+                {players.map((p, idx) => (
+                  <div
+                    key={p.deviceId || idx}
+                    className="p-2 sm:p-2.5 rounded-xl bg-slate-900/90 border border-white/10 flex items-center justify-between font-black text-xs sm:text-sm text-slate-100 shadow-sm"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-slate-800 text-purple-300 text-[11px] flex items-center justify-center font-mono border border-purple-500/40 shrink-0">
+                        {idx + 1}
+                      </span>
+                      <span className="truncate max-w-[140px] sm:max-w-[180px]">
+                        {p.name} {p.deviceId === myDeviceIdRef.current ? '(你)' : ''}
+                      </span>
+                      {p.isHost && (
+                        <span className="text-[10px] font-black px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-300 border border-amber-400/40 shrink-0">
+                          👑 房主
+                        </span>
+                      )}
+                    </div>
+
+                    {isHost && p.deviceId !== myDeviceIdRef.current && (
+                      <button
+                        type="button"
+                        onClick={() => handleKickPlayer(p.deviceId, p.name)}
+                        className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-black bg-rose-950/80 hover:bg-rose-900 text-rose-300 transition-all cursor-pointer active:scale-95 border border-rose-500/40 shrink-0"
+                        title={`剔除 ${p.name}`}
+                      >
+                        <UserX className="w-3 h-3" />
+                        <span>剔除</span>
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                {/* 顯示空位等待插槽 */}
+                {Array.from({ length: Math.max(0, 4 - players.length) }).map((_, emptyIdx) => (
+                  <div
+                    key={`empty-${emptyIdx}`}
+                    className="p-2 rounded-xl border border-dashed border-white/15 bg-slate-950/40 flex items-center justify-center text-[11px] font-bold text-slate-500 gap-1.5"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-600 animate-pulse" />
+                    <span>等待其他同學加入...</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 下半部：開戰控制按鈕 */}
+            <div className="pt-2 border-t border-white/10 shrink-0 mt-2">
+              {isHost ? (
+                <Button3D
+                  variant={players.length >= 2 ? "rose" : "slate"}
+                  size="md"
+                  disabled={players.length < 2}
+                  onClick={handleStartGameBroadcast}
+                  className="w-full shadow-lg shadow-rose-500/25"
+                  icon={Play}
+                >
+                  {players.length < 2
+                    ? '等待同學加入 (至少 2 人)...'
+                    : players.length === 4
+                      ? '🚀 開戰！(4 人滿員決戰)'
+                      : `🚀 開戰！(${players.length} 人即刻開局)`
+                  }
+                </Button3D>
+              ) : (
+                <div className="p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/30 text-center animate-pulse">
+                  <p className="text-xs font-black text-pink-300">
+                    ⏳ 等待房主按下開戰 (目前 {players.length} 人已就緒)...
+                  </p>
+                </div>
+              )}
+            </div>
+
+          </div>
+
         </div>
+
+        {/* ── 底部提示條 ── */}
+        <footer className="relative z-20 w-full text-center py-1 shrink-0 text-[10px] text-slate-400 font-bold">
+          霧臺國小星際連線擂台 • 自動心跳保活 • 支援 2~4 人跨載具秒速連線
+        </footer>
       </div>
     );
   }

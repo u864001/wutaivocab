@@ -166,6 +166,9 @@ export const WhackAMoleGame = ({
       setTimeLeft(prev => {
         const nextVal = prev <= 1 ? 0 : prev - 1;
         timeLeftRef.current = nextVal;
+        if (nextVal <= 10 && nextVal > 0) {
+          soundEngine.countdownTensionTick(nextVal);
+        }
         if (nextVal === 0) {
           clearInterval(timer);
           triggerGameOver('timeup');
@@ -451,6 +454,7 @@ export const WhackAMoleGame = ({
     // ── A. 擊中正解地鼠（點擊時播放敲擊與答對音效，不再二次重念語音） ──
     if (mole.isTarget) {
       soundEngine.correct();
+      soundEngine.hapticPulse(mole.isGold ? 'strong' : 'normal');
 
       // 得分計算：正解 10 分 + 連擊獎勵（黃金鼠 +60 分）
       const bonus = mole.isGold ? 50 : combo * 2;
