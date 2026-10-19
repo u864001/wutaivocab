@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button3D } from '../../components/ui/Button3D';
 import { useStudent } from '../../context/StudentContext';
 import { speakEnglish, soundEngine } from '../../services/audio';
+import { groupInventoryItems } from '../../utils/inventoryHelper';
 import {
   Package, X, Volume2, Sparkles, Utensils,
   BookOpen, Ticket, Shield, CheckCircle2, Heart
@@ -22,10 +23,15 @@ export const BackpackModal = ({ onClose }) => {
   const [useToast, setUseToast] = useState(null);
 
   const items = inventory || [];
+  
+  // 自動聚合摺疊同類道具（同 id 聚合為一格並附帶 count 數量）
+  const groupedItems = useMemo(() => groupInventoryItems(items), [items]);
 
-  const filteredItems = activeCategory === 'all'
-    ? items
-    : items.filter(it => it.category === activeCategory);
+  const filteredItems = useMemo(() => {
+    return activeCategory === 'all'
+      ? groupedItems
+      : groupedItems.filter(it => it.category === activeCategory);
+  }, [groupedItems, activeCategory]);
 
   const handleUseItem = async (item, index) => {
     soundEngine.correct();
@@ -64,7 +70,7 @@ export const BackpackModal = ({ onClose }) => {
                   學生溫馨的家 • 探險個人背包
                 </h3>
                 <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-lime-500 text-white shadow-sm">
-                  共 {items.length} 件寶物
+                  共 {items.length} 件寶物（摺疊為 {groupedItems.length} 款）
                 </span>
               </div>
               <p className="text-xs font-bold text-emerald-200">
@@ -132,10 +138,15 @@ export const BackpackModal = ({ onClose }) => {
                       {item.icon}
                     </div>
                     <div>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <h4 className="text-sm font-black text-slate-800 dark:text-slate-100 font-heading">
                           {item.nameZh}
                         </h4>
+                        {item.count > 1 && (
+                          <span className="px-2 py-0.2 rounded-full bg-amber-400 text-stone-950 text-[10px] font-mono font-black shadow-sm">
+                            x{item.count}
+                          </span>
+                        )}
                         <button
                           type="button"
                           onClick={() => speakEnglish(item.nameEn)}
@@ -156,7 +167,7 @@ export const BackpackModal = ({ onClose }) => {
 
                   <div className="pt-2 border-t border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between">
                     <span className="text-[10px] font-mono text-slate-400">
-                      類別: {item.category}
+                      類別: {item.category}{item.count > 1 ? ` • 持有 ${item.count} 件` : ''}
                     </span>
                     <Button3D
                       variant="emerald"

@@ -38,6 +38,7 @@ import confetti from 'canvas-confetti';
 import { GrimoireSanctuaryModal } from './GrimoireSanctuaryModal';
 import { CurioBackpackModal } from '../games/town/CurioBackpackModal';
 import { getGrimoireSummary } from '../utils/grimoireHelper';
+import { groupInventoryItems } from '../utils/inventoryHelper';
 import { soundEngine } from '../services/audio';
 
 export const StudentProfileModal = () => {
@@ -93,6 +94,11 @@ export const StudentProfileModal = () => {
   const grimoireSummary = useMemo(() => {
     return getGrimoireSummary(currentStudent?.student_id || 'guest');
   }, [currentStudent?.student_id, isGrimoireOpen]);
+
+  // 背包物品自動摺疊堆疊（同品摺疊為 1 格並標記 xN 數量）
+  const groupedInventory = useMemo(() => {
+    return groupInventoryItems(currentStudent?.inventory || []);
+  }, [currentStudent?.inventory]);
 
   // 當彈窗開啟或學生變更時同步表單
   useEffect(() => {
@@ -418,14 +424,18 @@ export const StudentProfileModal = () => {
                   <span className={`text-[11px] sm:text-xs font-black ${
                     cardTheme === 'dark' ? 'text-teal-300' : 'text-teal-900'
                   }`}>
-                    {t.backpackItems} ({(currentStudent.inventory || []).length} 件)
+                    {t.backpackItems} ({(currentStudent.inventory || []).length} 件{groupedInventory.length > 0 ? ` • ${groupedInventory.length} 類` : ''})
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 overflow-x-auto max-w-[55%] py-1">
-                  {(currentStudent.inventory || []).length > 0 ? (
-                    currentStudent.inventory.slice(0, 4).map((it, idx) => (
-                      <span key={idx} className="px-2 py-0.5 rounded-md bg-teal-950/80 border border-teal-400/40 text-[9px] text-teal-200 font-bold whitespace-nowrap">
-                        {it.nameZh || it.name || it}
+                  {groupedInventory.length > 0 ? (
+                    groupedInventory.slice(0, 4).map((it, idx) => (
+                      <span key={idx} className="px-2 py-0.5 rounded-md bg-teal-950/80 border border-teal-400/40 text-[9px] text-teal-200 font-bold whitespace-nowrap flex items-center gap-1 shadow-sm">
+                        <span>{it.icon || '📦'}</span>
+                        <span>{it.nameZh || it.name || it}</span>
+                        {it.count > 1 && (
+                          <span className="text-amber-400 font-mono font-black text-[9px]">x{it.count}</span>
+                        )}
                       </span>
                     ))
                   ) : (

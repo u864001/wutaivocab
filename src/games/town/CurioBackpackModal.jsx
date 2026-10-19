@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   X, Sparkles, Volume2, Package, Layers,
   ShoppingBag, CheckCircle2, Shield, ArrowRight, Heart
 } from 'lucide-react';
+import { Button3D } from '../../components/ui/Button3D';
 import { useStudent } from '../../context/StudentContext';
 import { speakEnglish, soundEngine } from '../../services/audio';
+import { groupInventoryItems, getItemQuantity } from '../../utils/inventoryHelper';
 import { TOWN_ITEMS } from './townData';
 
 const TOTAL_SLOTS = 24; // 24 格精緻多寶格置物槽
@@ -21,6 +23,9 @@ export const CurioBackpackModal = ({
   const [inspectModalItem, setInspectModalItem] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
 
+  // 自動聚合摺疊同類道具（同 id 聚合為一格並附帶 count 數量）
+  const groupedInventory = useMemo(() => groupInventoryItems(inventory), [inventory]);
+
   // 學生自訂的多寶格位置對應表 (持久化至 localStorage)
   const [slotLayout, setSlotLayout] = useState(() => {
     try {
@@ -29,9 +34,10 @@ export const CurioBackpackModal = ({
       if (saved) return JSON.parse(saved);
     } catch (e) {}
 
-    // 預設將現有物品依序放入前幾個槽位
+    // 預設將現有物品（自動摺疊同品後的獨特道具）依序放入前幾個槽位
     const initial = {};
-    (inventory || []).forEach((item, idx) => {
+    const grouped = groupInventoryItems(inventory || []);
+    grouped.forEach((item, idx) => {
       if (idx < TOTAL_SLOTS) {
         initial[idx] = item;
       }
@@ -209,6 +215,7 @@ export const CurioBackpackModal = ({
               {Array.from({ length: TOTAL_SLOTS }).map((_, slotIdx) => {
                 const item = slotLayout[slotIdx];
                 const isTarget = selectedSlotIndex === slotIdx;
+                const count = item ? getItemQuantity(inventory, item) : 0;
 
                 return (
                   <button
@@ -226,7 +233,7 @@ export const CurioBackpackModal = ({
                         ? 'border-dashed border-white/15 bg-black/40 hover:border-white/30'
                         : 'border-dashed border-stone-400/30 bg-stone-200/50 hover:border-stone-400'
                     }`}
-                    title={item ? `${item.nameZh} (${item.nameEn})` : `第 ${slotIdx + 1} 置物格 (空)`}
+                    title={item ? `${item.nameZh} (${item.nameEn})${count > 1 ? ` • 持有 x${count}` : ''}` : `第 ${slotIdx + 1} 置物格 (空)`}
                   >
                     {item ? (
                       <>
@@ -239,6 +246,12 @@ export const CurioBackpackModal = ({
                         <span className="text-[8px] opacity-75 font-mono truncate max-w-full">
                           {item.nameEn}
                         </span>
+                        {/* xN 數量角標 (當持有 2 件以上，如 10 件時以金色立體角標摺疊顯示) */}
+                        {count > 1 && (
+                          <span className="absolute bottom-1 right-1 px-1.5 py-0.2 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-stone-950 font-mono font-black text-[9px] shadow-md border border-amber-300">
+                            x{count}
+                          </span>
+                        )}
                       </>
                     ) : (
                       <span className="text-[10px] font-bold opacity-30 font-mono">
@@ -261,27 +274,27 @@ export const CurioBackpackModal = ({
                 <span>所有收藏道具清單（點選後可放置到上方多寶格）</span>
               </span>
               <span className={`text-[10px] font-bold ${isDark ? 'text-slate-400' : 'text-stone-500'}`}>
-                共 {inventory.length} 件寶物
+                共 {inventory.length} 件寶物（摺疊為 {groupedInventory.length} 款）
               </span>
             </div>
 
-            {inventory.length === 0 ? (
+            {groupedInventory.length === 0 ? (
               <div className="py-6 text-center text-slate-400 font-bold text-xs">
                 目前背包尚無道具，可前往小鎮集會所、黑熊超市或雲豹書局採購！
               </div>
             ) : (
               <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                {inventory.map((it, idx) => {
+                {groupedInventory.map((it, idx) => {
                   const isPicked = selectedItem?.id === it.id;
                   return (
                     <button
-                      key={idx}
+                      key={it.id || idx}
                       type="button"
                       onClick={() => {
                         soundEngine.click();
                         setSelectedItem(isPicked ? null : it);
                         if (!isPicked) {
-                          showToast(`已選取【${it.nameZh}】，請點擊上方任一多寶格置物槽放置！`);
+                          showToast(`已選取【${it.nameZh}】${it.count > 1 ? `(x${it.count})` : ''}，請點擊上方任一多寶格置物槽放置！`);
                         }
                       }}
                       className={`px-3 py-1.5 rounded-xl border flex items-center gap-1.5 text-xs font-black shrink-0 transition-all cursor-pointer ${
@@ -294,6 +307,11 @@ export const CurioBackpackModal = ({
                     >
                       <span>{it.icon || '📦'}</span>
                       <span>{it.nameZh}</span>
+                      {it.count > 1 && (
+                        <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-stone-950 text-[10px] font-mono font-black">
+                          x{it.count}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -335,6 +353,11 @@ export const CurioBackpackModal = ({
                 >
                   <Volume2 className="w-3 h-3" />
                 </button>
+                {getItemQuantity(inventory, inspectModalItem.item) > 1 && (
+                  <span className="px-2 py-0.5 rounded-full bg-amber-400 text-stone-950 font-mono font-black text-[10px] shadow-sm ml-1">
+                    持有 x{getItemQuantity(inventory, inspectModalItem.item)}
+                  </span>
+                )}
               </div>
 
               <p className={`text-xs font-bold leading-relaxed mb-4 px-2 ${
