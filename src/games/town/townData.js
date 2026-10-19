@@ -516,6 +516,56 @@ export const TOWN_ITEMS = [
     category: 'clothing',
     description: '印有精緻傳統幾何圖騰的舒適純棉上衣。'
   },
+  {
+    id: 'sacred_urn',
+    shopId: 'plaza',
+    nameEn: 'Sacred Pottery Urn',
+    nameZh: '神聖排灣陶甕',
+    price: 90,
+    icon: '🏺',
+    category: 'special',
+    description: '銘刻百步蛇幾何雕紋的神聖陶甕，相傳為神靈棲息蘊藏千古智慧。'
+  },
+  {
+    id: 'ceremonial_knife',
+    shopId: 'plaza',
+    nameEn: 'Ceremonial Knife',
+    nameZh: '原住民雕花禮刀',
+    price: 95,
+    icon: '🗡️',
+    category: 'special',
+    description: '部落勇士榮譽的象徵，刀柄鑲嵌鹿角精雕，刀鞘飾以百步蛇紋。'
+  },
+  {
+    id: 'eagle_feather',
+    shopId: 'plaza',
+    nameEn: 'Mountain Eagle Feather',
+    nameZh: '熊鷹羽毛頭飾',
+    price: 85,
+    icon: '🪶',
+    category: 'clothing',
+    description: '大武山大冠鷲與熊鷹的尊貴飛羽，象徵勇士展翅高飛與榮譽配飾。'
+  },
+  {
+    id: 'lily_headdress',
+    shopId: 'plaza',
+    nameEn: 'Sacred Lily Headdress',
+    nameZh: '高山百合花頭飾',
+    price: 75,
+    icon: '🪻',
+    category: 'clothing',
+    description: '象徵純潔、勇氣與傳統配飾榮譽的高雅百合花冠。'
+  },
+  {
+    id: 'hunter_shotgun',
+    shopId: 'plaza',
+    nameEn: 'Hunter Traditional Prop',
+    nameZh: '原住民傳統獵槍模型',
+    price: 90,
+    icon: '🪵',
+    category: 'special',
+    description: '部落勇士守護山林、巡視祖靈聖地的傳統巡山獵槍木雕模型。'
+  },
 
   // 🎬 山豬影城娛樂點心
   {

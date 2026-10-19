@@ -31,9 +31,14 @@ import {
   ShieldCheck,
   Medal,
   Crown,
-  Layers
+  Layers,
+  BookOpen
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { GrimoireSanctuaryModal } from './GrimoireSanctuaryModal';
+import { CurioBackpackModal } from '../games/town/CurioBackpackModal';
+import { getGrimoireSummary } from '../utils/grimoireHelper';
+import { soundEngine } from '../services/audio';
 
 export const StudentProfileModal = () => {
   const {
@@ -79,6 +84,15 @@ export const StudentProfileModal = () => {
 
   // 執照主題樣式：'dark' (深邃墨岩冷光) | 'parchment' (羊皮紙石雕)
   const [cardTheme, setCardTheme] = useState('dark');
+
+  // 八冊秘典典藏館與多寶格背包彈窗
+  const [isGrimoireOpen, setIsGrimoireOpen] = useState(false);
+  const [isCurioBackpackOpen, setIsCurioBackpackOpen] = useState(false);
+
+  // 八星大宗師與全冊三星解鎖進度總結
+  const grimoireSummary = useMemo(() => {
+    return getGrimoireSummary(currentStudent?.student_id || 'guest');
+  }, [currentStudent?.student_id, isGrimoireOpen]);
 
   // 當彈窗開啟或學生變更時同步表單
   useEffect(() => {
@@ -312,28 +326,52 @@ export const StudentProfileModal = () => {
                 </p>
               </div>
 
-              {/* ═══ 槽位 3：右上勇士稱號與階級槽 (Left: 43.10%, Top: 26.37%, W: 46.61%, H: 8.30%) ═══ */}
-              <div className="absolute left-[43.10%] top-[26.37%] w-[46.61%] h-[8.30%] flex items-center justify-between px-2.5 z-20">
-                <div className="flex flex-col">
-                  <span className={`text-[8px] font-mono uppercase tracking-wider font-bold ${
+              {/* ═══ 槽位 3：右上勇士稱號與 8 星大宗師星盤槽 (Left: 43.10%, Top: 26.37%, W: 46.61%, H: 8.30%) ═══ */}
+              <div
+                onClick={() => {
+                  soundEngine.click();
+                  setIsGrimoireOpen(true);
+                }}
+                className="absolute left-[43.10%] top-[26.37%] w-[46.61%] h-[8.30%] flex flex-col justify-center px-2 z-20 cursor-pointer group hover:bg-black/20 rounded-xl transition-all"
+                title="點擊開啟【八冊秘典典藏館】檢視各冊彩色解鎖與星度進程"
+              >
+                {/* 第一行：左側標籤 + 右側 8 顆星盤星位 (獨立橫列排列，絕不擠壓稱號) */}
+                <div className="flex items-center justify-between w-full mb-0.5">
+                  <span className={`text-[7px] sm:text-[8px] font-mono uppercase tracking-wider font-bold ${
                     cardTheme === 'dark' ? 'text-slate-400' : 'text-stone-600'
                   }`}>
                     TITLED WARRIOR
                   </span>
-                  <span className={`text-[11px] sm:text-xs font-black truncate flex items-center gap-1 ${
-                    cardTheme === 'dark' ? 'text-amber-300' : 'text-amber-800'
+
+                  {/* 8 星專屬星盤列 (寬度固定 42px，星度一目了然) */}
+                  <div className="flex items-center gap-[1.5px] bg-black/40 px-1 py-0.2 rounded-full border border-amber-400/30">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`text-[8px] leading-none transition-all ${
+                          i < grimoireSummary.masteredStars
+                            ? 'text-amber-400 drop-shadow-[0_0_3px_rgba(251,191,36,0.9)] animate-pulse'
+                            : cardTheme === 'dark' ? 'text-slate-600/70' : 'text-stone-400/60'
+                        }`}
+                      >
+                        {i < grimoireSummary.masteredStars ? '★' : '☆'}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 第二行：稱號本體 (字體清晰 11px~12px 絕不縮小) + 典藏館微圖示 */}
+                <div className="flex items-center justify-between w-full">
+                  <div className={`text-[11px] sm:text-xs font-black truncate flex items-center gap-1 ${
+                    cardTheme === 'dark' ? 'text-amber-300' : 'text-amber-900'
                   }`}>
                     <ShieldCheck className="w-3 h-3 text-emerald-500 shrink-0" />
-                    <span>大武山守護者</span>
+                    <span className="truncate">{grimoireSummary.titleInfo.name}</span>
+                  </div>
+                  <span className="text-[9px] text-amber-400/80 group-hover:text-amber-300 flex items-center shrink-0">
+                    <BookOpen className="w-2.5 h-2.5 ml-0.5" />
                   </span>
                 </div>
-                <span className={`px-1.5 py-0.5 rounded-full border text-[9px] font-bold ${
-                  cardTheme === 'dark'
-                    ? 'bg-emerald-500/25 border-emerald-400/40 text-emerald-300'
-                    : 'bg-emerald-700/20 border-emerald-700/40 text-emerald-900'
-                }`}>
-                  {currentStudent.grade} 年級勇士
-                </span>
               </div>
 
               {/* ═══ 槽位 4：左中金幣資產槽 (Left: 9.90%, Top: 38.18%, W: 36.98%, H: 9.47%) ═══ */}
@@ -366,10 +404,17 @@ export const StudentProfileModal = () => {
                 </div>
               </div>
 
-              {/* ═══ 槽位 6：中層道具收藏槽 (Left: 9.77%, Top: 50.88%, W: 80.08%, H: 9.38%) ═══ */}
-              <div className="absolute left-[9.77%] top-[50.88%] w-[80.08%] h-[9.38%] flex items-center justify-between px-3.5 z-20">
+              {/* ═══ 槽位 6：中層多寶格道具收藏槽 (Left: 9.77%, Top: 50.88%, W: 80.08%, H: 9.38%) ═══ */}
+              <div
+                onClick={() => {
+                  soundEngine.click();
+                  setIsCurioBackpackOpen(true);
+                }}
+                className="absolute left-[9.77%] top-[50.88%] w-[80.08%] h-[9.38%] flex items-center justify-between px-3.5 z-20 cursor-pointer group hover:bg-black/20 rounded-2xl transition-all"
+                title="點擊開啟【神山多寶格背包】整理陳列道具"
+              >
                 <div className="flex items-center gap-1.5">
-                  <Package className="w-3.5 h-3.5 text-teal-500 shrink-0" />
+                  <Package className="w-3.5 h-3.5 text-teal-500 shrink-0 group-hover:scale-110 transition-transform" />
                   <span className={`text-[11px] sm:text-xs font-black ${
                     cardTheme === 'dark' ? 'text-teal-300' : 'text-teal-900'
                   }`}>
@@ -380,14 +425,14 @@ export const StudentProfileModal = () => {
                   {(currentStudent.inventory || []).length > 0 ? (
                     currentStudent.inventory.slice(0, 4).map((it, idx) => (
                       <span key={idx} className="px-2 py-0.5 rounded-md bg-teal-950/80 border border-teal-400/40 text-[9px] text-teal-200 font-bold whitespace-nowrap">
-                        {it.name || it}
+                        {it.nameZh || it.name || it}
                       </span>
                     ))
                   ) : (
-                    <span className={`text-[9px] font-bold ${
+                    <span className={`text-[9px] font-bold flex items-center gap-1 ${
                       cardTheme === 'dark' ? 'text-slate-400' : 'text-stone-600'
                     }`}>
-                      前往小鎮商店收集徽章
+                      <span>點擊開啟多寶格整理道具</span>
                     </span>
                   )}
                 </div>
@@ -913,6 +958,24 @@ export const StudentProfileModal = () => {
           </div>
         )}
       </div>
+
+      {/* 八冊秘典典藏館彈窗 */}
+      {isGrimoireOpen && (
+        <GrimoireSanctuaryModal
+          studentId={currentStudent?.student_id || 'guest'}
+          studentName={currentStudent?.nickname || '好學生'}
+          cardTheme={cardTheme}
+          onClose={() => setIsGrimoireOpen(false)}
+        />
+      )}
+
+      {/* 神山多寶格虛擬背包彈窗 */}
+      {isCurioBackpackOpen && (
+        <CurioBackpackModal
+          cardTheme={cardTheme}
+          onClose={() => setIsCurioBackpackOpen(false)}
+        />
+      )}
     </div>
   );
 };

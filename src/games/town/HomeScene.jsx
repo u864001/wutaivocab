@@ -18,7 +18,7 @@ const CATEGORY_TABS = [
 ];
 
 export const HomeScene = ({ onClose }) => {
-  const { currentStudent, coins, questPoints, inventory, semesterName, semesterNotice, clearSemesterNotice } = useStudent();
+  const { currentStudent, coins, questPoints, inventory, semesterName, semesterNotice, clearSemesterNotice, openModal } = useStudent();
   const [activeCategory, setActiveCategory] = useState('all');
   const [isBgmPlaying, setIsBgmPlaying] = useState(true);
   const [isBackpackOpen, setIsBackpackOpen] = useState(false);
@@ -94,7 +94,11 @@ export const HomeScene = ({ onClose }) => {
     if (e) e.stopPropagation();
     triggerAudio();
     soundEngine.click();
-    setIsBackpackOpen(true);
+    if (openModal) {
+      openModal();
+    } else {
+      setIsBackpackOpen(true);
+    }
     setIsNoticeBoardOpen(false);
   };
 
@@ -241,7 +245,7 @@ export const HomeScene = ({ onClose }) => {
           onClick={handleOpenBackpack}
           style={{ left: '39.5%', top: '44%', width: '10.5%', height: '28%' }}
           className="absolute z-20 cursor-pointer rounded-2xl group transition-all duration-300 flex items-center justify-center hover:scale-105 active:scale-95"
-          title="開啟書包"
+          title="開啟學生通行證與書包"
         >
           {/* 呼吸微發光光圈 */}
           <div className="absolute inset-0 rounded-2xl border-2 border-emerald-400/70 shadow-[0_0_22px_rgba(52,211,153,0.7),inset_0_0_12px_rgba(52,211,153,0.3)] animate-pulse group-hover:border-emerald-300 group-hover:shadow-[0_0_32px_rgba(52,211,153,0.95)]" />
@@ -249,7 +253,7 @@ export const HomeScene = ({ onClose }) => {
           {/* 懸浮引導標籤 */}
           <div className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-emerald-400/70 text-white text-[11px] font-black flex items-center gap-1 shadow-xl whitespace-nowrap group-hover:-translate-y-1 transition-transform pointer-events-none">
             <span className="text-xs">🎒</span>
-            <span className="text-emerald-200">書包</span>
+            <span className="text-emerald-200">書包通行證</span>
             <span className="text-[10px] text-emerald-400">({items.length})</span>
           </div>
         </div>
@@ -306,9 +310,10 @@ export const HomeScene = ({ onClose }) => {
           <button
             onClick={handleOpenBackpack}
             className="px-3 py-1 rounded-xl bg-emerald-500/30 hover:bg-emerald-500/50 text-emerald-200 border border-emerald-400/40 text-xs font-black transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+            title="開啟學生通行證與多寶格背包"
           >
             <span>🎒</span>
-            <span>書包 ({items.length})</span>
+            <span>書包通行證 ({items.length})</span>
           </button>
 
           <button
