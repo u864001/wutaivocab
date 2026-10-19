@@ -22,14 +22,18 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
   const { t, lang } = useI18n();
 
   // ── 遊戲模式狀態 ──
-  // 'menu' (選單), 'playing' (遊戲中), 'settlement' (通關結算)
-  const [gameState, setGameState] = useState('menu');
+  // 'playing' (遊戲中), 'settlement' (通關結算)
+  const [gameState, setGameState] = useState('playing');
 
   // 模式層級：'beginner' (新手級), 'standard' (標準級), 'challenge' (挑戰級 10x10)
-  const [tier, setTier] = useState('standard');
+  const [tier, setTier] = useState(() => {
+    return localStorage.getItem('wutai_maze_tier') || 'standard';
+  });
 
   // 大小寫切換：false = 大寫 (A-Z), true = 小寫 (a-z)
-  const [isLowercase, setIsLowercase] = useState(false);
+  const [isLowercase, setIsLowercase] = useState(() => {
+    return localStorage.getItem('wutai_maze_isLowercase') === 'true';
+  });
 
   // 主題外觀：'snake' (霧台神山百步蛇), 'cosmic' (星際光軌巡航)
   const [theme, setTheme] = useState(() => {
@@ -37,8 +41,12 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
   });
 
   // ── 新手級自選起訖字母 ──
-  const [startChar, setStartChar] = useState('A');
-  const [endChar, setEndChar] = useState('H');
+  const [startChar, setStartChar] = useState(() => {
+    return localStorage.getItem('wutai_maze_startChar') || 'A';
+  });
+  const [endChar, setEndChar] = useState(() => {
+    return localStorage.getItem('wutai_maze_endChar') || 'H';
+  });
 
   // ── 迷宮資料結構與玩家足跡 ──
   const [mazeData, setMazeData] = useState(null);
@@ -135,6 +143,11 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
       console.error('Maze generation error:', e);
     }
   }, [gridRows, gridCols, sequence, isLowercase, tier]);
+
+  // 掛載時自動全螢幕並初始化生成迷宮
+  useEffect(() => {
+    startNewMaze();
+  }, [startNewMaze]);
 
   // 進入遊戲畫面
   const handleLaunchGame = (selectedTier = tier) => {
@@ -493,11 +506,10 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
     onBack();
   };
 
-  // 退出至迷宮模式選單
+  // 退出至迷宮模式選單 (回大廳專屬整備室)
   const handleBackToMenu = () => {
-    setGameState('menu');
-    setTrail([]);
-    setTimerRunning(false);
+    exitFullscreen();
+    onBack();
   };
 
   // ─── 畫面 1：迷宮主選單與難度設定 ───
@@ -756,7 +768,15 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
   }
 
   // ─── 畫面 2：遊戲進行中 (滿版防誤觸全螢幕設計) ───
-  if (gameState === 'playing' && mazeData) {
+  if (gameState === 'playing') {
+    if (!mazeData) {
+      return (
+        <div className="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center text-white z-50">
+          <Compass className="w-12 h-12 text-teal-400 animate-spin" />
+          <p className="mt-4 text-sm font-black text-teal-300">正在生成神山迷宮航道...</p>
+        </div>
+      );
+    }
     const isIndigenous = theme === 'snake';
     const isChallenge = tier === 'challenge';
     const currentStep = trail.length;
@@ -776,14 +796,14 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
         {/* ── 頂部 HUD 資訊防卡死控制列 ── */}
         <div className="w-full max-w-2xl flex items-center justify-between gap-2 shrink-0">
           <div className="flex items-center gap-2">
-            {/* 防遊戲卡死必備按鈕：點擊立刻返回迷宮選單 */}
+            {/* 防遊戲卡死必備按鈕：點擊立刻返回大廳整備 */}
             <button
-              onClick={handleBackToMenu}
+              onClick={handleBackToLobby}
               className="px-3 py-2 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-white text-xs font-black flex items-center gap-1.5 border border-white/20 shadow-md transition-all cursor-pointer"
-              title="回迷宮選單"
+              title="回大廳整備"
             >
               <ArrowLeft className="w-4 h-4 text-amber-400" />
-              <span className="hidden sm:inline">回選單</span>
+              <span className="hidden sm:inline">回大廳整備</span>
             </button>
 
             {/* 快速返回單字學習館 */}
@@ -1318,7 +1338,7 @@ export const AlphabetMazeGame = ({ onBack, qualifyingBook }) => {
               onClick={handleBackToMenu}
               className="w-full"
             >
-              回迷宮選單
+              回迷宮整備室
             </Button3D>
 
             <Button3D

@@ -73,10 +73,10 @@ const GAME_SPOTLIGHT_ART = {
   snake: '/assets/screenshots/screenshot_snake.webp',
   spotter: '/assets/spotter/book1_base.jpg',
   escape: '/assets/escape/bg_temple.webp',
-  maze: '/assets/screenshots/screenshot_snake.webp',
-  swipe: '/assets/screenshots/screenshot_meteor.webp',
+  maze: '/assets/screenshots/screenshot_maze.webp',
+  swipe: '/assets/screenshots/screenshot_swipe.webp',
   memory: '/assets/lobby/theme_explore.jpg',
-  spelling: '/assets/screenshots/screenshot_mole.webp',
+  spelling: '/assets/screenshots/screenshot_spelling.webp',
   'quiz-zh-en': '/assets/lobby/theme_quiz.jpg',
   'quiz-en-zh': '/assets/lobby/theme_quiz.jpg',
   'quiz-listening': '/assets/lobby/theme_quiz.jpg',
@@ -162,6 +162,12 @@ export const Lobby = ({
 
   // ── 密室逃脫選定主題 ──
   const [escapeThemeId, setEscapeThemeId] = useState('temple');
+
+  // ── 字母巡航迷宮專屬選單狀態 ──
+  const [mazeTheme, setMazeTheme] = useState(() => localStorage.getItem('wutai_maze_theme') || 'snake');
+  const [mazeTier, setMazeTier] = useState(() => localStorage.getItem('wutai_maze_tier') || 'standard');
+  const [mazeIsLowercase, setMazeIsLowercase] = useState(() => localStorage.getItem('wutai_maze_isLowercase') === 'true');
+  const [mazeRangePreset, setMazeRangePreset] = useState(() => localStorage.getItem('wutai_maze_rangePreset') || 'AH');
 
   // ── 記住我的選擇核選狀態 ──
   const [rememberSelection, setRememberSelection] = useState(() => {
@@ -531,9 +537,9 @@ export const Lobby = ({
     soundEngine.click();
     setSelectedGame(gameId);
     
-    // 若點選字母巡航迷宮，迷宮內建專屬難度與外觀設定，直接進入
+    // 若為字母巡航迷宮，直接切換到專屬一頁式整備室 (分流 C)
     if (gameId === 'maze') {
-      onNavigate('maze');
+      setStep('scope');
       return;
     }
 
@@ -622,6 +628,30 @@ export const Lobby = ({
       } catch (e) {}
       onNavigate('escape');
     } else if (selectedGame === 'maze') {
+      try {
+        localStorage.setItem('wutai_maze_theme', mazeTheme);
+        localStorage.setItem('wutai_maze_tier', mazeTier);
+        localStorage.setItem('wutai_maze_isLowercase', mazeIsLowercase ? 'true' : 'false');
+        localStorage.setItem('wutai_maze_rangePreset', mazeRangePreset);
+        if (mazeTier === 'beginner') {
+          if (mazeRangePreset === 'AH') {
+            localStorage.setItem('wutai_maze_startChar', mazeIsLowercase ? 'a' : 'A');
+            localStorage.setItem('wutai_maze_endChar', mazeIsLowercase ? 'h' : 'H');
+          } else if (mazeRangePreset === 'AM') {
+            localStorage.setItem('wutai_maze_startChar', mazeIsLowercase ? 'a' : 'A');
+            localStorage.setItem('wutai_maze_endChar', mazeIsLowercase ? 'm' : 'M');
+          } else if (mazeRangePreset === 'NZ') {
+            localStorage.setItem('wutai_maze_startChar', mazeIsLowercase ? 'n' : 'N');
+            localStorage.setItem('wutai_maze_endChar', mazeIsLowercase ? 'z' : 'Z');
+          } else {
+            localStorage.setItem('wutai_maze_startChar', mazeIsLowercase ? 'a' : 'A');
+            localStorage.setItem('wutai_maze_endChar', mazeIsLowercase ? 'z' : 'Z');
+          }
+        } else {
+          localStorage.setItem('wutai_maze_startChar', mazeIsLowercase ? 'a' : 'A');
+          localStorage.setItem('wutai_maze_endChar', mazeIsLowercase ? 'z' : 'Z');
+        }
+      } catch (e) {}
       onNavigate('maze');
     } else {
       onNavigate(selectedGame);
@@ -1016,6 +1046,313 @@ export const Lobby = ({
                     className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 hover:from-emerald-300 hover:to-teal-200 text-stone-950 font-heading font-black text-sm sm:text-base flex items-center gap-2 shadow-2xl active:scale-95 transition-all cursor-pointer border-2 border-emerald-200"
                   >
                     <span>🚪 進入秘境 START</span>
+                    <Play className="w-4 h-4 fill-stone-950" />
+                  </button>
+                </div>
+
+              </div>
+            ) : selectedGame === 'maze' ? (
+              /* ═══ 分流 C：字母巡航迷宮專屬整備室（相同視覺、一頁畫面處理完畢） ═══ */
+              <div className="relative z-10 w-full h-full p-2.5 sm:p-4 md:p-5 flex flex-col justify-between overflow-y-auto">
+                
+                {/* 頂部引導題字 */}
+                <div className="flex items-center justify-between pb-2 border-b border-white/15 shrink-0">
+                  <div className="flex items-center gap-2">
+                    <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-teal-400" />
+                    <h3 className="text-sm sm:text-base font-black text-white font-heading">
+                      請選擇字母巡航迷宮探索模式：
+                    </h3>
+                  </div>
+
+                  <span className="px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-400/40 text-[11px] font-bold flex items-center gap-1.5 shadow">
+                    <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+                    <span>手指連結字母順序，安全巡航通往終點</span>
+                  </span>
+                </div>
+
+                {/* ── 核心舞台：左側 1/4 靈魂大圖 (右側漸層完全透明融合) + 右側專屬三層選單 ── */}
+                <div className="relative flex-1 w-full my-1 sm:my-2 flex items-stretch justify-between overflow-hidden">
+                  
+                  {/* 左側 1/4 遊戲真實動作瞬間原畫 (約佔 24%，右側邊緣逐漸透明融入) */}
+                  <div className="hidden md:block absolute left-0 top-0 bottom-0 w-[24%] min-w-[190px] max-w-[270px] h-full pointer-events-none select-none z-0">
+                    <img
+                      src={GAME_SPOTLIGHT_ART.maze}
+                      alt="Alphabet Maze Action Spotlight"
+                      className="w-full h-full object-cover rounded-2xl filter brightness-95 contrast-105"
+                      style={{
+                        maskImage: 'linear-gradient(to right, black 40%, rgba(0,0,0,0.6) 65%, transparent 100%), linear-gradient(to bottom, black 85%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to right, black 40%, rgba(0,0,0,0.6) 65%, transparent 100%), linear-gradient(to bottom, black 85%, transparent 100%)'
+                      }}
+                    />
+                  </div>
+
+                  {/* 右側專屬三層式結構面板：主題外觀置頂、難度層級置中、字母規格與航程置底 */}
+                  <div className="relative z-10 w-full md:w-[76%] md:ml-auto h-full flex flex-col justify-between py-1 gap-2">
+                    
+                    {/* ═══ 【第一層：主題風格外觀】2 大經典世界觀 ═══ */}
+                    <div className="w-full shrink-0">
+                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                        <span className="flex items-center gap-1">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          <span>1. 選擇巡航主題風格：</span>
+                        </span>
+                        <span className="text-[10px] text-teal-300 font-bold">
+                          {mazeTheme === 'snake' ? '霧台神山百步蛇守護道' : '星際光軌太空巡航站'}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 w-full">
+                        {/* 主題 1：神山百步蛇 */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            soundEngine.click();
+                            setMazeTheme('snake');
+                          }}
+                          className={`p-2 sm:p-2.5 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex items-center gap-3 relative active:scale-95 shadow-md ${
+                            mazeTheme === 'snake'
+                              ? 'bg-gradient-to-r from-emerald-950/90 via-teal-900/90 to-emerald-900/90 text-white border-amber-300 ring-2 ring-amber-400/50 shadow-[0_0_20px_rgba(245,158,11,0.3)]'
+                              : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-white/20 hover:border-amber-400/60'
+                          }`}
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-2xl shrink-0">
+                            🐍
+                          </div>
+                          <div className="flex flex-col text-left overflow-hidden">
+                            <span className="text-xs sm:text-sm font-black font-heading text-amber-300 flex items-center gap-1.5">
+                              <span>霧台神山 • 百步蛇守護道</span>
+                              {mazeTheme === 'snake' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 inline" />}
+                            </span>
+                            <span className="text-[9px] sm:text-[10px] text-slate-300 line-clamp-1">
+                              排灣與魯凱板岩古道，守護百步蛇引領前進，金光粒子足跡
+                            </span>
+                          </div>
+                        </button>
+
+                        {/* 主題 2：星際光軌 */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            soundEngine.click();
+                            setMazeTheme('cosmic');
+                          }}
+                          className={`p-2 sm:p-2.5 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex items-center gap-3 relative active:scale-95 shadow-md ${
+                            mazeTheme === 'cosmic'
+                              ? 'bg-gradient-to-r from-indigo-950/90 via-sky-900/90 to-indigo-900/90 text-white border-cyan-300 ring-2 ring-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.3)]'
+                              : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-white/20 hover:border-cyan-400/60'
+                          }`}
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-2xl shrink-0">
+                            🚀
+                          </div>
+                          <div className="flex flex-col text-left overflow-hidden">
+                            <span className="text-xs sm:text-sm font-black font-heading text-cyan-300 flex items-center gap-1.5">
+                              <span>星際光軌 • 太空巡航站</span>
+                              {mazeTheme === 'cosmic' && <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 inline" />}
+                            </span>
+                            <span className="text-[9px] sm:text-[10px] text-slate-300 line-clamp-1">
+                              穿梭浩瀚星雲光子節點，推進器引擎噴射，賽博未來霓虹航線
+                            </span>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* ═══ 【第二層：挑戰難度層級】三大模式 ═══ */}
+                    <div className="w-full shrink-0">
+                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                        <span className="flex items-center gap-1">
+                          <Layers className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>2. 選擇巡航難度層級：</span>
+                        </span>
+                        <span className="text-[10px] text-emerald-300 font-bold">
+                          {mazeTier === 'beginner' ? '自適應 5x5~8x8 • 全程常駐發光' : mazeTier === 'standard' ? '經典 8x8 迷宮 • 停頓智慧提示' : '巨大 10x10 迷宮 • 計時搶分極限榜'}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 w-full">
+                        {/* 新手級 */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            soundEngine.click();
+                            setMazeTier('beginner');
+                          }}
+                          className={`p-2 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
+                            mazeTier === 'beginner'
+                              ? 'bg-gradient-to-b from-emerald-500 via-teal-500 to-emerald-600 text-stone-950 border-emerald-200 ring-2 ring-emerald-300 font-black shadow-[0_0_15px_rgba(16,185,129,0.5)]'
+                              : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-emerald-400/60'
+                          }`}
+                        >
+                          <span className="text-xs sm:text-sm font-black font-heading tracking-wide flex items-center gap-1">
+                            <span>🌱 新手啟蒙級</span>
+                            {mazeTier === 'beginner' && <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />}
+                          </span>
+                          <span className={`text-[8px] sm:text-[9px] font-bold mt-0.5 truncate max-w-full ${
+                            mazeTier === 'beginner' ? 'text-stone-950/80' : 'text-slate-300'
+                          }`}>
+                            起訖字母自由選 • 常駐發光指引
+                          </span>
+                        </button>
+
+                        {/* 標準級 */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            soundEngine.click();
+                            setMazeTier('standard');
+                          }}
+                          className={`p-2 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
+                            mazeTier === 'standard'
+                              ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-2 ring-amber-300 font-black shadow-[0_0_15px_rgba(245,158,11,0.5)]'
+                              : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                          }`}
+                        >
+                          <span className="text-xs sm:text-sm font-black font-heading tracking-wide flex items-center gap-1">
+                            <span>🧭 標準冒險級</span>
+                            {mazeTier === 'standard' && <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />}
+                          </span>
+                          <span className={`text-[8px] sm:text-[9px] font-bold mt-0.5 truncate max-w-full ${
+                            mazeTier === 'standard' ? 'text-stone-950/80' : 'text-slate-300'
+                          }`}>
+                            8x8 經典迷宮 • 停頓 1 秒自適應提示
+                          </span>
+                        </button>
+
+                        {/* 挑戰級 */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            soundEngine.click();
+                            setMazeTier('challenge');
+                          }}
+                          className={`p-2 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
+                            mazeTier === 'challenge'
+                              ? 'bg-gradient-to-b from-rose-500 via-red-500 to-rose-600 text-white border-rose-200 ring-2 ring-rose-300 font-black shadow-[0_0_15px_rgba(244,63,94,0.5)]'
+                              : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-rose-400/60'
+                          }`}
+                        >
+                          <span className="text-xs sm:text-sm font-black font-heading tracking-wide flex items-center gap-1">
+                            <span>⚡ 極限挑戰級</span>
+                            {mazeTier === 'challenge' && <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />}
+                          </span>
+                          <span className={`text-[8px] sm:text-[9px] font-bold mt-0.5 truncate max-w-full ${
+                            mazeTier === 'challenge' ? 'text-white/90' : 'text-slate-300'
+                          }`}>
+                            10x10 巨大迷宮 • 計時搶分極限榜
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* ═══ 【第三層：字母字形規格與巡航區間】 ═══ */}
+                    <div className="w-full shrink-0">
+                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                        <span className="flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>3. 字母字形與航程範圍：</span>
+                        </span>
+                        <span className="text-[10px] text-amber-300 font-bold">
+                          {mazeIsLowercase ? '🔡 小寫字母' : '🔠 大寫字母'}
+                        </span>
+                      </div>
+
+                      <div className="w-full min-h-[52px] sm:min-h-[58px] flex items-center justify-between p-2 rounded-2xl bg-slate-900/90 border border-white/20 backdrop-blur-md gap-2">
+                        {/* 大小寫切換 */}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              soundEngine.click();
+                              setMazeIsLowercase(false);
+                            }}
+                            className={`py-1.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                              !mazeIsLowercase
+                                ? 'bg-amber-400 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 shadow'
+                                : 'bg-slate-800 text-slate-200 hover:text-white border-white/15'
+                            }`}
+                          >
+                            🔠 大寫 A-Z
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              soundEngine.click();
+                              setMazeIsLowercase(true);
+                            }}
+                            className={`py-1.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                              mazeIsLowercase
+                                ? 'bg-amber-400 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 shadow'
+                                : 'bg-slate-800 text-slate-200 hover:text-white border-white/15'
+                            }`}
+                          >
+                            🔡 小寫 a-z
+                          </button>
+                        </div>
+
+                        {/* 航程範圍：新手級顯示區間膠囊，標準/挑戰級顯示全套標牌 */}
+                        {mazeTier === 'beginner' ? (
+                          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 justify-end animate-fadeIn">
+                            <span className="text-[11px] font-black text-emerald-300 hidden lg:inline mr-1">
+                              航程區間：
+                            </span>
+                            {[
+                              { id: 'AH', label: 'A - H (入門 8 字)' },
+                              { id: 'AM', label: 'A - M (前半 13 字)' },
+                              { id: 'NZ', label: 'N - Z (後半 13 字)' },
+                              { id: 'AZ', label: 'A - Z (全套 26 字)' }
+                            ].map((p) => {
+                              const isActive = mazeRangePreset === p.id;
+                              return (
+                                <button
+                                  key={p.id}
+                                  type="button"
+                                  onClick={() => {
+                                    soundEngine.click();
+                                    setMazeRangePreset(p.id);
+                                  }}
+                                  className={`py-1.5 px-2.5 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer border active:scale-95 ${
+                                    isActive
+                                      ? 'bg-gradient-to-r from-emerald-400 to-teal-400 text-stone-950 border-emerald-200 ring-2 ring-emerald-300 font-black'
+                                      : 'bg-slate-800/90 text-slate-300 hover:text-white border-white/15'
+                                  }`}
+                                >
+                                  {p.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-xs font-black text-amber-300 px-2 animate-fadeIn">
+                            <Sparkles className="w-4 h-4 text-amber-400" />
+                            <span>全航程 26 字母完整考驗 • 手指連續滑動貫通迷宮！</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* 整備室底部：狀態摘要與出征按鈕 */}
+                <div className="pt-2 border-t border-white/15 flex items-center justify-between shrink-0">
+                  <div className="flex items-center gap-2 text-xs text-slate-200 font-bold">
+                    <span>出征整備：</span>
+                    <span className="text-amber-300 font-black">
+                      【{mazeTheme === 'snake' ? '霧台神山百步蛇' : '星際光軌巡航'}】• {mazeTier === 'beginner' ? `新手級 (${mazeRangePreset})` : mazeTier === 'standard' ? '標準級 (8x8)' : '挑戰級 (10x10)'} • {mazeIsLowercase ? '小寫 a-z' : '大寫 A-Z'}
+                    </span>
+                    <span className="text-emerald-400 font-black hidden sm:inline ml-1">
+                      • 英雄榜榮譽資格已啟用
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleStartGame}
+                    className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-amber-300 hover:to-yellow-200 text-stone-950 font-heading font-black text-sm sm:text-base flex items-center gap-2 shadow-2xl active:scale-95 transition-all cursor-pointer border-2 border-amber-200"
+                  >
+                    <span>⚔️ 開始巡航 START</span>
                     <Play className="w-4 h-4 fill-stone-950" />
                   </button>
                 </div>
