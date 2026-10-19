@@ -107,7 +107,8 @@ export const GRIMOIRE_BOOKS = [
   }
 ];
 
-// 全站 12 大遊戲模式 (學生任選精通 10 款即可 100% 點亮該冊並啟動星盤，保留友好容錯與未來擴充性)
+// 前三大單元遊戲區域對應之 10 大單人遊戲模式（排除獨立特區「多人連線」與「霧臺小鎮」）
+// 每款三星通關解鎖該冊 10% 彩色進度，10 款全部三星通關達 100% 並亮起該冊星星（8冊共80項 = 八星大宗師）
 export const REQUIRED_MODES_FOR_MASTER = 10;
 
 export const GRIMOIRE_GAME_MODES = [
@@ -119,10 +120,8 @@ export const GRIMOIRE_GAME_MODES = [
   { id: 'mole', nameZh: '森林打地鼠', icon: '🔨', category: 'speed' },
   { id: 'snake', nameZh: '叢林神山貪食蛇', icon: '🐍', category: 'speed' },
   { id: 'meteor', nameZh: '3D 隕石防衛戰', icon: '☄️', category: 'speed' },
-  { id: 'memory', nameZh: '星際記憶翻牌', icon: '🃏', category: 'quiz' },
-  { id: 'quiz', nameZh: '經典星空大會考', icon: '📜', category: 'quiz' },
-  { id: 'battle', nameZh: '星際連線擂台', icon: '⚔️', category: 'multiplayer' },
-  { id: 'town', nameZh: '霧臺小鎮時光', icon: '🏡', category: 'town' }
+  { id: 'memory', nameZh: '星際記憶翻牌', icon: '🃏', category: 'explore' },
+  { id: 'quiz', nameZh: '經典星空大會考', icon: '📜', category: 'quiz' }
 ];
 
 const STORAGE_PREFIX = 'wutai_grimoire_progress_';

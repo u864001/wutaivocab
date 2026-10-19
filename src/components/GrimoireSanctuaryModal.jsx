@@ -256,7 +256,7 @@ export const GrimoireSanctuaryModal = ({
           </div>
 
           {/* ════════════════════════════════════════════════════════
-              右欄 (5/12)：選取書冊之 12 款遊戲模式檢視清單
+              右欄 (5/12)：選取書冊之 10 大遊戲挑戰模式清單
              ════════════════════════════════════════════════════════ */}
           <div className={`md:col-span-5 flex flex-col justify-between p-3 rounded-2xl border min-h-0 overflow-hidden shadow-inner ${
             isDark ? 'bg-slate-900/90 border-white/10' : 'bg-white border-stone-300'
@@ -289,7 +289,7 @@ export const GrimoireSanctuaryModal = ({
 
               {/* 友善容錯提示橫幅 */}
               <div className="px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-bold text-emerald-300 flex items-center justify-between">
-                <span>🎯 全冊 12 款挑戰中，任選 10 款三星即可 100% 點亮本冊！</span>
+                <span>🎯 每三星通關 1 款解鎖 10%，精通全冊 10 大模式即 100% 點亮本冊！</span>
               </div>
             </div>
 
@@ -379,7 +379,7 @@ export const GrimoireSanctuaryModal = ({
 
         {/* ── 底部快捷條 (極簡單行) ── */}
         <footer className="relative z-10 px-4 py-1.5 border-t border-white/10 flex items-center justify-between shrink-0 text-[11px] font-bold text-slate-400 bg-black/40">
-          <span>大武山神聖守護法則 • 支援 iPad 單頁全景自適應 • 任選 10 款三星即 100% 點亮</span>
+          <span>大武山神聖守護法則 • 支援 iPad 單頁全景自適應 • 精通全冊 10 大遊戲即 100% 點亮</span>
           <button
             onClick={() => {
               soundEngine.click();
