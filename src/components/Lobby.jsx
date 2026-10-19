@@ -10,7 +10,7 @@ import {
   Sparkles, Keyboard, BookOpen, Volume2, Swords,
   Store, RotateCcw, Check, CheckCircle2, ChevronRight,
   Sun, Moon, VolumeX, ShieldCheck, Layers, HelpCircle,
-  X, Zap, Star
+  X, Zap, Star, AlertCircle
 } from 'lucide-react';
 
 const POSTER_EXPLORE = '/assets/lobby/theme_explore.jpg';
@@ -76,6 +76,7 @@ const GAME_SPOTLIGHT_ART = {
   maze: '/assets/screenshots/screenshot_snake.webp',
   swipe: '/assets/screenshots/screenshot_meteor.webp',
   memory: '/assets/lobby/theme_explore.jpg',
+  spelling: '/assets/screenshots/screenshot_mole.webp',
   'quiz-zh-en': '/assets/lobby/theme_quiz.jpg',
   'quiz-en-zh': '/assets/lobby/theme_quiz.jpg',
   'quiz-listening': '/assets/lobby/theme_quiz.jpg',
@@ -284,7 +285,7 @@ export const Lobby = ({
         { id: 'quiz-zh-en', name: '看中選英', iconComp: Keyboard, iconColor: 'text-sky-400', iconBg: 'bg-sky-500/25 border-sky-400/40', badge: '中選英' },
         { id: 'quiz-en-zh', name: '看英選中', iconComp: BookOpen, iconColor: 'text-indigo-400', iconBg: 'bg-indigo-500/25 border-indigo-400/40', badge: '英選中' },
         { id: 'quiz-listening', name: '英語聽力', iconComp: Volume2, iconColor: 'text-cyan-400', iconBg: 'bg-cyan-500/25 border-cyan-400/40', badge: '聽音辨字' },
-        { id: 'quiz-mixed', name: '綜合全能測驗', iconComp: Trophy, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '隨機挑戰' }
+        { id: 'spelling', name: '單字積木拼裝', iconComp: Puzzle, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '積木拼字' }
       ]
     },
     {
@@ -530,29 +531,42 @@ export const Lobby = ({
     soundEngine.click();
     setSelectedGame(gameId);
     
+    // 若點選字母巡航迷宮，迷宮內建專屬難度與外觀設定，直接進入
+    if (gameId === 'maze') {
+      onNavigate('maze');
+      return;
+    }
+
+    // 取得當前年級冊次預設所有單元
+    const bKey = currentOptionData.book;
+    const bData = groupedUnits[bKey];
+    const defaultUnits = currentOptionData.isAlpha
+      ? ['abc']
+      : (bData && bData.lessons ? Array.from(bData.lessons).map(l => `${bKey}-${l}`) : []);
+
     // 若該遊戲為全冊專用 (spotter)，直接鎖定當前冊次
     if (gameId === 'spotter') {
-      const bKey = currentOptionData.book;
-      const bData = groupedUnits[bKey];
-      const allUnits = bData && bData.lessons ? Array.from(bData.lessons).map(l => `${bKey}-${l}`) : [];
       setSettings(prev => ({
         ...prev,
-        alphaMode: null,
-        selectedUnits: allUnits
+        alphaMode: currentOptionData.isAlpha ? alphaMode : null,
+        selectedUnits: defaultUnits
       }));
-    } else if (!rememberSelection) {
-      // 若玩家未勾選「記住我的選擇」，強制清空全部已選清單
-      setSettings(prev => ({
-        ...prev,
-        alphaMode: null,
-        selectedUnits: []
-      }));
+    } else {
+      // 若玩家未勾選記憶選擇，或者目前尚無已選單元，預設帶入當前冊次全單元，確保出征按鈕立即可點！
+      const currentSelected = settings.selectedUnits || [];
+      if (!rememberSelection || currentSelected.length === 0) {
+        setSettings(prev => ({
+          ...prev,
+          alphaMode: currentOptionData.isAlpha ? alphaMode : null,
+          selectedUnits: defaultUnits
+        }));
+      }
     }
     
     setStep('scope');
   };
 
-  // ── 點選冊次 (若為全冊遊戲，換冊直接切換該冊全部單元；若為可選單元遊戲，換冊僅切換當前視野，不更動/不重置底層已選清單) ──
+  // ── 點選冊次 ──
   const handleSelectBookOption = (optId) => {
     soundEngine.click();
     setSelectedOptionId(optId);
@@ -560,24 +574,18 @@ export const Lobby = ({
     const optData = ALL_GRADE_OPTIONS.find(o => o.id === optId);
     if (!optData) return;
 
-    if (isWholeBookOnlyGame) {
-      if (optData.isAlpha) {
-        setSettings(prev => ({
-          ...prev,
-          alphaMode: alphaMode,
-          selectedUnits: ['abc']
-        }));
-      } else {
-        const bKey = optData.book;
-        const bData = groupedUnits[bKey];
-        const allUnits = bData && bData.lessons ? Array.from(bData.lessons).map(l => `${bKey}-${l}`) : [];
-        setSettings(prev => ({
-          ...prev,
-          alphaMode: null,
-          selectedUnits: allUnits
-        }));
-      }
-    }
+    const bKey = optData.book;
+    const bData = groupedUnits[bKey];
+    const newBookUnits = optData.isAlpha
+      ? ['abc']
+      : (bData && bData.lessons ? Array.from(bData.lessons).map(l => `${bKey}-${l}`) : []);
+
+    // 換冊時自動帶入該冊所有單元，讓學生無需額外點選單元膠囊即可出征
+    setSettings(prev => ({
+      ...prev,
+      alphaMode: optData.isAlpha ? alphaMode : null,
+      selectedUnits: newBookUnits
+    }));
   };
 
   // ── 點選字母模式 ──
@@ -1015,7 +1023,7 @@ export const Lobby = ({
               </div>
             ) : (
               /* ═══ 分流 B：全單人通用整備室 ═══ */
-              <div className="relative z-10 w-full h-full p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden">
+              <div className="relative z-10 w-full h-full p-2.5 sm:p-4 md:p-5 flex flex-col justify-between overflow-y-auto">
                 
                 {/* 頂部引導題字 */}
                 <div className="flex items-center justify-between pb-2 border-b border-white/15 shrink-0">

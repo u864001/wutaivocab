@@ -67,6 +67,9 @@ export const StandardQuiz = ({
       }
     } else {
       let filtered = words.filter(w => settings?.selectedUnits?.includes(`${w.book}-${w.lesson}`));
+      if (filtered.length === 0 && words.length > 0) {
+        filtered = words;
+      }
       let shuffled = [...filtered].sort(() => 0.5 - Math.random());
       if (settings?.count !== 'all') {
         shuffled = shuffled.slice(0, parseInt(settings?.count, 10) || 20);
@@ -164,7 +167,7 @@ export const StandardQuiz = ({
     let isCorrect = false;
     const ans = inputValue.trim().toLowerCase();
 
-    if (mode === 'quiz-zh-en' || mode === 'quiz-listening' || mode === 'quiz-hard') {
+    if (mode === 'quiz-zh-en' || mode === 'quiz-listening' || mode === 'quiz-hard' || mode === 'quiz-mixed') {
       const target = (currentQuestion.correctEn || currentQuestion.en || '').toLowerCase();
       isCorrect = ans === target;
     } else if (mode === 'quiz-en-zh') {
@@ -405,7 +408,7 @@ export const StandardQuiz = ({
 
           {/* 題目與發音顯示區域 */}
           <div className="min-h-[140px] flex flex-col items-center justify-center mb-6">
-            {mode === 'quiz-zh-en' || mode === 'quiz-hard' ? (
+            {mode === 'quiz-zh-en' || mode === 'quiz-hard' || mode === 'quiz-mixed' ? (
               <h2 className="text-3xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 font-heading">
                 {currentQuestion.zh}
               </h2>

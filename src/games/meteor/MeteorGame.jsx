@@ -104,7 +104,10 @@ export const MeteorGame = ({
         zh: l.toLowerCase()
       }));
     }
-    const filtered = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
+    let filtered = words.filter(w => (settings?.selectedUnits || []).includes(`${w.book}-${w.lesson}`));
+    if (filtered.length === 0 && words.length > 0) {
+      filtered = words;
+    }
     return filtered;
   };
 

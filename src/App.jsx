@@ -88,37 +88,31 @@ export function App() {
   const { lang, setLang } = useI18n();
   const { isDark, toggleTheme } = useTheme();
 
-  const [currentView, setCurrentView] = useState(() => {
+  const resolveViewFromUrl = () => {
     try {
-      const path = window.location.pathname.toLowerCase();
       const urlParams = new URLSearchParams(window.location.search);
-      if (path === '/phonics' || path.endsWith('/phonics') || urlParams.get('view') === 'phonics') {
-        return 'phonics';
-      }
-      if (path === '/vocab' || path === '/lobby' || urlParams.get('view') === 'lobby' || urlParams.get('view') === 'vocab') {
-        return 'lobby';
-      }
-      if (path === '/town' || urlParams.get('view') === 'town') {
-        return 'town';
-      }
-      if (path === '/textbook' || urlParams.get('view') === 'textbook') {
-        return 'textbook';
-      }
-      if (path === '/langlab' || urlParams.get('view') === 'langlab') {
-        return 'langlab';
-      }
-      if (path === '/escape' || urlParams.get('view') === 'escape') {
-        return 'escape';
-      }
-      if (path === '/spotter' || urlParams.get('view') === 'spotter') {
-        return 'spotter';
-      }
-      if (urlParams.get('join')) {
-        return 'battle';
-      }
+      if (urlParams.get('join')) return 'battle';
+
+      const viewParam = (urlParams.get('view') || '').toLowerCase();
+      const path = window.location.pathname.toLowerCase().replace(/^\/+|\/+$/g, '');
+      const target = viewParam || path;
+
+      if (!target || target === 'home' || target === 'portal') return 'portal';
+      if (target === 'vocab' || target === 'lobby') return 'lobby';
+
+      const VALID_VIEWS = [
+        'phonics', 'lobby', 'town', 'textbook', 'langlab',
+        'escape', 'spotter', 'maze', 'memory',
+        'mole', 'swipe', 'meteor', 'snake', 'spelling',
+        'battle', 'leaderboard', 'teacher-hub'
+      ];
+      if (VALID_VIEWS.includes(target)) return target;
+      if (target.startsWith('quiz-')) return target;
     } catch (e) {}
     return 'portal';
-  });
+  };
+
+  const [currentView, setCurrentView] = useState(resolveViewFromUrl);
 
   const [words, setWords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -161,21 +155,12 @@ export function App() {
 
   // 監聽瀏覽器上一頁/下一頁返回事件 (POPSTATE)
   useEffect(() => {
-    const handlePopState = () => {
+    const handlePopState = (e) => {
       try {
-        const path = window.location.pathname.toLowerCase();
-        if (path === '/phonics' || path.endsWith('/phonics')) {
-          setCurrentView('phonics');
-        } else if (path === '/vocab' || path === '/lobby') {
-          setCurrentView('lobby');
-        } else if (path === '/town' || path.endsWith('/town')) {
-          setCurrentView('town');
-        } else if (path === '/textbook' || path.endsWith('/textbook')) {
-          setCurrentView('textbook');
-        } else if (path === '/langlab' || path.endsWith('/langlab')) {
-          setCurrentView('langlab');
+        if (e.state?.view) {
+          setCurrentView(e.state.view);
         } else {
-          setCurrentView('portal');
+          setCurrentView(resolveViewFromUrl());
         }
       } catch (e) {}
     };
@@ -224,42 +209,13 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
-      if (view === 'phonics') {
-        if (window.location.pathname !== '/phonics') {
-          window.history.pushState({ view: 'phonics' }, '', '/phonics');
-        }
-      } else if (view === 'lobby') {
-        if (window.location.pathname !== '/vocab') {
-          window.history.pushState({ view: 'lobby' }, '', '/vocab');
-        }
-      } else if (view === 'town') {
-        if (window.location.pathname !== '/town') {
-          window.history.pushState({ view: 'town' }, '', '/town');
-        }
-      } else if (view === 'textbook') {
-        if (window.location.pathname !== '/textbook') {
-          window.history.pushState({ view: 'textbook' }, '', '/textbook');
-        }
-      } else if (view === 'langlab') {
-        if (window.location.pathname !== '/langlab') {
-          window.history.pushState({ view: 'langlab' }, '', '/langlab');
-        }
-      } else if (view === 'escape') {
-        if (window.location.pathname !== '/escape') {
-          window.history.pushState({ view: 'escape' }, '', '/escape');
-        }
-      } else if (view === 'spotter') {
-        if (window.location.pathname !== '/spotter') {
-          window.history.pushState({ view: 'spotter' }, '', '/spotter');
-        }
-      } else if (view === 'mole') {
-        if (window.location.pathname !== '/mole') {
-          window.history.pushState({ view: 'mole' }, '', '/mole');
-        }
-      } else if (view === 'portal') {
-        if (window.location.pathname !== '/') {
-          window.history.pushState({ view: 'portal' }, '', '/');
-        }
+      let targetPath = '/';
+      if (view === 'portal') targetPath = '/';
+      else if (view === 'lobby') targetPath = '/vocab';
+      else targetPath = `/${view}`;
+
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState({ view }, '', targetPath);
       }
     } catch (e) {}
   };
