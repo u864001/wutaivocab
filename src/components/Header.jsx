@@ -85,9 +85,18 @@ export const Header = ({
           <button
             onClick={openModal}
             title={t.currentIdentity}
-            className="px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 border border-emerald-300 dark:border-emerald-600 text-slate-800 dark:text-slate-100 flex items-center gap-1 text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer shrink-0"
+            className="px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 border border-emerald-300 dark:border-emerald-600 text-slate-800 dark:text-slate-100 flex items-center gap-1.5 text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer shrink-0"
           >
-            <User className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            {currentStudent?.avatar_id ? (
+              <img
+                src={`/assets/avatars/${currentStudent.avatar_id}.webp`}
+                alt="Warrior Avatar"
+                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-amber-400 shadow-sm shrink-0"
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+            ) : (
+              <User className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            )}
             <span className="font-heading truncate max-w-[110px] hidden sm:inline">
               {formatStudentBadge(currentStudent, lang)}
             </span>

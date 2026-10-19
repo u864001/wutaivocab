@@ -19,6 +19,8 @@ const POSTER_QUIZ = '/assets/lobby/theme_quiz.jpg';
 const POSTER_BATTLE = '/assets/lobby/theme_battle.jpg';
 const POSTER_TOWN = '/assets/lobby/theme_town.jpg';
 
+const ALPHABET_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
 // ── 5 欄 × 2 列年級配對定義（由左至右：一二年級、三上三下、四上四下、五上五下、六上六下） ──
 const GRADE_COLUMNS = [
   {
@@ -168,6 +170,8 @@ export const Lobby = ({
   const [mazeTier, setMazeTier] = useState(() => localStorage.getItem('wutai_maze_tier') || 'standard');
   const [mazeIsLowercase, setMazeIsLowercase] = useState(() => localStorage.getItem('wutai_maze_isLowercase') === 'true');
   const [mazeRangePreset, setMazeRangePreset] = useState(() => localStorage.getItem('wutai_maze_rangePreset') || 'AH');
+  const [mazeStartChar, setMazeStartChar] = useState(() => localStorage.getItem('wutai_maze_startChar')?.toUpperCase() || 'A');
+  const [mazeEndChar, setMazeEndChar] = useState(() => localStorage.getItem('wutai_maze_endChar')?.toUpperCase() || 'H');
 
   // ── 記住我的選擇核選狀態 ──
   const [rememberSelection, setRememberSelection] = useState(() => {
@@ -634,19 +638,10 @@ export const Lobby = ({
         localStorage.setItem('wutai_maze_isLowercase', mazeIsLowercase ? 'true' : 'false');
         localStorage.setItem('wutai_maze_rangePreset', mazeRangePreset);
         if (mazeTier === 'beginner') {
-          if (mazeRangePreset === 'AH') {
-            localStorage.setItem('wutai_maze_startChar', mazeIsLowercase ? 'a' : 'A');
-            localStorage.setItem('wutai_maze_endChar', mazeIsLowercase ? 'h' : 'H');
-          } else if (mazeRangePreset === 'AM') {
-            localStorage.setItem('wutai_maze_startChar', mazeIsLowercase ? 'a' : 'A');
-            localStorage.setItem('wutai_maze_endChar', mazeIsLowercase ? 'm' : 'M');
-          } else if (mazeRangePreset === 'NZ') {
-            localStorage.setItem('wutai_maze_startChar', mazeIsLowercase ? 'n' : 'N');
-            localStorage.setItem('wutai_maze_endChar', mazeIsLowercase ? 'z' : 'Z');
-          } else {
-            localStorage.setItem('wutai_maze_startChar', mazeIsLowercase ? 'a' : 'A');
-            localStorage.setItem('wutai_maze_endChar', mazeIsLowercase ? 'z' : 'Z');
-          }
+          const s = mazeIsLowercase ? mazeStartChar.toLowerCase() : mazeStartChar.toUpperCase();
+          const e = mazeIsLowercase ? mazeEndChar.toLowerCase() : mazeEndChar.toUpperCase();
+          localStorage.setItem('wutai_maze_startChar', s);
+          localStorage.setItem('wutai_maze_endChar', e);
         } else {
           localStorage.setItem('wutai_maze_startChar', mazeIsLowercase ? 'a' : 'A');
           localStorage.setItem('wutai_maze_endChar', mazeIsLowercase ? 'z' : 'Z');
@@ -1080,8 +1075,8 @@ export const Lobby = ({
                       alt="Alphabet Maze Action Spotlight"
                       className="w-full h-full object-cover rounded-2xl filter brightness-95 contrast-105"
                       style={{
-                        maskImage: 'linear-gradient(to right, black 40%, rgba(0,0,0,0.6) 65%, transparent 100%), linear-gradient(to bottom, black 85%, transparent 100%)',
-                        WebkitMaskImage: 'linear-gradient(to right, black 40%, rgba(0,0,0,0.6) 65%, transparent 100%), linear-gradient(to bottom, black 85%, transparent 100%)'
+                        maskImage: 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.3) 65%, rgba(0,0,0,0) 100%)',
+                        WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.3) 65%, rgba(0,0,0,0) 100%)'
                       }}
                     />
                   </div>
@@ -1290,28 +1285,66 @@ export const Lobby = ({
                           </button>
                         </div>
 
-                        {/* 航程範圍：新手級顯示區間膠囊，標準/挑戰級顯示全套標牌 */}
+                        {/* 航程範圍：新手級自選起訖字母與區間膠囊，標準/挑戰級顯示全套標牌 */}
                         {mazeTier === 'beginner' ? (
-                          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 justify-end animate-fadeIn">
-                            <span className="text-[11px] font-black text-emerald-300 hidden lg:inline mr-1">
-                              航程區間：
-                            </span>
+                          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto py-0.5 flex-1 justify-end animate-fadeIn">
+                            {/* 自選起訖下拉選單 */}
+                            <div className="flex items-center gap-1 bg-slate-950/90 px-2 py-1 rounded-xl border border-white/20 text-xs shrink-0">
+                              <span className="text-[10px] text-emerald-300 font-bold">起點：</span>
+                              <select
+                                value={mazeStartChar}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setMazeStartChar(val);
+                                  setMazeRangePreset('custom');
+                                  soundEngine.click();
+                                  if (val >= mazeEndChar) {
+                                    const nextIdx = Math.min(25, ALPHABET_UPPER.indexOf(val) + 3);
+                                    setMazeEndChar(ALPHABET_UPPER[nextIdx]);
+                                  }
+                                }}
+                                className="bg-slate-800 text-amber-300 font-mono font-black text-xs px-1.5 py-0.5 rounded border border-white/20 outline-none cursor-pointer"
+                              >
+                                {ALPHABET_UPPER.slice(0, 24).map(c => (
+                                  <option key={c} value={c}>{mazeIsLowercase ? c.toLowerCase() : c}</option>
+                                ))}
+                              </select>
+
+                              <span className="text-[10px] text-emerald-300 font-bold ml-1">終點：</span>
+                              <select
+                                value={mazeEndChar}
+                                onChange={(e) => {
+                                  setMazeEndChar(e.target.value);
+                                  setMazeRangePreset('custom');
+                                  soundEngine.click();
+                                }}
+                                className="bg-slate-800 text-amber-300 font-mono font-black text-xs px-1.5 py-0.5 rounded border border-white/20 outline-none cursor-pointer"
+                              >
+                                {ALPHABET_UPPER.slice(ALPHABET_UPPER.indexOf(mazeStartChar) + 1).map(c => (
+                                  <option key={c} value={c}>{mazeIsLowercase ? c.toLowerCase() : c}</option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* 4 個快速推薦區間膠囊 */}
                             {[
-                              { id: 'AH', label: 'A - H (入門 8 字)' },
-                              { id: 'AM', label: 'A - M (前半 13 字)' },
-                              { id: 'NZ', label: 'N - Z (後半 13 字)' },
-                              { id: 'AZ', label: 'A - Z (全套 26 字)' }
+                              { id: 'AH', label: 'A-H (8字)', s: 'A', e: 'H' },
+                              { id: 'AM', label: 'A-M (13字)', s: 'A', e: 'M' },
+                              { id: 'NZ', label: 'N-Z (13字)', s: 'N', e: 'Z' },
+                              { id: 'AZ', label: 'A-Z (全套)', s: 'A', e: 'Z' }
                             ].map((p) => {
-                              const isActive = mazeRangePreset === p.id;
+                              const isActive = mazeStartChar === p.s && mazeEndChar === p.e;
                               return (
                                 <button
                                   key={p.id}
                                   type="button"
                                   onClick={() => {
                                     soundEngine.click();
+                                    setMazeStartChar(p.s);
+                                    setMazeEndChar(p.e);
                                     setMazeRangePreset(p.id);
                                   }}
-                                  className={`py-1.5 px-2.5 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer border active:scale-95 ${
+                                  className={`py-1 px-2 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer border active:scale-95 ${
                                     isActive
                                       ? 'bg-gradient-to-r from-emerald-400 to-teal-400 text-stone-950 border-emerald-200 ring-2 ring-emerald-300 font-black'
                                       : 'bg-slate-800/90 text-slate-300 hover:text-white border-white/15'
@@ -1340,11 +1373,17 @@ export const Lobby = ({
                   <div className="flex items-center gap-2 text-xs text-slate-200 font-bold">
                     <span>出征整備：</span>
                     <span className="text-amber-300 font-black">
-                      【{mazeTheme === 'snake' ? '霧台神山百步蛇' : '星際光軌巡航'}】• {mazeTier === 'beginner' ? `新手級 (${mazeRangePreset})` : mazeTier === 'standard' ? '標準級 (8x8)' : '挑戰級 (10x10)'} • {mazeIsLowercase ? '小寫 a-z' : '大寫 A-Z'}
+                      【{mazeTheme === 'snake' ? '霧台神山百步蛇' : '星際光軌巡航'}】• {mazeTier === 'beginner' ? `新手級 (${mazeStartChar}-${mazeEndChar})` : mazeTier === 'standard' ? '標準級 (8x8)' : '挑戰級 (10x10)'} • {mazeIsLowercase ? '小寫 a-z' : '大寫 A-Z'}
                     </span>
-                    <span className="text-emerald-400 font-black hidden sm:inline ml-1">
-                      • 英雄榜榮譽資格已啟用
-                    </span>
+                    {mazeTier === 'challenge' ? (
+                      <span className="text-amber-400 font-black hidden sm:inline ml-1 animate-pulse">
+                        • 🏆 全校英雄榜榮譽資格 (需 100% 零失誤完美路線)
+                      </span>
+                    ) : (
+                      <span className="text-slate-400 font-bold hidden sm:inline ml-1">
+                        • 🌱 練習模式 (無英雄榜；挑戰級 10x10 零提示方可登榜)
+                      </span>
+                    )}
                   </div>
 
                   <button
@@ -1388,8 +1427,8 @@ export const Lobby = ({
                       alt="Game Action Spotlight"
                       className="w-full h-full object-cover rounded-2xl filter brightness-95 contrast-105"
                       style={{
-                        maskImage: 'linear-gradient(to right, black 40%, rgba(0,0,0,0.6) 65%, transparent 100%), linear-gradient(to bottom, black 85%, transparent 100%)',
-                        WebkitMaskImage: 'linear-gradient(to right, black 40%, rgba(0,0,0,0.6) 65%, transparent 100%), linear-gradient(to bottom, black 85%, transparent 100%)'
+                        maskImage: 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.3) 65%, rgba(0,0,0,0) 100%)',
+                        WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0.3) 65%, rgba(0,0,0,0) 100%)'
                       }}
                     />
                   </div>
