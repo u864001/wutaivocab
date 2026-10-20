@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Button3D } from '../../components/ui/Button3D';
+import { useTheme } from '../../context/ThemeContext';
 import { useStudent } from '../../context/StudentContext';
 import { speakEnglish, soundEngine } from '../../services/audio';
 import { groupInventoryItems } from '../../utils/inventoryHelper';
@@ -18,6 +19,7 @@ const CATEGORY_TABS = [
 ];
 
 export const BackpackModal = ({ onClose }) => {
+  const { isDark } = useTheme();
   const { currentStudent, inventory, updateInventory } = useStudent();
   const [activeCategory, setActiveCategory] = useState('all');
   const [useToast, setUseToast] = useState(null);
@@ -56,7 +58,7 @@ export const BackpackModal = ({ onClose }) => {
         {/* 頂部倉庫橫幅 */}
         <div className="relative p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
-            <img src="/assets/town/bg_home.webp" alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
+            <img src={isDark ? "/assets/town/bg_home_night.webp" : "/assets/town/bg_home.webp"} alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
             <div className="absolute inset-0 bg-emerald-950/70 backdrop-blur-[2px]" />
           </div>
 

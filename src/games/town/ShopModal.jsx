@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button3D } from '../../components/ui/Button3D';
+import { useTheme } from '../../context/ThemeContext';
 import { useStudent } from '../../context/StudentContext';
 import { TOWN_ITEMS, TOWN_LOCATIONS } from './townData';
 import { soundEngine, speakEnglish } from '../../services/audio';
@@ -67,14 +68,17 @@ export const ShopModal = ({ locationId, onClose, onQuestProgress }) => {
     }
   };
 
+  const { isDark } = useTheme();
+  const shopBg = (isDark && location.bgImageNight) ? location.bgImageNight : location.bgImage;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-md animate-fadeIn">
       <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border-2 border-amber-400 dark:border-amber-600 overflow-hidden relative max-h-[85vh] flex flex-col animate-scaleUp">
         {/* 頂部商標橫幅 */}
         <div className="relative p-4 sm:p-5 flex items-center justify-between shrink-0 border-b border-slate-200 dark:border-slate-800 overflow-hidden">
-          {location.bgImage ? (
+          {shopBg ? (
             <div className="absolute inset-0 pointer-events-none">
-              <img src={location.bgImage} alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
+              <img src={shopBg} alt="" className="w-full h-full object-cover filter brightness-[0.35] contrast-125" />
               <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]" />
             </div>
           ) : (

@@ -76,6 +76,7 @@ export const TOWN_LOCATIONS = [
       '今日校園公告：大武山清新晨間活力'
     ],
     bgImage: '/assets/town/bg_school.webp',
+    bgImageNight: '/assets/town/bg_school_night.webp',
     npcPortrait: '/assets/town/npc_principal.webp',
     hasShop: false,
     hasQuests: true
@@ -101,6 +102,7 @@ export const TOWN_LOCATIONS = [
       '今日彩繪特輯：美術色彩筆與彩繪筆記本'
     ],
     bgImage: '/assets/town/bg_bookstore.webp',
+    bgImageNight: '/assets/town/bg_bookstore_night.webp',
     npcPortrait: '/assets/town/npc_bookstore.webp',
     hasShop: true,
     hasQuests: false
@@ -126,6 +128,7 @@ export const TOWN_LOCATIONS = [
       '今日野餐特刊：黃金香蕉與山林探險補給'
     ],
     bgImage: '/assets/town/bg_supermarket.webp',
+    bgImageNight: '/assets/town/bg_supermarket_night.webp',
     npcPortrait: '/assets/town/npc_supermarket.webp',
     hasShop: true,
     hasQuests: false
@@ -151,6 +154,7 @@ export const TOWN_LOCATIONS = [
       '今日大自然觀察：大武山四季風景與野生動物'
     ],
     bgImage: '/assets/town/bg_park.webp',
+    bgImageNight: '/assets/town/bg_park_night.webp',
     npcPortrait: '/assets/town/npc_park.webp',
     hasShop: false,
     hasQuests: false
@@ -176,6 +180,7 @@ export const TOWN_LOCATIONS = [
       '今日轉乘資訊：出發前往屏東與高雄城市之旅'
     ],
     bgImage: '/assets/town/bg_station.webp',
+    bgImageNight: '/assets/town/bg_station_night.webp',
     npcPortrait: '/assets/town/npc_station.webp',
     hasShop: true,
     hasQuests: false
@@ -201,6 +206,7 @@ export const TOWN_LOCATIONS = [
       '今日衛教專欄：戶外運動防護與退熱冰冰貼'
     ],
     bgImage: '/assets/town/bg_clinic.webp',
+    bgImageNight: '/assets/town/bg_clinic_night.webp',
     npcPortrait: '/assets/town/npc_clinic.webp',
     hasShop: true,
     hasQuests: false
@@ -226,6 +232,7 @@ export const TOWN_LOCATIONS = [
       '今日服飾風尚：帥氣獵人帽與百步蛇圖騰背心'
     ],
     bgImage: '/assets/town/bg_plaza.webp',
+    bgImageNight: '/assets/town/bg_plaza_night.webp',
     npcPortrait: '/assets/town/npc_plaza.webp',
     hasShop: true,
     hasQuests: false
@@ -251,6 +258,7 @@ export const TOWN_LOCATIONS = [
       '今日熱映中：《飛鼠快俠與星空探險》(Flying Squirrel Speedster)'
     ],
     bgImage: '/assets/town/bg_cinema.webp',
+    bgImageNight: '/assets/town/bg_cinema_night.webp',
     npcPortrait: '/assets/town/npc_cinema.webp',
     hasShop: true,
     hasQuests: false
@@ -272,6 +280,7 @@ export const TOWN_LOCATIONS = [
     description: '溫暖舒服的個人房間，伴隨輕柔八音盒音樂，整理背包道具與收藏榮譽。',
     dailyThemes: ['溫暖的家：放鬆聆聽房間八音盒音樂，整理個人探險背包'],
     bgImage: '/assets/town/bg_home.webp',
+    bgImageNight: '/assets/town/bg_home_night.webp',
     npcPortrait: null,
     hasShop: false,
     hasBackpack: true

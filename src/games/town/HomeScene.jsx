@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { useStudent } from '../../context/StudentContext';
 import { soundEngine, speakEnglish, stopSpeech } from '../../services/audio';
 import { WisdomCardModal } from './WisdomCardModal';
@@ -18,6 +19,7 @@ const CATEGORY_TABS = [
 ];
 
 export const HomeScene = ({ onClose }) => {
+  const { isDark } = useTheme();
   const { currentStudent, coins, questPoints, inventory, semesterName, semesterNotice, clearSemesterNotice, openModal } = useStudent();
   const [activeCategory, setActiveCategory] = useState('all');
   const [isBgmPlaying, setIsBgmPlaying] = useState(true);
@@ -164,12 +166,12 @@ export const HomeScene = ({ onClose }) => {
         <div className="absolute inset-0 bg-gradient-to-br from-amber-700/30 via-orange-800/20 to-lime-900/30" />
         {!bgError && (
           <img
-            src="/assets/town/bg_home.webp"
+            src={isDark ? "/assets/town/bg_home_night.webp" : "/assets/town/bg_home.webp"}
             alt="學生溫馨的家"
             fetchPriority="high"
             decoding="async"
             onError={() => setBgError(true)}
-            className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.98] contrast-[1.02] pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.98] contrast-[1.02] pointer-events-none transition-all duration-700"
           />
         )}
 

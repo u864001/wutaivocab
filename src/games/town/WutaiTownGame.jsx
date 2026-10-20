@@ -341,8 +341,11 @@ export const WutaiTownGame = ({ onBack }) => {
   // ── 預先快取小鎮各場景與 NPC WebP 圖片 (瀏覽器背景閒置預載，秒開零等待) ──
   useEffect(() => {
     const preloadList = [
-      ...TOWN_LOCATIONS.flatMap(loc => [loc.bgImage, loc.npcPortrait].filter(Boolean)),
+      TOWN_MAP_PANORAMA_IMG,
+      TOWN_MAP_PANORAMA_NIGHT_IMG,
+      ...TOWN_LOCATIONS.flatMap(loc => [loc.bgImage, loc.bgImageNight, loc.npcPortrait].filter(Boolean)),
       '/assets/town/bg_home.webp',
+      '/assets/town/bg_home_night.webp',
       '/assets/town/teacher_mario.webp',
       '/assets/town/teacher_ibu.webp'
     ];

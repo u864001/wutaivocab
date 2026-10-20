@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { getDialogueTreeForLocation } from './townData';
 import { speakEnglish, stopSpeech, soundEngine } from '../../services/audio';
 import {
@@ -174,10 +175,11 @@ export const DialogueEngine = ({
     }
   };
 
+  const { isDark } = useTheme();
   const displayAvatar = isVisitingTeacher ? visitingTeacher.avatar : location.npcAvatar;
   const displayPortrait = isVisitingTeacher ? visitingTeacher.portrait : location.npcPortrait;
   const displayRole = isVisitingTeacher ? visitingTeacher.roleZh : location.npcRole;
-  const displayBg = location.bgImage;
+  const displayBg = (isDark && location.bgImageNight) ? location.bgImageNight : location.bgImage;
 
   const standeeSide = isVisitingTeacher 
     ? (visitingTeacher.standeeSide || 'right') 
