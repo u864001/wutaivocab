@@ -78,9 +78,76 @@ export const Header = ({
         </div>
       </div>
 
-      {/* 功能控制區：手機版純圖示單行排版、電腦版完整文字 */}
+      {/* 功能控制區：符合業界標準排序（返回 ➔ 榮譽獎盃 ➔ 聲音 ➔ 雙語 ➔ 日夜主題 ➔ 學生通行證錨點） */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        {/* 學生漫遊通行證 / 座號按鈕 (手機版純圖示無文字，避免佔位折行) */}
+        {/* 1. 上一層返回按鈕 (非首頁時顯示，手機版僅箭頭圖示) */}
+        {(onGoParent || onGoHome) && currentView !== 'portal' && (
+          <button
+            onClick={onGoParent || onGoHome}
+            title={
+              currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab'
+                ? (lang === 'zh-TW' ? '返回學習宇宙首頁' : 'Back to Universe Home')
+                : (lang === 'zh-TW' ? '返回單字冒險館' : 'Back to Vocab Hub')
+            }
+            className="p-2 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 flex items-center gap-1 text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer shrink-0"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span className="hidden sm:inline">
+              {currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab'
+                ? (lang === 'zh-TW' ? '學習首頁' : 'Home')
+                : (lang === 'zh-TW' ? '回單字館' : 'Vocab Hub')}
+            </span>
+          </button>
+        )}
+
+        {/* 2. 🏆 全校排行榜圓形金盃按鈕 (連續點選 5 次可開啟教師後台) */}
+        {onOpenLeaderboard && (
+          <button
+            type="button"
+            onClick={handleLeaderboardClick}
+            title={lang === 'zh-TW' ? '全校榮譽排行榜 (連續點選 5 次開啟教師後台)' : 'School Leaderboard'}
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-amber-400/20 via-yellow-400/30 to-amber-500/20 hover:from-amber-400/40 hover:to-yellow-400/50 border border-amber-400/60 dark:border-yellow-400/50 text-amber-500 dark:text-yellow-300 flex items-center justify-center shadow-sm hover:shadow-amber-400/25 active:scale-95 transition-all cursor-pointer shrink-0"
+          >
+            <Trophy className="w-4 h-4 text-amber-500 dark:text-yellow-300 fill-amber-400/30 dark:fill-yellow-400/20 drop-shadow-xs" />
+          </button>
+        )}
+
+        {/* 3. 🔊 音效開關 (純圖示) */}
+        <button
+          onClick={handleToggleSound}
+          title={isMuted ? t.soundOff : t.soundOn}
+          className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm transition-all active:scale-95 shrink-0"
+        >
+          {isMuted ? <VolumeX className="w-3.5 h-3.5 text-rose-500" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-600 dark:text-cyan-400" />}
+        </button>
+
+        {/* 4. 🌐 雙語切換 (手機版純圖示) */}
+        <button
+          onClick={toggleLang}
+          title={lang === 'zh-TW' ? 'Switch to English' : '切換為繁體中文'}
+          className="p-2 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 flex items-center gap-1 text-xs font-black shadow-sm transition-all active:scale-95 shrink-0"
+        >
+          <Globe className="w-3.5 h-3.5 text-blue-500" />
+          <span className="hidden sm:inline">{lang === 'zh-TW' ? 'EN' : '中文'}</span>
+        </button>
+
+        {/* 5. ☀️/🌙 主題切換 (晨曦白晝 vs 星月夜景，支援時鐘自動隨動) */}
+        <button
+          onClick={toggleTheme}
+          title={
+            isAuto
+              ? (isDark ? '星月夜間模式 (依時鐘自動，點擊切換為手動白天)' : '晨曦日間模式 (依時鐘自動，點擊切換為手動夜間)')
+              : (isDark ? '當前為手動夜間 (點擊回歸時鐘自動)' : '當前為手動白天 (點擊切換為手動夜間)')
+          }
+          className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-amber-500 dark:text-cyan-300 shadow-sm transition-all active:scale-95 shrink-0 relative"
+        >
+          {isDark ? <Moon className="w-3.5 h-3.5 text-cyan-300" /> : <Sun className="w-3.5 h-3.5 animate-spin-slow text-amber-500" />}
+          {isAuto && (
+            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white dark:ring-slate-900" title="隨時鐘自動切換" />
+          )}
+        </button>
+
+        {/* 6. 👤 學生漫遊通行證 / 座號登入按鈕 (個人身分錨定於最右側) */}
         {isLoggedIn ? (
           <button
             onClick={openModal}
@@ -115,73 +182,6 @@ export const Header = ({
             <span className="hidden sm:inline">{t.loginToRoam}</span>
           </button>
         )}
-
-        {/* 🏆 全校排行榜圓形金盃按鈕 (與音量、日夜收在一起，放在學生資訊欄與聲音切換鈕中間；連點 5 次可開啟教師後台) */}
-        {onOpenLeaderboard && (
-          <button
-            type="button"
-            onClick={handleLeaderboardClick}
-            title={lang === 'zh-TW' ? '全校榮譽排行榜 (連續點選 5 次開啟教師後台)' : 'School Leaderboard'}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-amber-400/20 via-yellow-400/30 to-amber-500/20 hover:from-amber-400/40 hover:to-yellow-400/50 border border-amber-400/60 dark:border-yellow-400/50 text-amber-500 dark:text-yellow-300 flex items-center justify-center shadow-sm hover:shadow-amber-400/25 active:scale-95 transition-all cursor-pointer shrink-0"
-          >
-            <Trophy className="w-4 h-4 text-amber-500 dark:text-yellow-300 fill-amber-400/30 dark:fill-yellow-400/20 drop-shadow-xs" />
-          </button>
-        )}
-
-        {/* 上一層返回按鈕 (非首頁時顯示，手機版僅箭頭圖示) */}
-        {(onGoParent || onGoHome) && currentView !== 'portal' && (
-          <button
-            onClick={onGoParent || onGoHome}
-            title={
-              currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab'
-                ? (lang === 'zh-TW' ? '返回學習宇宙首頁' : 'Back to Universe Home')
-                : (lang === 'zh-TW' ? '返回單字冒險館' : 'Back to Vocab Hub')
-            }
-            className="p-2 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 flex items-center gap-1 text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer shrink-0"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="hidden sm:inline">
-              {currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab'
-                ? (lang === 'zh-TW' ? '學習首頁' : 'Home')
-                : (lang === 'zh-TW' ? '回單字館' : 'Vocab Hub')}
-            </span>
-          </button>
-        )}
-
-        {/* 音效開關 (純圖示) */}
-        <button
-          onClick={handleToggleSound}
-          title={isMuted ? t.soundOff : t.soundOn}
-          className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm transition-all active:scale-95 shrink-0"
-        >
-          {isMuted ? <VolumeX className="w-3.5 h-3.5 text-rose-500" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-600 dark:text-cyan-400" />}
-        </button>
-
-        {/* 雙語切換 (手機版純圖示) */}
-        <button
-          onClick={toggleLang}
-          title={lang === 'zh-TW' ? 'Switch to English' : '切換為繁體中文'}
-          className="p-2 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 flex items-center gap-1 text-xs font-black shadow-sm transition-all active:scale-95 shrink-0"
-        >
-          <Globe className="w-3.5 h-3.5 text-blue-500" />
-          <span className="hidden sm:inline">{lang === 'zh-TW' ? 'EN' : '中文'}</span>
-        </button>
-
-        {/* 主題切換 (☀️ 晨曦白晝 vs 🌙 星月夜景，支援時鐘自動隨動) */}
-        <button
-          onClick={toggleTheme}
-          title={
-            isAuto
-              ? (isDark ? '星月夜間模式 (依時鐘自動，點擊切換為手動白天)' : '晨曦日間模式 (依時鐘自動，點擊切換為手動夜間)')
-              : (isDark ? '當前為手動夜間 (點擊回歸時鐘自動)' : '當前為手動白天 (點擊切換為手動夜間)')
-          }
-          className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-amber-500 dark:text-cyan-300 shadow-sm transition-all active:scale-95 shrink-0 relative"
-        >
-          {isDark ? <Moon className="w-3.5 h-3.5 text-cyan-300" /> : <Sun className="w-3.5 h-3.5 animate-spin-slow text-amber-500" />}
-          {isAuto && (
-            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white dark:ring-slate-900" title="隨時鐘自動切換" />
-          )}
-        </button>
       </div>
     </header>
   );

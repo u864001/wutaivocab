@@ -18,8 +18,8 @@ import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
   Swords, X, ChevronRight, Compass, Flame, Coins, Award,
-  Users, Crown, Zap, School, KeyRound, Eye, Headphones, Mic, Volume2,
-  Sun, Moon
+  Users, Crown, Zap, School, KeyRound, Eye, Headphones, Mic, Volume2, VolumeX, Globe,
+  Sun, Moon, User
 } from 'lucide-react';
 
 export const GRADE_LEADERBOARD_TABS = [
@@ -225,9 +225,10 @@ export const CONSOLIDATED_GAME_MODES = [
 ];
 
 export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
-  const { t, lang } = useI18n();
-  const { currentStudent } = useStudent();
+  const { t, lang, toggleLang } = useI18n();
+  const { currentStudent, isLoggedIn, openModal } = useStudent();
   const { isDark, toggleTheme, isAuto } = useTheme();
+  const [isMuted, setIsMuted] = useState(soundEngine.isMuted);
   const currentWeek = getWeekNumber();
 
   // 智慧預設目標年級：若已登入學生則自動錨定其所屬年級 (1~6)，否則預設 4 年級
@@ -394,13 +395,62 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
             {t.heroHallTitle || '全校英雄榮譽榜'}
           </h2>
 
-          <div className="flex items-center gap-2">
+          {/* 右上角控制群組：業界標準統一排序（重新整理 ➔ 聲音 ➔ 雙語 ➔ 日夜主題 ➔ 學生通行證錨點） */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* 1. 重新整理 */}
+            <button
+              onClick={() => loadGradeBoards(true)}
+              disabled={isLoading}
+              className={`p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 ${
+                isDark
+                  ? 'bg-black/60 border-white/20 text-slate-300 hover:text-white'
+                  : 'bg-white/90 border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm'
+              }`}
+              title={t.refresh || '重新整理'}
+            >
+              <RotateCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            </button>
+
+            {/* 2. 靜音/音效切換 */}
+            <button
+              onClick={() => {
+                const m = soundEngine.toggleMute();
+                setIsMuted(m);
+              }}
+              className={`p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 ${
+                isDark
+                  ? 'bg-black/60 border-white/20 text-slate-300 hover:text-white'
+                  : 'bg-white/90 border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm'
+              }`}
+              title={isMuted ? '開啟音效' : '靜音'}
+            >
+              {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-500" />}
+            </button>
+
+            {/* 3. 雙語切換 */}
+            <button
+              onClick={() => {
+                soundEngine.click();
+                if (toggleLang) toggleLang();
+              }}
+              className={`p-2 sm:px-3 sm:py-2 rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 flex items-center gap-1 ${
+                isDark
+                  ? 'bg-black/60 border-white/20 text-blue-400 hover:text-white'
+                  : 'bg-white/90 border-slate-300 text-blue-600 hover:text-blue-700 shadow-sm'
+              }`}
+              title={lang === 'zh-TW' ? 'Switch to English' : '切換為繁體中文'}
+            >
+              <Globe className="w-4 h-4 text-blue-500" />
+              <span className="text-xs font-black hidden sm:inline">{lang === 'zh-TW' ? 'EN' : '中文'}</span>
+            </button>
+
+            {/* 4. 日夜模式切換 */}
             <button
               onClick={() => {
                 soundEngine.click();
                 toggleTheme();
               }}
-              className={`p-2.5 rounded-2xl border transition-all cursor-pointer shadow-lg backdrop-blur-md active:scale-95 relative ${
+              className={`p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 relative ${
                 isDark
                   ? 'bg-black/60 border-white/20 text-cyan-300 hover:text-white'
                   : 'bg-white/90 border-slate-300 text-amber-500 hover:text-amber-600 shadow-sm'
@@ -417,18 +467,47 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
               )}
             </button>
 
-            <button
-              onClick={() => loadGradeBoards(true)}
-              disabled={isLoading}
-              className={`p-2.5 rounded-2xl border transition-all cursor-pointer shadow-lg backdrop-blur-md active:scale-95 ${
-                isDark
-                  ? 'bg-black/60 border-white/20 text-slate-300 hover:text-white'
-                  : 'bg-white/90 border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm'
-              }`}
-              title={t.refresh || '重新整理'}
-            >
-              <RotateCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-            </button>
+            {/* 5. 學生探險通行證 / 登入 (個人身分錨定於最右側) */}
+            {isLoggedIn ? (
+              <button
+                onClick={() => {
+                  soundEngine.click();
+                  if (openModal) openModal();
+                }}
+                title={t.currentIdentity || '個人探險通行證'}
+                className="px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-slate-800 border border-emerald-400/50 text-slate-800 dark:text-slate-100 flex items-center gap-1.5 text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer shrink-0"
+              >
+                {currentStudent?.avatar_id ? (
+                  <img
+                    src={`/assets/avatars/${currentStudent.avatar_id}.webp`}
+                    alt="Warrior Avatar"
+                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-amber-400 shadow-sm shrink-0"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                ) : (
+                  <User className="w-3.5 h-3.5 text-emerald-500" />
+                )}
+                <span className="font-heading truncate max-w-[100px] hidden sm:inline">
+                  {formatStudentBadge(currentStudent, lang)}
+                </span>
+                <span className="flex items-center gap-0.5 text-amber-500 dark:text-amber-400 font-mono font-black text-xs">
+                  <Coins className="w-3 h-3" />
+                  {currentStudent?.coins ?? 0}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  soundEngine.click();
+                  if (openModal) openModal();
+                }}
+                title={t.loginToRoam || '登入座號漫遊'}
+                className="p-2 sm:px-3 sm:py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white flex items-center gap-1.5 text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer shrink-0"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{t.loginToRoam || '登入座號'}</span>
+              </button>
+            )}
           </div>
         </div>
 

@@ -15,9 +15,15 @@ import {
   Send,
   X,
   Layers,
+  Sun,
+  Moon,
+  User,
+  Coins,
 } from 'lucide-react';
 import { useI18n } from '../context/I18nContext';
 import { useTheme } from '../context/ThemeContext';
+import { useStudent } from '../context/StudentContext';
+import { formatStudentBadge } from '../utils/studentIdHelper';
 
 // 課本大綱目錄（對應 Heyzine 48 頁完整教材）
 const CHAPTERS = [
@@ -62,8 +68,9 @@ const DEFAULT_LISTENING_DATA = {
 };
 
 export const TextbookViewer = ({ onBack }) => {
-  const { lang } = useI18n();
-  const { isDark } = useTheme();
+  const { lang, t } = useI18n();
+  const { isDark, toggleTheme, isAuto } = useTheme();
+  const { currentStudent, isLoggedIn, openModal } = useStudent();
   const [activePage, setActivePage] = useState(1);
   const [isAudioDrawerOpen, setIsAudioDrawerOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState('u1');
@@ -149,8 +156,9 @@ export const TextbookViewer = ({ onBack }) => {
           </div>
         </div>
 
-        {/* 右側：聽力隨身聽開關與外開按鈕 */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* 右側控制群組：業界標準統一排序（聽力隨身聽 ➔ 新分頁 ➔ 日夜主題 ➔ 學生通行證錨點） */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* 1. 聽力隨身聽開關 */}
           <button
             onClick={() => setIsAudioDrawerOpen(!isAudioDrawerOpen)}
             className={`px-2.5 py-1.5 rounded-xl border flex items-center gap-1.5 text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer ${
@@ -166,6 +174,7 @@ export const TextbookViewer = ({ onBack }) => {
             </span>
           </button>
 
+          {/* 2. 另開新分頁按鈕 */}
           <a
             href="https://heyzine.com/flip-book/962c488fe3.html"
             target="_blank"
@@ -178,6 +187,62 @@ export const TextbookViewer = ({ onBack }) => {
             <ExternalLink className="w-3.5 h-3.5" />
             <span className="hidden md:inline text-[11px]">新分頁</span>
           </a>
+
+          {/* 3. 日夜主題切換鈕 */}
+          <button
+            onClick={toggleTheme}
+            className={`p-1.5 sm:p-2 rounded-xl border transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center relative ${
+              isDark
+                ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-cyan-300'
+                : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-amber-500'
+            }`}
+            title={
+              isAuto
+                ? (isDark ? '星月夜間模式 (依時鐘自動，點擊切換為手動白天)' : '晨曦日間模式 (依時鐘自動，點擊切換為手動夜間)')
+                : (isDark ? '當前為手動夜間 (點擊回歸時鐘自動)' : '當前為手動白天 (點擊切換為手動夜間)')
+            }
+          >
+            {isDark ? <Moon className="w-3.5 h-3.5 text-cyan-300" /> : <Sun className="w-3.5 h-3.5 text-amber-500 animate-spin-slow" />}
+            {isAuto && (
+              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white dark:ring-slate-900" title="隨時鐘自動切換" />
+            )}
+          </button>
+
+          {/* 4. 學生通行證 / 登入錨點 */}
+          {isLoggedIn ? (
+            <button
+              onClick={openModal}
+              title={t?.currentIdentity || '個人探險通行證'}
+              className="px-2 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border flex items-center gap-1.5 text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer shrink-0 bg-white dark:bg-slate-800 border-emerald-400/50 text-slate-800 dark:text-slate-100"
+            >
+              {currentStudent?.avatar_id ? (
+                <img
+                  src={`/assets/avatars/${currentStudent.avatar_id}.webp`}
+                  alt="Avatar"
+                  className="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover border border-amber-400 shrink-0"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              ) : (
+                <User className="w-3.5 h-3.5 text-emerald-500" />
+              )}
+              <span className="font-heading truncate max-w-[90px] hidden sm:inline">
+                {formatStudentBadge(currentStudent, lang)}
+              </span>
+              <span className="flex items-center gap-0.5 text-amber-500 font-mono font-bold text-xs">
+                <Coins className="w-3 h-3" />
+                {currentStudent?.coins ?? 0}
+              </span>
+            </button>
+          ) : (
+            <button
+              onClick={openModal}
+              title={t?.loginToRoam || '登入座號漫遊'}
+              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white flex items-center gap-1 text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer shrink-0"
+            >
+              <User className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t?.loginToRoam || '登入座號'}</span>
+            </button>
+          )}
         </div>
       </div>
 

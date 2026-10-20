@@ -10,7 +10,7 @@ import {
   Sparkles, Keyboard, BookOpen, Volume2, Swords,
   Store, RotateCcw, Check, CheckCircle2, ChevronRight,
   Sun, Moon, VolumeX, ShieldCheck, Layers, HelpCircle,
-  X, Zap, Star, AlertCircle
+  X, Zap, Star, AlertCircle, Globe
 } from 'lucide-react';
 
 const POSTER_EXPLORE = '/assets/lobby/theme_explore.jpg';
@@ -140,7 +140,7 @@ export const Lobby = ({
   onOpenTeacherHub,
   qualifyingBook
 }) => {
-  const { t, lang } = useI18n();
+  const { t, lang, toggleLang } = useI18n();
   const { currentStudent, isLoggedIn, openModal } = useStudent();
   const { isDark, toggleTheme, isAuto } = useTheme();
   const [isMuted, setIsMuted] = useState(soundEngine.isMuted);
@@ -740,33 +740,9 @@ export const Lobby = ({
           </button>
         )}
 
-        {/* 右上角控制群組：日夜切換 • 靜音切換 • 個人資訊通行證 */}
+        {/* 右上角控制群組：業界標準統一排序（聲音 ➔ 雙語 ➔ 日夜主題 ➔ 勇士探險通行證） */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* 日夜切換按鈕 */}
-          <button
-            type="button"
-            onClick={() => {
-              soundEngine.click();
-              toggleTheme();
-            }}
-            className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center border relative ${
-              isDark
-                ? 'bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border-white/20'
-                : 'bg-white hover:bg-slate-50 text-amber-500 border-slate-300'
-            }`}
-            title={
-              isAuto
-                ? (isDark ? '星月夜間模式 (依時鐘自動，點擊切換為手動白天)' : '晨曦日間模式 (依時鐘自動，點擊切換為手動夜間)')
-                : (isDark ? '當前為手動夜間 (點擊回歸時鐘自動)' : '當前為手動白天 (點擊切換為手動夜間)')
-            }
-          >
-            {isDark ? <Moon className="w-4 h-4 text-cyan-300" /> : <Sun className="w-4 h-4 text-amber-500 animate-spin-slow" />}
-            {isAuto && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white dark:ring-slate-900" title="隨時鐘自動切換" />
-            )}
-          </button>
-
-          {/* 靜音切換按鈕 */}
+          {/* 1. 靜音/音效切換按鈕 */}
           <button
             type="button"
             onClick={() => {
@@ -783,7 +759,49 @@ export const Lobby = ({
             {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-500" />}
           </button>
 
-          {/* 勇士探險通行證 */}
+          {/* 2. 雙語切換按鈕 */}
+          <button
+            type="button"
+            onClick={() => {
+              soundEngine.click();
+              if (toggleLang) toggleLang();
+            }}
+            className={`p-1.5 sm:px-2.5 sm:py-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1 border ${
+              isDark
+                ? 'bg-slate-900/90 hover:bg-slate-800 text-blue-400 border-white/20'
+                : 'bg-white hover:bg-slate-50 text-blue-600 border-slate-300'
+            }`}
+            title={lang === 'zh-TW' ? 'Switch to English' : '切換為繁體中文'}
+          >
+            <Globe className="w-4 h-4 text-blue-500" />
+            <span className="text-xs font-black hidden sm:inline">{lang === 'zh-TW' ? 'EN' : '中文'}</span>
+          </button>
+
+          {/* 3. 日夜切換按鈕 */}
+          <button
+            type="button"
+            onClick={() => {
+              soundEngine.click();
+              toggleTheme();
+            }}
+            className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center border relative ${
+              isDark
+                ? 'bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border-white/20'
+                : 'bg-white hover:bg-slate-50 text-amber-500 border-slate-300'
+            }`}
+            title={
+              isAuto
+                ? (isDark ? '星月夜間模式 (依時鐘自動，點擊切換為手動白天)' : '晨曦日間模式 (依時鐘自動，點擊切手動夜間)')
+                : (isDark ? '當前為手動夜間 (點擊回歸時鐘自動)' : '當前為手動白天 (點擊切換為手動夜間)')
+            }
+          >
+            {isDark ? <Moon className="w-4 h-4 text-cyan-300" /> : <Sun className="w-4 h-4 text-amber-500 animate-spin-slow" />}
+            {isAuto && (
+              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white dark:ring-slate-900" title="隨時鐘自動切換" />
+            )}
+          </button>
+
+          {/* 4. 勇士探險通行證 (固定錨定於最右側) */}
           <button
             type="button"
             onClick={() => {

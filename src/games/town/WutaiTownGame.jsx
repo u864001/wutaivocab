@@ -474,22 +474,50 @@ export const WutaiTownGame = ({ onBack }) => {
             )}
           </div>
 
-          {/* 右側：日夜切換 + 音樂切換 + 金幣 + 榮譽積分 + 背包 + 任務 (手機版純圖示單行排版) */}
+          {/* 右側控制群組：業界標準統一排序（遊戲任務 ➔ 我的房間 ➔ 音樂 ➔ 日夜主題 ➔ 個人金幣與積分錨點） */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {/* ☀️/🌙 小鎮日夜切換鈕 */}
+            {/* 1. 每日任務 */}
             <button
-              onClick={toggleTheme}
-              className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 bg-white/15 hover:bg-white/25 text-amber-300 border-white/20 relative"
-              title={isAuto ? (isDark ? '小鎮星月夜景 (依時鐘自動)' : '小鎮白晝晨曦 (依時鐘自動)') : (isDark ? '點擊切換為白晝小鎮' : '點擊切換為星月小鎮')}
+              onClick={() => {
+                soundEngine.click();
+                setIsQuestBoardOpen(true);
+              }}
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
+              title="查看每日任務"
             >
-              {isDark ? <Moon className="w-3.5 h-3.5 text-cyan-300" /> : <Sun className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />}
-              <span className="hidden lg:inline text-[11px]">{isDark ? '星月夜景' : '晨曦白晝'}</span>
-              {isAuto && (
-                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white" title="隨時鐘自動切換" />
-              )}
+              <ScrollText className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">每日任務</span>
             </button>
 
-            {/* 🎵 音樂開關 */}
+            {/* 2. 我的房間 / 背包 */}
+            <button
+              onClick={() => {
+                soundEngine.click();
+                soundEngine.init();
+                if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
+                  soundEngine.ctx.resume().catch(() => {});
+                }
+                soundEngine.startHomeBgm();
+                setIsHomeOpen(true);
+              }}
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-lime-600 hover:bg-lime-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
+              title="回到溫馨的家 • 整理背包"
+            >
+              <Package className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">我的房間</span>
+              <span className="text-[11px] sm:text-xs font-mono">({inventory?.length || 0})</span>
+            </button>
+
+            {/* 3. 今日生活對話完成進度 (上限 6 枚金幣) */}
+            <div
+              className="px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-xl bg-teal-500/20 border border-teal-300/40 backdrop-blur-md flex items-center gap-1 text-teal-200 text-xs font-black shadow-sm"
+              title={`今日小鎮生活對話：已在 ${dailyDialogueRecord?.completedLocations?.length || 0} 個地標完成交談（每日上限 6 枚金幣）`}
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-teal-300" />
+              <span className="font-mono text-xs sm:text-sm">{dailyDialogueRecord?.completedLocations?.length || 0}/6</span>
+            </div>
+
+            {/* 4. 🎵 音樂/靜音切換 */}
             <button
               onClick={handleToggleTownBgm}
               className={`p-1.5 sm:px-2.5 sm:py-1 rounded-xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 ${
@@ -512,58 +540,30 @@ export const WutaiTownGame = ({ onBack }) => {
               )}
             </button>
 
-            {/* 金幣計數器 */}
-            <div className="px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-xl bg-amber-500/20 border border-amber-300/40 backdrop-blur-md flex items-center gap-1 text-amber-200 text-xs font-black shadow-sm">
-              <Coins className="w-3.5 h-3.5 text-amber-400" />
-              <span className="font-mono text-xs sm:text-sm">{coins}</span>
-            </div>
-
-            {/* 探索積分 (榮譽) */}
-            <div className="px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-xl bg-indigo-500/20 border border-indigo-300/40 backdrop-blur-md flex items-center gap-1 text-indigo-200 text-xs font-black shadow-sm">
-              <Trophy className="w-3.5 h-3.5 text-indigo-400" />
-              <span className="font-mono text-xs sm:text-sm">{questPoints}</span>
-            </div>
-
-            {/* 今日生活對話完成進度 (上限 6 枚金幣) */}
-            <div
-              className="px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-xl bg-teal-500/20 border border-teal-300/40 backdrop-blur-md flex items-center gap-1 text-teal-200 text-xs font-black shadow-sm"
-              title={`今日小鎮生活對話：已在 ${dailyDialogueRecord?.completedLocations?.length || 0} 個地標完成交談（每日上限 6 枚金幣）`}
-            >
-              <MessageSquare className="w-3.5 h-3.5 text-teal-300" />
-              <span className="font-mono text-xs sm:text-sm">{dailyDialogueRecord?.completedLocations?.length || 0}/6</span>
-            </div>
-
-            {/* 我的房間 / 背包 */}
+            {/* 5. ☀️/🌙 小鎮日夜切換鈕 */}
             <button
-              onClick={() => {
-                soundEngine.click();
-                soundEngine.init();
-                if (soundEngine.ctx && soundEngine.ctx.state === 'suspended') {
-                  soundEngine.ctx.resume().catch(() => {});
-                }
-                soundEngine.startHomeBgm();
-                setIsHomeOpen(true);
-              }}
-              className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-lime-600 hover:bg-lime-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
-              title="回到溫馨的家 • 整理背包"
+              onClick={toggleTheme}
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 bg-white/15 hover:bg-white/25 text-amber-300 border-white/20 relative"
+              title={isAuto ? (isDark ? '小鎮星月夜景 (依時鐘自動)' : '小鎮白晝晨曦 (依時鐘自動)') : (isDark ? '點擊切換為白晝小鎮' : '點擊切換為星月小鎮')}
             >
-              <Package className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">我的房間</span>
-              <span className="text-[11px] sm:text-xs font-mono">({inventory?.length || 0})</span>
+              {isDark ? <Moon className="w-3.5 h-3.5 text-cyan-300" /> : <Sun className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />}
+              <span className="hidden lg:inline text-[11px]">{isDark ? '星月夜景' : '晨曦白晝'}</span>
+              {isAuto && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white" title="隨時鐘自動切換" />
+              )}
             </button>
 
-            {/* 每日任務 */}
-            <button
-              onClick={() => {
-                soundEngine.click();
-                setIsQuestBoardOpen(true);
-              }}
-              className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer"
-              title="查看每日任務"
-            >
-              <ScrollText className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">每日任務</span>
-            </button>
+            {/* 6. 金幣與榮譽積分 (個人資產錨定於最右側) */}
+            <div className="flex items-center gap-1">
+              <div className="px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-xl bg-amber-500/20 border border-amber-300/40 backdrop-blur-md flex items-center gap-1 text-amber-200 text-xs font-black shadow-sm">
+                <Coins className="w-3.5 h-3.5 text-amber-400" />
+                <span className="font-mono text-xs sm:text-sm">{coins}</span>
+              </div>
+              <div className="px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-xl bg-indigo-500/20 border border-indigo-300/40 backdrop-blur-md flex items-center gap-1 text-indigo-200 text-xs font-black shadow-sm">
+                <Trophy className="w-3.5 h-3.5 text-indigo-400" />
+                <span className="font-mono text-xs sm:text-sm">{questPoints}</span>
+              </div>
+            </div>
           </div>
         </div>
 
