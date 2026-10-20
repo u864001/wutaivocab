@@ -143,6 +143,7 @@ export const Lobby = ({
   const { t, lang } = useI18n();
   const { currentStudent, isLoggedIn, openModal } = useStudent();
   const { isDark, toggleTheme } = useTheme();
+  const [isMuted, setIsMuted] = useState(soundEngine.isMuted);
 
   // ── 流程步驟：'game' (選遊戲手風琴) | 'scope' (專屬整備選冊/秘境頁) ──
   const [step, setStep] = useState('game');
@@ -654,33 +655,55 @@ export const Lobby = ({
   };
 
   return (
-    <div className="fixed inset-0 w-full h-[100dvh] bg-slate-950 text-white flex flex-col justify-between overflow-hidden select-none z-10 animate-fadeIn font-sans">
+    <div className={`fixed inset-0 w-full h-[100dvh] flex flex-col justify-between overflow-hidden select-none z-10 animate-fadeIn font-sans transition-colors duration-300 ${
+      isDark
+        ? 'bg-slate-950 text-white'
+        : 'bg-gradient-to-b from-amber-50/50 via-slate-50/60 to-emerald-50/40 text-slate-800'
+    }`}>
       
-      {/* ── 背景星空環境微光 ── */}
-      <div className="absolute inset-0 bg-slate-950 pointer-events-none" />
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
+      {/* ── 背景環境微光 ── */}
+      {isDark ? (
+        <>
+          <div className="absolute inset-0 bg-slate-950 pointer-events-none" />
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
+        </>
+      ) : (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-b from-amber-50/80 via-white/80 to-emerald-50/80 pointer-events-none" />
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-400/15 rounded-full blur-3xl pointer-events-none" />
+        </>
+      )}
 
       {/* ════════════════════════════════════════════════════════════════
-          【固定頂部 HUD】左上回首頁 / 上一步 • 上中英雄榜 • 右上個人通行證
+          【固定頂部 HUD】左上回首頁 / 上一步 • 上中英雄榜 • 右上模式/音效/通行證
          ════════════════════════════════════════════════════════════════ */}
-      <header className="relative z-30 w-full px-3 sm:px-6 py-2 sm:py-2.5 bg-slate-950/85 backdrop-blur-md border-b border-white/10 flex items-center justify-between shadow-xl shrink-0">
+      <header className={`relative z-30 w-full px-3 sm:px-6 py-2 sm:py-2.5 backdrop-blur-md border-b flex items-center justify-between shadow-xl shrink-0 transition-colors duration-300 ${
+        isDark
+          ? 'bg-slate-950/85 border-white/10 text-white'
+          : 'bg-white/85 border-slate-200/90 text-slate-800 shadow-sm'
+      }`}>
         
         {/* 左上角：上一步 / 回首頁 */}
         <button
           type="button"
           onClick={handleGoBack}
-          className="px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-100 hover:text-white border border-white/20 text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+          className={`px-3.5 py-1.5 rounded-xl border text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer ${
+            isDark
+              ? 'bg-slate-900/90 hover:bg-slate-800 text-slate-100 hover:text-white border-white/20'
+              : 'bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border-slate-300 shadow-sm'
+          }`}
           title={step === 'scope' ? '返回選擇其他遊戲' : '返回英語學習宇宙首頁'}
         >
           {step === 'scope' ? (
             <>
-              <ArrowLeft className="w-4 h-4 text-amber-400" />
+              <ArrowLeft className="w-4 h-4 text-amber-500 dark:text-amber-400" />
               <span>回選遊戲</span>
             </>
           ) : (
             <>
-              <Home className="w-4 h-4 text-emerald-400" />
+              <Home className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>回首頁</span>
             </>
           )}
@@ -688,12 +711,14 @@ export const Lobby = ({
 
         {/* 置上中：英雄榜 或 整備室標題 */}
         {step === 'scope' ? (
-          <div className="flex items-center gap-2 px-3.5 py-1 rounded-2xl bg-slate-900/90 border border-white/20 shadow-md">
-            <currentGameObj.iconComp className="w-4 h-4 text-amber-400" />
-            <span className="font-heading font-black text-xs sm:text-sm tracking-wide text-white">
+          <div className={`flex items-center gap-2 px-3.5 py-1 rounded-2xl border shadow-md transition-colors ${
+            isDark ? 'bg-slate-900/90 border-white/20 text-white' : 'bg-white border-amber-300/80 text-slate-800 shadow-sm'
+          }`}>
+            <currentGameObj.iconComp className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+            <span className="font-heading font-black text-xs sm:text-sm tracking-wide">
               {currentGameObj.name}
             </span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold">
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-400/40 font-bold">
               {currentGameObj.categoryTitle}
             </span>
           </div>
@@ -704,49 +729,90 @@ export const Lobby = ({
               soundEngine.click();
               onOpenLeaderboard();
             }}
-            className="px-4 py-1.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/35 hover:to-yellow-500/45 border-2 border-amber-400/60 text-amber-200 font-heading text-xs sm:text-sm font-black flex items-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer"
+            className="px-4 py-1.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/35 hover:to-yellow-500/45 border-2 border-amber-500/60 text-amber-800 dark:text-amber-200 font-heading text-xs sm:text-sm font-black flex items-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer backdrop-blur-md"
             title="查看全校與年級英雄榜"
           >
-            <Trophy className="w-4 h-4 text-amber-400 animate-bounce" />
+            <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-bounce" />
             <span className="tracking-wide">英雄榜</span>
-            <span className="hidden md:inline text-[11px] text-amber-300 font-mono">
+            <span className="hidden md:inline text-[11px] text-amber-700 dark:text-amber-300 font-mono">
               (看{studentGradeNum}年級排行)
             </span>
           </button>
         )}
 
-        {/* 右上角：個人資訊通行證 */}
-        <button
-          type="button"
-          onClick={() => {
-            soundEngine.click();
-            if (openModal) openModal();
-          }}
-          className="px-2.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white border border-emerald-400/30 text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer backdrop-blur-md"
-          title="點擊開啟勇士探險通行證"
-        >
-          {currentStudent?.avatar_id ? (
-            <div className="w-5 h-5 rounded-full overflow-hidden ring-1 ring-emerald-400 shrink-0 relative bg-slate-950">
-              <img
-                src={`/assets/avatars/${currentStudent.avatar_id}.webp`}
-                alt="avatar"
-                className="w-full h-full object-cover"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
-            </div>
-          ) : (
-            <User className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-          )}
-          <span className="max-w-[120px] truncate">
-            {formatStudentBadge(currentStudent, lang) || '設置身分'}
-          </span>
-          {currentStudent?.coins !== undefined && (
-            <span className="text-amber-400 font-mono font-bold flex items-center gap-1 ml-1 text-xs">
-              <Sparkles className="w-3 h-3 text-amber-400" />
-              <span>{currentStudent.coins}</span>
+        {/* 右上角控制群組：日夜切換 • 靜音切換 • 個人資訊通行證 */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* 日夜切換按鈕 */}
+          <button
+            type="button"
+            onClick={() => {
+              soundEngine.click();
+              toggleTheme();
+            }}
+            className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center border ${
+              isDark
+                ? 'bg-slate-900/90 hover:bg-slate-800 text-amber-300 border-white/20'
+                : 'bg-white hover:bg-slate-50 text-amber-600 border-slate-300'
+            }`}
+            title={isDark ? '切換為晨曦白天模式' : '切換為星空夜間模式'}
+          >
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+
+          {/* 靜音切換按鈕 */}
+          <button
+            type="button"
+            onClick={() => {
+              const m = soundEngine.toggleMute();
+              setIsMuted(m);
+            }}
+            className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center border ${
+              isDark
+                ? 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-white/20'
+                : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-300'
+            }`}
+            title={isMuted ? '開啟音效' : '靜音'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-500" />}
+          </button>
+
+          {/* 勇士探險通行證 */}
+          <button
+            type="button"
+            onClick={() => {
+              soundEngine.click();
+              if (openModal) openModal();
+            }}
+            className={`px-2.5 py-1.5 rounded-xl border text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer backdrop-blur-md ${
+              isDark
+                ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-emerald-400/30'
+                : 'bg-white hover:bg-slate-50 text-slate-800 border-emerald-500/40 shadow-sm'
+            }`}
+            title="點擊開啟勇士探險通行證"
+          >
+            {currentStudent?.avatar_id ? (
+              <div className="w-5 h-5 rounded-full overflow-hidden ring-1 ring-emerald-400 shrink-0 relative bg-slate-950">
+                <img
+                  src={`/assets/avatars/${currentStudent.avatar_id}.webp`}
+                  alt="avatar"
+                  className="w-full h-full object-cover"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              </div>
+            ) : (
+              <User className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+            )}
+            <span className="max-w-[120px] truncate">
+              {formatStudentBadge(currentStudent, lang) || '設置身分'}
             </span>
-          )}
-        </button>
+            {currentStudent?.coins !== undefined && (
+              <span className="text-amber-500 dark:text-amber-400 font-mono font-bold flex items-center gap-1 ml-1 text-xs">
+                <Sparkles className="w-3 h-3 text-amber-500 dark:text-amber-400" />
+                <span>{currentStudent.coins}</span>
+              </span>
+            )}
+          </button>
+        </div>
 
       </header>
 
@@ -868,7 +934,9 @@ export const Lobby = ({
                                 className={`px-3 py-2.5 sm:py-3 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 relative group active:scale-98 backdrop-blur-md shadow-lg ${
                                   isGameActive
                                     ? 'bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 border-amber-200 ring-4 ring-amber-300/80 font-black scale-102'
-                                    : 'bg-slate-950/85 hover:bg-slate-900/95 text-white/95 border-white/25 hover:border-amber-400/60 hover:scale-101'
+                                    : isDark
+                                    ? 'bg-slate-950/85 hover:bg-slate-900/95 text-white/95 border-white/25 hover:border-amber-400/60 hover:scale-101'
+                                    : 'bg-white/90 hover:bg-white text-slate-800 border-slate-200/90 hover:border-amber-400/70 hover:scale-101 shadow-md'
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
@@ -876,7 +944,7 @@ export const Lobby = ({
                                     isGameActive ? 'bg-stone-950/20' : 'bg-amber-400/20 border border-amber-400/40'
                                   }`}>
                                     <IconComp className={`w-4 h-4 ${
-                                      isGameActive ? 'text-stone-950' : 'text-amber-300'
+                                      isGameActive ? 'text-stone-950' : isDark ? 'text-amber-300' : 'text-amber-600'
                                     }`} />
                                   </div>
                                   <h4 className="text-xs sm:text-sm font-black tracking-wide truncate">
@@ -888,11 +956,13 @@ export const Lobby = ({
                                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                                     isGameActive
                                       ? 'bg-stone-950/25 text-stone-950'
-                                      : 'bg-white/10 text-slate-200'
+                                      : isDark
+                                      ? 'bg-white/10 text-slate-200'
+                                      : 'bg-slate-100 text-slate-600'
                                   }`}>
                                     {g.badge}
                                   </span>
-                                  <ChevronRight className={`w-4 h-4 ${isGameActive ? 'text-stone-950' : 'text-white/40'}`} />
+                                  <ChevronRight className={`w-4 h-4 ${isGameActive ? 'text-stone-950' : isDark ? 'text-white/40' : 'text-slate-400'}`} />
                                 </div>
                               </button>
                             );
@@ -952,23 +1022,27 @@ export const Lobby = ({
             <img
               src={currentGameObj.bgImage}
               alt={currentGameObj.name}
-              className="absolute inset-0 w-full h-full object-cover filter brightness-[0.35] contrast-[1.1] pointer-events-none select-none"
+              className={`absolute inset-0 w-full h-full object-cover pointer-events-none select-none transition-all duration-500 ${
+                isDark ? 'brightness-[0.35] contrast-[1.1]' : 'brightness-[0.65] contrast-[1.05]'
+              }`}
             />
-            <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md pointer-events-none" />
+            <div className={`absolute inset-0 pointer-events-none transition-colors duration-300 ${
+              isDark ? 'bg-slate-950/80 backdrop-blur-md' : 'bg-white/70 backdrop-blur-md'
+            }`} />
 
             {/* ═══ 分流 A：神祕密室逃脫 • 四大秘境手風琴 ═══ */}
             {selectedGame === 'escape' ? (
               <div className="relative z-10 w-full h-full p-3 sm:p-5 flex flex-col justify-between">
                 
                 {/* 秘境手風琴標題列 */}
-                <div className="flex items-center justify-between pb-2 border-b border-white/15 shrink-0">
+                <div className={`flex items-center justify-between pb-2 border-b shrink-0 ${isDark ? 'border-white/15' : 'border-slate-300/80'}`}>
                   <div className="flex items-center gap-2">
-                    <KeyRound className="w-5 h-5 text-emerald-400" />
-                    <h3 className="text-base sm:text-lg font-black text-white font-heading">
+                    <KeyRound className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
+                    <h3 className={`text-base sm:text-lg font-black font-heading ${isDark ? 'text-white' : 'text-slate-800'}`}>
                       請選擇探索秘境：
                     </h3>
                   </div>
-                  <span className="text-xs text-emerald-300 font-bold hidden sm:inline">
+                  <span className={`text-xs font-bold hidden sm:inline ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
                     大武山四大古代封印，破解三室機關重現天日
                   </span>
                 </div>
@@ -1030,9 +1104,9 @@ export const Lobby = ({
                 </div>
 
                 {/* 秘境底部開始按鈕 */}
-                <div className="pt-2 border-t border-white/15 flex items-center justify-between shrink-0">
-                  <div className="text-xs text-slate-200 font-bold">
-                    已選定：<span className="text-amber-300 font-black">{ESCAPE_THEMES_PREVIEW.find(t => t.id === escapeThemeId)?.name}</span>
+                <div className={`pt-2 border-t flex items-center justify-between shrink-0 ${isDark ? 'border-white/15' : 'border-slate-300/80'}`}>
+                  <div className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                    已選定：<span className="text-amber-500 dark:text-amber-300 font-black">{ESCAPE_THEMES_PREVIEW.find(t => t.id === escapeThemeId)?.name}</span>
                   </div>
 
                   <button
@@ -1051,16 +1125,18 @@ export const Lobby = ({
               <div className="relative z-10 w-full h-full p-2.5 sm:p-4 md:p-5 flex flex-col justify-between overflow-y-auto">
                 
                 {/* 頂部引導題字 */}
-                <div className="flex items-center justify-between pb-2 border-b border-white/15 shrink-0">
+                <div className={`flex items-center justify-between pb-2 border-b shrink-0 ${isDark ? 'border-white/15' : 'border-slate-300/80'}`}>
                   <div className="flex items-center gap-2">
-                    <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-teal-400" />
-                    <h3 className="text-sm sm:text-base font-black text-white font-heading">
+                    <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-teal-500 dark:text-teal-400" />
+                    <h3 className={`text-sm sm:text-base font-black font-heading ${isDark ? 'text-white' : 'text-slate-800'}`}>
                       請選擇字母巡航迷宮探索模式：
                     </h3>
                   </div>
 
-                  <span className="px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-400/40 text-[11px] font-bold flex items-center gap-1.5 shadow">
-                    <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+                  <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold flex items-center gap-1.5 shadow ${
+                    isDark ? 'bg-teal-500/20 text-teal-300 border-teal-400/40' : 'bg-teal-50 text-teal-800 border-teal-300'
+                  }`}>
+                    <Sparkles className="w-3.5 h-3.5 text-teal-500 dark:text-teal-400" />
                     <span>手指連結字母順序，安全巡航通往終點</span>
                   </span>
                 </div>
@@ -1086,12 +1162,12 @@ export const Lobby = ({
                     
                     {/* ═══ 【第一層：主題風格外觀】2 大經典世界觀 ═══ */}
                     <div className="w-full shrink-0">
-                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                      <div className={`text-[11px] font-black mb-1 flex items-center justify-between ${isDark ? 'text-amber-200/90' : 'text-amber-900'}`}>
                         <span className="flex items-center gap-1">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
                           <span>1. 選擇巡航主題風格：</span>
                         </span>
-                        <span className="text-[10px] text-teal-300 font-bold">
+                        <span className={`text-[10px] font-bold ${isDark ? 'text-teal-300' : 'text-teal-700'}`}>
                           {mazeTheme === 'snake' ? '霧台神山百步蛇守護道' : '星際光軌太空巡航站'}
                         </span>
                       </div>
@@ -1107,18 +1183,20 @@ export const Lobby = ({
                           className={`p-2 sm:p-2.5 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex items-center gap-3 relative active:scale-95 shadow-md ${
                             mazeTheme === 'snake'
                               ? 'bg-gradient-to-r from-emerald-950/90 via-teal-900/90 to-emerald-900/90 text-white border-amber-300 ring-2 ring-amber-400/50 shadow-[0_0_20px_rgba(245,158,11,0.3)]'
-                              : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-white/20 hover:border-amber-400/60'
+                              : isDark
+                              ? 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-white/20 hover:border-amber-400/60'
+                              : 'bg-white/95 hover:bg-amber-50/70 text-slate-700 border-slate-200/90 hover:border-amber-400/60 shadow-sm'
                           }`}
                         >
                           <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-2xl shrink-0">
                             🐍
                           </div>
                           <div className="flex flex-col text-left overflow-hidden">
-                            <span className="text-xs sm:text-sm font-black font-heading text-amber-300 flex items-center gap-1.5">
+                            <span className="text-xs sm:text-sm font-black font-heading text-amber-500 dark:text-amber-300 flex items-center gap-1.5">
                               <span>霧台神山 • 百步蛇守護道</span>
-                              {mazeTheme === 'snake' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 inline" />}
+                              {mazeTheme === 'snake' && <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 inline" />}
                             </span>
-                            <span className="text-[9px] sm:text-[10px] text-slate-300 line-clamp-1">
+                            <span className={`text-[9px] sm:text-[10px] line-clamp-1 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
                               排灣與魯凱板岩古道，守護百步蛇引領前進，金光粒子足跡
                             </span>
                           </div>
@@ -1134,18 +1212,20 @@ export const Lobby = ({
                           className={`p-2 sm:p-2.5 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex items-center gap-3 relative active:scale-95 shadow-md ${
                             mazeTheme === 'cosmic'
                               ? 'bg-gradient-to-r from-indigo-950/90 via-sky-900/90 to-indigo-900/90 text-white border-cyan-300 ring-2 ring-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.3)]'
-                              : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-white/20 hover:border-cyan-400/60'
+                              : isDark
+                              ? 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-white/20 hover:border-cyan-400/60'
+                              : 'bg-white/95 hover:bg-sky-50/70 text-slate-700 border-slate-200/90 hover:border-cyan-400/60 shadow-sm'
                           }`}
                         >
                           <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-2xl shrink-0">
                             🚀
                           </div>
                           <div className="flex flex-col text-left overflow-hidden">
-                            <span className="text-xs sm:text-sm font-black font-heading text-cyan-300 flex items-center gap-1.5">
+                            <span className="text-xs sm:text-sm font-black font-heading text-cyan-600 dark:text-cyan-300 flex items-center gap-1.5">
                               <span>星際光軌 • 太空巡航站</span>
-                              {mazeTheme === 'cosmic' && <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 inline" />}
+                              {mazeTheme === 'cosmic' && <CheckCircle2 className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400 inline" />}
                             </span>
-                            <span className="text-[9px] sm:text-[10px] text-slate-300 line-clamp-1">
+                            <span className={`text-[9px] sm:text-[10px] line-clamp-1 ${isDark ? 'text-slate-300' : 'text-slate-500'}`}>
                               穿梭浩瀚星雲光子節點，推進器引擎噴射，賽博未來霓虹航線
                             </span>
                           </div>
@@ -1155,12 +1235,12 @@ export const Lobby = ({
 
                     {/* ═══ 【第二層：挑戰難度層級】三大模式 ═══ */}
                     <div className="w-full shrink-0">
-                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                      <div className={`text-[11px] font-black mb-1 flex items-center justify-between ${isDark ? 'text-amber-200/90' : 'text-amber-900'}`}>
                         <span className="flex items-center gap-1">
-                          <Layers className="w-3.5 h-3.5 text-emerald-400" />
+                          <Layers className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                           <span>2. 選擇巡航難度層級：</span>
                         </span>
-                        <span className="text-[10px] text-emerald-300 font-bold">
+                        <span className={`text-[10px] font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
                           {mazeTier === 'beginner' ? '自適應 5x5~8x8 • 全程常駐發光' : mazeTier === 'standard' ? '經典 8x8 迷宮 • 停頓智慧提示' : '巨大 10x10 迷宮 • 計時搶分極限榜'}
                         </span>
                       </div>
@@ -1176,7 +1256,9 @@ export const Lobby = ({
                           className={`p-2 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
                             mazeTier === 'beginner'
                               ? 'bg-gradient-to-b from-emerald-500 via-teal-500 to-emerald-600 text-stone-950 border-emerald-200 ring-2 ring-emerald-300 font-black shadow-[0_0_15px_rgba(16,185,129,0.5)]'
-                              : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-emerald-400/60'
+                              : isDark
+                              ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-emerald-400/60'
+                              : 'bg-white/95 hover:bg-emerald-50/70 text-slate-800 border-slate-200/90 hover:border-emerald-400/60 shadow-sm'
                           }`}
                         >
                           <span className="text-xs sm:text-sm font-black font-heading tracking-wide flex items-center gap-1">
@@ -1184,7 +1266,7 @@ export const Lobby = ({
                             {mazeTier === 'beginner' && <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />}
                           </span>
                           <span className={`text-[8px] sm:text-[9px] font-bold mt-0.5 truncate max-w-full ${
-                            mazeTier === 'beginner' ? 'text-stone-950/80' : 'text-slate-300'
+                            mazeTier === 'beginner' ? 'text-stone-950/80' : isDark ? 'text-slate-300' : 'text-slate-500'
                           }`}>
                             起訖字母自由選 • 常駐發光指引
                           </span>
@@ -1200,7 +1282,9 @@ export const Lobby = ({
                           className={`p-2 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
                             mazeTier === 'standard'
                               ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-2 ring-amber-300 font-black shadow-[0_0_15px_rgba(245,158,11,0.5)]'
-                              : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                              : isDark
+                              ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                              : 'bg-white/95 hover:bg-amber-50/70 text-slate-800 border-slate-200/90 hover:border-amber-400/60 shadow-sm'
                           }`}
                         >
                           <span className="text-xs sm:text-sm font-black font-heading tracking-wide flex items-center gap-1">
@@ -1208,7 +1292,7 @@ export const Lobby = ({
                             {mazeTier === 'standard' && <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />}
                           </span>
                           <span className={`text-[8px] sm:text-[9px] font-bold mt-0.5 truncate max-w-full ${
-                            mazeTier === 'standard' ? 'text-stone-950/80' : 'text-slate-300'
+                            mazeTier === 'standard' ? 'text-stone-950/80' : isDark ? 'text-slate-300' : 'text-slate-500'
                           }`}>
                             8x8 經典迷宮 • 停頓 1 秒自適應提示
                           </span>
@@ -1224,7 +1308,9 @@ export const Lobby = ({
                           className={`p-2 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
                             mazeTier === 'challenge'
                               ? 'bg-gradient-to-b from-rose-500 via-red-500 to-rose-600 text-white border-rose-200 ring-2 ring-rose-300 font-black shadow-[0_0_15px_rgba(244,63,94,0.5)]'
-                              : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-rose-400/60'
+                              : isDark
+                              ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-rose-400/60'
+                              : 'bg-white/95 hover:bg-rose-50/70 text-slate-800 border-slate-200/90 hover:border-rose-400/60 shadow-sm'
                           }`}
                         >
                           <span className="text-xs sm:text-sm font-black font-heading tracking-wide flex items-center gap-1">
@@ -1232,7 +1318,7 @@ export const Lobby = ({
                             {mazeTier === 'challenge' && <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />}
                           </span>
                           <span className={`text-[8px] sm:text-[9px] font-bold mt-0.5 truncate max-w-full ${
-                            mazeTier === 'challenge' ? 'text-white/90' : 'text-slate-300'
+                            mazeTier === 'challenge' ? 'text-white/90' : isDark ? 'text-slate-300' : 'text-slate-500'
                           }`}>
                             10x10 巨大迷宮 • 計時搶分極限榜
                           </span>
@@ -1242,17 +1328,19 @@ export const Lobby = ({
 
                     {/* ═══ 【第三層：字母字形規格與巡航區間】 ═══ */}
                     <div className="w-full shrink-0">
-                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                      <div className={`text-[11px] font-black mb-1 flex items-center justify-between ${isDark ? 'text-amber-200/90' : 'text-amber-900'}`}>
                         <span className="flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                           <span>3. 字母字形與航程範圍：</span>
                         </span>
-                        <span className="text-[10px] text-amber-300 font-bold">
+                        <span className={`text-[10px] font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
                           {mazeIsLowercase ? '🔡 小寫字母' : '🔠 大寫字母'}
                         </span>
                       </div>
 
-                      <div className="w-full min-h-[52px] sm:min-h-[58px] flex items-center justify-between p-2 rounded-2xl bg-slate-900/90 border border-white/20 backdrop-blur-md gap-2">
+                      <div className={`w-full min-h-[52px] sm:min-h-[58px] flex items-center justify-between p-2 rounded-2xl border backdrop-blur-md gap-2 ${
+                        isDark ? 'bg-slate-900/90 border-white/20' : 'bg-white/95 border-slate-200/90 shadow-sm'
+                      }`}>
                         {/* 大小寫切換 */}
                         <div className="flex items-center gap-1.5 shrink-0">
                           <button
@@ -1264,7 +1352,9 @@ export const Lobby = ({
                             className={`py-1.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer border ${
                               !mazeIsLowercase
                                 ? 'bg-amber-400 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 shadow'
-                                : 'bg-slate-800 text-slate-200 hover:text-white border-white/15'
+                                : isDark
+                                ? 'bg-slate-800 text-slate-200 hover:text-white border-white/15'
+                                : 'bg-slate-100 text-slate-700 hover:text-slate-900 border-slate-200'
                             }`}
                           >
                             🔠 大寫 A-Z
@@ -1278,7 +1368,9 @@ export const Lobby = ({
                             className={`py-1.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer border ${
                               mazeIsLowercase
                                 ? 'bg-amber-400 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 shadow'
-                                : 'bg-slate-800 text-slate-200 hover:text-white border-white/15'
+                                : isDark
+                                ? 'bg-slate-800 text-slate-200 hover:text-white border-white/15'
+                                : 'bg-slate-100 text-slate-700 hover:text-slate-900 border-slate-200'
                             }`}
                           >
                             🔡 小寫 a-z
@@ -1289,8 +1381,10 @@ export const Lobby = ({
                         {mazeTier === 'beginner' ? (
                           <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto py-0.5 flex-1 justify-end animate-fadeIn">
                             {/* 自選起訖下拉選單 */}
-                            <div className="flex items-center gap-1 bg-slate-950/90 px-2 py-1 rounded-xl border border-white/20 text-xs shrink-0">
-                              <span className="text-[10px] text-emerald-300 font-bold">起點：</span>
+                            <div className={`flex items-center gap-1 px-2 py-1 rounded-xl border text-xs shrink-0 ${
+                              isDark ? 'bg-slate-950/90 border-white/20' : 'bg-slate-50 border-slate-300 shadow-sm'
+                            }`}>
+                              <span className={`text-[10px] font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>起點：</span>
                               <select
                                 value={mazeStartChar}
                                 onChange={(e) => {
@@ -1303,14 +1397,16 @@ export const Lobby = ({
                                     setMazeEndChar(ALPHABET_UPPER[nextIdx]);
                                   }
                                 }}
-                                className="bg-slate-800 text-amber-300 font-mono font-black text-xs px-1.5 py-0.5 rounded border border-white/20 outline-none cursor-pointer"
+                                className={`font-mono font-black text-xs px-1.5 py-0.5 rounded border outline-none cursor-pointer ${
+                                  isDark ? 'bg-slate-800 text-amber-300 border-white/20' : 'bg-white text-amber-800 border-slate-300'
+                                }`}
                               >
                                 {ALPHABET_UPPER.slice(0, 24).map(c => (
                                   <option key={c} value={c}>{mazeIsLowercase ? c.toLowerCase() : c}</option>
                                 ))}
                               </select>
 
-                              <span className="text-[10px] text-emerald-300 font-bold ml-1">終點：</span>
+                              <span className={`text-[10px] font-bold ml-1 ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>終點：</span>
                               <select
                                 value={mazeEndChar}
                                 onChange={(e) => {
@@ -1318,7 +1414,9 @@ export const Lobby = ({
                                   setMazeRangePreset('custom');
                                   soundEngine.click();
                                 }}
-                                className="bg-slate-800 text-amber-300 font-mono font-black text-xs px-1.5 py-0.5 rounded border border-white/20 outline-none cursor-pointer"
+                                className={`font-mono font-black text-xs px-1.5 py-0.5 rounded border outline-none cursor-pointer ${
+                                  isDark ? 'bg-slate-800 text-amber-300 border-white/20' : 'bg-white text-amber-800 border-slate-300'
+                                }`}
                               >
                                 {ALPHABET_UPPER.slice(ALPHABET_UPPER.indexOf(mazeStartChar) + 1).map(c => (
                                   <option key={c} value={c}>{mazeIsLowercase ? c.toLowerCase() : c}</option>
@@ -1347,7 +1445,9 @@ export const Lobby = ({
                                   className={`py-1 px-2 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer border active:scale-95 ${
                                     isActive
                                       ? 'bg-gradient-to-r from-emerald-400 to-teal-400 text-stone-950 border-emerald-200 ring-2 ring-emerald-300 font-black'
-                                      : 'bg-slate-800/90 text-slate-300 hover:text-white border-white/15'
+                                      : isDark
+                                      ? 'bg-slate-800/90 text-slate-300 hover:text-white border-white/15'
+                                      : 'bg-slate-100 text-slate-700 hover:text-slate-900 border-slate-200'
                                   }`}
                                 >
                                   {p.label}
@@ -1356,8 +1456,8 @@ export const Lobby = ({
                             })}
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 text-xs font-black text-amber-300 px-2 animate-fadeIn">
-                            <Sparkles className="w-4 h-4 text-amber-400" />
+                          <div className="flex items-center gap-2 text-xs font-black text-amber-500 dark:text-amber-300 px-2 animate-fadeIn">
+                            <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                             <span>全航程 26 字母完整考驗 • 手指連續滑動貫通迷宮！</span>
                           </div>
                         )}
@@ -1369,10 +1469,10 @@ export const Lobby = ({
                 </div>
 
                 {/* 整備室底部：狀態摘要與出征按鈕 */}
-                <div className="pt-2 border-t border-white/15 flex items-center justify-between shrink-0">
-                  <div className="flex items-center gap-2 text-xs text-slate-200 font-bold">
+                <div className={`pt-2 border-t flex items-center justify-between shrink-0 ${isDark ? 'border-white/15' : 'border-slate-300/80'}`}>
+                  <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                     <span>出征整備：</span>
-                    <span className="text-amber-300 font-black">
+                    <span className="text-amber-500 dark:text-amber-300 font-black">
                       【{mazeTheme === 'snake' ? '霧台神山百步蛇' : '星際光軌巡航'}】• {mazeTier === 'beginner' ? `新手級 (${mazeStartChar}-${mazeEndChar})` : mazeTier === 'standard' ? '標準級 (8x8)' : '挑戰級 (10x10)'} • {mazeIsLowercase ? '小寫 a-z' : '大寫 A-Z'}
                     </span>
                     {mazeTier === 'challenge' ? (
@@ -1402,17 +1502,19 @@ export const Lobby = ({
               <div className="relative z-10 w-full h-full p-2.5 sm:p-4 md:p-5 flex flex-col justify-between overflow-y-auto">
                 
                 {/* 頂部引導題字 */}
-                <div className="flex items-center justify-between pb-2 border-b border-white/15 shrink-0">
+                <div className={`flex items-center justify-between pb-2 border-b shrink-0 ${isDark ? 'border-white/15' : 'border-slate-300/80'}`}>
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-400" />
-                    <h3 className="text-sm sm:text-base font-black text-white font-heading">
+                    <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                    <h3 className={`text-sm sm:text-base font-black font-heading ${isDark ? 'text-white' : 'text-slate-800'}`}>
                       請選擇挑戰年級冊次：
                     </h3>
                   </div>
 
                   {/* 當前上榜資質標牌 */}
-                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[11px] font-bold flex items-center gap-1.5 shadow">
-                    <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                  <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold flex items-center gap-1.5 shadow ${
+                    isDark ? 'bg-amber-500/20 text-amber-300 border-amber-400/40' : 'bg-amber-50 text-amber-800 border-amber-300'
+                  }`}>
+                    <Trophy className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
                     <span>選冊即可直接獲得英雄榜資格</span>
                   </span>
                 </div>
@@ -1438,9 +1540,9 @@ export const Lobby = ({
                     
                     {/* ═══ 【第一層：冊數置頂】5 欄 × 2 列上下排列 (由左至右：一二年級、三上三下、四上四下、五上五下、六上六下) ═══ */}
                     <div className="w-full shrink-0">
-                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                      <div className={`text-[11px] font-black mb-1 flex items-center justify-between ${isDark ? 'text-amber-200/90' : 'text-amber-900'}`}>
                         <span className="flex items-center gap-1">
-                          <Layers className="w-3.5 h-3.5 text-amber-400" />
+                          <Layers className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
                           <span>1. 選擇年級冊次：</span>
                         </span>
 
@@ -1448,16 +1550,20 @@ export const Lobby = ({
                         {!isWholeBookOnlyGame && (
                           <label
                             onClick={handleToggleRememberSelection}
-                            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-white/20 text-[11px] font-bold text-slate-200 hover:text-white cursor-pointer select-none transition-all active:scale-95 shadow"
+                            className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border text-[11px] font-bold cursor-pointer select-none transition-all active:scale-95 shadow ${
+                              isDark
+                                ? 'bg-slate-900/90 hover:bg-slate-800 border-white/20 text-slate-200 hover:text-white'
+                                : 'bg-white hover:bg-slate-50 border-slate-300 text-slate-700 hover:text-slate-900'
+                            }`}
                             title="勾選後將保留您的單元選取設定；未勾選則每次重新出征時自動清空"
                           >
                             <input
                               type="checkbox"
                               checked={rememberSelection}
                               onChange={() => {}} // handled by parent onClick
-                              className="w-3.5 h-3.5 rounded accent-amber-400 cursor-pointer"
+                              className="w-3.5 h-3.5 rounded accent-amber-500 cursor-pointer"
                             />
-                            <span className={rememberSelection ? 'text-amber-300 font-black' : 'text-slate-300'}>
+                            <span className={rememberSelection ? (isDark ? 'text-amber-300 font-black' : 'text-amber-700 font-black') : (isDark ? 'text-slate-300' : 'text-slate-600')}>
                               記住我的選擇
                             </span>
                           </label>
@@ -1481,7 +1587,9 @@ export const Lobby = ({
                                 className={`p-1.5 sm:p-2 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
                                   isTopSelected
                                     ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 scale-102 font-black shadow-[0_0_15px_rgba(245,158,11,0.5)]'
-                                    : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                                    : isDark
+                                    ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                                    : 'bg-white/95 hover:bg-amber-50/80 text-slate-800 border-slate-200/90 hover:border-amber-400/70 shadow-sm'
                                 }`}
                               >
                                 {isTopRecommended && (
@@ -1499,7 +1607,7 @@ export const Lobby = ({
                                   {col.top.label}
                                 </span>
                                 <span className={`text-[8px] sm:text-[9px] font-bold truncate max-w-full ${
-                                  isTopSelected ? 'text-stone-950/80' : 'text-slate-300'
+                                  isTopSelected ? 'text-stone-950/80' : isDark ? 'text-slate-300' : 'text-slate-500'
                                 }`}>
                                   {col.top.desc}
                                 </span>
@@ -1516,7 +1624,9 @@ export const Lobby = ({
                                 className={`p-1.5 sm:p-2 rounded-2xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center justify-center relative active:scale-95 shadow-md ${
                                   isBottomSelected
                                     ? 'bg-gradient-to-b from-amber-400 via-yellow-400 to-amber-500 text-stone-950 border-amber-200 ring-2 ring-amber-300/80 scale-102 font-black shadow-[0_0_15px_rgba(245,158,11,0.5)]'
-                                    : 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                                    : isDark
+                                    ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-white/20 hover:border-amber-400/60'
+                                    : 'bg-white/95 hover:bg-amber-50/80 text-slate-800 border-slate-200/90 hover:border-amber-400/70 shadow-sm'
                                 }`}
                               >
                                 {isBottomRecommended && (
@@ -1534,7 +1644,7 @@ export const Lobby = ({
                                   {col.bottom.label}
                                 </span>
                                 <span className={`text-[8px] sm:text-[9px] font-bold truncate max-w-full ${
-                                  isBottomSelected ? 'text-stone-950/80' : 'text-slate-300'
+                                  isBottomSelected ? 'text-stone-950/80' : isDark ? 'text-slate-300' : 'text-slate-500'
                                 }`}>
                                   {col.bottom.desc}
                                 </span>
@@ -1552,22 +1662,24 @@ export const Lobby = ({
 
                     {/* ═══ 【第二層：待選範圍置中 • 支援單元複選】(點選亮起，再點歸暗) ═══ */}
                     <div className="w-full shrink-0">
-                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                      <div className={`text-[11px] font-black mb-1 flex items-center justify-between ${isDark ? 'text-amber-200/90' : 'text-amber-900'}`}>
                         <span className="flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                           <span>2. 點選單元膠囊 (可複選，點擊亮起 / 再次點擊取消)：</span>
                         </span>
-                        <span className="text-[10px] text-emerald-300 font-bold">
+                        <span className={`text-[10px] font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
                           {currentOptionData.isAlpha ? '低年級字母規格' : `目前所選冊次：${currentOptionData.label}`}
                         </span>
                       </div>
 
-                      <div className="w-full min-h-[52px] sm:min-h-[58px] flex items-center justify-center p-2 rounded-2xl bg-slate-900/90 border border-white/20 backdrop-blur-md">
+                      <div className={`w-full min-h-[52px] sm:min-h-[58px] flex items-center justify-center p-2 rounded-2xl border backdrop-blur-md ${
+                        isDark ? 'bg-slate-900/90 border-white/20' : 'bg-white/95 border-slate-200/90 shadow-sm'
+                      }`}>
                         {currentOptionData.isAlpha ? (
                           /* 低年級字母模式三大選項 */
                           <div className="w-full flex items-center justify-between gap-2 animate-fadeIn">
-                            <span className="text-xs font-black text-emerald-300 flex items-center gap-1.5 shrink-0">
-                              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                            <span className={`text-xs font-black flex items-center gap-1.5 shrink-0 ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
+                              <Sparkles className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                               <span>字母模式：</span>
                             </span>
 
@@ -1586,7 +1698,9 @@ export const Lobby = ({
                                     className={`py-1.5 px-2 rounded-xl text-xs font-black transition-all cursor-pointer border ${
                                       isModeActive
                                         ? 'bg-emerald-400 text-stone-950 border-emerald-200 ring-2 ring-emerald-300/80 shadow'
-                                        : 'bg-slate-800 text-slate-100 hover:text-white border-white/20'
+                                        : isDark
+                                        ? 'bg-slate-800 text-slate-100 hover:text-white border-white/20'
+                                        : 'bg-slate-100 text-slate-700 hover:text-slate-900 border-slate-200'
                                     }`}
                                   >
                                     {m.label}
@@ -1597,8 +1711,8 @@ export const Lobby = ({
                           </div>
                         ) : isWholeBookOnlyGame ? (
                           /* 全冊專屬遊戲提示 */
-                          <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-amber-300 animate-fadeIn">
-                            <Eye className="w-4 h-4 text-amber-400 animate-pulse" />
+                          <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-amber-500 dark:text-amber-300 animate-fadeIn">
+                            <Eye className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-pulse" />
                             <span>✨ 鷹眼神探採全冊 3D 紙雕全景尋寶 • 點擊右下角立即出征！</span>
                           </div>
                         ) : (
@@ -1614,13 +1728,15 @@ export const Lobby = ({
                                   className={`py-1.5 px-2.5 sm:px-3 rounded-xl text-xs font-black whitespace-nowrap transition-all cursor-pointer border flex items-center gap-1 active:scale-95 ${
                                     isUnitActive
                                       ? 'bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 border-amber-200 ring-2 ring-amber-300 shadow font-black'
-                                      : 'bg-slate-800/90 text-slate-300 hover:text-white border-white/15 hover:border-amber-400/50'
+                                      : isDark
+                                      ? 'bg-slate-800/90 text-slate-300 hover:text-white border-white/15 hover:border-amber-400/50'
+                                      : 'bg-slate-100/90 text-slate-600 hover:text-slate-900 border-slate-200/80 hover:bg-amber-50 hover:border-amber-400/50 shadow-xs'
                                   }`}
                                 >
                                   {isUnitActive ? (
                                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                                   ) : (
-                                    <span className="w-2 h-2 rounded-full bg-slate-500" />
+                                    <span className="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500" />
                                   )}
                                   <span>{u.label}</span>
                                 </button>
@@ -1633,26 +1749,30 @@ export const Lobby = ({
 
                     {/* ═══ 【第三層：目前已選範圍置底托盤】4 碼膠囊即時呈現 (例: B2U3, B4Fe, B2St, AZ) ═══ */}
                     <div className="w-full shrink-0">
-                      <div className="text-[11px] font-black text-amber-200/90 mb-1 flex items-center justify-between">
+                      <div className={`text-[11px] font-black mb-1 flex items-center justify-between ${isDark ? 'text-amber-200/90' : 'text-amber-900'}`}>
                         <span className="flex items-center gap-1">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
                           <span>3. 目前已選出征範圍 (點擊下方四碼膠囊可移除)：</span>
                         </span>
-                        <span className="text-[10px] text-amber-300 font-mono font-bold">
+                        <span className={`text-[10px] font-mono font-bold ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
                           共選取 {(settings.selectedUnits || []).length} 個單元 • 合計 {selectedWordsCount} 字
                         </span>
                       </div>
 
-                      <div className="w-full min-h-[42px] max-h-[58px] overflow-y-auto p-1.5 sm:p-2 rounded-2xl bg-slate-950/80 border border-white/20 backdrop-blur-md flex flex-wrap items-center gap-1.5">
+                      <div className={`w-full min-h-[42px] max-h-[58px] overflow-y-auto p-1.5 sm:p-2 rounded-2xl border backdrop-blur-md flex flex-wrap items-center gap-1.5 ${
+                        isDark ? 'bg-slate-950/80 border-white/20' : 'bg-white/90 border-slate-200/90 shadow-inner'
+                      }`}>
                         {currentOptionData.isAlpha ? (
-                          <span className="px-2.5 py-1 rounded-xl bg-emerald-500/25 border border-emerald-400/50 text-emerald-300 font-mono font-black text-xs flex items-center gap-1 shadow">
+                          <span className={`px-2.5 py-1 rounded-xl border font-mono font-black text-xs flex items-center gap-1 shadow ${
+                            isDark ? 'bg-emerald-500/25 border-emerald-400/50 text-emerald-300' : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                          }`}>
                             <span>{formatUnitToShortCode('abc')}</span>
-                            <span className="text-[10px] font-sans text-emerald-200 font-bold">
+                            <span className={`text-[10px] font-sans font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-700'}`}>
                               ({alphaMode === 'upper' ? '大寫全套' : alphaMode === 'lower' ? '小寫全套' : '混合全套'})
                             </span>
                           </span>
                         ) : (settings.selectedUnits || []).length === 0 ? (
-                          <span className="text-xs text-slate-400 font-bold px-2 py-0.5">
+                          <span className={`text-xs font-bold px-2 py-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                             尚未選取單元，請點擊上方單元膠囊
                           </span>
                         ) : (
@@ -1663,11 +1783,15 @@ export const Lobby = ({
                                 key={uKey}
                                 type="button"
                                 onClick={() => handleRemoveSelectedUnit(uKey)}
-                                className="px-2.5 py-0.5 rounded-lg bg-slate-800 hover:bg-rose-950/80 text-amber-300 hover:text-rose-200 border border-amber-400/40 hover:border-rose-400/60 font-mono font-black text-xs flex items-center gap-1 transition-all cursor-pointer shadow group"
+                                className={`px-2.5 py-0.5 rounded-lg font-mono font-black text-xs flex items-center gap-1 transition-all cursor-pointer shadow group border ${
+                                  isDark
+                                    ? 'bg-slate-800 hover:bg-rose-950/80 text-amber-300 hover:text-rose-200 border-amber-400/40 hover:border-rose-400/60'
+                                    : 'bg-amber-100/90 hover:bg-rose-100 text-amber-900 hover:text-rose-700 border-amber-300/80 hover:border-rose-300 shadow-xs'
+                                }`}
                                 title="點擊移除此單元"
                               >
                                 <span>{shortCode}</span>
-                                <X className="w-3 h-3 text-slate-400 group-hover:text-rose-300 transition-colors" />
+                                <X className="w-3 h-3 text-slate-400 group-hover:text-rose-500 transition-colors" />
                               </button>
                             );
                           })
@@ -1680,26 +1804,26 @@ export const Lobby = ({
                 </div>
 
                 {/* 整備室底部：狀態摘要與出征按鈕 */}
-                <div className="pt-2 border-t border-white/15 flex items-center justify-between shrink-0">
-                  <div className="flex items-center gap-2 text-xs text-slate-200 font-bold">
+                <div className={`pt-2 border-t flex items-center justify-between shrink-0 ${isDark ? 'border-white/15' : 'border-slate-300/80'}`}>
+                  <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                     <span>出征整備：</span>
                     {isWholeBookOnlyGame ? (
-                      <span className="text-amber-300 font-black">
+                      <span className="text-amber-500 dark:text-amber-300 font-black">
                         {currentOptionData.label} (全冊 3D 紙雕尋寶)
                       </span>
                     ) : (settings.selectedUnits || []).length > 0 ? (
-                      <span className="text-amber-300 font-black">
+                      <span className="text-amber-500 dark:text-amber-300 font-black">
                         {currentOptionData.isAlpha ? '26 字母全套' : `${(settings.selectedUnits || []).length} 個單元 (${selectedWordsCount} 字)`}
                       </span>
                     ) : (
-                      <span className="text-rose-400 font-bold flex items-center gap-1 animate-pulse">
+                      <span className="text-rose-500 dark:text-rose-400 font-bold flex items-center gap-1 animate-pulse">
                         <AlertCircle className="w-3.5 h-3.5" />
                         <span>尚未選取單元，請點選上方單元膠囊</span>
                       </span>
                     )}
 
                     {(isWholeBookOnlyGame || (settings.selectedUnits || []).length > 0) && (
-                      <span className="text-emerald-400 font-black hidden sm:inline ml-1">
+                      <span className="text-emerald-600 dark:text-emerald-400 font-black hidden sm:inline ml-1">
                         • 英雄榜榮譽資格已啟用
                       </span>
                     )}
@@ -1716,11 +1840,13 @@ export const Lobby = ({
                         className={`px-7 sm:px-9 py-2.5 rounded-2xl font-heading font-black text-sm sm:text-base flex items-center gap-2 transition-all cursor-pointer border-2 ${
                           canStart
                             ? 'bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 shadow-[0_0_25px_rgba(245,158,11,0.6)] active:scale-95 border-amber-200 animate-pulse'
-                            : 'bg-slate-800 text-slate-500 border-white/10 opacity-50 cursor-not-allowed shadow-none'
+                            : isDark
+                            ? 'bg-slate-800 text-slate-500 border-white/10 opacity-50 cursor-not-allowed shadow-none'
+                            : 'bg-slate-200 text-slate-400 border-slate-300 opacity-50 cursor-not-allowed shadow-none'
                         }`}
                       >
                         <span>⚔️ 開始遊戲 START</span>
-                        <Play className={`w-4 h-4 ${canStart ? 'fill-stone-950' : 'fill-slate-500'}`} />
+                        <Play className={`w-4 h-4 ${canStart ? 'fill-stone-950' : isDark ? 'fill-slate-500' : 'fill-slate-400'}`} />
                       </button>
                     );
                   })()}
@@ -1738,13 +1864,15 @@ export const Lobby = ({
           【固定底部簡易提示列】僅在首頁狀態下輔助說明
          ════════════════════════════════════════════════════════════════ */}
       {step === 'game' && (
-        <footer className="relative z-30 w-full px-4 py-2 bg-slate-950/85 backdrop-blur-md border-t border-white/10 flex items-center justify-between text-xs text-slate-300 font-bold shrink-0">
+        <footer className={`relative z-30 w-full px-4 py-2 backdrop-blur-md border-t flex items-center justify-between text-xs font-bold shrink-0 transition-colors ${
+          isDark ? 'bg-slate-950/85 border-white/10 text-slate-300' : 'bg-white/85 border-slate-200 text-slate-600 shadow-sm'
+        }`}>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>五大主題 • 點選任一遊戲立即展開整備出征室</span>
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] text-amber-300 font-mono">
+          <div className={`flex items-center gap-2 text-[11px] font-mono ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
             WUTAI ENGLISH ADVENTURE HALL
           </div>
         </footer>

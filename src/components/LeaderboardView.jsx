@@ -3,6 +3,7 @@ import { GlassCard } from './ui/GlassCard';
 import { Button3D } from './ui/Button3D';
 import { useI18n } from '../context/I18nContext';
 import { useStudent } from '../context/StudentContext';
+import { useTheme } from '../context/ThemeContext';
 import {
   fetchLeaderboard,
   fetchMonopolyLeaderboard,
@@ -17,7 +18,8 @@ import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
   Swords, X, ChevronRight, Compass, Flame, Coins, Award,
-  Users, Crown, Zap, School, KeyRound, Eye, Headphones, Mic, Volume2
+  Users, Crown, Zap, School, KeyRound, Eye, Headphones, Mic, Volume2,
+  Sun, Moon
 } from 'lucide-react';
 
 export const GRADE_LEADERBOARD_TABS = [
@@ -225,6 +227,7 @@ export const CONSOLIDATED_GAME_MODES = [
 export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
   const { t, lang } = useI18n();
   const { currentStudent } = useStudent();
+  const { isDark, toggleTheme } = useTheme();
   const currentWeek = getWeekNumber();
 
   // 智慧預設目標年級：若已登入學生則自動錨定其所屬年級 (1~6)，否則預設 4 年級
@@ -354,48 +357,79 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
   const currentWallpaper = THEME_WALLPAPERS[selectedDomain] || THEME_WALLPAPERS.all;
 
   return (
-    <div className="relative min-h-screen w-full select-none animate-fadeIn pb-16 text-white">
+    <div className={`relative min-h-screen w-full select-none animate-fadeIn pb-16 transition-colors duration-300 ${isDark ? 'text-white' : 'text-slate-800'}`}>
       {/* ── 專屬主題海報全景背景層 (依點選分類平滑切換，清晰震撼) ── */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none select-none z-0">
         <img
           key={currentWallpaper}
           src={currentWallpaper}
           alt="Theme Wallpaper"
-          className="w-full h-full object-cover object-center brightness-[0.70] contrast-[1.1] scale-100 transition-all duration-700 ease-out animate-fadeIn"
+          className={`w-full h-full object-cover object-center scale-100 transition-all duration-700 ease-out animate-fadeIn ${
+            isDark ? 'brightness-[0.70] contrast-[1.1]' : 'brightness-[0.85] contrast-[1.05]'
+          }`}
         />
         {/* 柔和暗度漸層：上方柔和暗化保護導覽列，中央透光顯現原畫，下方沉穩 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/40 to-slate-950/90 pointer-events-none" />
+        <div className={`absolute inset-0 pointer-events-none transition-colors duration-500 ${
+          isDark
+            ? 'bg-gradient-to-b from-slate-950/85 via-slate-950/40 to-slate-950/90'
+            : 'bg-gradient-to-b from-white/90 via-slate-50/75 to-white/95 backdrop-blur-[1px]'
+        }`} />
       </div>
 
       <div className="relative z-10 w-full max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
         {/* ── 頂部導覽列 ── */}
         <div className="flex items-center justify-between mb-4">
-          <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
+          <Button3D variant={isDark ? "slate" : "secondary"} size="sm" onClick={onBack} icon={ArrowLeft}>
             {t.backLobby || '回大廳'}
           </Button3D>
 
           <h2
             onClick={handleTitleClick}
-            className="text-2xl sm:text-3xl font-black text-white font-heading flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
+            className={`text-2xl sm:text-3xl font-black font-heading flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform ${
+              isDark ? 'text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]' : 'text-slate-800 drop-shadow-[0_1px_3px_rgba(255,255,255,0.9)]'
+            }`}
             title="連續點擊 5 次啟動管理後台"
           >
-            <Trophy className="w-8 h-8 text-amber-400 animate-bounce" />
+            <Trophy className="w-8 h-8 text-amber-500 dark:text-amber-400 animate-bounce" />
             {t.heroHallTitle || '全校英雄榮譽榜'}
           </h2>
 
-          <button
-            onClick={() => loadGradeBoards(true)}
-            disabled={isLoading}
-            className="p-2.5 rounded-2xl bg-black/60 border border-white/20 text-slate-300 hover:text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer shadow-lg backdrop-blur-md"
-            title={t.refresh || '重新整理'}
-          >
-            <RotateCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                soundEngine.click();
+                toggleTheme();
+              }}
+              className={`p-2.5 rounded-2xl border transition-all cursor-pointer shadow-lg backdrop-blur-md active:scale-95 ${
+                isDark
+                  ? 'bg-black/60 border-white/20 text-amber-300 hover:text-white'
+                  : 'bg-white/90 border-slate-300 text-amber-600 hover:text-amber-700 shadow-sm'
+              }`}
+              title={isDark ? '切換為晨曦白天模式' : '切換為星空夜間模式'}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+
+            <button
+              onClick={() => loadGradeBoards(true)}
+              disabled={isLoading}
+              className={`p-2.5 rounded-2xl border transition-all cursor-pointer shadow-lg backdrop-blur-md active:scale-95 ${
+                isDark
+                  ? 'bg-black/60 border-white/20 text-slate-300 hover:text-white'
+                  : 'bg-white/90 border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm'
+              }`}
+              title={t.refresh || '重新整理'}
+            >
+              <RotateCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
 
         {/* ── 年級分流分頁導覽列 (一到六年級 + 全校大亂鬥 共 7 大類別) ── */}
         <div className="mb-4">
-          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-950/75 border border-white/20 backdrop-blur-md overflow-x-auto scrollbar-none shadow-2xl">
+          <div className={`flex items-center gap-1.5 p-1.5 rounded-2xl border backdrop-blur-md overflow-x-auto scrollbar-none shadow-2xl transition-colors ${
+            isDark ? 'bg-slate-950/75 border-white/20' : 'bg-white/90 border-slate-200/90 shadow-md'
+          }`}>
             {GRADE_LEADERBOARD_TABS.map((tab) => {
               const isSelected = selectedGrade === tab.id;
               return (
@@ -408,20 +442,22 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                   className={`flex-1 min-w-[95px] py-2 px-2 rounded-xl text-xs sm:text-sm font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer shrink-0 ${
                     isSelected
                       ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg border border-emerald-300 ring-2 ring-emerald-400/40 scale-102'
-                      : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      : isDark
+                      ? 'text-slate-300 hover:text-white hover:bg-white/10'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
                   <span>{lang === 'zh-TW' ? tab.zh : tab.en}</span>
                   {tab.isAlphabet ? (
-                    <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-200' : 'text-slate-400'}`}>
+                    <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-200' : isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       字母樂園 🔤
                     </span>
                   ) : tab.isAllSchool ? (
-                    <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-200' : 'text-slate-400'}`}>
+                    <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-200' : isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       綜合大亂鬥 ⚔️
                     </span>
                   ) : (
-                    <span className={`text-[10px] font-bold ${isSelected ? 'text-emerald-200' : 'text-slate-400'}`}>
+                    <span className={`text-[10px] font-bold ${isSelected ? 'text-emerald-200' : isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       第 {tab.books?.join('、')} 冊
                     </span>
                   )}
@@ -432,14 +468,18 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
         </div>
 
         {/* ── 篩選控制器便當卡 (當前年級資訊、學期身分 ＆ 競賽週次切換) ── */}
-        <div className="mb-5 p-3.5 sm:p-4 rounded-3xl bg-slate-950/75 border border-white/20 backdrop-blur-md text-white shadow-2xl">
+        <div className={`mb-5 p-3.5 sm:p-4 rounded-3xl border backdrop-blur-md shadow-2xl transition-colors ${
+          isDark ? 'bg-slate-950/75 border-white/20 text-white' : 'bg-white/90 border-slate-200/90 text-slate-800 shadow-md'
+        }`}>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-white/10 text-emerald-400 flex items-center justify-center font-black">
-                {activeGradeObj.isAllSchool ? <Swords className="w-5 h-5 text-amber-400" /> : <Users className="w-5 h-5" />}
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black ${
+                isDark ? 'bg-white/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+              }`}>
+                {activeGradeObj.isAllSchool ? <Swords className="w-5 h-5 text-amber-500 dark:text-amber-400" /> : <Users className="w-5 h-5" />}
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-black text-white">
+                <span className={`text-sm font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {lang === 'zh-TW' ? activeGradeObj.zh : activeGradeObj.en} 榮譽競賽榜
                 </span>
                 {selectedGrade === currentStudent?.grade && (
@@ -447,7 +487,9 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                     我的年級 🎯
                   </span>
                 )}
-                <span className="px-2 py-0.5 rounded-full bg-indigo-500/30 border border-indigo-400/40 text-indigo-200 text-[10px] font-black flex items-center gap-1">
+                <span className={`px-2 py-0.5 rounded-full border text-[10px] font-black flex items-center gap-1 ${
+                  isDark ? 'bg-indigo-500/30 border-indigo-400/40 text-indigo-200' : 'bg-indigo-50 border-indigo-200 text-indigo-700'
+                }`}>
                   <School className="w-3 h-3" />
                   {getSemesterDisplayName()}
                 </span>
@@ -456,20 +498,24 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
 
             {/* 週次切換 */}
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs font-black text-slate-200">
+              <Calendar className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+              <span className={`text-xs font-black ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
                 {t.compWeekLabel || '競賽週次：'}
               </span>
               <select
                 value={selectedWeek}
                 onChange={(e) => setSelectedWeek(parseInt(e.target.value, 10))}
-                className="p-1.5 sm:p-2 rounded-xl bg-slate-900 border border-white/20 font-black text-xs sm:text-sm text-white outline-none focus:border-emerald-400"
+                className={`p-1.5 sm:p-2 rounded-xl border font-black text-xs sm:text-sm outline-none transition-colors ${
+                  isDark
+                    ? 'bg-slate-900 border-white/20 text-white focus:border-emerald-400'
+                    : 'bg-slate-50 border-slate-300 text-slate-800 focus:border-emerald-500'
+                }`}
               >
                 {[...Array(6)].map((_, i) => {
                   const w = currentWeek - i;
                   if (w < 1) return null;
                   return (
-                    <option key={w} value={w} className="bg-slate-900 text-white">
+                    <option key={w} value={w} className={isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-800'}>
                       {(t.weekN ? t.weekN.replace('{w}', w) : `第 ${w} 週`)} {w === currentWeek ? (t.currentWeekTag || '(本週)') : ''}
                     </option>
                   );
@@ -494,7 +540,9 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                   className={`px-3.5 sm:px-5 py-2 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-lg border ${
                     isSelected
                       ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-300 ring-2 ring-emerald-400/40 scale-105 shadow-emerald-500/30'
-                      : 'bg-slate-950/75 text-slate-300 border-white/20 hover:text-white hover:bg-slate-900'
+                      : isDark
+                      ? 'bg-slate-950/75 text-slate-300 border-white/20 hover:text-white hover:bg-slate-900'
+                      : 'bg-white/85 text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-100 shadow-xs'
                   }`}
                 >
                   <span>{lang === 'zh-TW' ? cat.zh : cat.en}</span>
@@ -520,26 +568,36 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
               <div
                 key={mode.id}
                 className={`flex flex-col justify-between p-4 sm:p-5 rounded-3xl relative overflow-hidden group transition-all duration-300 shadow-2xl backdrop-blur-md ${
-                  mode.category === 'explore'
-                    ? 'bg-slate-950/75 border border-emerald-500/40 hover:border-emerald-400 hover:shadow-emerald-500/20'
-                    : mode.category === 'speed'
-                    ? 'bg-slate-950/75 border border-amber-500/40 hover:border-amber-400 hover:shadow-amber-500/20'
-                    : mode.category === 'quiz'
-                    ? 'bg-slate-950/75 border border-sky-500/40 hover:border-sky-400 hover:shadow-sky-500/20'
-                    : mode.category === 'battle'
-                    ? 'bg-slate-950/75 border border-purple-500/40 hover:border-purple-400 hover:shadow-purple-500/20'
-                    : 'bg-slate-950/75 border border-rose-500/40 hover:border-rose-400 hover:shadow-rose-500/20'
+                  isDark
+                    ? mode.category === 'explore'
+                      ? 'bg-slate-950/75 border border-emerald-500/40 hover:border-emerald-400 hover:shadow-emerald-500/20'
+                      : mode.category === 'speed'
+                      ? 'bg-slate-950/75 border border-amber-500/40 hover:border-amber-400 hover:shadow-amber-500/20'
+                      : mode.category === 'quiz'
+                      ? 'bg-slate-950/75 border border-sky-500/40 hover:border-sky-400 hover:shadow-sky-500/20'
+                      : mode.category === 'battle'
+                      ? 'bg-slate-950/75 border border-purple-500/40 hover:border-purple-400 hover:shadow-purple-500/20'
+                      : 'bg-slate-950/75 border border-rose-500/40 hover:border-rose-400 hover:shadow-rose-500/20'
+                    : mode.category === 'explore'
+                      ? 'bg-white/90 border border-emerald-400/60 hover:border-emerald-500 hover:shadow-emerald-500/15 text-slate-800 shadow-lg'
+                      : mode.category === 'speed'
+                      ? 'bg-white/90 border border-amber-400/60 hover:border-amber-500 hover:shadow-amber-500/15 text-slate-800 shadow-lg'
+                      : mode.category === 'quiz'
+                      ? 'bg-white/90 border border-sky-400/60 hover:border-sky-500 hover:shadow-sky-500/15 text-slate-800 shadow-lg'
+                      : mode.category === 'battle'
+                      ? 'bg-white/90 border border-purple-400/60 hover:border-purple-500 hover:shadow-purple-500/15 text-slate-800 shadow-lg'
+                      : 'bg-white/90 border border-rose-400/60 hover:border-rose-500 hover:shadow-rose-500/15 text-slate-800 shadow-lg'
                 } ${isWide ? 'border-2 ring-1 ring-sky-400/40' : ''}`}
               >
                 <div>
                   {/* 卡片標題與圖標 */}
-                  <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-white/10">
+                  <div className={`flex items-center justify-between mb-3 pb-2.5 border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                     <div className="flex items-center gap-2">
-                      <div className={`w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center ${mode.color}`}>
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${mode.color} ${isDark ? 'bg-white/10' : 'bg-slate-100'}`}>
                         <Icon className="w-4 h-4" />
                       </div>
                       <div>
-                        <h3 className="font-heading font-black text-sm sm:text-base text-white flex items-center gap-1.5">
+                        <h3 className={`font-heading font-black text-sm sm:text-base flex items-center gap-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           <span>{mode.label}</span>
                           {mode.category === 'langlab' && (
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-400 text-stone-950 font-black">
@@ -550,7 +608,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                       </div>
                     </div>
 
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-white/10 text-slate-300 font-mono">
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-md font-mono ${isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-100 text-slate-600'}`}>
                       {mode.unit}
                     </span>
                   </div>
@@ -589,12 +647,12 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                             key={entry.id || entry.student_id || idx}
                             className={`flex items-center justify-between p-2 rounded-xl text-xs transition-colors ${
                               isFirst
-                                ? 'bg-amber-400/20 border border-amber-300/80 font-black text-amber-200'
+                                ? 'bg-amber-400/20 border border-amber-300/80 font-black text-amber-500 dark:text-amber-200'
                                 : isSecond
-                                ? 'bg-white/10 border border-white/10 font-bold text-slate-100'
+                                ? isDark ? 'bg-white/10 border border-white/10 font-bold text-slate-100' : 'bg-slate-100 border border-slate-200 font-bold text-slate-800'
                                 : isThird
-                                ? 'bg-amber-700/20 border border-amber-700/40 font-bold text-amber-300'
-                                : 'text-slate-300 hover:bg-white/5'
+                                ? 'bg-amber-700/20 border border-amber-700/40 font-bold text-amber-700 dark:text-amber-300'
+                                : isDark ? 'text-slate-300 hover:bg-white/5' : 'text-slate-700 hover:bg-slate-50'
                             }`}
                           >
                             <div className="flex items-center gap-2 truncate pr-2">
@@ -605,15 +663,17 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                                 {studentName}
                               </span>
                               {badgeText && (
-                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/15 text-slate-200 shrink-0">
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                                  isDark ? 'bg-white/15 text-slate-200' : 'bg-slate-100 text-slate-600 border border-slate-200'
+                                }`}>
                                   {badgeText}
                                 </span>
                               )}
                             </div>
 
-                            <div className="font-mono font-black shrink-0 text-right text-emerald-400">
+                            <div className={`font-mono font-black shrink-0 text-right ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
                               {scoreValue}
-                              <span className="text-[10px] font-normal ml-0.5 text-slate-400">
+                              <span className={`text-[10px] font-normal ml-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                                 {mode.unit}
                               </span>
                             </div>
@@ -630,7 +690,9 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                     soundEngine.click();
                     setModalModeId(mode.id);
                   }}
-                  className="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95 shadow-sm"
+                  className={`w-full py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95 shadow-sm border ${
+                    isDark ? 'bg-white/10 hover:bg-white/20 text-white border-white/20' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200/90'
+                  }`}
                 >
                   <span>{t.viewTop50Btn || '查看完整前 50 名'}</span>
                   <ChevronRight className="w-3.5 h-3.5" />

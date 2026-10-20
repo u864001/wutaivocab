@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useStudent } from '../context/StudentContext';
 import { useI18n } from '../context/I18nContext';
+import { useTheme } from '../context/ThemeContext';
 import { Button3D } from './ui/Button3D';
 import { GlassCard } from './ui/GlassCard';
 import {
@@ -83,8 +84,14 @@ export const StudentProfileModal = () => {
   const [studentTopHonors, setStudentTopHonors] = useState([]);
   const [isLoadingHonors, setIsLoadingHonors] = useState(false);
 
-  // 執照主題樣式：'dark' (深邃墨岩冷光) | 'parchment' (羊皮紙石雕)
-  const [cardTheme, setCardTheme] = useState('dark');
+  const { isDark } = useTheme();
+
+  // 執照主題樣式：'dark' (深邃墨岩冷光) | 'parchment' (羊皮紙石雕) - 預設自適應全局主題
+  const [cardTheme, setCardTheme] = useState(() => (isDark ? 'dark' : 'parchment'));
+
+  useEffect(() => {
+    setCardTheme(isDark ? 'dark' : 'parchment');
+  }, [isDark]);
 
   // 八冊秘典典藏館與多寶格背包彈窗
   const [isGrimoireOpen, setIsGrimoireOpen] = useState(false);
