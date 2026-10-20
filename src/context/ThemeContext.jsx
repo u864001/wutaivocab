@@ -3,12 +3,19 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 const ThemeContext = createContext();
 
 /**
- * 依據本地時間自動判斷應為晨曦白晝 (06:00 ~ 17:59) 或星月夜晚 (18:00 ~ 05:59)
+ * 依據校園作息沉浸式排程自動輪替日夜：
+ * 00:00-06:00(夜)、06:00-10:00(日)、10:00-12:00(夜)、12:00-14:00(日)、
+ * 14:00-16:00(夜)、16:00-18:00(日)、18:00-24:00(夜)
  */
 export const getAutoThemeByTime = () => {
   try {
     const hour = new Date().getHours();
-    return (hour >= 6 && hour < 18) ? 'light' : 'dark';
+    if (hour >= 6 && hour < 10) return 'light';
+    if (hour >= 10 && hour < 12) return 'dark';
+    if (hour >= 12 && hour < 14) return 'light';
+    if (hour >= 14 && hour < 16) return 'dark';
+    if (hour >= 16 && hour < 18) return 'light';
+    return 'dark';
   } catch (e) {
     return 'light';
   }
