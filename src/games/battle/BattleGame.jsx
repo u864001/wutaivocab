@@ -1039,7 +1039,15 @@ export const BattleGame = ({
 
     // 準備單字題庫
     const units = battleUnitsRef.current;
-    let pool = words.filter(w => units.includes(`${w.book}-${w.lesson}`));
+    const isAlpha = units.includes('abc');
+    let pool = isAlpha
+      ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c => ({
+          id: `abc-${c}`,
+          en: c,
+          zh: `字母 ${c}`,
+          isAlphabet: true
+        }))
+      : words.filter(w => units.includes(`${w.book}-${w.lesson}`));
     if (pool.length === 0) pool = words;
 
     const shuffled = [...pool].sort(() => 0.5 - Math.random());

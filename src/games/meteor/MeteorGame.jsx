@@ -26,7 +26,18 @@ export const MeteorGame = ({
   onBack
 }) => {
   const { t } = useI18n();
-  const [subMode, setSubMode] = useState('zh-en'); // 'zh-en' | 'en-zh' | 'abc'
+  // 低年級 Aa 字母模式判斷
+  const isAlphabetMode = Boolean(
+    qualifyingBook === 'abc' ||
+    (settings?.selectedUnits && settings.selectedUnits.includes('abc')) ||
+    settings?.alphaMode
+  );
+  const [subMode, setSubMode] = useState(isAlphabetMode ? 'abc' : 'zh-en'); // 'zh-en' | 'en-zh' | 'abc'
+  useEffect(() => {
+    if (isAlphabetMode) {
+      setSubMode('abc');
+    }
+  }, [isAlphabetMode]);
   const [renderMode, setRenderMode] = useState('3d'); // '3d' | '2d'
   const [queue, setQueue] = useState([]);
   const [currentMeteor, setCurrentMeteor] = useState(null);

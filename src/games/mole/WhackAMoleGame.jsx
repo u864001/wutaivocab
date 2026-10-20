@@ -41,8 +41,8 @@ export const WhackAMoleGame = ({
 }) => {
   // ── 1. 遊戲單字庫建置（低年級字母模式 vs 中高年級單字模式） ──
   const isAlphabetMode = useMemo(() => {
-    return settings?.alphaMode || (settings?.selectedUnits && settings.selectedUnits.includes('abc'));
-  }, [settings]);
+    return qualifyingBook === 'abc' || settings?.alphaMode || (settings?.selectedUnits && settings.selectedUnits.includes('abc'));
+  }, [settings, qualifyingBook]);
 
   const rawWordPool = useMemo(() => {
     if (isAlphabetMode) {

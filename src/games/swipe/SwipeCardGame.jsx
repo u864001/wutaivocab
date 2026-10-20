@@ -105,8 +105,19 @@ export const SwipeCardGame = ({
   // 'menu' (選單), 'playing' (進行中), 'settlement' (結算)
   const [gameState, setGameState] = useState('menu');
 
+  // 低年級 Aa 字母模式判斷
+  const isAlphabetMode = Boolean(
+    qualifyingBook === 'abc' ||
+    (settings?.selectedUnits && settings.selectedUnits.includes('abc')) ||
+    settings?.alphaMode
+  );
   // 模式：'vocab' (中高年級單字釋義), 'letters' (低年級 Aa 大小寫配對)
-  const [gameMode, setGameMode] = useState('vocab');
+  const [gameMode, setGameMode] = useState(isAlphabetMode ? 'letters' : 'vocab');
+  useEffect(() => {
+    if (isAlphabetMode) {
+      setGameMode('letters');
+    }
+  }, [isAlphabetMode]);
 
   // 計時器 (30秒極速對決)
   const TOTAL_GAME_TIME = 30;

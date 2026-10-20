@@ -4,6 +4,7 @@ import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
+import { generateSpellingAlphabetQuestion } from '../../services/alphabetEngine';
 import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Volume2, Heart, Trophy, CheckCircle2, HeartCrack, Sparkles } from 'lucide-react';
@@ -15,6 +16,11 @@ export const SpellingGame = ({
   onBack
 }) => {
   const { t } = useI18n();
+  const isAlphabetMode = Boolean(
+    qualifyingBook === 'abc' ||
+    (settings?.selectedUnits && settings.selectedUnits.includes('abc')) ||
+    settings?.alphaMode
+  );
   const [queue, setQueue] = useState([]);
   const [currentWord, setCurrentWord] = useState(null);
   const [wordGroups, setWordGroups] = useState([]);
@@ -173,7 +179,8 @@ export const SpellingGame = ({
 
     const targetChar = cleanTargetRef.current[nextEmptyIndex];
 
-    if (letter.char === targetChar) {
+    const isMatch = isAlphabetMode ? letter.char === targetChar : letter.char.toLowerCase() === targetChar.toLowerCase();
+    if (isMatch) {
       processCorrect(letter, nextEmptyIndex);
     } else {
       processWrong(nextEmptyIndex);
@@ -204,7 +211,8 @@ export const SpellingGame = ({
     if (slotsRef.current[targetSlotIndex] !== null) return;
 
     const expectedChar = cleanTargetRef.current[targetSlotIndex];
-    if (letterObj.char === expectedChar) {
+    const isMatch = isAlphabetMode ? letterObj.char === expectedChar : letterObj.char.toLowerCase() === expectedChar.toLowerCase();
+    if (isMatch) {
       processCorrect(letterObj, targetSlotIndex);
     } else {
       processWrong(targetSlotIndex);
@@ -263,16 +271,17 @@ export const SpellingGame = ({
       if (e.ctrlKey || e.altKey || e.metaKey) return;
       if (e.key.length !== 1) return;
 
-      const pressedKey = e.key.toLowerCase();
-      if (!/[a-z]/.test(pressedKey)) return;
+      const pressedKey = isAlphabetMode ? (currentWordRef.current?.isUpper ? e.key.toUpperCase() : e.key.toLowerCase()) : e.key.toLowerCase();
+      if (!/[a-zA-Z]/.test(e.key)) return;
 
       const currentSlots = slotsRef.current;
       const nextEmptyIndex = currentSlots.findIndex(s => s === null);
       if (nextEmptyIndex === -1) return;
 
       const targetChar = cleanTargetRef.current[nextEmptyIndex];
+      const isMatch = isAlphabetMode ? pressedKey === targetChar : pressedKey === targetChar.toLowerCase();
 
-      if (pressedKey === targetChar) {
+      if (isMatch) {
         const availableLetter = lettersRef.current.find(l => !l.isPlaced && l.char === pressedKey);
         if (availableLetter) {
           processCorrect(availableLetter, nextEmptyIndex);
@@ -375,12 +384,12 @@ export const SpellingGame = ({
 
           {/* 榮譽榜破紀錄留名判定卡與獎狀領取 */}
           <HonorSubmissionCard
-            mode="spelling"
-            book={qualifyingBook}
+            mode={isAlphabetMode ? 'spelling-abc' : 'spelling'}
+            book={isAlphabetMode ? 'abc' : qualifyingBook}
             score={firstAttemptPerfect}
             time={elapsedTime}
             totalCount={totalWords}
-            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', ')}
+            rangeText={isAlphabetMode ? 'Aa 字母連續序列拼裝' : (qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', '))}
             reviewWords={Array.from(historyWordsRef.current.values()).map(w => ({
               ...w,
               isMistake: mistakeIdsRef.current.has(w.id)

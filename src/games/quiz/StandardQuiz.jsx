@@ -5,6 +5,7 @@ import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { getSentenceListeningQuestions, getDialogueQAQuestions } from '../../services/listeningQuestionBank.js';
+import { generateQuizAlphabetQuestions } from '../../services/alphabetEngine';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Volume2, Send, CheckCircle2, XCircle,
@@ -19,6 +20,11 @@ export const StandardQuiz = ({
   onBack
 }) => {
   const { t } = useI18n();
+  const isAlphabetMode = Boolean(
+    qualifyingBook === 'abc' ||
+    (settings?.selectedUnits && settings.selectedUnits.includes('abc')) ||
+    settings?.alphaMode
+  );
 
   // 聽力三合一膠囊子模式：'word' (單字辨音) | 'sentence' (句子辨句) | 'qa' (情境問答)
   const [listeningSubMode, setListeningSubMode] = useState('word');
@@ -46,7 +52,13 @@ export const StandardQuiz = ({
   useEffect(() => {
     let list = [];
 
-    if (mode === 'quiz-listening') {
+    if (isAlphabetMode) {
+      const qCount = settings?.count === 'all' ? 26 : (parseInt(settings?.count, 10) || 20);
+      let qType = 'upper_to_lower';
+      if (mode === 'quiz-en-zh') qType = 'lower_to_upper';
+      if (mode === 'quiz-listening') qType = 'listening';
+      list = generateQuizAlphabetQuestions(qType, qCount);
+    } else if (mode === 'quiz-listening') {
       const qCount = settings?.count === 'all' ? 30 : (parseInt(settings?.count, 10) || 20);
 
       if (listeningSubMode === 'sentence') {
@@ -243,13 +255,9 @@ export const StandardQuiz = ({
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 mb-2 font-heading">
-            {mode === 'quiz-zh-en'
-              ? t.quizZhEn
-              : mode === 'quiz-en-zh'
-              ? t.quizEnZh
-              : mode === 'quiz-listening'
-              ? t.quizListening
-              : t.quizHard}
+            {isAlphabetMode
+              ? (mode === 'quiz-zh-en' ? '看大寫選小寫' : mode === 'quiz-en-zh' ? '看小寫選大寫' : '聽音選字母')
+              : (mode === 'quiz-zh-en' ? t.quizZhEn : mode === 'quiz-en-zh' ? t.quizEnZh : mode === 'quiz-listening' ? t.quizListening : t.quizHard)}
           </h2>
 
           {/* 🌟 聽力測驗專屬：膠囊式切換欄 [🐣 單字辨音 | 🦁 句子辨句 | 💬 情境問答] 🌟 */}

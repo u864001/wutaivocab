@@ -168,9 +168,14 @@ export function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // 榮譽榜資格判斷：僅能選同冊，且超過 20 字，或者包含兩個以上的正常單元 (unit1, 2, 3, 4 取至少二)
+  // 榮譽榜資格判斷：低年級 abc 模式直接合格；中高年級僅能選同冊且超過 20 字或 2 單元以上
   const qualifyingBook = useMemo(() => {
     if (!settings.selectedUnits || settings.selectedUnits.length === 0) return null;
+
+    // 低年級 Aa 字母全套模式直接認可為合格冊別 'abc'
+    if (settings.selectedUnits.includes('abc') || settings.alphaMode) {
+      return 'abc';
+    }
 
     const selectedBooks = [...new Set(settings.selectedUnits.map(u => u.split('-')[0]))];
     // 條件 1：僅能選同冊

@@ -498,7 +498,7 @@ export const VocabEscapeGame = ({
                 <span>挑戰教材進度（點擊切換）：</span>
               </label>
               <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400">
-                目前出題：第 {qualifyingBook} 冊
+                目前出題：{qualifyingBook === 'abc' ? 'Aa 字母神石密室' : `第 ${qualifyingBook} 冊`}
               </span>
             </div>
 
@@ -847,7 +847,7 @@ export const VocabEscapeGame = ({
                 score={totalPuzzlesCount}
                 time={timeElapsed}
                 totalCount={totalPuzzlesCount}
-                rangeText={`第 ${qualifyingBook} 冊 - 三連環密室大脫逃`}
+                rangeText={qualifyingBook === 'abc' ? 'Aa 字母神石密室大脫逃' : `第 ${qualifyingBook} 冊 - 三連環密室大脫逃`}
                 reviewWords={allWordsInvolved.map(w => ({
                   id: w.id,
                   en: w.en,

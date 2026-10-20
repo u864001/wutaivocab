@@ -1,3 +1,4 @@
+import { generateEscapeAlphabetPuzzles } from '../../services/alphabetEngine';
 // ── 密室逃脫：四大風格主題、八大多元題型、動態不重疊座標與三室戰役生成引擎 ──
 import {
   generatePedagogicalCloze,
@@ -562,6 +563,12 @@ export const getActiveCurriculumBookForGrade = (grade, date = new Date()) => {
  */
 export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
   const { grade = '03', selectedUnits = [], themeId = 'temple' } = options;
+  const isAlphabetMode = Boolean(
+    options.isAlphabetMode ||
+    (Array.isArray(selectedUnits) && selectedUnits.includes('abc')) ||
+    grade === '01' ||
+    grade === '02'
+  );
 
   // 挑選密室主題風格 (temple | dungeon | tomb | asylum | random)
   let selectedTheme = ESCAPE_THEMES[0];
@@ -826,7 +833,7 @@ export const generateEscapeRoomCampaign = (allWords = [], options = {}) => {
   return {
     theme: selectedTheme,
     chapters,
-    qualifyingBook,
+    qualifyingBook: isAlphabetMode ? 'abc' : qualifyingBook,
     totalPuzzlesCount: 9,
     allWordsInvolved
   };

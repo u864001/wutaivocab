@@ -1,3 +1,4 @@
+import { useStudent } from '../../context/StudentContext';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
@@ -5,6 +6,7 @@ import { SpotterScene } from './SpotterScene';
 import { SpotterWordBank } from './SpotterWordBank';
 import { SPOTTER_SCENES, SPOTTER_SCENES_BY_BOOK, DIFFERENCE_CATEGORIES, generateSpotterRound } from './spotterData';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
+import { generateSpotterAlphabetRound } from '../../services/alphabetEngine';
 import { soundEngine } from '../../services/audio';
 import confetti from 'canvas-confetti';
 import {
@@ -18,6 +20,7 @@ export const VocabSpotterGame = ({
   qualifyingBook,
   onBack
 }) => {
+  const { currentStudent } = useStudent();
   // 依據選取的冊次動態匹配場景（預設為三年級第一冊 Here We Go Book 1 彩虹文具與創意課室）
   const selectedBook = useMemo(() => {
     if (qualifyingBook) return String(qualifyingBook);
@@ -28,13 +31,26 @@ export const VocabSpotterGame = ({
     return '1';
   }, [qualifyingBook, settings?.selectedUnits]);
 
+  // 低年級 Aa 字母模式判斷
+  const isAlphabetMode = useMemo(() => {
+    return qualifyingBook === 'abc' ||
+      (settings?.selectedUnits && settings.selectedUnits.includes('abc')) ||
+      settings?.alphaMode;
+  }, [qualifyingBook, settings]);
+
   const currentScene = SPOTTER_SCENES_BY_BOOK[selectedBook] || SPOTTER_SCENES_BY_BOOK['1'];
 
   // 每一局動態隨機抽取 5 個目標單字並指定樣態
   const [roundSeed, setRoundSeed] = useState(() => Date.now());
   const roundData = useMemo(() => generateSpotterRound(currentScene, 5), [currentScene, roundSeed]);
 
-  const { activeDifferences, itemStateMap, wordBankOptions, totalCount } = roundData;
+  const alphaRoundData = useMemo(() => {
+    return isAlphabetMode ? generateSpotterAlphabetRound(6, 3, currentStudent?.grade || '01') : null;
+  }, [isAlphabetMode, roundSeed, currentStudent?.grade]);
+
+  const { activeDifferences, itemStateMap, wordBankOptions, totalCount } = isAlphabetMode
+    ? { activeDifferences: alphaRoundData?.differences || [], itemStateMap: {}, wordBankOptions: [], totalCount: 3 }
+    : roundData;
 
   // 遊戲核心狀態
   const [gameState, setGameState] = useState('playing'); // 'playing' | 'failed' | 'victory'
@@ -133,6 +149,44 @@ export const VocabSpotterGame = ({
     // 提示反饋
     setMissFeedback(reasonText);
     setTimeout(() => setMissFeedback(null), 2500);
+  };
+
+  // 點擊字母積木處理 (低年級找碴模式)
+  const handleAlphabetBlockClick = (block) => {
+    if (gameState !== 'playing' || !alphaRoundData) return;
+
+    if (block.isDifference) {
+      if (solvedDiffIds.has(block.diffId)) return;
+      const newSolved = new Set(solvedDiffIds);
+      newSolved.add(block.diffId);
+      setSolvedDiffIds(newSolved);
+      soundEngine.correct();
+
+      const diffObj = alphaRoundData.differences.find(d => d.id === block.diffId);
+      setMatchSuccessFeedback({
+        word: block.char,
+        wordZh: diffObj?.reason || '積木差異',
+        solvedCount: newSolved.size,
+        total: alphaRoundData.totalDiffs
+      });
+      setTimeout(() => setMatchSuccessFeedback(null), 2500);
+
+      try {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
+
+      if (newSolved.size >= alphaRoundData.totalDiffs) {
+        setGameState('victory');
+        soundEngine.win();
+        setTimeout(() => {
+          try {
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+          } catch (e) {}
+        }, 300);
+      }
+    } else {
+      deductLife('❌ 這裡兩邊積木完全一樣喔！請再仔細觀察其他字母～');
+    }
   };
 
   // 點擊命中相異目標

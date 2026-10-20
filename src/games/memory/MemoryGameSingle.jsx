@@ -4,6 +4,7 @@ import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
+import { UPPERCASE_ALPHABET, SHUFFLE } from '../../services/alphabetEngine';
 import { CARD_THEMES } from './memoryThemes';
 import { POWER_UP_DEFS, AnnouncementBanner } from './PowerUpEffects';
 import { PowerUpCodexModal } from './PowerUpCodexModal';
@@ -122,6 +123,11 @@ export const MemoryGameSingle = ({
   onBack
 }) => {
   const { t } = useI18n();
+  const isAlphabetMode = Boolean(
+    qualifyingBook === 'abc' ||
+    (settings?.selectedUnits && settings.selectedUnits.includes('abc')) ||
+    settings?.alphaMode
+  );
 
   // 卡牌色系樣式
   const [cardThemeId, setCardThemeId] = useState(() => {
@@ -181,28 +187,53 @@ export const MemoryGameSingle = ({
     if (pool.length < 8) pool = words;
     const selected = [...pool].sort(() => 0.5 - Math.random()).slice(0, 8);
     selectedWordsRef.current = selected;
-
     const cardList = [];
-    // 16 張字卡
-    selected.forEach((w, idx) => {
-      const matchKey = `pair_${idx}`;
-      cardList.push({
-        id: `en-${matchKey}`,
-        matchId: matchKey,
-        text: w.en,
-        type: 'en',
-        speak: w.en,
-        isPowerUp: false
+    if (isAlphabetMode) {
+      // 字母模式：抽 8 組英文字母大小寫配對 (A ↔ a)
+      const selectedRoots = SHUFFLE(UPPERCASE_ALPHABET).slice(0, 8);
+      selectedRoots.forEach((upper) => {
+        const matchKey = `pair_${upper}`;
+        cardList.push({
+          id: `upper-${matchKey}`,
+          matchId: matchKey,
+          text: upper,
+          subText: '大寫',
+          type: 'en',
+          speak: upper,
+          isPowerUp: false
+        });
+        cardList.push({
+          id: `lower-${matchKey}`,
+          matchId: matchKey,
+          text: upper.toLowerCase(),
+          subText: '小寫',
+          type: 'zh',
+          speak: upper,
+          isPowerUp: false
+        });
       });
-      cardList.push({
-        id: `zh-${matchKey}`,
-        matchId: matchKey,
-        text: w.zh,
-        type: 'zh',
-        speak: w.en,
-        isPowerUp: false
+    } else {
+      // 16 張單字卡
+      selected.forEach((w, idx) => {
+        const matchKey = `pair_${idx}`;
+        cardList.push({
+          id: `en-${matchKey}`,
+          matchId: matchKey,
+          text: w.en,
+          type: 'en',
+          speak: w.en,
+          isPowerUp: false
+        });
+        cardList.push({
+          id: `zh-${matchKey}`,
+          matchId: matchKey,
+          text: w.zh,
+          type: 'zh',
+          speak: w.en,
+          isPowerUp: false
+        });
       });
-    });
+    }
 
     // 4 張精選功能卡 (偷看卡、加分卡、金幣雨、雷達卡、閃電卡)
     const availablePowerUps = ['peek', 'bonus', 'coin', 'radar', 'lightning'];

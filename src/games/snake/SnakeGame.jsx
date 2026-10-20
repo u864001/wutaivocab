@@ -4,6 +4,7 @@ import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
+import { getSnakeNextLetter, UPPERCASE_ALPHABET } from '../../services/alphabetEngine';
 import { SnakeCanvas2D } from './SnakeCanvas2D';
 import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import confetti from 'canvas-confetti';
@@ -31,6 +32,13 @@ export const SnakeGame = ({
   const [isFinished, setIsFinished] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  // 低年級 Aa 字母巡航模式判斷
+  const isAlphabetMode = Boolean(
+    qualifyingBook === 'abc' ||
+    (settings?.selectedUnits && settings.selectedUnits.includes('abc')) ||
+    settings?.alphaMode
+  );
+  const alphaIndexRef = useRef(0);
   const [currentWord, setCurrentWord] = useState(null);
   const [spelledChars, setSpelledChars] = useState('');
   const [score, setScore] = useState(0);
@@ -113,6 +121,46 @@ export const SnakeGame = ({
   }, [settings, words]);
 
   const loadNextWord = () => {
+    if (isAlphabetMode) {
+      const letterData = getSnakeNextLetter(alphaIndexRef.current, false);
+      const targetChar = letterData.char;
+      setCurrentWord({
+        id: `alpha_${targetChar}`,
+        en: targetChar,
+        zh: `吃掉字母 【 ${targetChar} 】`,
+        isAlphabet: true
+      });
+      setSpelledChars('');
+      spelledCharsRef.current = '';
+      speakEnglish(targetChar);
+
+      // 產生目標字母與 3 個隨機干擾字母
+      const otherLetters = UPPERCASE_ALPHABET.filter(c => c !== targetChar);
+      const distractors = [...otherLetters].sort(() => 0.5 - Math.random()).slice(0, 3);
+      const allChars = [targetChar, ...distractors].sort(() => 0.5 - Math.random());
+
+      const placed = [];
+      allChars.forEach((ch, idx) => {
+        let x, y;
+        let tries = 0;
+        do {
+          x = Math.floor(Math.random() * (GRID_W - 2)) + 1;
+          y = Math.floor(Math.random() * (GRID_H - 2)) + 1;
+          tries++;
+        } while (
+          tries < 50 &&
+          (placed.some(p => p.x === x && p.y === y) ||
+            snakeRef.current.some(s => s.x === x && s.y === y) ||
+            (nextHeadRef.current.x === x && nextHeadRef.current.y === y))
+        );
+        placed.push({ char: ch, x, y, id: `${ch}-${idx}-${Date.now()}`, isTarget: ch === targetChar });
+      });
+
+      lettersRef.current = placed;
+      setRenderLetters([...placed]);
+      return;
+    }
+
     if (wordQueueRef.current.length === 0) {
       let filtered = words.filter(w => (settings?.selectedUnits || []).includes(`${w.book}-${w.lesson}`));
       if (filtered.length === 0 && words.length > 0) {
@@ -162,8 +210,9 @@ export const SnakeGame = ({
   };
 
   const handleStart = (mode) => {
-    const filtered = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
-    if (filtered.length === 0) {
+    const isAlpha = qualifyingBook === 'abc' || (settings?.selectedUnits && settings.selectedUnits.includes('abc')) || settings?.alphaMode;
+    const filtered = isAlpha ? [{ id: 'alpha_start', en: 'ALPHABET', zh: '26 字母巡航' }] : words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
+    if (!isAlpha && filtered.length === 0) {
       alert('請先在主畫面勾選複習範圍！');
       return onBack();
     }
