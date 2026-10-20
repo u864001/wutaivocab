@@ -7,7 +7,7 @@ import { checkIfQualifiesForTop50, uploadScore } from '../services/supabase';
 import { CertificateModal } from './CertificateModal';
 import { getAccuracyLevel } from '../services/certificateGenerator';
 import { getProfanityError } from '../services/profanityFilter';
-import { recordGrimoireStar } from '../utils/grimoireHelper';
+import { recordGrimoireStar, mapModeToGrimoireId } from '../utils/grimoireHelper';
 import confetti from 'canvas-confetti';
 import { Trophy, CheckCircle2, Sparkles, Send, Loader2, Award, UserCheck, RefreshCw, AlertCircle, Coins, ShieldCheck, User } from 'lucide-react';
 
@@ -102,6 +102,34 @@ export const HonorSubmissionCard = ({
       addCoins(awardedInfo.delta);
     }
   }, [isLoggedIn, awardedInfo.delta, addCoins]);
+  const [grimoireNotice, setGrimoireNotice] = useState(null);
+  const hasRecordedGrimoireStarRef = useRef(false);
+
+  // ── 神山八冊秘典典藏館進度連動（點亮星星與書籍完成度） ──
+  useEffect(() => {
+    if (status === 'checking' || hasRecordedGrimoireStarRef.current) return;
+
+    const targetBook = (effectiveBook && effectiveBook !== 'abc')
+      ? String(effectiveBook)
+      : (isAlphabet ? (currentStudent?.grade === '02' ? '2' : '1') : null);
+
+    if (targetBook && ['1', '2', '3', '4', '5', '6', '7', '8'].includes(targetBook)) {
+      const gId = mapModeToGrimoireId(actualMode);
+      if (gId) {
+        // 評定星數：滿80%或突破Top50為三星，60%為二星，其餘有效完成為一星
+        const stars = (status === 'qualified' || status === 'submitted' || accuracy >= 80) ? 3 : (accuracy >= 60 ? 2 : 1);
+        const sId = currentStudent?.student_id || 'guest';
+        recordGrimoireStar(sId, targetBook, gId, stars);
+        hasRecordedGrimoireStarRef.current = true;
+        setGrimoireNotice({
+          bookId: targetBook,
+          gameId: gId,
+          stars
+        });
+      }
+    }
+  }, [status, actualMode, effectiveBook, accuracy, currentStudent, isAlphabet]);
+
 
   // 答對率計算
   const accuracy = totalCount > 0 ? Math.min(100, Math.round((score / totalCount) * 100)) : 100;
@@ -223,6 +251,28 @@ export const HonorSubmissionCard = ({
           {t.viewCertificateBtn}
         </Button3D>
       </div>
+      {/* ── 神山秘典典藏館進度連動標籤 (Grimoire Star Synchronized) ── */}
+      {grimoireNotice && (
+        <div className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 border-2 border-amber-400/50 dark:border-amber-600/60 flex items-center justify-between gap-2 shadow-sm text-center sm:text-left">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xl sm:text-2xl shrink-0">📖</span>
+            <div>
+              <div className="flex items-center gap-1.5 justify-center sm:justify-start">
+                <span className="text-xs sm:text-sm font-black text-amber-800 dark:text-amber-300">
+                  {t.bookText || '第'} {grimoireNotice.bookId} {t.bookUnit || '冊'} 秘典進度已更新！
+                </span>
+                <span className="text-sm font-mono tracking-wider drop-shadow-sm">
+                  {'⭐'.repeat(grimoireNotice.stars)}
+                </span>
+              </div>
+              <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                已同步點亮典藏館！集滿 10 項即可解鎖整冊神印！
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* ── 金幣經濟結算便當條 (Coin Reward Banner) ── */}
       {awardedInfo.type !== 'none' && (

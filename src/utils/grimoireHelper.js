@@ -210,6 +210,27 @@ export const getGrimoireSummary = (studentId) => {
 };
 
 /**
+ * 將各遊戲模式字串精確映射至八冊秘典之 12 大模式代碼
+ */
+export const mapModeToGrimoireId = (mode) => {
+  if (!mode) return null;
+  const m = String(mode).toLowerCase();
+  if (m.startsWith('escape')) return 'escape';
+  if (m.startsWith('spotter')) return 'spotter';
+  if (m.startsWith('maze')) return 'maze';
+  if (m.startsWith('memory')) return 'memory';
+  if (m.startsWith('mole')) return 'mole';
+  if (m.startsWith('swipe')) return 'swipe';
+  if (m.startsWith('meteor')) return 'meteor';
+  if (m.startsWith('snake')) return 'snake';
+  if (m.startsWith('spelling')) return 'spelling';
+  if (m === 'quiz-zh-en' || m === 'choice-zh-en') return 'quiz-zh-en';
+  if (m === 'quiz-en-zh' || m === 'choice-en-zh') return 'quiz-en-zh';
+  if (m.startsWith('quiz-listening') || m.startsWith('listening')) return 'quiz-listening';
+  return null;
+};
+
+/**
  * 記錄學生在某冊某遊戲的三星戰績
  */
 export const recordGrimoireStar = (studentId, bookId, gameId, stars = 3) => {

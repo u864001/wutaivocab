@@ -107,7 +107,7 @@ export const BattleGame = ({
   const [pinInput, setPinInput] = useState('');
   const [gameMode, setGameMode] = useState('meteor'); // 'meteor' | 'memory'
   const hasSelectedUnits = true;
-  const { currentStudent } = useStudent();
+  const { currentStudent, isLoggedIn, addCoins } = useStudent();
   const [isScopeModalOpen, setIsScopeModalOpen] = useState(false);
   const [modalBookId, setModalBookId] = useState('1');
 
@@ -251,6 +251,37 @@ export const BattleGame = ({
 
   // 飄浮動態通知
   const [noticeBanner, setNoticeBanner] = useState(null);
+  // 對戰結算金幣獎勵
+  const hasAwardedBattleCoinsRef = useRef(false);
+  const [battleReward, setBattleReward] = useState(null);
+
+  useEffect(() => {
+    if (view === 'result' && finalLeaderboard.length > 0 && !hasAwardedBattleCoinsRef.current) {
+      hasAwardedBattleCoinsRef.current = true;
+      const myIdx = finalLeaderboard.findIndex(p => p.deviceId === myDeviceIdRef.current);
+      let coinsDelta = 3;
+      let rankText = '榮譽參賽';
+      if (myIdx === 0) {
+        coinsDelta = 15;
+        rankText = '👑 擂台大冠軍';
+      } else if (myIdx === 1) {
+        coinsDelta = 10;
+        rankText = '🥈 榮耀亞軍';
+      } else if (myIdx === 2) {
+        coinsDelta = 6;
+        rankText = '🥉 勇士季軍';
+      }
+      setBattleReward({ coins: coinsDelta, title: rankText });
+      if (isLoggedIn && addCoins) {
+        addCoins(coinsDelta);
+      }
+    }
+    if (view !== 'result') {
+      hasAwardedBattleCoinsRef.current = false;
+      setBattleReward(null);
+    }
+  }, [view, finalLeaderboard, isLoggedIn, addCoins]);
+
 
   // 結算數據
   const [finalLeaderboard, setFinalLeaderboard] = useState([]);
@@ -1838,7 +1869,7 @@ export const BattleGame = ({
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-purple-950/40 to-slate-950/95 backdrop-blur-[1px]" />
         </div>
 
-        <div className="relative z-10 max-w-xl w-full text-center p-6 sm:p-8 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-purple-500/50 shadow-[0_0_50px_rgba(168,85,247,0.35)]">
+        <div className="relative z-10 max-w-xl w-full max-h-[92vh] overflow-y-auto text-center p-4 sm:p-6 md:p-8 rounded-3xl bg-slate-950/90 backdrop-blur-md border-2 border-purple-500/50 shadow-[0_0_50px_rgba(168,85,247,0.35)]">
           <Trophy className="w-16 h-16 text-amber-400 mx-auto mb-2 animate-bounce drop-shadow-[0_0_25px_rgba(251,191,36,0.7)]" />
           <h2 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 font-heading mb-1 drop-shadow">
             星際死鬥結算榮譽榜
@@ -1846,6 +1877,23 @@ export const BattleGame = ({
           <p className="text-xs sm:text-sm font-bold text-purple-200/80 mb-6">
             生還者殘存愛心每顆重賞 <strong className="text-emerald-400 font-black">+50 分</strong>！
           </p>
+          {/* 對戰宇宙金幣獎勵便當條 */}
+          {battleReward && (
+            <div className="mb-4 p-3 rounded-2xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-between text-left">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🪙</span>
+                <div>
+                  <span className="text-xs sm:text-sm font-black text-amber-300">
+                    {battleReward.title}獎勵：+{battleReward.coins} 宇宙金幣！
+                  </span>
+                  <p className="text-[10px] text-amber-200/80">
+                    {isLoggedIn ? '已存入勇士探險通行證！' : '登入通行證可永久保存金幣！'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
 
           {/* 榮譽排列表 */}
           <div className="space-y-3 mb-8">
