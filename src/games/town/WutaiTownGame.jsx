@@ -43,6 +43,8 @@ export const WutaiTownGame = ({ onBack }) => {
   // 計算今日客座外師巡迴狀態
   const todayStr = useMemo(() => getTodayDateStr(), []);
   const teacherInfo = useMemo(() => getDailyVisitingTeacherInfo(todayStr), [todayStr]);
+  const studentId = currentStudent?.student_id || 'guest';
+  const dialogueStorageKey = `wutai_town_dialogues_${studentId}_${todayStr}`;
   const hasMetTeacherToday = currentStudent?.daily_quest?.teacherMetDate === todayStr;
 
   // 畫面模態與地標狀態
@@ -61,7 +63,7 @@ export const WutaiTownGame = ({ onBack }) => {
   // 今日生活對話完成紀錄 (防刷防通膨：每地標每日限領 1 金幣，每日小鎮上限 6 枚金幣)
   const [dailyDialogueRecord, setDailyDialogueRecord] = useState(() => {
     try {
-      const saved = localStorage.getItem(`wutai_town_dialogues_${todayStr}`);
+      const saved = localStorage.getItem(dialogueStorageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && typeof parsed.coinsEarned === 'number' && Array.isArray(parsed.completedLocations)) {
@@ -78,7 +80,7 @@ export const WutaiTownGame = ({ onBack }) => {
 
     let currentRecord = dailyDialogueRecord;
     try {
-      const saved = localStorage.getItem(`wutai_town_dialogues_${todayStr}`);
+      const saved = localStorage.getItem(dialogueStorageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && typeof parsed.coinsEarned === 'number' && Array.isArray(parsed.completedLocations)) {
@@ -102,7 +104,7 @@ export const WutaiTownGame = ({ onBack }) => {
       };
       setDailyDialogueRecord(updated);
       try {
-        localStorage.setItem(`wutai_town_dialogues_${todayStr}`, JSON.stringify(updated));
+        localStorage.setItem(dialogueStorageKey, JSON.stringify(updated));
       } catch (e) {}
 
       if (addCoins) {
@@ -128,7 +130,7 @@ export const WutaiTownGame = ({ onBack }) => {
       };
       setDailyDialogueRecord(updated);
       try {
-        localStorage.setItem(`wutai_town_dialogues_${todayStr}`, JSON.stringify(updated));
+        localStorage.setItem(dialogueStorageKey, JSON.stringify(updated));
       } catch (e) {}
 
       if (addQuestPoints) {

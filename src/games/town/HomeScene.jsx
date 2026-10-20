@@ -33,7 +33,7 @@ export const HomeScene = ({ onClose }) => {
   // 載入釘在告示板上的英語靈感卡 (僅存最新單張)
   const loadPinnedCard = () => {
     try {
-      const saved = localStorage.getItem('wutai_latest_pinned_wisdom_card');
+      const saved = localStorage.getItem(pinnedCardStorageKey);
       if (saved) {
         setPinnedWisdomCard(JSON.parse(saved));
       } else {
@@ -51,7 +51,7 @@ export const HomeScene = ({ onClose }) => {
   const handleUnpinCard = (e) => {
     if (e) e.stopPropagation();
     soundEngine.click();
-    localStorage.removeItem('wutai_latest_pinned_wisdom_card');
+    localStorage.removeItem(pinnedCardStorageKey);
     setPinnedWisdomCard(null);
     setUseToast("📌 已取下告示板上的靈感卡！");
     setTimeout(() => setUseToast(null), 3000);

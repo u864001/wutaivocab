@@ -75,12 +75,12 @@ export const WisdomCardModal = ({ onClose, customWordsPool = [] }) => {
     soundEngine.spinCard();
 
     // 檢查今日是否為首次翻卡 (+5 積分判斷)
-    const lastDrawDate = localStorage.getItem('wutai_wisdom_last_draw_date');
+    const lastDrawDate = localStorage.getItem(wisdomDrawKey);
     const isFirstToday = lastDrawDate !== todayStr;
     setIsFirstDrawToday(isFirstToday);
 
     // 檢查該卡是否已被釘在告示板
-    const pinnedCardStr = localStorage.getItem('wutai_latest_pinned_wisdom_card');
+    const pinnedCardStr = localStorage.getItem(wisdomPinKey);
     if (pinnedCardStr) {
       try {
         const p = JSON.parse(pinnedCardStr);
@@ -111,7 +111,7 @@ export const WisdomCardModal = ({ onClose, customWordsPool = [] }) => {
         if (addQuestPoints) {
           addQuestPoints(5);
         }
-        localStorage.setItem('wutai_wisdom_last_draw_date', todayStr);
+        localStorage.setItem(wisdomDrawKey, todayStr);
       }
 
       // 自動朗讀卡牌英文短句
@@ -136,7 +136,7 @@ export const WisdomCardModal = ({ onClose, customWordsPool = [] }) => {
       ...selectedCard,
       pinnedDate: todayStr
     };
-    localStorage.setItem('wutai_latest_pinned_wisdom_card', JSON.stringify(pinnedData));
+    localStorage.setItem(wisdomPinKey, JSON.stringify(pinnedData));
     setIsPinned(true);
     setPinToast(`📌 已將「${selectedCard.word}」靈感卡釘在房間告示板！`);
     setTimeout(() => setPinToast(null), 3200);

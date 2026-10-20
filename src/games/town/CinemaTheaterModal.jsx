@@ -7,7 +7,10 @@ import { YouTubeClipPlayer } from '../../components/common/YouTubeClipPlayer';
 import confetti from 'canvas-confetti';
 
 export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall = 'ALL' }) => {
-  const { addQuestPoints, addCoins } = useStudent();
+  const { currentStudent, addQuestPoints, addCoins } = useStudent();
+  const studentId = currentStudent?.student_id || 'guest';
+  const todayStr = new Date().toISOString().split('T')[0];
+  const popcornStorageKey = `wutai_cinema_popcorn_${studentId}_${todayStr}`;
   
   // 檢視模式：'schedule' (放映時刻表看板) | 'player' (大螢幕放映中)
   const [viewMode, setViewMode] = useState(initialMovieId ? 'player' : 'schedule');
@@ -16,10 +19,9 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
   const theaterRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const todayStr = new Date().toISOString().split('T')[0];
   const [claimedReward, setClaimedReward] = useState(() => {
     try {
-      return localStorage.getItem(`wutai_cinema_popcorn_${todayStr}`) === 'true';
+      return localStorage.getItem(popcornStorageKey) === 'true';
     } catch (e) {
       return false;
     }
@@ -50,7 +52,7 @@ export const CinemaTheaterModal = ({ onClose, initialMovieId = null, initialHall
     soundEngine.win();
     setClaimedReward(true);
     try {
-      localStorage.setItem(`wutai_cinema_popcorn_${todayStr}`, 'true');
+      localStorage.setItem(popcornStorageKey, 'true');
     } catch (e) {}
     if (addQuestPoints) await addQuestPoints(2);
     if (addCoins) await addCoins(1);

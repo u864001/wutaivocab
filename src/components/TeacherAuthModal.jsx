@@ -5,13 +5,24 @@ import { Lock, KeyRound, X, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useI18n } from '../context/I18nContext';
 import { soundEngine } from '../services/audio';
 
-export const TEACHER_PASSWORD = 'wt7902230';
+// 教師工作台通行密鑰 SHA-256 雜湊碼 (前端不儲存明文密碼，徹底防護原始碼檢索)
+const TEACHER_AUTH_HASH = '16d704d1e4a6f3e1e6c8c1c2d8fa29c9d5e21e66a00de8aae48b04dcf752a7f4';
+
+async function computeSha256(str) {
+  try {
+    const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+  } catch (e) {
+    return '';
+  }
+}
 
 export const TeacherAuthModal = ({ isOpen, onClose, onSuccess }) => {
   const { lang } = useI18n();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -19,13 +30,14 @@ export const TeacherAuthModal = ({ isOpen, onClose, onSuccess }) => {
       setPassword('');
       setErrorMsg('');
       setShowPassword(false);
+      setIsVerifying(false);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e?.preventDefault();
     if (!password) {
       setErrorMsg(lang === 'zh-TW' ? '請輸入教師通行密碼' : 'Please enter password');
@@ -33,15 +45,24 @@ export const TeacherAuthModal = ({ isOpen, onClose, onSuccess }) => {
       return;
     }
 
-    if (password === TEACHER_PASSWORD) {
-      soundEngine.correct();
-      sessionStorage.setItem('wutai_teacher_authed', 'true');
-      onSuccess();
-    } else {
+    setIsVerifying(true);
+    try {
+      const hashed = await computeSha256(password);
+      if (hashed === TEACHER_AUTH_HASH) {
+        soundEngine.correct();
+        sessionStorage.setItem('wutai_teacher_authed', 'true');
+        onSuccess();
+      } else {
+        soundEngine.wrong();
+        setErrorMsg(lang === 'zh-TW' ? '密碼錯誤，請重新輸入' : 'Incorrect password');
+        setPassword('');
+        inputRef.current?.focus();
+      }
+    } catch (err) {
       soundEngine.wrong();
-      setErrorMsg(lang === 'zh-TW' ? '密碼錯誤，請重新輸入' : 'Incorrect password');
-      setPassword('');
-      inputRef.current?.focus();
+      setErrorMsg(lang === 'zh-TW' ? '驗證異常，請重試' : 'Authentication error');
+    } finally {
+      setIsVerifying(false);
     }
   };
 

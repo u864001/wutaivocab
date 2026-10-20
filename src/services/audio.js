@@ -164,10 +164,23 @@ const isExplicitFemale = (v) => {
   return femaleSignals.some(f => name.includes(f));
 };
 
+let speechPrimed = false;
+export const primeSpeechSynthesis = () => {
+  if (speechPrimed || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  speechPrimed = true;
+  try {
+    const silent = new SpeechSynthesisUtterance(' ');
+    silent.volume = 0.01;
+    silent.rate = 10;
+    window.speechSynthesis.speak(silent);
+  } catch (e) {}
+};
+
 class VoiceManager {
   constructor() {
     this.voices = [];
     this.isReady = false;
+    this.speakingToken = 0;
 
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       this.initVoices();
@@ -259,14 +272,31 @@ class VoiceManager {
       utterance.pitch = pitch;
       utterance.rate = rate;
 
+      const currentToken = ++this.speakingToken;
+      let started = false;
+      const timeoutId = setTimeout(() => {
+        if (!started && this.speakingToken === currentToken) {
+          // iOS Safari 靜默丟棄發音或語音被阻擋時，強制恢復背景音樂
+          bgmManager.resumeBgm();
+        }
+      }, 1200);
+
       utterance.onstart = () => {
+        started = true;
+        clearTimeout(timeoutId);
         bgmManager.pauseBgm();
       };
       utterance.onend = () => {
-        bgmManager.resumeBgm();
+        clearTimeout(timeoutId);
+        if (this.speakingToken === currentToken) {
+          bgmManager.resumeBgm();
+        }
       };
       utterance.onerror = () => {
-        bgmManager.resumeBgm();
+        clearTimeout(timeoutId);
+        if (this.speakingToken === currentToken) {
+          bgmManager.resumeBgm();
+        }
       };
 
       window.speechSynthesis.speak(utterance);
@@ -316,6 +346,7 @@ class BgmManager {
         if (this.currentAudio && !this.isMuted && this.currentAudio.paused) {
           this.currentAudio.play().catch(() => {});
         }
+        primeSpeechSynthesis();
         window.removeEventListener('pointerdown', unlockAudio);
         window.removeEventListener('click', unlockAudio);
         window.removeEventListener('keydown', unlockAudio);

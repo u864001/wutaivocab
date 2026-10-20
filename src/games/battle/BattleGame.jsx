@@ -354,7 +354,12 @@ export const BattleGame = ({
 
     const timer = setTimeout(() => {
       if (!isCancelled) {
-        probeChannels.forEach(ch => supabase.removeChannel(ch));
+        probeChannels.forEach(ch => {
+          try {
+            if (ch.untrack) ch.untrack();
+            supabase.removeChannel(ch);
+          } catch (e) {}
+        });
         setIsProbing(false);
       }
     }, 1500);
@@ -362,7 +367,12 @@ export const BattleGame = ({
     return () => {
       isCancelled = true;
       clearTimeout(timer);
-      probeChannels.forEach(ch => supabase.removeChannel(ch));
+      probeChannels.forEach(ch => {
+        try {
+          if (ch.untrack) ch.untrack();
+          supabase.removeChannel(ch);
+        } catch (e) {}
+      });
       setIsProbing(false);
     };
   }, [view, probeCounter]);
@@ -375,6 +385,7 @@ export const BattleGame = ({
 
     if (channelRef.current) {
       try {
+        if (channelRef.current.untrack) channelRef.current.untrack();
         supabase.removeChannel(channelRef.current);
       } catch (e) {}
       channelRef.current = null;

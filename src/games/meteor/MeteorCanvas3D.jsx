@@ -367,6 +367,12 @@ export const MeteorCanvas3D = ({
         if (lb.progress >= 1.0) {
           lb.active = false;
           scene.remove(lb.mesh);
+          lb.mesh.geometry?.dispose();
+          if (Array.isArray(lb.mesh.material)) {
+            lb.mesh.material.forEach(m => m.dispose());
+          } else if (lb.mesh.material) {
+            lb.mesh.material.dispose();
+          }
           if (lb.onHit) lb.onHit();
         }
       }
@@ -392,6 +398,45 @@ export const MeteorCanvas3D = ({
       }
       if (asteroidObjRef.current) {
         asteroidObjRef.current.dispose();
+      }
+
+      // 深度遍歷釋放場景中所有網格、幾何體與材質 (徹底杜絕 GPU 顯存洩漏)
+      if (sceneRef.current) {
+        sceneRef.current.traverse((obj) => {
+          if (obj.isMesh || obj.isPoints) {
+            obj.geometry?.dispose();
+            if (Array.isArray(obj.material)) {
+              obj.material.forEach(m => {
+                m.map?.dispose();
+                m.dispose();
+              });
+            } else if (obj.material) {
+              obj.material.map?.dispose();
+              obj.material.dispose();
+            }
+          }
+        });
+      }
+
+      // 清理未消散的碎屑、衝擊波與名牌 Texture
+      if (debrisRef.current) {
+        debrisRef.current.forEach(d => {
+          d.mesh?.geometry?.dispose();
+          d.mesh?.material?.dispose();
+        });
+        debrisRef.current = [];
+      }
+      if (shockwavesRef.current) {
+        shockwavesRef.current.forEach(sw => {
+          sw.mesh?.geometry?.dispose();
+          sw.mesh?.material?.dispose();
+        });
+        shockwavesRef.current = [];
+      }
+      if (wordSpriteRef.current) {
+        wordSpriteRef.current.texture?.dispose();
+        wordSpriteRef.current.spriteMat?.dispose();
+        wordSpriteRef.current = null;
       }
     };
   }, []);
