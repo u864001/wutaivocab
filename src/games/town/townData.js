@@ -51,6 +51,7 @@ import { DIALOGUE_VARIANTS, VISITING_TEACHER_VARIANTS } from './townDialogueData
 export { DIALOGUE_VARIANTS, VISITING_TEACHER_VARIANTS };
 
 export const TOWN_MAP_PANORAMA_IMG = '/assets/town/town_map_panorama.webp';
+export const TOWN_MAP_PANORAMA_NIGHT_IMG = '/assets/town/town_map_panorama_night.webp';
 
 // ── 1. 霧臺小鎮 9 大社區地標清單 ──
 export const TOWN_LOCATIONS = [

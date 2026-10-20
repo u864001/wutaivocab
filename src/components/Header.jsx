@@ -16,7 +16,7 @@ export const Header = ({
   currentView = 'portal',
   isOnline = true
 }) => {
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, isAuto } = useTheme();
   const { lang, toggleLang, t } = useI18n();
   const { currentStudent, isLoggedIn, openModal } = useStudent();
   const [isMuted, setIsMuted] = useState(soundEngine.isMuted);
@@ -167,13 +167,20 @@ export const Header = ({
           <span className="hidden sm:inline">{lang === 'zh-TW' ? 'EN' : '中文'}</span>
         </button>
 
-        {/* 主題切換 (☀️ 陽光叢林 vs 🌙 極光星空，純圖示) */}
+        {/* 主題切換 (☀️ 晨曦白晝 vs 🌙 星月夜景，支援時鐘自動隨動) */}
         <button
           onClick={toggleTheme}
-          title={isDark ? t.themeDay : t.themeNight}
-          className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-amber-500 dark:text-cyan-300 shadow-sm transition-all active:scale-95 shrink-0"
+          title={
+            isAuto
+              ? (isDark ? '星月夜間模式 (依時鐘自動，點擊切換為手動白天)' : '晨曦日間模式 (依時鐘自動，點擊切換為手動夜間)')
+              : (isDark ? '當前為手動夜間 (點擊回歸時鐘自動)' : '當前為手動白天 (點擊切換為手動夜間)')
+          }
+          className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-amber-500 dark:text-cyan-300 shadow-sm transition-all active:scale-95 shrink-0 relative"
         >
-          {isDark ? <Sun className="w-3.5 h-3.5 animate-spin-slow" /> : <Moon className="w-3.5 h-3.5" />}
+          {isDark ? <Moon className="w-3.5 h-3.5 text-cyan-300" /> : <Sun className="w-3.5 h-3.5 animate-spin-slow text-amber-500" />}
+          {isAuto && (
+            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white dark:ring-slate-900" title="隨時鐘自動切換" />
+          )}
         </button>
       </div>
     </header>

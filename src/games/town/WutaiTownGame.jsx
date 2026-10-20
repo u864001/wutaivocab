@@ -1,11 +1,13 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useStudent } from '../../context/StudentContext';
 import {
   TOWN_LOCATIONS,
   TOWN_ITEMS,
   TOWN_MAP_PANORAMA_IMG,
+  TOWN_MAP_PANORAMA_NIGHT_IMG,
   getTodayDateStr,
   getDailyVisitingTeacherInfo,
   getLocationDailyTheme,
@@ -19,12 +21,14 @@ import { QuestBoardModal } from './QuestBoardModal';
 import { soundEngine, stopSpeech } from '../../services/audio';
 import {
   ArrowLeft, Coins, Trophy, Package, ScrollText, Sparkles,
-  Compass, ChevronRight, Gift, Music, VolumeX, MessageSquare
+  Compass, ChevronRight, Gift, Music, VolumeX, MessageSquare,
+  Sun, Moon
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export const WutaiTownGame = ({ onBack }) => {
   const { lang } = useI18n();
+  const { isDark, toggleTheme, isAuto } = useTheme();
   const {
     currentStudent,
     coins,
@@ -398,11 +402,21 @@ export const WutaiTownGame = ({ onBack }) => {
       {/* ── 16:9 比例完整保留全景大地圖容器 (Zero-crop 16:9 Panoramic Stage) ── */}
       <div className="relative w-full aspect-[16/9] rounded-3xl overflow-hidden shadow-2xl border-2 border-emerald-500/50 bg-slate-950 select-none">
         
-        {/* 全景地圖底圖 (100% 完整無裁切呈現) */}
+        {/* ☀️ 白晝版小鎮全景地圖 */}
         <img
           src={TOWN_MAP_PANORAMA_IMG}
-          alt="霧臺小鎮全景大地圖"
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none filter brightness-[0.98] contrast-[1.02]"
+          alt="霧臺小鎮白晝全景大地圖"
+          className={`absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none filter brightness-[0.98] contrast-[1.02] transition-opacity duration-1000 ${
+            isDark ? 'opacity-0' : 'opacity-100'
+          }`}
+        />
+        {/* 🌙 星月夜景版小鎮全景地圖 (暖黃提燈、石板屋窗火、星月銀河) */}
+        <img
+          src={TOWN_MAP_PANORAMA_NIGHT_IMG}
+          alt="霧臺小鎮夜間全景大地圖"
+          className={`absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none filter brightness-[1.02] contrast-[1.05] transition-opacity duration-1000 ${
+            isDark ? 'opacity-100' : 'opacity-0'
+          }`}
         />
 
         {/* ── 頂部懸浮超輕薄毛玻璃導航橫幅 (Floating Top Glass HUD) ── */}
@@ -457,8 +471,21 @@ export const WutaiTownGame = ({ onBack }) => {
             )}
           </div>
 
-          {/* 右側：音樂切換 + 金幣 + 榮譽積分 + 背包 + 任務 (手機版純圖示單行排版) */}
+          {/* 右側：日夜切換 + 音樂切換 + 金幣 + 榮譽積分 + 背包 + 任務 (手機版純圖示單行排版) */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* ☀️/🌙 小鎮日夜切換鈕 */}
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 sm:px-2.5 sm:py-1 rounded-xl text-xs font-black backdrop-blur-md border transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 bg-white/15 hover:bg-white/25 text-amber-300 border-white/20 relative"
+              title={isAuto ? (isDark ? '小鎮星月夜景 (依時鐘自動)' : '小鎮白晝晨曦 (依時鐘自動)') : (isDark ? '點擊切換為白晝小鎮' : '點擊切換為星月小鎮')}
+            >
+              {isDark ? <Moon className="w-3.5 h-3.5 text-cyan-300" /> : <Sun className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />}
+              <span className="hidden lg:inline text-[11px]">{isDark ? '星月夜景' : '晨曦白晝'}</span>
+              {isAuto && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white" title="隨時鐘自動切換" />
+              )}
+            </button>
+
             {/* 🎵 音樂開關 */}
             <button
               onClick={handleToggleTownBgm}

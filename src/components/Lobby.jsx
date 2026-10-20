@@ -142,7 +142,7 @@ export const Lobby = ({
 }) => {
   const { t, lang } = useI18n();
   const { currentStudent, isLoggedIn, openModal } = useStudent();
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme, isAuto } = useTheme();
   const [isMuted, setIsMuted] = useState(soundEngine.isMuted);
 
   // ── 流程步驟：'game' (選遊戲手風琴) | 'scope' (專屬整備選冊/秘境頁) ──
@@ -749,14 +749,21 @@ export const Lobby = ({
               soundEngine.click();
               toggleTheme();
             }}
-            className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center border ${
+            className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center border relative ${
               isDark
-                ? 'bg-slate-900/90 hover:bg-slate-800 text-amber-300 border-white/20'
-                : 'bg-white hover:bg-slate-50 text-amber-600 border-slate-300'
+                ? 'bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border-white/20'
+                : 'bg-white hover:bg-slate-50 text-amber-500 border-slate-300'
             }`}
-            title={isDark ? '切換為晨曦白天模式' : '切換為星空夜間模式'}
+            title={
+              isAuto
+                ? (isDark ? '星月夜間模式 (依時鐘自動，點擊切換為手動白天)' : '晨曦日間模式 (依時鐘自動，點擊切換為手動夜間)')
+                : (isDark ? '當前為手動夜間 (點擊回歸時鐘自動)' : '當前為手動白天 (點擊切換為手動夜間)')
+            }
           >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {isDark ? <Moon className="w-4 h-4 text-cyan-300" /> : <Sun className="w-4 h-4 text-amber-500 animate-spin-slow" />}
+            {isAuto && (
+              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-white dark:ring-slate-900" title="隨時鐘自動切換" />
+            )}
           </button>
 
           {/* 靜音切換按鈕 */}

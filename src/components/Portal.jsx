@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GlassCard } from './ui/GlassCard';
 import { Button3D } from './ui/Button3D';
 import { useI18n } from '../context/I18nContext';
+import { useTheme } from '../context/ThemeContext';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 import {
   Sparkles,
@@ -35,24 +36,40 @@ export const Portal = ({
   wordsCount = 0,
 }) => {
   const { t, lang } = useI18n();
+  const { isDark } = useTheme();
   const handleAdminTrigger = useEasterEgg(onOpenTeacherHub, 5, 2000);
   const [showMobileQr, setShowMobileQr] = useState(false);
 
   return (
     <div className="relative min-h-screen w-full">
       {/* ══════════════════════════════════════════════════════════ */}
-      {/* 🏞️ 魯凱族原住民文化專屬自適應網頁底圖 (寬螢幕與窄螢幕自適應) */}
-      {/* 上方為純淨開闊的晨曦天空（無頂部織布干擾，確保導覽列文字清晰）， */}
-      {/* 下方保留盛開百合花 (Bariangalay)、神聖古陶壺 (Kadilrungane) 與幾何飾邊 */}
+      {/* 🏞️ 魯凱族原住民文化專屬自適應網頁底圖 (日夜自適應無縫漸變) */}
+      {/* ☀️ 白晝版：晨曦朝陽下的大武山與盛開百合花、古陶壺 */}
+      {/* 🌙 星月夜版：皎潔月光、浩瀚銀河星空與夜光百合花 (WebP 高清無損) */}
       {/* ══════════════════════════════════════════════════════════ */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
+        {/* 白晝晨曦款底圖 */}
         <img
           src="/assets/rukai_ui_background.jpg"
-          alt="Rukai Indigenous Cultural Background"
-          className="w-full h-full object-cover object-top opacity-90 dark:opacity-25 transition-opacity duration-700"
+          alt="Rukai Indigenous Cultural Background - Day"
+          className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-1000 ${
+            isDark ? 'opacity-0' : 'opacity-90'
+          }`}
+        />
+        {/* 星月夜景款底圖 (WebP 經無損級高壓壓縮，極速加載) */}
+        <img
+          src="/assets/rukai_ui_background_night.webp"
+          alt="Rukai Indigenous Cultural Background - Night"
+          className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-1000 ${
+            isDark ? 'opacity-90' : 'opacity-0'
+          }`}
         />
         {/* 柔和霧嵐漫射遮罩：兼顧文化美學與文字高清晰度無障礙對比 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/10 to-white/40 dark:from-slate-950/70 dark:via-slate-950/50 dark:to-slate-950/80 backdrop-blur-[0.5px]" />
+        <div className={`absolute inset-0 transition-colors duration-1000 backdrop-blur-[0.5px] ${
+          isDark
+            ? 'bg-gradient-to-b from-slate-950/65 via-slate-950/35 to-slate-950/75'
+            : 'bg-gradient-to-b from-white/30 via-white/10 to-white/40'
+        }`} />
       </div>
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-3 sm:px-4 py-3 sm:py-6 space-y-4 sm:space-y-6 animate-fadeIn pb-14">
