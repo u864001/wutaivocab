@@ -415,6 +415,7 @@ export function App() {
           {currentView === 'battle' && (
             <BattleGame
               settings={settings}
+              setSettings={setSettings}
               words={words}
               autoJoinCode={autoJoinCode}
               onBack={() => {

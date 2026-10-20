@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
@@ -91,11 +91,13 @@ const FIXED_ARENAS = [
 
 export const BattleGame = ({
   settings,
+  setSettings,
   words = [],
   onBack,
   autoJoinCode = null
 }) => {
   const { t } = useI18n();
+  const battleUnitsRef = useRef(settings?.selectedUnits || []);
   const [view, setView] = useState('menu'); // 'menu' | 'lobby' | 'playing' | 'result'
   const [selectedArena, setSelectedArena] = useState(FIXED_ARENAS[0]);
   const [playerName, setPlayerName] = useState(() => localStorage.getItem('wutai_player_name') || '');
@@ -121,7 +123,7 @@ export const BattleGame = ({
 
       const defaultUnits = getUnitsForBook(defaultBook, words);
       if (defaultUnits.length > 0) {
-        if (setSettings) {
+        if (typeof setSettings === 'function') {
           setSettings(prev => ({ ...prev, selectedUnits: defaultUnits }));
         }
         battleUnitsRef.current = defaultUnits;
@@ -166,7 +168,7 @@ export const BattleGame = ({
     soundEngine.click();
     const newUnits = getUnitsForBook(bookId, words);
     battleUnitsRef.current = newUnits;
-    if (setSettings) {
+    if (typeof setSettings === 'function') {
       setSettings(prev => ({ ...prev, selectedUnits: newUnits }));
     }
   };
@@ -197,7 +199,7 @@ export const BattleGame = ({
     }
     const nextUnits = Array.from(current);
     battleUnitsRef.current = nextUnits;
-    if (setSettings) {
+    if (typeof setSettings === 'function') {
       setSettings(prev => ({ ...prev, selectedUnits: nextUnits }));
     }
   };
@@ -207,7 +209,7 @@ export const BattleGame = ({
     soundEngine.click();
     const allOfBook = getUnitsForBook(bookId, words);
     battleUnitsRef.current = allOfBook;
-    if (setSettings) {
+    if (typeof setSettings === 'function') {
       setSettings(prev => ({ ...prev, selectedUnits: allOfBook }));
     }
   };
@@ -257,7 +259,6 @@ export const BattleGame = ({
   // 內部同步 Ref (防止非同步閉包取得過期資料)
   const channelRef = useRef(null);
   const myDeviceIdRef = useRef(getDeviceId());
-  const battleUnitsRef = useRef(settings?.selectedUnits || []);
   const myJoinTimestampRef = useRef(Date.now());
   const gameStartTimeRef = useRef(0);
 
