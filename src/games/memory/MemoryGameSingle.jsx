@@ -475,7 +475,7 @@ export const MemoryGameSingle = ({
   if (isFinished) {
     return (
       <div className="min-h-[75vh] flex items-center justify-center p-4 animate-fadeIn">
-        <GlassCard className="max-w-md w-full text-center p-8 shadow-2xl">
+        <GlassCard className="max-w-lg w-full text-center p-4 sm:p-6 md:p-8 shadow-2xl">
           <Trophy className="w-16 h-16 text-amber-400 mx-auto mb-3 animate-bounce" />
           <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
             {t.memoryComplete}

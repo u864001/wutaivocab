@@ -349,7 +349,7 @@ export const MeteorGame = ({
   if (!hasStarted) {
     return (
       <div className="min-h-[75vh] flex items-center justify-center p-4">
-        <GlassCard className="max-w-md w-full text-center p-8">
+        <GlassCard className="max-w-lg w-full text-center p-4 sm:p-6 md:p-8">
           <div className="w-20 h-20 rounded-3xl bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-4 animate-float-slow">
             <Rocket className="w-10 h-10" />
           </div>

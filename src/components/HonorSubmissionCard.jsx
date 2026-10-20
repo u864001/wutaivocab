@@ -13,7 +13,9 @@ import { Trophy, CheckCircle2, Sparkles, Send, Loader2, Award, UserCheck, Refres
 
 export const HonorSubmissionCard = ({
   mode,
+  gameMode,
   book,
+  qualifyingBook,
   score = 0,
   time = 0,
   totalCount = 20,
@@ -31,9 +33,11 @@ export const HonorSubmissionCard = ({
   const hasAwardedCoinsRef = useRef(false);
   const [awardedInfo, setAwardedInfo] = useState({ delta: 0, reason: '', type: 'none' });
 
-  // 判斷是否為字母類遊戲 (迷宮、是非字母、隕石ABC、記憶翻牌)
-  const isAlphabet = isAlphabetGameMode(mode, book);
-  const effectiveBook = book || (isAlphabet ? 'abc' : null);
+  // 支援雙向相容 mode/gameMode 與 book/qualifyingBook
+  const actualMode = mode || gameMode;
+  const rawBook = book || qualifyingBook;
+  const isAlphabet = isAlphabetGameMode(actualMode, rawBook);
+  const effectiveBook = rawBook || (isAlphabet ? 'abc' : null);
 
   useEffect(() => {
     if (currentStudent && !playerName) {
@@ -50,7 +54,7 @@ export const HonorSubmissionCard = ({
 
     // 防刷門檻 (Anti-exploit Gate)：答題數 >= 5、總題數 >= 10，或挑戰時間 >= 20 秒
     const isLegitimateSession = totalCount >= 10 || score >= 5 || time >= 20;
-    const isOwnGrade = isBookInOwnGrade(effectiveBook, currentStudent?.grade, mode);
+    const isOwnGrade = isBookInOwnGrade(effectiveBook, currentStudent?.grade, actualMode);
 
     if (!isLegitimateSession) {
       setAwardedInfo({
@@ -120,7 +124,7 @@ export const HonorSubmissionCard = ({
 
     // 3. 向 Supabase 檢查本週該冊別、該模式是否達到 Top 50 門檻
     setStatus('checking');
-    checkIfQualifiesForTop50({ mode, book: effectiveBook || 'abc', score, time })
+    checkIfQualifiesForTop50({ mode: actualMode, book: effectiveBook || 'abc', score, time })
       .then((qualified) => {
         if (isCancelled) return;
         if (qualified) {
@@ -139,7 +143,7 @@ export const HonorSubmissionCard = ({
     return () => {
       isCancelled = true;
     };
-  }, [mode, effectiveBook, score, time, isAlphabet]);
+  }, [actualMode, effectiveBook, score, time, isAlphabet]);
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
@@ -158,7 +162,7 @@ export const HonorSubmissionCard = ({
     localStorage.setItem('wutai_player_name', trimmedName);
 
     const success = await uploadScore({
-      mode,
+      mode: actualMode,
       book: effectiveBook || 'abc',
       name: trimmedName,
       score,

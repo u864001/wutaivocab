@@ -908,10 +908,13 @@ export const WhackAMoleGame = ({
 
             {/* 榮譽榜成績提交卡片 */}
             <HonorSubmissionCard
-              gameMode={isAlphabetMode ? 'mole-abc' : 'mole-vocab'}
+              mode={isAlphabetMode ? 'mole-abc' : 'mole-vocab'}
+              book={isAlphabetMode ? 'abc' : (qualifyingBook || '1')}
               score={score}
-              qualifyingBook={isAlphabetMode ? 'abc' : (qualifyingBook || '1')}
-              categoryTitle={isAlphabetMode ? '字母打地鼠' : '單字打地鼠'}
+              time={60}
+              totalCount={Math.max(score, 10)}
+              rangeText={isAlphabetMode ? '60秒極速打地鼠 (字母 ABC)' : (qualifyingBook ? `第 ${qualifyingBook} 冊單字打地鼠` : '全冊單字打地鼠')}
+              reviewWords={[]}
               className="mb-4"
             />
 

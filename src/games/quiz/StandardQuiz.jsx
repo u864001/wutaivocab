@@ -326,7 +326,7 @@ export const StandardQuiz = ({
 
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-4 animate-fadeIn">
-        <GlassCard className="max-w-md w-full text-center p-8">
+        <GlassCard className="max-w-lg w-full text-center p-4 sm:p-6 md:p-8">
           <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-3 animate-bounce" />
           <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 font-heading mb-1">
             {t.perfect}

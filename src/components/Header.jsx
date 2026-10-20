@@ -36,28 +36,28 @@ export const Header = ({
   };
 
   return (
-    <header className="w-full max-w-6xl mx-auto px-2.5 sm:px-4 py-2 sm:py-4 flex items-center justify-between gap-2 sm:gap-3 relative z-20">
+    <header className="w-full max-w-6xl mx-auto px-2.5 sm:px-4 py-2 sm:py-3 flex items-center justify-between gap-2 relative z-20">
       {/* 學校標題與連線狀態 */}
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {/* 一鍵回首頁圖示 (手機版專用回首頁鈕，電腦版點擊星光 5 次直通後台) */}
         <div
           onClick={() => {
             if (onGoHome) onGoHome();
             else handleAdminTrigger();
           }}
-          className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-emerald-500 to-lime-400 dark:from-indigo-600 dark:to-cyan-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 dark:shadow-indigo-500/30 cursor-pointer select-none active:scale-95 transition-transform shrink-0"
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-emerald-500 to-lime-400 dark:from-indigo-600 dark:to-cyan-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 dark:shadow-indigo-500/30 cursor-pointer select-none active:scale-95 transition-transform shrink-0"
           title={lang === 'zh-TW' ? '返回英語學習宇宙首頁' : 'Go Home'}
         >
           <Home className="w-4 h-4 sm:hidden pointer-events-none" />
-          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 hidden sm:block pointer-events-none" />
+          <Sparkles className="w-5 h-5 hidden sm:block pointer-events-none" />
         </div>
 
         {/* 電腦版完整標題與連線狀態標籤 (手機版隱藏，徹底避免直排佔據10行) */}
-        <div className="hidden sm:block">
+        <div className="hidden sm:block min-w-0">
           <div className="flex items-center gap-2">
             <h1
               onClick={onGoHome}
-              className={`text-lg sm:text-2xl font-black tracking-wide text-slate-800 dark:text-slate-100 font-heading whitespace-nowrap ${
+              className={`text-base sm:text-lg md:text-xl font-black tracking-wide text-slate-800 dark:text-slate-100 font-heading truncate ${
                 onGoHome ? 'cursor-pointer hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors' : ''
               }`}
             >
@@ -72,7 +72,7 @@ export const Header = ({
               {isOnline ? t.connected : t.offline}
             </span>
           </div>
-          <p className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap">
+          <p className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap hidden lg:block">
             {t.subtitle}
           </p>
         </div>
@@ -92,7 +92,7 @@ export const Header = ({
             className="p-2 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 flex items-center gap-1 text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer shrink-0"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="hidden sm:inline">
+            <span className="hidden lg:inline">
               {currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab'
                 ? (lang === 'zh-TW' ? '學習首頁' : 'Home')
                 : (lang === 'zh-TW' ? '回單字館' : 'Vocab Hub')}
@@ -128,7 +128,7 @@ export const Header = ({
           className="p-2 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 flex items-center gap-1 text-xs font-black shadow-sm transition-all active:scale-95 shrink-0"
         >
           <Globe className="w-3.5 h-3.5 text-blue-500" />
-          <span className="hidden sm:inline">{lang === 'zh-TW' ? 'EN' : '中文'}</span>
+          <span className="hidden lg:inline">{lang === 'zh-TW' ? 'EN' : '中文'}</span>
         </button>
 
         {/* 5. ☀️/🌙 主題切換 (晨曦白晝 vs 星月夜景，支援時鐘自動隨動) */}
@@ -164,7 +164,7 @@ export const Header = ({
             ) : (
               <User className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             )}
-            <span className="font-heading truncate max-w-[110px] hidden sm:inline">
+            <span className="font-heading truncate max-w-[90px] hidden lg:inline">
               {formatStudentBadge(currentStudent, lang)}
             </span>
             <span className="flex items-center gap-0.5 text-amber-600 dark:text-amber-400 font-mono font-black text-[11px] sm:text-xs">
@@ -179,7 +179,7 @@ export const Header = ({
             className="p-2 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white flex items-center gap-1.5 text-xs font-black shadow-sm shadow-amber-500/20 transition-all active:scale-95 cursor-pointer shrink-0"
           >
             <User className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{t.loginToRoam}</span>
+            <span className="hidden lg:inline">{t.loginToRoam}</span>
           </button>
         )}
       </div>

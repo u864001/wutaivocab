@@ -381,12 +381,13 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
         {/* ── 頂部導覽列 ── */}
         <div className="flex items-center justify-between mb-4">
           <Button3D variant={isDark ? "slate" : "secondary"} size="sm" onClick={onBack} icon={ArrowLeft}>
-            {t.backLobby || '回大廳'}
+            <span className="hidden sm:inline">{t.backLobby || '回大廳'}
+          </span>
           </Button3D>
 
           <h2
             onClick={handleTitleClick}
-            className={`text-2xl sm:text-3xl font-black font-heading flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform ${
+            className={`hidden md:flex text-2xl sm:text-3xl font-black font-heading items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform ${
               isDark ? 'text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]' : 'text-slate-800 drop-shadow-[0_1px_3px_rgba(255,255,255,0.9)]'
             }`}
             title="連續點擊 5 次啟動管理後台"

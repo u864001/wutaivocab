@@ -516,7 +516,7 @@ export const SnakeGame = ({
 
     return (
       <div className="min-h-[75vh] flex items-center justify-center p-4 animate-fadeIn">
-        <GlassCard className={`max-w-md w-full text-center p-8 border shadow-2xl ${
+        <GlassCard className={`max-w-lg w-full text-center p-4 sm:p-6 md:p-8 border shadow-2xl text-slate-800 dark:text-slate-100 ${
           isIndigenous
             ? 'bg-stone-900/90 border-amber-500/40 text-stone-100'
             : 'bg-emerald-950/20 border-emerald-500/30'
