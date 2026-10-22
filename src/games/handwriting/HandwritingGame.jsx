@@ -891,66 +891,6 @@ export const HandwritingGame = ({
             onContextMenu={(e) => e.preventDefault()}
             className="absolute inset-0 w-full h-full touch-none select-none cursor-crosshair z-10"
           />
-
-          {/* 3. 實戰模式評分正誤遮罩彈窗 */}
-          {evalResult && (
-            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-              <div className="w-full max-w-sm p-5 rounded-3xl bg-white dark:bg-slate-800 shadow-2xl text-center border-2 border-slate-200 dark:border-slate-700">
-                <div className="text-4xl mb-2">
-                  {evalResult.passed ? '🎉' : '💪'}
-                </div>
-                <h3 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1">
-                  {evalResult.passed ? `${evalResult.score} 分 • 完美書寫！` : `${evalResult.score} 分 • 再試一次`}
-                </h3>
-                <div className="flex justify-center gap-1 text-2xl mb-2">
-                  {'⭐'.repeat(evalResult.stars)}
-                </div>
-                <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
-                  {evalResult.feedback}
-                </p>
-
-                {/* 單字模式各字母評分分佈 */}
-                {evalResult.letterScores && (
-                  <div className="flex justify-center gap-1.5 mb-4 flex-wrap">
-                    {evalResult.letterScores.map((ls, idx) => (
-                      <span
-                        key={idx}
-                        className={`px-2 py-0.5 rounded-lg text-xs font-mono font-black border ${
-                          ls.passed
-                            ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-400/40'
-                            : 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border-rose-400/40'
-                        }`}
-                      >
-                        {ls.char} ({ls.score})
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                <div className="flex gap-2">
-                  <Button3D
-                    variant="slate"
-                    size="sm"
-                    onClick={handleClear}
-                    className="flex-1"
-                  >
-                    重新書寫
-                  </Button3D>
-                  {evalResult.passed && (
-                    <Button3D
-                      variant="emerald"
-                      size="sm"
-                      onClick={handleNextStep}
-                      className="flex-1"
-                      icon={ArrowRight}
-                    >
-                      下一題
-                    </Button3D>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
@@ -1031,6 +971,66 @@ export const HandwritingGame = ({
           </Button3D>
         )}
       </div>
+
+      {/* ── 實戰模式評分正誤遮罩彈窗 (獨立 fixed 浮層，徹底脫離四線三格容器，杜絕被裁剪) ── */}
+      {evalResult && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fadeIn select-none">
+          <div className="w-full max-w-sm max-h-[90vh] overflow-y-auto p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-800 shadow-2xl text-center border-2 border-slate-200 dark:border-slate-700 animate-scaleUp">
+            <div className="text-4xl sm:text-5xl mb-2">
+              {evalResult.passed ? '🎉' : '💪'}
+            </div>
+            <h3 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1">
+              {evalResult.passed ? `${evalResult.score} 分 • 完美書寫！` : `${evalResult.score} 分 • 再試一次`}
+            </h3>
+            <div className="flex justify-center gap-1 text-2xl mb-2">
+              {'⭐'.repeat(evalResult.stars)}
+            </div>
+            <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
+              {evalResult.feedback}
+            </p>
+
+            {/* 單字模式各字母評分分佈 */}
+            {evalResult.letterScores && (
+              <div className="flex justify-center gap-1.5 mb-4 flex-wrap">
+                {evalResult.letterScores.map((ls, idx) => (
+                  <span
+                    key={idx}
+                    className={`px-2 py-0.5 rounded-lg text-xs font-mono font-black border ${
+                      ls.passed
+                        ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-400/40'
+                        : 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border-rose-400/40'
+                    }`}
+                  >
+                    {ls.char} ({ls.score})
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="flex gap-2.5 mt-2">
+              <Button3D
+                variant="slate"
+                size="md"
+                onClick={handleClear}
+                className="flex-1"
+              >
+                重新書寫
+              </Button3D>
+              {evalResult.passed && (
+                <Button3D
+                  variant="emerald"
+                  size="md"
+                  onClick={handleNextStep}
+                  className="flex-1"
+                  icon={ArrowRight}
+                >
+                  下一題
+                </Button3D>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
