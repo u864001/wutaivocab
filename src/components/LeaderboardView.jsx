@@ -13,7 +13,7 @@ import {
 import { getCurrentSemesterId, getSemesterDisplayName } from '../utils/semesterHelper';
 import { soundEngine } from '../services/audio';
 import { useEasterEgg } from '../hooks/useEasterEgg';
-import { pad2, formatStudentBadge } from '../utils/studentIdHelper';
+import { pad2, formatStudentBadge, isGuestStudent } from '../utils/studentIdHelper';
 import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
@@ -363,11 +363,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
   const activeModalRanks = useMemo(() => {
     let list = modalModeId ? (boardData[modalModeId] || []) : [];
     if (isPastWeek && Array.isArray(list)) {
-      list = list.filter(row => {
-        const sId = String(row.student_id || '');
-        const name = String(row.name || '');
-        return sId !== '999999' && !sId.startsWith('99') && !name.includes('訪客') && !name.includes('Guest');
-      });
+      list = list.filter(row => !isGuestStudent(row));
     }
     return list;
   }, [modalModeId, boardData, isPastWeek]);

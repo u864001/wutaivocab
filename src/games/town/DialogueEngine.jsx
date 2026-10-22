@@ -32,6 +32,7 @@ export const DialogueEngine = ({
   const [nodeHistory, setNodeHistory] = useState([]); // 樹狀對話歷史堆疊，支援回上一層
   const [showChineseNpc, setShowChineseNpc] = useState(false); // 預設隱藏 NPC 中文翻譯，由學生主動點擊展開
   const [showChineseOptions, setShowChineseOptions] = useState(false); // 預設隱藏應答選項中文，純美語閱讀練習
+  const { isDark } = useTheme();
   const currentNode = tree?.nodes?.[currentNodeId];
   const [portraitError, setPortraitError] = useState(false);
   const [bgError, setBgError] = useState(false);
@@ -175,7 +176,6 @@ export const DialogueEngine = ({
     }
   };
 
-  const { isDark } = useTheme();
   const displayAvatar = isVisitingTeacher ? visitingTeacher.avatar : location.npcAvatar;
   const displayPortrait = isVisitingTeacher ? visitingTeacher.portrait : location.npcPortrait;
   const displayRole = isVisitingTeacher ? visitingTeacher.roleZh : location.npcRole;

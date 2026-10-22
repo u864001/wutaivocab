@@ -49,6 +49,9 @@ const CARD_BACK_THEMES = [
   }
 ];
 
+const wisdomDrawKey = 'wutai_wisdom_last_draw_date';
+const wisdomPinKey = 'wutai_pinned_wisdom_card';
+
 export const WisdomCardModal = ({ onClose, customWordsPool = [] }) => {
   const { addQuestPoints } = useStudent();
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);

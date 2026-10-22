@@ -9,6 +9,8 @@ import {
   X, BookOpen, Coffee, Sun, Pin, Trash2
 } from 'lucide-react';
 
+const pinnedCardStorageKey = 'wutai_pinned_wisdom_card';
+
 const CATEGORY_TABS = [
   { id: 'all', label: '全部收藏' },
   { id: 'stationery', label: '文具圖書' },

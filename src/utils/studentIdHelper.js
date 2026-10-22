@@ -69,6 +69,24 @@ export const parseStudentId = (studentId) => {
  * 取得格式化顯示名稱
  * e.g. "4年乙班 09號 (小明)" 或 "[訪客] 神秘訪客勇士"
  */
+
+/**
+ * 全平台標準訪客判定唯一真理來源 (Single Source of Truth)
+ * @param {string|object} studentOrId - 學生識別碼或學生物件
+ * @returns {boolean}
+ */
+export const isGuestStudent = (studentOrId) => {
+  if (!studentOrId) return true;
+  if (typeof studentOrId === 'object') {
+    const sId = String(studentOrId.student_id || studentOrId.id || '');
+    const name = String(studentOrId.nickname || studentOrId.name || '');
+    const grade = String(studentOrId.grade || '');
+    return sId === '999999' || sId.startsWith('99') || grade === '99' || name.includes('訪客') || name.includes('Guest');
+  }
+  const str = String(studentOrId);
+  return str === '999999' || str.startsWith('99') || str === 'guest';
+};
+
 export const formatStudentDisplayName = (student, lang = 'zh-TW') => {
   if (!student) return lang === 'zh-TW' ? '訪客學生' : 'Guest Student';
   const sId = String(student.student_id || '');

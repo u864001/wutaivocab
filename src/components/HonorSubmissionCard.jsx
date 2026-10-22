@@ -105,6 +105,10 @@ export const HonorSubmissionCard = ({
   const [grimoireNotice, setGrimoireNotice] = useState(null);
   const hasRecordedGrimoireStarRef = useRef(false);
 
+  // 答對率計算
+  const accuracy = totalCount > 0 ? Math.min(100, Math.round((score / totalCount) * 100)) : 100;
+  const level = getAccuracyLevel(accuracy);
+
   // ── 神山八冊秘典典藏館進度連動（點亮星星與書籍完成度） ──
   useEffect(() => {
     if (status === 'checking' || hasRecordedGrimoireStarRef.current) return;
@@ -130,10 +134,6 @@ export const HonorSubmissionCard = ({
     }
   }, [status, actualMode, effectiveBook, accuracy, currentStudent, isAlphabet]);
 
-
-  // 答對率計算
-  const accuracy = totalCount > 0 ? Math.min(100, Math.round((score / totalCount) * 100)) : 100;
-  const level = getAccuracyLevel(accuracy);
 
   useEffect(() => {
     let isCancelled = false;

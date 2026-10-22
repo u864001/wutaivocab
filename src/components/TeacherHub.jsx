@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { GlassCard } from './ui/GlassCard';
 import { Button3D } from './ui/Button3D';
 import {
