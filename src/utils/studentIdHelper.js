@@ -10,7 +10,7 @@ export const GRADE_OPTIONS = [
   { id: '04', zh: '四年級', en: 'Grade 4', shortZh: '4年', books: ['3', '4'], descZh: '四年級第3~4冊進階' },
   { id: '05', zh: '五年級', en: 'Grade 5', shortZh: '5年', books: ['5', '6'], descZh: '五年級第5~6冊高年級' },
   { id: '06', zh: '六年級', en: 'Grade 6', shortZh: '6年', books: ['7', '8'], descZh: '六年級第7~8冊畢業會考' },
-  { id: '00', zh: '訪客 / 全校大亂鬥', en: 'Guest / All School', shortZh: '全校', books: ['1', '2', '3', '4', '5', '6', '7', '8', 'abc'] },
+  { id: '99', zh: '訪客體驗', en: 'Guest Mode', shortZh: '訪客', books: ['1', '2', '3', '4', '5', '6', '7', '8', 'abc'], isGuest: true, descZh: '全校自由體驗與遊客試玩' }
 ];
 
 export const CLASS_OPTIONS = [
@@ -39,42 +39,51 @@ export const pad2 = (val) => {
 
 /**
  * 組成 6 碼學生識別碼 (student_id)
- * @param {string|number} grade - 年級 (01~06, 00)
- * @param {string|number} classNum - 班級 (01~03, 00)
- * @param {string|number} seat - 座號 (01~35)
- * @returns {string} 6-digit ID (e.g. '040209')
+ * @param {string|number} grade - 年級 (01~06, 99, 00)
+ * @param {string|number} classNum - 班級 (01~03, 99, 00)
+ * @param {string|number} seat - 座號 (01~35, 99)
+ * @returns {string} 6-digit ID (e.g. '040209', '999999')
  */
 export const formatStudentId = (grade, classNum, seat) => {
+  if (String(grade) === '99') return '999999';
   return `${pad2(grade)}${pad2(classNum)}${pad2(seat)}`;
 };
 
 /**
  * 解析 6 碼學生識別碼
  * @param {string} studentId
- * @returns {{ grade: string, classNum: string, seat: string, isValid: boolean }}
+ * @returns {{ grade: string, classNum: string, seat: string, isValid: boolean, isGuest: boolean }}
  */
 export const parseStudentId = (studentId) => {
   if (!studentId || typeof studentId !== 'string' || studentId.length !== 6) {
-    return { grade: '00', classNum: '00', seat: '00', isValid: false };
+    return { grade: '00', classNum: '00', seat: '00', isValid: false, isGuest: false };
   }
   const grade = studentId.substring(0, 2);
   const classNum = studentId.substring(2, 4);
   const seat = studentId.substring(4, 6);
-  return { grade, classNum, seat, isValid: true };
+  const isGuest = studentId === '999999' || grade === '99';
+  return { grade, classNum, seat, isValid: true, isGuest };
 };
 
 /**
  * 取得格式化顯示名稱
- * e.g. "4年乙班 09號 (小明)"
+ * e.g. "4年乙班 09號 (小明)" 或 "[訪客] 神秘訪客勇士"
  */
 export const formatStudentDisplayName = (student, lang = 'zh-TW') => {
   if (!student) return lang === 'zh-TW' ? '訪客學生' : 'Guest Student';
+  const sId = String(student.student_id || '');
+  const isGuest = sId === '999999' || pad2(student.grade) === '99';
+  const nickname = student.nickname || (lang === 'zh-TW' ? (isGuest ? '訪客勇士' : '好學生') : (isGuest ? 'Guest' : 'Learner'));
+
+  if (isGuest) {
+    return lang === 'zh-TW' ? `[訪客] ${nickname}` : `[Guest] ${nickname}`;
+  }
+
   const gradeObj = GRADE_OPTIONS.find(g => g.id === pad2(student.grade)) || GRADE_OPTIONS[0];
   const classObj = CLASS_OPTIONS.find(c => c.id === pad2(student.classNum || student.class)) || CLASS_OPTIONS[0];
   const seatNum = parseInt(student.seat, 10) || 0;
-  const nickname = student.nickname || (lang === 'zh-TW' ? '好學生' : 'Learner');
 
-  if (gradeObj.id === '00') {
+  if (gradeObj.id === '00' || gradeObj.id === '99') {
     return `${gradeObj[lang === 'zh-TW' ? 'zh' : 'en']} (${nickname})`;
   }
 
@@ -87,15 +96,19 @@ export const formatStudentDisplayName = (student, lang = 'zh-TW') => {
 
 /**
  * 取得精簡標籤
- * e.g. "4乙 09號"
+ * e.g. "4乙 09號" 或 "[訪客]"
  */
 export const formatStudentBadge = (student, lang = 'zh-TW') => {
   if (!student) return lang === 'zh-TW' ? '訪客' : 'Guest';
+  const sId = String(student.student_id || '');
+  if (sId === '999999' || pad2(student.grade) === '99' || pad2(student.grade) === '00') {
+    return lang === 'zh-TW' ? '[訪客]' : '[Guest]';
+  }
   const gradeObj = GRADE_OPTIONS.find(g => g.id === pad2(student.grade));
   const classObj = CLASS_OPTIONS.find(c => c.id === pad2(student.classNum || student.class));
   const seatNum = parseInt(student.seat, 10) || 0;
 
-  if (!gradeObj || gradeObj.id === '00') return lang === 'zh-TW' ? '訪客' : 'Guest';
+  if (!gradeObj || gradeObj.id === '00' || gradeObj.id === '99') return lang === 'zh-TW' ? '[訪客]' : '[Guest]';
   const seatText = seatNum > 0 ? `${seatNum}號` : '';
   return `${gradeObj.shortZh}${classObj ? classObj.shortZh : ''} ${seatText}`.trim();
 };
@@ -118,8 +131,15 @@ export const isAlphabetGameMode = (mode, book) => {
   const m = String(mode);
   return (
     m.startsWith('maze') ||
-    m.includes('abc') || m.endsWith('-abc') || m === 'swipe-abc' ||
+    m.includes('abc') ||
+    m.endsWith('-abc') ||
+    m === 'swipe-abc' ||
     m === 'meteor-abc' ||
+    m === 'mole-abc' ||
+    m === 'snake-abc' ||
+    m === 'memory-abc' ||
+    m === 'spelling-abc' ||
+    m === 'spotter-abc' ||
     m === 'memory-single' ||
     ((m === 'listening_lab' || m === 'speaking_lab') && (!book || book === 'abc'))
   );
@@ -132,11 +152,11 @@ export const isAlphabetGameMode = (mode, book) => {
  * 年級 4 -> 第 3, 4 冊
  * 年級 5 -> 第 5, 6 冊
  * 年級 6 -> 第 7, 8 冊
- * 年級 0 (訪客/全開) -> 全冊皆符合
+ * 年級 99 / 00 (訪客/全開) -> 全冊皆符合
  */
 export const isBookInOwnGrade = (book, grade, mode = null) => {
   const cleanGrade = pad2(grade);
-  if (cleanGrade === '00') return true; // 訪客全開放
+  if (cleanGrade === '00' || cleanGrade === '99') return true; // 訪客全開放
 
   // 一、二年級核心範圍：所有字母類遊戲均直接認定為本年級合格範圍！
   if ((cleanGrade === '01' || cleanGrade === '02') && isAlphabetGameMode(mode, book)) {

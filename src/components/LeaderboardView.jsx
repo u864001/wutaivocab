@@ -297,6 +297,13 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
               ? null
               : books;
             fetchedList = await fetchLeaderboard(selectedWeek, m.modeKeys, queryBooks, 50);
+            if (isPastWeek && Array.isArray(fetchedList)) {
+              fetchedList = fetchedList.filter(row => {
+                const sId = String(row.student_id || '');
+                const name = String(row.name || '');
+                return sId !== '999999' && !sId.startsWith('99') && !name.includes('訪客') && !name.includes('Guest');
+              });
+            }
           }
         } catch (err) {
           console.warn(`讀取模式 ${m.id} 排行失敗:`, err);
@@ -324,7 +331,17 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
     return CONSOLIDATED_GAME_MODES.find(m => m.id === modalModeId);
   }, [modalModeId]);
 
-  const activeModalRanks = modalModeId ? (boardData[modalModeId] || []) : [];
+  const activeModalRanks = useMemo(() => {
+    let list = modalModeId ? (boardData[modalModeId] || []) : [];
+    if (isPastWeek && Array.isArray(list)) {
+      list = list.filter(row => {
+        const sId = String(row.student_id || '');
+        const name = String(row.name || '');
+        return sId !== '999999' && !sId.startsWith('99') && !name.includes('訪客') && !name.includes('Guest');
+      });
+    }
+    return list;
+  }, [modalModeId, boardData, isPastWeek]);
 
   // 輔助函式：取得子模式或冊別標籤
   const getSubModeBadge = (row, modeObj) => {
@@ -718,7 +735,10 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                         const isSecond = idx === 1;
                         const isThird = idx === 2;
 
-                        const studentName = entry.nickname || entry.name || '同學';
+                        const isEntryGuest = String(entry.student_id || '') === '999999' || String(entry.name || '').includes('訪客') || String(entry.name || '').includes('Guest');
+                        const studentName = isEntryGuest
+                          ? `[訪客] ${(entry.nickname || entry.name || '探險者').replace(/^\[訪客\]\s*/, '')}`
+                          : (entry.nickname || entry.name || '同學');
                         const scoreValue = mode.isSpecial === 'monopoly'
                           ? (entry.coins ?? 0)
                           : mode.isSpecial === 'quest'

@@ -312,8 +312,8 @@ export const StudentProfileModal = () => {
 
                   {/* 槽位下方等級/座號標籤 */}
                   <div className={`absolute -bottom-1.5 px-2 py-0.2 rounded-full border text-[8px] font-black shadow-md flex items-center gap-1 ${currentFrame.badgeColor} z-10`}>
-                    <span>LV.{currentStudent.grade || 4}</span>
-                    <span className="opacity-80">({pad2(currentStudent.seat)}號)</span>
+                    <span>{currentStudent.student_id === '999999' || String(currentStudent.grade) === '99' ? 'LV.訪客' : `LV.${currentStudent.grade || 4}`}</span>
+                    <span className="opacity-80">{currentStudent.student_id === '999999' || String(currentStudent.grade) === '99' ? '全校暢玩' : `(${pad2(currentStudent.seat)}號)`}</span>
                   </div>
                 </button>
               </div>
@@ -813,7 +813,16 @@ export const StudentProfileModal = () => {
                       <button
                         type="button"
                         key={g.id}
-                        onClick={() => setSelectedGrade(g.id)}
+                        onClick={() => {
+                          setSelectedGrade(g.id);
+                          if (g.id === '99') {
+                            setSelectedClass('99');
+                            setSelectedSeat('99');
+                          } else if (selectedGrade === '99') {
+                            setSelectedClass('01');
+                            setSelectedSeat('01');
+                          }
+                        }}
                         className={`py-2 px-1 rounded-xl text-xs font-black transition-all border ${
                           isSelected
                             ? 'bg-emerald-500 text-white border-emerald-600 shadow-md scale-102'
@@ -960,7 +969,7 @@ export const StudentProfileModal = () => {
                   icon={Sparkles}
                   className="w-full shadow-lg"
                 >
-                  {isLoading ? '正在連結雲端漫遊檔案...' : t.roamingLaunchBtn}
+                  {isLoading ? '正在連結雲端漫遊檔案...' : (selectedGrade === '99' ? '開始訪客體驗 🚀 (免選班級座號)' : t.roamingLaunchBtn)}
                 </Button3D>
               </div>
 
