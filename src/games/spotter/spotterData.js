@@ -15,7 +15,7 @@ export const BOOK1_CLASSROOM_SCENE = {
   grade: 3,
   titleZh: '彩虹文具與創意課室（三年級第 1 冊）',
   titleEn: 'Rainbow Stationery & Creative Classroom (Book 1)',
-  descZh: '在立體紙雕課室中，仔細觀察左右兩圖 5 處相異之處！點選後在單字庫配對正確單字！',
+  descZh: '在立體紙雕課室中，仔細觀察左右兩圖 8 處相異之處！點選後在單字庫配對正確單字！',
   baseImage: '/assets/spotter/book1_base.jpg',
   diffImage: '/assets/spotter/book1_diff.jpg',
   width: 1376,
@@ -110,7 +110,7 @@ export const BOOK2_PARTY_SCENE = {
   grade: 3,
   titleZh: '溫馨派對與感恩卡片（三年級第 2 冊）',
   titleEn: 'Mother\'s Day Party & Cards (Book 2)',
-  descZh: '在溫馨的派對客廳中，找出 5 處相異物品！',
+  descZh: '在溫馨的派對客廳中，找出 8 處相異物品！',
   baseImage: '/assets/spotter/book2_base.jpg',
   diffImage: '/assets/spotter/book2_diff.jpg',
   width: 1376,
@@ -133,22 +133,214 @@ export const BOOK2_PARTY_SCENE = {
   ]
 };
 
-// ── 依冊次索引 ──
-export const SPOTTER_SCENES_BY_BOOK = {
-  '1': BOOK1_CLASSROOM_SCENE,
-  '2': BOOK2_PARTY_SCENE
+// ── 【Book 3 四年級上學期】微風氣象湖畔與青草野餐公園 (Here We Go Book 3) ──
+export const BOOK3_PARK_SCENE = {
+  id: 'book3_park',
+  book: '3',
+  grade: 4,
+  titleZh: '微風氣象湖畔與青草野餐公園（四年級第 3 冊）',
+  titleEn: 'Breeze Lake & Sunny Picnic Park (Book 3)',
+  descZh: '在風和日麗的野餐公園中，找出 8 處相異物品！點選後在單字庫配對正確單字！',
+  baseImage: '/assets/spotter/book3_base.jpg',
+  diffImage: '/assets/spotter/book3_diff.jpg',
+  width: 1376,
+  height: 768,
+  targetItems: [
+    { word: 'sun', wordZh: '太陽', x: 791, y: 96, radius: 75, typeZh: '光芒樣式', descZh: '左圖太陽散發金黃光芒，右圖轉為燦爛多芒晨曦' },
+    { word: 'kite', wordZh: '風箏', x: 384, y: 117, radius: 75, typeZh: '風箏圖樣', descZh: '左圖晴空是幾何條紋風箏，右圖轉為菱形純色彩繪風箏' },
+    { word: 'umbrella', wordZh: '遮陽傘', x: 135, y: 428, radius: 85, typeZh: '傘面花色', descZh: '左圖草地是紅白條紋遮陽傘，右圖轉為藍白海洋條紋傘' },
+    { word: 'hamburger', wordZh: '漢堡', x: 475, y: 468, radius: 65, typeZh: '夾心配料', descZh: '左圖長椅上是起司牛肉堡，右圖轉為脆皮炸雞雙層堡' },
+    { word: 'hot dog', wordZh: '熱狗', x: 785, y: 329, radius: 65, typeZh: '醬料樣態', descZh: '左圖木棧道熱狗淋滿黃芥末醬，右圖淋滿番茄紅醬' },
+    { word: 'pizza', wordZh: '披薩', x: 714, y: 557, radius: 75, typeZh: '披薩配料', descZh: '左圖石台上是經典臘腸披薩，右圖轉為夏威夷鳳梨披薩' },
+    { word: 'ice cream', wordZh: '冰淇淋', x: 1008, y: 396, radius: 75, typeZh: '甜筒口味', descZh: '左圖花叢邊是粉紅草莓冰淇淋，右圖轉為香濃巧克力甜筒' },
+    { word: 'juice', wordZh: '果汁', x: 1148, y: 641, radius: 75, typeZh: '果汁色澤', descZh: '左圖野餐墊是金黃柳橙果汁，右圖轉為翠綠奇異果汁' }
+  ],
+  distractors: [
+    { word: 'cloud', wordZh: '雲朵' },
+    { word: 'bird', wordZh: '小鳥' },
+    { word: 'lake', wordZh: '湖泊' },
+    { word: 'grass', wordZh: '草地' }
+  ]
 };
 
-// 全域場景清單（預設優先展示 Book 1 三年級課室）
+// ── 【Book 4 四年級下學期】英倫時鐘小鎮與透視溫馨家居 (Here We Go Book 4) ──
+export const BOOK4_LONDON_SCENE = {
+  id: 'book4_london',
+  book: '4',
+  grade: 4,
+  titleZh: '英倫時鐘小鎮與透視溫馨家居（四年級第 4 冊）',
+  titleEn: 'London Street & Cozy Home (Book 4)',
+  descZh: '在精緻的英倫街景與立體剖面小屋中，找出 8 處相異物品！',
+  baseImage: '/assets/spotter/book4_base.jpg',
+  diffImage: '/assets/spotter/book4_diff.jpg',
+  width: 1376,
+  height: 768,
+  targetItems: [
+    { word: 'clock', wordZh: '時鐘', x: 1178, y: 162, radius: 65, typeZh: '鐘樓時鐘', descZh: '左圖遠方鐘樓指標為整點，右圖指針與鐘面色彩轉變' },
+    { word: 'bus', wordZh: '公車', x: 834, y: 243, radius: 65, typeZh: '公車外觀', descZh: '左圖街道是經典英倫紅雙層巴士，右圖車身轉為皇家藍配色' },
+    { word: 'bed', wordZh: '床鋪', x: 382, y: 165, radius: 65, typeZh: '床單花紋', descZh: '左圖二樓單人床是暖黃格紋被套，右圖轉為深藍星空被套' },
+    { word: 'hat', wordZh: '帽子', x: 374, y: 304, radius: 65, typeZh: '帽款色彩', descZh: '左圖衣帽架上是黑圓頂高帽，右圖轉為復古棕色獵鹿帽' },
+    { word: 'computer', wordZh: '電腦', x: 289, y: 510, radius: 75, typeZh: '螢幕顯示', descZh: '左圖書桌上是筆記型電腦螢幕發光，右圖轉為簡約銀灰桌機螢幕' },
+    { word: 'book', wordZh: '書本', x: 608, y: 593, radius: 75, typeZh: '書本封皮', descZh: '左圖茶几上是紅色精裝讀本，右圖轉為翠綠圖畫書' },
+    { word: 'sofa', wordZh: '沙發', x: 1092, y: 616, radius: 75, typeZh: '沙發布料', descZh: '左圖客廳沙發是溫馨米色布面，右圖轉為墨綠復古絨布沙發' },
+    { word: 'bag', wordZh: '背包', x: 289, y: 510, radius: 75, typeZh: '提包樣態', descZh: '左圖玄關地毯旁是休閒雙肩包，右圖轉為焦糖棕真皮手提公事包' }
+  ],
+  distractors: [
+    { word: 'lamp', wordZh: '檯燈' },
+    { word: 'table', wordZh: '桌子' },
+    { word: 'chair', wordZh: '椅子' },
+    { word: 'window', wordZh: '窗戶' }
+  ]
+};
+
+// ── 【Book 5 五年級上學期】巴黎羅浮宮藝文廣場（Here We Go Book 5） ──
+export const BOOK5_PARIS_SCENE = {
+  id: 'book5_paris',
+  book: '5',
+  grade: 5,
+  titleZh: '巴黎羅浮宮藝文廣場（五年級第 5 冊）',
+  titleEn: 'Paris Louvre Art Plaza (Book 5)',
+  descZh: '在充滿藝術氣息的羅浮宮前廣場，找出 8 處相異物品！',
+  baseImage: '/assets/spotter/book5_base.jpg',
+  diffImage: '/assets/spotter/book5_diff.jpg',
+  width: 1376,
+  height: 768,
+  targetItems: [
+    { word: 'lion', wordZh: '守護石獅', x: 114, y: 154, radius: 55, typeZh: '雕像姿態', descZh: '左圖宮殿台階旁是端坐石獅，右圖轉為威嚴昂首姿態' },
+    { word: 'koala', wordZh: '無尾熊', x: 182, y: 208, radius: 55, typeZh: '無尾熊樣態', descZh: '左圖大樹上是憨厚灰毛無尾熊，右圖轉為抱著桉樹嫩葉' },
+    { word: 'bread', wordZh: '麵包', x: 403, y: 555, radius: 75, typeZh: '麵包種類', descZh: '左圖長椅邊是法國金黃長棍麵包，右圖轉為螺旋牛角可頌麵包' },
+    { word: 'milk', wordZh: '牛奶', x: 536, y: 283, radius: 65, typeZh: '瓶身圖樣', descZh: '左圖石牆上是復古透明玻璃牛奶瓶，右圖轉為藍白條紋紙盒鮮奶' },
+    { word: 'football', wordZh: '足球', x: 755, y: 577, radius: 75, typeZh: '足球圖樣', descZh: '左圖石板廣場上是黑白經典足球，右圖轉為藍金世界杯紀念足球' },
+    { word: 'painting', wordZh: '畫作', x: 1027, y: 419, radius: 60, typeZh: '油畫畫面', descZh: '左圖畫架上是蒙娜麗莎神秘微笑，右圖轉為塞納河畔晨曦風景油畫' },
+    { word: 'palette', wordZh: '調色盤', x: 1141, y: 612, radius: 65, typeZh: '顏料色彩', descZh: '左圖調色几上是彩虹七彩油畫顏料，右圖轉為大地暖金色系顏料' },
+    { word: 'camera', wordZh: '相機', x: 1266, y: 493, radius: 75, typeZh: '相機款式', descZh: '左圖路燈柱上懸掛著復古黑色單眼相機，右圖轉為銀紅雙色拍立得相機' }
+  ],
+  distractors: [
+    { word: 'museum', wordZh: '博物館' },
+    { word: 'statue', wordZh: '雕像' },
+    { word: 'pyramid', wordZh: '金字塔' },
+    { word: 'river', wordZh: '河流' }
+  ]
+};
+
+// ── 【Book 6 五年級下學期】世界自然歷史與星際探索博物館（Here We Go Book 6） ──
+export const BOOK6_MUSEUM_SCENE = {
+  id: 'book6_museum',
+  book: '6',
+  grade: 5,
+  titleZh: '世界自然歷史與星際探索博物館（五年級第 6 冊）',
+  titleEn: 'World Science & Space Museum (Book 6)',
+  descZh: '在壯麗的星際與自然歷史博物館中，找出 8 處相異物品！',
+  baseImage: '/assets/spotter/book6_base.jpg',
+  diffImage: '/assets/spotter/book6_diff.jpg',
+  width: 1376,
+  height: 768,
+  targetItems: [
+    { word: 'rocket', wordZh: '火箭', x: 406, y: 185, radius: 85, typeZh: '航天機型', descZh: '左圖穹頂懸掛經典紅白火箭，右圖轉為藍銀太空穿梭機' },
+    { word: 'dinosaur', wordZh: '恐龍', x: 1004, y: 197, radius: 85, typeZh: '化石標本', descZh: '左圖夾層展廳是霸王龍骨骼化石，右圖轉為具頭盾雙角的三角龍化石' },
+    { word: 'elephant', wordZh: '大象', x: 274, y: 298, radius: 65, typeZh: '裝飾樣式', descZh: '左圖野生非洲展區是素色灰象，右圖身披彩色刺繡節慶鞍毯' },
+    { word: 'mask', wordZh: '口罩', x: 103, y: 423, radius: 60, typeZh: '圖樣樣式', descZh: '左圖防疫站是淺藍醫用口罩，右圖轉為鮮黃卡通笑臉口罩' },
+    { word: 'noodles', wordZh: '麵食', x: 480, y: 467, radius: 65, typeZh: '餐點品項', descZh: '左圖咖啡几上是日式拉麵碗，右圖轉為經典番茄肉醬義大利麵' },
+    { word: 'salad', wordZh: '沙拉', x: 945, y: 492, radius: 65, typeZh: '沙拉風味', descZh: '左圖長椅上是清爽綠生菜沙拉，右圖轉為草莓鮮果水果沙拉' },
+    { word: 'sunglasses', wordZh: '墨鏡', x: 680, y: 381, radius: 65, typeZh: '墨鏡造型', descZh: '左圖中央展台是黑色飛行員墨鏡，右圖轉為復古紅色愛心墨鏡' },
+    { word: 'backpack', wordZh: '背包', x: 1151, y: 597, radius: 75, typeZh: '背包配色', descZh: '左圖立柱掛著藍橘撞色背包，右圖轉為深紫螢光綠探險背包' }
+  ],
+  distractors: [
+    { word: 'telescope', wordZh: '望遠鏡' },
+    { word: 'planet', wordZh: '行星' },
+    { word: 'robot', wordZh: '機器人' },
+    { word: 'fossil', wordZh: '化石' }
+  ]
+};
+
+// ── 【Book 7 六年級上學期】世界節慶與環球港灣（Here We Go Book 7） ──
+export const BOOK7_HARBOR_SCENE = {
+  id: 'book7_harbor',
+  book: '7',
+  grade: 6,
+  titleZh: '世界節慶與環球港灣（六年級第 7 冊）',
+  titleEn: 'Global World Harbor & Coastal Scenic Pier (Book 7)',
+  descZh: '在美麗的環球海港與景觀棧道上，找出 8 處相異物品！點選後在單字庫配對正確單字！',
+  baseImage: '/assets/spotter/book7_base.jpg',
+  diffImage: '/assets/spotter/book7_diff.jpg',
+  width: 1376,
+  height: 768,
+  targetItems: [
+    { word: 'airplane', wordZh: '飛機', x: 334, y: 109, radius: 75, typeZh: '機型樣式', descZh: '左圖高空是經典白藍客機，右圖轉為金橘色超音速噴射機' },
+    { word: 'flag', wordZh: '國旗', x: 1132, y: 67, radius: 60, typeZh: '旗幟樣式', descZh: '左圖燈塔頂端是紅白藍國家旗幟，右圖轉為金黃海軍藍燕尾信號旗' },
+    { word: 'train', wordZh: '火車', x: 800, y: 273, radius: 75, typeZh: '列車型式', descZh: '左圖石拱橋上是復古蒸氣火車，右圖轉為流線型銀紅高速列車' },
+    { word: 'ship', wordZh: '輪船', x: 373, y: 388, radius: 85, typeZh: '船隻種類', descZh: '左圖港灣中是純白豪華遊輪，右圖轉為雙桅木造復古風帆帆船' },
+    { word: 'postcard', wordZh: '明信片', x: 230, y: 517, radius: 65, typeZh: '明信片圖樣', descZh: '左圖郵筒旁是燈塔海景明信片，右圖轉為熱帶海灘愛心郵戳明信片' },
+    { word: 'map', wordZh: '地圖', x: 582, y: 548, radius: 85, typeZh: '地圖形式', descZh: '左圖欄杆上是平鋪彩色世界地圖，右圖轉為復古羊皮紙藏寶圖' },
+    { word: 'suitcase', wordZh: '行李箱', x: 903, y: 575, radius: 80, typeZh: '箱體造型', descZh: '左圖長椅旁是復古真皮皮箱，右圖轉為亮綠藍色硬殼四輪行李箱' },
+    { word: 'gift', wordZh: '禮物', x: 1248, y: 554, radius: 75, typeZh: '包裝緞帶', descZh: '左圖售票亭是深藍金緞帶禮盒，右圖轉為緋紅翠綠緞帶禮盒' }
+  ],
+  distractors: [
+    { word: 'passport', wordZh: '護照' },
+    { word: 'ticket', wordZh: '車票' },
+    { word: 'taxi', wordZh: '計程車' },
+    { word: 'hotel', wordZh: '旅館' }
+  ]
+};
+
+// ── 【Book 8 六年級下學期】四季時光庭園與畢業留影（Here We Go Book 8） ──
+export const BOOK8_GARDEN_SCENE = {
+  id: 'book8_garden',
+  book: '8',
+  grade: 6,
+  titleZh: '四季時光庭園與畢業留影（六年級第 8 冊）',
+  titleEn: 'Four Seasons Memory Garden (Book 8)',
+  descZh: '在繁花盛開的四季庭園中，找出 8 處相異物品！點選後在單字庫配對正確單字！',
+  baseImage: '/assets/spotter/book8_base.jpg',
+  diffImage: '/assets/spotter/book8_diff.jpg',
+  width: 1376,
+  height: 768,
+  targetItems: [
+    { word: 'drum', wordZh: '鼓', x: 288, y: 270, radius: 65, typeZh: '樂器外觀', descZh: '左圖涼亭舞台是紅金行進鼓，右圖轉為皇家深藍小鼓' },
+    { word: 'swan', wordZh: '天鵝', x: 64, y: 472, radius: 55, typeZh: '羽色品種', descZh: '左圖倒影池是純白白天鵝，右圖轉為紅喙純黑天鵝' },
+    { word: 'spade', wordZh: '鏟子', x: 279, y: 516, radius: 75, typeZh: '工具配色', descZh: '左圖花壇是原木握柄園藝鏟，右圖轉為亮金黃色鏟子' },
+    { word: 'rose', wordZh: '玫瑰', x: 699, y: 269, radius: 65, typeZh: '花卉色彩', descZh: '左圖拱門是鮮紅玫瑰花叢，右圖轉為金黃玫瑰花叢' },
+    { word: 'pie', wordZh: '派', x: 694, y: 550, radius: 75, typeZh: '點心風味', descZh: '左圖茶几上是酥皮水果派，右圖轉為深紫黑莓派' },
+    { word: 'flute', wordZh: '長笛', x: 961, y: 298, radius: 70, typeZh: '樂器光澤', descZh: '左圖樂譜架上是銀白長笛，右圖轉為玫瑰金長笛' },
+    { word: 'coat', wordZh: '大衣', x: 988, y: 497, radius: 75, typeZh: '服飾樣式', descZh: '左圖長椅上是海軍藍風衣，右圖轉為暖駝色牛角扣大衣' },
+    { word: 'dress', wordZh: '洋裝', x: 1256, y: 384, radius: 85, typeZh: '禮服色彩', descZh: '左圖人台上是淡紫碎花洋裝，右圖轉為祖母綠綢緞晚宴洋裝' }
+  ],
+  distractors: [
+    { word: 'violin', wordZh: '小提琴' },
+    { word: 'piano', wordZh: '鋼琴' },
+    { word: 'tree', wordZh: '大樹' },
+    { word: 'bench', wordZh: '長椅' }
+  ]
+};
+
+// ── 依冊次索引 (覆蓋 1 到 8 冊全系列教材) ──
+export const SPOTTER_SCENES_BY_BOOK = {
+  '1': BOOK1_CLASSROOM_SCENE,
+  '2': BOOK2_PARTY_SCENE,
+  '3': BOOK3_PARK_SCENE,
+  '4': BOOK4_LONDON_SCENE,
+  '5': BOOK5_PARIS_SCENE,
+  '6': BOOK6_MUSEUM_SCENE,
+  '7': BOOK7_HARBOR_SCENE,
+  '8': BOOK8_GARDEN_SCENE
+};
+
+// 全域場景清單（依冊次 1～8 排序）
 export const SPOTTER_SCENES = [
   BOOK1_CLASSROOM_SCENE,
-  BOOK2_PARTY_SCENE
+  BOOK2_PARTY_SCENE,
+  BOOK3_PARK_SCENE,
+  BOOK4_LONDON_SCENE,
+  BOOK5_PARIS_SCENE,
+  BOOK6_MUSEUM_SCENE,
+  BOOK7_HARBOR_SCENE,
+  BOOK8_GARDEN_SCENE
 ];
 
 // 向下相容匯出
 export const TARGET_ITEMS_POOL = BOOK1_CLASSROOM_SCENE.targetItems;
 
-// ── 動態出題產生器 (每次進關從 8 大候選隨機抽選 5 個) ──
+// ── 動態出題產生器 (每次進關全量開放該圖所有相異點，絕無幽靈差異誤扣心) ──
 export const generateSpotterRound = (scene = BOOK1_CLASSROOM_SCENE, targetCount = null) => {
   const activeScene = scene || BOOK1_CLASSROOM_SCENE;
   const items = activeScene.targetItems || BOOK1_CLASSROOM_SCENE.targetItems;
@@ -184,7 +376,7 @@ export const generateSpotterRound = (scene = BOOK1_CLASSROOM_SCENE, targetCount 
     itemStateMap[item.word] = active ? 'active' : 'default';
   });
 
-  // 3. 組裝 Word Bank 選項：5 個正解目標 + 3 個現場常見誘答單字 = 8 個友善大字卡
+  // 3. 組裝 Word Bank 選項：正解目標 + 現場常見誘答單字
   const targetWordsSet = new Set(chosenTargets.map(c => c.word));
   const availableDistractors = [
     ...(activeScene.distractors || []),

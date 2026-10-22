@@ -225,6 +225,24 @@ async function run() {
     console.log('  ✓ Spotter G3: Papercut dual-view & Word Bank verified');
   }
 
+  // 3C. 六年級第 7 冊專屬場景驗收 (驗收世界節慶與環球港灣、第 7 冊單字庫)
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=spotter&grade=6&book=7` });
+  await new Promise(r => setTimeout(r, 1200));
+  const spotterG6Check = await client.evaluate(`
+    (() => {
+      const body = document.body.innerText;
+      const hasBook7Title = body.includes('世界節慶與環球港灣') || body.includes('第 7 冊');
+      const hasScenes = document.querySelectorAll('svg').length >= 2;
+      return { hasBook7Title, hasScenes };
+    })()
+  `);
+  if (!spotterG6Check.hasBook7Title || !spotterG6Check.hasScenes) {
+    failures.push({ target: 'Spotter Book 7 Scene & Vocab', error: 'Book 7 not loaded', details: spotterG6Check });
+    console.log('  ❌ Spotter Book 7 failed:', spotterG6Check);
+  } else {
+    console.log('  ✓ Spotter Book 7: Global Harbor scene & Grade 6 vocab verified');
+  }
+
   // ── 檢查點 4: 雙語聽說口說測驗功能性流程驗收 (錄音、反饋與重測) ──
   console.log('\n[4/5] Deep Functional Testing: Speaking Lab...');
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=langlab` });

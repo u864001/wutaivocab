@@ -21,15 +21,48 @@ export const VocabSpotterGame = ({
   onBack
 }) => {
   const { currentStudent } = useStudent();
-  // 依據選取的冊次動態匹配場景（預設為三年級第一冊 Here We Go Book 1 彩虹文具與創意課室）
+  // 依據選取的冊次動態匹配場景（支援 1～8 冊完整成對立體紙雕）
   const selectedBook = useMemo(() => {
-    if (qualifyingBook) return String(qualifyingBook);
-    if (settings?.selectedUnits && settings.selectedUnits.length > 0) {
-      const b = String(settings.selectedUnits[0]).split('-')[0];
-      if (b && SPOTTER_SCENES_BY_BOOK[b]) return b;
+    // 1. 優先檢查 URL 參數
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const urlBook = sp.get('book');
+      if (urlBook && SPOTTER_SCENES_BY_BOOK[urlBook]) return urlBook;
+      const urlGrade = sp.get('grade');
+      if (urlGrade) {
+        const gradeMap = { '6': '7', '5': '5', '4': '3', '3': '1' };
+        const cleanG = urlGrade.replace(/^0/, '');
+        if (gradeMap[cleanG] && SPOTTER_SCENES_BY_BOOK[gradeMap[cleanG]]) return gradeMap[cleanG];
+      }
+    } catch (e) {}
+
+    // 2. 檢查 props 傳入的 qualifyingBook
+    if (qualifyingBook && SPOTTER_SCENES_BY_BOOK[String(qualifyingBook)]) {
+      return String(qualifyingBook);
     }
+
+    // 3. 檢查 settings?.selectedBook
+    if (settings?.selectedBook && SPOTTER_SCENES_BY_BOOK[String(settings.selectedBook)]) {
+      return String(settings.selectedBook);
+    }
+
+    // 4. 檢查 settings?.selectedUnits (例如 '7-1' 或 'b7' -> '7')
+    if (settings?.selectedUnits && settings.selectedUnits.length > 0) {
+      for (const u of settings.selectedUnits) {
+        const b = String(u).split('-')[0].replace(/^b/, '');
+        if (b && SPOTTER_SCENES_BY_BOOK[b]) return b;
+      }
+    }
+
+    // 5. 檢查當前登入學生的年級 (六年級預設第 7 冊、五年級第 5 冊、四年級第 3 冊、三年級第 1 冊)
+    const cleanGrade = String(currentStudent?.grade || '').replace(/^0/, '');
+    const gradeBookMap = { '6': '7', '5': '5', '4': '3', '3': '1' };
+    if (cleanGrade && gradeBookMap[cleanGrade] && SPOTTER_SCENES_BY_BOOK[gradeBookMap[cleanGrade]]) {
+      return gradeBookMap[cleanGrade];
+    }
+
     return '1';
-  }, [qualifyingBook, settings?.selectedUnits]);
+  }, [qualifyingBook, settings?.selectedBook, settings?.selectedUnits, currentStudent?.grade]);
 
   // 低年級 Aa 字母模式判斷 (一、二年級或字母專案)
   const isAlphabetMode = useMemo(() => {
@@ -307,11 +340,11 @@ export const VocabSpotterGame = ({
                 鷹眼神探 • 單字找不同
               </h2>
               <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-black">
-                隨機 5 處相異題
+                第 {currentScene.book} 冊
               </span>
             </div>
             <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
-              {currentScene.titleZh} • 找出本局 5 處相異處並配對正確單字！
+              {currentScene.titleZh} • 找出全部 {totalCount} 處相異處並配對正確單字！
             </p>
           </div>
         </div>
@@ -683,11 +716,11 @@ export const VocabSpotterGame = ({
             <div className="mb-5 text-left">
               <HonorSubmissionCard
                 mode="spotter"
-                book={qualifyingBook || '3'}
+                book={qualifyingBook || currentScene.book || '1'}
                 score={lives}
                 time={Math.round(elapsedMs / 1000)}
                 totalCount={totalCount}
-                rangeText="第 3 冊 - 鷹眼神探單字找不同"
+                rangeText={`第 ${currentScene.book} 冊 - ${currentScene.titleZh}`}
                 reviewWords={activeDifferences.map(d => ({
                   id: d.id,
                   en: d.word,

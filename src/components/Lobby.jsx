@@ -406,14 +406,15 @@ export const Lobby = ({
       } else {
         const bKey = currentOptionData.book;
         const bData = groupedUnits[bKey];
-        if (bData && bData.lessons) {
-          const allUnits = Array.from(bData.lessons).map(l => `${bKey}-${l}`);
-          setSettings(prev => ({
-            ...prev,
-            alphaMode: null,
-            selectedUnits: allUnits
-          }));
-        }
+        const allUnits = (bData && bData.lessons && bData.lessons.size > 0)
+          ? Array.from(bData.lessons).map(l => `${bKey}-${l}`)
+          : [`${bKey}-all`];
+        setSettings(prev => ({
+          ...prev,
+          selectedBook: bKey,
+          alphaMode: null,
+          selectedUnits: allUnits
+        }));
       }
     }
   }, [currentOptionData, alphaMode, isWholeBookOnlyGame, groupedUnits, setSettings]);
@@ -555,12 +556,13 @@ export const Lobby = ({
     const bData = groupedUnits[bKey];
     const defaultUnits = currentOptionData.isAlpha
       ? ['abc']
-      : (bData && bData.lessons ? Array.from(bData.lessons).map(l => `${bKey}-${l}`) : []);
+      : (bData && bData.lessons && bData.lessons.size > 0 ? Array.from(bData.lessons).map(l => `${bKey}-${l}`) : [`${bKey}-all`]);
 
     // 若該遊戲為全冊專用 (spotter)，直接鎖定當前冊次
     if (gameId === 'spotter') {
       setSettings(prev => ({
         ...prev,
+        selectedBook: bKey,
         alphaMode: currentOptionData.isAlpha ? alphaMode : null,
         selectedUnits: defaultUnits
       }));
@@ -591,11 +593,12 @@ export const Lobby = ({
     const bData = groupedUnits[bKey];
     const newBookUnits = optData.isAlpha
       ? ['abc']
-      : (bData && bData.lessons ? Array.from(bData.lessons).map(l => `${bKey}-${l}`) : []);
+      : (bData && bData.lessons && bData.lessons.size > 0 ? Array.from(bData.lessons).map(l => `${bKey}-${l}`) : [`${bKey}-all`]);
 
     // 換冊時自動帶入該冊所有單元，讓學生無需額外點選單元膠囊即可出征
     setSettings(prev => ({
       ...prev,
+      selectedBook: bKey,
       alphaMode: optData.isAlpha ? alphaMode : null,
       selectedUnits: newBookUnits
     }));
