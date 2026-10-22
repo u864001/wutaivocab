@@ -269,6 +269,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
   });
 
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
+  const isPastWeek = selectedWeek < currentWeek;
   const [selectedDomain, setSelectedDomain] = useState('all'); // 'all' | 'langlab' | 'arcade' | 'campus'
   const [boardData, setBoardData] = useState({}); // { [modeId]: items[] }
   const [isLoading, setIsLoading] = useState(false);

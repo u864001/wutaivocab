@@ -265,6 +265,28 @@ export const BattleGame = ({
   const hasAwardedBattleCoinsRef = useRef(false);
   const [battleReward, setBattleReward] = useState(null);
 
+  // 結算數據
+  const [finalLeaderboard, setFinalLeaderboard] = useState([]);
+  const [winnerName, setWinnerName] = useState('');
+
+  // 內部同步 Ref (防止非同步閉包取得過期資料)
+  const channelRef = useRef(null);
+  const myDeviceIdRef = useRef(getDeviceId());
+  const myJoinTimestampRef = useRef(Date.now());
+  const gameStartTimeRef = useRef(0);
+
+  const livesRef = useRef(3);
+  const scoreRef = useRef(0);
+  const comboRef = useRef(0);
+  const horizonRef = useRef(0);
+  const destroyedRef = useRef(0);
+  const isDeadRef = useRef(false);
+  const playersRef = useRef([]);
+
+  const containerRef = useRef(null);
+  const meteor2DRef = useRef(null);
+  const animFrameRef = useRef(null);
+
   useEffect(() => {
     if (view === 'result' && finalLeaderboard.length > 0 && !hasAwardedBattleCoinsRef.current) {
       hasAwardedBattleCoinsRef.current = true;
@@ -291,29 +313,6 @@ export const BattleGame = ({
       setBattleReward(null);
     }
   }, [view, finalLeaderboard, isLoggedIn, addCoins]);
-
-
-  // 結算數據
-  const [finalLeaderboard, setFinalLeaderboard] = useState([]);
-  const [winnerName, setWinnerName] = useState('');
-
-  // 內部同步 Ref (防止非同步閉包取得過期資料)
-  const channelRef = useRef(null);
-  const myDeviceIdRef = useRef(getDeviceId());
-  const myJoinTimestampRef = useRef(Date.now());
-  const gameStartTimeRef = useRef(0);
-
-  const livesRef = useRef(3);
-  const scoreRef = useRef(0);
-  const comboRef = useRef(0);
-  const horizonRef = useRef(0);
-  const destroyedRef = useRef(0);
-  const isDeadRef = useRef(false);
-  const playersRef = useRef([]);
-
-  const containerRef = useRef(null);
-  const meteor2DRef = useRef(null);
-  const animFrameRef = useRef(null);
 
   // 同步 Refs
   useEffect(() => { livesRef.current = myLives; }, [myLives]);
