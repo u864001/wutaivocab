@@ -17,6 +17,7 @@ export const SnakeCanvas2D = ({
   stepProgress = 0, // 0.0 ~ 1.0 (當前步進平滑進度)
   letters = [],
   theme = 'indigenous', // 'indigenous' | 'jungle'
+  isDark = false,
   isDead = false,
   isInvulnerable = false,
   isNextTargetFn = () => false,
@@ -38,6 +39,16 @@ export const SnakeCanvas2D = ({
   // 歡呼計時器
   const cheerTimerRef = useRef(0);
   const prevCheerTriggerRef = useRef(cheerTrigger);
+
+  // 夜間螢火蟲物理狀態 (霧台神山夜景模式專屬)
+  const firefliesRef = useRef([
+    { x: 120, y: 100, vx: 14, vy: 9, phase: 0 },
+    { x: 340, y: 220, vx: -12, vy: 14, phase: 1.5 },
+    { x: 620, y: 160, vx: 15, vy: -11, phase: 3.0 },
+    { x: 480, y: 380, vx: -13, vy: -10, phase: 4.5 },
+    { x: 200, y: 320, vx: 11, vy: 12, phase: 2.2 },
+    { x: 700, y: 280, vx: -12, vy: 11, phase: 5.1 }
+  ]);
 
   // 彩蛋蝴蝶物理狀態 (Jungle 主題)
   const butterfliesRef = useRef([
@@ -260,7 +271,7 @@ export const SnakeCanvas2D = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [snake, nextHead, stepProgress, letters, theme, isDead, isInvulnerable, isNextTargetFn, width, height, gridW, gridH]);
+  }, [snake, nextHead, stepProgress, letters, theme, isDark, isDead, isInvulnerable, isNextTargetFn, width, height, gridW, gridH]);
 
   return (
     <canvas

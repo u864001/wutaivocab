@@ -425,10 +425,10 @@ export const WutaiTownGame = ({ onBack }) => {
         />
 
         {/* ── 頂部懸浮超輕薄毛玻璃導航橫幅 (Floating Top Glass HUD) ── */}
-        <div className="absolute top-1.5 left-1.5 right-1.5 sm:top-3 sm:left-3 sm:right-3 z-30 px-2 sm:px-5 py-1.5 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-950/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-between gap-1.5 sm:gap-3 shadow-lg pointer-events-auto">
+        <div className="absolute top-1.5 left-1.5 right-1.5 sm:top-3 sm:left-3 sm:right-3 z-30 px-2 sm:px-5 py-1.5 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-950/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-between gap-1.5 sm:gap-3 shadow-lg pointer-events-none">
           
           {/* 左側：返回學習宇宙與標題 (手機版極精簡圖示) */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 pointer-events-auto">
             <button
               onClick={handleBackToGalaxy}
               title={lang === 'zh-TW' ? '回學習宇宙' : 'Back'}
@@ -477,7 +477,7 @@ export const WutaiTownGame = ({ onBack }) => {
           </div>
 
           {/* 右側控制群組：業界標準統一排序（遊戲任務 ➔ 我的房間 ➔ 音樂 ➔ 日夜主題 ➔ 個人金幣與積分錨點） */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0 pointer-events-auto">
             {/* 1. 每日任務 */}
             <button
               onClick={() => {

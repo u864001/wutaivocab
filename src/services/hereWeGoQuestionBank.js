@@ -11,6 +11,19 @@ function shuffle(arr) {
 }
 
 /**
+ * 嚴格過濾合法英文句子：嚴禁任何中文穿插、必須包含實質英文字母
+ */
+export function isValidEnglishSentence(item) {
+  if (!item || typeof item.en !== 'string') return false;
+  const en = item.en.trim();
+  if (en.length < 2) return false;
+  if (/[\u4e00-\u9fa5]/.test(en)) return false; // 絕對不可包含漢字
+  if (!/[a-zA-Z]{2,}/.test(en)) return false;
+  return true;
+}
+
+
+/**
  * 取得 1~9 冊書本與單元總覽
  */
 export function getBooksSummary() {
@@ -41,13 +54,11 @@ export function getUnitListeningQuestions(bookNum = 1, unitId = null, count = 15
   }
 
   // 收集該單元句型
-  let pool = [...(targetUnit.dialogues || [])];
+  let pool = [...(targetUnit.dialogues || []).filter(isValidEnglishSentence)];
 
   // 若題數不足，混合本冊其他單元句型擴充
   if (pool.length < count) {
-    const otherBookSentences = book.units
-      .filter(u => u.unitId !== targetUnit.unitId)
-      .flatMap(u => u.dialogues || []);
+    const otherBookSentences = book.units.filter(u => u.unitId !== targetUnit.unitId).flatMap(u => (u.dialogues || []).filter(isValidEnglishSentence));
     pool = [...pool, ...shuffle(otherBookSentences)];
   }
 
@@ -59,7 +70,7 @@ export function getUnitListeningQuestions(bookNum = 1, unitId = null, count = 15
   const selected = shuffle(pool).slice(0, Math.min(count, pool.length));
 
   // 全域干擾池 (從全部冊次挑選其他句子做為干擾項)
-  const allSentences = HERE_WE_GO_TEXTBOOKS.flatMap(b => b.units.flatMap(u => u.dialogues || []));
+  const allSentences = HERE_WE_GO_TEXTBOOKS.flatMap(b => b.units.flatMap(u => (u.dialogues || []).filter(isValidEnglishSentence)));
 
   return selected.map((item, idx) => {
     const others = allSentences.filter(s => s.en.toLowerCase() !== item.en.toLowerCase());
@@ -104,7 +115,7 @@ export function getUnitSpeakingQuestions(bookNum = 1, unitId = null, count = 10)
     targetUnit = book.units[1] || book.units[0];
   }
 
-  let pool = [...(targetUnit.dialogues || [])];
+  let pool = [...(targetUnit.dialogues || []).filter(isValidEnglishSentence)];
   if (pool.length < count) {
     const otherBookSentences = book.units
       .filter(u => u.unitId !== targetUnit.unitId)
@@ -239,8 +250,7 @@ export function getGradeListeningQuestions(gradeId = 'g3', count = 15) {
   const cfg = GRADE_CONFIG[gradeId] || GRADE_CONFIG.g3;
   const books = HERE_WE_GO_TEXTBOOKS.filter(b => cfg.books.includes(b.book));
   const pool = books.flatMap(b =>
-    b.units.flatMap(u =>
-      (u.dialogues || []).map(d => ({
+    b.units.flatMap(u => (u.dialogues || []).filter(isValidEnglishSentence).map(d => ({
         ...d,
         book: b.book,
         unitTitle: u.title
@@ -287,8 +297,7 @@ export function getGradeSpeakingQuestions(gradeId = 'g3', count = 15) {
   const cfg = GRADE_CONFIG[gradeId] || GRADE_CONFIG.g3;
   const books = HERE_WE_GO_TEXTBOOKS.filter(b => cfg.books.includes(b.book));
   const pool = books.flatMap(b =>
-    b.units.flatMap(u =>
-      (u.dialogues || []).map(d => ({
+    b.units.flatMap(u => (u.dialogues || []).filter(isValidEnglishSentence).map(d => ({
         ...d,
         book: b.book,
         unitTitle: u.title

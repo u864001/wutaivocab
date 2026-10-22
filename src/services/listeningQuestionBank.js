@@ -21,7 +21,7 @@ function extractAllData() {
 
         nodes.forEach(node => {
           // 1. 提取節點自然英語句子 (NPC 說的話)
-          if (node.en && node.zh && node.en.trim().length >= 4) {
+          if (node.en && node.zh && node.en.trim().length >= 4 && !/[\u4e00-\u9fa5]/.test(node.en) && /[a-zA-Z]{2,}/.test(node.en)) {
             rawSentencePool.push({
               id: `node_${node.id || Math.random()}`,
               en: node.en.trim(),
@@ -35,13 +35,7 @@ function extractAllData() {
             node.options.forEach((opt, optIdx) => {
               const textEn = opt.text_en?.trim();
               const textZh = opt.text_zh?.trim();
-              if (
-                textEn &&
-                textZh &&
-                textEn.length >= 4 &&
-                opt.target_id !== 'END' &&
-                !opt.action?.startsWith('OPEN_')
-              ) {
+              if (textEn && textZh && textEn.length >= 4 && !/[\u4e00-\u9fa5]/.test(textEn) && /[a-zA-Z]{2,}/.test(textEn) && opt.target_id !== 'END' && !opt.action?.startsWith('OPEN_')) {
                 // 做為純句子庫候選
                 rawSentencePool.push({
                   id: `opt_${optIdx}_${Math.random()}`,

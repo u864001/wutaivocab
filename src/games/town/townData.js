@@ -88,7 +88,7 @@ export const TOWN_LOCATIONS = [
     npcName: '雲豹店長 (Manager Leopard)',
     npcRole: '文具專賣與冒險筆記',
     npcAvatar: '🐆',
-    mapArea: { left: 31, top: 7, width: 18, height: 23 },
+    mapArea: { left: 30, top: 7, width: 20, height: 27 },
     mapCoords: { x: 40, y: 18.5 },
     standeeSide: 'left',
     voiceProfile: { gender: 'male', pitch: 0.96, rate: 0.92, accent: 'en-US' }, // 熱情活潑清亮書卷氣的雲豹男店長
@@ -114,7 +114,7 @@ export const TOWN_LOCATIONS = [
     npcName: '黑熊店員 (Clerk Bear)',
     npcRole: '美味點心與新鮮蔬果',
     npcAvatar: '🐻',
-    mapArea: { left: 53, top: 15, width: 22, height: 21 },
+    mapArea: { left: 52, top: 13, width: 23, height: 26 },
     mapCoords: { x: 64, y: 25.5 },
     standeeSide: 'left',
     voiceProfile: { gender: 'male', pitch: 0.60, rate: 0.78, accent: 'en-US' }, // 極渾厚低沉憨厚的大黑熊男音
@@ -218,7 +218,7 @@ export const TOWN_LOCATIONS = [
     npcName: '百合設計師 (Stylist Lily)',
     npcRole: '部落文化與服飾圖騰',
     npcAvatar: '🌺',
-    mapArea: { left: 2, top: 6, width: 23, height: 28 },
+    mapArea: { left: 2, top: 6, width: 24, height: 32 },
     mapCoords: { x: 13.5, y: 20 },
     standeeSide: 'left',
     voiceProfile: { gender: 'female', pitch: 1.18, rate: 0.85, accent: 'en-US' }, // 優雅柔和婉約悅耳的百合女設計師

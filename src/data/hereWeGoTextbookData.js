@@ -701,9 +701,9 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b2_u0_s7",
             "speaker": "Character",
-            "en": "我是 Mia。",
+            "en": "I’m Mia.",
             "zh": "我是米婭。",
-            "fullEn": "Character: 我是 Mia。",
+            "fullEn": "Character: I’m Mia.",
             "fullZh": "Character：我是米婭。"
           }
         ],
@@ -1485,40 +1485,40 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b2_u4_s19",
             "speaker": "Character",
-            "en": "card 卡片",
-            "zh": "卡配",
+            "en": "a card",
+            "zh": "卡片",
             "fullEn": "Character: card 卡片",
             "fullZh": "Character：卡配"
           },
           {
             "id": "b2_u4_s20",
             "speaker": "Character",
-            "en": "flower 花",
-            "zh": "花 花",
+            "en": "a flower",
+            "zh": "花",
             "fullEn": "Character: flower 花",
             "fullZh": "Character：花 花"
           },
           {
             "id": "b2_u4_s21",
             "speaker": "Character",
-            "en": "gift 禮物",
-            "zh": "禮物 禮物",
+            "en": "a gift",
+            "zh": "禮物",
             "fullEn": "Character: gift 禮物",
             "fullZh": "Character：禮物 禮物"
           },
           {
             "id": "b2_u4_s22",
             "speaker": "Character",
-            "en": "heart 心",
-            "zh": "心心",
+            "en": "a heart",
+            "zh": "愛心",
             "fullEn": "Character: heart 心",
             "fullZh": "Character：心心"
           },
           {
             "id": "b2_u4_s23",
             "speaker": "Character",
-            "en": "love 愛",
-            "zh": "愛愛",
+            "en": "love",
+            "zh": "愛",
             "fullEn": "Character: love 愛",
             "fullZh": "Character：愛愛"
           },
@@ -2990,7 +2990,7 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b4_u4_s17",
             "speaker": "Teddy",
-            "en": "看！帽子舞！",
+            "en": "Look! The hat dance!",
             "zh": "看！帽子舞！",
             "fullEn": "Teddy: 看！帽子舞！",
             "fullZh": "Teddy：看！帽子舞！"
@@ -2998,7 +2998,7 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b4_u4_s18",
             "speaker": "Woman",
-            "en": "當然可以。",
+            "en": "Sure.",
             "zh": "當然可以。",
             "fullEn": "Woman: 當然可以。",
             "fullZh": "Woman：當然可以。"
@@ -3006,7 +3006,7 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b4_u4_s19",
             "speaker": "Abu",
-            "en": "嗯……。Edison 在哪裡？",
+            "en": "Um... Where is Edison?",
             "zh": "嗯……。愛迪生在哪裡？",
             "fullEn": "Abu: 嗯……。Edison 在哪裡？",
             "fullZh": "Abu：嗯……。愛迪生在哪裡？"
@@ -3014,7 +3014,7 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b4_u4_s20",
             "speaker": "Rocky",
-            "en": "快來，Edison。",
+            "en": "Come on, Edison.",
             "zh": "快來，愛迪生。",
             "fullEn": "Rocky: 快來，Edison。",
             "fullZh": "Rocky：快來，愛迪生。"
@@ -3022,7 +3022,7 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b4_u4_s21",
             "speaker": "Edison",
-            "en": "Teddy，你的包包在哪裡？",
+            "en": "Teddy, where is your bag?",
             "zh": "泰迪，你的包包在哪裡？",
             "fullEn": "Edison: Teddy，你的包包在哪裡？",
             "fullZh": "Edison：泰迪，你的包包在哪裡？"
@@ -3030,7 +3030,7 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b4_u4_s22",
             "speaker": "Man",
-            "en": "小心！",
+            "en": "Watch out!",
             "zh": "小心！",
             "fullEn": "Man: 小心！",
             "fullZh": "Man：小心！"
@@ -4701,7 +4701,7 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b6_u4_s22",
             "speaker": "Character",
-            "en": "a zongzi (rice dumpling) 粽子",
+            "en": "a zongzi (rice dumpling)",
             "zh": "粽子",
             "fullEn": "Character: a zongzi (rice dumpling) 粽子",
             "fullZh": "Character：粽子"
@@ -7515,7 +7515,7 @@ export const HERE_WE_GO_TEXTBOOKS = [
           {
             "id": "b9_u3_s25",
             "speaker": "Character",
-            "en": "Teddy，你先走。",
+            "en": "After you, Teddy.",
             "zh": "泰迪，你先走。",
             "fullEn": "Character: Teddy，你先走。",
             "fullZh": "Character：泰迪，你先走。"

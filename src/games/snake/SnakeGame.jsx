@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
+import { useTheme } from '../../context/ThemeContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { getSnakeNextLetter, UPPERCASE_ALPHABET } from '../../services/alphabetEngine';
@@ -11,7 +12,7 @@ import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Heart, Trophy, Sparkles, Maximize2, Minimize2,
   ArrowUp, ArrowDown, ArrowLeft as DpadLeft, ArrowRight as DpadRight,
-  Mountain, Trees, Award
+  Mountain, Trees, Award, Sun, Moon
 } from 'lucide-react';
 
 const GRID_W = 20;
@@ -24,6 +25,8 @@ export const SnakeGame = ({
   onBack
 }) => {
   const { t } = useI18n();
+  const { isDark, toggleTheme } = useTheme();
+  const inputQueueRef = useRef([]);
   const [gameMode, setGameMode] = useState('normal'); // 'easy' | 'normal' | 'survival'
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('wutai_snake_theme') || 'indigenous'; // 預設霧台百步蛇神山
@@ -245,6 +248,31 @@ export const SnakeGame = ({
   const handleBackToLobby = () => {
     exitFullscreen();
     onBack();
+  };
+
+  // ── 方向輸入緩衝隊列 (徹底杜絕轉彎延遲、掉幀與指令覆蓋) ──
+  const queueDirection = (newDir) => {
+    const queue = inputQueueRef.current;
+    const lastDir = queue.length > 0 ? queue[queue.length - 1] : dirRef.current;
+
+    // 防止同方向重複
+    if (newDir === lastDir) return;
+
+    // 防止 180 度直接掉頭撞擊自己
+    const isOpposite =
+      (newDir === 'UP' && lastDir === 'DOWN') ||
+      (newDir === 'DOWN' && lastDir === 'UP') ||
+      (newDir === 'LEFT' && lastDir === 'RIGHT') ||
+      (newDir === 'RIGHT' && lastDir === 'LEFT');
+
+    if (isOpposite) return;
+
+    // 最多保留最新 2 個有效轉彎指令，依序執行！
+    if (queue.length < 2) {
+      queue.push(newDir);
+    } else {
+      queue[1] = newDir;
+    }
   };
 
   // 鍵盤操作監聽 (防反向撞自己)
@@ -646,31 +674,46 @@ export const SnakeGame = ({
             {t.backLobby}
           </Button3D>
 
-        {/* 雙主題快速切換微型開關 */}
-        <div className="flex items-center p-1 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700">
+                {/* 雙主題與日夜模式快速切換微型開關 */}
+        <div className="flex items-center gap-1.5">
+          <div className="flex items-center p-1 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700">
+            <button
+              onClick={() => handleToggleTheme('indigenous')}
+              title="切換為霧台百步蛇主題"
+              className={`px-2 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1 ${
+                theme === 'indigenous'
+                  ? 'bg-amber-500 text-stone-950 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              <Mountain className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">百步蛇</span>
+            </button>
+            <button
+              onClick={() => handleToggleTheme('jungle')}
+              title="切換為熱帶雨林主題"
+              className={`px-2 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1 ${
+                theme === 'jungle'
+                  ? 'bg-emerald-500 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              <Trees className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">青蛇雨林</span>
+            </button>
+          </div>
+
+          {/* ☀️/🌙 晨曦與星月夜景切換 */}
           <button
-            onClick={() => handleToggleTheme('indigenous')}
-            title="切換為霧台百步蛇主題"
-            className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1 ${
-              theme === 'indigenous'
-                ? 'bg-amber-500 text-stone-950 shadow-sm'
-                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
+            onClick={() => {
+              soundEngine.click();
+              toggleTheme();
+            }}
+            title={isDark ? '切換為晨曦白晝' : '切換為星月夜景 (附螢火蟲)'}
+            className="p-1.5 sm:px-2 sm:py-1 rounded-xl bg-slate-200/80 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-amber-500 dark:text-cyan-300 hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1 text-xs font-black shadow-sm"
           >
-            <Mountain className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">百步蛇</span>
-          </button>
-          <button
-            onClick={() => handleToggleTheme('jungle')}
-            title="切換為熱帶雨林主題"
-            className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all flex items-center gap-1 ${
-              theme === 'jungle'
-                ? 'bg-emerald-500 text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
-          >
-            <Trees className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">青蛇雨林</span>
+            {isDark ? <Moon className="w-3.5 h-3.5 text-cyan-300" /> : <Sun className="w-3.5 h-3.5 text-amber-500 animate-spin-slow" />}
+            <span className="hidden md:inline">{isDark ? '星月夜景' : '晨曦白晝'}</span>
           </button>
         </div>
 
@@ -758,6 +801,7 @@ export const SnakeGame = ({
           stepProgress={stepProgress}
           letters={renderLetters}
           theme={theme}
+          isDark={isDark}
           isDead={isSnakeDead}
           isInvulnerable={invulnerableTime > 0}
           isNextTargetFn={isNextTargetLetter}
@@ -772,41 +816,57 @@ export const SnakeGame = ({
         />
       </div>
 
-      {/* 虛擬十字鍵 */}
-      <div className="flex flex-col items-center gap-1.5 flex-shrink-0 mb-1">
-        <Button3D
-          variant={theme === 'indigenous' ? 'stone' : 'slate'}
-          size="sm"
-          onClick={() => handleDpad('UP')}
-          className="w-16 h-11"
+      {/* 虛擬十字鍵 (極速 0ms 延遲 onPointerDown + 防誤觸) */}
+      <div className="flex flex-col items-center gap-1.5 flex-shrink-0 mb-1 select-none touch-none">
+        <button
+          type="button"
+          onPointerDown={(e) => {
+            e.preventDefault();
+            soundEngine.click();
+            queueDirection('UP');
+          }}
+          className="w-16 h-11 sm:h-12 rounded-2xl bg-slate-800/90 active:bg-amber-500 border-2 border-slate-600 active:border-amber-300 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all cursor-pointer"
+          title="向上 (W / ↑)"
         >
-          <ArrowUp className="w-5 h-5" />
-        </Button3D>
+          <ArrowUp className="w-6 h-6 text-amber-300" />
+        </button>
         <div className="flex gap-4">
-          <Button3D
-            variant={theme === 'indigenous' ? 'stone' : 'slate'}
-            size="sm"
-            onClick={() => handleDpad('LEFT')}
-            className="w-16 h-11"
+          <button
+            type="button"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              soundEngine.click();
+              queueDirection('LEFT');
+            }}
+            className="w-16 h-11 sm:h-12 rounded-2xl bg-slate-800/90 active:bg-amber-500 border-2 border-slate-600 active:border-amber-300 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all cursor-pointer"
+            title="向左 (A / ←)"
           >
-            <DpadLeft className="w-5 h-5" />
-          </Button3D>
-          <Button3D
-            variant={theme === 'indigenous' ? 'stone' : 'slate'}
-            size="sm"
-            onClick={() => handleDpad('DOWN')}
-            className="w-16 h-11"
+            <DpadLeft className="w-6 h-6 text-amber-300" />
+          </button>
+          <button
+            type="button"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              soundEngine.click();
+              queueDirection('DOWN');
+            }}
+            className="w-16 h-11 sm:h-12 rounded-2xl bg-slate-800/90 active:bg-amber-500 border-2 border-slate-600 active:border-amber-300 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all cursor-pointer"
+            title="向下 (S / ↓)"
           >
-            <ArrowDown className="w-5 h-5" />
-          </Button3D>
-          <Button3D
-            variant={theme === 'indigenous' ? 'stone' : 'slate'}
-            size="sm"
-            onClick={() => handleDpad('RIGHT')}
-            className="w-16 h-11"
+            <ArrowDown className="w-6 h-6 text-amber-300" />
+          </button>
+          <button
+            type="button"
+            onPointerDown={(e) => {
+              e.preventDefault();
+              soundEngine.click();
+              queueDirection('RIGHT');
+            }}
+            className="w-16 h-11 sm:h-12 rounded-2xl bg-slate-800/90 active:bg-amber-500 border-2 border-slate-600 active:border-amber-300 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all cursor-pointer"
+            title="向右 (D / →)"
           >
-            <DpadRight className="w-5 h-5" />
-          </Button3D>
+            <DpadRight className="w-6 h-6 text-amber-300" />
+          </button>
         </div>
       </div>
     </div>
