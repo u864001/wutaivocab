@@ -125,10 +125,10 @@ export const GRIMOIRE_GAME_MODES = [
   { id: 'snake', nameZh: '叢林神山貪食蛇', icon: '🐍', category: 'speed' },
 
   // ── 經典測驗 (4 款) ──
-  { id: 'quiz-zh-en', nameZh: '看中選英測驗', icon: '⌨️', category: 'quiz' },
-  { id: 'quiz-en-zh', nameZh: '看英選中測驗', icon: '📖', category: 'quiz' },
+  { id: 'quiz-choice', nameZh: '中英字義速辨', icon: '⌨️', category: 'quiz', note: '看中選英/看英選中/雙向速測' },
   { id: 'quiz-listening', nameZh: '英語聽力挑戰', icon: '🎧', category: 'quiz', note: '單字辨音/句子/問答任一三星' },
-  { id: 'spelling', nameZh: '單字積木拼裝', icon: '🧱', category: 'quiz' }
+  { id: 'spelling', nameZh: '單字積木拼裝', icon: '🧱', category: 'quiz' },
+  { id: 'handwriting', nameZh: '神筆筆順書寫', icon: '✍️', category: 'quiz', note: '四線三格標準手寫評測' }
 ];
 
 const STORAGE_PREFIX = 'wutai_grimoire_progress_';
@@ -162,17 +162,21 @@ export const getBookProgress = (studentId, bookId) => {
   
   // 計算在該冊獲得 3 星 (或通關) 的遊戲數
   let threeStarCount = 0;
+  const consolidatedRecord = { ...bookRecord };
+  consolidatedRecord['quiz-choice'] = Math.max(
+    bookRecord['quiz-choice'] || 0,
+    bookRecord['quiz-zh-en'] || 0,
+    bookRecord['quiz-en-zh'] || 0
+  );
+  consolidatedRecord['quiz-listening'] = Math.max(
+    bookRecord['quiz-listening'] || 0,
+    bookRecord['quiz-listening-word'] || 0,
+    bookRecord['quiz-listening-sentence'] || 0,
+    bookRecord['quiz-listening-qa'] || 0
+  );
+
   GRIMOIRE_GAME_MODES.forEach(m => {
-    let star = bookRecord[m.id] || 0;
-    // 聽力三種子模式 (單字辨音/句子辨句/情境問答) 任一達三星皆代表英語聽力精通
-    if (m.id === 'quiz-listening') {
-      star = Math.max(
-        star,
-        bookRecord['quiz-listening-word'] || 0,
-        bookRecord['quiz-listening-sentence'] || 0,
-        bookRecord['quiz-listening-qa'] || 0
-      );
-    }
+    let star = consolidatedRecord[m.id] || 0;
     if (star >= 3) {
       threeStarCount++;
     }
@@ -188,7 +192,7 @@ export const getBookProgress = (studentId, bookId) => {
     requiredModes: REQUIRED_MODES_FOR_MASTER,
     totalModes: GRIMOIRE_GAME_MODES.length,
     isMastered,
-    modesStatus: bookRecord
+    modesStatus: consolidatedRecord
   };
 };
 
@@ -224,8 +228,8 @@ export const mapModeToGrimoireId = (mode) => {
   if (m.startsWith('meteor')) return 'meteor';
   if (m.startsWith('snake')) return 'snake';
   if (m.startsWith('spelling')) return 'spelling';
-  if (m === 'quiz-zh-en' || m === 'choice-zh-en') return 'quiz-zh-en';
-  if (m === 'quiz-en-zh' || m === 'choice-en-zh') return 'quiz-en-zh';
+  if (m.startsWith('handwriting')) return 'handwriting';
+  if (m === 'quiz-choice' || m === 'quiz-zh-en' || m === 'choice-zh-en' || m === 'quiz-en-zh' || m === 'choice-en-zh') return 'quiz-choice';
   if (m.startsWith('quiz-listening') || m.startsWith('listening')) return 'quiz-listening';
   return null;
 };

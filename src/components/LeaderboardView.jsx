@@ -18,7 +18,7 @@ import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
   Swords, X, ChevronRight, Compass, Flame, Coins, Award,
-  Users, Crown, Zap, School, KeyRound, Eye, Headphones, Mic, Volume2, VolumeX, Globe,
+  Users, Crown, Zap, School, KeyRound, Eye, Headphones, PenTool, Mic, Volume2, VolumeX, Globe,
   Sun, Moon, User
 } from 'lucide-react';
 
@@ -150,31 +150,59 @@ export const CONSOLIDATED_GAME_MODES = [
       { key: 'snake-survival', label: '生存挑戰' }
     ]
   },
-  {
-    id: 'spelling',
-    label: '拖曳拼字',
-    icon: Puzzle,
-    color: 'text-yellow-400',
-    unit: '分',
-    category: 'speed',
-    modeKeys: ['spelling'],
-    subModes: [{ key: 'spelling', label: '標準拼字' }]
-  },
 
-  // ── 經典測驗 (Quiz) ──
+  // ── 經典測驗 (Quiz - 4 大核心挑戰) ──
   {
     id: 'quiz',
-    label: '四大經典測驗',
+    label: '中英字義速辨',
     icon: Keyboard,
     color: 'text-sky-400',
     unit: '分',
     category: 'quiz',
-    modeKeys: ['quiz-zh-en', 'quiz-en-zh', 'quiz-listening', 'quiz-hard'],
+    modeKeys: ['quiz-choice', 'quiz-zh-en', 'quiz-en-zh', 'quiz-hard'],
     subModes: [
+      { key: 'quiz-choice', label: '雙向速測' },
       { key: 'quiz-zh-en', label: '中選英' },
       { key: 'quiz-en-zh', label: '英選中' },
-      { key: 'quiz-listening', label: '英語聽力' },
-      { key: 'quiz-hard', label: '魔王綜合' }
+      { key: 'quiz-hard', label: '魔王挑戰' }
+    ]
+  },
+  {
+    id: 'listening',
+    label: '聽力三合一',
+    icon: Volume2,
+    color: 'text-cyan-400',
+    unit: '分',
+    category: 'quiz',
+    modeKeys: ['quiz-listening', 'quiz-listening-word', 'quiz-listening-sentence', 'quiz-listening-qa'],
+    subModes: [
+      { key: 'quiz-listening', label: '聽力全能' },
+      { key: 'quiz-listening-word', label: '單字辨音' },
+      { key: 'quiz-listening-sentence', label: '句子辨句' },
+      { key: 'quiz-listening-qa', label: '情境問答' }
+    ]
+  },
+  {
+    id: 'spelling',
+    label: '單字積木拼裝',
+    icon: Puzzle,
+    color: 'text-amber-400',
+    unit: '分',
+    category: 'quiz',
+    modeKeys: ['spelling'],
+    subModes: [{ key: 'spelling', label: '標準拼字' }]
+  },
+  {
+    id: 'handwriting',
+    label: '神筆筆順書寫',
+    icon: PenTool,
+    color: 'text-emerald-400',
+    unit: '分',
+    category: 'quiz',
+    modeKeys: ['handwriting', 'handwriting-abc'],
+    subModes: [
+      { key: 'handwriting', label: '實戰默寫' },
+      { key: 'handwriting-abc', label: '字母書寫' }
     ]
   },
 

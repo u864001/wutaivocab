@@ -27,6 +27,13 @@ export const StandardQuiz = ({
   );
 
   // 聽力三合一膠囊子模式：'word' (單字辨音) | 'sentence' (句子辨句) | 'qa' (情境問答)
+  // 雙向速辨子模式：'zh-en' (看中選英) | 'en-zh' (看英選中) | 'mixed' (雙向混合)
+  const [choiceDirection, setChoiceDirection] = useState(() => {
+    if (mode === 'quiz-en-zh') return 'en-zh';
+    return 'zh-en';
+  });
+  const isChoiceMode = mode === 'quiz-choice' || mode === 'quiz-zh-en' || mode === 'quiz-en-zh';
+
   const [listeningSubMode, setListeningSubMode] = useState('word');
 
   const [queue, setQueue] = useState([]);
@@ -55,9 +62,20 @@ export const StandardQuiz = ({
     if (isAlphabetMode) {
       const qCount = settings?.count === 'all' ? 26 : (parseInt(settings?.count, 10) || 20);
       let qType = 'upper_to_lower';
-      if (mode === 'quiz-en-zh') qType = 'lower_to_upper';
-      if (mode === 'quiz-listening') qType = 'listening';
-      list = generateQuizAlphabetQuestions(qType, qCount);
+      if (mode === 'quiz-en-zh' || (isChoiceMode && choiceDirection === 'en-zh')) {
+        qType = 'lower_to_upper';
+      }
+      if (mode === 'quiz-listening') {
+        qType = 'listening';
+      }
+      if (isChoiceMode && choiceDirection === 'mixed') {
+        const half = Math.ceil(qCount / 2);
+        const listA = generateQuizAlphabetQuestions('upper_to_lower', half);
+        const listB = generateQuizAlphabetQuestions('lower_to_upper', qCount - half);
+        list = [...listA, ...listB].sort(() => 0.5 - Math.random());
+      } else {
+        list = generateQuizAlphabetQuestions(qType, qCount);
+      }
     } else if (mode === 'quiz-listening') {
       const qCount = settings?.count === 'all' ? 30 : (parseInt(settings?.count, 10) || 20);
 
@@ -86,7 +104,13 @@ export const StandardQuiz = ({
       if (settings?.count !== 'all') {
         shuffled = shuffled.slice(0, parseInt(settings?.count, 10) || 20);
       }
-      list = shuffled;
+      list = shuffled.map((w, idx) => {
+        let qDir = choiceDirection;
+        if (choiceDirection === 'mixed') {
+          qDir = idx % 2 === 0 ? 'zh-en' : 'en-zh';
+        }
+        return { ...w, qDirection: qDir };
+      });
     }
 
     setQueue(list);
@@ -106,7 +130,7 @@ export const StandardQuiz = ({
     });
 
     setCurrentQuestion(list[0] || null);
-  }, [settings, words, mode, listeningSubMode]);
+  }, [settings, words, mode, listeningSubMode, choiceDirection, isChoiceMode, isAlphabetMode]);
 
   // 聽力模式自動播放語音
   useEffect(() => {
@@ -179,10 +203,14 @@ export const StandardQuiz = ({
     let isCorrect = false;
     const ans = inputValue.trim().toLowerCase();
 
-    if (mode === 'quiz-zh-en' || mode === 'quiz-listening' || mode === 'quiz-hard' || mode === 'quiz-mixed') {
+    let effectiveDir = currentQuestion?.qDirection || choiceDirection;
+    if (mode === 'quiz-zh-en') effectiveDir = 'zh-en';
+    if (mode === 'quiz-en-zh') effectiveDir = 'en-zh';
+
+    if (effectiveDir === 'zh-en' || mode === 'quiz-listening' || mode === 'quiz-hard') {
       const target = (currentQuestion.correctEn || currentQuestion.en || '').toLowerCase();
       isCorrect = ans === target;
-    } else if (mode === 'quiz-en-zh') {
+    } else {
       const inputTargets = ans.split(/[、,，/]/).map(w => w.trim());
       const correctTargets = (currentQuestion.correctZh || currentQuestion.zh || '').split(/[、,，/]/).map(w => w.trim());
       isCorrect = inputTargets.some(u => correctTargets.includes(u));
@@ -256,9 +284,55 @@ export const StandardQuiz = ({
 
           <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 mb-2 font-heading">
             {isAlphabetMode
-              ? (mode === 'quiz-zh-en' ? '看大寫選小寫' : mode === 'quiz-en-zh' ? '看小寫選大寫' : '聽音選字母')
-              : (mode === 'quiz-zh-en' ? t.quizZhEn : mode === 'quiz-en-zh' ? t.quizEnZh : mode === 'quiz-listening' ? t.quizListening : t.quizHard)}
+              ? (isChoiceMode
+                  ? (choiceDirection === 'en-zh' ? '看小寫選大寫' : choiceDirection === 'mixed' ? '大小寫雙向速測' : '看大寫選小寫')
+                  : mode === 'quiz-listening' ? '聽音選字母' : '字母趣味測驗')
+              : (isChoiceMode
+                  ? (choiceDirection === 'en-zh' ? t.quizEnZh : choiceDirection === 'mixed' ? '中英字義速辨（雙向速測）' : t.quizZhEn)
+                  : mode === 'quiz-listening' ? t.quizListening : t.quizHard)}
           </h2>
+
+          {/* 🌟 中英雙向字義速辨專屬：膠囊式切換欄 [🇨🇳➔🇬🇧 看中選英 | 🇬🇧➔🇨🇳 看英選中 | 🔀 雙向速測] 🌟 */}
+          {isChoiceMode && (
+            <div className="my-5 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 max-w-md mx-auto flex gap-1.5 shadow-inner">
+              <button
+                type="button"
+                onClick={() => setChoiceDirection('zh-en')}
+                className={`flex-1 py-2 px-2.5 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                  choiceDirection === 'zh-en'
+                    ? 'bg-sky-600 text-white shadow-md scale-[1.02]'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <span>🇨🇳➔🇬🇧</span>
+                <span>{isAlphabetMode ? '看大選小' : '看中選英'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setChoiceDirection('en-zh')}
+                className={`flex-1 py-2 px-2.5 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                  choiceDirection === 'en-zh'
+                    ? 'bg-indigo-600 text-white shadow-md scale-[1.02]'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <span>🇬🇧➔🇨🇳</span>
+                <span>{isAlphabetMode ? '看小選大' : '看英選中'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setChoiceDirection('mixed')}
+                className={`flex-1 py-2 px-2.5 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                  choiceDirection === 'mixed'
+                    ? 'bg-purple-600 text-white shadow-md scale-[1.02]'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <span>🔀</span>
+                <span>雙向速測</span>
+              </button>
+            </div>
+          )}
 
           {/* 🌟 聽力測驗專屬：膠囊式切換欄 [🐣 單字辨音 | 🦁 句子辨句 | 💬 情境問答] 🌟 */}
           {mode === 'quiz-listening' && (
@@ -362,7 +436,7 @@ export const StandardQuiz = ({
 
           {/* 榮譽榜破紀錄留名判定卡與獎狀領取 */}
           <HonorSubmissionCard
-            mode={mode}
+            mode={isChoiceMode ? 'quiz-choice' : mode}
             book={isTownListeningMode ? null : qualifyingBook}
             score={firstAttemptCorrect}
             time={elapsedTime}
@@ -416,13 +490,9 @@ export const StandardQuiz = ({
 
           {/* 題目與發音顯示區域 */}
           <div className="min-h-[140px] flex flex-col items-center justify-center mb-6">
-            {mode === 'quiz-zh-en' || mode === 'quiz-hard' || mode === 'quiz-mixed' ? (
+            {(currentQuestion?.qDirection === 'zh-en' || (!currentQuestion?.qDirection && choiceDirection === 'zh-en') || mode === 'quiz-zh-en' || mode === 'quiz-hard') && mode !== 'quiz-listening' ? (
               <h2 className="text-3xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 font-heading">
                 {currentQuestion.zh}
-              </h2>
-            ) : mode === 'quiz-en-zh' ? (
-              <h2 className="text-3xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 font-heading">
-                {currentQuestion.en}
               </h2>
             ) : mode === 'quiz-listening' ? (
               <div className="flex flex-col items-center">
@@ -450,7 +520,11 @@ export const StandardQuiz = ({
                   <span>點擊按鈕可隨時重聽語音</span>
                 </p>
               </div>
-            ) : null}
+            ) : (
+              <h2 className="text-3xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 font-heading">
+                {currentQuestion.en}
+              </h2>
+            )}
           </div>
 
           {/* 🌟 4 大實體觸控卡片選項 (句子辨句、情境問答專用) 🌟 */}
@@ -555,7 +629,7 @@ export const StandardQuiz = ({
                   <span className="text-2xl font-black font-heading mb-1">{t.wrong}</span>
                   <p className="text-sm font-bold opacity-90">
                     正確答案：<span className="text-xl underline font-black ml-1">
-                      {mode === 'quiz-en-zh' ? currentQuestion.zh : currentQuestion.en}
+                      {(currentQuestion?.qDirection === 'en-zh' || mode === 'quiz-en-zh') ? currentQuestion.zh : currentQuestion.en}
                     </span>
                   </p>
                 </>

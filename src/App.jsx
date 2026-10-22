@@ -4,6 +4,7 @@ import { Lobby } from './components/Lobby';
 import { TeacherHub } from './components/TeacherHub';
 import { LeaderboardView } from './components/LeaderboardView';
 import { StandardQuiz } from './games/quiz/StandardQuiz';
+import { HandwritingGame } from './games/handwriting/HandwritingGame';
 import { SpellingGame } from './games/spelling/SpellingGame';
 import { MeteorGame } from './games/meteor/MeteorGame';
 import { SnakeGame } from './games/snake/SnakeGame';
@@ -103,7 +104,7 @@ export function App() {
       const VALID_VIEWS = [
         'phonics', 'lobby', 'town', 'textbook', 'langlab',
         'escape', 'spotter', 'maze', 'memory',
-        'mole', 'swipe', 'meteor', 'snake', 'spelling',
+        'mole', 'swipe', 'meteor', 'snake', 'spelling', 'handwriting',
         'battle', 'leaderboard', 'teacher-hub'
       ];
       if (VALID_VIEWS.includes(target)) return target;
@@ -427,6 +428,15 @@ export function App() {
                 setAutoJoinCode(null);
                 handleNavigate('lobby');
               }}
+            />
+          )}
+
+          {currentView === 'handwriting' && (
+            <HandwritingGame
+              settings={settings}
+              words={words}
+              qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
             />
           )}
 

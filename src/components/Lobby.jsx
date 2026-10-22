@@ -6,7 +6,7 @@ import { formatStudentBadge } from '../utils/studentIdHelper';
 import { soundEngine } from '../services/audio';
 import {
   Home, Trophy, User, ArrowLeft, ArrowRight, Play,
-  KeyRound, Eye, Compass, Puzzle, Flame, Rocket,
+  KeyRound, Eye, Compass, Puzzle, Flame, Rocket, PenTool,
   Sparkles, Keyboard, BookOpen, Volume2, Swords,
   Store, RotateCcw, Check, CheckCircle2, ChevronRight,
   Sun, Moon, VolumeX, ShieldCheck, Layers, HelpCircle,
@@ -79,6 +79,8 @@ const GAME_SPOTLIGHT_ART = {
   swipe: '/assets/screenshots/screenshot_swipe.webp',
   memory: '/assets/lobby/theme_explore.jpg',
   spelling: '/assets/screenshots/screenshot_spelling.webp',
+  'quiz-choice': '/assets/lobby/theme_quiz.jpg',
+  handwriting: '/assets/lobby/theme_quiz.jpg',
   'quiz-zh-en': '/assets/lobby/theme_quiz.jpg',
   'quiz-en-zh': '/assets/lobby/theme_quiz.jpg',
   'quiz-listening': '/assets/lobby/theme_quiz.jpg',
@@ -293,10 +295,10 @@ export const Lobby = ({
       summary: '星空書閣 • 智慧結晶 • 全能評測',
       isDirectJump: false,
       games: [
-        { id: 'quiz-zh-en', name: '看中選英', iconComp: Keyboard, iconColor: 'text-sky-400', iconBg: 'bg-sky-500/25 border-sky-400/40', badge: '中選英' },
-        { id: 'quiz-en-zh', name: '看英選中', iconComp: BookOpen, iconColor: 'text-indigo-400', iconBg: 'bg-indigo-500/25 border-indigo-400/40', badge: '英選中' },
+        { id: 'quiz-choice', name: '中英字義速辨', iconComp: Keyboard, iconColor: 'text-sky-400', iconBg: 'bg-sky-500/25 border-sky-400/40', badge: '雙向速測' },
         { id: 'quiz-listening', name: '英語聽力', iconComp: Volume2, iconColor: 'text-cyan-400', iconBg: 'bg-cyan-500/25 border-cyan-400/40', badge: '聽音辨字' },
-        { id: 'spelling', name: '單字積木拼裝', iconComp: Puzzle, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '積木拼字' }
+        { id: 'spelling', name: '單字積木拼裝', iconComp: Puzzle, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '積木拼字' },
+        { id: 'handwriting', name: '神筆筆順書寫', iconComp: PenTool, iconColor: 'text-emerald-400', iconBg: 'bg-emerald-500/25 border-emerald-400/40', badge: '四線三格' }
       ]
     },
     {
