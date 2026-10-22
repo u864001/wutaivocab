@@ -15,8 +15,12 @@ import {
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Volume2, RotateCcw, Check, Sparkles, Trophy,
-  Undo2, PenTool, HelpCircle, ArrowRight, ShieldCheck, Flame, BookOpen
+  Undo2, PenTool, HelpCircle, ArrowRight, ShieldCheck, Flame, BookOpen,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
+
+const LETTER_SLOT_WIDTH = 65;
+const BOARD_PADDING_X = 35;
 
 export const HandwritingGame = ({
   settings,
@@ -31,28 +35,33 @@ export const HandwritingGame = ({
   // 模式：'tracing' (描寫自學版 - 有螢光導引，不登排行榜) | 'challenge' (實戰默寫版 - 無導引，評分登榜)
   const [playMode, setPlayMode] = useState('tracing');
 
-  // 年級自適應判定：1年級大寫、2年級小寫、3~6年級單字逐字分格
+  // 年級自適應判定：1年級大寫、2年級小寫、3~6年級單字四線三格長卷
   const studentGradeNum = useMemo(() => {
+    if (settings?.selectedOptionId === 'g1' || (qualifyingBook === '1' && settings?.alphaMode)) return 1;
+    if (settings?.selectedOptionId === 'g2') return 2;
     if (currentStudent?.grade) {
       const g = parseInt(currentStudent.grade, 10);
       if (g >= 1 && g <= 6) return g;
     }
     return 3;
-  }, [currentStudent]);
+  }, [currentStudent, settings, qualifyingBook]);
 
   // 出題列表 (題目物件清單)
   const [questions, setQuestions] = useState([]);
   const [qIndex, setQIndex] = useState(0);
 
-  // 若是單字模式，追蹤當前單字寫到第幾個字母 (letterIndex)
-  const [charInWordIndex, setCharInWordIndex] = useState(0);
+  // 當前聚焦之字母索引 (在單字模式下，追蹤 0, 1, 2... 字元)
+  const [activeLetterIdx, setActiveLetterIdx] = useState(0);
+
+  // 描寫版：已成功描寫完成的字母集合
+  const [completedLetterIndices, setCompletedLetterIndices] = useState(new Set());
+
+  // 描寫版：當前聚焦字母正在進行的筆劃序號 (0, 1, 2...)
+  const [activeStrokeStep, setActiveStrokeStep] = useState(0);
 
   // 畫布筆跡歷史 (每一劃為一組 points: [{x, y}, ...])
   const [strokes, setStrokes] = useState([]);
   const [currentStroke, setCurrentStroke] = useState(null);
-
-  // 描寫版：目前正在進行的筆劃序號 (0, 1, 2...)
-  const [activeStrokeStep, setActiveStrokeStep] = useState(0);
 
   // 實戰版評分反饋
   const [evalResult, setEvalResult] = useState(null);
@@ -66,6 +75,7 @@ export const HandwritingGame = ({
   const [scoredCount, setScoredCount] = useState(0);
 
   const canvasRef = useRef(null);
+  const boardScrollRef = useRef(null);
   const isDrawingRef = useRef(false);
 
   // ── 題庫初始化 ──
@@ -80,7 +90,7 @@ export const HandwritingGame = ({
     );
 
     if (isAlphabetMode) {
-      // 1年級大寫，2年級小寫 (或大寫隨機)
+      // 1年級大寫，2年級小寫 (單字母方形大格)
       const isLower = studentGradeNum === 2;
       const alphabetStr = isLower ? 'abcdefghijklmnopqrstuvwxyz' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       const shuffled = alphabetStr.split('').sort(() => 0.5 - Math.random());
@@ -93,7 +103,7 @@ export const HandwritingGame = ({
         zh: isLower ? `請練習小寫字母 ${char}` : `請練習大寫字母 ${char}`
       }));
     } else {
-      // 3~6 年級單字模式：篩選單元單字
+      // 3~6 年級單字模式：篩選單元單字 (支援長單字如 supermarket, banana, apple)
       let filtered = words.filter(w => settings?.selectedUnits?.includes(`${w.book}-${w.lesson}`));
       if (filtered.length === 0 && words.length > 0) {
         filtered = words;
@@ -116,7 +126,8 @@ export const HandwritingGame = ({
 
     setQuestions(list);
     setQIndex(0);
-    setCharInWordIndex(0);
+    setActiveLetterIdx(0);
+    setCompletedLetterIndices(new Set());
     setStrokes([]);
     setActiveStrokeStep(0);
     setEvalResult(null);
@@ -125,27 +136,80 @@ export const HandwritingGame = ({
   // 當前目標題目
   const currentQ = questions[qIndex] || null;
 
-  // 當前畫布上目標書寫的字母
-  const activeChar = useMemo(() => {
-    if (!currentQ) return 'A';
-    if (currentQ.type === 'letter') {
-      return currentQ.targetChar;
-    }
-    const chars = currentQ.wordStr || '';
-    return chars[charInWordIndex] || chars[0] || 'A';
-  }, [currentQ, charInWordIndex]);
+  // 判斷是否為「多字母長單字模式」
+  const isWordMode = Boolean(currentQ && currentQ.type === 'word' && currentQ.wordStr.length > 1);
+  const wordChars = useMemo(() => {
+    return currentQ?.wordStr?.split('') || ['A'];
+  }, [currentQ]);
 
-  // 目標字母的標準筆順數據
-  const strokeModel = useMemo(() => {
+  // 🌟 動態四線三格寬高計算：一二年級單字方形大格 (100x120)；高年級單字依長度自適應細長長卷！
+  const boardWidth = useMemo(() => {
+    if (!isWordMode) return 100; // 一二年級單字母大方格
+    // 高年級長單字 (如 supermarket: 11 字元 => 35*2 + 11*65 = 785)
+    return BOARD_PADDING_X * 2 + wordChars.length * LETTER_SLOT_WIDTH;
+  }, [isWordMode, wordChars]);
+
+  const boardHeight = 120; // 標準 4 線高度 (top: 15, mid: 45, base: 75, bottom: 105)
+
+  // 每個字母的槽位幾何資訊
+  const slotList = useMemo(() => {
+    if (!isWordMode) {
+      return [{
+        char: currentQ?.targetChar || 'A',
+        center: 50,
+        scale: 1,
+        startX: 0,
+        endX: 100,
+        index: 0
+      }];
+    }
+    return wordChars.map((c, i) => {
+      const startX = BOARD_PADDING_X + i * LETTER_SLOT_WIDTH;
+      const endX = startX + LETTER_SLOT_WIDTH;
+      const center = startX + LETTER_SLOT_WIDTH / 2;
+      return {
+        char: c,
+        center,
+        scale: 0.82,
+        startX,
+        endX,
+        index: i
+      };
+    });
+  }, [isWordMode, wordChars, currentQ]);
+
+  // 當前活躍的單字母
+  const activeChar = slotList[activeLetterIdx]?.char || 'A';
+  const activeSlot = slotList[activeLetterIdx] || slotList[0];
+  const activeStrokeModel = useMemo(() => {
     return getLetterStrokes(activeChar) || getLetterStrokes('A');
   }, [activeChar]);
 
-  // 自動播放語音朗讀
+  // 自動發音
   useEffect(() => {
-    if (activeChar) {
-      speakEnglish(activeChar);
+    if (currentQ?.wordStr) {
+      speakEnglish(currentQ.wordStr);
     }
-  }, [activeChar]);
+  }, [currentQ]);
+
+  // 自動滾動聚焦至當前描寫之字母槽位 (手機/平板上流暢平移)
+  const scrollToActiveSlot = useCallback((idx) => {
+    const container = boardScrollRef.current;
+    if (!container || !isWordMode) return;
+    const targetSlot = slotList[idx];
+    if (!targetSlot) return;
+
+    const slotRatio = targetSlot.center / boardWidth;
+    const scrollTarget = slotRatio * container.scrollWidth - container.clientWidth / 2;
+    container.scrollTo({
+      left: Math.max(0, scrollTarget),
+      behavior: 'smooth'
+    });
+  }, [isWordMode, slotList, boardWidth]);
+
+  useEffect(() => {
+    scrollToActiveSlot(activeLetterIdx);
+  }, [activeLetterIdx, scrollToActiveSlot]);
 
   // ── 畫布重繪邏輯 ──
   const redrawCanvas = useCallback(() => {
@@ -158,35 +222,35 @@ export const HandwritingGame = ({
     const height = canvas.height;
     ctx.clearRect(0, 0, width, height);
 
-    // 繪製使用者筆劃
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
     const allStrokes = currentStroke ? [...strokes, currentStroke] : strokes;
 
-    allStrokes.forEach((stroke, sIdx) => {
+    allStrokes.forEach((stroke) => {
       if (stroke.length < 1) return;
       ctx.beginPath();
-      ctx.lineWidth = Math.max(10, width * 0.055);
-      // 筆劃顏色：深色主題用明亮天藍/翠綠，淺色用深海藍
+      // 筆劃寬度自適應
+      const baseWidth = isWordMode ? Math.max(6, height * 0.045) : Math.max(9, width * 0.055);
+      ctx.lineWidth = baseWidth;
       ctx.strokeStyle = isDark ? '#38bdf8' : '#0284c7';
-      ctx.shadowColor = isDark ? 'rgba(56, 189, 248, 0.4)' : 'rgba(2, 132, 199, 0.25)';
-      ctx.shadowBlur = 6;
+      ctx.shadowColor = isDark ? 'rgba(56, 189, 248, 0.45)' : 'rgba(2, 132, 199, 0.3)';
+      ctx.shadowBlur = 5;
 
       const p0 = stroke[0];
-      const startX = (p0.x / FOUR_LINES.width) * width;
-      const startY = (p0.y / FOUR_LINES.height) * height;
+      const startX = (p0.x / boardWidth) * width;
+      const startY = (p0.y / boardHeight) * height;
       ctx.moveTo(startX, startY);
 
       for (let i = 1; i < stroke.length; i++) {
         const pt = stroke[i];
-        const px = (pt.x / FOUR_LINES.width) * width;
-        const py = (pt.y / FOUR_LINES.height) * height;
+        const px = (pt.x / boardWidth) * width;
+        const py = (pt.y / boardHeight) * height;
         ctx.lineTo(px, py);
       }
       ctx.stroke();
     });
-  }, [strokes, currentStroke, isDark]);
+  }, [strokes, currentStroke, isDark, boardWidth, boardHeight, isWordMode]);
 
   useEffect(() => {
     redrawCanvas();
@@ -211,7 +275,7 @@ export const HandwritingGame = ({
     updateCanvasSize();
     window.addEventListener('resize', updateCanvasSize);
     return () => window.removeEventListener('resize', updateCanvasSize);
-  }, [updateCanvasSize]);
+  }, [updateCanvasSize, boardWidth]);
 
   // ── 防誤觸防滑動指針座標計算 ──
   const getCanvasCoords = (e) => {
@@ -221,13 +285,12 @@ export const HandwritingGame = ({
     const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
     const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
 
-    const normX = Math.max(0, Math.min(FOUR_LINES.width, ((clientX - rect.left) / rect.width) * FOUR_LINES.width));
-    const normY = Math.max(0, Math.min(FOUR_LINES.height, ((clientY - rect.top) / rect.height) * FOUR_LINES.height));
+    const normX = Math.max(0, Math.min(boardWidth, ((clientX - rect.left) / rect.width) * boardWidth));
+    const normY = Math.max(0, Math.min(boardHeight, ((clientY - rect.top) / rect.height) * boardHeight));
     return { x: normX, y: normY };
   };
 
   const handlePointerDown = (e) => {
-    // 徹底鎖定原生手勢與滑動
     e.preventDefault();
     e.stopPropagation();
     isDrawingRef.current = true;
@@ -250,19 +313,6 @@ export const HandwritingGame = ({
       }
       return prev;
     });
-
-    // 描寫版：實時檢測是否靠近當前目標筆劃
-    if (playMode === 'tracing' && strokeModel) {
-      const targetStroke = strokeModel.strokes[activeStrokeStep];
-      if (targetStroke) {
-        const startDist = Math.hypot(pt.x - targetStroke.start.x, pt.y - targetStroke.start.y);
-        const endDist = Math.hypot(pt.x - targetStroke.end.x, pt.y - targetStroke.end.y);
-        // 若到達終點附近
-        if (endDist < 14) {
-          // 本劃完成
-        }
-      }
-    }
   };
 
   const handlePointerUp = (e) => {
@@ -276,21 +326,32 @@ export const HandwritingGame = ({
       setStrokes(nextStrokes);
       setCurrentStroke(null);
 
-      // 描寫模式下逐步完成推進
-      if (playMode === 'tracing' && strokeModel) {
+      // ── 描寫模式：逐步引導推進 ──
+      if (playMode === 'tracing' && activeStrokeModel) {
         const nextStep = activeStrokeStep + 1;
         soundEngine.click();
 
-        if (nextStep >= strokeModel.strokes.length) {
-          // 本字母描寫全數完成！
+        if (nextStep >= activeStrokeModel.strokes.length) {
+          // 當前字母完成！
+          const updatedSet = new Set(completedLetterIndices);
+          updatedSet.add(activeLetterIdx);
+          setCompletedLetterIndices(updatedSet);
           soundEngine.correct();
-          confetti({ particleCount: 35, spread: 50, origin: { y: 0.6 } });
-          setEvalResult({
-            score: 100,
-            stars: 3,
-            passed: true,
-            feedback: '🎉 筆順引導描紅完成！標準握筆與順序全對！'
-          });
+
+          // 檢查單字是否還有下一個字母
+          if (isWordMode && activeLetterIdx + 1 < slotList.length) {
+            setActiveLetterIdx(activeLetterIdx + 1);
+            setActiveStrokeStep(0);
+          } else {
+            // 全單字或全字母描寫完成！
+            confetti({ particleCount: 50, spread: 65, origin: { y: 0.6 } });
+            setEvalResult({
+              score: 100,
+              stars: 3,
+              passed: true,
+              feedback: isWordMode ? `🎉 完美完成單字「${currentQ.wordStr}」四線三格描寫！` : '🎉 筆順引導描紅完成！'
+            });
+          }
         } else {
           setActiveStrokeStep(nextStep);
         }
@@ -305,7 +366,9 @@ export const HandwritingGame = ({
     soundEngine.click();
     setStrokes([]);
     setCurrentStroke(null);
+    setActiveLetterIdx(0);
     setActiveStrokeStep(0);
+    setCompletedLetterIndices(new Set());
     setEvalResult(null);
   };
 
@@ -321,60 +384,117 @@ export const HandwritingGame = ({
     }
   };
 
-  // 實戰挑戰模式：提交書寫評分
+  // 實戰默寫版：提交書寫評分 (支援長單字整詞各字母槽位自動判定)
   const handleEvaluateChallenge = () => {
     if (isSubmitting || strokes.length === 0) return;
     soundEngine.click();
     setIsSubmitting(true);
 
-    const result = evaluateHandwriting({
-      targetChar: activeChar,
-      userStrokes: strokes,
-      isGuidedTracing: false
+    if (!isWordMode) {
+      // 一二年級單字母評估
+      const result = evaluateHandwriting({
+        targetChar: activeChar,
+        userStrokes: strokes,
+        isGuidedTracing: false
+      });
+      setEvalResult(result);
+      setIsSubmitting(false);
+      if (result.passed) {
+        soundEngine.correct();
+        confetti({ particleCount: 45, spread: 60, origin: { y: 0.6 } });
+      } else {
+        soundEngine.wrong();
+      }
+      return;
+    }
+
+    // 🌟 高年級單字模式：將所有筆劃自動分配給最近的字母槽位進行綜合評分
+    const slotStrokesMap = new Map();
+    slotList.forEach(s => slotStrokesMap.set(s.index, []));
+
+    strokes.forEach(stroke => {
+      if (stroke.length === 0) return;
+      // 計算筆劃平均中心點 X
+      const avgX = stroke.reduce((sum, p) => sum + p.x, 0) / stroke.length;
+      // 找到最近的字母槽位
+      let bestSlot = slotList[0];
+      let bestDist = 9999;
+      slotList.forEach(s => {
+        const d = Math.abs(avgX - s.center);
+        if (d < bestDist) {
+          bestDist = d;
+          bestSlot = s;
+        }
+      });
+
+      // 將座標轉換回該字母的標準模型空間 (100x120，中心在 50)
+      const normalizedStroke = stroke.map(p => ({
+        x: Math.round(50 + (p.x - bestSlot.center) / bestSlot.scale),
+        y: p.y
+      }));
+      slotStrokesMap.get(bestSlot.index).push(normalizedStroke);
     });
+
+    // 逐字母評分計算
+    let totalScore = 0;
+    const letterScores = [];
+
+    slotList.forEach(s => {
+      const userLetterStrokes = slotStrokesMap.get(s.index) || [];
+      const res = evaluateHandwriting({
+        targetChar: s.char,
+        userStrokes: userLetterStrokes,
+        isGuidedTracing: false
+      });
+      letterScores.push({ char: s.char, score: res.score, passed: res.passed });
+      totalScore += res.score;
+    });
+
+    const avgScore = Math.round(totalScore / slotList.length);
+    const passed = avgScore >= 60;
+    const stars = avgScore >= 80 ? 3 : (avgScore >= 60 ? 2 : 1);
+
+    const result = {
+      score: avgScore,
+      stars,
+      passed,
+      feedback: avgScore >= 80
+        ? `太棒了！單字「${currentQ.wordStr}」四線三格默寫極為精準！`
+        : avgScore >= 60
+        ? `默寫良好！注意字母間距與四線三格位置，繼續加油！`
+        : `請參考標準四線三格基線，再試一次一定能成功！`,
+      letterScores
+    };
 
     setEvalResult(result);
     setIsSubmitting(false);
 
-    if (result.passed) {
+    if (passed) {
       soundEngine.correct();
-      confetti({ particleCount: 45, spread: 60, origin: { y: 0.6 } });
+      confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
     } else {
       soundEngine.wrong();
     }
   };
 
-  // 進入下一個字母或下一題
+  // 推進至下一題
   const handleNextStep = () => {
     soundEngine.click();
     const scoreVal = evalResult?.score || 100;
     setTotalScoreSum(s => s + scoreVal);
     setScoredCount(c => c + 1);
 
-    // 檢查單字模式是否還有下一個字母
-    if (currentQ?.type === 'word') {
-      const nextCharIdx = charInWordIndex + 1;
-      if (nextCharIdx < currentQ.wordStr.length) {
-        setCharInWordIndex(nextCharIdx);
-        setStrokes([]);
-        setCurrentStroke(null);
-        setActiveStrokeStep(0);
-        setEvalResult(null);
-        return;
-      }
-    }
-
-    // 題目推進
     const nextQIdx = qIndex + 1;
     if (nextQIdx < questions.length) {
       setQIndex(nextQIdx);
-      setCharInWordIndex(0);
+      setActiveLetterIdx(0);
+      setCompletedLetterIndices(new Set());
       setStrokes([]);
       setCurrentStroke(null);
       setActiveStrokeStep(0);
       setEvalResult(null);
     } else {
-      // 測驗全數結束
+      // 全數挑戰完成
       const finalTime = Math.max(15, Math.floor((Date.now() - sessionStartTime) / 1000));
       setElapsedTime(finalTime);
       setIsFinished(true);
@@ -448,7 +568,8 @@ export const HandwritingGame = ({
               onClick={() => {
                 setIsFinished(false);
                 setQIndex(0);
-                setCharInWordIndex(0);
+                setActiveLetterIdx(0);
+                setCompletedLetterIndices(new Set());
                 setStrokes([]);
                 setEvalResult(null);
                 setTotalScoreSum(0);
@@ -478,7 +599,7 @@ export const HandwritingGame = ({
       }}
     >
       {/* ── 頂部導航列與模式切換 ── */}
-      <div className="w-full max-w-xl flex items-center justify-between gap-2 mb-3">
+      <div className="w-full max-w-4xl flex items-center justify-between gap-2 mb-3">
         <button
           type="button"
           onClick={onBack}
@@ -527,7 +648,7 @@ export const HandwritingGame = ({
         {/* 朗讀發音按鈕 */}
         <button
           type="button"
-          onClick={() => speakEnglish(currentQ?.type === 'word' ? currentQ.wordStr : activeChar)}
+          onClick={() => speakEnglish(currentQ?.wordStr || activeChar)}
           className="p-2 sm:p-2.5 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-300/40 hover:scale-105 active:scale-95 transition-transform shadow-sm cursor-pointer"
           title="播放標準英語發音"
         >
@@ -536,183 +657,276 @@ export const HandwritingGame = ({
       </div>
 
       {/* ── 題目提示資訊卡 ── */}
-      <div className="w-full max-w-xl mb-3 flex items-center justify-between px-3 py-2 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-200 dark:border-slate-700/80 shadow-sm">
+      <div className="w-full max-w-4xl mb-3 flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-200 dark:border-slate-700/80 shadow-sm">
         <div className="flex items-center gap-2">
           <span className="px-2.5 py-0.5 rounded-lg text-xs font-black bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-400/30">
             第 {qIndex + 1} / {questions.length} 題
           </span>
-          <span className="text-sm font-black text-slate-700 dark:text-slate-200">
-            {currentQ?.zh}
+          <span className="text-sm sm:text-base font-black text-slate-800 dark:text-slate-100 font-heading">
+            {currentQ?.displayTitle}
+          </span>
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-bold hidden sm:inline">
+            ({currentQ?.zh})
           </span>
         </div>
 
-        {/* 單字模式下的各字母分頁卡 (c - a - t) */}
-        {currentQ?.type === 'word' && (
-          <div className="flex items-center gap-1">
-            {currentQ.wordStr.split('').map((c, i) => (
-              <span
-                key={i}
-                className={`w-6 h-6 rounded-lg font-mono font-black text-xs flex items-center justify-center border transition-all ${
-                  i === charInWordIndex
-                    ? 'bg-blue-600 text-white border-blue-400 scale-110 shadow-sm'
-                    : i < charInWordIndex
-                    ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-400/30'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-300 dark:border-slate-700'
-                }`}
-              >
-                {c}
-              </span>
-            ))}
+        {/* 單字模式下的各字母分頁卡 (s - u - p - e - r - m - a - r - k - e - t) */}
+        {isWordMode && (
+          <div className="flex items-center gap-1 overflow-x-auto py-0.5 max-w-full">
+            {slotList.map((slot) => {
+              const isCompleted = completedLetterIndices.has(slot.index);
+              const isActive = slot.index === activeLetterIdx;
+              return (
+                <button
+                  key={slot.index}
+                  type="button"
+                  onClick={() => {
+                    soundEngine.click();
+                    setActiveLetterIdx(slot.index);
+                    setActiveStrokeStep(0);
+                  }}
+                  className={`min-w-6 h-6 px-1.5 rounded-lg font-mono font-black text-xs flex items-center justify-center border transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-blue-600 text-white border-blue-400 scale-110 shadow-sm'
+                      : isCompleted
+                      ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-400/30'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-300 dark:border-slate-700'
+                  }`}
+                >
+                  {slot.char}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
 
-      {/* ── 核心四線三格手寫板主舞台 ── */}
-      <div className="relative w-full max-w-md aspect-[100/120] rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-300/80 dark:border-slate-700 bg-amber-50/50 dark:bg-slate-900/90 backdrop-blur-md flex items-center justify-center">
-        {/* 1. 四線三格標準教學格線 SVG */}
-        <svg
-          viewBox={`0 0 ${FOUR_LINES.width} ${FOUR_LINES.height}`}
-          className="absolute inset-0 w-full h-full pointer-events-none select-none"
+      {/* ── 核心四線三格手寫板主舞台 (一二年級單字方形大格，高年級長單字細長自適應長卷) ── */}
+      <div
+        ref={boardScrollRef}
+        className={`relative w-full ${
+          isWordMode ? 'max-w-4xl overflow-x-auto scrollbar-thin' : 'max-w-md aspect-[100/120]'
+        } rounded-3xl border-4 border-slate-300/80 dark:border-slate-700 bg-amber-50/50 dark:bg-slate-900/90 shadow-2xl backdrop-blur-md`}
+      >
+        <div
+          style={{
+            minWidth: isWordMode ? Math.max(340, boardWidth * 1.25) : '100%',
+            height: isWordMode ? (window.innerWidth < 640 ? '200px' : '260px') : '100%'
+          }}
+          className="relative w-full h-full flex items-center justify-center select-none touch-none"
         >
-          {/* 四線背景區塊微漸層 */}
-          <rect x="0" y="0" width="100" height="15" fill={isDark ? 'rgba(15, 23, 42, 0.4)' : 'rgba(241, 245, 249, 0.5)'} />
-          <rect x="0" y="15" width="100" height="30" fill={isDark ? 'rgba(30, 41, 59, 0.25)' : 'rgba(255, 255, 255, 0.6)'} />
-          <rect x="0" y="45" width="100" height="30" fill={isDark ? 'rgba(56, 189, 248, 0.05)' : 'rgba(224, 242, 254, 0.35)'} />
-          <rect x="0" y="75" width="100" height="30" fill={isDark ? 'rgba(30, 41, 59, 0.25)' : 'rgba(255, 255, 255, 0.6)'} />
-          <rect x="0" y="105" width="100" height="15" fill={isDark ? 'rgba(15, 23, 42, 0.4)' : 'rgba(241, 245, 249, 0.5)'} />
+          {/* 1. 四線三格標準教學格線 SVG (全寬度連續延伸) */}
+          <svg
+            id="four-lines-board-svg"
+            viewBox={`0 0 ${boardWidth} ${boardHeight}`}
+            className="absolute inset-0 w-full h-full pointer-events-none select-none"
+          >
+            {/* 四線背景區塊微漸層 */}
+            <rect x="0" y="0" width={boardWidth} height="15" fill={isDark ? 'rgba(15, 23, 42, 0.4)' : 'rgba(241, 245, 249, 0.5)'} />
+            <rect x="0" y="15" width={boardWidth} height="30" fill={isDark ? 'rgba(30, 41, 59, 0.25)' : 'rgba(255, 255, 255, 0.6)'} />
+            <rect x="0" y="45" width={boardWidth} height="30" fill={isDark ? 'rgba(56, 189, 248, 0.05)' : 'rgba(224, 242, 254, 0.35)'} />
+            <rect x="0" y="75" width={boardWidth} height="30" fill={isDark ? 'rgba(30, 41, 59, 0.25)' : 'rgba(255, 255, 255, 0.6)'} />
+            <rect x="0" y="105" width={boardWidth} height="15" fill={isDark ? 'rgba(15, 23, 42, 0.4)' : 'rgba(241, 245, 249, 0.5)'} />
 
-          {/* 第 1 線：頂線 (Headline / Ascender) */}
-          <line x1="0" y1="15" x2="100" y2="15" stroke={isDark ? '#64748b' : '#94a3b8'} strokeWidth="0.8" />
-          <text x="3" y="13" fontSize="3.2" fill={isDark ? '#64748b' : '#94a3b8'} fontWeight="bold">Top (頂線)</text>
+            {/* 第 1 線：頂線 (Headline / Ascender) */}
+            <line x1="0" y1="15" x2={boardWidth} y2="15" stroke={isDark ? '#64748b' : '#94a3b8'} strokeWidth="0.8" />
+            <text x="3" y="13" fontSize="3.2" fill={isDark ? '#64748b' : '#94a3b8'} fontWeight="bold">Top (頂線)</text>
 
-          {/* 第 2 線：中線 (Midline / Waistline - 虛線) */}
-          <line x1="0" y1="45" x2="100" y2="45" stroke={isDark ? '#38bdf8' : '#0284c7'} strokeWidth="0.8" strokeDasharray="2, 2" />
-          <text x="3" y="43" fontSize="3.2" fill={isDark ? '#38bdf8' : '#0284c7'} fontWeight="bold">Mid (中線)</text>
+            {/* 第 2 線：中線 (Midline / Waistline - 虛線) */}
+            <line x1="0" y1="45" x2={boardWidth} y2="45" stroke={isDark ? '#38bdf8' : '#0284c7'} strokeWidth="0.8" strokeDasharray="2, 2" />
+            <text x="3" y="43" fontSize="3.2" fill={isDark ? '#38bdf8' : '#0284c7'} fontWeight="bold">Mid (中線)</text>
 
-          {/* 第 3 線：基線 (Baseline - 紅色/橘色主基線) */}
-          <line x1="0" y1="75" x2="100" y2="75" stroke="#f43f5e" strokeWidth="1.2" />
-          <text x="3" y="73" fontSize="3.2" fill="#f43f5e" fontWeight="bold">Base (基線)</text>
+            {/* 第 3 線：基線 (Baseline - 紅色主基底線) */}
+            <line x1="0" y1="75" x2={boardWidth} y2="75" stroke="#f43f5e" strokeWidth="1.2" />
+            <text x="3" y="73" fontSize="3.2" fill="#f43f5e" fontWeight="bold">Base (基線)</text>
 
-          {/* 第 4 線：底線 (Descender / Bottom line) */}
-          <line x1="0" y1="105" x2="100" y2="105" stroke={isDark ? '#64748b' : '#94a3b8'} strokeWidth="0.8" />
-          <text x="3" y="103" fontSize="3.2" fill={isDark ? '#64748b' : '#94a3b8'} fontWeight="bold">Bottom (底線)</text>
+            {/* 第 4 線：底線 (Descender / Bottom line) */}
+            <line x1="0" y1="105" x2={boardWidth} y2="105" stroke={isDark ? '#64748b' : '#94a3b8'} strokeWidth="0.8" />
+            <text x="3" y="103" fontSize="3.2" fill={isDark ? '#64748b' : '#94a3b8'} fontWeight="bold">Bottom (底線)</text>
 
-          {/* 🌟 描寫版：粗半透明螢光引導筆劃與 ①②③ 號碼標籤 🌟 */}
-          {playMode === 'tracing' && strokeModel && strokeModel.strokes.map((st, idx) => {
-            const isCompleted = idx < activeStrokeStep;
-            const isCurrent = idx === activeStrokeStep;
-
-            return (
-              <g key={st.id}>
-                {/* 粗半透明螢光軌跡 */}
-                <path
-                  d={st.path}
-                  fill="none"
-                  stroke={
-                    isCompleted
-                      ? '#10b981'
-                      : isCurrent
-                      ? (isDark ? '#facc15' : '#eab308')
-                      : (isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)')
-                  }
-                  strokeWidth="12"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  opacity={isCompleted ? 0.75 : isCurrent ? 0.45 : 0.25}
-                />
-
-                {/* 筆順圓圈號碼標記 ①②③ */}
-                <circle
-                  cx={st.labelPos.x}
-                  cy={st.labelPos.y}
-                  r="4"
-                  fill={isCompleted ? '#10b981' : isCurrent ? '#f59e0b' : '#94a3b8'}
-                  stroke="#ffffff"
-                  strokeWidth="0.8"
-                />
-                <text
-                  x={st.labelPos.x}
-                  y={st.labelPos.y + 1.4}
-                  textAnchor="middle"
-                  fill="#ffffff"
-                  fontSize="4"
-                  fontWeight="bold"
-                >
-                  {st.id}
-                </text>
-
-                {/* 當前活躍筆劃起筆指引閃爍小光點 */}
-                {isCurrent && (
-                  <circle
-                    cx={st.start.x}
-                    cy={st.start.y}
-                    r="3.5"
-                    fill="#3b82f6"
-                    className="animate-ping"
-                    opacity="0.85"
+            {/* 長單字模式下的垂直槽位輔助分界線 (讓學生一眼辨別每個字母的位置) */}
+            {isWordMode && slotList.map((slot, idx) => (
+              <g key={`slot_guide_${idx}`}>
+                {idx > 0 && (
+                  <line
+                    x1={slot.startX}
+                    y1="25"
+                    x2={slot.startX}
+                    y2="95"
+                    stroke={isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'}
+                    strokeWidth="0.8"
+                    strokeDasharray="2, 2"
                   />
                 )}
-              </g>
-            );
-          })}
-        </svg>
-
-        {/* 2. HTML5 繪圖 Canvas (事件全面鎖定與防滑動) */}
-        <canvas
-          ref={canvasRef}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-          onContextMenu={(e) => e.preventDefault()}
-          className="absolute inset-0 w-full h-full touch-none select-none cursor-crosshair z-10"
-        />
-
-        {/* 3. 實戰模式評分正誤遮罩彈窗 */}
-        {evalResult && (
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
-            <div className="w-full max-w-xs p-5 rounded-3xl bg-white dark:bg-slate-800 shadow-2xl text-center border-2 border-slate-200 dark:border-slate-700">
-              <div className="text-4xl mb-2">
-                {evalResult.passed ? '🎉' : '💪'}
-              </div>
-              <h3 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1">
-                {evalResult.passed ? `${evalResult.score} 分 • 完美書寫！` : `${evalResult.score} 分 • 再試一次`}
-              </h3>
-              <div className="flex justify-center gap-1 text-2xl mb-2">
-                {'⭐'.repeat(evalResult.stars)}
-              </div>
-              <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
-                {evalResult.feedback}
-              </p>
-
-              <div className="flex gap-2">
-                <Button3D
-                  variant="slate"
-                  size="sm"
-                  onClick={handleClear}
-                  className="flex-1"
-                >
-                  重新書寫
-                </Button3D>
-                {evalResult.passed && (
-                  <Button3D
-                    variant="emerald"
-                    size="sm"
-                    onClick={handleNextStep}
-                    className="flex-1"
-                    icon={ArrowRight}
+                {/* 實戰默寫版底部小標記提示 */}
+                {playMode === 'challenge' && (
+                  <text
+                    x={slot.center}
+                    y="114"
+                    textAnchor="middle"
+                    fill={isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'}
+                    fontSize="4"
+                    fontFamily="monospace"
                   >
-                    下一題
-                  </Button3D>
+                    {idx + 1}
+                  </text>
                 )}
+              </g>
+            ))}
+
+            {/* 🌟 描寫版：粗半透明螢光引導筆劃與 ①②③ 號碼標籤 (所有字母精確呈現在四線三格長卷上) 🌟 */}
+            {playMode === 'tracing' && slotList.map((slot) => {
+              const model = getLetterStrokes(slot.char);
+              if (!model) return null;
+              const isLetterCompleted = completedLetterIndices.has(slot.index);
+              const isLetterActive = slot.index === activeLetterIdx;
+
+              return (
+                <g
+                  key={`letter_group_${slot.index}`}
+                  transform={`translate(${slot.center}, 0) scale(${slot.scale}, 1) translate(-50, 0)`}
+                >
+                  {model.strokes.map((st, sIdx) => {
+                    const isStrokeDone = isLetterCompleted || (isLetterActive && sIdx < activeStrokeStep);
+                    const isCurrentStroke = isLetterActive && sIdx === activeStrokeStep;
+
+                    return (
+                      <g key={st.id}>
+                        {/* 粗半透明螢光筆跡導引 */}
+                        <path
+                          d={st.path}
+                          fill="none"
+                          stroke={
+                            isStrokeDone
+                              ? '#10b981'
+                              : isCurrentStroke
+                              ? (isDark ? '#facc15' : '#eab308')
+                              : (isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)')
+                          }
+                          strokeWidth="11"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          opacity={isStrokeDone ? 0.75 : isCurrentStroke ? 0.45 : 0.22}
+                        />
+
+                        {/* 筆順圓圈號碼標記 ①②③ (僅在目前活躍的字母上顯示，保持畫面純淨) */}
+                        {isLetterActive && (
+                          <>
+                            <circle
+                              cx={st.labelPos.x}
+                              cy={st.labelPos.y}
+                              r="3.8"
+                              fill={isStrokeDone ? '#10b981' : isCurrentStroke ? '#f59e0b' : '#94a3b8'}
+                              stroke="#ffffff"
+                              strokeWidth="0.8"
+                            />
+                            <text
+                              x={st.labelPos.x}
+                              y={st.labelPos.y + 1.3}
+                              textAnchor="middle"
+                              fill="#ffffff"
+                              fontSize="3.8"
+                              fontWeight="bold"
+                            >
+                              {st.id}
+                            </text>
+
+                            {/* 當前活躍筆劃起筆指引閃爍小光點 */}
+                            {isCurrentStroke && (
+                              <circle
+                                cx={st.start.x}
+                                cy={st.start.y}
+                                r="3.2"
+                                fill="#3b82f6"
+                                className="animate-ping"
+                                opacity="0.85"
+                              />
+                            )}
+                          </>
+                        )}
+                      </g>
+                    );
+                  })}
+                </g>
+              );
+            })}
+          </svg>
+
+          {/* 2. HTML5 繪圖 Canvas (全自適應寬度，支援觸控與滑鼠防滑動手寫) */}
+          <canvas
+            ref={canvasRef}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            onContextMenu={(e) => e.preventDefault()}
+            className="absolute inset-0 w-full h-full touch-none select-none cursor-crosshair z-10"
+          />
+
+          {/* 3. 實戰模式評分正誤遮罩彈窗 */}
+          {evalResult && (
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
+              <div className="w-full max-w-sm p-5 rounded-3xl bg-white dark:bg-slate-800 shadow-2xl text-center border-2 border-slate-200 dark:border-slate-700">
+                <div className="text-4xl mb-2">
+                  {evalResult.passed ? '🎉' : '💪'}
+                </div>
+                <h3 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1">
+                  {evalResult.passed ? `${evalResult.score} 分 • 完美書寫！` : `${evalResult.score} 分 • 再試一次`}
+                </h3>
+                <div className="flex justify-center gap-1 text-2xl mb-2">
+                  {'⭐'.repeat(evalResult.stars)}
+                </div>
+                <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
+                  {evalResult.feedback}
+                </p>
+
+                {/* 單字模式各字母評分分佈 */}
+                {evalResult.letterScores && (
+                  <div className="flex justify-center gap-1.5 mb-4 flex-wrap">
+                    {evalResult.letterScores.map((ls, idx) => (
+                      <span
+                        key={idx}
+                        className={`px-2 py-0.5 rounded-lg text-xs font-mono font-black border ${
+                          ls.passed
+                            ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-400/40'
+                            : 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border-rose-400/40'
+                        }`}
+                      >
+                        {ls.char} ({ls.score})
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <Button3D
+                    variant="slate"
+                    size="sm"
+                    onClick={handleClear}
+                    className="flex-1"
+                  >
+                    重新書寫
+                  </Button3D>
+                  {evalResult.passed && (
+                    <Button3D
+                      variant="emerald"
+                      size="sm"
+                      onClick={handleNextStep}
+                      className="flex-1"
+                      icon={ArrowRight}
+                    >
+                      下一題
+                    </Button3D>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* ── 底部控制工具列 ── */}
-      <div className="w-full max-w-md mt-4 flex items-center justify-between gap-2 px-2">
+      {/* ── 底部控制工具列與長單字微調按鈕 ── */}
+      <div className="w-full max-w-4xl mt-4 flex items-center justify-between gap-2 px-2">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -732,6 +946,38 @@ export const HandwritingGame = ({
           >
             <Undo2 className="w-4 h-4" />
           </button>
+
+          {/* 長單字左右導航微調小按鈕 (手機視窗特別便利) */}
+          {isWordMode && (
+            <div className="flex items-center gap-1 ml-1 sm:hidden">
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeLetterIdx > 0) {
+                    setActiveLetterIdx(activeLetterIdx - 1);
+                    setActiveStrokeStep(0);
+                  }
+                }}
+                disabled={activeLetterIdx === 0}
+                className="p-2 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 disabled:opacity-30"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeLetterIdx + 1 < slotList.length) {
+                    setActiveLetterIdx(activeLetterIdx + 1);
+                    setActiveStrokeStep(0);
+                  }
+                }}
+                disabled={activeLetterIdx + 1 >= slotList.length}
+                className="p-2 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 disabled:opacity-30"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
 
         {playMode === 'tracing' ? (
@@ -739,7 +985,7 @@ export const HandwritingGame = ({
             variant="emerald"
             size="md"
             onClick={handleNextStep}
-            disabled={activeStrokeStep < (strokeModel?.strokes?.length || 1)}
+            disabled={!evalResult?.passed && completedLetterIndices.size < (isWordMode ? slotList.length : 1)}
             icon={ArrowRight}
           >
             完成進入下一題

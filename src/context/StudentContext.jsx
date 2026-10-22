@@ -37,15 +37,32 @@ export const StudentProvider = ({ children }) => {
       try {
         const lastId = localStorage.getItem(LAST_STUDENT_ID_KEY);
         if (lastId && lastId.length === 6) {
-          const profile = await fetchStudentProfile(lastId);
-          if (!isCancelled && profile) {
-            const avatarId = localStorage.getItem(`wutai_avatar_${lastId}`) || profile.avatar_id || 'boy_scout';
-            const frameId = localStorage.getItem(`wutai_frame_${lastId}`) || profile.avatar_frame || 'frame_slate';
-            const enriched = { ...profile, avatar_id: avatarId, avatar_frame: frameId };
-            setCurrentStudent(enriched);
-            if (profile.has_just_reset_semester) {
-              setSemesterNotice(profile.last_reset_notice || '🎉 歡迎進入新學期！全新學期競賽已開跑！');
+          try {
+            const profile = await fetchStudentProfile(lastId);
+            if (!isCancelled && profile) {
+              const avatarId = localStorage.getItem(`wutai_avatar_${lastId}`) || profile.avatar_id || 'boy_scout';
+              const frameId = localStorage.getItem(`wutai_frame_${lastId}`) || profile.avatar_frame || 'frame_slate';
+              const enriched = { ...profile, avatar_id: avatarId, avatar_frame: frameId };
+              setCurrentStudent(enriched);
+              if (profile.has_just_reset_semester) {
+                setSemesterNotice(profile.last_reset_notice || '🎉 歡迎進入新學期！全新學期競賽已開跑！');
+              }
+              return;
             }
+          } catch (e) {}
+
+          const parsed = parseStudentId(lastId);
+          if (parsed.isValid && !isCancelled) {
+            const fallbackProfile = {
+              student_id: lastId,
+              grade: parsed.grade,
+              classNum: parsed.classNum,
+              seat: parsed.seat,
+              nickname: parsed.isGuest ? '神秘訪客勇士' : `學生${lastId.slice(-2)}`,
+              avatar_id: localStorage.getItem(`wutai_avatar_${lastId}`) || 'boy_scout',
+              avatar_frame: localStorage.getItem(`wutai_frame_${lastId}`) || 'frame_slate'
+            };
+            setCurrentStudent(fallbackProfile);
             return;
           }
         }
