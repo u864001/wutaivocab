@@ -31,12 +31,23 @@ export const VocabSpotterGame = ({
     return '1';
   }, [qualifyingBook, settings?.selectedUnits]);
 
-  // 低年級 Aa 字母模式判斷
+  // 低年級 Aa 字母模式判斷 (一、二年級或字母專案)
   const isAlphabetMode = useMemo(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const urlGrade = sp.get('grade');
+      const urlBook = sp.get('book');
+      if (urlGrade === '1' || urlGrade === '2' || urlGrade === '01' || urlGrade === '02' || urlBook === 'abc') {
+        return true;
+      }
+    } catch (e) {}
+
+    const cleanGrade = String(currentStudent?.grade || '');
     return qualifyingBook === 'abc' ||
+      cleanGrade === '01' || cleanGrade === '02' || cleanGrade === '1' || cleanGrade === '2' ||
       (settings?.selectedUnits && settings.selectedUnits.includes('abc')) ||
-      settings?.alphaMode;
-  }, [qualifyingBook, settings]);
+      Boolean(settings?.alphaMode);
+  }, [qualifyingBook, settings, currentStudent?.grade]);
 
   const currentScene = SPOTTER_SCENES_BY_BOOK[selectedBook] || SPOTTER_SCENES_BY_BOOK['1'];
 
@@ -189,6 +200,8 @@ export const VocabSpotterGame = ({
     }
   };
 
+  const wordBankContainerRef = useRef(null);
+
   // 點擊命中相異目標
   const handleDifferenceClicked = (diffId, clickPos) => {
     if (spotlightDiffId) return; // 聚光燈鎖定中不重複觸發
@@ -197,6 +210,13 @@ export const VocabSpotterGame = ({
     soundEngine.correct();
     setSpotlightDiffId(diffId);
     setMissFeedback(null);
+
+    // 平滑捲動至單字庫區，確保小螢幕與平板上單字庫即刻出現在視野中央
+    if (wordBankContainerRef.current) {
+      setTimeout(() => {
+        wordBankContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
   };
 
   // 點擊非相異之處 (點錯)
@@ -426,54 +446,174 @@ export const VocabSpotterGame = ({
         </div>
       )}
 
-      {/* ── 雙圖畫卷核心區域 (左圖與右圖對照) ── */}
-      <div className={`grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 transition-transform ${shakeScene ? 'animate-headShake' : ''}`}>
-        {/* 左圖 */}
-        <SpotterScene
-          scene={currentScene}
-          itemStateMap={itemStateMap}
-          activeDifferences={activeDifferences}
-          isLeft={true}
-          spotlightDiffId={spotlightDiffId}
-          solvedDiffIds={solvedDiffIds}
-          onDifferenceClicked={handleDifferenceClicked}
-          onMissClicked={handleMissClicked}
-          missRipples={missRipples}
-          isInspectMode={isInspectMode}
-          zoomLevel={2.2}
-          pan={pan}
-          onPanChange={setPan}
-          hintDiffId={hintDiffId}
-        />
+      {/* ── 核心遊戲舞台：低年級字母托盤模式 vs 中高年級紙雕場景模式 ── */}
+      {isAlphabetMode ? (
+        <div className="w-full flex flex-col space-y-3 animate-fadeIn">
+          {/* 低年級字母托盤狀態欄 */}
+          <div className="p-3 rounded-2xl bg-amber-500/15 border-2 border-amber-400 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-black flex items-center justify-between shadow-md">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-500 animate-spin-slow" />
+              <span>左右托盤散落著字母積木，找出 <strong>{alphaRoundData?.totalDiffs || 3}</strong> 處顏色、字母或大小寫相異之處！</span>
+            </div>
+            <span className="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-black shrink-0 shadow">
+              已尋獲：{solvedDiffIds.size} / {alphaRoundData?.totalDiffs || 3}
+            </span>
+          </div>
 
-        {/* 右圖 */}
-        <SpotterScene
-          scene={currentScene}
-          itemStateMap={itemStateMap}
-          activeDifferences={activeDifferences}
-          isLeft={false}
-          spotlightDiffId={spotlightDiffId}
-          solvedDiffIds={solvedDiffIds}
-          onDifferenceClicked={handleDifferenceClicked}
-          onMissClicked={handleMissClicked}
-          missRipples={missRipples}
-          isInspectMode={isInspectMode}
-          zoomLevel={2.2}
-          pan={pan}
-          onPanChange={setPan}
-          hintDiffId={hintDiffId}
-        />
-      </div>
+          {/* 左右對照字母托盤 */}
+          <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 transition-transform ${shakeScene ? 'animate-headShake' : ''}`}>
+            {/* 左托盤 */}
+            <div className="relative w-full aspect-[4/3] rounded-3xl bg-gradient-to-b from-stone-850 via-stone-900 to-stone-950 border-4 border-amber-500/70 shadow-2xl overflow-hidden p-4">
+              <div className="absolute top-2.5 left-3 z-10 px-2.5 py-1 rounded-xl bg-black/70 text-amber-300 text-xs font-black border border-amber-400/30">
+                左側托盤 (Left Tray)
+              </div>
+              <div className="relative w-full h-full">
+                {alphaRoundData?.leftBlocks.map((block) => {
+                  const isSolved = solvedDiffIds.has(block.diffId);
+                  return (
+                    <button
+                      key={block.id}
+                      type="button"
+                      onClick={() => handleAlphabetBlockClick(block)}
+                      style={{
+                        left: `${block.x}%`,
+                        top: `${block.y}%`,
+                        transform: `translate(-50%, -50%) rotate(${block.rotation}deg)`,
+                        fontFamily: block.font,
+                        color: block.color,
+                        fontSize: `${block.fontSize}px`
+                      }}
+                      className={`absolute w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center font-black shadow-xl border-2 transition-transform active:scale-90 cursor-pointer select-none ${
+                        isSolved
+                          ? 'bg-emerald-500/30 border-emerald-400 ring-4 ring-emerald-400/50 scale-105'
+                          : 'bg-stone-900/90 border-stone-600 hover:border-amber-400 hover:scale-110'
+                      }`}
+                    >
+                      <span>{block.char}</span>
+                      {isSolved && (
+                        <CheckCircle2 className="absolute -top-1.5 -right-1.5 w-5 h-5 text-emerald-400 bg-stone-950 rounded-full" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
-      {/* ── 下方單字庫 (Word Bank) ── */}
-      <SpotterWordBank
-        spotlightDiff={activeSpotlightDiff}
-        wordOptions={wordBankOptions}
-        activeDifferences={activeDifferences}
-        solvedDiffIds={solvedDiffIds}
-        onWordMatchSuccess={handleWordMatchSuccess}
-        onWordMatchFail={handleWordMatchFail}
-      />
+            {/* 右托盤 */}
+            <div className="relative w-full aspect-[4/3] rounded-3xl bg-gradient-to-b from-stone-850 via-stone-900 to-stone-950 border-4 border-cyan-500/70 shadow-2xl overflow-hidden p-4">
+              <div className="absolute top-2.5 left-3 z-10 px-2.5 py-1 rounded-xl bg-black/70 text-cyan-300 text-xs font-black border border-cyan-400/30">
+                右側托盤 (Right Tray)
+              </div>
+              <div className="relative w-full h-full">
+                {alphaRoundData?.rightBlocks.map((block) => {
+                  if (block.isVisible === false) {
+                    const isSolved = solvedDiffIds.has(block.diffId);
+                    return (
+                      <button
+                        key={block.id}
+                        type="button"
+                        onClick={() => handleAlphabetBlockClick({ ...block, isDifference: true })}
+                        style={{
+                          left: `${block.x}%`,
+                          top: `${block.y}%`,
+                          transform: 'translate(-50%, -50%)'
+                        }}
+                        className={`absolute w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 border-dashed flex items-center justify-center text-xs font-black cursor-pointer transition-all active:scale-90 ${
+                          isSolved
+                            ? 'bg-emerald-500/30 border-emerald-400 text-emerald-300 ring-4 ring-emerald-400/50'
+                            : 'border-rose-400/70 bg-rose-500/15 text-rose-300 hover:bg-rose-500/30'
+                        }`}
+                      >
+                        <span>{isSolved ? '已找齊' : '❓ 缺漏'}</span>
+                      </button>
+                    );
+                  }
+
+                  const isSolved = solvedDiffIds.has(block.diffId);
+                  return (
+                    <button
+                      key={block.id}
+                      type="button"
+                      onClick={() => handleAlphabetBlockClick(block)}
+                      style={{
+                        left: `${block.x}%`,
+                        top: `${block.y}%`,
+                        transform: `translate(-50%, -50%) rotate(${block.rotation}deg)`,
+                        fontFamily: block.font,
+                        color: block.color,
+                        fontSize: `${block.fontSize}px`
+                      }}
+                      className={`absolute w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center font-black shadow-xl border-2 transition-transform active:scale-90 cursor-pointer select-none ${
+                        isSolved
+                          ? 'bg-emerald-500/30 border-emerald-400 ring-4 ring-emerald-400/50 scale-105'
+                          : 'bg-stone-900/90 border-stone-600 hover:border-cyan-400 hover:scale-110'
+                      }`}
+                    >
+                      <span>{block.char}</span>
+                      {isSolved && (
+                        <CheckCircle2 className="absolute -top-1.5 -right-1.5 w-5 h-5 text-emerald-400 bg-stone-950 rounded-full" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* 雙圖畫卷核心區域 (左圖與右圖對照) */}
+          <div className={`grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 transition-transform ${shakeScene ? 'animate-headShake' : ''}`}>
+            {/* 左圖 */}
+            <SpotterScene
+              scene={currentScene}
+              itemStateMap={itemStateMap}
+              activeDifferences={activeDifferences}
+              isLeft={true}
+              spotlightDiffId={spotlightDiffId}
+              solvedDiffIds={solvedDiffIds}
+              onDifferenceClicked={handleDifferenceClicked}
+              onMissClicked={handleMissClicked}
+              missRipples={missRipples}
+              isInspectMode={isInspectMode}
+              zoomLevel={2.2}
+              pan={pan}
+              onPanChange={setPan}
+              hintDiffId={hintDiffId}
+            />
+
+            {/* 右圖 */}
+            <SpotterScene
+              scene={currentScene}
+              itemStateMap={itemStateMap}
+              activeDifferences={activeDifferences}
+              isLeft={false}
+              spotlightDiffId={spotlightDiffId}
+              solvedDiffIds={solvedDiffIds}
+              onDifferenceClicked={handleDifferenceClicked}
+              onMissClicked={handleMissClicked}
+              missRipples={missRipples}
+              isInspectMode={isInspectMode}
+              zoomLevel={2.2}
+              pan={pan}
+              onPanChange={setPan}
+              hintDiffId={hintDiffId}
+            />
+          </div>
+
+          {/* 下方單字庫 (Word Bank) */}
+          <div ref={wordBankContainerRef} className="w-full">
+            <SpotterWordBank
+              spotlightDiff={activeSpotlightDiff}
+              wordOptions={wordBankOptions}
+              activeDifferences={activeDifferences}
+              solvedDiffIds={solvedDiffIds}
+              onWordMatchSuccess={handleWordMatchSuccess}
+              onWordMatchFail={handleWordMatchFail}
+            />
+          </div>
+        </>
+      )}
 
       {/* ── 彈窗 0：提示確認對話框 (Hint Confirmation) ── */}
       {showHintConfirmModal && (

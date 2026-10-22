@@ -7,11 +7,22 @@ export const WORD_WISDOM_DECK = [
     word: 'Desk',
     phonetic: '/dɛsk/',
     partOfSpeech: 'n. 書桌',
-    icon: '🪑',
+    icon: '📚',
     energy: '專注與平靜 (Focus)',
     theme: 'amber',
     quoteEn: "Keep your desk clean and study hard.",
     quoteZh: "書桌就像是你的小基地，在上課前把桌面整理得乾乾淨淨，把用不到的東西收好。當你的基地變整齊了，你的心也會跟著平靜下來，上課就會更有精神、學得更快哦！今天一起在乾淨的課桌上好好努力吧！"
+  },
+  {
+    id: 'chair',
+    word: 'Chair',
+    phonetic: '/tʃɛr/',
+    partOfSpeech: 'n. 椅子',
+    icon: '🪑',
+    energy: '端正與專注 (Posture)',
+    theme: 'amber',
+    quoteEn: "Sit up straight on your chair and listen with care.",
+    quoteZh: "椅子是陪伴我們認真上課的好朋友。坐在椅子上時，把背挺得直直的，雙腳踩平地面，精神自然就抖擻起來了！端正的坐姿不僅保護我們的脊椎，還能讓我們聽課更專心哦！"
   },
   {
     id: 'book',

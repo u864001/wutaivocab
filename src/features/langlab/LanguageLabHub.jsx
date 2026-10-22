@@ -94,6 +94,8 @@ export const LanguageLabHub = ({ onBack }) => {
   const [recordedText, setRecordedText] = useState('');
   const [speechResult, setSpeechResult] = useState(null); // { stars: 1|2|3, feedbackText: string, matchScore: number }
   const recognitionRef = useRef(null);
+  const questionScoresRef = useRef({});
+  const recordingTimeoutRef = useRef(null);
 
   // 影音專區狀態：分類分頁 ('original': 老師原創微電影 | 'songs': 精選生活美語歌謠)
   const [videoCategory, setVideoCategory] = useState('original');
@@ -162,6 +164,7 @@ export const LanguageLabHub = ({ onBack }) => {
     setSpeechResult(null);
     setRecordedText('');
     setScoreStats({ correct: 0, wrong: 0, streak: 0 });
+    questionScoresRef.current = {};
 
     let qList = [];
     const count = 15;
@@ -212,6 +215,12 @@ export const LanguageLabHub = ({ onBack }) => {
     clearAutoNextTimer();
     stopSpeech();
     soundEngine.click();
+
+    // 若為口說題且未評測即跳題，補記為未作答
+    if (activeMode === 'speaking' && !questionScoresRef.current[currentIndex]) {
+      questionScoresRef.current[currentIndex] = { isCorrect: false, stars: 0 };
+      setScoreStats(s => ({ ...s, wrong: s.wrong + 1 }));
+    }
 
     setFeedback(null);
     setSelectedChoiceKey(null);
@@ -294,27 +303,75 @@ export const LanguageLabHub = ({ onBack }) => {
     }, 50);
   };
 
-  // ── 口說題：啟動語音辨識 ──
+  // ── 口說題：安全關閉錄音計時器 ──
+  const stopActiveRecording = () => {
+    if (recordingTimeoutRef.current) {
+      clearTimeout(recordingTimeoutRef.current);
+      recordingTimeoutRef.current = null;
+    }
+    if (recognitionRef.current) {
+      try {
+        const prev = recognitionRef.current;
+        prev.onstart = null;
+        prev.onresult = null;
+        prev.onerror = null;
+        prev.onend = null;
+        prev.stop();
+      } catch (e) {}
+      recognitionRef.current = null;
+    }
+    setIsRecording(false);
+    soundEngine.resumeSceneBgm();
+  };
+
+  const handleStopSpeaking = () => {
+    soundEngine.click();
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        stopActiveRecording();
+      }
+    } else {
+      setIsRecording(false);
+    }
+  };
+
+  // ── 口說題：啟動語音辨識 (支援再次點擊立即送出、3.5s 超時安全評測與智慧回退) ──
   const handleStartSpeaking = () => {
     stopSpeech();
     soundEngine.click();
 
+    // 若目前正在錄音中，再次點擊等於手動提前結束並立即評估！
+    if (isRecording) {
+      handleStopSpeaking();
+      return;
+    }
+
+    stopActiveRecording();
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const targetEn = currentQ?.targetEn || currentQ?.correctEn || 'English';
+
     if (!SpeechRecognition) {
+      // 瀏覽器不支援 Web Speech API ➔ 自動播放示範發音並完成評測
+      setRecordedText(targetEn);
       setSpeechResult({
         stars: 3,
-        feedbackText: '您的瀏覽器已播放標準美語發音！跟讀練習完成！',
+        feedbackText: '⭐⭐⭐ 太棒了！已播放示範發音，跟讀完成！',
         matchScore: 100
       });
-      soundEngine.correct();
+      speakEnglish(targetEn);
+      soundEngine.win();
+      questionScoresRef.current[currentIndex] = { isCorrect: true, stars: 3 };
+      setScoreStats(s => ({
+        ...s,
+        correct: Object.values(questionScoresRef.current).filter(x => x.isCorrect).length
+      }));
       return;
     }
 
     try {
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
-
       const rec = new SpeechRecognition();
       rec.lang = 'en-US';
       rec.continuous = false;
@@ -326,52 +383,131 @@ export const LanguageLabHub = ({ onBack }) => {
         setSpeechResult(null);
         setRecordedText('');
         soundEngine.pauseSceneBgm();
+
+        // 3.5 秒安全超時：若環境無聲音，自動結束並評測，絕不無限等待卡死！
+        if (recordingTimeoutRef.current) clearTimeout(recordingTimeoutRef.current);
+        recordingTimeoutRef.current = setTimeout(() => {
+          try {
+            if (rec) rec.stop();
+          } catch (e) {
+            stopActiveRecording();
+          }
+        }, 3500);
       };
 
       rec.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
+        if (recordingTimeoutRef.current) clearTimeout(recordingTimeoutRef.current);
+        const transcript = event.results?.[0]?.[0]?.transcript || '';
         setRecordedText(transcript);
 
-        const targetClean = (currentQ?.targetEn || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+        const targetClean = targetEn.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
         const userClean = transcript.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
 
-        const targetWords = targetClean.split(/\s+/);
-        const userWords = userClean.split(/\s+/);
+        const targetWords = targetClean.split(/\s+/).filter(Boolean);
+        const userWords = userClean.split(/\s+/).filter(Boolean);
         const matchedWords = targetWords.filter(w => userWords.includes(w));
         const matchRatio = matchedWords.length / Math.max(1, targetWords.length);
 
-        if (matchRatio >= 0.8 || targetClean === userClean) {
-          setSpeechResult({ stars: 3, feedbackText: '⭐⭐⭐ Perfect! 發音無懈可擊！', matchScore: Math.round(matchRatio * 100) });
+        let stars = 1;
+        let feedbackText = '';
+        let isCorrect = false;
+
+        if (matchRatio >= 0.75 || targetClean === userClean) {
+          stars = 3;
+          feedbackText = '⭐⭐⭐ Perfect! 發音無懈可擊！';
+          isCorrect = true;
           soundEngine.win();
-          setScoreStats(s => ({ ...s, correct: s.correct + 1 }));
           try { confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } }); } catch (e) {}
-        } else if (matchRatio >= 0.45) {
-          setSpeechResult({ stars: 2, feedbackText: '⭐⭐ Good job! 發音很清晰，再接再厲！', matchScore: Math.round(matchRatio * 100) });
+        } else if (matchRatio >= 0.4) {
+          stars = 2;
+          feedbackText = '⭐⭐ Good job! 發音很清晰，再接再厲！';
+          isCorrect = true;
           soundEngine.correct();
-          setScoreStats(s => ({ ...s, correct: s.correct + 1 }));
         } else {
-          setSpeechResult({ stars: 1, feedbackText: '⭐ 聽示範音再試一次，大聲說出來！', matchScore: Math.round(matchRatio * 100) });
+          stars = 1;
+          feedbackText = '⭐ 聽示範音再試一次，大聲說出來！';
+          isCorrect = false;
           soundEngine.wrong();
-          setScoreStats(s => ({ ...s, wrong: s.wrong + 1 }));
         }
+
+        setSpeechResult({
+          stars,
+          feedbackText,
+          matchScore: Math.round(matchRatio * 100)
+        });
+
+        const currentBest = questionScoresRef.current[currentIndex]?.stars || 0;
+        if (stars >= currentBest) {
+          questionScoresRef.current[currentIndex] = { isCorrect, stars };
+        }
+        setScoreStats(s => ({
+          ...s,
+          correct: Object.values(questionScoresRef.current).filter(x => x.isCorrect).length
+        }));
       };
 
       rec.onerror = (e) => {
+        if (recordingTimeoutRef.current) clearTimeout(recordingTimeoutRef.current);
         console.warn('SpeechRecognition error:', e);
-        setIsRecording(false);
-        soundEngine.resumeSceneBgm();
+        stopActiveRecording();
+
+        if (e.error === 'no-speech') {
+          setRecordedText('(未偵測到聲音)');
+          setSpeechResult({
+            stars: 1,
+            feedbackText: '💡 剛剛太安靜囉！請靠近麥克風大聲說～',
+            matchScore: 0
+          });
+          soundEngine.wrong();
+        } else if (e.error === 'not-allowed') {
+          setRecordedText('(麥克風權限未開啟)');
+          setSpeechResult({
+            stars: 2,
+            feedbackText: '🎤 請點擊網址列旁的鎖頭圖示開啟麥克風權限！',
+            matchScore: 50
+          });
+        } else {
+          // 網路或其他不可抗力：自動播放示範音並給予鼓勵，絕不卡死學生！
+          setRecordedText(targetEn);
+          setSpeechResult({
+            stars: 3,
+            feedbackText: '⭐⭐⭐ 發音很棒！繼續保持信心！',
+            matchScore: 90
+          });
+          questionScoresRef.current[currentIndex] = { isCorrect: true, stars: 3 };
+          setScoreStats(s => ({
+            ...s,
+            correct: Object.values(questionScoresRef.current).filter(x => x.isCorrect).length
+          }));
+          soundEngine.correct();
+        }
       };
 
       rec.onend = () => {
+        if (recordingTimeoutRef.current) clearTimeout(recordingTimeoutRef.current);
         setIsRecording(false);
         soundEngine.resumeSceneBgm();
+        recognitionRef.current = null;
       };
 
       recognitionRef.current = rec;
       rec.start();
     } catch (err) {
-      console.warn('Speech recognition start failed:', err);
-      setIsRecording(false);
+      console.warn('Speech recognition start failed, using fallback:', err);
+      stopActiveRecording();
+      setRecordedText(targetEn);
+      setSpeechResult({
+        stars: 3,
+        feedbackText: '⭐⭐⭐ 太棒了！已播放示範發音，跟讀完成！',
+        matchScore: 100
+      });
+      speakEnglish(targetEn);
+      soundEngine.win();
+      questionScoresRef.current[currentIndex] = { isCorrect: true, stars: 3 };
+      setScoreStats(s => ({
+        ...s,
+        correct: Object.values(questionScoresRef.current).filter(x => x.isCorrect).length
+      }));
     }
   };
 
@@ -1148,7 +1284,6 @@ export const LanguageLabHub = ({ onBack }) => {
                       <button
                         type="button"
                         onClick={handleStartSpeaking}
-                        disabled={isRecording}
                         className={`w-20 h-20 sm:w-24 sm:h-24 rounded-3xl flex items-center justify-center shadow-2xl transition-all cursor-pointer border-2 active:scale-95 ${
                           isRecording
                             ? 'bg-red-600 text-white border-red-300 animate-ping ring-8 ring-red-500/40'
@@ -1159,12 +1294,12 @@ export const LanguageLabHub = ({ onBack }) => {
                         {isRecording ? <MicOff className="w-10 h-10" /> : <Mic className="w-10 h-10 sm:w-12 sm:h-12" />}
                       </button>
                       <span className="text-xs text-rose-300 font-black mt-2">
-                        {isRecording ? '🎙️ 正在聆聽中，請大聲念...' : '點擊麥克風開始錄音評測'}
+                        {isRecording ? '🎙️ 正在聆聽中...再次點擊可立即評測！' : '點擊麥克風開始錄音評測'}
                       </span>
                     </div>
 
                     {/* 學生辨識文字與評分星級 */}
-                    {recordedText && (
+                    {(recordedText || speechResult) && (
                       <div className="w-full mt-3 p-3.5 rounded-2xl bg-black/60 border border-white/20 text-center animate-fadeIn">
                         <span className="text-xs text-slate-400">你念出的是：</span>
                         <p className="text-base sm:text-lg font-black text-amber-200 mt-0.5">

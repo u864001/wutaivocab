@@ -149,7 +149,7 @@ export const SPOTTER_SCENES = [
 export const TARGET_ITEMS_POOL = BOOK1_CLASSROOM_SCENE.targetItems;
 
 // ── 動態出題產生器 (每次進關從 8 大候選隨機抽選 5 個) ──
-export const generateSpotterRound = (scene = BOOK1_CLASSROOM_SCENE, targetCount = 5) => {
+export const generateSpotterRound = (scene = BOOK1_CLASSROOM_SCENE, targetCount = null) => {
   const activeScene = scene || BOOK1_CLASSROOM_SCENE;
   const items = activeScene.targetItems || BOOK1_CLASSROOM_SCENE.targetItems;
 
@@ -162,9 +162,9 @@ export const generateSpotterRound = (scene = BOOK1_CLASSROOM_SCENE, targetCount 
     return list;
   };
 
-  // 1. 隨機抽選 5 個正解目標
-  const chosenTargets = shuffle(items).slice(0, targetCount);
-  const unchosenTargets = items.filter(item => !chosenTargets.some(c => c.word === item.word));
+  // 100% 啟用該紙雕圖上的所有相異目標，保證「畫面上看到的相異處 = 本題有效目標」，絕不留幽靈差異誤扣心！
+  const chosenTargets = items;
+  const unchosenTargets = [];
 
   const activeDifferences = chosenTargets.map(item => ({
     id: `diff-${item.word}`,
@@ -212,6 +212,6 @@ export const generateSpotterRound = (scene = BOOK1_CLASSROOM_SCENE, targetCount 
     activeDifferences,
     itemStateMap,
     wordBankOptions,
-    totalCount: targetCount
+    totalCount: chosenTargets.length
   };
 };
