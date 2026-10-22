@@ -97,10 +97,11 @@ export const SpotterScene = ({
       // 目標座標（支援位移差異左右圖座標不同）
       const targetX = (!isLeft && diff.altX !== undefined) ? diff.altX : diff.x;
       const targetY = (!isLeft && diff.altY !== undefined) ? diff.altY : diff.y;
-      const radius = (diff.radius || 40) + 6; // 稍微加大命中容錯率，方便 iPad 觸控
+      const rx = (diff.radiusX || diff.radius || 40) + 8; // 稍微加大命中容錯率，方便觸控
+      const ry = (diff.radiusY || diff.radius || 40) + 8;
 
-      const dist = Math.sqrt(Math.pow(clickX - targetX, 2) + Math.pow(clickY - targetY, 2));
-      if (dist <= radius) {
+      const normDistSq = Math.pow((clickX - targetX) / rx, 2) + Math.pow((clickY - targetY) / ry, 2);
+      if (normDistSq <= 1.0) {
         if (solvedDiffIds.has(diff.id)) {
           hitSolved = true;
           break;
@@ -142,6 +143,8 @@ export const SpotterScene = ({
   const spotlightPos = activeSpotlight ? {
     x: (!isLeft && activeSpotlight.altX !== undefined) ? activeSpotlight.altX : activeSpotlight.x,
     y: (!isLeft && activeSpotlight.altY !== undefined) ? activeSpotlight.altY : activeSpotlight.y,
+    rx: (activeSpotlight.radiusX || activeSpotlight.radius || 46) + 4,
+    ry: (activeSpotlight.radiusY || activeSpotlight.radius || 46) + 4,
     radius: (activeSpotlight.radius || 46) + 4
   } : null;
 
@@ -190,7 +193,7 @@ export const SpotterScene = ({
           {spotlightPos && (
             <mask id={maskId}>
               <rect width="1376" height="768" fill="white" />
-              <circle cx={spotlightPos.x} cy={spotlightPos.y} r={spotlightPos.radius} fill="black" />
+              <ellipse cx={spotlightPos.x} cy={spotlightPos.y} rx={spotlightPos.rx} ry={spotlightPos.ry} fill="black" />
             </mask>
           )}
         </defs>
@@ -211,10 +214,11 @@ export const SpotterScene = ({
             <rect width="1376" height="768" fill="rgba(10, 15, 30, 0.75)" mask={`url(#${maskId})`} />
 
             {/* 聚光燈外環脈動光波 */}
-            <circle
+            <ellipse
               cx={spotlightPos.x}
               cy={spotlightPos.y}
-              r={spotlightPos.radius + 6}
+              rx={spotlightPos.rx + 6}
+              ry={spotlightPos.ry + 6}
               fill="none"
               stroke="#fbbf24"
               strokeWidth="4"
@@ -224,10 +228,11 @@ export const SpotterScene = ({
             />
 
             {/* 聚光燈金色實體光圈 */}
-            <circle
+            <ellipse
               cx={spotlightPos.x}
               cy={spotlightPos.y}
-              r={spotlightPos.radius}
+              rx={spotlightPos.rx}
+              ry={spotlightPos.ry}
               fill="none"
               stroke="#f59e0b"
               strokeWidth="3.5"
@@ -235,13 +240,13 @@ export const SpotterScene = ({
             />
 
             {/* 瞄準十字線 */}
-            <line x1={spotlightPos.x - spotlightPos.radius - 10} y1={spotlightPos.y} x2={spotlightPos.x - spotlightPos.radius + 4} y2={spotlightPos.y} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1={spotlightPos.x + spotlightPos.radius - 4} y1={spotlightPos.y} x2={spotlightPos.x + spotlightPos.radius + 10} y2={spotlightPos.y} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1={spotlightPos.x} y1={spotlightPos.y - spotlightPos.radius - 10} x2={spotlightPos.x} y2={spotlightPos.y - spotlightPos.radius + 4} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1={spotlightPos.x} y1={spotlightPos.y + spotlightPos.radius - 4} x2={spotlightPos.x} y2={spotlightPos.y + spotlightPos.radius + 10} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1={spotlightPos.x - spotlightPos.rx - 10} y1={spotlightPos.y} x2={spotlightPos.x - spotlightPos.rx + 4} y2={spotlightPos.y} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1={spotlightPos.x + spotlightPos.rx - 4} y1={spotlightPos.y} x2={spotlightPos.x + spotlightPos.rx + 10} y2={spotlightPos.y} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1={spotlightPos.x} y1={spotlightPos.y - spotlightPos.ry - 10} x2={spotlightPos.x} y2={spotlightPos.y - spotlightPos.ry + 4} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1={spotlightPos.x} y1={spotlightPos.y + spotlightPos.ry - 4} x2={spotlightPos.x} y2={spotlightPos.y + spotlightPos.ry + 10} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
 
             {/* 頂部引導膠囊 */}
-            <g transform={`translate(${spotlightPos.x}, ${spotlightPos.y - spotlightPos.radius - 24})`}>
+            <g transform={`translate(${spotlightPos.x}, ${spotlightPos.y - spotlightPos.ry - 24})`}>
               <rect x="-80" y="-14" width="160" height="24" rx="12" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))" />
               <text x="0" y="3" fill="#fef08a" fontSize="11" fontWeight="900" textAnchor="middle">
                 🎯 鷹眼鎖定！選出單字
@@ -255,20 +260,22 @@ export const SpotterScene = ({
           if (!solvedDiffIds.has(diff.id)) return null;
           const markerX = (!isLeft && diff.altX !== undefined) ? diff.altX : diff.x;
           const markerY = (!isLeft && diff.altY !== undefined) ? diff.altY : diff.y;
-          const r = diff.radius || 46;
+          const rx = diff.radiusX || diff.radius || 46;
+          const ry = diff.radiusY || diff.radius || 46;
 
           return (
             <g key={diff.id} id={`solved-marker-${diff.id}`} className="pointer-events-none animate-fadeIn">
-              <circle
+              <ellipse
                 cx={markerX}
                 cy={markerY}
-                r={r}
+                rx={rx}
+                ry={ry}
                 fill="rgba(16, 185, 129, 0.12)"
                 stroke="#10b981"
                 strokeWidth="2.5"
                 strokeDasharray="4 2"
               />
-              <g transform={`translate(${markerX + r * 0.65}, ${markerY - r * 0.65})`}>
+              <g transform={`translate(${markerX + rx * 0.65}, ${markerY - ry * 0.65})`}>
                 <circle cx="0" cy="0" r="10" fill="#10b981" stroke="#ffffff" strokeWidth="2" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))" />
                 <path d="M -4 0 L -1 3 L 4 -3" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
               </g>
@@ -283,15 +290,17 @@ export const SpotterScene = ({
             if (!hintDiff) return null;
             const hx = (!isLeft && hintDiff.altX !== undefined) ? hintDiff.altX : hintDiff.x;
             const hy = (!isLeft && hintDiff.altY !== undefined) ? hintDiff.altY : hintDiff.y;
-            const hr = (hintDiff.radius || 50) + 8;
+            const hrx = (hintDiff.radiusX || hintDiff.radius || 50) + 8;
+            const hry = (hintDiff.radiusY || hintDiff.radius || 50) + 8;
 
             return (
               <g key="hint-neon-marker" className="pointer-events-none">
                 {/* 外部旋轉金色破折光圈 */}
-                <circle
+                <ellipse
                   cx={hx}
                   cy={hy}
-                  r={hr + 14}
+                  rx={hrx + 14}
+                  ry={hry + 14}
                   fill="rgba(251, 191, 36, 0.22)"
                   stroke="#fbbf24"
                   strokeWidth="3.5"
@@ -301,10 +310,11 @@ export const SpotterScene = ({
                 />
 
                 {/* 內部高亮度青藍霓虹脈動圈 */}
-                <circle
+                <ellipse
                   cx={hx}
                   cy={hy}
-                  r={hr}
+                  rx={hrx}
+                  ry={hry}
                   fill="none"
                   stroke="#00f0ff"
                   strokeWidth="4"
@@ -313,7 +323,7 @@ export const SpotterScene = ({
                 />
 
                 {/* 頂部顯著提示膠囊標籤 */}
-                <g transform={`translate(${hx}, ${hy - hr - 16})`}>
+                <g transform={`translate(${hx}, ${hy - hry - 16})`}>
                   <rect
                     x="-50"
                     y="-13"
