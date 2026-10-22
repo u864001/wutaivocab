@@ -211,7 +211,7 @@ export const HandwritingGame = ({
     scrollToActiveSlot(activeLetterIdx);
   }, [activeLetterIdx, scrollToActiveSlot]);
 
-  // ── 畫布重繪邏輯 ──
+  // ── 畫布重繪邏輯 (直接使用邏輯座標系映射，徹底消滅 DPR 縮放與跑格) ──
   const redrawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -220,7 +220,11 @@ export const HandwritingGame = ({
 
     const width = canvas.width;
     const height = canvas.height;
-    ctx.clearRect(0, 0, width, height);
+    if (width === 0 || height === 0) return;
+
+    // 重置所有變換矩陣，直接將 context 縮放映射為 boardWidth x boardHeight 邏輯座標系
+    ctx.setTransform(width / boardWidth, 0, 0, height / boardHeight, 0, 0);
+    ctx.clearRect(0, 0, boardWidth, boardHeight);
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -230,23 +234,19 @@ export const HandwritingGame = ({
     allStrokes.forEach((stroke) => {
       if (stroke.length < 1) return;
       ctx.beginPath();
-      // 筆劃寬度自適應
-      const baseWidth = isWordMode ? Math.max(6, height * 0.045) : Math.max(9, width * 0.055);
+      // 在邏輯座標系中，標準 4 線三格總高為 120，筆劃寬度 4.8 ~ 5.8 像素最為飽滿滑順
+      const baseWidth = isWordMode ? 4.8 : 5.8;
       ctx.lineWidth = baseWidth;
       ctx.strokeStyle = isDark ? '#38bdf8' : '#0284c7';
       ctx.shadowColor = isDark ? 'rgba(56, 189, 248, 0.45)' : 'rgba(2, 132, 199, 0.3)';
-      ctx.shadowBlur = 5;
+      ctx.shadowBlur = 1.2;
 
       const p0 = stroke[0];
-      const startX = (p0.x / boardWidth) * width;
-      const startY = (p0.y / boardHeight) * height;
-      ctx.moveTo(startX, startY);
+      ctx.moveTo(p0.x, p0.y);
 
       for (let i = 1; i < stroke.length; i++) {
         const pt = stroke[i];
-        const px = (pt.x / boardWidth) * width;
-        const py = (pt.y / boardHeight) * height;
-        ctx.lineTo(px, py);
+        ctx.lineTo(pt.x, pt.y);
       }
       ctx.stroke();
     });
@@ -256,34 +256,53 @@ export const HandwritingGame = ({
     redrawCanvas();
   }, [redrawCanvas]);
 
-  // 尺寸自動調整
+  // 尺寸自動調整 (自適應高解析度螢幕 DPR 與動態縮放)
   const updateCanvasSize = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     if (rect.width > 0 && rect.height > 0) {
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      const ctx = canvas.getContext('2d');
-      ctx.scale(dpr, dpr);
+      const targetW = Math.round(rect.width * dpr);
+      const targetH = Math.round(rect.height * dpr);
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
       redrawCanvas();
     }
   }, [redrawCanvas]);
 
   useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
     updateCanvasSize();
+
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        updateCanvasSize();
+      });
+      resizeObserver.observe(canvas);
+    }
+
     window.addEventListener('resize', updateCanvasSize);
-    return () => window.removeEventListener('resize', updateCanvasSize);
+    return () => {
+      if (resizeObserver) resizeObserver.disconnect();
+      window.removeEventListener('resize', updateCanvasSize);
+    };
   }, [updateCanvasSize, boardWidth]);
 
-  // ── 防誤觸防滑動指針座標計算 ──
+  // ── 防誤觸防滑動指針座標計算 (精確計算點擊相對百分比，與畫布 100% 絕對對齊) ──
   const getCanvasCoords = (e) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
-    const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
+    if (rect.width === 0 || rect.height === 0) return { x: 0, y: 0 };
+
+    const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+    const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
 
     const normX = Math.max(0, Math.min(boardWidth, ((clientX - rect.left) / rect.width) * boardWidth));
     const normY = Math.max(0, Math.min(boardHeight, ((clientY - rect.top) / rect.height) * boardHeight));
@@ -293,6 +312,9 @@ export const HandwritingGame = ({
   const handlePointerDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    try {
+      e.target.setPointerCapture(e.pointerId);
+    } catch (err) {}
     isDrawingRef.current = true;
     const pt = getCanvasCoords(e);
     setCurrentStroke([pt]);
@@ -308,7 +330,7 @@ export const HandwritingGame = ({
       if (!prev) return [pt];
       const last = prev[prev.length - 1];
       const dist = Math.hypot(pt.x - last.x, pt.y - last.y);
-      if (dist > 1.2) {
+      if (dist > 0.8) {
         return [...prev, pt];
       }
       return prev;
@@ -318,6 +340,11 @@ export const HandwritingGame = ({
   const handlePointerUp = (e) => {
     e?.preventDefault();
     e?.stopPropagation();
+    try {
+      if (e?.target?.hasPointerCapture?.(e.pointerId)) {
+        e.target.releasePointerCapture(e.pointerId);
+      }
+    } catch (err) {}
     if (!isDrawingRef.current) return;
     isDrawingRef.current = false;
 
@@ -705,20 +732,22 @@ export const HandwritingGame = ({
       <div
         ref={boardScrollRef}
         className={`relative w-full ${
-          isWordMode ? 'max-w-4xl overflow-x-auto scrollbar-thin' : 'max-w-md aspect-[100/120]'
-        } rounded-3xl border-4 border-slate-300/80 dark:border-slate-700 bg-amber-50/50 dark:bg-slate-900/90 shadow-2xl backdrop-blur-md`}
+          isWordMode ? 'max-w-4xl overflow-x-auto scrollbar-thin' : 'max-w-md'
+        } rounded-3xl border-4 border-slate-300/80 dark:border-slate-700 bg-amber-50/50 dark:bg-slate-900/90 shadow-2xl backdrop-blur-md p-2 sm:p-3`}
       >
         <div
           style={{
-            minWidth: isWordMode ? Math.max(340, boardWidth * 1.25) : '100%',
-            height: isWordMode ? (window.innerWidth < 640 ? '200px' : '260px') : '100%'
+            // 嚴格鎖定繪圖區域 aspect-ratio，保證 SVG 格線與 Canvas 在任何螢幕下 1:1 毫釐不差！
+            width: isWordMode ? `${Math.max(360, Math.round(boardWidth * 1.6))}px` : '100%',
+            aspectRatio: `${boardWidth} / ${boardHeight}`
           }}
-          className="relative w-full h-full flex items-center justify-center select-none touch-none"
+          className="relative mx-auto flex items-center justify-center select-none touch-none overflow-hidden rounded-2xl"
         >
-          {/* 1. 四線三格標準教學格線 SVG (全寬度連續延伸) */}
+          {/* 1. 四線三格標準教學格線 SVG (preserveAspectRatio="none" 確保與 Canvas 繪圖層 100% 絕對重合) */}
           <svg
             id="four-lines-board-svg"
             viewBox={`0 0 ${boardWidth} ${boardHeight}`}
+            preserveAspectRatio="none"
             className="absolute inset-0 w-full h-full pointer-events-none select-none"
           >
             {/* 四線背景區塊微漸層 */}
