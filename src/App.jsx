@@ -22,6 +22,7 @@ import { TextbookViewer } from './components/TextbookViewer';
 import { LanguageLabHub } from './features/langlab/LanguageLabHub';
 import { TeacherAuthModal } from './components/TeacherAuthModal';
 import { StudentProfileModal } from './components/StudentProfileModal';
+import { InactivityGuard } from './components/common/InactivityGuard';
 import { useI18n } from './context/I18nContext';
 import { useTheme } from './context/ThemeContext';
 import { fetchWordsFromDb } from './services/supabase';
@@ -488,6 +489,14 @@ export function App() {
 
       {/* 學生 6 碼雲端漫遊通行證彈窗 */}
       <StudentProfileModal />
+
+      {/* 全域單人 12 款遊戲與互動模組 45 分鐘閒置保護與休眠監控 */}
+      <InactivityGuard
+        currentView={currentView}
+        onTimeoutToLobby={() => handleNavigate('lobby')}
+        timeoutMinutes={45}
+        warningSeconds={60}
+      />
     </div>
   );
 }

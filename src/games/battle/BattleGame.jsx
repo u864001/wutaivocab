@@ -221,6 +221,16 @@ export const BattleGame = ({
     'arena-2': { count: 0, isBattling: false, hostName: '', playerNames: [] },
     'arena-3': { count: 0, isBattling: false, hostName: '', playerNames: [] }
   });
+  // ── 幽靈房間與閒置防護計時器 (Ghost Room & Inactivity Defenses) ──
+  const [lobbyIdleCountdown, setLobbyIdleCountdown] = useState(300); // 5 分鐘等待房無活動自動解散
+  const [resultCountdown, setResultCountdown] = useState(60); // 60 秒結算畫面自動釋出擂台
+  const lobbyActivityRef = useRef(Date.now());
+
+  const recordLobbyActivity = useCallback(() => {
+    lobbyActivityRef.current = Date.now();
+    setLobbyIdleCountdown(300);
+  }, []);
+
   const [isConnecting, setIsConnecting] = useState(null);
   const [isProbing, setIsProbing] = useState(false);
   const [probeCounter, setProbeCounter] = useState(0);
@@ -353,6 +363,73 @@ export const BattleGame = ({
     }, 2800);
   }, []);
 
+  // 閘門 1：開房 5 分鐘無活動自動解散釋出 (Auto-disband on 5-min inactivity in lobby)
+  useEffect(() => {
+    if (view !== 'lobby') return;
+
+    lobbyActivityRef.current = Date.now();
+    setLobbyIdleCountdown(300);
+
+    const timer = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - lobbyActivityRef.current) / 1000);
+      const remaining = Math.max(0, 300 - elapsed);
+      setLobbyIdleCountdown(remaining);
+
+      if (remaining <= 0) {
+        clearInterval(timer);
+        if (isHost && channelRef.current) {
+          try {
+            channelRef.current.send({
+              type: 'broadcast',
+              event: 'room-timeout',
+              payload: { arenaId: selectedArena?.id }
+            });
+          } catch (e) {}
+        }
+        handleLeaveRoom();
+        setErrorMsg('⏰ 此擂台開立後已超過 5 分鐘無操作，系統已自動解散並釋出房間供全校使用。');
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [view, isHost, selectedArena]);
+
+  // 閘門 3：結算畫面 60 秒自動清除並釋放擂台 (Auto-release room on settlement expiration)
+  useEffect(() => {
+    if (view !== 'result') return;
+
+    // 即刻更新 Presence 狀態為 'result'，讓大廳探測能辨識此擂台已可供新局使用
+    if (channelRef.current) {
+      try {
+        channelRef.current.track({
+          deviceId: myDeviceIdRef.current,
+          name: playerName.trim(),
+          isHost: isHost,
+          status: 'result',
+          isDead: isDeadRef.current,
+          lives: livesRef.current,
+          score: scoreRef.current,
+          joinedAt: myJoinTimestampRef.current,
+          lastActiveAt: Date.now()
+        });
+      } catch (e) {}
+    }
+
+    setResultCountdown(60);
+    const timer = setInterval(() => {
+      setResultCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleLeaveRoom();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [view, isHost, playerName]);
+
   // ── 大廳零長連線架構：1-Shot 快照探測 ──
   useEffect(() => {
     if (view !== 'menu') return;
@@ -367,15 +444,28 @@ export const BattleGame = ({
         const state = ch.presenceState();
         const list = Object.values(state).flat();
         const host = list.find(p => p.isHost);
-        const isBattling = list.some(p => p.status === 'battling');
+
+        const now = Date.now();
+        // 幽靈房精準判定：
+        // 1. 全體成員皆處於 'result'（已結算死房）
+        // 2. 或全體成員皆為 'waiting' 且加入時間已逾 5 分鐘（無人開局之幽靈大廳）
+        const allResult = list.length > 0 && list.every(p => p.status === 'result');
+        const isStaleWaiting = list.length > 0 && list.every(p => p.status === 'waiting' && (now - (p.joinedAt || now) > 5 * 60 * 1000));
+        const isGhost = allResult || isStaleWaiting;
+
+        const effectiveCount = isGhost ? 0 : list.length;
+        const isBattling = !isGhost && list.some(p => p.status === 'battling');
 
         setArenaStates(prev => ({
           ...prev,
           [arena.id]: {
-            count: list.length,
+            count: effectiveCount,
+            rawCount: list.length,
             isBattling,
-            hostName: host ? host.name : '',
-            playerNames: list.map(p => p.name)
+            isGhost,
+            ghostReason: allResult ? '已結算釋出' : (isStaleWaiting ? '超過5分鐘無活動' : null),
+            hostName: host && !isGhost ? host.name : '',
+            playerNames: isGhost ? [] : list.map(p => p.name)
           }
         }));
       });
@@ -452,9 +542,26 @@ export const BattleGame = ({
     }
 
     const cur = arenaStates[arena.id];
-    if (cur && (cur.count > 0 || cur.isBattling)) {
+    if (cur && !cur.isGhost && (cur.count > 0 || cur.isBattling)) {
       setErrorMsg(`【${arena.name}】剛已被搶先開立或正在對戰中，請選擇其他空房！`);
       return;
+    }
+
+    // 若為幽靈房，主動先向該頻道發送 reset 指令清除殘留幽靈 presence
+    if (cur?.isGhost) {
+      try {
+        const cleanupCh = supabase.channel(`battle-${arena.id}`);
+        cleanupCh.subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            await cleanupCh.send({
+              type: 'broadcast',
+              event: 'admin_force_reset',
+              payload: { reason: 'stale_ghost_override', timestamp: Date.now() }
+            });
+            supabase.removeChannel(cleanupCh);
+          }
+        });
+      } catch (e) {}
     }
 
     localStorage.setItem('wutai_player_name', cleanName);
@@ -863,15 +970,31 @@ export const BattleGame = ({
           }
         }
 
-        // 5. 存活人數即時判定 (支援 2 人、3 人、4 人對決結算與中途離線處理)
+        // 5. 存活人數即時判定 (支援 2 人、3 人、4 人對決結算與中途全員離線處理)
         if (viewRef.current === 'playing') {
-          const alive = activeList.filter(p => !p.isDead);
-          if (activeList.length >= 1 && alive.length <= 1) {
+          const alive = activeList.filter(p => !p.isDead && p.status !== 'result');
+          // 若全房只剩 1 人，且該人正是自己（所有對手皆斷線或關閉分頁）
+          if (activeList.length === 1 && activeList[0].deviceId === myDeviceIdRef.current) {
+            showNotice('🏆 所有對手均已離線，判定您奪得本場擂台勝利！', 'success');
+            setTimeout(() => {
+              triggerGameOver(activeList);
+            }, 800);
+          } else if (activeList.length >= 1 && alive.length <= 1) {
             setTimeout(() => {
               triggerGameOver(activeList);
             }, 600);
           }
         }
+      })
+      .on('broadcast', { event: 'room-timeout' }, () => {
+        soundEngine.wrong();
+        handleLeaveRoom();
+        setErrorMsg('⏰ 該擂台在大廳等待超過 5 分鐘無操作，房間已自動解散釋出。');
+      })
+      .on('broadcast', { event: 'admin_force_reset' }, () => {
+        soundEngine.wrong();
+        handleLeaveRoom();
+        setErrorMsg('⚠️ 此擂台已由教師後台強制重置並釋放。');
       })
       .on('broadcast', { event: 'kick-player' }, ({ payload }) => {
         if (payload?.targetDeviceId === myDeviceIdRef.current) {
@@ -1273,19 +1396,22 @@ export const BattleGame = ({
     showNotice(`🛸 攔截外星幽浮！+5 ${ufoBonus > 0 ? `(+${ufoBonus} 連擊加成)` : ''}`, 'success');
   };
 
-  // 離線清理 (iPad 關閉分頁、背景防幽靈連線)
+  // 離線清理 (iPad 關閉分頁、滑掉 App、切換背景防幽靈連線)
   useEffect(() => {
-    const handleBeforeUnload = () => {
+    const handlePageExit = () => {
       if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
+        try {
+          if (channelRef.current.untrack) channelRef.current.untrack();
+          supabase.removeChannel(channelRef.current);
+        } catch (e) {}
       }
     };
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('beforeunload', handlePageExit);
+    window.addEventListener('pagehide', handlePageExit);
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      if (channelRef.current) {
-        supabase.removeChannel(channelRef.current);
-      }
+      window.removeEventListener('beforeunload', handlePageExit);
+      window.removeEventListener('pagehide', handlePageExit);
+      handlePageExit();
     };
   }, []);
 
@@ -1467,9 +1593,9 @@ export const BattleGame = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {FIXED_ARENAS.map((arena) => {
               const state = arenaStates[arena.id] || { count: 0, isBattling: false, hostName: '', playerNames: [] };
-              const isEmpty = state.count === 0 && !state.isBattling;
-              const isWaiting = state.count > 0 && state.count < 4 && !state.isBattling;
-              const isFullOrBattling = state.isBattling || state.count >= 4;
+              const isEmpty = (state.count === 0 || state.isGhost) && !state.isBattling;
+              const isWaiting = !state.isGhost && state.count > 0 && state.count < 4 && !state.isBattling;
+              const isFullOrBattling = !state.isGhost && (state.isBattling || state.count >= 4);
 
               const isEmptyDisabled = false;
 
@@ -1515,10 +1641,21 @@ export const BattleGame = ({
                         </div>
                       ) : (
                         <div className="text-center">
-                          <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-xs font-black mb-1 shadow-sm">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> 空房可開立
-                          </div>
-                          <p className="text-xs font-bold text-slate-300">目前尚無同學使用，點下方開立擂台</p>
+                          {state.isGhost ? (
+                            <div>
+                              <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 text-xs font-black mb-1 shadow-sm">
+                                <Sparkles className="w-3.5 h-3.5" /> 幽靈已釋出 (可直接開立)
+                              </div>
+                              <p className="text-xs font-bold text-slate-300">前場已結算完畢或逾時，點擊下方即可立即開立新局！</p>
+                            </div>
+                          ) : (
+                            <div>
+                              <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-xs font-black mb-1 shadow-sm">
+                                <CheckCircle2 className="w-3.5 h-3.5" /> 空房可開立
+                              </div>
+                              <p className="text-xs font-bold text-slate-300">目前尚無同學使用，點下方開立擂台</p>
+                            </div>
+                          )}
                         </div>
                       )
                     )}
@@ -1622,7 +1759,7 @@ export const BattleGame = ({
     )}`;
 
     return (
-      <div className="fixed inset-0 w-full h-[100dvh] flex flex-col justify-between p-2.5 sm:p-3 md:p-4 text-white font-sans overflow-hidden select-none z-10 animate-fadeIn">
+      <div onClick={recordLobbyActivity} className="fixed inset-0 w-full h-[100dvh] flex flex-col justify-between p-2.5 sm:p-3 md:p-4 text-white font-sans overflow-hidden select-none z-10 animate-fadeIn">
         {/* 電影級多人連線競技場海報背景 */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
           <img
@@ -1647,6 +1784,9 @@ export const BattleGame = ({
             </span>
             <span className="font-mono text-xs font-black text-slate-300 bg-slate-900/80 px-2.5 py-0.5 rounded-lg border border-white/10">
               {players.length}/4 人
+            </span>
+            <span className="font-mono text-[11px] font-bold text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded-lg border border-amber-500/40 hidden sm:inline-flex items-center gap-1 shadow-sm">
+              ⏳ 閒置釋出：{Math.floor(lobbyIdleCountdown / 60)}:{String(lobbyIdleCountdown % 60).padStart(2, '0')}
             </span>
           </div>
 
@@ -1989,6 +2129,14 @@ export const BattleGame = ({
               );
             })}
           </div>
+
+          <p className="text-xs font-bold text-purple-200/90 mb-3 flex items-center justify-center gap-1.5 animate-pulse">
+            <span>⏳ 系統將於</span>
+            <strong className="font-mono font-black text-amber-400 text-sm px-2 py-0.5 rounded bg-black/40 border border-amber-400/30 shadow-inner">
+              {resultCountdown}
+            </strong>
+            <span>秒後自動退出並釋出擂台...</span>
+          </p>
 
           <Button3D variant="rose" size="lg" onClick={handleLeaveRoom} className="w-full shadow-lg shadow-rose-500/30">
             返回擂台大廳

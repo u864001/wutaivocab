@@ -64,9 +64,9 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords }) => {
 
   // ── Tab 3: 對戰擂台監控狀態 ──
   const [arenaStatusList, setArenaStatusList] = useState([
-    { id: 'arena-1', name: '擂台 1：青翠山林', status: 'idle', count: 0 },
-    { id: 'arena-2', name: '擂台 2：高山雄鷹', status: 'idle', count: 0 },
-    { id: 'arena-3', name: '擂台 3：百合花開', status: 'idle', count: 0 }
+    { id: 'arena-1', name: '🔴 烈焰擂台 (PIN 1001)', status: 'idle', statusText: '空房就緒', count: 0, players: [] },
+    { id: 'arena-2', name: '🟢 翡翠擂台 (PIN 1002)', status: 'idle', statusText: '空房就緒', count: 0, players: [] },
+    { id: 'arena-3', name: '🔵 星空擂台 (PIN 1003)', status: 'idle', statusText: '空房就緒', count: 0, players: [] }
   ]);
 
   // ── Tab 4: 系統狀態與雲端體檢 ──
@@ -280,19 +280,95 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords }) => {
     }
   };
 
-  // ── Tab 3: 監控並重置擂台 ──
-  const handleResetArena = async (arenaId, arenaName) => {
-    if (!window.confirm(`確定要強制重置「${arenaName}」嗎？這將廣播重置訊號給該擂台玩家。`)) return;
-    try {
-      const channel = supabase.channel(`arena_presence_${arenaId}`);
-      await channel.subscribe();
-      await channel.send({
-        type: 'broadcast',
-        event: 'admin_force_reset',
-        payload: { resetBy: 'admin', timestamp: Date.now() }
+  // ── Tab 3: 即時探測與重置三大固定擂台 ──
+  const probeArenasInHub = useCallback(() => {
+    const arenaDefs = [
+      { id: 'arena-1', name: '🔴 烈焰擂台 (PIN 1001)' },
+      { id: 'arena-2', name: '🟢 翡翠擂台 (PIN 1002)' },
+      { id: 'arena-3', name: '🔵 星空擂台 (PIN 1003)' }
+    ];
+
+    arenaDefs.forEach(def => {
+      const ch = supabase.channel(`battle-${def.id}`);
+      ch.on('presence', { event: 'sync' }, () => {
+        const state = ch.presenceState();
+        const list = Object.values(state).flat();
+        const isBattling = list.some(p => p.status === 'battling');
+        const allResult = list.length > 0 && list.every(p => p.status === 'result');
+        const now = Date.now();
+        const isStale = list.length > 0 && list.every(p => p.status === 'waiting' && (now - (p.joinedAt || now) > 5 * 60 * 1000));
+
+        let statusText = '空房就緒 (可開立)';
+        let statusBadge = 'idle';
+        if (isBattling) {
+          statusText = '激戰進行中 (已鎖定)';
+          statusBadge = 'battling';
+        } else if (allResult) {
+          statusText = '結算完成 (即將自動釋出)';
+          statusBadge = 'result';
+        } else if (isStale) {
+          statusText = '逾時無活動幽靈房 (可一鍵重置)';
+          statusBadge = 'stale';
+        } else if (list.length > 0) {
+          statusText = `等待開戰 (${list.length}/4 人)`;
+          statusBadge = 'waiting';
+        }
+
+        setArenaStatusList(prev => prev.map(a => a.id === def.id ? {
+          ...a,
+          name: def.name,
+          count: list.length,
+          status: statusBadge,
+          statusText,
+          players: list.map(p => p.name || '小勇士')
+        } : a));
       });
-      await supabase.removeChannel(channel);
-      showToast(`已成功發送重置訊號給 ${arenaName}！`);
+      ch.subscribe();
+      setTimeout(() => {
+        try { supabase.removeChannel(ch); } catch(e) {}
+      }, 1800);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'arenas') {
+      probeArenasInHub();
+      const interval = setInterval(probeArenasInHub, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab, probeArenasInHub]);
+
+  const handleResetArena = async (arenaId, arenaName) => {
+    if (!window.confirm(`確定要強制重置「${arenaName}」嗎？這將廣播重置訊號給該擂台玩家並清空幽靈連線。`)) return;
+    try {
+      // 1. 發送至現代標準頻道 battle-${arenaId}
+      const chBattle = supabase.channel(`battle-${arenaId}`);
+      await chBattle.subscribe(async (s) => {
+        if (s === 'SUBSCRIBED') {
+          await chBattle.send({
+            type: 'broadcast',
+            event: 'admin_force_reset',
+            payload: { resetBy: 'admin', timestamp: Date.now() }
+          });
+          supabase.removeChannel(chBattle);
+        }
+      });
+
+      // 2. 同時發送至舊版相容頻道 arena_presence_${arenaId}
+      const chLegacy = supabase.channel(`arena_presence_${arenaId}`);
+      await chLegacy.subscribe(async (s) => {
+        if (s === 'SUBSCRIBED') {
+          await chLegacy.send({
+            type: 'broadcast',
+            event: 'admin_force_reset',
+            payload: { resetBy: 'admin', timestamp: Date.now() }
+          });
+          supabase.removeChannel(chLegacy);
+        }
+      });
+
+      showToast(`已成功發送強制重置訊號給 ${arenaName}！幽靈房間已解散釋出。`);
+      setTimeout(probeArenasInHub, 600);
     } catch (err) {
       showToast('重置擂台失敗', 'error');
     }
@@ -835,16 +911,37 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords }) => {
                       <span className="text-xs font-black px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
                         {arena.id}
                       </span>
-                      <span className="flex items-center gap-1.5 text-xs font-black text-emerald-600">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        監控就緒
+                      <span className={`flex items-center gap-1.5 text-xs font-black ${
+                        arena.status === 'battling'
+                          ? 'text-rose-500'
+                          : arena.status === 'waiting'
+                          ? 'text-amber-500'
+                          : arena.status === 'stale'
+                          ? 'text-purple-500'
+                          : 'text-emerald-500'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full animate-pulse ${
+                          arena.status === 'battling'
+                            ? 'bg-rose-500'
+                            : arena.status === 'waiting'
+                            ? 'bg-amber-500'
+                            : arena.status === 'stale'
+                            ? 'bg-purple-500'
+                            : 'bg-emerald-500'
+                        }`} />
+                        {arena.statusText || '監控就緒'}
                       </span>
                     </div>
                     <h4 className="text-base font-black text-slate-800 dark:text-slate-100 font-heading">
                       {arena.name}
                     </h4>
                     <p className="text-xs text-slate-500 mt-1">
-                      容量上限：4 人連線對決
+                      線上人數：<strong className="text-slate-700 dark:text-slate-200 font-mono">{arena.count}</strong> / 4 人
+                      {arena.players && arena.players.length > 0 && (
+                        <span className="block text-[11px] text-slate-400 mt-0.5 truncate">
+                          成員：{arena.players.join('、')}
+                        </span>
+                      )}
                     </p>
                   </div>
 
