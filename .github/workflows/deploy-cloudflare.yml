@@ -6,7 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-# 防止同時間多次推播造成部署競爭，取消先前進行中的排隊
 concurrency:
   group: cloudflare-pages-${{ github.ref }}
   cancel-in-progress: true
@@ -37,15 +36,8 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxa2RrbWNxanN3dWZ6YnZrcmFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NTI0ODcsImV4cCI6MjEwNjAyODQ4N30.UGYwWwnyPsOX-BXBup9OC-6OxiZxTXn7nahaHj8izUo' }}
 
       - name: 🚀 Publish to Cloudflare Pages
-        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 4cd48161aad48dd1884b350e37ba7c75
           command: pages deploy dist --project-name=wutaivocab --branch=main --commit-dirty=true
-
-      - name: ℹ️ Notice if CLOUDFLARE_API_TOKEN is not configured
-        if: ${{ secrets.CLOUDFLARE_API_TOKEN == '' }}
-        run: |
-          echo "⚠️ 尚未在 GitHub 倉庫設置 CLOUDFLARE_API_TOKEN 密鑰。"
-          echo "👉 請至 GitHub 儲存庫的 Settings > Secrets and variables > Actions 新增密鑰 'CLOUDFLARE_API_TOKEN' 以啟用自動部署。"
