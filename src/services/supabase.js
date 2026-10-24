@@ -203,12 +203,19 @@ export const uploadScore = async ({ mode, book, name, score, time }) => {
       .eq('book', actualBook)
       .maybeSingle();
 
+    const isTimeAscending = mode === 'spotter' || mode === 'escape';
+    // 嚴格防禦：找不同與密室逃脫若通關時間 <= 0 秒，視為異常資料，嚴禁上榜
+    if (isTimeAscending && (!time || Number(time) <= 0)) {
+      console.warn('通關時間異常 (<= 0 秒)，已攔截上榜請求:', time);
+      return false;
+    }
+
     if (existing) {
-      const isTimeAscending = mode === 'spotter' || mode === 'escape';
       // 找不同與密室逃脫：以過關時間升冪排序 (time ASC)，同時間再比剩餘愛心/機關數 (score DESC)
+      // 若歷史資料包含 0 秒異常紀錄 (existing.time <= 0)，以本次合規正常成績覆蓋
       // 其他模式：以得分降冪排序 (score DESC)，同分再比通關速度 (time ASC)
       const isBetter = isTimeAscending
-        ? ((time > 0 && (existing.time === 0 || time < existing.time)) || (time === existing.time && score > existing.score))
+        ? ((existing.time <= 0 && time > 0) || (time > 0 && time < existing.time) || (time === existing.time && score > existing.score))
         : (score > existing.score || (score === existing.score && (existing.time === 0 || time < existing.time)));
       if (isBetter) {
         await supabase
@@ -242,6 +249,10 @@ export const checkIfQualifiesForTop50 = async ({ mode, book, score, time }) => {
 
   try {
     const isTimeAscending = mode === 'spotter' || mode === 'escape';
+    if (isTimeAscending && (!time || Number(time) <= 0)) {
+      return false; // 秒數無效 (<= 0) 絕對不予留名
+    }
+
     let query = supabase
       .from('leaderboard')
       .select('score, time')
@@ -250,7 +261,7 @@ export const checkIfQualifiesForTop50 = async ({ mode, book, score, time }) => {
       .eq('book', actualBook);
 
     if (isTimeAscending) {
-      query = query.order('time', { ascending: true }).order('score', { ascending: false });
+      query = query.gt('time', 0).order('time', { ascending: true }).order('score', { ascending: false });
     } else {
       query = query.order('score', { ascending: false }).order('time', { ascending: true });
     }
@@ -345,7 +356,7 @@ export const fetchLeaderboard = async (week, mode, bookOrBooks, limit = 50) => {
                             (Array.isArray(mode) ? mode.includes('escape') : mode === 'escape');
 
     if (isTimeAscending) {
-      query = query.order('time', { ascending: true }).order('score', { ascending: false });
+      query = query.gt('time', 0).order('time', { ascending: true }).order('score', { ascending: false });
     } else {
       query = query.order('score', { ascending: false }).order('time', { ascending: true });
     }
@@ -355,10 +366,13 @@ export const fetchLeaderboard = async (week, mode, bookOrBooks, limit = 50) => {
     if (error) throw error;
     if (!data || data.length === 0) return [];
 
-    // 每位學生僅保留其最佳單筆成績
+    // 每位學生僅保留其最佳單筆成績，且對秒數計時遊戲強制過濾 time > 0
     const seenNames = new Set();
     const uniqueList = [];
     for (const entry of data) {
+      if (isTimeAscending && (!entry.time || Number(entry.time) <= 0)) {
+        continue; // 徹底防禦與清洗歷史 0 秒髒資料
+      }
       const cleanName = (entry.name || '').trim();
       if (!seenNames.has(cleanName)) {
         seenNames.add(cleanName);

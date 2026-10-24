@@ -123,8 +123,9 @@ export const CertificateModal = ({
                 onClick={handleDownload}
                 disabled={isLoading || !certDataUrl}
                 icon={Download}
+                className="text-xs"
               >
-                點我下載獎狀
+                下載圖檔
               </Button3D>
               <Button3D
                 variant="blue"
@@ -132,17 +133,19 @@ export const CertificateModal = ({
                 onClick={handlePrint}
                 disabled={isLoading || !certDataUrl}
                 icon={Printer}
-                className="hidden sm:inline-flex"
+                className="text-xs"
+                title="呼叫印表機或 AirPrint 列印 A4 獎狀"
               >
-                列印 (A4)
+                列印獎狀 (A4)
               </Button3D>
               <Button3D
                 variant="slate"
                 size="sm"
                 onClick={onClose}
                 icon={X}
+                className="text-xs"
               >
-                關閉視窗
+                關閉
               </Button3D>
             </div>
           </div>

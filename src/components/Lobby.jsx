@@ -684,17 +684,17 @@ export const Lobby = ({
       {/* ════════════════════════════════════════════════════════════════
           【固定頂部 HUD】左上回首頁 / 上一步 • 上中英雄榜 • 右上模式/音效/通行證
          ════════════════════════════════════════════════════════════════ */}
-      <header className={`relative z-30 w-full px-3 sm:px-6 py-2 sm:py-2.5 backdrop-blur-md border-b flex items-center justify-between shadow-xl shrink-0 transition-colors duration-300 ${
+      <header className={`relative z-30 w-full px-2 sm:px-6 py-1.5 sm:py-2.5 backdrop-blur-md border-b flex items-center justify-between shadow-xl shrink-0 transition-colors duration-300 gap-1 sm:gap-2 ${
         isDark
           ? 'bg-slate-950/85 border-white/10 text-white'
           : 'bg-white/85 border-slate-200/90 text-slate-800 shadow-sm'
       }`}>
         
-        {/* 左上角：上一步 / 回首頁 */}
+        {/* 左上角：上一步 / 回首頁 (手機版純圖示零擠壓) */}
         <button
           type="button"
           onClick={handleGoBack}
-          className={`px-3.5 py-1.5 rounded-xl border text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer ${
+          className={`p-1.5 sm:px-3.5 sm:py-1.5 rounded-xl border text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer shrink-0 ${
             isDark
               ? 'bg-slate-900/90 hover:bg-slate-800 text-slate-100 hover:text-white border-white/20'
               : 'bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border-slate-300 shadow-sm'
@@ -704,26 +704,26 @@ export const Lobby = ({
           {step === 'scope' ? (
             <>
               <ArrowLeft className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-              <span>回選遊戲</span>
+              <span className="hidden sm:inline">回選遊戲</span>
             </>
           ) : (
             <>
               <Home className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>回首頁</span>
+              <span className="hidden sm:inline">回首頁</span>
             </>
           )}
         </button>
 
-        {/* 置上中：英雄榜 或 整備室標題 */}
+        {/* 置上中：英雄榜 或 整備室標題 (手機版精簡不折行) */}
         {step === 'scope' ? (
-          <div className={`flex items-center gap-2 px-3.5 py-1 rounded-2xl border shadow-md transition-colors ${
+          <div className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 rounded-2xl border shadow-md transition-colors min-w-0 shrink-0 ${
             isDark ? 'bg-slate-900/90 border-white/20 text-white' : 'bg-white border-amber-300/80 text-slate-800 shadow-sm'
           }`}>
-            <currentGameObj.iconComp className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-            <span className="font-heading font-black text-xs sm:text-sm tracking-wide">
+            <currentGameObj.iconComp className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0" />
+            <span className="font-heading font-black text-xs sm:text-sm tracking-wide truncate max-w-[100px] xs:max-w-[140px] sm:max-w-none">
               {currentGameObj.name}
             </span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-400/40 font-bold">
+            <span className="hidden xs:inline text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-400/40 font-bold shrink-0">
               {currentGameObj.categoryTitle}
             </span>
           </div>
@@ -734,11 +734,11 @@ export const Lobby = ({
               soundEngine.click();
               onOpenLeaderboard();
             }}
-            className="px-4 py-1.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/35 hover:to-yellow-500/45 border-2 border-amber-500/60 text-amber-800 dark:text-amber-200 font-heading text-xs sm:text-sm font-black flex items-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer backdrop-blur-md"
+            className="p-1.5 sm:px-4 sm:py-1.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/35 hover:to-yellow-500/45 border-2 border-amber-500/60 text-amber-800 dark:text-amber-200 font-heading text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-lg active:scale-95 transition-all cursor-pointer backdrop-blur-md shrink-0"
             title="查看全校與年級英雄榜"
           >
-            <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-bounce" />
-            <span className="tracking-wide">英雄榜</span>
+            <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-bounce shrink-0" />
+            <span className="tracking-wide hidden sm:inline">英雄榜</span>
             <span className="hidden md:inline text-[11px] text-amber-700 dark:text-amber-300 font-mono">
               (看{studentGradeNum}年級排行)
             </span>
@@ -746,7 +746,7 @@ export const Lobby = ({
         )}
 
         {/* 右上角控制群組：業界標準統一排序（聲音 ➔ 雙語 ➔ 日夜主題 ➔ 勇士探險通行證） */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* 1. 靜音/音效切換按鈕 */}
           <button
             type="button"
@@ -754,7 +754,7 @@ export const Lobby = ({
               const m = soundEngine.toggleMute();
               setIsMuted(m);
             }}
-            className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center border ${
+            className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center border shrink-0 ${
               isDark
                 ? 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-white/20'
                 : 'bg-white hover:bg-slate-50 text-slate-600 border-slate-300'
@@ -771,7 +771,7 @@ export const Lobby = ({
               soundEngine.click();
               if (toggleLang) toggleLang();
             }}
-            className={`p-1.5 sm:px-2.5 sm:py-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1 border ${
+            className={`p-1.5 sm:px-2.5 sm:py-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1 border shrink-0 ${
               isDark
                 ? 'bg-slate-900/90 hover:bg-slate-800 text-blue-400 border-white/20'
                 : 'bg-white hover:bg-slate-50 text-blue-600 border-slate-300'
@@ -789,7 +789,7 @@ export const Lobby = ({
               soundEngine.click();
               toggleTheme();
             }}
-            className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center border relative ${
+            className={`p-1.5 sm:p-2 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center border relative shrink-0 ${
               isDark
                 ? 'bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border-white/20'
                 : 'bg-white hover:bg-slate-50 text-amber-500 border-slate-300'
@@ -806,14 +806,14 @@ export const Lobby = ({
             )}
           </button>
 
-          {/* 4. 勇士探險通行證 (固定錨定於最右側) */}
+          {/* 4. 勇士探險通行證 (固定錨定於最右側，手機版精簡為頭像+金幣，零多行折疊) */}
           <button
             type="button"
             onClick={() => {
               soundEngine.click();
               if (openModal) openModal();
             }}
-            className={`px-2.5 py-1.5 rounded-xl border text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer backdrop-blur-md ${
+            className={`px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border text-xs font-black flex items-center gap-1 sm:gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer backdrop-blur-md shrink-0 ${
               isDark
                 ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-emerald-400/30'
                 : 'bg-white hover:bg-slate-50 text-slate-800 border-emerald-500/40 shadow-sm'
@@ -832,12 +832,12 @@ export const Lobby = ({
             ) : (
               <User className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
             )}
-            <span className="max-w-[120px] truncate">
+            <span className="max-w-[120px] truncate hidden sm:inline">
               {formatStudentBadge(currentStudent, lang) || '設置身分'}
             </span>
             {currentStudent?.coins !== undefined && (
-              <span className="text-amber-500 dark:text-amber-400 font-mono font-bold flex items-center gap-1 ml-1 text-xs">
-                <Sparkles className="w-3 h-3 text-amber-500 dark:text-amber-400" />
+              <span className="text-amber-500 dark:text-amber-400 font-mono font-bold flex items-center gap-0.5 text-xs">
+                <Sparkles className="w-3 h-3 text-amber-500 dark:text-amber-400 shrink-0" />
                 <span>{currentStudent.coins}</span>
               </span>
             )}

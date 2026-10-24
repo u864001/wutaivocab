@@ -326,12 +326,18 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
               ? null
               : books;
             fetchedList = await fetchLeaderboard(selectedWeek, m.modeKeys, queryBooks, 50);
-            if (isPastWeek && Array.isArray(fetchedList)) {
-              fetchedList = fetchedList.filter(row => {
-                const sId = String(row.student_id || '');
-                const name = String(row.name || '');
-                return sId !== '999999' && !sId.startsWith('99') && !name.includes('訪客') && !name.includes('Guest');
-              });
+            if (Array.isArray(fetchedList)) {
+              // 密室逃脫與找不同：秒數為 0 或負數者屬異常髒資料，強制過濾排除
+              if (m.id === 'escape' || m.id === 'spotter') {
+                fetchedList = fetchedList.filter(row => row.time && Number(row.time) > 0);
+              }
+              if (isPastWeek) {
+                fetchedList = fetchedList.filter(row => {
+                  const sId = String(row.student_id || '');
+                  const name = String(row.name || '');
+                  return sId !== '999999' && !sId.startsWith('99') && !name.includes('訪客') && !name.includes('Guest');
+                });
+              }
             }
           }
         } catch (err) {
@@ -362,6 +368,9 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
 
   const activeModalRanks = useMemo(() => {
     let list = modalModeId ? (boardData[modalModeId] || []) : [];
+    if (modalModeId === 'escape' || modalModeId === 'spotter') {
+      list = list.filter(row => row.time && Number(row.time) > 0);
+    }
     if (isPastWeek && Array.isArray(list)) {
       list = list.filter(row => !isGuestStudent(row));
     }
@@ -378,7 +387,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
       return formatStudentBadge({ grade: row.grade, class: row.class, seat: row.seat }, lang);
     }
 
-    if (modeObj.id === 'spotter') {
+    if (modeObj.id === 'spotter' || modeObj.id === 'escape') {
       const bookLabel = row.book ? `B${row.book}` : '';
       const heartsLabel = row.score ? `❤️x${row.score}` : '';
       return [bookLabel, heartsLabel].filter(Boolean).join(' • ');
@@ -419,12 +428,11 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
         }`} />
       </div>
 
-      <div className="relative z-10 w-full max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
-        {/* ── 頂部導覽列 ── */}
-        <div className="flex items-center justify-between mb-4">
-          <Button3D variant={isDark ? "slate" : "secondary"} size="sm" onClick={onBack} icon={ArrowLeft}>
-            <span className="hidden sm:inline">{t.backLobby || '回大廳'}
-          </span>
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-2 sm:px-6 py-2.5 sm:py-6">
+        {/* ── 頂部導覽列 (手機版全圖示防擠壓) ── */}
+        <div className="flex items-center justify-between gap-1 sm:gap-2 mb-3 sm:mb-4">
+          <Button3D variant={isDark ? "slate" : "secondary"} size="sm" onClick={onBack} icon={ArrowLeft} className="px-2.5 py-1.5 sm:px-3.5 shrink-0">
+            <span className="hidden sm:inline">{t.backLobby || '回大廳'}</span>
           </Button3D>
 
           <h2
@@ -439,12 +447,12 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
           </h2>
 
           {/* 右上角控制群組：業界標準統一排序（重新整理 ➔ 聲音 ➔ 雙語 ➔ 日夜主題 ➔ 學生通行證錨點） */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* 1. 重新整理 */}
             <button
               onClick={() => loadGradeBoards(true)}
               disabled={isLoading}
-              className={`p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 ${
+              className={`p-1.5 sm:p-2.5 rounded-xl sm:rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 shrink-0 ${
                 isDark
                   ? 'bg-black/60 border-white/20 text-slate-300 hover:text-white'
                   : 'bg-white/90 border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm'
@@ -460,7 +468,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                 const m = soundEngine.toggleMute();
                 setIsMuted(m);
               }}
-              className={`p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 ${
+              className={`p-1.5 sm:p-2.5 rounded-xl sm:rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 shrink-0 ${
                 isDark
                   ? 'bg-black/60 border-white/20 text-slate-300 hover:text-white'
                   : 'bg-white/90 border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm'
@@ -476,7 +484,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                 soundEngine.click();
                 if (toggleLang) toggleLang();
               }}
-              className={`p-2 sm:px-3 sm:py-2 rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 flex items-center gap-1 ${
+              className={`p-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 flex items-center gap-1 shrink-0 ${
                 isDark
                   ? 'bg-black/60 border-white/20 text-blue-400 hover:text-white'
                   : 'bg-white/90 border-slate-300 text-blue-600 hover:text-blue-700 shadow-sm'
@@ -493,7 +501,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                 soundEngine.click();
                 toggleTheme();
               }}
-              className={`p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 relative ${
+              className={`p-1.5 sm:p-2.5 rounded-xl sm:rounded-2xl border transition-all cursor-pointer shadow-md active:scale-95 relative shrink-0 ${
                 isDark
                   ? 'bg-black/60 border-white/20 text-cyan-300 hover:text-white'
                   : 'bg-white/90 border-slate-300 text-amber-500 hover:text-amber-600 shadow-sm'
@@ -518,7 +526,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                   if (openModal) openModal();
                 }}
                 title={t.currentIdentity || '個人探險通行證'}
-                className="px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-slate-800 border border-emerald-400/50 text-slate-800 dark:text-slate-100 flex items-center gap-1.5 text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer shrink-0"
+                className="px-2 py-1 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-slate-800 border border-emerald-400/50 text-slate-800 dark:text-slate-100 flex items-center gap-1 sm:gap-1.5 text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer shrink-0"
               >
                 {currentStudent?.avatar_id ? (
                   <img
@@ -528,13 +536,13 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                     onError={(e) => { e.target.style.display = 'none'; }}
                   />
                 ) : (
-                  <User className="w-3.5 h-3.5 text-emerald-500" />
+                  <User className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                 )}
                 <span className="font-heading truncate max-w-[100px] hidden sm:inline">
                   {formatStudentBadge(currentStudent, lang)}
                 </span>
                 <span className="flex items-center gap-0.5 text-amber-500 dark:text-amber-400 font-mono font-black text-xs">
-                  <Coins className="w-3 h-3" />
+                  <Coins className="w-3 h-3 shrink-0" />
                   {currentStudent?.coins ?? 0}
                 </span>
               </button>
@@ -545,7 +553,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                   if (openModal) openModal();
                 }}
                 title={t.loginToRoam || '登入座號漫遊'}
-                className="p-2 sm:px-3 sm:py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white flex items-center gap-1.5 text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer shrink-0"
+                className="p-1.5 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white flex items-center gap-1.5 text-xs font-black shadow-md transition-all active:scale-95 cursor-pointer shrink-0"
               >
                 <User className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">{t.loginToRoam || '登入座號'}</span>
@@ -1086,8 +1094,8 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                             </span>
                           </div>
                           {activeModalMode.id === 'escape' ? (
-                            <span className="text-[10px] font-bold text-slate-400 block font-mono">
-                              已解開 {entry.score} 道機關
+                            <span className="text-[10px] font-bold text-rose-400 block font-mono">
+                              剩餘 ❤️ x {entry.score}
                             </span>
                           ) : activeModalMode.id === 'spotter' ? (
                             <span className="text-[10px] font-bold text-rose-400 block font-mono">

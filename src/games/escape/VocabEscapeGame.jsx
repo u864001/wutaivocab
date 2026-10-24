@@ -356,6 +356,12 @@ export const VocabEscapeGame = ({
       addQuestPoints(5);
     }
 
+    // 嚴格確保通關耗時計算精準且 >= 1 秒，防禦任何 0 秒異常
+    const finalSeconds = startTimeRef.current
+      ? Math.max(1, Math.floor((Date.now() - startTimeRef.current) / 1000))
+      : Math.max(1, timeElapsed);
+    setTimeElapsed(finalSeconds);
+
     setGameState('victory');
   };
 
@@ -813,7 +819,7 @@ export const VocabEscapeGame = ({
               🎉 逃脫成功！
             </h2>
             <p className="text-xs font-bold text-slate-400 mb-3">
-              探險家 <strong className="text-amber-400">{playerName}</strong> 歷時 <span className="text-amber-400 font-black text-base">{timeElapsed} 秒</span> 破解三連環全部封印！
+              探險家 <strong className="text-amber-400">{playerName}</strong> 歷時 <span className="text-amber-400 font-black text-base">{timeElapsed} 秒</span>（剩餘愛心 <span className="text-rose-400 font-black">❤️ x {lives}</span>）破解三連環全部封印！
             </p>
 
             {/* 三大古老符印全數集齊 */}
@@ -844,9 +850,9 @@ export const VocabEscapeGame = ({
               <HonorSubmissionCard
                 mode="escape"
                 book={qualifyingBook}
-                score={totalPuzzlesCount}
-                time={timeElapsed}
-                totalCount={totalPuzzlesCount}
+                score={lives}
+                time={Math.max(1, timeElapsed)}
+                totalCount={3}
                 rangeText={qualifyingBook === 'abc' ? 'Aa 字母神石密室大脫逃' : `第 ${qualifyingBook} 冊 - 三連環密室大脫逃`}
                 reviewWords={allWordsInvolved.map(w => ({
                   id: w.id,

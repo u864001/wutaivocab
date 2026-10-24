@@ -9,7 +9,7 @@ import { getAccuracyLevel } from '../services/certificateGenerator';
 import { getProfanityError } from '../services/profanityFilter';
 import { recordGrimoireStar, mapModeToGrimoireId } from '../utils/grimoireHelper';
 import confetti from 'canvas-confetti';
-import { Trophy, CheckCircle2, Sparkles, Send, Loader2, Award, UserCheck, RefreshCw, AlertCircle, Coins, ShieldCheck, User } from 'lucide-react';
+import { Trophy, CheckCircle2, Sparkles, Send, Loader2, Award, UserCheck, RefreshCw, AlertCircle, Coins, ShieldCheck, User, Printer, Edit3 } from 'lucide-react';
 
 export const HonorSubmissionCard = ({
   mode,
@@ -173,6 +173,35 @@ export const HonorSubmissionCard = ({
     };
   }, [actualMode, effectiveBook, score, time, isAlphabet]);
 
+  // ── 智慧自動上榜防呆機制：若學生已登入座號，突破 Top 50 時自動背景登錄，杜絕忘按送出漏失 ──
+  useEffect(() => {
+    if (status === 'qualified' && isLoggedIn && !hasSubmittedRef.current) {
+      const autoName = (formatStudentDisplayName(currentStudent) || playerName || '').trim();
+      if (autoName) {
+        hasSubmittedRef.current = true;
+        setStatus('submitting');
+        uploadScore({
+          mode: actualMode,
+          book: effectiveBook || 'abc',
+          name: autoName,
+          score,
+          time
+        }).then((success) => {
+          if (success) {
+            setStatus('submitted');
+            try {
+              confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+            } catch (e) {}
+            if (onSuccess) onSuccess();
+          } else {
+            hasSubmittedRef.current = false;
+            setStatus('qualified');
+          }
+        });
+      }
+    }
+  }, [status, isLoggedIn, currentStudent, actualMode, effectiveBook, score, time, playerName, onSuccess]);
+
   const handleSubmit = async (e) => {
     e?.preventDefault();
     const trimmedName = playerName.trim();
@@ -219,180 +248,142 @@ export const HonorSubmissionCard = ({
   const effectiveRangeText = rangeText || (book ? `第 ${book} 冊精選單元` : '全校英語星際挑戰');
 
   return (
-    <div className="w-full mb-6 space-y-4">
-      {/* ── 普及成就感：領取榮譽獎狀便當條 (所有學生皆可點擊領取！) ── */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-400/20 via-yellow-400/20 to-amber-500/20 dark:from-amber-950/40 dark:via-yellow-950/30 dark:to-amber-950/40 border-2 border-amber-300 dark:border-amber-700/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-400/30 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
-            <Award className="w-6 h-6 animate-pulse" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5 justify-center sm:justify-start">
-              <span className="text-xs font-black px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-100">
-                答對率 {accuracy}%
+    <div className="w-full mb-4 space-y-2.5">
+      {/* ── 頂部戰績與獎勵精華列 (iPad 一頁式緊湊橫幅，整合答對率、金幣、秘典與本作列印成績單) ── */}
+      <div className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-400/20 via-yellow-400/15 to-emerald-400/20 dark:from-slate-900/90 dark:via-slate-850/80 dark:to-slate-900/90 border-2 border-amber-300/80 dark:border-amber-600/50 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-md backdrop-blur-md">
+        <div className="flex items-center gap-2.5 min-w-0 w-full sm:w-auto justify-between sm:justify-start">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-amber-300 dark:bg-amber-900/80 text-amber-950 dark:text-amber-100 shadow-xs">
+              答對率 {accuracy}%
+            </span>
+            <span className="text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1">
+              <span>{level.badge}</span>
+              <span>{level.title}</span>
+            </span>
+            {awardedInfo.delta > 0 && (
+              <span className="text-xs font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-400/30 flex items-center gap-0.5">
+                <Coins className="w-3 h-3 text-amber-500" />
+                <span>+{awardedInfo.delta} 金幣</span>
               </span>
-              <span className="text-xs font-bold text-amber-800 dark:text-amber-300">
-                {level.badge} {level.title}
+            )}
+            {grimoireNotice && (
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-400/30">
+                📖 B{grimoireNotice.bookId} {'⭐'.repeat(grimoireNotice.stars)}
               </span>
-            </div>
-            <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mt-1">
-              完成 {totalCount} 題，答對 {score} 題！可領取自主學習紀念獎狀
-            </p>
+            )}
           </div>
         </div>
 
-        <Button3D
-          variant="amber"
-          size="sm"
-          onClick={() => setIsCertOpen(true)}
-          icon={Award}
-          className="shadow-md shrink-0 w-full sm:w-auto"
-        >
-          {t.viewCertificateBtn}
-        </Button3D>
+        {/* 🖨️ 本作風格印表機成績單按鈕 (非普通 emoji，採用本作高品質金光質感圖示) */}
+        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
+          <Button3D
+            variant="amber"
+            size="sm"
+            onClick={() => setIsCertOpen(true)}
+            icon={Printer}
+            className="shadow-sm w-full sm:w-auto text-xs py-1.5 px-3"
+            title="預覽並輸出本作風格 A4 學習成就獎狀"
+          >
+            列印榮譽成績單
+          </Button3D>
+        </div>
       </div>
-      {/* ── 神山秘典典藏館進度連動標籤 (Grimoire Star Synchronized) ── */}
-      {grimoireNotice && (
-        <div className="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-500/15 border-2 border-amber-400/50 dark:border-amber-600/60 flex items-center justify-between gap-2 shadow-sm text-center sm:text-left">
-          <div className="flex items-center gap-2.5">
-            <span className="text-xl sm:text-2xl shrink-0">📖</span>
-            <div>
-              <div className="flex items-center gap-1.5 justify-center sm:justify-start">
-                <span className="text-xs sm:text-sm font-black text-amber-800 dark:text-amber-300">
-                  {t.bookText || '第'} {grimoireNotice.bookId} {t.bookUnit || '冊'} 秘典進度已更新！
-                </span>
-                <span className="text-sm font-mono tracking-wider drop-shadow-sm">
-                  {'⭐'.repeat(grimoireNotice.stars)}
-                </span>
-              </div>
-              <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
-                已同步點亮典藏館！集滿 10 項即可解鎖整冊神印！
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
-
-      {/* ── 金幣經濟結算便當條 (Coin Reward Banner) ── */}
-      {awardedInfo.type !== 'none' && (
-        <div className={`p-4 rounded-2xl border-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left shadow-sm ${
-          awardedInfo.delta >= 10
-            ? 'bg-gradient-to-r from-amber-400/25 via-yellow-400/20 to-amber-500/25 border-amber-400 dark:border-amber-600'
-            : awardedInfo.delta > 0
-            ? 'bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border-emerald-400 dark:border-emerald-600'
-            : 'bg-slate-100/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700'
-        }`}>
-          <div className="flex items-center gap-3">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl shrink-0 shadow-sm ${
-              awardedInfo.delta >= 10
-                ? 'bg-amber-400 text-amber-950 animate-bounce'
-                : awardedInfo.delta > 0
-                ? 'bg-emerald-500 text-white'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-500'
-            }`}>
-              <Coins className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5 justify-center sm:justify-start">
-                <span className={`text-xs font-black px-2.5 py-0.5 rounded-full ${
-                  awardedInfo.delta >= 10
-                    ? 'bg-amber-500 text-white shadow-sm'
-                    : awardedInfo.delta > 0
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-                }`}>
-                  {awardedInfo.delta > 0 ? `+${awardedInfo.delta} 金幣獎勵` : '探索練習'}
-                </span>
-                {isLoggedIn && awardedInfo.delta > 0 && (
-                  <span className="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                    （目前金幣：{coins} 枚）
-                  </span>
-                )}
-              </div>
-              <p className="text-xs font-bold text-slate-700 dark:text-slate-200 mt-1">
-                {awardedInfo.reason}
-              </p>
-            </div>
-          </div>
-
-          {!isLoggedIn && awardedInfo.delta > 0 && (
-            <Button3D
-              variant="amber"
-              size="sm"
-              onClick={openModal}
-              icon={User}
-              className="shadow-md shrink-0 w-full sm:w-auto"
-            >
-              登入座號領金幣 🪙
-            </Button3D>
-          )}
-        </div>
-      )}
-
+      {/* ── 下部：英雄榜上榜狀態與身分確認 (緊湊防呆一頁式) ── */}
       {/* 狀況 1：未選取符合排行榜門檻的範圍 */}
       {status === 'not_qualifying_book' && (
-        <div className="p-4 rounded-2xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-left">
-          <p className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-start gap-2">
-            <span className="text-base leading-none">💡</span>
-            <span>
-              <strong className="text-slate-700 dark:text-slate-200 block mb-0.5">{t.scopeHintTitle}</strong>
-              {t.scopeHintText}
-            </span>
+        <div className="p-2.5 rounded-xl bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-left">
+          <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <span>💡</span>
+            <span>自選多單元練習模式，歡迎在首頁點選「全冊範圍」衝刺全校榮譽榜！</span>
           </p>
         </div>
       )}
 
-      {/* 狀況 2：比對中 */}
+      {/* 狀況 2：比對全校門檻中 */}
       {status === 'checking' && (
-        <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-center flex items-center justify-center gap-2">
-          <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
+        <div className="p-2.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/60 text-center flex items-center justify-center gap-2">
+          <Loader2 className="w-3.5 h-3.5 text-blue-500 animate-spin" />
           <span className="text-xs font-black text-blue-700 dark:text-blue-300">
-            {t.checkingTop50}
+            比對本週全校 Top 50 門檻中...
           </span>
         </div>
       )}
 
       {/* 狀況 3：未突破 Top 50 門檻 */}
       {status === 'not_top50' && (
-        <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-center">
-          <p className="text-xs font-black text-amber-800 dark:text-amber-300 mb-1">
-            {t.notTop50Title}
-          </p>
-          <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-            {t.notTop50Encourage}
-          </p>
+        <div className="p-2.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 flex items-center justify-between gap-2 text-left">
+          <div className="flex items-center gap-2">
+            <span className="text-base">👏</span>
+            <div>
+              <p className="text-xs font-black text-amber-800 dark:text-amber-300">
+                恭喜完成挑戰！自主練習金幣已存入探險執照！
+              </p>
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                只要提升速度或答對率，就有機會挺進全校 Top 50 英雄榜！
+              </p>
+            </div>
+          </div>
+          {!isLoggedIn && (
+            <button
+              onClick={openModal}
+              className="px-2.5 py-1 rounded-lg text-xs font-black bg-amber-500 hover:bg-amber-400 text-white shadow-xs shrink-0 cursor-pointer"
+            >
+              登入座號領金幣 🪙
+            </button>
+          )}
         </div>
       )}
 
-      {/* 狀況 4：成功上傳 */}
+      {/* 狀況 4：成功上榜 (自動登記或手動登記完成) */}
       {status === 'submitted' && (
-        <div className="p-4 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-center animate-fadeIn">
-          <div className="flex items-center justify-center gap-1.5 text-emerald-800 dark:text-emerald-200 font-black text-sm mb-1">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            {t.submittedTitle}
+        <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-400/60 text-emerald-950 dark:text-emerald-100 flex items-center justify-between gap-2 animate-fadeIn shadow-xs">
+          <div className="flex items-center gap-2 truncate">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+            <div className="truncate">
+              <span className="text-xs font-black text-emerald-800 dark:text-emerald-200">
+                🏆 成績已成功登錄全校英雄榜！
+              </span>
+              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 ml-1.5 hidden sm:inline">
+                勇士：{playerName || formatStudentDisplayName(currentStudent) || '優秀同學'}
+              </span>
+            </div>
           </div>
-          <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-            {t.submittedSubtitle}
-          </p>
+          <button
+            type="button"
+            onClick={handleSwitchPlayer}
+            className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-white underline flex items-center gap-0.5 shrink-0 cursor-pointer"
+            title="如需登記為其他座號或暱稱請點此"
+          >
+            <Edit3 className="w-3 h-3" />
+            <span>更換名稱</span>
+          </button>
         </div>
       )}
 
-      {/* 狀況 5：突破紀錄，符合 Top 50 留名資格 */}
+      {/* 狀況 5：突破紀錄中 / 訪客手動登記留名 */}
       {(status === 'qualified' || status === 'submitting') && (
-        <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/30 border-2 border-amber-400 dark:border-amber-600 text-center shadow-lg animate-fadeIn">
-          <div className="flex items-center justify-center gap-1.5 mb-1">
-            <Trophy className="w-5 h-5 text-amber-500 animate-bounce" />
-            <span className="text-sm font-black text-amber-900 dark:text-amber-200 font-heading">
-              {t.qualifyTop50Title}
-            </span>
+        <div className="p-3 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/30 border-2 border-amber-400 dark:border-amber-600 text-center shadow-md animate-fadeIn">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-1.5">
+              <Trophy className="w-4 h-4 text-amber-500 animate-bounce" />
+              <span className="text-xs sm:text-sm font-black text-amber-900 dark:text-amber-200 font-heading">
+                🎉 突破本週全校 Top 50 門檻！
+              </span>
+            </div>
+            {!isLoggedIn && (
+              <button
+                type="button"
+                onClick={openModal}
+                className="text-[11px] font-bold text-amber-700 dark:text-amber-300 underline cursor-pointer"
+              >
+                直接登入座號
+              </button>
+            )}
           </div>
-          <p className="text-xs font-bold text-amber-800/80 dark:text-amber-300/80 mb-3">
-            {t.breakTop50Prompt}
-          </p>
 
-          <form onSubmit={handleSubmit} className="space-y-2">
-            <div className="relative">
+          <form onSubmit={handleSubmit} className="flex items-center gap-2">
+            <div className="relative flex-1">
               <input
                 type="text"
                 value={playerName}
@@ -400,42 +391,32 @@ export const HonorSubmissionCard = ({
                   setPlayerName(e.target.value);
                   setValidationError('');
                 }}
-                placeholder={t.namePlaceholder}
+                placeholder="請輸入班級與姓名（如：501小明）"
                 maxLength={15}
-                className={`w-full p-3 rounded-xl border ${
+                className={`w-full py-1.5 px-3 rounded-xl border ${
                   validationError ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-950/20' : 'border-amber-300 dark:border-amber-700'
-                } bg-white dark:bg-slate-800 text-center font-black text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-amber-400 text-sm shadow-inner pr-20`}
+                } bg-white dark:bg-slate-800 text-center font-black text-slate-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-amber-400 text-xs shadow-inner`}
               />
-              {playerName && (
-                <button
-                  type="button"
-                  onClick={handleSwitchPlayer}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg text-xs font-black bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
-                  title="切換其他同學"
-                >
-                  {t.switchPlayer}
-                </button>
-              )}
             </div>
-
-            {validationError && (
-              <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs font-black text-rose-600 dark:text-rose-400 flex items-center justify-center gap-1.5 animate-fadeIn">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{validationError}</span>
-              </div>
-            )}
 
             <Button3D
               variant="amber"
-              size="md"
+              size="sm"
               type="submit"
               disabled={!playerName.trim() || status === 'submitting' || hasSubmittedRef.current}
-              className="w-full"
+              className="shrink-0 text-xs py-1.5 px-3"
               icon={Send}
             >
-              {status === 'submitting' ? t.submittingBtn : t.submitHonorBtn}
+              {status === 'submitting' ? '送出中...' : '送出上榜 🚀'}
             </Button3D>
           </form>
+
+          {validationError && (
+            <div className="mt-1.5 p-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-[11px] font-black text-rose-600 dark:text-rose-400 flex items-center justify-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{validationError}</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -443,7 +424,7 @@ export const HonorSubmissionCard = ({
       <CertificateModal
         isOpen={isCertOpen}
         onClose={() => setIsCertOpen(false)}
-        studentName={playerName || '優秀學生'}
+        studentName={playerName || formatStudentDisplayName(currentStudent) || '優秀學生'}
         rangeText={effectiveRangeText}
         totalCount={totalCount}
         correctCount={score}
