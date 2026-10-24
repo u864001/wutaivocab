@@ -75,6 +75,20 @@
 #### 6. 手寫字母判定彈窗修正 (`src/games/handwriting/HandwritingGame.jsx`)
 * 判定彈窗脫離四線三格 aspect-ratio 容器，做成全螢幕獨立浮層，下方的「下一題」操作按鈕在任何裝置螢幕上皆完整露出且可點擊。
 
+#### 7. 手機頂部導航精簡化 (`src/components/Lobby.jsx`, `src/components/LeaderboardView.jsx`, `src/components/TextbookViewer.jsx`)
+* **標題超載折行全面根除**：大廳、排行榜、課本電子書之頂部橫幅在小螢幕（`< 640px`）將「返回主大廳」、「英雄榜」、「電子書聽讀」等長文字隱藏，統一以大圖標解決；學生身份資料在手機直立版精簡為大頭貼與宇宙金幣，確保 360px 極限螢幕下頂部永遠維持單行，騰出寶貴垂直視野。
+
+#### 8. 密室逃脫「0 秒通關」漏洞根治與排行榜修復 (`src/services/supabase.js`, `src/games/escape/VocabEscapeGame.jsx`, `src/components/LeaderboardView.jsx`)
+* **排位依據校準**：密室逃脫與找不同統一確立為「秒數低優先（time ASC），相同秒數再比剩餘愛心（score DESC）」。通關上傳分數 `score` 修正為上傳「剩餘愛心數（1~3）」，而非原本錯誤的謎題總數。
+* **資料庫多重防護**：
+  * `uploadScore` 與 `checkIfQualifiesForTop50`：針對耗時類型遊戲加入強硬防禦 `time > 0`，小於等於 0 秒直接拒絕入榜；若歷史紀錄為 0 秒則允許被正常有效秒數覆蓋更新。
+  * `fetchLeaderboard`：資料庫查詢加上 `.gt('time', 0)`，前端抓取時亦雙重過濾跳過 `time <= 0`，歷史異常的 0 秒資料全面隱形消失。
+  * 通關秒數計算以 `Math.max(1, Math.floor((Date.now() - startTimeRef.current) / 1000))` 強制確保秒數 $\ge 1$。
+
+#### 9. 結算畫面智慧自動上榜與零捲動壓縮 (`src/components/HonorSubmissionCard.jsx`, `src/components/CertificateModal.jsx`)
+* **已登入學生自動非同步登錄**：登入學生遊戲結束進入結算時，系統自動於背景調用 `uploadScore`，杜絕學生誤按列印或返回導致辛苦成績未送出的問題，畫面直接展示「🏆 成績已成功登錄全校英雄榜！」。
+* **iPad / 手機零捲動排版**：將原本冗長的結算內容壓縮至精巧的成就彩帶（整合答對率、金幣、圖鑑星數），並內嵌與本作設計風格一致的 `Printer` 按鈕，點擊一鍵叫出 A4 大武山/百合花風格獎狀列印預覽。
+
 ---
 
 ### 四、核心目錄與關鍵模組結構
