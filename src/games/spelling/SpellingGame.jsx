@@ -158,7 +158,10 @@ export const SpellingGame = ({
 
   const handleStart = () => {
     if (!queue || queue.length === 0) {
-      alert('選取範圍內沒有單字，請回大廳重新勾選！');
+      if (words && words.length > 0) {
+        loadWord(words[0]);
+        return;
+      }
       return onBack();
     }
     setHasStarted(true);
@@ -169,6 +172,11 @@ export const SpellingGame = ({
     enterFullscreen();
     loadWord(queue[0]);
   };
+
+  // 自動直接開局（零二次彈窗）
+  useEffect(() => {
+    handleStart();
+  }, [queue.length]);
 
   // 點擊字母自動填入第一個空格 (平板友善)
   const handleLetterClick = (letter) => {
@@ -320,36 +328,6 @@ export const SpellingGame = ({
       confetti({ particleCount: 100, spread: 100, origin: { y: 0.5 } });
     }
   };
-
-  if (!hasStarted) {
-    return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4">
-        <GlassCard className="max-w-lg w-full text-center p-4 sm:p-6 md:p-8">
-          <div className="w-20 h-20 rounded-3xl bg-rose-500/20 text-rose-500 flex items-center justify-center mx-auto mb-4">
-            <Sparkles className="w-10 h-10" />
-          </div>
-          <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-2 font-heading">
-            {t.spellingTitle}
-          </h2>
-          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-4">
-            {t.spellingHelp}
-          </p>
-          <div className="flex items-center justify-center gap-1.5 text-rose-500 text-xs font-black mb-6">
-            <Heart className="w-4 h-4 fill-rose-500" />
-            {t.heartGraceInfo}
-          </div>
-          <div className="space-y-3">
-            <Button3D variant="rose" size="lg" onClick={handleStart} className="w-full">
-              {t.startChallenge}
-            </Button3D>
-            <Button3D variant="slate" size="md" onClick={handleBackToLobby} className="w-full">
-              {t.backLobby}
-            </Button3D>
-          </div>
-        </GlassCard>
-      </div>
-    );
-  }
 
   if (isFinished) {
     const totalWords = initialCountRef.current || stats.correct;

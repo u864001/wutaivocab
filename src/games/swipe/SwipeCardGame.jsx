@@ -316,6 +316,12 @@ export const SwipeCardGame = ({
     setGameState('playing');
   };
 
+  // 自動直接開局（依據 Lobby 整備室設定，零二次彈窗）
+  useEffect(() => {
+    const savedMode = localStorage.getItem('wutai_swipe_mode') || (isAlphabetMode ? 'letters' : 'vocab');
+    handleStartGame(savedMode);
+  }, []);
+
   // ── 倒數計時器監聽 ──
   useEffect(() => {
     if (!isTimerRunning || isTimerFrozen || gameState !== 'playing') return;
@@ -584,169 +590,14 @@ export const SwipeCardGame = ({
     onBack();
   };
 
-  // 退出至選單
+  // 退出至大廳
   const handleBackToMenu = () => {
     if (dismissTimerRef.current) {
       clearTimeout(dismissTimerRef.current);
       dismissTimerRef.current = null;
     }
-    setGameState('menu');
-    setIsTimerRunning(false);
-    setIsTimerFrozen(false);
+    handleBackToLobby();
   };
-
-  // ─── 畫面 1：遊戲選單與模式選擇 ───
-  if (gameState === 'menu') {
-    return (
-      <div className="w-full max-w-4xl mx-auto px-4 py-4 sm:py-6 space-y-6 animate-fadeIn pb-16">
-        {/* 頂部導覽列 */}
-        <div className="flex items-center justify-between">
-          <Button3D variant="slate" size="sm" onClick={handleBackToLobby} icon={ArrowLeft}>
-            {t.backToVocabLobby || '回單字學習館'}
-          </Button3D>
-
-          <span className="px-3 py-1 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 font-mono font-black text-xs">
-            ⏱️ 30 秒極速對決
-          </span>
-        </div>
-
-        {/* 歡迎主橫幅 */}
-        <GlassCard className="text-center p-6 sm:p-8 relative overflow-hidden bg-gradient-to-r from-rose-500/15 via-orange-500/10 to-amber-500/15 border-2 border-rose-400 dark:border-rose-600/60 shadow-lg">
-          <div className="w-20 h-20 rounded-3xl mx-auto mb-4 flex items-center justify-center bg-gradient-to-tr from-rose-500 to-amber-400 text-white shadow-xl shadow-rose-500/30">
-            <Flame className="w-10 h-10 animate-pulse text-white" />
-          </div>
-
-          <h2 className="text-2xl sm:text-4xl font-black font-heading text-slate-800 dark:text-white mb-2">
-            🃏 極速是非滑牌 • 撲克大對決
-          </h2>
-          <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 max-w-xl mx-auto leading-relaxed">
-            30 秒手速與腦力極限！手握撲克手牌，配對正確右滑、錯誤左滑。享受神級連擊 Bonus、7 大功能彩蛋卡牌與時間凍結名師訂正！
-          </p>
-
-          {/* 模式切換器 */}
-          <div className="mt-5 inline-flex items-center gap-2 p-1.5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-sm">
-            <button
-              onClick={() => { setGameMode('vocab'); soundEngine.click(); }}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
-                gameMode === 'vocab'
-                  ? 'bg-rose-500 text-white shadow-md font-extrabold'
-                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
-              }`}
-            >
-              📖 單字詞義是非 (中高年級)
-            </button>
-            <button
-              onClick={() => { setGameMode('letters'); soundEngine.click(); }}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
-                gameMode === 'letters'
-                  ? 'bg-rose-500 text-white shadow-md font-extrabold'
-                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
-              }`}
-            >
-              🔡 Aa 字母大小寫 (低年級首選)
-            </button>
-          </div>
-        </GlassCard>
-
-        {/* 雙模式詳細卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* 1. 中高年級單字模式 */}
-          <GlassCard className="p-6 flex flex-col justify-between border-2 border-rose-300/80 dark:border-rose-700/60 relative overflow-hidden group">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-sm flex items-center gap-1">
-                  <Flame className="w-3 h-3 animate-pulse" />
-                  <span>Top 50 英雄榜</span>
-                </span>
-                <span className="text-xs font-mono font-black text-rose-600 dark:text-rose-400">
-                  30 秒限時
-                </span>
-              </div>
-
-              <h3 className="text-xl font-black font-heading text-slate-800 dark:text-slate-100">
-                單字詞義速辨
-              </h3>
-
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
-                牌面顯示英文單字與中文釋義，快速辨識是否相符。隨選教材範圍（共 {activeWordList.length} 字），答對連續連擊倍數加乘！
-              </p>
-
-              <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 space-y-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
-                <div className="flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-rose-500 shrink-0" />
-                  <span>右滑 ✔ 是 / 左滑 ✖ 非</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Zap className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span>隨機掉落 7 種驚喜功能卡（雙倍、無敵星、時鐘）</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Undo2 className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span>答錯時間凍結，浮現名師正確解釋</span>
-                </div>
-              </div>
-            </div>
-
-            <Button3D
-              variant="rose"
-              size="md"
-              onClick={() => handleStartGame('vocab')}
-              className="w-full mt-4"
-            >
-              進入單字滑牌挑戰
-            </Button3D>
-          </GlassCard>
-
-          {/* 2. 低年級字母配對模式 */}
-          <GlassCard className="p-6 flex flex-col justify-between border-2 border-amber-300/80 dark:border-amber-700/60 relative overflow-hidden group">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-500 text-stone-950 shadow-sm flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
-                  <span>低年級入門首選</span>
-                </span>
-                <span className="text-xs font-mono font-black text-amber-600 dark:text-amber-400">
-                  免選題庫即玩
-                </span>
-              </div>
-
-              <h3 className="text-xl font-black font-heading text-slate-800 dark:text-slate-100">
-                Aa 字母大小寫配對
-              </h3>
-
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
-                專為低年級打造！免選範圍，大字體隨機出現大寫與小寫字母（含 b/d, p/q 易混淆辨析），鍛鍊極速英文字母反射神經！
-              </p>
-
-              <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 space-y-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
-                <div className="flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span>直觀對照（例如 A-a 往右滑、B-d 往左滑）</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Flame className="w-4 h-4 text-rose-500 shrink-0" />
-                  <span>30 秒極限衝刺，角逐全校英雄榜</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Star className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span>全功能彩蛋卡支援，歡樂滿滿</span>
-                </div>
-              </div>
-            </div>
-
-            <Button3D
-              variant="amber"
-              size="md"
-              onClick={() => handleStartGame('letters')}
-              className="w-full mt-4"
-            >
-              進入 Aa 字母配對
-            </Button3D>
-          </GlassCard>
-        </div>
-      </div>
-    );
-  }
 
   // ─── 畫面 2：遊戲進行中 (2D 撲克手牌展開堆疊) ───
   if (gameState === 'playing') {

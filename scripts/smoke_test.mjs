@@ -84,6 +84,8 @@ class CDPClient {
           }
         } else if (data.method === 'Runtime.exceptionThrown') {
           this.exceptions.push(data.params.exceptionDetails);
+        } else if (data.method === 'Page.javascriptDialogOpening') {
+          this.send('Page.handleJavaScriptDialog', { accept: true }).catch(() => {});
         }
       };
     });
@@ -132,6 +134,9 @@ async function run() {
 
   await client.send('Page.enable');
   await client.send('Runtime.enable');
+  await client.send('Page.addScriptToEvaluateOnNewDocument', {
+    source: 'window.alert = () => {}; window.confirm = () => true; window.prompt = () => null;'
+  }).catch(() => {});
 
   const failures = [];
 

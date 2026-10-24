@@ -176,6 +176,13 @@ export const Lobby = ({
   const [mazeStartChar, setMazeStartChar] = useState(() => localStorage.getItem('wutai_maze_startChar')?.toUpperCase() || 'A');
   const [mazeEndChar, setMazeEndChar] = useState(() => localStorage.getItem('wutai_maze_endChar')?.toUpperCase() || 'H');
 
+  // 子遊戲專屬設定 (由 Lobby 整備室統一整併，告別遊戲內二次彈窗)
+  const [snakeDifficulty, setSnakeDifficulty] = useState(() => localStorage.getItem('wutai_snake_difficulty') || 'normal');
+  const [memoryMode, setMemoryMode] = useState(() => localStorage.getItem('wutai_memory_mode') || 'en-zh');
+  const [swipeMode, setSwipeMode] = useState(() => localStorage.getItem('wutai_swipe_mode') || 'vocab');
+  const [quizChoiceDirection, setQuizChoiceDirection] = useState(() => localStorage.getItem('wutai_quiz_choice_dir') || 'mixed');
+  const [quizListeningSubMode, setQuizListeningSubMode] = useState(() => localStorage.getItem('wutai_quiz_listening_sub') || 'word');
+
   // ── 記住我的選擇核選狀態 ──
   const [rememberSelection, setRememberSelection] = useState(() => {
     try {
@@ -654,6 +661,31 @@ export const Lobby = ({
         }
       } catch (e) {}
       onNavigate('maze');
+    } else if (selectedGame === 'snake') {
+      try {
+        localStorage.setItem('wutai_snake_difficulty', snakeDifficulty);
+      } catch (e) {}
+      onNavigate('snake');
+    } else if (selectedGame === 'memory') {
+      try {
+        localStorage.setItem('wutai_memory_mode', memoryMode);
+      } catch (e) {}
+      onNavigate('memory');
+    } else if (selectedGame === 'swipe') {
+      try {
+        localStorage.setItem('wutai_swipe_mode', swipeMode);
+      } catch (e) {}
+      onNavigate('swipe');
+    } else if (selectedGame === 'quiz-choice') {
+      try {
+        localStorage.setItem('wutai_quiz_choice_dir', quizChoiceDirection);
+      } catch (e) {}
+      onNavigate('quiz-choice');
+    } else if (selectedGame === 'quiz-listening') {
+      try {
+        localStorage.setItem('wutai_quiz_listening_sub', quizListeningSubMode);
+      } catch (e) {}
+      onNavigate('quiz-listening');
     } else {
       onNavigate(selectedGame);
     }
@@ -1495,7 +1527,6 @@ export const Lobby = ({
                     </div>
 
                   </div>
-
                 </div>
 
                 {/* 整備室底部：狀態摘要與出征按鈕 */}
@@ -1829,8 +1860,199 @@ export const Lobby = ({
                       </div>
                     </div>
 
-                  </div>
+                    {/* ═══ 【第四層：玩法風格微調 (已預選推薦，告別遊戲內二次彈窗)】 ═══ */}
+                    {(selectedGame === 'snake' || selectedGame === 'memory' || selectedGame === 'swipe' || selectedGame === 'quiz-choice' || selectedGame === 'quiz-listening') && (
+                      <div className={`w-full shrink-0 flex flex-wrap items-center justify-between gap-1.5 px-2.5 py-1 rounded-xl border backdrop-blur-md animate-fadeIn ${
+                        isDark ? 'bg-amber-950/40 border-amber-500/30 text-amber-200' : 'bg-amber-50/90 border-amber-300/80 text-amber-900'
+                      }`}>
+                        <div className="flex items-center gap-1 text-[11px] font-black">
+                          <Sparkles className="w-3 h-3 text-amber-500 dark:text-amber-400" />
+                          <span>4. 玩法風格 (已預選推薦)：</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                          {selectedGame === 'snake' && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setSnakeDifficulty('normal'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  snakeDifficulty === 'normal'
+                                    ? 'bg-amber-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-amber-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                ⭐ 標準模式 (60s)
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setSnakeDifficulty('casual'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  snakeDifficulty === 'casual'
+                                    ? 'bg-amber-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-amber-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                🌱 休閒模式 (撞牆不死)
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setSnakeDifficulty('survival'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  snakeDifficulty === 'survival'
+                                    ? 'bg-amber-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-amber-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                🔥 無盡生存 (越吃越快)
+                              </button>
+                            </>
+                          )}
 
+                          {selectedGame === 'memory' && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setMemoryMode('en-zh'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  memoryMode === 'en-zh'
+                                    ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                ⭐ 英翻中配對
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setMemoryMode('zh-en'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  memoryMode === 'zh-en'
+                                    ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                中翻英配對
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setMemoryMode('audio-zh'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  memoryMode === 'audio-zh'
+                                    ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                🎧 聽力配對
+                              </button>
+                            </>
+                          )}
+
+                          {selectedGame === 'swipe' && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setSwipeMode('vocab'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  swipeMode === 'vocab'
+                                    ? 'bg-rose-500 text-white shadow-sm font-extrabold ring-1 ring-rose-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                ⭐ 單字詞義是非
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setSwipeMode('letters'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  swipeMode === 'letters'
+                                    ? 'bg-rose-500 text-white shadow-sm font-extrabold ring-1 ring-rose-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                🔡 Aa 大小寫是非
+                              </button>
+                            </>
+                          )}
+
+                          {selectedGame === 'quiz-choice' && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setQuizChoiceDirection('mixed'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  quizChoiceDirection === 'mixed'
+                                    ? 'bg-sky-500 text-white shadow-sm font-extrabold ring-1 ring-sky-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                ⭐ 雙向速測
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setQuizChoiceDirection('en-zh'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  quizChoiceDirection === 'en-zh'
+                                    ? 'bg-sky-500 text-white shadow-sm font-extrabold ring-1 ring-sky-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                看英選中
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setQuizChoiceDirection('zh-en'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  quizChoiceDirection === 'zh-en'
+                                    ? 'bg-sky-500 text-white shadow-sm font-extrabold ring-1 ring-sky-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                看中選英
+                              </button>
+                            </>
+                          )}
+
+                          {selectedGame === 'quiz-listening' && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setQuizListeningSubMode('word'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  quizListeningSubMode === 'word'
+                                    ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                ⭐ 單字辨音
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setQuizListeningSubMode('sentence'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  quizListeningSubMode === 'sentence'
+                                    ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                句子辨句
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { soundEngine.click(); setQuizListeningSubMode('qa'); }}
+                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                  quizListeningSubMode === 'qa'
+                                    ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
+                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                }`}
+                              >
+                                生活情境問答
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* 整備室底部：狀態摘要與出征按鈕 */}

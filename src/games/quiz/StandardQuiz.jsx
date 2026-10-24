@@ -29,12 +29,13 @@ export const StandardQuiz = ({
   // 聽力三合一膠囊子模式：'word' (單字辨音) | 'sentence' (句子辨句) | 'qa' (情境問答)
   // 雙向速辨子模式：'zh-en' (看中選英) | 'en-zh' (看英選中) | 'mixed' (雙向混合)
   const [choiceDirection, setChoiceDirection] = useState(() => {
-    if (mode === 'quiz-en-zh') return 'en-zh';
-    return 'zh-en';
+    return localStorage.getItem('wutai_quiz_choice_dir') || 'mixed';
   });
   const isChoiceMode = mode === 'quiz-choice' || mode === 'quiz-zh-en' || mode === 'quiz-en-zh';
 
-  const [listeningSubMode, setListeningSubMode] = useState('word');
+  const [listeningSubMode, setListeningSubMode] = useState(() => {
+    return localStorage.getItem('wutai_quiz_listening_sub') || 'word';
+  });
 
   const [queue, setQueue] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(null);
@@ -151,6 +152,11 @@ export const StandardQuiz = ({
     setStartTime(Date.now());
     setTimeout(() => inputRef.current?.focus(), 150);
   };
+
+  // 自動直接開局（依據 Lobby 整備室設定，零二次彈窗）
+  useEffect(() => {
+    handleStart();
+  }, [queue.length]);
 
   // 重新播放當前題目語音
   const handleReplayAudio = useCallback(() => {
@@ -273,131 +279,7 @@ export const StandardQuiz = ({
     }
   };
 
-  // 尚未開始畫面
-  if (!hasStarted) {
-    return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4">
-        <GlassCard className="max-w-lg w-full text-center p-6 sm:p-8">
-          <div className="w-20 h-20 rounded-3xl bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-4 shadow-sm">
-            {mode === 'quiz-listening' ? <Headphones className="w-10 h-10" /> : <Volume2 className="w-10 h-10" />}
-          </div>
-
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 mb-2 font-heading">
-            {isAlphabetMode
-              ? (isChoiceMode
-                  ? (choiceDirection === 'en-zh' ? '看小寫選大寫' : choiceDirection === 'mixed' ? '大小寫雙向速測' : '看大寫選小寫')
-                  : mode === 'quiz-listening' ? '聽音選字母' : '字母趣味測驗')
-              : (isChoiceMode
-                  ? (choiceDirection === 'en-zh' ? t.quizEnZh : choiceDirection === 'mixed' ? '中英字義速辨（雙向速測）' : t.quizZhEn)
-                  : mode === 'quiz-listening' ? t.quizListening : t.quizHard)}
-          </h2>
-
-          {/* 🌟 中英雙向字義速辨專屬：膠囊式切換欄 [🇨🇳➔🇬🇧 看中選英 | 🇬🇧➔🇨🇳 看英選中 | 🔀 雙向速測] 🌟 */}
-          {isChoiceMode && (
-            <div className="my-5 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 max-w-md mx-auto flex gap-1.5 shadow-inner">
-              <button
-                type="button"
-                onClick={() => setChoiceDirection('zh-en')}
-                className={`flex-1 py-2 px-2.5 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                  choiceDirection === 'zh-en'
-                    ? 'bg-sky-600 text-white shadow-md scale-[1.02]'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <span>🇨🇳➔🇬🇧</span>
-                <span>{isAlphabetMode ? '看大選小' : '看中選英'}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setChoiceDirection('en-zh')}
-                className={`flex-1 py-2 px-2.5 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                  choiceDirection === 'en-zh'
-                    ? 'bg-indigo-600 text-white shadow-md scale-[1.02]'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <span>🇬🇧➔🇨🇳</span>
-                <span>{isAlphabetMode ? '看小選大' : '看英選中'}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setChoiceDirection('mixed')}
-                className={`flex-1 py-2 px-2.5 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                  choiceDirection === 'mixed'
-                    ? 'bg-purple-600 text-white shadow-md scale-[1.02]'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <span>🔀</span>
-                <span>雙向速測</span>
-              </button>
-            </div>
-          )}
-
-          {/* 🌟 聽力測驗專屬：膠囊式切換欄 [🐣 單字辨音 | 🦁 句子辨句 | 💬 情境問答] 🌟 */}
-          {mode === 'quiz-listening' && (
-            <div className="my-5 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 max-w-md mx-auto flex gap-1.5 shadow-inner">
-              <button
-                type="button"
-                onClick={() => setListeningSubMode('word')}
-                className={`flex-1 py-2 px-2.5 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                  listeningSubMode === 'word'
-                    ? 'bg-blue-600 text-white shadow-md scale-[1.02]'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <span>🐣</span>
-                <span>單字辨音</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setListeningSubMode('sentence')}
-                className={`flex-1 py-2 px-2.5 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                  listeningSubMode === 'sentence'
-                    ? 'bg-emerald-600 text-white shadow-md scale-[1.02]'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <span>🦁</span>
-                <span>句子辨句</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setListeningSubMode('qa')}
-                className={`flex-1 py-2 px-2.5 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                  listeningSubMode === 'qa'
-                    ? 'bg-indigo-600 text-white shadow-md scale-[1.02]'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <span>💬</span>
-                <span>情境問答</span>
-              </button>
-            </div>
-          )}
-
-          <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
-            {mode === 'quiz-listening' && listeningSubMode === 'sentence'
-              ? `聆聽小鎮生活英語原音，選出聽到的正確句子 (共 ${queue.length} 題)`
-              : mode === 'quiz-listening' && listeningSubMode === 'qa'
-              ? `聆聽小鎮在地好友提問，選出最得體的生活答句 (共 ${queue.length} 題)`
-              : t.quizQuestionCountHint.replace('{count}', queue.length)}
-          </p>
-
-          <div className="space-y-3">
-            <Button3D variant="blue" size="lg" onClick={handleStart} className="w-full">
-              {t.startChallenge}
-            </Button3D>
-            <Button3D variant="slate" size="md" onClick={onBack} className="w-full">
-              {t.backLobby}
-            </Button3D>
-          </div>
-        </GlassCard>
-      </div>
-    );
-  }
-
-  // 測驗結算畫面
+// 測驗結算畫面
   if (isFinished) {
     const isTownListeningMode = mode === 'quiz-listening' && (listeningSubMode === 'sentence' || listeningSubMode === 'qa');
     const rangeDescription = isTownListeningMode

@@ -8,7 +8,8 @@ import {
   drawCloudedLeopard,
   drawJungleMonkey,
   drawButterfly,
-  drawMountainButterfly
+  drawMountainButterfly,
+  drawFirefly
 } from './snakeJungleTheme';
 
 export const SnakeCanvas2D = ({
@@ -174,44 +175,115 @@ export const SnakeCanvas2D = ({
         });
       }
 
+      // 夜間螢火蟲緩慢漂移物理
+      if (isDark) {
+        firefliesRef.current.forEach(ff => {
+          ff.x += ff.vx * dt;
+          ff.y += ff.vy * dt;
+          if (ff.x < 45) { ff.x = 45; ff.vx = Math.abs(ff.vx); }
+          if (ff.x > width - 45) { ff.x = width - 45; ff.vx = -Math.abs(ff.vx); }
+          if (ff.y < 45) { ff.y = 45; ff.vy = Math.abs(ff.vy); }
+          if (ff.y > height - 45) { ff.y = height - 45; ff.vy = -Math.abs(ff.vy); }
+        });
+      }
+
       // ─── 5. 畫布繪製 (Canvas Rendering) ───
       ctx.clearRect(0, 0, width, height);
 
       if (theme === 'indigenous') {
-        // ⛰️ 霧台神山：清晨高山草甸與溫潤板岩綠 (提升亮度，告別深黑！)
-        ctx.fillStyle = '#1e3a2f'; // 清新高山青綠底色
-        ctx.fillRect(0, 0, width, height);
+        if (!isDark) {
+          // ☀️ 白晝晨曦：翠綠高山草地 2D 俯視
+          ctx.fillStyle = '#166534'; // 晨曦翠綠高山草皮底色
+          ctx.fillRect(0, 0, width, height);
 
-        // 溫潤板岩青石棋盤格微對比
-        for (let x = 0; x < gridW; x++) {
-          for (let y = 0; y < gridH; y++) {
-            if ((x + y) % 2 === 0) {
-              ctx.fillStyle = '#26483a';
-              ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
+          // 雙色翠綠草坪棋盤格微凹槽對比
+          for (let x = 0; x < gridW; x++) {
+            for (let y = 0; y < gridH; y++) {
+              if ((x + y) % 2 === 0) {
+                ctx.fillStyle = '#15803d'; // 明亮翠綠
+                ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
+              }
             }
           }
+
+          // 晨曦朝陽溫潤微光
+          const morningGlow = ctx.createLinearGradient(0, 0, width, height);
+          morningGlow.addColorStop(0, 'rgba(254, 240, 138, 0.12)');
+          morningGlow.addColorStop(1, 'rgba(34, 197, 94, 0.06)');
+          ctx.fillStyle = morningGlow;
+          ctx.fillRect(0, 0, width, height);
+
+          // 四周灌木與純白百合花圍欄
+          drawLushBushBorder(ctx, width, height, time, 'indigenous', cheerTimerRef.current);
+
+          // 彩蛋：雲豹與黑熊
+          drawCloudedLeopard(ctx, leopardPosRef.current.x, leopardPosRef.current.y, time);
+          drawBlackBear(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering);
+
+          // 靈動飛舞的國寶鳳蝶
+          butterfliesRef.current.forEach(bf => {
+            drawMountainButterfly(ctx, bf.x, bf.y, bf.angle, time);
+          });
+        } else {
+          // 🌙 月夜幽谷：深邃月夜草坪 2D 俯視
+          ctx.fillStyle = '#061a15'; // 月夜墨藍綠草坪底色
+          ctx.fillRect(0, 0, width, height);
+
+          // 深色草坪棋盤格
+          for (let x = 0; x < gridW; x++) {
+            for (let y = 0; y < gridH; y++) {
+              if ((x + y) % 2 === 0) {
+                ctx.fillStyle = '#0a241e';
+                ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
+              }
+            }
+          }
+
+          // 皎潔月光幽谷漸層
+          const moonlightGlow = ctx.createLinearGradient(0, 0, width, height);
+          moonlightGlow.addColorStop(0, 'rgba(56, 189, 248, 0.08)');
+          moonlightGlow.addColorStop(1, 'rgba(99, 102, 241, 0.04)');
+          ctx.fillStyle = moonlightGlow;
+          ctx.fillRect(0, 0, width, height);
+
+          // 🌟 每隔 7 秒一次的 45° 金屬月光掃光 (Moonlight Specular Sweep)
+          const sweepDuration = 1.8;
+          const sweepPeriod = 7.0;
+          const sweepCycleTime = (time % sweepPeriod);
+          if (sweepCycleTime < sweepDuration) {
+            const sweepProgress = sweepCycleTime / sweepDuration;
+            const sweepCenter = (width + height) * sweepProgress - (width * 0.2);
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, width, height);
+            ctx.clip();
+
+            const sweepGrad = ctx.createLinearGradient(
+              sweepCenter - 80, sweepCenter - 80,
+              sweepCenter + 80, sweepCenter + 80
+            );
+            sweepGrad.addColorStop(0, 'rgba(224, 242, 254, 0)');
+            sweepGrad.addColorStop(0.5, 'rgba(224, 242, 254, 0.16)');
+            sweepGrad.addColorStop(1, 'rgba(224, 242, 254, 0)');
+
+            ctx.fillStyle = sweepGrad;
+            ctx.fillRect(0, 0, width, height);
+            ctx.restore();
+          }
+
+          // 四周夜幕灌木圍欄
+          drawLushBushBorder(ctx, width, height, time, 'indigenous', cheerTimerRef.current);
+
+          // 彩蛋：雲豹與黑熊
+          drawCloudedLeopard(ctx, leopardPosRef.current.x, leopardPosRef.current.y, time);
+          drawBlackBear(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering);
+
+          // 🌟 緩慢漂浮微光呼吸的夜光螢火蟲 (取代白天的蝴蝶)
+          firefliesRef.current.forEach(ff => {
+            drawFirefly(ctx, ff.x, ff.y, time, ff.phase);
+          });
         }
-
-        // 神山高山微光漸層 (清朗晨光)
-        const mountainGlow = ctx.createLinearGradient(0, 0, width, height);
-        mountainGlow.addColorStop(0, 'rgba(253, 230, 138, 0.08)');
-        mountainGlow.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
-        ctx.fillStyle = mountainGlow;
-        ctx.fillRect(0, 0, width, height);
-
-        // 繪製四周厚實重疊茂密灌木叢，純白百合花自然穿插生長在葉隙中！
-        drawLushBushBorder(ctx, width, height, time, 'indigenous', cheerTimerRef.current);
-
-        // 探頭彩蛋：台灣雲豹 (左下邊界灌木後方)
-        drawCloudedLeopard(ctx, leopardPosRef.current.x, leopardPosRef.current.y, time);
-
-        // 探頭彩蛋：台灣黑熊 (右上邊界灌木後方，答對時高舉雙掌歡呼)
-        drawBlackBear(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering);
-
-        // 台灣國寶神山鳳蝶飛舞彩蛋 (燕尾黑天鵝絨紅寶石斑)
-        butterfliesRef.current.forEach(bf => {
-          drawMountainButterfly(ctx, bf.x, bf.y, bf.angle, time);
-        });
 
       } else {
         // 🌿 陽光熱帶雨林：明朗生機翠綠 (已徹底移除突兀的淡黃色大圓圈！)
@@ -250,14 +322,15 @@ export const SnakeCanvas2D = ({
           { ...letter, renderX, renderY },
           theme,
           isNext,
-          time
+          time,
+          isDark
         );
       });
 
       // ─── 7. 繪製平滑蛇身 (Snake Body & Head) ───
       if (spine.length >= 2) {
         if (theme === 'indigenous') {
-          drawHundredPaceSnake(ctx, spine, time, bulgesRef.current, isDead, isInvulnerable);
+          drawHundredPaceSnake(ctx, spine, time, bulgesRef.current, isDead, isInvulnerable, isDark);
         } else {
           drawGreenSnake(ctx, spine, time, bulgesRef.current, isDead, isInvulnerable);
         }

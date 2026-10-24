@@ -258,6 +258,7 @@ export const BattleGame = ({
   const raidQueueRef = useRef([]);
   const isProcessingRaidRef = useRef(false);
   const raidMissStreakRef = useRef(0);
+  const lastRaidTimeRef = useRef(0); // 發射冷卻計時器，防護 Supabase Realtime 頻寬與客戶端負載
 
   // 飄浮動態通知
   const [noticeBanner, setNoticeBanner] = useState(null);
@@ -702,7 +703,8 @@ export const BattleGame = ({
     setActiveRaid({
       ...nextRaid,
       isMega,
-      missStreak: currentStreak
+      missStreak: currentStreak,
+      slot: nextRaid.slot || 'left'
     });
   }, []);
 
@@ -1030,12 +1032,18 @@ export const BattleGame = ({
           if (isMega) {
             showNotice(`🚨 致命警告！來自【${payload.attackerName}】的毀滅烈焰空襲！墜地將扣心！`, 'danger');
           } else {
-            showNotice(`⚠️ 來自【${payload.attackerName}】的突襲空襲！速點 5 下防衛！`, 'warning');
+            showNotice(`⚠️ 來自【${payload.attackerName}】的突襲空襲！速點 3 下防衛！`, 'warning');
+          }
+
+          // 核心保護機制：佇列最多保留 2 顆，超過立即丟棄，杜絕排隊卡死與流量崩潰
+          if (raidQueueRef.current.length >= 2) {
+            return;
           }
 
           raidQueueRef.current.push({
             id: payload.raidId || Math.random(),
-            attackerName: payload.attackerName
+            attackerName: payload.attackerName,
+            slot: Math.random() > 0.5 ? 'right' : 'left'
           });
           processNextRaid();
         }
@@ -1191,10 +1199,10 @@ export const BattleGame = ({
     setOptions(opts);
   };
 
-  // 召喚單字隕石 (鎖定中心 44%~56% 走廊，徹底與左側空襲 10%~25% 及右側連擊 74%~96% 零遮蔽隔開)
+  // 召喚單字隕石 (在 35%~65% 動態中央走廊，避開兩側 14%~26% 及 74%~86% 突襲空域)
   const spawnMeteor = (wordObj, questionIndex) => {
     const duration = calculateMeteorDuration(questionIndex);
-    const xPos = 44 + Math.random() * 12;
+    const xPos = 35 + Math.random() * 30;
 
     setCurrentMeteor({
       word: wordObj,
@@ -1292,10 +1300,12 @@ export const BattleGame = ({
 
       if (nextCombo >= 2) soundEngine.combo(nextCombo);
 
-      // ── 互動機制 1：連對 3 題 (Combo 3) 突襲赤紅隕石 ──
-      if (nextCombo % 3 === 0) {
+      // ── 互動機制 1：連對 5 題 (Combo 5) 突襲赤紅隕石 (附帶 3 秒冷卻防護 Supabase 流量與客戶端佇列) ──
+      const now = Date.now();
+      if (nextCombo >= 5 && nextCombo % 5 === 0 && (now - lastRaidTimeRef.current > 3000)) {
+        lastRaidTimeRef.current = now;
         soundEngine.combo(4);
-        showNotice('🔥 3連擊！已向所有對手發射突襲赤紅隕石施加干擾！', 'success');
+        showNotice('🔥 5連擊！已向所有對手發射突襲赤紅隕石施加干擾！', 'success');
         if (channelRef.current) {
           channelRef.current.send({
             type: 'broadcast',

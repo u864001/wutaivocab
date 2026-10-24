@@ -214,10 +214,13 @@ export const SnakeGame = ({
 
   const handleStart = (mode) => {
     const isAlpha = qualifyingBook === 'abc' || (settings?.selectedUnits && settings.selectedUnits.includes('abc')) || settings?.alphaMode;
-    const filtered = isAlpha ? [{ id: 'alpha_start', en: 'ALPHABET', zh: '26 字母巡航' }] : words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
+    const filtered = isAlpha ? [{ id: 'alpha_start', en: 'ALPHABET', zh: '26 字母巡航' }] : words.filter(w => settings.selectedUnits?.includes(`${w.book}-${w.lesson}`));
     if (!isAlpha && filtered.length === 0) {
-      alert('請先在主畫面勾選複習範圍！');
-      return onBack();
+      if (words && words.length > 0) {
+        filtered.push(...words.slice(0, 10));
+      } else {
+        filtered.push({ id: 'fallback_1', en: 'HELLO', zh: '你好' });
+      }
     }
     wordQueueRef.current = [...filtered].sort(() => 0.5 - Math.random());
     completedWordsRef.current.clear();
@@ -244,6 +247,12 @@ export const SnakeGame = ({
     enterFullscreen();
     loadNextWord();
   };
+
+  // 自動直接開局（依據 Lobby 整備室設定的難度，零二次彈窗）
+  useEffect(() => {
+    const savedDiff = localStorage.getItem('wutai_snake_difficulty') || 'normal';
+    handleStart(savedDiff);
+  }, []);
 
   const handleBackToLobby = () => {
     exitFullscreen();
@@ -494,98 +503,6 @@ export const SnakeGame = ({
       letter.char === currentWord.en.toLowerCase()[spelledChars.length]
     );
   };
-
-  // ─── 遊戲前大廳畫面 ───
-  if (!hasStarted) {
-    return (
-      <div className="min-h-[75vh] flex items-center justify-center p-4">
-        <GlassCard className="max-w-lg w-full text-center p-8 backdrop-blur-xl border border-white/20 shadow-2xl">
-          <div className={`w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-4 animate-bounce shadow-lg ${
-            theme === 'indigenous'
-              ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30'
-              : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-          }`}>
-            {theme === 'indigenous' ? (
-              <span className="text-5xl">🐍</span>
-            ) : (
-              <Sparkles className="w-12 h-12" />
-            )}
-          </div>
-
-          <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 mb-2 font-heading tracking-tight">
-            {theme === 'indigenous' ? '⛰️ 霧台神山 • 百步蛇拼字傳奇' : '🌿 陽光熱帶雨林 • 字母貪食蛇'}
-          </h2>
-
-          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
-            {theme === 'indigenous'
-              ? '化身排灣與魯凱族守護神獸「百步蛇」，在茂密高山灌木與隨風搖曳的純白百合花間穿梭，累積勇士積分！'
-              : t.snakeHelp}
-          </p>
-
-          {/* 雙主題風格切換器 */}
-          <div className="mb-6 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center gap-1">
-            <button
-              onClick={() => handleToggleTheme('indigenous')}
-              className={`flex-1 py-2.5 px-3 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all ${
-                theme === 'indigenous'
-                  ? 'bg-amber-500 text-stone-950 shadow-md scale-100 font-extrabold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Mountain className="w-4 h-4" />
-              <span>霧台神山百步蛇</span>
-            </button>
-            <button
-              onClick={() => handleToggleTheme('jungle')}
-              className={`flex-1 py-2.5 px-3 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all ${
-                theme === 'jungle'
-                  ? 'bg-emerald-500 text-white shadow-md scale-100 font-extrabold'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Trees className="w-4 h-4" />
-              <span>陽光熱帶雨林</span>
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            <Button3D
-              variant={theme === 'indigenous' ? 'amber' : 'emerald'}
-              size="lg"
-              onClick={() => handleStart('easy')}
-              className="w-full text-base"
-            >
-              {t.snakeEasy}
-            </Button3D>
-            <Button3D
-              variant={theme === 'indigenous' ? 'amber' : 'amber'}
-              size="lg"
-              onClick={() => handleStart('normal')}
-              className="w-full text-base"
-            >
-              {t.snakeNormal}
-            </Button3D>
-            <Button3D
-              variant={theme === 'indigenous' ? 'stone' : 'blue'}
-              size="lg"
-              onClick={() => handleStart('survival')}
-              className="w-full text-base"
-            >
-              {t.snakeSurvival}
-            </Button3D>
-            <Button3D
-              variant="slate"
-              size="md"
-              onClick={handleBackToLobby}
-              className="w-full mt-2"
-            >
-              {t.backLobby}
-            </Button3D>
-          </div>
-        </GlassCard>
-      </div>
-    );
-  }
 
   // ─── 遊戲結算畫面 ───
   if (isFinished) {

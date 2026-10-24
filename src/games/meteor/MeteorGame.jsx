@@ -189,8 +189,11 @@ export const MeteorGame = ({
     const pool = getSelectedPool(mode);
 
     if (pool.length === 0) {
-      alert('請先在主畫面勾選複習範圍！');
-      return onBack();
+      if (words && words.length > 0) {
+        pool.push(...words.slice(0, 10));
+      } else {
+        pool.push({ id: 'fallback_1', en: 'STAR', zh: '星星' });
+      }
     }
 
     const shuffled = [...pool].sort(() => 0.5 - Math.random());
@@ -199,6 +202,16 @@ export const MeteorGame = ({
     updateOptionsFor(first, mode);
     spawnMeteor(first, 0, mode);
   };
+
+  // 自動直接開局（預設 3D 單字擊墜，零二次彈窗）
+  useEffect(() => {
+    const isAlpha = Boolean(
+      qualifyingBook === 'abc' ||
+      (settings?.selectedUnits && settings.selectedUnits.includes('abc')) ||
+      settings?.alphaMode
+    );
+    handleStart(isAlpha ? 'abc' : 'words');
+  }, []);
 
   // 2D 備援模式下的物理落下循環 (與 3D 物理引擎 100% 同步)
   useEffect(() => {
@@ -355,43 +368,6 @@ export const MeteorGame = ({
     updateOptionsFor(nextWord, subModeRef.current);
     spawnMeteor(nextWord, currentDestroyedCount, subModeRef.current);
   };
-
-  // 模式選擇前導頁
-  if (!hasStarted) {
-    return (
-      <div className="min-h-[75vh] flex items-center justify-center p-4">
-        <GlassCard className="max-w-lg w-full text-center p-4 sm:p-6 md:p-8">
-          <div className="w-20 h-20 rounded-3xl bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-4 animate-float-slow">
-            <Rocket className="w-10 h-10" />
-          </div>
-          <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1 font-heading">
-            {t.meteorTitle} 3D
-          </h2>
-          <p className="text-xs font-bold text-cyan-600 dark:text-cyan-400 mb-2">
-            ● 地球守衛戰：攔截星際隕石群
-          </p>
-          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-6">
-            {t.selectDefenseMode}
-          </p>
-
-          <div className="space-y-3">
-            <Button3D variant="blue" size="lg" onClick={() => handleStart('zh-en')} className="w-full">
-              {t.meteorZhEn}
-            </Button3D>
-            <Button3D variant="emerald" size="lg" onClick={() => handleStart('en-zh')} className="w-full">
-              {t.meteorEnZh}
-            </Button3D>
-            <Button3D variant="amber" size="lg" onClick={() => handleStart('abc')} className="w-full">
-              {t.meteorAbc}
-            </Button3D>
-            <Button3D variant="slate" size="md" onClick={onBack} className="w-full mt-2">
-              {t.backLobby}
-            </Button3D>
-          </div>
-        </GlassCard>
-      </div>
-    );
-  }
 
   // 結算畫面
   if (isFinished) {

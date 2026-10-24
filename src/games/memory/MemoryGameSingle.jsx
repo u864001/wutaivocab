@@ -271,6 +271,11 @@ export const MemoryGameSingle = ({
     enterFullscreen();
   };
 
+  // 自動直接開局發牌（依據 Lobby 整備室設定，零二次彈窗）
+  useEffect(() => {
+    handleStart();
+  }, []);
+
   // 點擊卡牌處理
   const handleCardClick = (index) => {
     const card = cards[index];
@@ -428,79 +433,6 @@ export const MemoryGameSingle = ({
       }
     }
   };
-
-  // ─── 遊戲前大廳 ───
-  if (!hasStarted) {
-    return (
-      <div className="min-h-[75vh] flex items-center justify-center p-4">
-        {/* 八大卡牌精靈圖鑑彈窗 */}
-        <PowerUpCodexModal isOpen={showCodex} onClose={() => setShowCodex(false)} />
-
-        <GlassCard className="max-w-lg w-full text-center p-8 backdrop-blur-xl border border-white/20 shadow-2xl">
-          <div className="w-20 h-20 rounded-3xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-4 animate-float-slow shadow-lg border border-cyan-500/30">
-            <Sparkles className="w-10 h-10" />
-          </div>
-
-          <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 mb-2 font-heading tracking-tight">
-            {t.memoryTitle}
-          </h2>
-
-          <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
-            共 20 張卡片（8 組中英單字 + 4 張隨機正增強神卡），翻開成對單字即可消除，連續配對可獲得 Bonus 額外回合！
-          </p>
-
-          {/* 四大卡牌色系風格切換器 */}
-          <div className="mb-6 p-2 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-            <div className="flex items-center justify-between px-2 mb-2">
-              <span className="text-xs font-black text-slate-600 dark:text-slate-300 flex items-center gap-1">
-                <Palette className="w-3.5 h-3.5 text-amber-400" /> 選擇卡牌外觀風格
-              </span>
-              <span className="text-xs font-extrabold text-amber-500">
-                {currentCardTheme.name}
-              </span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-              {Object.values(CARD_THEMES).map(themeItem => (
-                <button
-                  key={themeItem.id}
-                  onClick={() => handleToggleCardTheme(themeItem.id)}
-                  className={`py-2 px-1.5 rounded-xl font-black text-xs flex items-center justify-center gap-1 transition-all ${
-                    cardThemeId === themeItem.id
-                      ? 'bg-amber-400 text-stone-950 shadow-md scale-100 font-extrabold ring-2 ring-amber-300'
-                      : 'bg-white dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-                  }`}
-                >
-                  <span>{themeItem.icon}</span>
-                  <span className="truncate">{themeItem.name.slice(0, 4)}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 進入八大卡牌精靈圖鑑按鈕 */}
-          <button
-            onClick={() => {
-              soundEngine.click();
-              setShowCodex(true);
-            }}
-            className="w-full mb-4 py-3 px-4 rounded-2xl bg-gradient-to-r from-indigo-900/60 to-purple-900/60 hover:from-indigo-800/80 hover:to-purple-800/80 border-2 border-indigo-400/50 text-indigo-200 font-black text-sm flex items-center justify-center gap-2 shadow-lg transition-all hover:scale-[1.02]"
-          >
-            <BookOpen className="w-4 h-4 text-amber-400" />
-            <span>開啟「八大功能卡牌精靈圖鑑」(含實戰動畫模擬)</span>
-          </button>
-
-          <div className="space-y-3">
-            <Button3D variant="blue" size="lg" onClick={handleStart} className="w-full text-base">
-              開始翻牌冒險
-            </Button3D>
-            <Button3D variant="slate" size="md" onClick={onBack} className="w-full">
-              {t.backLobby}
-            </Button3D>
-          </div>
-        </GlassCard>
-      </div>
-    );
-  }
 
   // ─── 結算畫面 ───
   if (isFinished) {

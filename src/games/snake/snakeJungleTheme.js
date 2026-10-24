@@ -216,7 +216,8 @@ export const drawHundredPaceSnake = (
   time,
   bulges = [],
   isDead = false,
-  isInvulnerable = false
+  isInvulnerable = false,
+  isDark = false
 ) => {
   if (!spine || spine.length < 2) return;
   ctx.save();
@@ -289,16 +290,16 @@ export const drawHundredPaceSnake = (
     }
     ctx.closePath();
 
-    // 蛇身底色：飽滿立體的暖赤栗褐 (#7c2d12)
-    ctx.fillStyle = '#7c2d12';
+    // 蛇身底色：白晝暖赤栗褐 vs 月夜黑曜板岩
+    ctx.fillStyle = isDark ? '#18232c' : '#7c2d12';
     ctx.fill();
 
-    // 外輪廓深褐細描邊
-    ctx.strokeStyle = '#431407';
+    // 外輪廓深色細描邊
+    ctx.strokeStyle = isDark ? '#0b1116' : '#431407';
     ctx.lineWidth = 1.8;
     ctx.stroke();
 
-    // 2) 沿著連貫中心線，在各骨骼節點處繪製經典祖靈黑白金幾何三角菱形紋 (等比 80%)
+    // 2) 沿著連貫中心線，在各骨骼節點處繪製經典祖靈幾何三角菱形紋 (等比 80%)
     for (let k = chain.length - 1; k >= 1; k--) {
       const item = chain[k];
       const pt = item.pt;
@@ -319,25 +320,49 @@ export const drawHundredPaceSnake = (
       ctx.translate(pt.x, pt.y);
       ctx.rotate(angle);
 
-      // 高純度雪白幾何外三角
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.moveTo(-r * 0.72, 0);
-      ctx.lineTo(0, -r * 0.85);
-      ctx.lineTo(r * 0.72, 0);
-      ctx.lineTo(0, r * 0.85);
-      ctx.closePath();
-      ctx.fill();
+      if (isDark) {
+        // 🌙 夜間：深黑幾何外三角 + 幽微琉璃琥珀呼吸微光（絕非全身刺眼光棒）
+        const pulse = 0.55 + 0.45 * Math.sin(time * 3.5 + gIdx * 0.4);
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.72, 0);
+        ctx.lineTo(0, -r * 0.85);
+        ctx.lineTo(r * 0.72, 0);
+        ctx.lineTo(0, r * 0.85);
+        ctx.closePath();
+        ctx.fill();
 
-      // 燦爛金黃幾何內菱形
-      ctx.fillStyle = gIdx % 2 === 0 ? '#facc15' : '#fbbf24';
-      ctx.beginPath();
-      ctx.moveTo(-r * 0.44, 0);
-      ctx.lineTo(0, -r * 0.54);
-      ctx.lineTo(r * 0.44, 0);
-      ctx.lineTo(0, r * 0.54);
-      ctx.closePath();
-      ctx.fill();
+        ctx.fillStyle = `rgba(245, 158, 11, ${pulse})`;
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 6 * pulse;
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.44, 0);
+        ctx.lineTo(0, -r * 0.54);
+        ctx.lineTo(r * 0.44, 0);
+        ctx.lineTo(0, r * 0.54);
+        ctx.closePath();
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      } else {
+        // ☀️ 白天：高純度雪白幾何外三角 + 燦爛金黃幾何內菱形
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.72, 0);
+        ctx.lineTo(0, -r * 0.85);
+        ctx.lineTo(r * 0.72, 0);
+        ctx.lineTo(0, r * 0.85);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = gIdx % 2 === 0 ? '#facc15' : '#fbbf24';
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.44, 0);
+        ctx.lineTo(0, -r * 0.54);
+        ctx.lineTo(r * 0.44, 0);
+        ctx.lineTo(0, r * 0.54);
+        ctx.closePath();
+        ctx.fill();
+      }
 
       ctx.restore();
     }
@@ -368,8 +393,8 @@ export const drawHundredPaceSnake = (
   }
 
   // 經典尖吻翹鼻頭型 (原比例 80%)
-  ctx.fillStyle = '#9a3412';
-  ctx.strokeStyle = '#431407';
+  ctx.fillStyle = isDark ? '#1e293b' : '#9a3412';
+  ctx.strokeStyle = isDark ? '#0b1116' : '#431407';
   ctx.lineWidth = 2.2;
   ctx.beginPath();
   ctx.moveTo(20, 0);
@@ -382,14 +407,14 @@ export const drawHundredPaceSnake = (
   ctx.fill();
   ctx.stroke();
 
-  // 鼻尖肉質微翹小特徵
-  ctx.fillStyle = '#ea580c';
+  // 鼻尖肉質微翹小特徵 (白晝暖橙 vs 月夜琥珀金)
+  ctx.fillStyle = isDark ? '#f59e0b' : '#ea580c';
   ctx.beginPath();
   ctx.arc(18.5, 0, 3.0, 0, Math.PI * 2);
   ctx.fill();
 
   // 頭頂祖靈王冠金黃紋
-  ctx.fillStyle = '#fde047';
+  ctx.fillStyle = isDark ? '#fbbf24' : '#fde047';
   ctx.beginPath();
   ctx.moveTo(6.5, 0);
   ctx.lineTo(-1, -5.5);
@@ -997,6 +1022,37 @@ export const drawMountainButterfly = (ctx, x, y, angle, time) => {
   ctx.fillStyle = '#09090b';
   ctx.beginPath();
   ctx.ellipse(0, 0, 1.4, 7.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+};
+
+/**
+ * 繪製月夜幽谷螢火蟲 (緩慢漂浮、間歇性呼吸微光)
+ */
+export const drawFirefly = (ctx, x, y, time, phase = 0) => {
+  ctx.save();
+  // 緩慢懸浮微幅漂移
+  const hoverX = x + Math.sin(time * 0.8 + phase) * 8;
+  const hoverY = y + Math.cos(time * 0.6 + phase) * 8;
+
+  // 2.5 秒週期的柔和呼吸光
+  const breath = Math.pow(Math.sin(time * 2.5 + phase), 4);
+  const glow = 0.25 + 0.75 * breath;
+
+  // 螢火蟲外圈冷綠微光光暈
+  ctx.shadowColor = '#a3e635';
+  ctx.shadowBlur = 12 * glow;
+
+  ctx.fillStyle = `rgba(163, 230, 53, ${0.4 * glow})`;
+  ctx.beginPath();
+  ctx.arc(hoverX, hoverY, 6 * glow, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 核心微明亮點
+  ctx.fillStyle = `rgba(254, 240, 138, ${0.9 * glow})`;
+  ctx.beginPath();
+  ctx.arc(hoverX, hoverY, 2.2, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.restore();

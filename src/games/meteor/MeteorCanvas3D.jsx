@@ -104,9 +104,9 @@ export const MeteorCanvas3D = ({
     sceneRef.current = scene;
     scene.fog = new THREE.FogExp2(0x060919, 0.008);
 
-    // 2. 相機 (Camera)
-    const camera = new THREE.PerspectiveCamera(48, width / height, 0.1, 800);
-    camera.position.set(0, 1.5, 24);
+    // 2. 相機 (Camera) - 適度後拉相機至 z: 27，拓展深空視野
+    const camera = new THREE.PerspectiveCamera(46, width / height, 0.1, 800);
+    camera.position.set(0, 1.8, 27);
     cameraRef.current = camera;
 
     // 3. 渲染器 (WebGLRenderer)
@@ -266,10 +266,10 @@ export const MeteorCanvas3D = ({
         shakeRef.current.time -= delta;
         const mag = shakeRef.current.intensity;
         camera.position.x = (Math.random() - 0.5) * mag;
-        camera.position.y = 1.5 + (Math.random() - 0.5) * mag;
+        camera.position.y = 1.8 + (Math.random() - 0.5) * mag;
       } else {
         camera.position.x = 0;
-        camera.position.y = 1.5;
+        camera.position.y = 1.8;
       }
 
       // 更新隕石本體動畫與尾跡
@@ -494,9 +494,9 @@ export const MeteorCanvas3D = ({
     if (!currentMeteor || isExploding) return;
 
     const targetX = ((currentMeteor.x - 50) / 35) * 11;
-    const spawnZ = -55;
-    const targetZ = 12;
-    const spawnY = 16;
+    const spawnZ = -75; // 大幅拉深起始空域，讓學生有更充裕的辨字反應時間
+    const targetZ = 6;  // 地平線墜落終點推遠，避免在靠近鏡頭時過大遮蓋畫面
+    const spawnY = 17;
     const targetY = -4;
 
     const startPos = new THREE.Vector3(targetX * 0.7, spawnY, spawnZ);

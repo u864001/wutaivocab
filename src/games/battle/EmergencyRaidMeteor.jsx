@@ -1,25 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { soundEngine } from '../../services/audio';
 import confetti from 'canvas-confetti';
-import { Flame, AlertTriangle, ShieldAlert, Skull, ShieldCheck } from 'lucide-react';
+import { Flame, AlertTriangle, ShieldAlert, Skull, ShieldCheck, Zap } from 'lucide-react';
 
 /**
  * 突襲隕石 (Emergency Raid Meteor) 組件
- * - 敵方連對 3 題時向所有對手投放
- * - 專屬「左側空域走廊」(10%~25%)，絕不遮蔽中央單字題與右側連擊氣球！
- * - 3 秒內手速狂點 5 下防禦打爆：
- *   - 成功防禦：不加分 (+0分)，重置墜地連續扣分連鎖 (連鎖歸零)。
- *   - 逾時墜地：
- *     - 第 1~5 顆：扣分 (10 + combo扣分加成)，不扣心。
- *     - 連續 5 顆未理會後，第 6 顆起突變為「毀滅級烈焰大隕石」：墜地扣分且扣 1 顆愛心！
+ * - 敵方連對 5 題 (Combo 5) 向對手發送
+ * - 支援「雙側空域走廊」分流 (左側 14%~26% 或 右側 74%~86%)，完全不遮擋中央單字題 (35%~65%)！
+ * - 4.5 秒充裕反應時間，手速點擊 3 下（毀滅烈焰 4 下）即可成功防禦攔截！
+ * - 帶有科幻戰術折線 (HUD Cyber Leader Line) 與全息警示標牌。
  */
 export const EmergencyRaidMeteor = ({
-  raidData, // { attackerName, id, isMega, missStreak }
-  onDefended, // (isMega) => void (成功點擊 5 下防衛)
-  onImpact // (isMega) => void (逾時墜地)
+  raidData, // { attackerName, id, isMega, missStreak, slot }
+  slot = 'left',
+  onDefended,
+  onImpact
 }) => {
   const [clicks, setClicks] = useState(0);
-  const [remainingSec, setRemainingSec] = useState(3.0);
+  const [remainingSec, setRemainingSec] = useState(4.5);
   const [topPercent, setTopPercent] = useState(8);
   const [isExploding, setIsExploding] = useState(false);
   const [impacted, setImpacted] = useState(false);
@@ -28,18 +26,22 @@ export const EmergencyRaidMeteor = ({
   const animFrameRef = useRef(null);
   const handledRef = useRef(false);
 
-  const isMega = !!raidData?.isMega;
+  const isMega = Boolean(raidData?.isMega);
   const missStreak = raidData?.missStreak || 0;
   const penaltyPoints = 10 + missStreak;
+  const targetClicks = isMega ? 4 : 3;
+  const isRight = slot === 'right' || raidData?.slot === 'right';
 
-  // 專屬左側空域走廊 (10% ~ 25%)，徹底與中央題目 (38%~62%) 和右側連擊 (74%~96%) 分道揚鑣
-  const [xPos] = useState(() => 10 + Math.random() * 15);
+  // 雙側分流：左側 14%~26%，右側 74%~86%，中央 35%~65% 保留給單字題目
+  const [xPos] = useState(() => {
+    return isRight ? 74 + Math.random() * 12 : 14 + Math.random() * 12;
+  });
 
   useEffect(() => {
     startTimeRef.current = performance.now();
-    soundEngine.wrong(); // 警報聲
+    soundEngine.wrong(); // 警報提示音
 
-    const duration = 3.0; // 3 秒撞地
+    const duration = 4.5; // 4.5 秒反應時間
 
     const tick = (now) => {
       if (handledRef.current) return;
@@ -47,13 +49,13 @@ export const EmergencyRaidMeteor = ({
       const rem = Math.max(0, duration - elapsed);
       setRemainingSec(rem);
 
-      // 下墜軌跡 (8% -> 82%)
+      // 下墜軌跡 (8% -> 80%)
       const progress = Math.min(1.0, elapsed / duration);
-      const easeProgress = Math.pow(progress, 1.35);
-      setTopPercent(8 + easeProgress * 74);
+      const easeProgress = Math.pow(progress, 1.25);
+      setTopPercent(8 + easeProgress * 72);
 
       if (rem <= 0) {
-        // 逾時撞擊地表！
+        // 逾時撞擊地表
         handledRef.current = true;
         setImpacted(true);
         soundEngine.explosion();
@@ -82,7 +84,7 @@ export const EmergencyRaidMeteor = ({
     const nextClicks = clicks + 1;
     setClicks(nextClicks);
 
-    if (nextClicks >= 5) {
+    if (nextClicks >= targetClicks) {
       // 成功打爆！
       handledRef.current = true;
       setIsExploding(true);
@@ -90,9 +92,9 @@ export const EmergencyRaidMeteor = ({
 
       try {
         confetti({
-          particleCount: isMega ? 45 : 25,
-          spread: isMega ? 80 : 60,
-          colors: isMega ? ['#ec4899', '#ef4444', '#f59e0b', '#7c3aed'] : ['#ef4444', '#f97316', '#fbbf24']
+          particleCount: isMega ? 40 : 25,
+          spread: isMega ? 75 : 55,
+          colors: isMega ? ['#ec4899', '#ef4444', '#f59e0b', '#7c3aed'] : ['#38bdf8', '#06b6d4', '#10b981']
         });
       } catch (err) {}
 
@@ -111,7 +113,7 @@ export const EmergencyRaidMeteor = ({
         <div className={isMega ? 'text-6xl drop-shadow-[0_0_20px_#ef4444]' : 'text-5xl'}>💥</div>
         {isMega && (
           <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white font-black text-xs shadow-lg animate-bounce block mt-1">
-            地表受創！-1❤️ -{penaltyPoints}分
+            防線受創！-1❤️ -{penaltyPoints}分
           </span>
         )}
       </div>
@@ -127,17 +129,19 @@ export const EmergencyRaidMeteor = ({
         <div className={isMega ? 'text-6xl' : 'text-5xl'}>✨</div>
         <span className="px-2.5 py-1 rounded-full bg-emerald-500 text-white font-black text-xs shadow-xl flex items-center gap-1 border border-emerald-300">
           <ShieldCheck className="w-3.5 h-3.5" />
-          <span>{isMega ? '毀滅解除！扣分歸零' : '成功防守！扣分歸零'}</span>
+          <span>{isMega ? '烈焰解除！扣分歸零' : '成功攔截！扣分歸零'}</span>
         </span>
       </div>
     );
   }
 
+  const progressPercent = Math.min(100, (clicks / targetClicks) * 100);
+
   return (
     <div
       onClick={handleClick}
       className={`absolute -translate-x-1/2 z-40 cursor-pointer select-none pointer-events-auto touch-manipulation group transition-transform ${
-        isMega ? 'scale-110 sm:scale-125' : ''
+        isMega ? 'scale-105 sm:scale-115' : ''
       }`}
       style={{
         left: `${xPos}%`,
@@ -145,50 +149,54 @@ export const EmergencyRaidMeteor = ({
         transition: 'transform 0.05s linear'
       }}
     >
-      <div className="flex flex-col items-center">
-        {/* 頂部空襲來源名牌 */}
-        <div className={`px-2.5 py-1 mb-1 rounded-full border-2 text-[11px] font-black shadow-lg flex items-center gap-1 whitespace-nowrap ${
-          isMega
-            ? 'bg-rose-950/95 border-rose-400 text-rose-200 shadow-[0_0_25px_rgba(244,63,94,1)] animate-bounce'
-            : 'bg-rose-950/90 border-rose-500 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.7)] animate-pulse'
-        }`}>
-          {isMega ? (
-            <Skull className="w-3.5 h-3.5 text-rose-400 animate-spin-slow" />
-          ) : (
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
-          )}
-          <span>{isMega ? `⚠️ 來自 ${raidData.attackerName} 的烈焰空襲！` : `來自 ${raidData.attackerName} 的空襲！`}</span>
-          <span className="text-white font-mono font-black">({remainingSec.toFixed(1)}s)</span>
+      <div className="relative flex flex-col items-center">
+        {/* 科幻數位戰術折線 (HUD Cyber Leader Line) */}
+        <div className={`flex flex-col items-center mb-1 ${isRight ? 'items-end' : 'items-start'}`}>
+          {/* 頂部來源全息標牌 */}
+          <div className={`px-2.5 py-1 rounded-xl border-2 text-[11px] font-black shadow-xl flex items-center gap-1 whitespace-nowrap backdrop-blur-md ${
+            isMega
+              ? 'bg-rose-950/90 border-rose-400 text-rose-200 shadow-[0_0_20px_rgba(244,63,94,0.9)] animate-pulse'
+              : 'bg-slate-900/90 border-cyan-400 text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.6)]'
+          }`}>
+            {isMega ? (
+              <Skull className="w-3.5 h-3.5 text-rose-400 animate-spin-slow" />
+            ) : (
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-300 animate-bounce" />
+            )}
+            <span>來自 <span className="text-amber-300 font-extrabold">{raidData.attackerName}</span> 的突襲！</span>
+            <span className="text-white font-mono font-black ml-1">⏱️{remainingSec.toFixed(1)}s</span>
+          </div>
+
+          {/* 點擊防衛進度條 (HUD Tactical Progress) */}
+          <div className="w-full mt-0.5 px-2 py-0.5 rounded-lg bg-black/75 border border-white/20 flex items-center justify-between gap-1 text-[10px] font-black">
+            <span className="text-amber-300 flex items-center gap-0.5">
+              <Zap className="w-3 h-3 text-amber-400 fill-amber-400" />
+              <span>點擊防衛 ({clicks}/{targetClicks})</span>
+            </span>
+            <div className="w-12 h-1.5 rounded-full bg-slate-700 overflow-hidden">
+              <div
+                className={`h-full transition-all duration-150 ${isMega ? 'bg-rose-500' : 'bg-cyan-400'}`}
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
         </div>
 
-        {/* 點擊防衛按鈕標籤 */}
-        <div className={`px-3 py-0.5 mb-1 rounded-full text-white text-xs font-black shadow-md border animate-bounce ${
-          isMega
-            ? 'bg-gradient-to-r from-red-600 via-rose-600 to-purple-700 border-amber-300 shadow-[0_0_15px_rgba(239,68,68,0.9)]'
-            : 'bg-red-600 border-yellow-300'
-        }`}>
-          {isMega ? (
-            <span>💥 墜地扣心！速點 5 下！({clicks}/5)</span>
-          ) : (
-            <span>🔥 速點 5 下！(墜地扣{penaltyPoints}分) ({clicks}/5)</span>
-          )}
-        </div>
-
-        {/* 突襲赤紅 / 烈焰燃燒隕石本體 */}
-        <div className="relative group-active:scale-90 transition-transform">
-          <Flame className={`-mb-3 mx-auto animate-pulse ${
-            isMega ? 'w-14 h-14 text-rose-400 drop-shadow-[0_0_15px_#f43f5e]' : 'w-10 h-10 text-rose-500'
+        {/* 隕石本體 (支援烈焰大隕石與科技隕石核心) */}
+        <div className="relative group-active:scale-95 transition-transform">
+          <Flame className={`-mb-2.5 mx-auto animate-pulse ${
+            isMega ? 'w-12 h-12 text-rose-400 drop-shadow-[0_0_15px_#f43f5e]' : 'w-9 h-9 text-amber-400 drop-shadow-[0_0_10px_#f59e0b]'
           }`} />
 
           <div className={`rounded-full border-2 flex items-center justify-center text-white font-black shadow-2xl transition-all ${
             isMega
-              ? 'w-16 h-16 bg-gradient-to-br from-rose-500 via-red-600 to-purple-950 border-rose-300 shadow-[0_0_35px_rgba(244,63,94,1)] animate-pulse'
-              : 'w-14 h-14 bg-gradient-to-br from-red-600 via-rose-700 to-slate-900 border-rose-400 shadow-[0_0_20px_rgba(239,68,68,0.9)]'
+              ? 'w-14 h-14 bg-gradient-to-br from-rose-600 via-red-600 to-purple-950 border-rose-300 shadow-[0_0_25px_rgba(244,63,94,0.9)] animate-pulse'
+              : 'w-12 h-12 bg-gradient-to-br from-cyan-600 via-blue-700 to-slate-900 border-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.8)]'
           }`}>
             {isMega ? (
-              <Skull className="w-8 h-8 text-amber-300 animate-spin-slow" />
+              <Skull className="w-7 h-7 text-amber-300 animate-spin-slow" />
             ) : (
-              <ShieldAlert className="w-7 h-7 text-amber-300 animate-spin-slow" />
+              <ShieldAlert className="w-6 h-6 text-cyan-200 animate-pulse" />
             )}
           </div>
         </div>
