@@ -160,4 +160,14 @@ src/
 | **執行完整驗證流水線 (必跑)** | `npm run verify` |
 | **僅執行自動化端對端測試** | `npm test` |
 | **生產環境打包** | `npm run build` |
-| **部署至 Cloudflare Pages** | `$env:CLOUDFLARE_API_TOKEN="<YOUR_CLOUDFLARE_API_TOKEN>" ; npx wrangler pages deploy dist --project-name=wutaivocab --branch=main` |
+| **部署至 Cloudflare Pages** | 推送至 `main` 分支自動透過 GitHub Actions 觸發部署，亦可手動執行：`npx wrangler pages deploy dist --project-name=wutaivocab --branch=main` |
+
+---
+
+### 六、自動化部署管線 (CI/CD Pipeline)
+
+* **GitHub Actions Workflow**: `.github/workflows/deploy-cloudflare.yml`
+* **觸發條件**: 推送至 `main` 分支或手動 `workflow_dispatch`
+* **部署標的**: Cloudflare Pages (`wutaivocab` 專案)
+* **憑證依賴**: GitHub Secret `CLOUDFLARE_API_TOKEN` (具備 `Account > Cloudflare Pages > Edit` 權限) 與 Account ID `4cd48161aad48dd1884b350e37ba7c75`
+
