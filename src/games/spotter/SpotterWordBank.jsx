@@ -49,29 +49,29 @@ export const SpotterWordBank = ({
   };
 
   return (
-    <div className={`w-full rounded-2xl p-4 sm:p-5 transition-all duration-300 relative ${
+    <div className={`w-full rounded-2xl p-3 sm:p-4 transition-all duration-300 relative ${
       spotlightDiff
         ? 'bg-amber-500/10 dark:bg-amber-950/30 border-2 border-amber-400 dark:border-amber-500 shadow-xl'
         : 'bg-white/70 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 opacity-60'
     }`}>
       {/* ── 狀態導引橫幅 ── */}
-      <div className="flex items-center justify-between gap-2 mb-3.5 pb-2.5 border-b border-slate-200/80 dark:border-slate-700/80">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2 mb-2.5 pb-2 border-b border-slate-200/80 dark:border-slate-700/80">
+        <div className="flex items-center gap-2 min-w-0">
           {spotlightDiff ? (
-            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black animate-pulse">
-              <span className="p-1.5 rounded-xl bg-amber-500 text-white shadow-sm">
+            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black animate-pulse truncate">
+              <span className="p-1.5 rounded-xl bg-amber-500 text-white shadow-sm shrink-0">
                 <Target className="w-4 h-4" />
               </span>
-              <span className="text-xs sm:text-sm font-heading">
+              <span className="text-xs sm:text-sm font-heading truncate">
                 🎯 鷹眼已鎖定！請在下方點選該相異物品的英語單字：
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 font-bold">
-              <span className="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 shadow-sm">
+            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 font-bold truncate">
+              <span className="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-500 shadow-sm shrink-0">
                 <Lock className="w-4 h-4" />
               </span>
-              <span className="text-xs sm:text-sm">
+              <span className="text-xs sm:text-sm truncate">
                 🔍 請先在上方雙圖中點選找出一處不同之處（單字庫暫時鎖定，點擊不扣心）
               </span>
             </div>
@@ -85,12 +85,13 @@ export const SpotterWordBank = ({
         )}
       </div>
 
-      {/* ── 單字卡選項網格 ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5">
+      {/* ── 單字卡選項網格 (自適應 iPad 零捲動設計，超長單字動態縮小字級) ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1.5 sm:gap-2">
         {wordOptions.map((opt) => {
           const isShaking = shakingWord === opt.word;
           const isSuccess = successWord === opt.word;
           const isThisDiffSolved = activeDifferences.some(d => d.word === opt.word && solvedDiffIds.has(d.id));
+          const wordLen = (opt.word || '').length;
 
           return (
             <button
@@ -98,7 +99,7 @@ export const SpotterWordBank = ({
               type="button"
               disabled={!spotlightDiff || isThisDiffSolved}
               onClick={() => handleSelectWord(opt)}
-              className={`group relative p-2.5 sm:p-3 rounded-xl font-heading text-left transition-all flex flex-col justify-between cursor-pointer active:scale-95 ${
+              className={`group relative p-2 sm:p-2.5 rounded-xl font-heading text-left transition-all flex flex-col justify-between cursor-pointer active:scale-95 ${
                 !spotlightDiff
                   ? 'bg-slate-100 dark:bg-slate-700/50 text-slate-400 border border-transparent cursor-not-allowed opacity-75'
                   : isSuccess
@@ -110,24 +111,30 @@ export const SpotterWordBank = ({
                   : 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 hover:bg-amber-50 dark:hover:bg-amber-950/40 border-2 border-slate-200 dark:border-slate-600 hover:border-amber-400 shadow-sm hover:shadow-md hover:scale-102'
               }`}
             >
-              <div className="flex items-center justify-between w-full">
-                <span className="text-xs sm:text-sm font-black capitalize tracking-wide">
+              <div className="flex items-center justify-between w-full gap-1">
+                <span className={`font-black capitalize tracking-wide break-words ${
+                  wordLen > 14
+                    ? 'text-[10px] sm:text-[11px] leading-tight'
+                    : wordLen > 9
+                    ? 'text-xs sm:text-xs leading-snug'
+                    : 'text-xs sm:text-sm'
+                }`}>
                   {opt.word}
                 </span>
 
                 <span
                   onClick={(e) => handlePronounce(e, opt.word)}
                   title="聆聽發音"
-                  className="p-1 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-100/50 dark:hover:bg-slate-600 transition-colors"
+                  className="p-1 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-100/50 dark:hover:bg-slate-600 transition-colors shrink-0"
                 >
                   <Volume2 className="w-3.5 h-3.5" />
                 </span>
               </div>
 
               <div className="flex items-center justify-between mt-1 text-[11px] font-bold text-slate-500 dark:text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-300">
-                <span>{opt.wordZh}</span>
+                <span className="truncate">{opt.wordZh}</span>
                 {isThisDiffSolved && (
-                  <span className="text-[10px] text-emerald-500 font-black">✓ 已解</span>
+                  <span className="text-[10px] text-emerald-500 font-black shrink-0">✓ 已解</span>
                 )}
               </div>
             </button>

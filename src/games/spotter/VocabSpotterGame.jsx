@@ -551,13 +551,19 @@ export const VocabSpotterGame = ({
                           top: `${block.y}%`,
                           transform: 'translate(-50%, -50%)'
                         }}
-                        className={`absolute w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 border-dashed flex items-center justify-center text-xs font-black cursor-pointer transition-all active:scale-90 ${
+                        className={`absolute w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center font-black cursor-pointer transition-all active:scale-90 select-none ${
                           isSolved
-                            ? 'bg-emerald-500/30 border-emerald-400 text-emerald-300 ring-4 ring-emerald-400/50'
-                            : 'border-rose-400/70 bg-rose-500/15 text-rose-300 hover:bg-rose-500/30'
+                            ? 'bg-emerald-500/30 border-2 border-emerald-400 text-emerald-300 ring-4 ring-emerald-400/50 scale-105'
+                            : 'bg-transparent border-0 opacity-0 hover:opacity-10'
                         }`}
+                        title={isSolved ? '已找齊' : ''}
                       >
-                        <span>{isSolved ? '已找齊' : '❓ 缺漏'}</span>
+                        {isSolved ? (
+                          <>
+                            <span className="text-[11px] font-black">已找齊</span>
+                            <CheckCircle2 className="absolute -top-1.5 -right-1.5 w-5 h-5 text-emerald-400 bg-stone-950 rounded-full" />
+                          </>
+                        ) : null}
                       </button>
                     );
                   }

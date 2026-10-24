@@ -312,14 +312,14 @@ export const BOOK8_GARDEN_SCENE = {
   width: 1376,
   height: 768,
   targetItems: [
-    { word: 'swan', wordZh: '天鵝', x: 136, y: 476, radius: 75, radiusX: 75, radiusY: 65, typeZh: '羽色品種', descZh: '左圖倒影池是純白白天鵝，右圖轉為紅喙純黑天鵝' },
-    { word: 'spade', wordZh: '鏟子', x: 280, y: 532, radius: 75, radiusX: 75, radiusY: 65, typeZh: '工具配色', descZh: '左圖花壇是原木握柄園藝鏟，右圖轉為亮金黃色鏟子' },
+    { word: 'swan', wordZh: '天鵝', x: 295, y: 485, radius: 72, radiusX: 75, radiusY: 62, typeZh: '羽色品種', descZh: '左圖池中是優雅純白白天鵝，右圖轉為紅喙純黑天鵝' },
+    { word: 'spade', wordZh: '鏟子', x: 138, y: 635, radius: 75, radiusX: 50, radiusY: 140, typeZh: '工具配色', descZh: '左圖花圃泥土插著銀柄鏟子，右圖轉為亮金黃色園藝鏟' },
     { word: 'drum', wordZh: '鼓', x: 288, y: 272, radius: 66, radiusX: 66, radiusY: 50, typeZh: '樂器外觀', descZh: '左圖涼亭舞台是紅金行進鼓，右圖轉為皇家深藍小鼓' },
-    { word: 'pie', wordZh: '派', x: 696, y: 548, radius: 98, radiusX: 98, radiusY: 46, typeZh: '點心風味', descZh: '左圖茶几上是酥皮水果派，右圖轉為深紫黑莓派' },
+    { word: 'pie', wordZh: '派', x: 704, y: 528, radius: 98, radiusX: 98, radiusY: 48, typeZh: '點心風味', descZh: '左圖石台茶几上是酥皮水果派，右圖轉為深紫黑莓派' },
     { word: 'rose', wordZh: '玫瑰', x: 700, y: 272, radius: 70, radiusX: 70, radiusY: 66, typeZh: '花卉色彩', descZh: '左圖拱門是鮮紅玫瑰花叢，右圖轉為金黃玫瑰花叢' },
-    { word: 'coat', wordZh: '大衣', x: 984, y: 500, radius: 103, radiusX: 103, radiusY: 40, typeZh: '服飾樣式', descZh: '左圖長椅上是海軍藍風衣，右圖轉為暖駝色牛角扣大衣' },
-    { word: 'flute', wordZh: '長笛', x: 960, y: 304, radius: 75, radiusX: 65, radiusY: 75, typeZh: '樂器光澤', descZh: '左圖樂譜架上是銀白長笛，右圖轉為玫瑰金長笛' },
-    { word: 'dress', wordZh: '洋裝', x: 1256, y: 356, radius: 130, radiusX: 106, radiusY: 130, typeZh: '禮服色彩', descZh: '左圖人台上是淡紫碎花洋裝，右圖轉為祖母綠綢緞晚宴洋裝' }
+    { word: 'coat', wordZh: '大衣', x: 952, y: 340, radius: 85, radiusX: 75, radiusY: 95, typeZh: '服飾樣式', descZh: '左圖長椅上是海軍藍風衣，右圖轉為暖駝色牛角扣大衣' },
+    { word: 'flute', wordZh: '長笛', x: 980, y: 515, radius: 80, radiusX: 115, radiusY: 35, typeZh: '樂器光澤', descZh: '左圖樂譜架上是銀白長笛，右圖轉為玫瑰金長笛' },
+    { word: 'dress', wordZh: '洋裝', x: 1256, y: 356, radius: 118, radiusX: 106, radiusY: 130, typeZh: '禮服色彩', descZh: '左圖人台上是淡紫碎花洋裝，右圖轉為祖母綠綢緞晚宴洋裝' }
   ],
   distractors: [
     { word: 'violin', wordZh: '小提琴' },
