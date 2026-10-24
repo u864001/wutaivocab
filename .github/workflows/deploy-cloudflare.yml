@@ -36,7 +36,7 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxa2RrbWNxanN3dWZ6YnZrcmFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NTI0ODcsImV4cCI6MjEwNjAyODQ4N30.UGYwWwnyPsOX-BXBup9OC-6OxiZxTXn7nahaHj8izUo' }}
 
       - name: 🚀 Publish to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy dist --project-name=wutaivocab --branch=main --commit-dirty=true
+        run: npx wrangler pages deploy dist --project-name=wutaivocab --branch=main --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 4cd48161aad48dd1884b350e37ba7c75
