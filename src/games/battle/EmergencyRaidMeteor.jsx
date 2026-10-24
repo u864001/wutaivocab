@@ -6,13 +6,12 @@ import { Flame, AlertTriangle, ShieldAlert, Skull, ShieldCheck, Zap } from 'luci
 /**
  * 突襲隕石 (Emergency Raid Meteor) 組件
  * - 敵方連對 5 題 (Combo 5) 向對手發送
- * - 支援「雙側空域走廊」分流 (左側 14%~26% 或 右側 74%~86%)，完全不遮擋中央單字題 (35%~65%)！
+ * - 螢幕最多維持 1 顆同學突襲隕石，隨機落於左翼安全空域 (18%~30%)，完全避開中央題目 (35%~65%) 與右上 Combo 區 (74%~96%)！
  * - 4.5 秒充裕反應時間，手速點擊 3 下（毀滅烈焰 4 下）即可成功防禦攔截！
  * - 帶有科幻戰術折線 (HUD Cyber Leader Line) 與全息警示標牌。
  */
 export const EmergencyRaidMeteor = ({
-  raidData, // { attackerName, id, isMega, missStreak, slot }
-  slot = 'left',
+  raidData, // { attackerName, id, isMega, missStreak }
   onDefended,
   onImpact
 }) => {
@@ -30,12 +29,10 @@ export const EmergencyRaidMeteor = ({
   const missStreak = raidData?.missStreak || 0;
   const penaltyPoints = 10 + missStreak;
   const targetClicks = isMega ? 4 : 3;
-  const isRight = slot === 'right' || raidData?.slot === 'right';
 
-  // 雙側分流：左側 14%~26%，右側 74%~86%，中央 35%~65% 保留給單字題目
-  const [xPos] = useState(() => {
-    return isRight ? 74 + Math.random() * 12 : 14 + Math.random() * 12;
-  });
+  // 隨機落點分佈：避開中央題目區 (35%~65%)、右上角 Combo 氣球區 (74%~96%)，也不過度貼近螢幕左緣 (0%~16%)
+  // 在 18% ~ 30% 之間隨機動態分佈
+  const [xPos] = useState(() => 18 + Math.random() * 12);
 
   useEffect(() => {
     startTimeRef.current = performance.now();
@@ -151,7 +148,7 @@ export const EmergencyRaidMeteor = ({
     >
       <div className="relative flex flex-col items-center">
         {/* 科幻數位戰術折線 (HUD Cyber Leader Line) */}
-        <div className={`flex flex-col items-center mb-1 ${isRight ? 'items-end' : 'items-start'}`}>
+        <div className="flex flex-col items-center mb-1 items-start">
           {/* 頂部來源全息標牌 */}
           <div className={`px-2.5 py-1 rounded-xl border-2 text-[11px] font-black shadow-xl flex items-center gap-1 whitespace-nowrap backdrop-blur-md ${
             isMega

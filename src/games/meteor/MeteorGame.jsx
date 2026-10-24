@@ -13,7 +13,7 @@ import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Rocket, Trophy, Flame,
-  Shield, Zap, Target, Eye, Maximize2, Minimize2, Sparkles
+  Shield, Zap, Target, Eye, Maximize2, Minimize2, Sparkles, ShieldCheck
 } from 'lucide-react';
 
 const PTS_PER_METEOR = 10;
@@ -43,6 +43,9 @@ export const MeteorGame = ({
   const [currentMeteor, setCurrentMeteor] = useState(null);
   const [options, setOptions] = useState([]);
   const [lives, setLives] = useState(3);
+  const [shields, setShields] = useState(0); // 地球防護罩層數 (每50分加一層，白光呼吸光暈)
+  const shieldsRef = useRef(0);
+  const lastShieldMilestoneRef = useRef(0);
   const [score, setScore] = useState(0); // 總得分
   const [meteorsDestroyed, setMeteorsDestroyed] = useState(0); // 擊落隕石數
   const [ufoCount, setUfoCount] = useState(0); // 攔截 UFO 彩蛋數
@@ -173,6 +176,9 @@ export const MeteorGame = ({
     setSubMode(mode);
     setHasStarted(true);
     setLives(3);
+    setShields(0);
+    shieldsRef.current = 0;
+    lastShieldMilestoneRef.current = 0;
     setScore(0);
     setMeteorsDestroyed(0);
     setUfoCount(0);
@@ -263,6 +269,21 @@ export const MeteorGame = ({
       mistakeIdsRef.current.add(currentMeteor.word.id);
     }
 
+    // 地球防護罩機制：優先消耗一層防護罩承受撞擊，愛心不受損，但連擊重算
+    if (shieldsRef.current > 0) {
+      setShields(curr => {
+        const next = Math.max(0, curr - 1);
+        shieldsRef.current = next;
+        return next;
+      });
+      setLastGainNotice({
+        text: `🛡️ 地球防護罩吸收隕石撞擊（剩餘 ${shieldsRef.current - 1} 層）！連擊重算。`,
+        type: 'shield'
+      });
+      setTimeout(() => nextTurn(meteorsDestroyed), 900);
+      return;
+    }
+
     setLives(prev => {
       const next = prev - 1;
       if (next <= 0) {
@@ -283,7 +304,21 @@ export const MeteorGame = ({
     const ufoBonus = Math.max(0, combo - 1);
     const totalGained = basePoints + ufoBonus;
 
-    setScore(s => s + totalGained);
+    setScore(s => {
+      const nextScore = s + totalGained;
+      const milestone = lastShieldMilestoneRef.current + 50;
+      if (nextScore >= milestone) {
+        const gained = Math.floor((nextScore - lastShieldMilestoneRef.current) / 50);
+        lastShieldMilestoneRef.current += gained * 50;
+        setShields(curr => {
+          const next = curr + gained;
+          shieldsRef.current = next;
+          soundEngine.powerUp();
+          return next;
+        });
+      }
+      return nextScore;
+    });
     setUfoCount(c => c + 1);
     setTotalStreakBonus(b => b + ufoBonus);
 
@@ -313,7 +348,21 @@ export const MeteorGame = ({
       const streakBonus = combo;
       const earnedPoints = PTS_PER_METEOR + streakBonus;
 
-      setScore(s => s + earnedPoints);
+      setScore(s => {
+        const nextScore = s + earnedPoints;
+        const milestone = lastShieldMilestoneRef.current + 50;
+        if (nextScore >= milestone) {
+          const gained = Math.floor((nextScore - lastShieldMilestoneRef.current) / 50);
+          lastShieldMilestoneRef.current += gained * 50;
+          setShields(curr => {
+            const next = curr + gained;
+            shieldsRef.current = next;
+            soundEngine.powerUp();
+            return next;
+          });
+        }
+        return nextScore;
+      });
       setTotalStreakBonus(b => b + streakBonus);
 
       const nextDestroyed = meteorsDestroyed + 1;
@@ -449,19 +498,35 @@ export const MeteorGame = ({
         </Button3D>
 
         {/* 護盾防護生命 (Shield Life) */}
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-slate-900/80 border border-slate-700/80 shadow-inner">
-          <Shield className="w-4 h-4 text-cyan-400" />
-          <div className="flex items-center gap-1.5">
-            {[...Array(3)].map((_, i) => (
-              <span
-                key={i}
-                className={`w-5 sm:w-6 h-2.5 sm:h-3 rounded-full transition-all duration-300 ${
-                  i < lives
-                    ? 'bg-gradient-to-r from-cyan-400 to-emerald-400 shadow-[0_0_10px_rgba(56,189,248,0.7)]'
-                    : 'bg-slate-700 opacity-40'
-                }`}
-              />
-            ))}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-slate-900/80 border border-slate-700/80 shadow-inner">
+            <Shield className="w-4 h-4 text-cyan-400" />
+            <div className="flex items-center gap-1.5">
+              {[...Array(3)].map((_, i) => (
+                <span
+                  key={i}
+                  className={`w-5 sm:w-6 h-2.5 sm:h-3 rounded-full transition-all duration-300 ${
+                    i < lives
+                      ? 'bg-gradient-to-r from-cyan-400 to-emerald-400 shadow-[0_0_10px_rgba(56,189,248,0.7)]'
+                      : 'bg-slate-700 opacity-40'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* 地球白色呼吸防護罩 (每50分加一層，白光呼吸光暈) */}
+          <div
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-2xl border text-xs font-black transition-all ${
+              shields > 0
+                ? 'bg-white/10 border-white/80 text-white shadow-[0_0_14px_rgba(255,255,255,0.7)] animate-pulse'
+                : 'bg-slate-900/60 border-slate-700/60 text-slate-500'
+            }`}
+            title={`地球防護罩：已累計 ${shields} 層（外擴光暈最多顯示 5 層），距離下一層還差 ${50 - (score % 50)} 分`}
+          >
+            <ShieldCheck className={`w-4 h-4 ${shields > 0 ? 'text-white drop-shadow-[0_0_6px_#fff]' : 'text-slate-600'}`} />
+            <span className="font-mono text-xs">{shields}</span>
+            <span className="text-[10px] opacity-75 hidden sm:inline">層防護</span>
           </div>
         </div>
 
@@ -550,6 +615,7 @@ export const MeteorGame = ({
               laserTrigger={laserTrigger}
               questionIndex={meteorsDestroyed}
               onUfoSuccess={handleUfoSuccess}
+              shields={shields}
             />
           </div>
         ) : (

@@ -16,7 +16,8 @@ export const MeteorCanvas3D = ({
   onExplosionFinish,
   questionIndex = 0,
   onUfoSuccess,
-  horizonOffset = 0
+  horizonOffset = 0,
+  shields = 0
 }) => {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
@@ -25,6 +26,9 @@ export const MeteorCanvas3D = ({
   const asteroidObjRef = useRef(null);
   const earthMeshRef = useRef(null);
   const atmoMeshRef = useRef(null);
+  const shieldGroupRef = useRef(null);
+  const shieldMeshesRef = useRef([]);
+  const shieldsRef = useRef(shields);
   const animIdRef = useRef(null);
   const laserBeamRef = useRef(null);
   const debrisRef = useRef([]);
@@ -187,6 +191,38 @@ export const MeteorCanvas3D = ({
     atmoMesh.position.set(0, -74, 5);
     scene.add(atmoMesh);
     atmoMeshRef.current = atmoMesh;
+
+    // 5.5 地球白色呼吸防護罩 (每50分加一層，最多顯示5層向太空外擴的呼吸光暈)
+    const shieldGroup = new THREE.Group();
+    shieldGroup.position.set(0, -74, 5);
+    shieldGroup.rotation.x = Math.PI / 2.2;
+    scene.add(shieldGroup);
+    shieldGroupRef.current = shieldGroup;
+
+    const layerConfigs = [
+      { inner: 76.6, outer: 79.0, color: 0xffffff, opacity: 0.40 },
+      { inner: 79.0, outer: 81.6, color: 0xf8fafc, opacity: 0.50 },
+      { inner: 81.6, outer: 84.4, color: 0xf1f5f9, opacity: 0.60 },
+      { inner: 84.4, outer: 87.5, color: 0xe2e8f0, opacity: 0.70 },
+      { inner: 87.5, outer: 91.0, color: 0xffffff, opacity: 0.85 }
+    ];
+
+    const shieldMeshes = layerConfigs.map((cfg) => {
+      const geo = new THREE.RingGeometry(cfg.inner, cfg.outer, 64);
+      const mat = new THREE.MeshBasicMaterial({
+        color: cfg.color,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: cfg.opacity,
+        blending: THREE.AdditiveBlending
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.visible = false;
+      mesh.userData = { baseOpacity: cfg.opacity };
+      shieldGroup.add(mesh);
+      return mesh;
+    });
+    shieldMeshesRef.current = shieldMeshes;
 
     // 6. 光源系統
     const sunLight = new THREE.DirectionalLight(0xfff7ed, 2.5);
@@ -377,6 +413,22 @@ export const MeteorCanvas3D = ({
         }
       }
 
+      // 5.6 更新地球白色呼吸防護罩 (每50分加一層，最多顯示5層向太空外擴的呼吸光暈)
+      const currentShields = shieldsRef.current || 0;
+      const displayLayers = Math.min(5, Math.max(0, currentShields));
+      const t = (now || performance.now()) * 0.001;
+      shieldMeshesRef.current.forEach((mesh, idx) => {
+        if (idx < displayLayers) {
+          mesh.visible = true;
+          // 動態呼吸光暈：隨時間弦波律動，外層更耀眼
+          const breath = Math.sin(t * 2.6 + idx * 0.45) * 0.22 + 0.78;
+          mesh.material.opacity = mesh.userData.baseOpacity * breath;
+          mesh.scale.setScalar(1.0 + Math.sin(t * 1.8 + idx * 0.3) * 0.006);
+        } else {
+          mesh.visible = false;
+        }
+      });
+
       renderer.render(scene, camera);
       animIdRef.current = requestAnimationFrame(animate);
     };
@@ -480,12 +532,20 @@ export const MeteorCanvas3D = ({
 
   }, [currentMeteor, subMode, isExploding]);
 
-  // ── 響應重力壓制：平滑升降地球大氣防衛圈 ──
+  // ── 同步地球防護罩層數 ──
+  useEffect(() => {
+    shieldsRef.current = shields;
+  }, [shields]);
+
+  // ── 響應重力壓制：平滑升降地球大氣防衛圈與防護罩 ──
   useEffect(() => {
     if (earthMeshRef.current && atmoMeshRef.current) {
       const shift = (horizonOffset || 0) * 0.28;
       earthMeshRef.current.position.y = -78 + shift;
       atmoMeshRef.current.position.y = -74 + shift;
+      if (shieldGroupRef.current) {
+        shieldGroupRef.current.position.y = -74 + shift;
+      }
     }
   }, [horizonOffset]);
 

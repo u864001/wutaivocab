@@ -13,7 +13,7 @@ import {
   ArrowLeft, Swords, Users, Heart, Zap,
   Trophy, Play, RefreshCw, Lock, CheckCircle2, AlertCircle,
   Eye, Maximize2, Minimize2, Sparkles, Flame, Skull, Crown,
-  UserX, Gamepad2, BookOpen, Check, Settings2, SlidersHorizontal, ChevronRight, X
+  UserX, Gamepad2, BookOpen, Check, Settings2, SlidersHorizontal, ChevronRight, X, ShieldCheck
 } from 'lucide-react';
 import { MeteorCanvas3D } from '../meteor/MeteorCanvas3D';
 import { MeteorEasterEggs2D } from '../meteor/MeteorEasterEggs2D';
@@ -239,6 +239,9 @@ export const BattleGame = ({
   const [renderMode, setRenderMode] = useState('3d');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [myLives, setMyLives] = useState(3);
+  const [myShields, setMyShields] = useState(0); // 地球防護罩 (每50分加一層，白光呼吸光暈)
+  const shieldsRef = useRef(0);
+  const lastShieldMilestoneRef = useRef(0);
   const [myScore, setMyScore] = useState(0);
   const [myMeteorsDestroyed, setMyMeteorsDestroyed] = useState(0);
   const [myCombo, setMyCombo] = useState(0);
@@ -317,6 +320,7 @@ export const BattleGame = ({
 
   // 同步 Refs
   useEffect(() => { livesRef.current = myLives; }, [myLives]);
+  useEffect(() => { shieldsRef.current = myShields; }, [myShields]);
   useEffect(() => { scoreRef.current = myScore; }, [myScore]);
   useEffect(() => { comboRef.current = myCombo; }, [myCombo]);
   useEffect(() => { horizonRef.current = horizonOffset; }, [horizonOffset]);
@@ -726,7 +730,7 @@ export const BattleGame = ({
     isProcessingRaidRef.current = false;
     setTimeout(() => {
       processNextRaid();
-    }, 500);
+    }, 1500); // 1.5 秒冷靜緩衝期，絕不連環緊迫掉落
   }, [showNotice, processNextRaid]);
 
   // 自身陣亡處理
@@ -787,18 +791,28 @@ export const BattleGame = ({
       return nextScore;
     });
 
-    // 致命機制：若為連續 5 顆未理會之烈焰大隕石 (isMega)，額外扣除 1 顆愛心！
+    // 致命機制：若為連續 5 顆未理會之烈焰大隕石 (isMega)，優先由地球防護罩抵擋，無防護罩才扣心！
     if (isMega) {
       soundEngine.wrong();
-      showNotice(`💥 毀滅烈焰隕石撞地！扣除 ${penalty} 分並扣除 1 顆愛心💔！`, 'danger');
-      setMyLives(prev => {
-        const nextLives = Math.max(0, prev - 1);
-        broadcastMyStats({ lives: nextLives });
-        if (nextLives <= 0) {
-          handlePlayerDead();
-        }
-        return nextLives;
-      });
+      if (shieldsRef.current > 0) {
+        setMyShields(curr => {
+          const nextShields = Math.max(0, curr - 1);
+          shieldsRef.current = nextShields;
+          broadcastMyStats({ shields: nextShields });
+          return nextShields;
+        });
+        showNotice(`🛡️ 地球防護罩發動！成功吸收毀滅烈焰隕石致命傷害（剩餘 ${shieldsRef.current - 1} 層）！扣除 ${penalty} 分。`, 'warning');
+      } else {
+        showNotice(`💥 毀滅烈焰隕石撞地！扣除 ${penalty} 分並扣除 1 顆愛心💔！`, 'danger');
+        setMyLives(prev => {
+          const nextLives = Math.max(0, prev - 1);
+          broadcastMyStats({ lives: nextLives });
+          if (nextLives <= 0) {
+            handlePlayerDead();
+          }
+          return nextLives;
+        });
+      }
     } else {
       showNotice(`💥 突襲隕石撞地！扣除 ${penalty} 分（連續未防禦 ${nextStreak} 顆）！`, 'danger');
     }
@@ -807,7 +821,7 @@ export const BattleGame = ({
     isProcessingRaidRef.current = false;
     setTimeout(() => {
       processNextRaid();
-    }, 500);
+    }, 1500); // 1.5 秒冷靜緩衝期
   }, [broadcastMyStats, showNotice, processNextRaid, handlePlayerDead]);
 
   // 計算結算排名榜單 (按規則：1.剩餘愛心降冪 2.總分含愛心加成降冪 3.擊落題數降冪 4.存活時間降冪)
@@ -887,6 +901,9 @@ export const BattleGame = ({
     raidMissStreakRef.current = 0;
     setMyScore(0);
     setMyLives(3);
+    setMyShields(0);
+    shieldsRef.current = 0;
+    lastShieldMilestoneRef.current = 0;
     setMyCombo(0);
     setHorizonOffset(0);
     setIsDead(false);
@@ -1035,15 +1052,18 @@ export const BattleGame = ({
             showNotice(`⚠️ 來自【${payload.attackerName}】的突襲空襲！速點 3 下防衛！`, 'warning');
           }
 
-          // 核心保護機制：佇列最多保留 2 顆，超過立即丟棄，杜絕排隊卡死與流量崩潰
-          if (raidQueueRef.current.length >= 2) {
+          // 核心保護機制：螢幕最多 1 顆同學隕石，佇列最多暫存 1 顆，超量直接拋棄！
+          // 徹底杜絕多位同學同時空襲造成無限排隊打不完的挫折
+          if (activeRaid && raidQueueRef.current.length >= 1) {
+            return;
+          }
+          if (raidQueueRef.current.length >= 1) {
             return;
           }
 
           raidQueueRef.current.push({
             id: payload.raidId || Math.random(),
-            attackerName: payload.attackerName,
-            slot: Math.random() > 0.5 ? 'right' : 'left'
+            attackerName: payload.attackerName
           });
           processNextRaid();
         }
@@ -1151,6 +1171,9 @@ export const BattleGame = ({
   const startGame = () => {
     setView('playing');
     setMyLives(3);
+    setMyShields(0);
+    shieldsRef.current = 0;
+    lastShieldMilestoneRef.current = 0;
     setMyScore(0);
     setMyMeteorsDestroyed(0);
     setMyCombo(0);
@@ -1260,7 +1283,20 @@ export const BattleGame = ({
     if (isDeadRef.current) return;
     soundEngine.wrong();
     setIsExploding(true);
-    setMyCombo(0);
+    setMyCombo(0); // 自己題目的隕石若墜地或答錯，連擊必須歸零重算！
+
+    // 檢查是否有地球防護罩承受撞擊 (每50分獲得1層)
+    if (shieldsRef.current > 0) {
+      setMyShields(curr => {
+        const nextShields = Math.max(0, curr - 1);
+        shieldsRef.current = nextShields;
+        broadcastMyStats({ shields: nextShields, combo: 0 });
+        return nextShields;
+      });
+      showNotice(`🛡️ 地球防護罩承受了隕石撞擊（剩餘 ${shieldsRef.current - 1} 層）！愛心無損，但連擊重新計算。`, 'warning');
+      setTimeout(() => nextTurn(destroyedRef.current), 800);
+      return;
+    }
 
     setMyLives(prev => {
       const next = Math.max(0, prev - 1);
@@ -1297,6 +1333,21 @@ export const BattleGame = ({
       setMyScore(nextScore);
       setMyMeteorsDestroyed(nextDestroyed);
       setMyCombo(nextCombo);
+
+      // 每達 50 分自動生成地球白色呼吸防護罩 (視覺最多外擴 5 層)
+      const milestone = lastShieldMilestoneRef.current + 50;
+      if (nextScore >= milestone) {
+        const gained = Math.floor((nextScore - lastShieldMilestoneRef.current) / 50);
+        lastShieldMilestoneRef.current += gained * 50;
+        setMyShields(curr => {
+          const nextShields = curr + gained;
+          shieldsRef.current = nextShields;
+          broadcastMyStats({ shields: nextShields });
+          soundEngine.powerUp();
+          showNotice(`🛡️ 地球能量達到 ${lastShieldMilestoneRef.current} 分！生成第 ${nextShields} 層白色呼吸防護罩！`, 'success');
+          return nextShields;
+        });
+      }
 
       if (nextCombo >= 2) soundEngine.combo(nextCombo);
 
@@ -2180,6 +2231,20 @@ export const BattleGame = ({
             ))}
           </div>
 
+          {/* 地球白色呼吸防護罩 (每50分加一層，白光呼吸光暈) */}
+          <div
+            className={`flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-black transition-all ${
+              myShields > 0
+                ? 'bg-white/10 border-2 border-white/80 text-white shadow-[0_0_12px_rgba(255,255,255,0.7)] animate-pulse'
+                : 'bg-slate-900/60 border border-slate-700/60 text-slate-500'
+            }`}
+            title={`地球防護罩：已累計 ${myShields} 層（視覺外擴最多顯示 5 層），距離下一層還差 ${50 - (myScore % 50)} 分`}
+          >
+            <ShieldCheck className={`w-3.5 h-3.5 ${myShields > 0 ? 'text-white drop-shadow-[0_0_6px_#fff]' : 'text-slate-600'}`} />
+            <span className="font-mono">{myShields}</span>
+            <span className="text-[10px] opacity-75 hidden sm:inline">層</span>
+          </div>
+
           {/* 本人防線位移指標 */}
           <div className={`px-2 py-1 rounded-xl text-xs font-black font-mono border ${
             horizonOffset > 0
@@ -2349,6 +2414,7 @@ export const BattleGame = ({
               questionIndex={myMeteorsDestroyed}
               onUfoSuccess={handleUfoSuccess}
               horizonOffset={horizonOffset}
+              shields={myShields}
             />
           </div>
         ) : (
