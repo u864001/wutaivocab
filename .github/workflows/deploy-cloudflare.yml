@@ -39,5 +39,4 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 4cd48161aad48dd1884b350e37ba7c75
           command: pages deploy dist --project-name=wutaivocab --branch=main --commit-dirty=true
