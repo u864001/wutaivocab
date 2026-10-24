@@ -585,21 +585,27 @@ export const MeteorGame = ({
         </div>
       </div>
 
-      {/* ── 目標單字科幻 HUD 鎖定儀 ── */}
-      {currentMeteor && (
-        <div className="w-full max-w-md mx-auto flex items-center justify-center gap-2 px-3 py-1 mb-1 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-xs font-black flex-shrink-0">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          <span>鎖定目標：</span>
-          <span className="text-white text-sm font-black tracking-wide">
-            {subMode === 'zh-en' ? currentMeteor.word.zh : currentMeteor.word.en}
-          </span>
-          {meteorsDestroyed >= 30 && (
-            <span className="ml-1 px-1.5 py-0.5 rounded bg-rose-500/80 text-[10px] text-white font-black animate-pulse">
-              超頻極速
+      {/* ── 目標單字科幻 HUD 鎖定儀 (固定高度 h-8，切換題目時絕不跳動) ── */}
+      <div className="w-full max-w-md mx-auto h-8 flex items-center justify-center gap-2 px-3 py-1 mb-1 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-xs font-black flex-shrink-0">
+        {currentMeteor ? (
+          <>
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+            <span>鎖定目標：</span>
+            <span className="text-white text-sm font-black tracking-wide truncate max-w-[200px]">
+              {subMode === 'zh-en' ? currentMeteor.word.zh : currentMeteor.word.en}
             </span>
-          )}
-        </div>
-      )}
+            {meteorsDestroyed >= 30 && (
+              <span className="ml-1 px-1.5 py-0.5 rounded bg-rose-500/80 text-[10px] text-white font-black animate-pulse">
+                超頻極速
+              </span>
+            )}
+          </>
+        ) : (
+          <span className="text-cyan-400/60 text-xs font-mono animate-pulse">
+            🛰️ 偵測深空星際雷達中...
+          </span>
+        )}
+      </div>
 
       {/* ── 隕石戰場區域 (彈性自適應高度 flex-1 min-h-0) ── */}
       <div className="flex-1 min-h-0 w-full max-w-4xl mx-auto relative mb-2 sm:mb-3 flex items-center justify-center">

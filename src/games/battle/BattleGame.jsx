@@ -1052,19 +1052,14 @@ export const BattleGame = ({
             showNotice(`⚠️ 來自【${payload.attackerName}】的突襲空襲！速點 3 下防衛！`, 'warning');
           }
 
-          // 核心保護機制：螢幕最多 1 顆同學隕石，佇列最多暫存 1 顆，超量直接拋棄！
-          // 徹底杜絕多位同學同時空襲造成無限排隊打不完的挫折
-          if (activeRaid && raidQueueRef.current.length >= 1) {
-            return;
+          // 待掉落待命佇列：保留所有同學送來的隕石，依序排隊下墜，畫面永遠維持最多單顆
+          // 保證多人同時達到 5 連擊時，互射的隕石 100% 完整排隊，絕不遺漏任何同學的心意
+          if (raidQueueRef.current.length < 15) {
+            raidQueueRef.current.push({
+              id: payload.raidId || Math.random(),
+              attackerName: payload.attackerName
+            });
           }
-          if (raidQueueRef.current.length >= 1) {
-            return;
-          }
-
-          raidQueueRef.current.push({
-            id: payload.raidId || Math.random(),
-            attackerName: payload.attackerName
-          });
           processNextRaid();
         }
       })
@@ -2312,9 +2307,11 @@ export const BattleGame = ({
         </div>
       </div>
 
-      {/* ── 飄浮通知橫幅 (受到壓制、發動空襲等提示，置於頂部微浮層絕不覆蓋題目) ── */}
-      {noticeBanner && (
-        <div className="fixed top-14 sm:top-16 inset-x-0 mx-auto w-fit max-w-[90vw] z-50 animate-fadeIn pointer-events-none">
+      {/* ── 飄浮通知橫幅 (受到壓制、發動空襲等提示，置於頂部微浮層絕不覆蓋題目且絕不造成版面跳動) ── */}
+      <div className={`fixed top-14 sm:top-16 inset-x-0 mx-auto w-fit max-w-[90vw] z-50 pointer-events-none transition-all duration-300 ${
+        noticeBanner ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-2 scale-95 pointer-events-none'
+      }`}>
+        {noticeBanner && (
           <div className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-black shadow-2xl flex items-center gap-2 border ${
             noticeBanner.type === 'danger'
               ? 'bg-rose-900/95 border-rose-500 text-rose-200 shadow-[0_0_20px_rgba(244,63,94,0.8)]'
@@ -2325,24 +2322,30 @@ export const BattleGame = ({
             <Sparkles className="w-4 h-4 animate-spin-slow" />
             <span>{noticeBanner.text}</span>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* ── 目標單字科幻 HUD 鎖定儀 ── */}
-      {currentMeteor && !isDead && (
-        <div className="w-full max-w-sm sm:max-w-md mx-auto flex items-center justify-center gap-2 px-3 py-1 my-0.5 sm:my-1 rounded-xl bg-cyan-950/50 border border-cyan-500/40 text-cyan-300 text-xs font-black flex-shrink-0 z-20">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          <span>鎖定目標：</span>
-          <span className="text-white text-sm font-black tracking-wide">
-            {currentMeteor.word.zh}
-          </span>
-          {myMeteorsDestroyed >= 30 && (
-            <span className="ml-1 px-1.5 py-0.5 rounded bg-rose-500/80 text-[10px] text-white font-black animate-pulse">
-              超頻極速
+      {/* ── 目標單字科幻 HUD 鎖定儀 (固定高度 h-8，切換題目時平滑過渡絕不跳動) ── */}
+      <div className="w-full max-w-sm sm:max-w-md mx-auto h-8 flex items-center justify-center gap-2 px-3 py-1 my-0.5 sm:my-1 rounded-xl bg-cyan-950/50 border border-cyan-500/40 text-cyan-300 text-xs font-black flex-shrink-0 z-20">
+        {currentMeteor && !isDead ? (
+          <>
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+            <span>鎖定目標：</span>
+            <span className="text-white text-sm font-black tracking-wide truncate max-w-[180px]">
+              {currentMeteor.word.zh}
             </span>
-          )}
-        </div>
-      )}
+            {myMeteorsDestroyed >= 30 && (
+              <span className="ml-1 px-1.5 py-0.5 rounded bg-rose-500/80 text-[10px] text-white font-black animate-pulse">
+                超頻極速
+              </span>
+            )}
+          </>
+        ) : (
+          <span className="text-cyan-400/60 text-xs font-mono animate-pulse">
+            🛰️ 偵測深空星際雷達中...
+          </span>
+        )}
+      </div>
 
       {/* ── 隕石戰鬥核心畫布區域 (flex-1 min-h-0) ── */}
       <div className="flex-1 min-h-0 w-full max-w-4xl mx-auto relative mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">

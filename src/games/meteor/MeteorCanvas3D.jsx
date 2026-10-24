@@ -413,17 +413,20 @@ export const MeteorCanvas3D = ({
         }
       }
 
-      // 5.6 更新地球白色呼吸防護罩 (每50分加一層，最多顯示5層向太空外擴的呼吸光暈)
+      // 5.6 更新地球白色呼吸防護罩 (每50分加一層，向外太空傳導的漣漪呼吸光波)
       const currentShields = shieldsRef.current || 0;
       const displayLayers = Math.min(5, Math.max(0, currentShields));
       const t = (now || performance.now()) * 0.001;
       shieldMeshesRef.current.forEach((mesh, idx) => {
         if (idx < displayLayers) {
           mesh.visible = true;
-          // 動態呼吸光暈：隨時間弦波律動，外層更耀眼
-          const breath = Math.sin(t * 2.6 + idx * 0.45) * 0.22 + 0.78;
-          mesh.material.opacity = mesh.userData.baseOpacity * breath;
-          mesh.scale.setScalar(1.0 + Math.sin(t * 1.8 + idx * 0.3) * 0.006);
+          // 向太空傳播的外擴光波：相位依 idx 由內向外延遲 (- idx * 0.72)
+          const wave = Math.sin(t * 2.4 - idx * 0.72);
+          const breath = Math.max(0.18, (wave * 0.35 + 0.65) * mesh.userData.baseOpacity);
+          mesh.material.opacity = breath;
+          // 顯著且優雅的向外呼吸微幅擴展：由內向外產生 2.2%~4.5% 的層次漣漪擴散
+          const outwardExpansion = 1.0 + (wave * 0.5 + 0.5) * (0.022 + idx * 0.006);
+          mesh.scale.set(outwardExpansion, outwardExpansion, 1.0);
         } else {
           mesh.visible = false;
         }
