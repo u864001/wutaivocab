@@ -13,13 +13,13 @@ import {
 // 8 個冊次的標籤與名稱
 const BOOKS_CONFIG = [
   { id: '1', grade: '三上', title: '第 1 冊', sub: '彩虹文具 / 阿姆斯特丹果園集市' },
-  { id: '2', grade: '三下', title: '第 2 冊', sub: '陽光農莊 / 京都花見小路' },
-  { id: '3', grade: '四上', title: '第 3 冊', sub: '自然公園 / 撒哈拉綠洲驛站' },
-  { id: '4', grade: '四下', title: '第 4 冊', sub: '泰晤士河畔 / 瑞士阿爾卑斯木屋' },
-  { id: '5', grade: '五上', title: '第 5 冊', sub: '巴黎左岸畫室 / 羅馬競技場花園' },
-  { id: '6', grade: '五下', title: '第 6 冊', sub: '奇趣博物館 / 巴塞隆納奎爾公園' },
-  { id: '7', grade: '六上', title: '第 7 冊', sub: '海港天文台 / 雪梨海灣大堡礁' },
-  { id: '8', grade: '六下', title: '第 8 冊', sub: '四季時光庭園 / 冰島藍冰洞' }
+  { id: '2', grade: '三下', title: '第 2 冊', sub: '陽光農莊公園 (圖2京都待繪)' },
+  { id: '3', grade: '四上', title: '第 3 冊', sub: '微風氣象野餐湖畔' },
+  { id: '4', grade: '四下', title: '第 4 冊', sub: '英倫時鐘小鎮與家居' },
+  { id: '5', grade: '五上', title: '第 5 冊', sub: '巴黎羅浮宮藝文廣場' },
+  { id: '6', grade: '五下', title: '第 6 冊', sub: '世界自然歷史博物館 (無食物)' },
+  { id: '7', grade: '六上', title: '第 7 冊', sub: '世界節慶與環球港灣' },
+  { id: '8', grade: '六下', title: '第 8 冊', sub: '四季時光庭園' }
 ];
 
 export const SpotterTestWorkbench = ({ onBack }) => {
