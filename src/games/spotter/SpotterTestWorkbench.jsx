@@ -108,8 +108,15 @@ export const SpotterTestWorkbench = ({ onBack }) => {
     for (const item of items) {
       const rx = (item.radiusX || item.radius || 50) + 10;
       const ry = (item.radiusY || item.radius || 50) + 10;
-      const dx = cx - item.x;
-      const dy = cy - item.y;
+      let dx = cx - item.x;
+      let dy = cy - item.y;
+      if (item.rotate) {
+        const rad = (-item.rotate * Math.PI) / 180;
+        const nx = dx * Math.cos(rad) - dy * Math.sin(rad);
+        const ny = dx * Math.sin(rad) + dy * Math.cos(rad);
+        dx = nx;
+        dy = ny;
+      }
       if ((dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1) {
         hitItem = item;
         break;
@@ -384,6 +391,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
                               cy={item.y}
                               rx={rx}
                               ry={ry}
+                              transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
                               fill={isHighlighted ? `${color}40` : `${color}15`}
                               stroke={color}
                               strokeWidth={isHighlighted ? 4 : 2}
@@ -478,6 +486,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
                               cy={item.y}
                               rx={rx}
                               ry={ry}
+                              transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
                               fill={isHighlighted ? `${color}40` : `${color}15`}
                               stroke={color}
                               strokeWidth={isHighlighted ? 4 : 2}
@@ -795,6 +804,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
                                 cy={item.y}
                                 rx={rx}
                                 ry={ry}
+                                transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
                                 fill="rgba(16, 185, 129, 0.2)"
                                 stroke="#10b981"
                                 strokeWidth="3"
@@ -862,6 +872,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
                             cy={item.y}
                             rx={rx}
                             ry={ry}
+                            transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
                             fill="rgba(16, 185, 129, 0.2)"
                             stroke="#10b981"
                             strokeWidth="3"

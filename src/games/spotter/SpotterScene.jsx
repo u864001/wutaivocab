@@ -100,7 +100,17 @@ export const SpotterScene = ({
       const rx = (diff.radiusX || diff.radius || 40) + 8; // 稍微加大命中容錯率，方便觸控
       const ry = (diff.radiusY || diff.radius || 40) + 8;
 
-      const normDistSq = Math.pow((clickX - targetX) / rx, 2) + Math.pow((clickY - targetY) / ry, 2);
+      let dx = clickX - targetX;
+      let dy = clickY - targetY;
+      if (diff.rotate) {
+        const rad = (-diff.rotate * Math.PI) / 180;
+        const nx = dx * Math.cos(rad) - dy * Math.sin(rad);
+        const ny = dx * Math.sin(rad) + dy * Math.cos(rad);
+        dx = nx;
+        dy = ny;
+      }
+
+      const normDistSq = Math.pow(dx / rx, 2) + Math.pow(dy / ry, 2);
       if (normDistSq <= 1.0) {
         if (solvedDiffIds.has(diff.id)) {
           hitSolved = true;
@@ -270,6 +280,7 @@ export const SpotterScene = ({
                 cy={markerY}
                 rx={rx}
                 ry={ry}
+                transform={diff.rotate ? `rotate(${diff.rotate} ${markerX} ${markerY})` : undefined}
                 fill="rgba(16, 185, 129, 0.12)"
                 stroke="#10b981"
                 strokeWidth="2.5"
