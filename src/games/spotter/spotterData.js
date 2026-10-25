@@ -8,18 +8,20 @@ export const DIFFERENCE_CATEGORIES = [
   { id: 'pattern', labelZh: '花紋紋理', color: 'text-rose-500', icon: '📍' }
 ];
 
-// ── 【Book 1 三年級上學期】彩虹文具與創意課室 (Here We Go Book 1 核心單字) ──
+// ── 【Book 1 三年級上學期】彩虹文具與創意課室 (Here We Go Book 1 核心單字 • 場景 1) ──
 export const BOOK1_CLASSROOM_SCENE = {
   id: 'book1_classroom',
   book: '1',
+  sceneNumber: 1,
   grade: 3,
-  titleZh: '彩虹文具與創意課室（三年級第 1 冊）',
-  titleEn: 'Rainbow Stationery & Creative Classroom (Book 1)',
+  titleZh: '彩虹文具與創意課室（三年級第 1 冊 • 場景 1）',
+  titleEn: 'Rainbow Stationery & Creative Classroom (Book 1 • Scene 1)',
   descZh: '在立體紙雕課室中，仔細觀察左右兩圖 8 處相異之處！點選後在單字庫配對正確單字！',
   baseImage: '/assets/spotter/book1_base.jpg',
   diffImage: '/assets/spotter/book1_diff.jpg',
   width: 1376,
   height: 768,
+  status: 'ready',
   targetItems: [
     {
       word: 'bag',
@@ -30,7 +32,8 @@ export const BOOK1_CLASSROOM_SCENE = {
       radiusX: 70,
       radiusY: 82,
       typeZh: '顏色樣態',
-      descZh: '左圖牆上是紅藍雙色雙肩書包，右圖轉為暖陽黃與翠綠雙色雙肩書包'
+      descZh: '左圖牆上是紅藍雙色雙肩書包，右圖轉為暖陽黃與翠綠雙色雙肩書包',
+      cropCompare: '/assets/spotter/crops/b1_s1/bag_compare.jpg'
     },
     {
       word: 'pencil',
@@ -41,7 +44,8 @@ export const BOOK1_CLASSROOM_SCENE = {
       radiusX: 105,
       radiusY: 65,
       typeZh: '花紋樣式',
-      descZh: '左圖木桌上是黃色六角木質鉛筆，右圖轉為彩虹糖果條紋鉛筆'
+      descZh: '左圖木桌上是黃色六角木質鉛筆，右圖轉為彩虹糖果條紋鉛筆',
+      cropCompare: '/assets/spotter/crops/b1_s1/pencil_compare.jpg'
     },
     {
       word: 'eraser',
@@ -52,7 +56,8 @@ export const BOOK1_CLASSROOM_SCENE = {
       radiusX: 50,
       radiusY: 45,
       typeZh: '造型顏色',
-      descZh: '左圖桌角是粉紅長方形橡皮擦，右圖轉為薄荷綠三角造型橡皮擦'
+      descZh: '左圖桌角是粉紅長方形橡皮擦，右圖轉為薄荷綠三角造型橡皮擦',
+      cropCompare: '/assets/spotter/crops/b1_s1/eraser_compare.jpg'
     },
     {
       word: 'book',
@@ -63,7 +68,8 @@ export const BOOK1_CLASSROOM_SCENE = {
       radiusX: 100,
       radiusY: 75,
       typeZh: '開闔狀態',
-      descZh: '左圖講台架上是翻開的彩色圖畫英語讀本，右圖轉為闔上的皇家紫精裝故事書'
+      descZh: '左圖講台架上是翻開的彩色圖畫英語讀本，右圖轉為闔上的皇家紫精裝故事書',
+      cropCompare: '/assets/spotter/crops/b1_s1/book_compare.jpg'
     },
     {
       word: 'ruler',
@@ -74,7 +80,8 @@ export const BOOK1_CLASSROOM_SCENE = {
       radiusX: 140,
       radiusY: 45,
       typeZh: '材質色彩',
-      descZh: '左圖手作几上是半透明金黃學生直尺，右圖轉為蔚藍天藍色直尺'
+      descZh: '左圖手作几上是半透明金黃學生直尺，右圖轉為蔚藍天藍色直尺',
+      cropCompare: '/assets/spotter/crops/b1_s1/ruler_compare.jpg'
     },
     {
       word: 'pen',
@@ -85,7 +92,8 @@ export const BOOK1_CLASSROOM_SCENE = {
       radiusX: 95,
       radiusY: 45,
       typeZh: '筆桿色彩',
-      descZh: '左圖學生桌筆槽中是深海軍藍原子筆，右圖轉為鮮豔亮紅金屬光澤原子筆'
+      descZh: '左圖學生桌筆槽中是深海軍藍原子筆，右圖轉為鮮豔亮紅金屬光澤原子筆',
+      cropCompare: '/assets/spotter/crops/b1_s1/pen_compare.jpg'
     },
     {
       word: 'pencil case',
@@ -96,7 +104,8 @@ export const BOOK1_CLASSROOM_SCENE = {
       radiusX: 95,
       radiusY: 55,
       typeZh: '布面圖樣',
-      descZh: '左圖課桌上是粉彩條紋拉鍊筆袋，右圖轉為海軍藍白波卡圓點鉛筆盒'
+      descZh: '左圖課桌上是粉彩條紋拉鍊筆袋，右圖轉為海軍藍白波卡圓點鉛筆盒',
+      cropCompare: '/assets/spotter/crops/b1_s1/pencil_case_compare.jpg'
     },
     {
       word: 'marker',
@@ -107,7 +116,8 @@ export const BOOK1_CLASSROOM_SCENE = {
       radiusX: 74,
       radiusY: 46,
       typeZh: '筆管色彩',
-      descZh: '左圖窗台邊是粗桿草綠色彩色筆，右圖轉為亮眼霓虹螢光橘彩色筆'
+      descZh: '左圖窗台邊是粗桿草綠色彩色筆，右圖轉為亮眼霓虹螢光橘彩色筆',
+      cropCompare: '/assets/spotter/crops/b1_s1/marker_compare.jpg'
     }
   ],
   distractors: [
@@ -116,6 +126,196 @@ export const BOOK1_CLASSROOM_SCENE = {
     { word: 'teacher', wordZh: '老師' },
     { word: 'student', wordZh: '學生' },
     { word: 'blackboard', wordZh: '黑板' }
+  ]
+};
+
+// ── 【Book 1 三年級上學期】阿姆斯特丹風車運河果園集市 (核心單字 • 場景 2 • 支援動態 Slot 變異) ──
+export const BOOK1_AMSTERDAM_SCENE = {
+  id: 'book1_scene2',
+  book: '1',
+  sceneNumber: 2,
+  grade: 3,
+  titleZh: '荷蘭贊斯風車運河果園集市（三年級第 1 冊 • 場景 2）',
+  titleEn: 'Amsterdam Windmill Canal Orchard Market (Book 1 • Scene 2)',
+  descZh: '在荷蘭贊斯風車運河與果園市集中，仔細觀察左右兩圖 8 處相異之處！點選後在單字庫配對正確單字！',
+  baseImage: '/assets/spotter/book1_scene2_base.jpg',
+  diffImage: '/assets/spotter/book1_scene2_diff.jpg',
+  width: 1376,
+  height: 768,
+  status: 'ready',
+  isDynamicReady: true,
+  patchDir: '/assets/spotter/patches/b1_s2',
+  targetItems: [
+    {
+      word: 'grape',
+      wordZh: '葡萄',
+      x: 250,
+      y: 190,
+      radius: 155,
+      radiusX: 185,
+      radiusY: 125,
+      typeZh: '果實色彩',
+      descZh: '左圖木藤架垂掛整排深紫巨峰葡萄，右圖轉為翠綠無籽葡萄串（已擴大包覆整區葡萄架）',
+      slot: { x: 50, y: 50, w: 450, h: 320, rx: 20 },
+      patchFile: 'grape_variantA.png',
+      cropCompare: '/assets/spotter/crops/b1_s2/grape_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '深紫巨峰葡萄', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '翠綠無籽葡萄串', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '晶瑩白葡萄串', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '雙倍豐收葡萄棚', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'banana',
+      wordZh: '香蕉',
+      x: 160,
+      y: 430,
+      radius: 65,
+      radiusX: 65,
+      radiusY: 60,
+      typeZh: '存在差異',
+      descZh: '左圖藤編吊籃放有一串熟黃香蕉，右圖吊籃空無一物',
+      slot: { x: 95, y: 370, w: 130, h: 140, rx: 16 },
+      patchFile: 'banana_variantA.png',
+      cropCompare: '/assets/spotter/crops/b1_s2/banana_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '藤籃熟黃香蕉', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '空吊籃 (無香蕉)', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '青草綠未熟香蕉', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '熱帶迷你芭蕉', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'apple',
+      wordZh: '蘋果',
+      x: 185,
+      y: 650,
+      radius: 95,
+      radiusX: 110,
+      radiusY: 70,
+      typeZh: '品種色彩',
+      descZh: '左圖木箱與箱外掉落的青蘋果，右圖全數轉為鮮紅富士蘋果（已擴大包覆箱外蘋果）',
+      slot: { x: 40, y: 580, w: 240, h: 170, rx: 16 },
+      patchFile: 'apple_variantA.png',
+      cropCompare: '/assets/spotter/crops/b1_s2/apple_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '翠綠青蘋果（含落果）', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '鮮紅富士蘋果（含落果）', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '金黃香甜蘋果', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '空木箱與單顆蘋果', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'cat',
+      wordZh: '貓咪',
+      x: 774,
+      y: 423,
+      radius: 50,
+      radiusX: 55,
+      radiusY: 45,
+      typeZh: '品種毛色',
+      descZh: '左圖石橋自行車旁趴著橘白花貓，右圖替換成純黑長尾貓咪',
+      slot: { x: 710, y: 380, w: 130, h: 100, rx: 14 },
+      patchFile: 'cat_variantA.png',
+      cropCompare: '/assets/spotter/crops/b1_s2/cat_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '趴臥橘白花貓', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '純黑長尾黑貓', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '白底灰斑三花貓', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '黑白紳士賓士貓', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'dog',
+      wordZh: '狗狗',
+      x: 464,
+      y: 602,
+      radius: 90,
+      radiusX: 95,
+      radiusY: 85,
+      typeZh: '品種樣態',
+      descZh: '左圖石板路坐著金黃柴犬，右圖轉為趴臥的斑點大麥町犬（已擴大包覆柴犬與大麥町完整身軀）',
+      slot: { x: 345, y: 475, w: 245, h: 235, rx: 20 },
+      patchFile: 'dog_variantA.png',
+      cropCompare: '/assets/spotter/crops/b1_s2/dog_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '坐姿金黃柴犬', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '趴臥斑點大麥町犬', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '短腿柯基犬', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '捲毛貴賓犬', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'fish',
+      wordZh: '魚兒',
+      x: 712,
+      y: 662,
+      radius: 48,
+      radiusX: 52,
+      radiusY: 42,
+      typeZh: '品種色彩',
+      descZh: '左圖運河游動金紅錦鯉，右圖替換成青藍色小魚',
+      slot: { x: 620, y: 640, w: 150, h: 90, rx: 16 },
+      patchFile: 'fish_variantA.png',
+      cropCompare: '/assets/spotter/crops/b1_s2/fish_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '金紅錦鯉', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '青藍紋熱帶魚', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '雙尾黑金小金魚', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '銀白小鮭魚', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'elephant',
+      wordZh: '大象',
+      x: 1117,
+      y: 573,
+      radius: 55,
+      radiusX: 58,
+      radiusY: 52,
+      typeZh: '雕塑造型',
+      descZh: '左圖地面花園廣場水池為小象石雕噴泉，右圖替換為海豚石雕噴泉（已修正移至地面花園廣場）',
+      slot: { x: 1040, y: 525, w: 160, h: 130, rx: 16 },
+      patchFile: 'elephant_variantA.png',
+      cropCompare: '/assets/spotter/crops/b1_s2/elephant_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '小象石雕噴泉', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '海豚石雕噴泉', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '青蛙吐水石雕', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '純水花疊流無雕像', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'pumpkin',
+      wordZh: '南瓜',
+      x: 1263,
+      y: 500,
+      radius: 40,
+      radiusX: 42,
+      radiusY: 36,
+      typeZh: '外觀造型',
+      descZh: '左圖農舍窗台放金黃大南瓜，右圖替換為笑臉萬聖南瓜燈',
+      slot: { x: 1210, y: 455, w: 110, h: 95, rx: 14 },
+      patchFile: 'pumpkin_variantA.png',
+      cropCompare: '/assets/spotter/crops/b1_s2/pumpkin_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '金黃自然大南瓜', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '萬聖節笑臉南瓜燈', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '奶油白條紋長南瓜', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '墨綠日本栗子南瓜', tag: 'Variant C' }
+      ]
+    }
+  ],
+  distractors: [
+    { word: 'windmill', wordZh: '風車' },
+    { word: 'canal', wordZh: '運河' },
+    { word: 'bridge', wordZh: '石橋' },
+    { word: 'boat', wordZh: '木船' },
+    { word: 'bike', wordZh: '自行車' },
+    { word: 'tree', wordZh: '樹木' },
+    { word: 'flower', wordZh: '花朵' },
+    { word: 'sun', wordZh: '太陽' }
   ]
 };
 
@@ -329,7 +529,51 @@ export const BOOK8_GARDEN_SCENE = {
   ]
 };
 
-// ── 依冊次索引 (覆蓋 1 到 8 冊全系列教材) ──
+// ── 【Book 2 場景 2 規劃中】日本京都花見小路與職人小鎮 ──
+export const BOOK2_KYOTO_SCENE_ROADMAP = {
+  id: 'book2_scene2',
+  book: '2',
+  sceneNumber: 2,
+  grade: 3,
+  titleZh: '日本京都花見小路與職人小鎮（三年級第 2 冊 • 場景 2）',
+  titleEn: 'Kyoto Hanamikoji Artisan Town (Book 2 • Scene 2)',
+  descZh: '在古色古香的京都木造町家與石疊小路中，尋找工藝禮品與茶屋相異之處！',
+  baseImage: '/assets/spotter/book2_base.jpg',
+  diffImage: '/assets/spotter/book2_diff.jpg',
+  width: 1376,
+  height: 768,
+  status: 'roadmap',
+  targetItems: [
+    { word: 'cup', wordZh: '茶杯', x: 260, y: 520, radiusX: 55, radiusY: 50, typeZh: '茶具樣式', descZh: '白瓷茶杯 ➔ 抹茶陶杯' },
+    { word: 'key', wordZh: '鑰匙', x: 420, y: 390, radiusX: 45, radiusY: 45, typeZh: '材質造型', descZh: '黃銅古鑰 ➔ 銀雕鑰匙' },
+    { word: 'fan', wordZh: '摺扇', x: 580, y: 280, radiusX: 65, radiusY: 55, typeZh: '扇面繪紋', descZh: '櫻花金箔摺扇 ➔ 富士山青藍扇' },
+    { word: 'box', wordZh: '盒子', x: 740, y: 560, radiusX: 70, radiusY: 60, typeZh: '漆器外盒', descZh: '黑漆描金點心盒 ➔ 朱紅木盒' },
+    { word: 'bird', wordZh: '小鳥', x: 890, y: 190, radiusX: 50, radiusY: 45, typeZh: '鳥羽品種', descZh: '枝頭青雀 ➔ 櫻樹白頭翁' },
+    { word: 'tea', wordZh: '茶葉', x: 980, y: 480, radiusX: 60, radiusY: 55, typeZh: '茶罐色彩', descZh: '玉露茶罐 ➔ 焙茶金罐' },
+    { word: 'umbrella', wordZh: '油紙傘', x: 1140, y: 340, radiusX: 85, radiusY: 75, typeZh: '傘面圖案', descZh: '緋紅蛇目傘 ➔ 紫羅蘭和傘' },
+    { word: 'doll', wordZh: '木芥子人偶', x: 1220, y: 580, radiusX: 55, radiusY: 65, typeZh: '人偶彩繪', descZh: '圓頭小芥子 ➔ 傳統鳴子芥子' }
+  ],
+  distractors: [{ word: 'house', wordZh: '房子' }, { word: 'tree', wordZh: '樹木' }, { word: 'path', wordZh: '小徑' }]
+};
+
+// ── 依冊次索引 (覆蓋 1 到 8 冊全系列教材，支援多場景切換) ──
+export const ALL_SCENES_BY_BOOK = {
+  '1': [BOOK1_CLASSROOM_SCENE, BOOK1_AMSTERDAM_SCENE],
+  '2': [BOOK2_PARTY_SCENE, BOOK2_KYOTO_SCENE_ROADMAP],
+  '3': [BOOK3_PARK_SCENE],
+  '4': [BOOK4_LONDON_SCENE],
+  '5': [BOOK5_PARIS_SCENE],
+  '6': [BOOK6_MUSEUM_SCENE],
+  '7': [BOOK7_HARBOR_SCENE],
+  '8': [BOOK8_GARDEN_SCENE]
+};
+
+// 取得該冊次所有場景
+export const getScenesForBook = (bookId) => {
+  return ALL_SCENES_BY_BOOK[String(bookId)] || [BOOK1_CLASSROOM_SCENE];
+};
+
+// 依冊次索引 (向後相容預設第一場景)
 export const SPOTTER_SCENES_BY_BOOK = {
   '1': BOOK1_CLASSROOM_SCENE,
   '2': BOOK2_PARTY_SCENE,
@@ -341,9 +585,10 @@ export const SPOTTER_SCENES_BY_BOOK = {
   '8': BOOK8_GARDEN_SCENE
 };
 
-// 全域場景清單（依冊次 1～8 排序）
+// 全域場景清單（依冊次與場景編號完整排序）
 export const SPOTTER_SCENES = [
   BOOK1_CLASSROOM_SCENE,
+  BOOK1_AMSTERDAM_SCENE,
   BOOK2_PARTY_SCENE,
   BOOK3_PARK_SCENE,
   BOOK4_LONDON_SCENE,

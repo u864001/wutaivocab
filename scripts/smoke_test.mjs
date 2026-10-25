@@ -188,10 +188,19 @@ async function run() {
 
   // ── 檢查點 3: 鷹眼神探深度功能性驗收 (低年級托盤 vs 中年級紙雕全相異) ──
   console.log('\n[3/5] Deep Functional Testing: VocabSpotterGame...');
+
+  const waitForSpotterLoad = async () => {
+    for (let i = 0; i < 25; i++) {
+      const isSyncing = await client.evaluate(`document.body && (document.body.innerText.includes('正在同步雲端單字庫') || document.body.innerText.includes('Adventure World Loading'))`);
+      if (!isSyncing) break;
+      await new Promise(r => setTimeout(r, 300));
+    }
+    await new Promise(r => setTimeout(r, 600));
+  };
   
   // 3A. 一年級字母托盤模式
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=spotter&grade=1&book=abc` });
-  await new Promise(r => setTimeout(r, 1200));
+  await waitForSpotterLoad();
   const spotterG1Check = await client.evaluate(`
     (() => {
       const body = document.body.innerText;
@@ -214,7 +223,7 @@ async function run() {
 
   // 3B. 三年級紙雕場景模式 (全部 8 處差異均為正解，Word Bank 存在)
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=spotter&grade=3&book=1` });
-  await new Promise(r => setTimeout(r, 1200));
+  await waitForSpotterLoad();
   const spotterG3Check = await client.evaluate(`
     (() => {
       const body = document.body.innerText;
@@ -232,7 +241,7 @@ async function run() {
 
   // 3C. 六年級第 7 冊專屬場景驗收 (驗收世界節慶與環球港灣、第 7 冊單字庫)
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=spotter&grade=6&book=7` });
-  await new Promise(r => setTimeout(r, 1200));
+  await waitForSpotterLoad();
   const spotterG6Check = await client.evaluate(`
     (() => {
       const body = document.body.innerText;

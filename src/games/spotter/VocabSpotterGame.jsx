@@ -4,7 +4,7 @@ import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { SpotterScene } from './SpotterScene';
 import { SpotterWordBank } from './SpotterWordBank';
-import { SPOTTER_SCENES, SPOTTER_SCENES_BY_BOOK, DIFFERENCE_CATEGORIES, generateSpotterRound } from './spotterData';
+import { SPOTTER_SCENES, SPOTTER_SCENES_BY_BOOK, ALL_SCENES_BY_BOOK, DIFFERENCE_CATEGORIES, generateSpotterRound } from './spotterData';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { generateSpotterAlphabetRound } from '../../services/alphabetEngine';
 import { soundEngine } from '../../services/audio';
@@ -18,7 +18,8 @@ export const VocabSpotterGame = ({
   settings,
   words = [],
   qualifyingBook,
-  onBack
+  onBack,
+  onOpenWorkbench
 }) => {
   const { currentStudent } = useStudent();
   // 依據選取的冊次動態匹配場景（支援 1～8 冊完整成對立體紙雕）
@@ -82,7 +83,9 @@ export const VocabSpotterGame = ({
       Boolean(settings?.alphaMode);
   }, [qualifyingBook, settings, currentStudent?.grade]);
 
-  const currentScene = SPOTTER_SCENES_BY_BOOK[selectedBook] || SPOTTER_SCENES_BY_BOOK['1'];
+  const scenesForBook = ALL_SCENES_BY_BOOK[selectedBook] || [SPOTTER_SCENES_BY_BOOK[selectedBook] || SPOTTER_SCENES_BY_BOOK['1']];
+  const [sceneIndex, setSceneIndex] = useState(0);
+  const currentScene = scenesForBook[sceneIndex] || scenesForBook[0];
 
   // 每一局動態隨機抽取 5 個目標單字並指定樣態
   const [roundSeed, setRoundSeed] = useState(() => Date.now());
@@ -343,6 +346,28 @@ export const VocabSpotterGame = ({
                 第 {currentScene.book} 冊
               </span>
             </div>
+            {scenesForBook.length > 1 && (
+              <div className="flex items-center gap-1.5 mt-1">
+                {scenesForBook.map((sc, idx) => (
+                  <button
+                    key={sc.id}
+                    onClick={() => {
+                      setSceneIndex(idx);
+                      setRoundSeed(Date.now());
+                      setSolvedDiffIds(new Set());
+                      setSpotlightDiffId(null);
+                    }}
+                    className={`px-2 py-0.5 rounded-lg text-[10px] font-black transition-all ${
+                      sceneIndex === idx
+                        ? 'bg-amber-500 text-slate-950 shadow-sm'
+                        : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300'
+                    }`}
+                  >
+                    {idx === 0 ? '🏫 場景 1: 創意課室' : '🌷 場景 2: 荷蘭集市'}
+                  </button>
+                ))}
+              </div>
+            )}
             <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
               {currentScene.titleZh} • 找出全部 {totalCount} 處相異處並配對正確單字！
             </p>
@@ -411,6 +436,22 @@ export const VocabSpotterGame = ({
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">換題</span>
+          </button>
+
+          {/* 🔬 專案負責人變異檢驗工作台 */}
+          <button
+            onClick={() => {
+              if (onOpenWorkbench) {
+                onOpenWorkbench();
+              } else {
+                window.location.search = '?view=spotter-test';
+              }
+            }}
+            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-700 dark:text-purple-300 border border-purple-400/40 text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+            title="開啟專案負責人 Mark 專屬變異檢驗工作台"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+            <span className="hidden md:inline">變異工作台</span>
           </button>
         </div>
       </GlassCard>

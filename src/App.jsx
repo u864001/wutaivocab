@@ -14,6 +14,7 @@ import { AlphabetMazeGame } from './games/maze/AlphabetMazeGame';
 import { SwipeCardGame } from './games/swipe/SwipeCardGame';
 import { VocabEscapeGame } from './games/escape/VocabEscapeGame';
 import { VocabSpotterGame } from './games/spotter/VocabSpotterGame';
+import { SpotterTestWorkbench } from './games/spotter/SpotterTestWorkbench';
 import { WhackAMoleGame } from './games/mole/WhackAMoleGame';
 import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
@@ -104,7 +105,7 @@ export function App() {
 
       const VALID_VIEWS = [
         'phonics', 'lobby', 'town', 'textbook', 'langlab',
-        'escape', 'spotter', 'maze', 'memory',
+        'escape', 'spotter', 'spotter-test', 'maze', 'memory',
         'mole', 'swipe', 'meteor', 'snake', 'spelling', 'handwriting',
         'battle', 'leaderboard', 'teacher-hub'
       ];
@@ -407,6 +408,13 @@ export function App() {
               words={words}
               qualifyingBook={qualifyingBook}
               onBack={() => handleNavigate('lobby')}
+              onOpenWorkbench={() => handleNavigate('spotter-test')}
+            />
+          )}
+
+          {currentView === 'spotter-test' && (
+            <SpotterTestWorkbench
+              onBack={() => handleNavigate('spotter')}
             />
           )}
 
