@@ -4,7 +4,7 @@ import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { SpotterScene } from './SpotterScene';
 import { SpotterWordBank } from './SpotterWordBank';
-import { SPOTTER_SCENES, SPOTTER_SCENES_BY_BOOK, ALL_SCENES_BY_BOOK, DIFFERENCE_CATEGORIES, generateSpotterRound } from './spotterData';
+import { SPOTTER_SCENES, SPOTTER_SCENES_BY_BOOK, ALL_SCENES_BY_BOOK, generateSpotterRound } from './spotterData';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { generateSpotterAlphabetRound } from '../../services/alphabetEngine';
 import { soundEngine } from '../../services/audio';
@@ -137,8 +137,11 @@ export const VocabSpotterGame = ({
     };
   }, [gameState]);
 
-  // 重置/開啟全新題目挑戰
+  // 重置/開啟全新題目挑戰（多場景冊次自動切換下一個場景）
   const handleRestart = () => {
+    if (scenesForBook.length > 1) {
+      setSceneIndex(prev => (prev + 1) % scenesForBook.length);
+    }
     setRoundSeed(Date.now()); // 換一組全新的隨機 5 個題目與樣態
     setGameState('playing');
     setLives(5);
@@ -152,6 +155,30 @@ export const VocabSpotterGame = ({
     setIsInspectMode(false);
     setPan({ x: 300, y: 180 });
     startTimeRef.current = Date.now();
+  };
+
+  // 專案負責人 Mark 隱藏入口：放大鏡圖標連點 5 下直通變異工作台
+  const secretClicksRef = useRef(0);
+  const secretTimerRef = useRef(null);
+
+  const handleMagnifierSecretClick = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    secretClicksRef.current += 1;
+    if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
+
+    if (secretClicksRef.current >= 5) {
+      secretClicksRef.current = 0;
+      soundEngine.correct();
+      if (onOpenWorkbench) {
+        onOpenWorkbench();
+      } else {
+        window.location.search = '?view=spotter-test';
+      }
+    } else {
+      secretTimerRef.current = setTimeout(() => {
+        secretClicksRef.current = 0;
+      }, 2000);
+    }
   };
 
   // 觸發提示請求
@@ -326,62 +353,46 @@ export const VocabSpotterGame = ({
   }, [elapsedMs]);
 
   const activeSpotlightDiff = activeDifferences.find(d => d.id === spotlightDiffId);
+  const BOOK_ZH_MAP = { '1': '一', '2': '二', '3': '三', '4': '四', '5': '五', '6': '六', '7': '七', '8': '八' };
+  const bookZhNum = BOOK_ZH_MAP[String(currentScene.book)] || currentScene.book;
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 space-y-4 animate-fadeIn pb-16 select-none">
-      {/* ── 頂部抬頭控制列 ── */}
-      <GlassCard className="p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3 border-2 border-amber-300 dark:border-amber-700/60 bg-gradient-to-r from-amber-500/10 via-yellow-500/5 to-amber-500/10">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
-            {typeof window !== 'undefined' && window.innerWidth < 640 ? '' : '回大廳'}
+    <div className="w-full max-w-6xl mx-auto px-1 sm:px-3 py-1.5 sm:py-3 space-y-1.5 sm:space-y-2.5 animate-fadeIn pb-10 select-none">
+      {/* ── 頂部抬頭控制列（極致精簡單列排版，最大化釋放雙圖空間） ── */}
+      <GlassCard className="p-1.5 sm:p-2.5 flex items-center justify-between gap-1.5 sm:gap-2.5 border-2 border-amber-300 dark:border-amber-700/60 bg-gradient-to-r from-amber-500/10 via-yellow-500/5 to-amber-500/10">
+        {/* 左側：回大廳、放大鏡圖標 (5次點擊直通工作台)、鷹眼神探 (手機僅圖標)、冊次標籤 (手機僅數字) */}
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft} className="px-2 py-1 text-xs shrink-0">
+            <span className="hidden sm:inline">回大廳</span>
           </Button3D>
 
-          <div>
-            <div className="flex items-center gap-2">
-              <Search className="w-5 h-5 text-amber-500" />
-              <h2 className="text-base sm:text-lg font-black text-slate-800 dark:text-white font-heading">
-                鷹眼神探 • 單字找不同
-              </h2>
-              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-black">
-                第 {currentScene.book} 冊
-              </span>
-            </div>
-            {scenesForBook.length > 1 && (
-              <div className="flex items-center gap-1.5 mt-1">
-                {scenesForBook.map((sc, idx) => (
-                  <button
-                    key={sc.id}
-                    onClick={() => {
-                      setSceneIndex(idx);
-                      setRoundSeed(Date.now());
-                      setSolvedDiffIds(new Set());
-                      setSpotlightDiffId(null);
-                    }}
-                    className={`px-2 py-0.5 rounded-lg text-[10px] font-black transition-all ${
-                      sceneIndex === idx
-                        ? 'bg-amber-500 text-slate-950 shadow-sm'
-                        : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-300'
-                    }`}
-                  >
-                    {idx === 0 ? '🏫 場景 1: 創意課室' : '🌷 場景 2: 荷蘭集市'}
-                  </button>
-                ))}
-              </div>
-            )}
-            <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-0.5 hidden sm:block">
-              {currentScene.titleZh} • 找出全部 {totalCount} 處相異處並配對正確單字！
-            </p>
-          </div>
+          <button
+            type="button"
+            onClick={handleMagnifierSecretClick}
+            className="p-1 rounded-lg hover:bg-amber-500/10 active:scale-90 transition-all text-amber-500 cursor-pointer shrink-0"
+            title="鷹眼神探"
+          >
+            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
+          </button>
+
+          <h2 className="hidden sm:inline text-sm sm:text-base font-black text-slate-800 dark:text-white font-heading whitespace-nowrap">
+            鷹眼神探
+          </h2>
+
+          <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-black shrink-0 whitespace-nowrap">
+            <span className="hidden sm:inline">第{bookZhNum}冊</span>
+            <span className="sm:hidden">{bookZhNum}</span>
+          </span>
         </div>
 
-        {/* 狀態指示：愛心、進度條與計時器 */}
-        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+        {/* 右側：愛心、進度、秒數、放大鏡、提示、換題 */}
+        <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none shrink-0">
           {/* 愛心條 (5 Lives) */}
-          <div className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-300 dark:border-rose-800">
+          <div className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 rounded-xl bg-rose-500/10 border border-rose-300 dark:border-rose-800 shrink-0">
             {[...Array(5)].map((_, i) => (
               <Heart
                 key={i}
-                className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform ${
                   i < lives
                     ? 'text-rose-500 fill-rose-500 scale-100'
                     : 'text-slate-300 dark:text-slate-600 scale-90'
@@ -391,33 +402,22 @@ export const VocabSpotterGame = ({
           </div>
 
           {/* 破案進度 (0/5) */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-black">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span>進度：{solvedDiffIds.size} / {totalCount}</span>
+          <div className="flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-xl bg-emerald-500/10 border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-[11px] sm:text-xs font-black shrink-0 whitespace-nowrap">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="hidden sm:inline">進度：</span>
+            <span>{solvedDiffIds.size}/{totalCount}</span>
           </div>
 
           {/* 計時器 */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-black font-mono">
-            <Timer className="w-4 h-4 text-amber-500" />
+          <div className="flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-[11px] sm:text-xs font-black font-mono shrink-0 whitespace-nowrap">
+            <Timer className="w-3.5 h-3.5 text-amber-500" />
             <span>{formattedTime}</span>
           </div>
-
-          {/* 💡 鷹眼提示按鈕 (消耗 1 心) */}
-          <button
-            onClick={handleRequestHint}
-            disabled={gameState !== 'playing' || !!spotlightDiffId}
-            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-400/40 text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-            title="消耗 1 顆愛心圈出 1 處未解線索"
-          >
-            <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
-            <span className="hidden sm:inline">提示</span>
-            <span className="text-[10px] text-rose-500 font-black">(-1❤️)</span>
-          </button>
 
           {/* 🔍 放大鏡檢視按鈕 */}
           <button
             onClick={() => setIsInspectMode(prev => !prev)}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer ${
+            className={`px-2 py-1 rounded-xl border text-[11px] sm:text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer shrink-0 ${
               isInspectMode
                 ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md font-black animate-pulse'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
@@ -425,76 +425,56 @@ export const VocabSpotterGame = ({
             title={isInspectMode ? '退出放大鏡檢視 (回到作答)' : '開啟放大鏡檢視模式'}
           >
             <Search className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{isInspectMode ? '退出放大' : '放大鏡'}</span>
+            <span className="hidden sm:inline">{isInspectMode ? '退出' : '放大鏡'}</span>
+          </button>
+
+          {/* 💡 鷹眼提示按鈕 (消耗 1 心) */}
+          <button
+            onClick={handleRequestHint}
+            disabled={gameState !== 'playing' || !!spotlightDiffId}
+            className="px-2 py-1 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-400/40 text-[11px] sm:text-xs font-black flex items-center gap-0.5 active:scale-95 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+            title="消耗 1 顆愛心圈出 1 處未解線索"
+          >
+            <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+            <span className="hidden sm:inline">提示</span>
+            <span className="text-[10px] text-rose-500 font-black">(-1❤️)</span>
           </button>
 
           {/* 隨機換題按鈕 */}
           <button
             onClick={handleRestart}
-            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
-            title="隨機換一組 5 處相異題"
+            className="px-2 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[11px] sm:text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer shrink-0"
+            title="隨機換題 / 切換場景"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">換題</span>
-          </button>
-
-          {/* 🔬 專案負責人變異檢驗工作台 */}
-          <button
-            onClick={() => {
-              if (onOpenWorkbench) {
-                onOpenWorkbench();
-              } else {
-                window.location.search = '?view=spotter-test';
-              }
-            }}
-            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-700 dark:text-purple-300 border border-purple-400/40 text-xs font-black flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
-            title="開啟專案負責人 Mark 專屬變異檢驗工作台"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-purple-500" />
-            <span className="hidden md:inline">變異工作台</span>
           </button>
         </div>
       </GlassCard>
 
       {/* ── 放大鏡檢視狀態浮動提示列 ── */}
       {isInspectMode && (
-        <div className="p-3 rounded-2xl bg-amber-500/15 border-2 border-amber-400 dark:border-amber-500 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-black flex flex-wrap items-center justify-between gap-2 shadow-lg backdrop-blur-md animate-in fade-in">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-xl bg-amber-500 text-slate-950 font-black shrink-0">🔍 放大檢視</span>
-            <span>拖曳任意一圖可同步移動視野，此模式下點擊安全不作答、絕不扣心！</span>
+        <div className="p-2 sm:p-2.5 rounded-xl bg-amber-500/15 border border-amber-400 dark:border-amber-500 text-amber-900 dark:text-amber-200 text-xs font-black flex flex-wrap items-center justify-between gap-2 shadow-md backdrop-blur-md animate-in fade-in">
+          <div className="flex items-center gap-1.5">
+            <span className="px-2 py-0.5 rounded-lg bg-amber-500 text-slate-950 font-black shrink-0 text-[11px]">🔍 放大檢視</span>
+            <span className="text-[11px] sm:text-xs">拖曳任一圖同步移動，此模式點擊不作答、不扣心</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={() => setPan({ x: 300, y: 180 })}
-              className="px-2.5 py-1.5 rounded-xl bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-black border border-slate-300 dark:border-slate-600 active:scale-95 transition-all cursor-pointer"
+              className="px-2 py-1 rounded-lg bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-black border border-slate-300 dark:border-slate-600 active:scale-95 transition-all cursor-pointer"
             >
               視野居中
             </button>
             <button
               onClick={() => setIsInspectMode(false)}
-              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black shadow-md active:scale-95 transition-all cursor-pointer"
+              className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 text-[11px] font-black shadow-sm active:scale-95 transition-all cursor-pointer"
             >
-              ✕ 退出放大鏡 (回到作答)
+              ✕ 退出
             </button>
           </div>
         </div>
       )}
-
-      {/* ── 6 大差異類型標籤導引欄 ── */}
-      <div className="flex items-center gap-1.5 p-2 rounded-2xl bg-white/70 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 overflow-x-auto scrollbar-none text-xs font-bold text-slate-600 dark:text-slate-300">
-        <span className="font-black text-amber-600 dark:text-amber-400 pl-1 shrink-0">
-          🔍 6大相異類型：
-        </span>
-        {DIFFERENCE_CATEGORIES.map(cat => (
-          <span
-            key={cat.id}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-700/70 border border-slate-200 dark:border-slate-600 text-[11px] shrink-0 font-black"
-          >
-            <span>{cat.icon}</span>
-            <span>{cat.labelZh}</span>
-          </span>
-        ))}
-      </div>
 
       {/* ── 浮動提示膠囊 (Toast HUD：浮於畫卷之上，徹底杜絕畫面跳動與 Layout Shift) ── */}
       {(matchSuccessFeedback || missFeedback) && (

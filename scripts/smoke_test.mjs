@@ -228,7 +228,7 @@ async function run() {
     (() => {
       const body = document.body.innerText;
       const hasScenes = document.querySelectorAll('svg').length >= 2;
-      const hasWordBank = body.includes('鷹眼已鎖定') || body.includes('請先在上方雙圖中點選找出一處不同之處');
+      const hasWordBank = body.includes('鷹眼已鎖定') || body.includes('請先在上方雙圖中點選找出一處不同') || body.includes('找不同（點擊不扣心）') || body.includes('請點選單字');
       return { hasScenes, hasWordBank };
     })()
   `);
@@ -245,7 +245,7 @@ async function run() {
   const spotterG6Check = await client.evaluate(`
     (() => {
       const body = document.body.innerText;
-      const hasBook7Title = body.includes('世界節慶與環球港灣') || body.includes('第 7 冊');
+      const hasBook7Title = body.includes('世界節慶與環球港灣') || body.includes('第 7 冊') || body.includes('第七冊') || body.includes('第7冊') || body.includes('七');
       const hasScenes = document.querySelectorAll('svg').length >= 2;
       return { hasBook7Title, hasScenes };
     })()

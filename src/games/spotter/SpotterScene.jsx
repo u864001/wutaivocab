@@ -163,12 +163,17 @@ export const SpotterScene = ({
   return (
     <div className={`relative w-full aspect-[1376/768] select-none rounded-2xl overflow-hidden shadow-xl border-2 border-slate-300 dark:border-slate-700 bg-sky-100 ${isInspectMode ? 'touch-none cursor-grab active:cursor-grabbing' : 'touch-manipulation'}`}>
       {/* 標籤標記 */}
-      <div className="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-xl bg-slate-900/80 backdrop-blur-md text-white text-xs font-black shadow-md flex items-center gap-1.5 pointer-events-none">
+      <div className="absolute top-2 left-2 z-20 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl bg-slate-900/80 backdrop-blur-md text-white text-[11px] sm:text-xs font-black shadow-md flex items-center gap-1.5 pointer-events-none">
         <span className={`w-2 h-2 rounded-full ${isInspectMode ? 'bg-amber-400 animate-ping' : 'bg-emerald-400 animate-pulse'}`} />
         <span>
-          {isInspectMode
-            ? `${isLeft ? '左圖' : '右圖'} 🔍 放大鏡檢視中 (支援拖曳)`
-            : (isLeft ? '左側視圖 (Left Scene)' : '右側視圖 (Right Scene)')}
+          {isInspectMode ? (
+            `${isLeft ? '左圖' : '右圖'} 🔍 放大檢視`
+          ) : (
+            <>
+              <span className="sm:hidden">{isLeft ? '左圖' : '右圖'}</span>
+              <span className="hidden sm:inline">{isLeft ? '左側視圖' : '右側視圖'}</span>
+            </>
+          )}
         </span>
       </div>
 
