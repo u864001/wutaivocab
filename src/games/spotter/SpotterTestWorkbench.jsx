@@ -13,7 +13,7 @@ import {
 // 8 個冊次的標籤與名稱
 const BOOKS_CONFIG = [
   { id: '1', grade: '三上', title: '第 1 冊', sub: '彩虹文具 / 阿姆斯特丹果園集市' },
-  { id: '2', grade: '三下', title: '第 2 冊', sub: '溫馨派對 / 京都花見小路' },
+  { id: '2', grade: '三下', title: '第 2 冊', sub: '陽光農莊 / 京都花見小路' },
   { id: '3', grade: '四上', title: '第 3 冊', sub: '自然公園 / 撒哈拉綠洲驛站' },
   { id: '4', grade: '四下', title: '第 4 冊', sub: '泰晤士河畔 / 瑞士阿爾卑斯木屋' },
   { id: '5', grade: '五上', title: '第 5 冊', sub: '巴黎左岸畫室 / 羅馬競技場花園' },

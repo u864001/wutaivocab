@@ -319,33 +319,33 @@ export const BOOK1_AMSTERDAM_SCENE = {
   ]
 };
 
-// ── 【Book 2 三年級下學期】溫馨派對與感恩卡片 (Here We Go Book 2) ──
-export const BOOK2_PARTY_SCENE = {
-  id: 'book2_party',
+// ── 【Book 2 三年級下學期】陽光農莊與可愛動物公園 (Here We Go Book 2) ──
+export const BOOK2_PARK_SCENE = {
+  id: 'book2_park',
   book: '2',
   grade: 3,
-  titleZh: '溫馨派對與感恩卡片（三年級第 2 冊）',
-  titleEn: 'Mother\'s Day Party & Cards (Book 2)',
-  descZh: '在溫馨的派對客廳中，找出 8 處相異物品！',
+  titleZh: '陽光農莊與可愛動物公園（三年級第 2 冊）',
+  titleEn: 'Sunny Farm & Pet Park (Book 2)',
+  descZh: '在溫暖的陽光農莊與綠草如茵的公園中，找出 8 處相異動物與玩具！',
   baseImage: '/assets/spotter/book2_base.jpg',
   diffImage: '/assets/spotter/book2_diff.jpg',
   width: 1376,
   height: 768,
   targetItems: [
-    { word: 'balloon', wordZh: '氣球', x: 809, y: 99, radius: 50, radiusX: 50, radiusY: 50, typeZh: '顏色樣式', descZh: '漂浮氣球樣式變更' },
-    { word: 'card', wordZh: '卡片', x: 881, y: 179, radius: 45, radiusX: 45, radiusY: 45, typeZh: '封面圖樣', descZh: '感恩卡片樣式變更' },
-    { word: 'cake', wordZh: '蛋糕', x: 596, y: 492, radius: 55, radiusX: 55, radiusY: 48, typeZh: '口味裝飾', descZh: '派對蛋糕裝飾變更' },
-    { word: 'candle', wordZh: '蠟燭', x: 744, y: 484, radius: 70, radiusX: 66, radiusY: 70, typeZh: '燭光色彩', descZh: '蠟燭顏色變更' },
-    { word: 'flower', wordZh: '花朵', x: 152, y: 412, radius: 74, radiusX: 74, radiusY: 54, typeZh: '花朵品種', descZh: '花瓶花卉變更' },
-    { word: 'gift', wordZh: '禮物', x: 1112, y: 572, radius: 55, radiusX: 55, radiusY: 50, typeZh: '包裝緞帶', descZh: '禮物盒顏色變更' },
-    { word: 'candy', wordZh: '糖果', x: 436, y: 652, radius: 62, radiusX: 62, radiusY: 62, typeZh: '糖果風味', descZh: '糖果盤點心變更' },
-    { word: 'party', wordZh: '派對帽', x: 1256, y: 396, radius: 50, radiusX: 50, radiusY: 45, typeZh: '節慶裝飾', descZh: '派對帽條紋變更' }
+    { word: 'cat', wordZh: '貓咪', x: 153, y: 417, radius: 75, radiusX: 75, radiusY: 55, typeZh: '花色品種', descZh: '左圖長椅上是三花貓，右圖轉為橘色虎斑貓', cropCompare: '/assets/spotter/crops/b2_s1/cat_compare.jpg' },
+    { word: 'ball', wordZh: '球', x: 441, y: 645, radius: 65, radiusX: 65, radiusY: 65, typeZh: '球類樣式', descZh: '左圖野餐墊旁是黑白足球，右圖轉為橘黑籃球', cropCompare: '/assets/spotter/crops/b2_s1/ball_compare.jpg' },
+    { word: 'dog', wordZh: '狗狗', x: 596, y: 492, radius: 75, radiusX: 65, radiusY: 75, typeZh: '神態配件', descZh: '左圖小狗戴紅色項圈，右圖轉為藍色項圈且俏皮眨眼', cropCompare: '/assets/spotter/crops/b2_s1/dog_compare.jpg' },
+    { word: 'rabbit', wordZh: '兔子', x: 735, y: 485, radius: 55, radiusX: 55, radiusY: 50, typeZh: '毛色外觀', descZh: '左圖幸運草堆是純白小兔，右圖轉為灰色小兔', cropCompare: '/assets/spotter/crops/b2_s1/rabbit_compare.jpg' },
+    { word: 'turtle', wordZh: '烏龜', x: 815, y: 530, radius: 50, radiusX: 50, radiusY: 45, typeZh: '甲殼花紋', descZh: '左圖池塘岩石是青綠小龜，右圖轉為金黃暖橘花紋烏龜', cropCompare: '/assets/spotter/crops/b2_s1/turtle_compare.jpg' },
+    { word: 'frog', wordZh: '青蛙', x: 1115, y: 555, radius: 55, radiusX: 55, radiusY: 50, typeZh: '飾品裝飾', descZh: '左圖荷葉上是普通綠青蛙，右圖頭戴閃耀金皇冠轉為青蛙王子', cropCompare: '/assets/spotter/crops/b2_s1/frog_compare.jpg' },
+    { word: 'kite', wordZh: '風箏', x: 815, y: 115, radius: 85, radiusX: 85, radiusY: 85, typeZh: '風箏圖樣', descZh: '左圖晴空是幾何條紋菱形風箏，右圖轉為彩虹蝴蝶彩繪風箏', cropCompare: '/assets/spotter/crops/b2_s1/kite_compare.jpg' },
+    { word: 'bird', wordZh: '小鳥', x: 1245, y: 395, radius: 50, radiusX: 50, radiusY: 45, typeZh: '數量品種', descZh: '左圖木柵欄上棲息2隻小鳥，右圖右側新增第3隻粉紅小鳥', cropCompare: '/assets/spotter/crops/b2_s1/bird_compare.jpg' }
   ],
   distractors: [
-    { word: 'family', wordZh: '家人' },
-    { word: 'mother', wordZh: '媽媽' },
-    { word: 'friend', wordZh: '朋友' },
-    { word: 'happy', wordZh: '快樂' }
+    { word: 'fish', wordZh: '小魚' },
+    { word: 'bear', wordZh: '玩具熊' },
+    { word: 'doll', wordZh: '洋娃娃' },
+    { word: 'yo-yo', wordZh: '溜溜球' }
   ]
 };
 
@@ -362,14 +362,14 @@ export const BOOK3_PARK_SCENE = {
   width: 1376,
   height: 768,
   targetItems: [
-    { word: 'umbrella', wordZh: '遮陽傘', x: 140, y: 428, radius: 140, radiusX: 140, radiusY: 86, typeZh: '傘面花色', descZh: '左圖草地是紅白條紋遮陽傘，右圖轉為藍白海洋條紋傘' },
-    { word: 'kite', wordZh: '風箏', x: 372, y: 124, radius: 130, radiusX: 130, radiusY: 120, typeZh: '風箏圖樣', descZh: '左圖晴空是幾何條紋風箏，右圖轉為菱形純色彩繪風箏' },
-    { word: 'hamburger', wordZh: '漢堡', x: 472, y: 456, radius: 66, radiusX: 66, radiusY: 50, typeZh: '夾心配料', descZh: '左圖長椅上是起司牛肉堡，右圖轉為脆皮炸雞雙層堡' },
-    { word: 'hot dog', wordZh: '熱狗', x: 784, y: 332, radius: 74, radiusX: 74, radiusY: 62, typeZh: '醬料樣態', descZh: '左圖木棧道熱狗淋滿黃芥末醬，右圖淋滿番茄紅醬' },
-    { word: 'sun', wordZh: '太陽', x: 792, y: 92, radius: 110, radiusX: 110, radiusY: 70, typeZh: '光芒樣式', descZh: '左圖太陽散發金黃光芒，右圖轉為燦爛多芒晨曦' },
-    { word: 'pizza', wordZh: '披薩', x: 716, y: 556, radius: 86, radiusX: 86, radiusY: 54, typeZh: '披薩配料', descZh: '左圖石台上是經典臘腸披薩，右圖轉為夏威夷鳳梨披薩' },
-    { word: 'ice cream', wordZh: '冰淇淋', x: 996, y: 388, radius: 62, radiusX: 62, radiusY: 54, typeZh: '甜筒口味', descZh: '左圖花叢邊是粉紅草莓冰淇淋，右圖轉為香濃巧克力甜筒' },
-    { word: 'juice', wordZh: '果汁', x: 1132, y: 640, radius: 86, radiusX: 86, radiusY: 66, typeZh: '果汁色澤', descZh: '左圖野餐墊是金黃柳橙果汁，右圖轉為翠綠奇異果汁' }
+    { word: 'umbrella', wordZh: '遮陽傘', x: 140, y: 428, radius: 140, radiusX: 140, radiusY: 86, typeZh: '傘面花色', descZh: '左圖草地是紅白條紋遮陽傘，右圖轉為藍白海洋條紋傘', cropCompare: '/assets/spotter/crops/b3_s1/umbrella_compare.jpg' },
+    { word: 'kite', wordZh: '風箏', x: 372, y: 124, radius: 130, radiusX: 130, radiusY: 120, typeZh: '風箏圖樣', descZh: '左圖晴空是幾何條紋風箏，右圖轉為菱形純色彩繪風箏', cropCompare: '/assets/spotter/crops/b3_s1/kite_compare.jpg' },
+    { word: 'hamburger', wordZh: '漢堡', x: 472, y: 456, radius: 66, radiusX: 66, radiusY: 50, typeZh: '夾心配料', descZh: '左圖長椅上是起司牛肉堡，右圖轉為脆皮炸雞雙層堡', cropCompare: '/assets/spotter/crops/b3_s1/hamburger_compare.jpg' },
+    { word: 'hot dog', wordZh: '熱狗', x: 784, y: 332, radius: 74, radiusX: 74, radiusY: 62, typeZh: '醬料樣態', descZh: '左圖木棧道熱狗淋滿黃芥末醬，右圖淋滿番茄紅醬', cropCompare: '/assets/spotter/crops/b3_s1/hot_dog_compare.jpg' },
+    { word: 'sun', wordZh: '太陽', x: 690, y: 100, radius: 80, radiusX: 80, radiusY: 75, typeZh: '光芒樣式', descZh: '左圖太陽散發金黃光芒，右圖轉為燦爛多芒晨曦（已校正置中於太陽本體）', cropCompare: '/assets/spotter/crops/b3_s1/sun_compare.jpg' },
+    { word: 'pizza', wordZh: '披薩', x: 716, y: 556, radius: 86, radiusX: 86, radiusY: 54, typeZh: '披薩配料', descZh: '左圖石台上是經典臘腸披薩，右圖轉為夏威夷鳳梨披薩', cropCompare: '/assets/spotter/crops/b3_s1/pizza_compare.jpg' },
+    { word: 'ice cream', wordZh: '冰淇淋', x: 996, y: 388, radius: 62, radiusX: 62, radiusY: 54, typeZh: '甜筒口味', descZh: '左圖花叢邊是粉紅草莓冰淇淋，右圖轉為香濃巧克力甜筒', cropCompare: '/assets/spotter/crops/b3_s1/ice_cream_compare.jpg' },
+    { word: 'juice', wordZh: '果汁', x: 1132, y: 640, radius: 86, radiusX: 86, radiusY: 66, typeZh: '果汁色澤', descZh: '左圖野餐墊是金黃柳橙果汁，右圖轉為翠綠奇異果汁', cropCompare: '/assets/spotter/crops/b3_s1/juice_compare.jpg' }
   ],
   distractors: [
     { word: 'cloud', wordZh: '雲朵' },
@@ -392,14 +392,14 @@ export const BOOK4_LONDON_SCENE = {
   width: 1376,
   height: 768,
   targetItems: [
-    { word: 'bed', wordZh: '床鋪', x: 380, y: 168, radius: 45, radiusX: 45, radiusY: 45, typeZh: '床單花紋', descZh: '左圖二樓單人床是暖黃格紋被套，右圖轉為深藍星空被套' },
-    { word: 'hat', wordZh: '帽子', x: 388, y: 304, radius: 65, radiusX: 65, radiusY: 45, typeZh: '帽款色彩', descZh: '左圖衣帽架上是黑圓頂高帽，右圖轉為復古棕色獵鹿帽' },
-    { word: 'computer', wordZh: '電腦', x: 288, y: 460, radius: 55, radiusX: 55, radiusY: 45, typeZh: '螢幕顯示', descZh: '左圖書桌上是筆記型電腦螢幕發光，右圖轉為簡約銀灰桌機螢幕' },
-    { word: 'bag', wordZh: '背包', x: 288, y: 570, radius: 55, radiusX: 55, radiusY: 45, typeZh: '提包樣態', descZh: '左圖玄關地毯旁是休閒雙肩包，右圖轉為焦糖棕真皮手提公事包' },
-    { word: 'book', wordZh: '書本', x: 636, y: 596, radius: 120, radiusX: 120, radiusY: 85, typeZh: '書本封皮', descZh: '左圖茶几上是紅色精裝讀本，右圖轉為翠綠圖畫書' },
-    { word: 'bus', wordZh: '公車', x: 824, y: 240, radius: 58, radiusX: 58, radiusY: 45, typeZh: '公車外觀', descZh: '左圖街道是經典英倫紅雙層巴士，右圖車身轉為皇家藍配色' },
-    { word: 'sofa', wordZh: '沙發', x: 1096, y: 616, radius: 58, radiusX: 58, radiusY: 58, typeZh: '沙發布料', descZh: '左圖客廳沙發是溫馨米色布面，右圖轉為墨綠復古絨布沙發' },
-    { word: 'clock', wordZh: '時鐘', x: 1176, y: 164, radius: 45, radiusX: 45, radiusY: 45, typeZh: '鐘樓時鐘', descZh: '左圖遠方鐘樓指標為整點，右圖指針與鐘面色彩轉變' }
+    { word: 'bus', wordZh: '公車', x: 210, y: 665, radius: 130, radiusX: 110, radiusY: 130, typeZh: '公車外觀', descZh: '左圖街道是經典英倫紅雙層巴士，右圖車身轉為皇家藍配色（已全域擴大包覆整輛巴士）', cropCompare: '/assets/spotter/crops/b4_s1/bus_compare.jpg' },
+    { word: 'bed', wordZh: '床鋪', x: 275, y: 395, radius: 110, radiusX: 110, radiusY: 65, typeZh: '床單花紋', descZh: '左圖二樓單人床是暖黃格紋被套，右圖轉為深藍星空被套（已修正移至二樓床鋪）', cropCompare: '/assets/spotter/crops/b4_s1/bed_compare.jpg' },
+    { word: 'hat', wordZh: '帽子', x: 275, y: 210, radius: 48, radiusX: 48, radiusY: 45, typeZh: '帽款色彩', descZh: '左圖二樓衣帽架上是黑圓頂禮帽，右圖轉為黃色緞帶草帽（已修正移至二樓帽架）', cropCompare: '/assets/spotter/crops/b4_s1/hat_compare.jpg' },
+    { word: 'computer', wordZh: '電腦', x: 605, y: 310, radius: 55, radiusX: 55, radiusY: 45, typeZh: '螢幕顯示', descZh: '左圖二樓書桌上是筆記型電腦螢幕發光，右圖轉為亮粉色外殼（已校準對齊書桌筆電）', cropCompare: '/assets/spotter/crops/b4_s1/computer_compare.jpg' },
+    { word: 'sofa', wordZh: '沙發', x: 435, y: 765, radius: 85, radiusX: 85, radiusY: 75, typeZh: '沙發布料', descZh: '左圖客廳沙發是溫馨米色布面，右圖轉為墨綠復古絨布沙發（已校準對齊客廳主沙發）', cropCompare: '/assets/spotter/crops/b4_s1/sofa_compare.jpg' },
+    { word: 'book', wordZh: '書本', x: 535, y: 775, radius: 50, radiusX: 50, radiusY: 35, typeZh: '書本封皮', descZh: '左圖茶几上是翻開花草繪本，右圖轉為厚重精裝書（已校準對齊茶几書本）', cropCompare: '/assets/spotter/crops/b4_s1/book_compare.jpg' },
+    { word: 'bag', wordZh: '背包', x: 792, y: 792, radius: 50, radiusX: 50, radiusY: 50, typeZh: '提包樣態', descZh: '左圖玄關地毯旁是紅藍學生雙肩書包，右圖轉為草綠色休閒背包（已校準對齊玄關背包）', cropCompare: '/assets/spotter/crops/b4_s1/bag_compare.jpg' },
+    { word: 'clock', wordZh: '時鐘', x: 855, y: 210, radius: 42, radiusX: 42, radiusY: 42, typeZh: '鐘樓時鐘', descZh: '左圖遠方大笨鐘面指標為整點，右圖指針與鐘面色彩轉變', cropCompare: '/assets/spotter/crops/b4_s1/clock_compare.jpg' }
   ],
   distractors: [
     { word: 'lamp', wordZh: '檯燈' },
@@ -422,14 +422,14 @@ export const BOOK5_PARIS_SCENE = {
   width: 1376,
   height: 768,
   targetItems: [
-    { word: 'lion', wordZh: '守護石獅', x: 112, y: 152, radius: 35, radiusX: 35, radiusY: 35, typeZh: '雕像姿態', descZh: '左圖宮殿台階旁是端坐石獅，右圖轉為威嚴昂首姿態' },
-    { word: 'koala', wordZh: '無尾熊', x: 180, y: 200, radius: 35, radiusX: 35, radiusY: 35, typeZh: '無尾熊樣態', descZh: '左圖大樹上是憨厚灰毛無尾熊，右圖轉為抱著桉樹嫩葉' },
-    { word: 'bread', wordZh: '麵包', x: 444, y: 540, radius: 105, radiusX: 94, radiusY: 105, typeZh: '麵包種類', descZh: '左圖長椅邊是法國金黃長棍麵包，右圖轉為螺旋牛角可頌麵包' },
-    { word: 'milk', wordZh: '牛奶', x: 528, y: 252, radius: 110, radiusX: 95, radiusY: 110, typeZh: '瓶身圖樣', descZh: '左圖石牆上是復古透明玻璃牛奶瓶，右圖轉為藍白條紋紙盒鮮奶' },
-    { word: 'football', wordZh: '足球', x: 752, y: 584, radius: 74, radiusX: 58, radiusY: 74, typeZh: '足球圖樣', descZh: '左圖石板廣場上是黑白經典足球，右圖轉為藍金世界杯紀念足球' },
-    { word: 'painting', wordZh: '畫作', x: 1024, y: 420, radius: 45, radiusX: 45, radiusY: 45, typeZh: '油畫畫面', descZh: '左圖畫架上是蒙娜麗莎神秘微笑，右圖轉為塞納河畔晨曦風景油畫' },
-    { word: 'palette', wordZh: '調色盤', x: 1136, y: 608, radius: 58, radiusX: 58, radiusY: 58, typeZh: '顏料色彩', descZh: '左圖調色几上是彩虹七彩油畫顏料，右圖轉為大地暖金色系顏料' },
-    { word: 'camera', wordZh: '相機', x: 1264, y: 488, radius: 82, radiusX: 82, radiusY: 82, typeZh: '相機款式', descZh: '左圖路燈柱上懸掛著復古黑色單眼相機，右圖轉為銀紅雙色拍立得相機' }
+    { word: 'koala', wordZh: '無尾熊', x: 88, y: 275, radius: 65, radiusX: 65, radiusY: 65, typeZh: '無尾熊樣態', descZh: '左圖左側大樹幹趴著灰毛無尾熊，右圖耳朵戴著金黃花朵（已校正移至左側樹上無尾熊）', cropCompare: '/assets/spotter/crops/b5_s1/koala_compare.jpg' },
+    { word: 'lion', wordZh: '守護石獅', x: 385, y: 345, radius: 80, radiusX: 80, radiusY: 75, typeZh: '雕像姿態', descZh: '左圖宮殿台階旁是端坐石獅，右圖轉為暗銅色且頭戴金桂冠（已校正移至台階石獅）', cropCompare: '/assets/spotter/crops/b5_s1/lion_compare.jpg' },
+    { word: 'milk', wordZh: '牛奶', x: 230, y: 725, radius: 60, radiusX: 45, radiusY: 60, typeZh: '瓶身圖樣', descZh: '左圖前方石牆上是透明玻璃牛奶瓶，右圖轉為粉紅草莓鮮奶瓶（已校正移至矮牆牛奶）', cropCompare: '/assets/spotter/crops/b5_s1/milk_compare.jpg' },
+    { word: 'bread', wordZh: '麵包', x: 300, y: 700, radius: 65, radiusX: 65, radiusY: 50, typeZh: '麵包種類', descZh: '左圖紙袋裝有法國金黃長棍麵包，右圖籃中轉為牛角可頌麵包', cropCompare: '/assets/spotter/crops/b5_s1/bread_compare.jpg' },
+    { word: 'football', wordZh: '足球', x: 550, y: 755, radius: 55, radiusX: 55, radiusY: 55, typeZh: '足球圖樣', descZh: '左圖廣場石板上是經典黑白足球，右圖轉為紅金獎盃足球', cropCompare: '/assets/spotter/crops/b5_s1/football_compare.jpg' },
+    { word: 'painting', wordZh: '畫作', x: 750, y: 595, radius: 70, radiusX: 65, radiusY: 70, typeZh: '油畫畫面', descZh: '左圖畫架上是蒙娜麗莎神秘微笑，右圖蒙娜麗莎俏皮戴上黑色墨鏡', cropCompare: '/assets/spotter/crops/b5_s1/painting_compare.jpg' },
+    { word: 'cake', wordZh: '蛋糕', x: 828, y: 790, radius: 50, radiusX: 50, radiusY: 45, typeZh: '點心甜點', descZh: '左圖圓木凳上是白奶油草莓切片蛋糕，右圖轉為黑森林櫻桃巧克力蛋糕（已更正為蛋糕）', cropCompare: '/assets/spotter/crops/b5_s1/cake_compare.jpg' },
+    { word: 'camera', wordZh: '相機', x: 915, y: 635, radius: 65, radiusX: 65, radiusY: 55, typeZh: '相機款式', descZh: '左圖路燈柱上懸掛著黑色單眼相機，右圖轉為青藍雙色拍立得相機', cropCompare: '/assets/spotter/crops/b5_s1/camera_compare.jpg' }
   ],
   distractors: [
     { word: 'museum', wordZh: '博物館' },
@@ -452,14 +452,14 @@ export const BOOK6_MUSEUM_SCENE = {
   width: 1376,
   height: 768,
   targetItems: [
-    { word: 'mask', wordZh: '口罩', x: 104, y: 424, radius: 58, radiusX: 58, radiusY: 50, typeZh: '圖樣樣式', descZh: '左圖防疫站是淺藍醫用口罩，右圖轉為鮮黃卡通笑臉口罩' },
-    { word: 'elephant', wordZh: '大象', x: 276, y: 300, radius: 40, radiusX: 40, radiusY: 40, typeZh: '裝飾樣式', descZh: '左圖野生非洲展區是素色灰象，右圖身披彩色刺繡節慶鞍毯' },
-    { word: 'rocket', wordZh: '火箭', x: 416, y: 192, radius: 115, radiusX: 115, radiusY: 72, typeZh: '航天機型', descZh: '左圖穹頂懸掛經典紅白火箭，右圖轉為藍銀太空穿梭機' },
-    { word: 'noodles', wordZh: '麵食', x: 480, y: 456, radius: 74, radiusX: 74, radiusY: 66, typeZh: '餐點品項', descZh: '左圖咖啡几上是日式拉麵碗，右圖轉為經典番茄肉醬義大利麵' },
-    { word: 'sunglasses', wordZh: '墨鏡', x: 656, y: 388, radius: 54, radiusX: 50, radiusY: 54, typeZh: '墨鏡造型', descZh: '左圖中央展台是黑色飛行員墨鏡，右圖轉為復古紅色愛心墨鏡' },
-    { word: 'salad', wordZh: '沙拉', x: 944, y: 496, radius: 58, radiusX: 58, radiusY: 45, typeZh: '沙拉風味', descZh: '左圖長椅上是清爽綠生菜沙拉，右圖轉為草莓鮮果水果沙拉' },
-    { word: 'dinosaur', wordZh: '恐龍', x: 996, y: 208, radius: 135, radiusX: 135, radiusY: 90, typeZh: '化石標本', descZh: '左圖夾層展廳是霸王龍骨骼化石，右圖轉為具頭盾雙角的三角龍化石' },
-    { word: 'backpack', wordZh: '背包', x: 1156, y: 588, radius: 86, radiusX: 70, radiusY: 86, typeZh: '背包配色', descZh: '左圖立柱掛著藍橘撞色背包，右圖轉為深紫螢光綠探險背包' }
+    { word: 'mask', wordZh: '口罩', x: 88, y: 550, radius: 55, radiusX: 55, radiusY: 45, typeZh: '圖樣樣式', descZh: '左圖接待台上方層架是淺藍醫用口罩，右圖轉為鮮黃笑臉口罩', cropCompare: '/assets/spotter/crops/b6_s1/mask_compare.jpg' },
+    { word: 'rocket', wordZh: '火箭', x: 380, y: 220, radius: 115, radiusX: 115, radiusY: 75, typeZh: '航天機型', descZh: '左圖穹頂懸掛經典紅白火箭，右圖轉為藍銀太空穿梭機', cropCompare: '/assets/spotter/crops/b6_s1/rocket_compare.jpg' },
+    { word: 'noodles', wordZh: '麵食', x: 345, y: 585, radius: 60, radiusX: 60, radiusY: 50, typeZh: '餐點品項', descZh: '左圖圓邊几上是熱氣騰騰的拉麵碗，右圖轉為番茄肉醬義大利麵', cropCompare: '/assets/spotter/crops/b6_s1/noodles_compare.jpg' },
+    { word: 'elephant', wordZh: '大象', x: 500, y: 520, radius: 90, radiusX: 90, radiusY: 70, typeZh: '裝飾樣式', descZh: '左圖中央自然展區是非洲灰象，右圖身披彩色刺繡節慶鞍毯（已校正對齊中央大象）', cropCompare: '/assets/spotter/crops/b6_s1/elephant_compare.jpg' },
+    { word: 'sunglasses', wordZh: '墨鏡', x: 500, y: 760, radius: 75, radiusX: 75, radiusY: 45, typeZh: '墨鏡造型', descZh: '左圖前方紅絲絨展台上是黑色飛行員墨鏡，右圖轉為紅色愛心造型墨鏡（已校正移至展台墨鏡）', cropCompare: '/assets/spotter/crops/b6_s1/sunglasses_compare.jpg' },
+    { word: 'salad', wordZh: '沙拉', x: 685, y: 645, radius: 60, radiusX: 60, radiusY: 45, typeZh: '沙拉風味', descZh: '左圖休息長椅上是木碗生菜沙拉，右圖轉為繽紛水果沙拉', cropCompare: '/assets/spotter/crops/b6_s1/salad_compare.jpg' },
+    { word: 'dinosaur', wordZh: '恐龍', x: 750, y: 260, radius: 125, radiusX: 125, radiusY: 85, typeZh: '化石標本', descZh: '左圖二樓夾層是霸王龍骨骼化石，右圖轉為三角龍骨骼化石', cropCompare: '/assets/spotter/crops/b6_s1/dinosaur_compare.jpg' },
+    { word: 'backpack', wordZh: '背包', x: 835, y: 765, radius: 65, radiusX: 55, radiusY: 65, typeZh: '背包配色', descZh: '左圖圍欄立柱掛著藍橘撞色背包，右圖轉為紫綠雙色探險背包', cropCompare: '/assets/spotter/crops/b6_s1/backpack_compare.jpg' }
   ],
   distractors: [
     { word: 'telescope', wordZh: '望遠鏡' },
@@ -482,14 +482,14 @@ export const BOOK7_HARBOR_SCENE = {
   width: 1376,
   height: 768,
   targetItems: [
-    { word: 'airplane', wordZh: '飛機', x: 336, y: 108, radius: 145, radiusX: 145, radiusY: 48, typeZh: '機型樣式', descZh: '左圖高空是經典白藍客機，右圖轉為金橘色超音速噴射機' },
-    { word: 'flag', wordZh: '國旗', x: 1140, y: 64, radius: 52, radiusX: 52, radiusY: 42, typeZh: '旗幟樣式', descZh: '左圖燈塔頂端是紅白藍國家旗幟，右圖轉為金黃海軍藍燕尾信號旗' },
-    { word: 'train', wordZh: '火車', x: 792, y: 260, radius: 175, radiusX: 175, radiusY: 45, typeZh: '列車型式', descZh: '左圖石拱橋上是復古蒸氣火車，右圖轉為流線型銀紅高速列車（全面覆蓋火車頭與整列車廂）' },
-    { word: 'ship', wordZh: '輪船', x: 440, y: 390, radius: 140, radiusX: 140, radiusY: 105, typeZh: '船隻種類', descZh: '左圖港灣中是純白豪華遊輪，右圖轉為雙桅木造復古風帆帆船' },
-    { word: 'postcard', wordZh: '明信片', x: 172, y: 548, radius: 88, radiusX: 88, radiusY: 52, typeZh: '明信片圖樣', descZh: '左圖郵筒旁是燈塔海景明信片，右圖轉為熱帶海灘愛心郵戳明信片（精確對齊紅色郵筒與卡片）' },
-    { word: 'map', wordZh: '地圖', x: 630, y: 585, radius: 95, radiusX: 95, radiusY: 65, typeZh: '地圖形式', descZh: '左圖欄杆上是平鋪彩色世界地圖，右圖轉為復古羊皮紙藏寶圖（精確對齊觀景台平台，絕無偏移至水面）' },
-    { word: 'suitcase', wordZh: '行李箱', x: 900, y: 570, radius: 85, radiusX: 85, radiusY: 68, typeZh: '箱體造型', descZh: '左圖長椅旁是復古真皮皮箱，右圖轉為亮綠藍色硬殼四輪行李箱' },
-    { word: 'gift', wordZh: '禮物', x: 1272, y: 532, radius: 75, radiusX: 75, radiusY: 72, typeZh: '包裝緞帶', descZh: '左圖售票亭是深藍金緞帶禮盒，右圖轉為緋紅翠綠緞帶禮盒' }
+    { word: 'airplane', wordZh: '飛機', x: 336, y: 108, radius: 145, radiusX: 145, radiusY: 48, typeZh: '機型樣式', descZh: '左圖高空是經典白藍客機，右圖轉為金橘色超音速噴射機', cropCompare: '/assets/spotter/crops/b7_s1/airplane_compare.jpg' },
+    { word: 'flag', wordZh: '國旗', x: 1140, y: 64, radius: 52, radiusX: 52, radiusY: 42, typeZh: '旗幟樣式', descZh: '左圖燈塔頂端是紅白藍國家旗幟，右圖轉為金黃海軍藍燕尾信號旗', cropCompare: '/assets/spotter/crops/b7_s1/flag_compare.jpg' },
+    { word: 'train', wordZh: '火車', x: 792, y: 260, radius: 175, radiusX: 175, radiusY: 45, typeZh: '列車型式', descZh: '左圖石拱橋上是復古蒸氣火車，右圖轉為流線型銀紅高速列車', cropCompare: '/assets/spotter/crops/b7_s1/train_compare.jpg' },
+    { word: 'ship', wordZh: '輪船', x: 440, y: 390, radius: 140, radiusX: 140, radiusY: 105, typeZh: '船隻種類', descZh: '左圖港灣中是純白豪華遊輪，右圖轉為雙桅木造復古風帆帆船', cropCompare: '/assets/spotter/crops/b7_s1/ship_compare.jpg' },
+    { word: 'postcard', wordZh: '明信片', x: 172, y: 548, radius: 88, radiusX: 88, radiusY: 52, typeZh: '明信片圖樣', descZh: '左圖郵筒旁是燈塔海景明信片，右圖轉為熱帶海灘愛心郵戳明信片', cropCompare: '/assets/spotter/crops/b7_s1/postcard_compare.jpg' },
+    { word: 'map', wordZh: '地圖', x: 640, y: 630, radius: 140, radiusX: 140, radiusY: 125, typeZh: '地圖形式', descZh: '左圖欄杆上是平鋪彩色世界地圖，右圖轉為復古羊皮紙藏寶圖（已全域擴大包覆整張地圖）', cropCompare: '/assets/spotter/crops/b7_s1/map_compare.jpg' },
+    { word: 'suitcase', wordZh: '行李箱', x: 925, y: 635, radius: 125, radiusX: 120, radiusY: 125, typeZh: '箱體造型', descZh: '左圖長椅旁是復古真皮皮箱，右圖轉為亮綠藍色硬殼四輪行李箱（已擴大包覆且與地圖獨立零重疊）', cropCompare: '/assets/spotter/crops/b7_s1/suitcase_compare.jpg' },
+    { word: 'gift', wordZh: '禮物', x: 1272, y: 532, radius: 75, radiusX: 75, radiusY: 72, typeZh: '包裝緞帶', descZh: '左圖售票亭是深藍金緞帶禮盒，右圖轉為緋紅翠綠緞帶禮盒', cropCompare: '/assets/spotter/crops/b7_s1/gift_compare.jpg' }
   ],
   distractors: [
     { word: 'passport', wordZh: '護照' },
@@ -512,14 +512,14 @@ export const BOOK8_GARDEN_SCENE = {
   width: 1376,
   height: 768,
   targetItems: [
-    { word: 'swan', wordZh: '天鵝', x: 295, y: 485, radius: 72, radiusX: 75, radiusY: 62, typeZh: '羽色品種', descZh: '左圖池中是優雅純白白天鵝，右圖轉為紅喙純黑天鵝' },
-    { word: 'spade', wordZh: '鏟子', x: 138, y: 635, radius: 75, radiusX: 50, radiusY: 140, typeZh: '工具配色', descZh: '左圖花圃泥土插著銀柄鏟子，右圖轉為亮金黃色園藝鏟' },
-    { word: 'drum', wordZh: '鼓', x: 288, y: 272, radius: 66, radiusX: 66, radiusY: 50, typeZh: '樂器外觀', descZh: '左圖涼亭舞台是紅金行進鼓，右圖轉為皇家深藍小鼓' },
-    { word: 'pie', wordZh: '派', x: 704, y: 528, radius: 98, radiusX: 98, radiusY: 48, typeZh: '點心風味', descZh: '左圖石台茶几上是酥皮水果派，右圖轉為深紫黑莓派' },
-    { word: 'rose', wordZh: '玫瑰', x: 700, y: 272, radius: 70, radiusX: 70, radiusY: 66, typeZh: '花卉色彩', descZh: '左圖拱門是鮮紅玫瑰花叢，右圖轉為金黃玫瑰花叢' },
-    { word: 'coat', wordZh: '大衣', x: 952, y: 340, radius: 85, radiusX: 75, radiusY: 95, typeZh: '服飾樣式', descZh: '左圖長椅上是海軍藍風衣，右圖轉為暖駝色牛角扣大衣' },
-    { word: 'flute', wordZh: '長笛', x: 980, y: 515, radius: 80, radiusX: 115, radiusY: 35, typeZh: '樂器光澤', descZh: '左圖樂譜架上是銀白長笛，右圖轉為玫瑰金長笛' },
-    { word: 'dress', wordZh: '洋裝', x: 1256, y: 356, radius: 118, radiusX: 106, radiusY: 130, typeZh: '禮服色彩', descZh: '左圖人台上是淡紫碎花洋裝，右圖轉為祖母綠綢緞晚宴洋裝' }
+    { word: 'swan', wordZh: '天鵝', x: 250, y: 580, radius: 95, radiusX: 95, radiusY: 90, typeZh: '羽色品種', descZh: '左圖池中是優雅純白白天鵝，右圖轉為紅喙純黑天鵝（已擴大包覆天鵝頭頸、羽翼與尾部）', cropCompare: '/assets/spotter/crops/b8_s1/swan_compare.jpg' },
+    { word: 'spade', wordZh: '鏟子', x: 145, y: 610, radius: 160, radiusX: 65, radiusY: 160, typeZh: '工具配色', descZh: '左圖花圃泥土插著銀柄鏟子，右圖轉為金黃園藝鏟（已往右上移，完整涵蓋頂端手柄至入土鏟刃）', cropCompare: '/assets/spotter/crops/b8_s1/spade_compare.jpg' },
+    { word: 'drum', wordZh: '鼓', x: 288, y: 272, radius: 66, radiusX: 66, radiusY: 50, typeZh: '樂器外觀', descZh: '左圖涼亭舞台是紅金行進鼓，右圖轉為皇家深藍小鼓', cropCompare: '/assets/spotter/crops/b8_s1/drum_compare.jpg' },
+    { word: 'pie', wordZh: '派', x: 704, y: 528, radius: 98, radiusX: 98, radiusY: 48, typeZh: '點心風味', descZh: '左圖石台茶几上是酥皮水果派，右圖轉為深紫黑莓派', cropCompare: '/assets/spotter/crops/b8_s1/pie_compare.jpg' },
+    { word: 'rose', wordZh: '玫瑰', x: 700, y: 272, radius: 70, radiusX: 70, radiusY: 66, typeZh: '花卉色彩', descZh: '左圖拱門是鮮紅玫瑰花叢，右圖轉為金黃玫瑰花叢', cropCompare: '/assets/spotter/crops/b8_s1/rose_compare.jpg' },
+    { word: 'coat', wordZh: '大衣', x: 952, y: 310, radius: 105, radiusX: 80, radiusY: 105, typeZh: '服飾樣式', descZh: '左圖長椅上是海軍藍風衣，右圖轉為暖駝色牛角扣大衣（已往上延伸完整包覆大衣領口）', cropCompare: '/assets/spotter/crops/b8_s1/coat_compare.jpg' },
+    { word: 'flute', wordZh: '長笛', x: 980, y: 515, radius: 115, radiusX: 115, radiusY: 35, typeZh: '樂器光澤', descZh: '左圖樂譜架上是銀白長笛，右圖轉為玫瑰金長笛', cropCompare: '/assets/spotter/crops/b8_s1/flute_compare.jpg' },
+    { word: 'dress', wordZh: '洋裝', x: 1256, y: 356, radius: 130, radiusX: 106, radiusY: 130, typeZh: '禮服色彩', descZh: '左圖人台上是淡紫碎花洋裝，右圖轉為祖母綠綢緞晚宴洋裝', cropCompare: '/assets/spotter/crops/b8_s1/dress_compare.jpg' }
   ],
   distractors: [
     { word: 'violin', wordZh: '小提琴' },
@@ -559,7 +559,7 @@ export const BOOK2_KYOTO_SCENE_ROADMAP = {
 // ── 依冊次索引 (覆蓋 1 到 8 冊全系列教材，支援多場景切換) ──
 export const ALL_SCENES_BY_BOOK = {
   '1': [BOOK1_CLASSROOM_SCENE, BOOK1_AMSTERDAM_SCENE],
-  '2': [BOOK2_PARTY_SCENE, BOOK2_KYOTO_SCENE_ROADMAP],
+  '2': [BOOK2_PARK_SCENE, BOOK2_KYOTO_SCENE_ROADMAP],
   '3': [BOOK3_PARK_SCENE],
   '4': [BOOK4_LONDON_SCENE],
   '5': [BOOK5_PARIS_SCENE],
@@ -576,7 +576,7 @@ export const getScenesForBook = (bookId) => {
 // 依冊次索引 (向後相容預設第一場景)
 export const SPOTTER_SCENES_BY_BOOK = {
   '1': BOOK1_CLASSROOM_SCENE,
-  '2': BOOK2_PARTY_SCENE,
+  '2': BOOK2_PARK_SCENE,
   '3': BOOK3_PARK_SCENE,
   '4': BOOK4_LONDON_SCENE,
   '5': BOOK5_PARIS_SCENE,
@@ -589,7 +589,7 @@ export const SPOTTER_SCENES_BY_BOOK = {
 export const SPOTTER_SCENES = [
   BOOK1_CLASSROOM_SCENE,
   BOOK1_AMSTERDAM_SCENE,
-  BOOK2_PARTY_SCENE,
+  BOOK2_PARK_SCENE,
   BOOK3_PARK_SCENE,
   BOOK4_LONDON_SCENE,
   BOOK5_PARIS_SCENE,
@@ -597,6 +597,9 @@ export const SPOTTER_SCENES = [
   BOOK7_HARBOR_SCENE,
   BOOK8_GARDEN_SCENE
 ];
+
+// 向後相容別名
+export const BOOK2_PARTY_SCENE = BOOK2_PARK_SCENE;
 
 // 向下相容匯出
 export const TARGET_ITEMS_POOL = BOOK1_CLASSROOM_SCENE.targetItems;
