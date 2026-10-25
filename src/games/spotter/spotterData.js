@@ -516,10 +516,10 @@ export const BOOK8_GARDEN_SCENE = {
     { word: 'spade', wordZh: '鏟子', x: 200, y: 535, radius: 135, radiusX: 38, radiusY: 135, rotate: -14, typeZh: '工具配色', descZh: '花圃插著園藝鏟，右圖轉為金黃園藝鏟（中心逆時針傾斜14度拉伸，完美涵蓋木柄至鏟刃，與天鵝零交疊）', cropCompare: '/assets/spotter/crops/b8_s1/spade_compare.jpg' },
     { word: 'drum', wordZh: '鼓', x: 288, y: 250, radius: 66, radiusX: 66, radiusY: 58, typeZh: '樂器外觀', descZh: '左圖涼亭舞台是紅金行進鼓，右圖轉為皇家深藍小鼓（向上移完整包含鼓面與鼓棒）', cropCompare: '/assets/spotter/crops/b8_s1/drum_compare.jpg' },
     { word: 'pie', wordZh: '派', x: 704, y: 546, radius: 96, radiusX: 96, radiusY: 52, typeZh: '點心風味', descZh: '左圖石台茶几上是酥皮水果派，右圖轉為深紫黑莓派（向下移包滿整個派與烤盤）', cropCompare: '/assets/spotter/crops/b8_s1/pie_compare.jpg' },
-    { word: 'rose', wordZh: '玫瑰', x: 700, y: 272, radius: 70, radiusX: 70, radiusY: 66, typeZh: '花卉色彩', descZh: '左圖拱門是鮮紅玫瑰花叢，右圖轉為金黃玫瑰花叢', cropCompare: '/assets/spotter/crops/b8_s1/rose_compare.jpg' },
+    { word: 'rose', wordZh: '玫瑰', x: 698, y: 268, radius: 76, radiusX: 76, radiusY: 74, typeZh: '花卉色彩', descZh: '左圖中央拱門是鮮紅玫瑰花叢，右圖轉為金黃玫瑰花叢（拱門兩側纏繞之背景玫瑰花已於兩圖統一顏色，僅中央玫瑰相異）', cropCompare: '/assets/spotter/crops/b8_s1/rose_compare.jpg' },
     { word: 'coat', wordZh: '大衣', x: 957, y: 310, radius: 95, radiusX: 75, radiusY: 95, typeZh: '服飾樣式', descZh: '左圖長椅上是海軍藍風衣，右圖轉為暖駝色牛角扣大衣（完整包覆領口與肩線）', cropCompare: '/assets/spotter/crops/b8_s1/coat_compare.jpg' },
     { word: 'flute', wordZh: '長笛', x: 998, y: 505, radius: 105, radiusX: 105, radiusY: 35, typeZh: '樂器光澤', descZh: '左圖樂譜架上是銀白長笛，右圖轉為玫瑰金長笛', cropCompare: '/assets/spotter/crops/b8_s1/flute_compare.jpg' },
-    { word: 'dress', wordZh: '洋裝', x: 1256, y: 390, radius: 110, radiusX: 105, radiusY: 110, typeZh: '禮服色彩', descZh: '右側人台上是淡紫碎花洋裝，右圖轉為祖母綠綢緞晚宴洋裝', cropCompare: '/assets/spotter/crops/b8_s1/dress_compare.jpg' }
+    { word: 'dress', wordZh: '洋裝', x: 1256, y: 348, radius: 142, radiusX: 110, radiusY: 142, typeZh: '禮服色彩', descZh: '右側人台模特兒上是淡紫碎花洋裝，右圖轉為祖母綠綢緞晚宴洋裝（判定框已向上拉伸完整包覆整個人形模特兒全身）', cropCompare: '/assets/spotter/crops/b8_s1/dress_compare.jpg' }
   ],
   distractors: [
     { word: 'violin', wordZh: '小提琴' },
