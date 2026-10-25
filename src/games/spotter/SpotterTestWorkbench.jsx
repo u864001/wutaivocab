@@ -37,11 +37,19 @@ export const SpotterTestWorkbench = ({ onBack }) => {
   );
 
   // 當切換冊次時，重設場景索引
+  // 變異版本檢視狀態
+  const [selectedSideBySideVariant, setSelectedSideBySideVariant] = useState('varA');
+  const [globalMatrixVariant, setGlobalMatrixVariant] = useState('varA');
+  const [cardVariantMap, setCardVariantMap] = useState({});
+
   const handleSelectBook = (bookId) => {
     setSelectedBookId(bookId);
     const scenes = getScenesForBook(bookId);
     setSelectedSceneIdx((bookId === '1' || bookId === '2') && scenes.length > 1 ? 1 : 0);
     setSelectedWord(null);
+    setSelectedSideBySideVariant('varA');
+    setGlobalMatrixVariant('varA');
+    setCardVariantMap({});
   };
 
   const currentScene = availableScenes[selectedSceneIdx] || availableScenes[0] || SPOTTER_SCENES_BY_BOOK['1'];
@@ -61,7 +69,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
   const [solvedWords, setSolvedWords] = useState(new Set());
   const [lastClickLog, setLastClickLog] = useState(null);
 
-  // 隨機抽 5 個目標
+  // 隨機抽 5 個目標，並為每個目標隨機分派已就緒之變異型態 (Var A, Var B, Var C)
   const dynamicSimData = useMemo(() => {
     void simSeed; // 依賴 simSeed 每次觸發重新抽題
     const items = currentScene.targetItems || [];
@@ -74,7 +82,16 @@ export const SpotterTestWorkbench = ({ onBack }) => {
     }
     // 打亂抽取 5 個
     const shuffled = [...items].sort(() => Math.random() - 0.5);
-    const chosen = shuffled.slice(0, 5);
+    const chosen = shuffled.slice(0, 5).map(item => {
+      const availableVars = item.variants ? item.variants.filter(v => v.id !== 'base' && v.patchFile) : [];
+      const pickedVar = availableVars.length > 0 ? availableVars[Math.floor(Math.random() * availableVars.length)] : null;
+      return {
+        ...item,
+        patchFile: pickedVar?.patchFile || item.patchFile,
+        variantName: pickedVar?.name || '變異 A',
+        variantLabel: pickedVar?.label || ''
+      };
+    });
     const unchosen = shuffled.slice(5);
     return {
       chosen,
@@ -454,14 +471,62 @@ export const SpotterTestWorkbench = ({ onBack }) => {
 
               {/* 右圖: 全變異圖 */}
               <div className="relative rounded-2xl overflow-hidden border-2 border-slate-700 bg-slate-900 shadow-2xl">
-                <div className="absolute top-2 left-2 z-20 px-2.5 py-1 rounded-xl bg-slate-950/85 backdrop-blur-md text-rose-300 font-bold text-xs border border-rose-500/30 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
-                  <span>右圖：成對變異圖 (Variant Image)</span>
+                <div className="absolute top-2 left-2 right-2 z-20 flex items-center justify-between pointer-events-none">
+                  <div className="px-2.5 py-1 rounded-xl bg-slate-950/85 backdrop-blur-md text-rose-300 font-bold text-xs border border-rose-500/30 flex items-center gap-1.5 pointer-events-auto">
+                    <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
+                    <span>右圖：成對變異圖 ({selectedSideBySideVariant === 'varB' ? '變異 B' : selectedSideBySideVariant === 'varC' ? '變異 C' : '變異 A'})</span>
+                  </div>
+
+                  {(currentScene.diffImageVarB || currentScene.diffImageVarC) && (
+                    <div className="flex items-center gap-1 bg-slate-950/85 backdrop-blur-md p-1 rounded-xl border border-slate-800 pointer-events-auto shadow-lg">
+                      <span className="text-[10px] text-slate-400 font-bold px-1">切換全圖變異:</span>
+                      <button
+                        onClick={() => setSelectedSideBySideVariant('varA')}
+                        className={`px-2 py-0.5 rounded text-[11px] font-black transition-all ${
+                          selectedSideBySideVariant === 'varA'
+                            ? 'bg-purple-600 text-white shadow'
+                            : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        變異 A
+                      </button>
+                      {currentScene.diffImageVarB && (
+                        <button
+                          onClick={() => setSelectedSideBySideVariant('varB')}
+                          className={`px-2 py-0.5 rounded text-[11px] font-black transition-all ${
+                            selectedSideBySideVariant === 'varB'
+                              ? 'bg-amber-600 text-white shadow'
+                              : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                          }`}
+                        >
+                          變異 B
+                        </button>
+                      )}
+                      {currentScene.diffImageVarC && (
+                        <button
+                          onClick={() => setSelectedSideBySideVariant('varC')}
+                          className={`px-2 py-0.5 rounded text-[11px] font-black transition-all ${
+                            selectedSideBySideVariant === 'varC'
+                              ? 'bg-teal-600 text-white shadow'
+                              : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                          }`}
+                        >
+                          變異 C
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="relative w-full aspect-[1376/768]">
                   <img
-                    src={currentScene.diffImage}
+                    src={
+                      selectedSideBySideVariant === 'varB'
+                        ? (currentScene.diffImageVarB || currentScene.diffImage)
+                        : selectedSideBySideVariant === 'varC'
+                        ? (currentScene.diffImageVarC || currentScene.diffImage)
+                        : currentScene.diffImage
+                    }
                     alt="Diff"
                     className="w-full h-full object-cover block"
                   />
@@ -614,19 +679,63 @@ export const SpotterTestWorkbench = ({ onBack }) => {
         {/* ──────── 模式 2: 8 大目標顯微驗收矩陣 ──────── */}
         {inspectMode === 'zoomMatrix' && (
           <div className="max-w-7xl mx-auto flex flex-col gap-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
               <div>
                 <h3 className="text-sm font-black text-emerald-400 flex items-center gap-2">
                   <Grid className="w-4 h-4" />
-                  8 大相異目標顯微局部驗收矩陣（Base vs Variant A 高解析對照）
+                  8 大相異目標顯微局部驗收矩陣（Base vs 多型態 Variant 高解析對照）
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  逐一檢視每個單字之原圖與變異圖裁切對比、判定圈規格與羽化裁切邊緣
+                  可全域切換或在個別單字卡點擊切換 Variant A、B、C 等不同變異型態進行裁切與羽化邊緣比對
                 </p>
               </div>
-              <span className="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
-                8 / 8 目標已建立獨立對照組
-              </span>
+
+              {/* 全域變異切換器 */}
+              {(currentScene.diffImageVarB || currentScene.diffImageVarC) ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400 font-bold shrink-0">批次切換型態:</span>
+                  <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                    <button
+                      onClick={() => { setGlobalMatrixVariant('varA'); setCardVariantMap({}); }}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                        globalMatrixVariant === 'varA' && Object.keys(cardVariantMap).length === 0
+                          ? 'bg-emerald-500 text-slate-950 font-black shadow'
+                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                      }`}
+                    >
+                      變異 A (全部)
+                    </button>
+                    {currentScene.diffImageVarB && (
+                      <button
+                        onClick={() => { setGlobalMatrixVariant('varB'); setCardVariantMap({}); }}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                          globalMatrixVariant === 'varB' && Object.keys(cardVariantMap).length === 0
+                            ? 'bg-amber-500 text-slate-950 font-black shadow'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                      >
+                        變異 B (全部)
+                      </button>
+                    )}
+                    {currentScene.diffImageVarC && (
+                      <button
+                        onClick={() => { setGlobalMatrixVariant('varC'); setCardVariantMap({}); }}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                          globalMatrixVariant === 'varC' && Object.keys(cardVariantMap).length === 0
+                            ? 'bg-teal-500 text-slate-950 font-black shadow'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                      >
+                        變異 C (全部)
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <span className="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
+                  8 / 8 目標已建立獨立對照組
+                </span>
+              )}
             </div>
 
             {/* 8 目標卡片網格 */}
@@ -635,6 +744,11 @@ export const SpotterTestWorkbench = ({ onBack }) => {
                 const color = targetColors[idx % targetColors.length];
                 const rx = item.radiusX || item.radius || 50;
                 const ry = item.radiusY || item.radius || 50;
+
+                const activeVarId = cardVariantMap[item.word] || globalMatrixVariant;
+                const activeVarObj = item.variants?.find(v => v.id === activeVarId) || item.variants?.find(v => v.id === 'varA') || item;
+                const activeCrop = activeVarObj.cropCompare || item.cropCompare;
+                const activeDesc = activeVarObj.descZh || item.descZh;
 
                 return (
                   <div
@@ -652,15 +766,15 @@ export const SpotterTestWorkbench = ({ onBack }) => {
                         <span className="text-xs text-slate-400 font-bold">{item.wordZh}</span>
                       </div>
                       <span className="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-amber-300 font-bold border border-slate-700">
-                        {item.typeZh}
+                        {activeVarObj.name || item.typeZh}
                       </span>
                     </div>
 
                     {/* 局部對比圖片 */}
                     <div className="w-full aspect-[650/276] rounded-xl overflow-hidden bg-slate-950 border border-slate-800 relative">
-                      {item.cropCompare ? (
+                      {activeCrop ? (
                         <img
-                          src={item.cropCompare}
+                          src={activeCrop}
                           alt={`${item.word} compare`}
                           className="w-full h-full object-cover block"
                           loading="lazy"
@@ -680,33 +794,47 @@ export const SpotterTestWorkbench = ({ onBack }) => {
 
                     {/* 相異變化說明 */}
                     <p className="text-[11px] text-slate-300 leading-relaxed bg-slate-800/40 p-2 rounded-xl flex-1">
-                      {item.descZh}
+                      {activeDesc}
                     </p>
 
-                    {/* 變異進程標籤 (Base ➔ Var A ➔ Var B ➔ Var C) */}
+                    {/* 變異切換按鈕組 (Base ➔ Var A ➔ Var B ➔ Var C) */}
                     {item.variants && (
                       <div className="pt-2 border-t border-slate-800 flex flex-wrap gap-1 text-[10px]">
-                        {item.variants.map((v) => (
-                          <span
-                            key={v.id}
-                            className={`px-1.5 py-0.5 rounded font-mono ${
-                              v.id === 'base'
-                                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30'
-                                : v.id === 'varA'
-                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold'
-                                : 'bg-slate-800 text-slate-500'
-                            }`}
-                          >
-                            {v.tag}
-                          </span>
-                        ))}
+                        {item.variants.map((v) => {
+                          const isSelected = (activeVarObj.id === v.id);
+                          const isReady = Boolean(v.cropCompare || v.id === 'base');
+                          return (
+                            <button
+                              key={v.id}
+                              disabled={!isReady}
+                              onClick={() => setCardVariantMap(prev => ({ ...prev, [item.word]: v.id }))}
+                              className={`px-2 py-0.5 rounded font-mono transition-all flex items-center gap-1 ${
+                                isSelected
+                                  ? v.id === 'base'
+                                    ? 'bg-sky-500 text-slate-950 font-black shadow'
+                                    : v.id === 'varA'
+                                    ? 'bg-emerald-500 text-slate-950 font-black shadow'
+                                    : v.id === 'varB'
+                                    ? 'bg-amber-500 text-slate-950 font-black shadow'
+                                    : 'bg-teal-500 text-slate-950 font-black shadow'
+                                  : isReady
+                                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                                  : 'bg-slate-900/50 text-slate-600 cursor-not-allowed'
+                              }`}
+                              title={v.descZh || v.label}
+                            >
+                              <span>{v.tag}</span>
+                              <span className="opacity-75 text-[9px]">{v.label}</span>
+                            </button>
+                          );
+                        })}
                       </div>
                     )}
 
                     {/* 驗證狀態徽章 */}
                     <div className="flex items-center gap-1.5 text-[10px] text-emerald-400 pt-1">
                       <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                      <span>判定圈精確度與羽化邊緣已校驗通過</span>
+                      <span>{activeVarObj.name || '變異'} 判定圈與羽化補丁已就緒</span>
                     </div>
                   </div>
                 );
@@ -921,9 +1049,11 @@ export const SpotterTestWorkbench = ({ onBack }) => {
                           <span className="font-black text-sm">{item.word}</span>
                           <span className="text-slate-400">({item.wordZh})</span>
                         </div>
-                        <span className="text-[11px] text-emerald-400 font-bold">
-                          {item.typeZh}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 font-mono font-bold border border-purple-500/30">
+                            {item.variantName || '變異 A'}{item.variantLabel ? ` • ${item.variantLabel}` : ''}
+                          </span>
+                        </div>
                       </div>
                     );
                   })}
