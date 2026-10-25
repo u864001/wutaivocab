@@ -514,8 +514,8 @@ export const VocabSpotterGame = ({
             </span>
           </div>
 
-          {/* 左右對照字母托盤 */}
-          <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 transition-transform ${shakeScene ? 'animate-headShake' : ''}`}>
+          {/* 左右對照字母托盤 (直立上下排、橫放/折疊/平板左右排) */}
+          <div className={`grid grid-cols-1 landscape:grid-cols-2 md:grid-cols-2 gap-3 transition-transform ${shakeScene ? 'animate-headShake' : ''}`}>
             {/* 左托盤 */}
             <div className="relative w-full aspect-[4/3] rounded-3xl bg-gradient-to-b from-stone-850 via-stone-900 to-stone-950 border-4 border-amber-500/70 shadow-2xl overflow-hidden p-4">
               <div className="absolute top-2.5 left-3 z-10 px-2.5 py-1 rounded-xl bg-black/70 text-amber-300 text-xs font-black border border-amber-400/30">
@@ -622,8 +622,8 @@ export const VocabSpotterGame = ({
         </div>
       ) : (
         <>
-          {/* 雙圖畫卷核心區域 (左圖與右圖對照) */}
-          <div className={`grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 transition-transform ${shakeScene ? 'animate-headShake' : ''}`}>
+          {/* 雙圖畫卷核心區域 (直立手機上下排、橫放/折疊/平板左右排) */}
+          <div className={`grid grid-cols-1 landscape:grid-cols-2 md:grid-cols-2 gap-2 sm:gap-3 transition-transform ${shakeScene ? 'animate-headShake' : ''}`}>
             {/* 左圖 */}
             <SpotterScene
               scene={currentScene}

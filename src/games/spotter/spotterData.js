@@ -144,6 +144,7 @@ export const BOOK1_AMSTERDAM_SCENE = {
   height: 768,
   status: 'ready',
   isDynamicReady: true,
+  isDynamicSlot: true,
   patchDir: '/assets/spotter/patches/b1_s2',
   targetItems: [
     {
@@ -529,37 +530,197 @@ export const BOOK8_GARDEN_SCENE = {
   ]
 };
 
-// ── 【Book 2 場景 2 規劃中】日本京都花見小路與職人小鎮 ──
-export const BOOK2_KYOTO_SCENE_ROADMAP = {
+// ── 【Book 2 場景 2 • A 方案動態槽位變異】日本京都花見小路與職人小鎮 ──
+export const BOOK2_KYOTO_SCENE = {
   id: 'book2_scene2',
   book: '2',
   sceneNumber: 2,
   grade: 3,
-  titleZh: '日本京都花見小路與職人小鎮（三年級第 2 冊 • 場景 2 • 規劃中）',
-  titleEn: 'Kyoto Hanamikoji Artisan Town (Book 2 • Scene 2 • Roadmap)',
+  titleZh: '日本京都花見小路與職人小鎮（三年級第 2 冊 • 場景 2 • A方案）',
+  titleEn: 'Kyoto Hanamikoji Artisan Town (Book 2 • Scene 2 • Dynamic Slot Engine)',
   descZh: '在古色古香的京都木造町家與石疊小路中，尋找工藝禮品與茶屋相異之處！',
-  baseImage: null,
-  diffImage: null,
+  baseImage: '/assets/spotter/book2_scene2_base.jpg',
+  diffImage: '/assets/spotter/book2_scene2_diff.jpg',
   width: 1376,
   height: 768,
-  status: 'roadmap',
+  status: 'ready',
+  isDynamic: true,
+  isDynamicSlot: true,
+  patchDir: '/assets/spotter/patches/b2_s2',
   targetItems: [
-    { word: 'cup', wordZh: '茶杯', x: 260, y: 520, radiusX: 55, radiusY: 50, typeZh: '茶具樣式', descZh: '白瓷茶杯 ➔ 抹茶陶杯' },
-    { word: 'key', wordZh: '鑰匙', x: 420, y: 390, radiusX: 45, radiusY: 45, typeZh: '材質造型', descZh: '黃銅古鑰 ➔ 銀雕鑰匙' },
-    { word: 'fan', wordZh: '摺扇', x: 580, y: 280, radiusX: 65, radiusY: 55, typeZh: '扇面繪紋', descZh: '櫻花金箔摺扇 ➔ 富士山青藍扇' },
-    { word: 'box', wordZh: '盒子', x: 740, y: 560, radiusX: 70, radiusY: 60, typeZh: '漆器外盒', descZh: '黑漆描金點心盒 ➔ 朱紅木盒' },
-    { word: 'bird', wordZh: '小鳥', x: 890, y: 190, radiusX: 50, radiusY: 45, typeZh: '鳥羽品種', descZh: '枝頭青雀 ➔ 櫻樹白頭翁' },
-    { word: 'tea', wordZh: '茶葉', x: 980, y: 480, radiusX: 60, radiusY: 55, typeZh: '茶罐色彩', descZh: '玉露茶罐 ➔ 焙茶金罐' },
-    { word: 'umbrella', wordZh: '油紙傘', x: 1140, y: 340, radiusX: 85, radiusY: 75, typeZh: '傘面圖案', descZh: '緋紅蛇目傘 ➔ 紫羅蘭和傘' },
-    { word: 'doll', wordZh: '木芥子人偶', x: 1220, y: 580, radiusX: 55, radiusY: 65, typeZh: '人偶彩繪', descZh: '圓頭小芥子 ➔ 傳統鳴子芥子' }
+    {
+      word: 'cup',
+      wordZh: '茶杯',
+      x: 146,
+      y: 595,
+      radius: 58,
+      radiusX: 58,
+      radiusY: 48,
+      typeZh: '茶具樣式',
+      descZh: '茶屋木長凳托盤上是白瓷茶杯，右圖轉為綠釉抹茶陶杯',
+      slot: { x: 73, y: 532, w: 146, h: 126, rx: 16 },
+      patchFile: 'cup_variantA.png',
+      cropCompare: '/assets/spotter/crops/b2_s2/cup_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '白瓷茶杯', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '綠釉抹茶陶杯', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '金漆茶道陶碗', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '倒扣木盤茶杯', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'bed',
+      wordZh: '榻榻米床鋪',
+      x: 318,
+      y: 230,
+      radius: 115,
+      radiusX: 115,
+      radiusY: 52,
+      typeZh: '被鋪花色',
+      descZh: '二樓和室敞開紙門內是暖黃藺草蓆被鋪，右圖轉為青藍浪紋日式被鋪',
+      slot: { x: 188, y: 163, w: 260, h: 134, rx: 16 },
+      patchFile: 'bed_variantA.png',
+      cropCompare: '/assets/spotter/crops/b2_s2/bed_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '暖黃藺草蓆被鋪', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '青藍浪紋日式被鋪', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '櫻粉花卉棉褥', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '收納乾淨和室疊蓆', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'umbrella',
+      wordZh: '和傘',
+      x: 468,
+      y: 536,
+      radius: 118,
+      radiusX: 118,
+      radiusY: 78,
+      typeZh: '傘面圖案',
+      descZh: '茶屋門口立著緋紅蛇目油紙傘，右圖轉為紫羅蘭碎花和傘',
+      slot: { x: 335, y: 443, w: 266, h: 186, rx: 20 },
+      patchFile: 'umbrella_variantA.png',
+      cropCompare: '/assets/spotter/crops/b2_s2/umbrella_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '緋紅蛇目油紙傘', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '紫羅蘭碎花和傘', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '金黃節慶和傘', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '收攏斜倚竹傘', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'doll',
+      wordZh: '木芥子人偶',
+      x: 583,
+      y: 422,
+      radius: 48,
+      radiusX: 48,
+      radiusY: 72,
+      typeZh: '人偶彩繪',
+      descZh: '工藝陳列架上是紅色和服木芥子娃娃，右圖轉為藍條紋鳴子人偶',
+      slot: { x: 520, y: 335, w: 126, h: 174, rx: 16 },
+      patchFile: 'doll_variantA.png',
+      cropCompare: '/assets/spotter/crops/b2_s2/doll_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '紅色和服木芥子', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '藍條紋鳴子人偶', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '招財貓木雕人偶', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '櫻花雙子小人偶', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'fish',
+      wordZh: '錦鯉',
+      x: 910,
+      y: 694,
+      radius: 72,
+      radiusX: 72,
+      radiusY: 38,
+      typeZh: '錦鯉花紋',
+      descZh: '庭園清澈石水盆中游動著紅金錦鯉，右圖轉為水墨黑白斑紋錦鯉',
+      slot: { x: 823, y: 641, w: 174, h: 106, rx: 16 },
+      patchFile: 'fish_variantA.png',
+      cropCompare: '/assets/spotter/crops/b2_s2/fish_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '紅金相間錦鯉', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '水墨黑白斑紋錦鯉', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '金黃招財錦鯉', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '清澈水面波紋', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'fan',
+      wordZh: '摺扇',
+      x: 1072,
+      y: 432,
+      radius: 88,
+      radiusX: 88,
+      radiusY: 48,
+      typeZh: '扇面繪紋',
+      descZh: '竹製陳列架上是櫻花金箔摺扇，右圖轉為富士山青藍摺扇',
+      slot: { x: 969, y: 369, w: 206, h: 126, rx: 16 },
+      patchFile: 'fan_variantA.png',
+      cropCompare: '/assets/spotter/crops/b2_s2/fan_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '櫻花金箔摺扇', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '富士山青藍摺扇', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '銀杏金色團扇', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '素面純白摺扇', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'bird',
+      wordZh: '小鳥',
+      x: 1231,
+      y: 141,
+      radius: 78,
+      radiusX: 78,
+      radiusY: 68,
+      typeZh: '羽色品種',
+      descZh: '右上櫻花樹梢停著翠綠小雀鳥，右圖轉為雪白灰羽小鳥',
+      slot: { x: 1138, y: 58, w: 186, h: 166, rx: 20 },
+      patchFile: 'bird_variantA.png',
+      cropCompare: '/assets/spotter/crops/b2_s2/bird_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '翠綠枝頭小雀鳥', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '雪白灰羽小鳥', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '雙鳥依偎樹梢', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '振翅飛翔小鳥', tag: 'Variant C' }
+      ]
+    },
+    {
+      word: 'box',
+      wordZh: '點心盒',
+      x: 1277,
+      y: 531,
+      radius: 78,
+      radiusX: 78,
+      radiusY: 58,
+      typeZh: '禮盒包裝',
+      descZh: '點心鋪桌上是黑漆描金點心盒，右圖轉為朱紅櫻花木質點心盒',
+      slot: { x: 1184, y: 458, w: 186, h: 146, rx: 16 },
+      patchFile: 'box_variantA.png',
+      cropCompare: '/assets/spotter/crops/b2_s2/box_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '黑漆描金點心盒', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '朱紅櫻花木質點心盒', tag: 'Variant A' },
+        { id: 'varB', name: '變異 B (規劃)', label: '紫藤緞帶禮品盒', tag: 'Variant B' },
+        { id: 'varC', name: '變異 C (規劃)', label: '雙層竹編點心籠', tag: 'Variant C' }
+      ]
+    }
   ],
-  distractors: [{ word: 'house', wordZh: '房子' }, { word: 'tree', wordZh: '樹木' }, { word: 'path', wordZh: '小徑' }]
+  distractors: [
+    { word: 'house', wordZh: '房子' },
+    { word: 'tree', wordZh: '樹木' },
+    { word: 'bridge', wordZh: '橋樑' },
+    { word: 'lantern', wordZh: '石燈籠' }
+  ]
 };
 
 // ── 依冊次索引 (覆蓋 1 到 8 冊全系列教材，支援多場景切換) ──
 export const ALL_SCENES_BY_BOOK = {
   '1': [BOOK1_CLASSROOM_SCENE, BOOK1_AMSTERDAM_SCENE],
-  '2': [BOOK2_PARK_SCENE],
+  '2': [BOOK2_PARK_SCENE, BOOK2_KYOTO_SCENE],
   '3': [BOOK3_PARK_SCENE],
   '4': [BOOK4_LONDON_SCENE],
   '5': [BOOK5_PARIS_SCENE],
@@ -590,6 +751,7 @@ export const SPOTTER_SCENES = [
   BOOK1_CLASSROOM_SCENE,
   BOOK1_AMSTERDAM_SCENE,
   BOOK2_PARK_SCENE,
+  BOOK2_KYOTO_SCENE,
   BOOK3_PARK_SCENE,
   BOOK4_LONDON_SCENE,
   BOOK5_PARIS_SCENE,
@@ -618,9 +780,18 @@ export const generateSpotterRound = (scene = BOOK1_CLASSROOM_SCENE, targetCount 
     return list;
   };
 
-  // 100% 啟用該紙雕圖上的所有相異目標，保證「畫面上看到的相異處 = 本題有效目標」，絕不留幽靈差異誤扣心！
-  const chosenTargets = items;
-  const unchosenTargets = [];
+  // 若為 Method A 動態補丁場景，隨機抽取 5 個目標；其餘 3 個目標在右圖不貼補丁，左右兩圖 100% 相同！
+  // 若為傳統 Method B 場景，則啟用紙雕圖上的所有相異目標，保證畫面看到的相異處 = 本題有效目標！
+  const isDynamic = Boolean(activeScene.isDynamicSlot);
+  const countToPick = targetCount || (isDynamic ? 5 : items.length);
+
+  let chosenTargets = items;
+  let unchosenTargets = [];
+  if (isDynamic && items.length > countToPick) {
+    const shuffled = shuffle(items);
+    chosenTargets = shuffled.slice(0, countToPick);
+    unchosenTargets = items.filter(it => !chosenTargets.some(c => c.word === it.word));
+  }
 
   const activeDifferences = chosenTargets.map(item => ({
     id: `diff-${item.word}`,
@@ -633,7 +804,9 @@ export const generateSpotterRound = (scene = BOOK1_CLASSROOM_SCENE, targetCount 
     radiusY: item.radiusY || item.radius || 55,
     rotate: item.rotate || 0,
     typeZh: item.typeZh || '樣態差異',
-    descZh: item.descZh || ''
+    descZh: item.descZh || '',
+    slot: item.slot,
+    patchFile: item.patchFile
   }));
 
   // 2. 狀態字典

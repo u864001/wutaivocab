@@ -162,16 +162,21 @@ export const SpotterScene = ({
 
   return (
     <div className={`relative w-full aspect-[1376/768] select-none rounded-2xl overflow-hidden shadow-xl border-2 border-slate-300 dark:border-slate-700 bg-sky-100 ${isInspectMode ? 'touch-none cursor-grab active:cursor-grabbing' : 'touch-manipulation'}`}>
-      {/* 標籤標記 */}
+      {/* 標籤標記：直立手機為上圖/下圖，橫放/折疊/寬螢幕為左圖/右圖 */}
       <div className="absolute top-2 left-2 z-20 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl bg-slate-900/80 backdrop-blur-md text-white text-[11px] sm:text-xs font-black shadow-md flex items-center gap-1.5 pointer-events-none">
         <span className={`w-2 h-2 rounded-full ${isInspectMode ? 'bg-amber-400 animate-ping' : 'bg-emerald-400 animate-pulse'}`} />
         <span>
           {isInspectMode ? (
-            `${isLeft ? '左圖' : '右圖'} 🔍 放大檢視`
+            <>
+              <span className="landscape:hidden md:hidden">{isLeft ? '上圖' : '下圖'}</span>
+              <span className="hidden landscape:inline md:inline">{isLeft ? '左圖' : '右圖'}</span>
+              <span> 🔍 放大檢視</span>
+            </>
           ) : (
             <>
-              <span className="sm:hidden">{isLeft ? '左圖' : '右圖'}</span>
-              <span className="hidden sm:inline">{isLeft ? '左側視圖' : '右側視圖'}</span>
+              {/* 直立手機顯示上圖/下圖；橫向、折疊展開或電腦顯示左圖/右圖 */}
+              <span className="landscape:hidden md:hidden">{isLeft ? '上圖' : '下圖'}</span>
+              <span className="hidden landscape:inline md:inline">{isLeft ? '左圖' : '右圖'}</span>
             </>
           )}
         </span>
@@ -213,15 +218,32 @@ export const SpotterScene = ({
           )}
         </defs>
 
-        {/* ── 1. 3D 立體紙雕精繪場景全景圖（左圖為基準圖，右圖為專屬成對相異圖） ── */}
+        {/* ── 1. 3D 立體紙雕精繪場景全景圖（左圖為基準圖；右圖在方案 A 動態 Slot 時以基準圖打底，再疊加補丁） ── */}
         <image
-          href={isLeft ? (scene?.baseImage || '/assets/spotter/book1_base.jpg') : (scene?.diffImage || '/assets/spotter/book1_diff.jpg')}
+          href={isLeft ? (scene?.baseImage || '/assets/spotter/book1_base.jpg') : (scene?.isDynamicSlot ? (scene?.baseImage || '/assets/spotter/book1_base.jpg') : (scene?.diffImage || '/assets/spotter/book1_diff.jpg'))}
           x="0"
           y="0"
           width="1376"
           height="768"
           preserveAspectRatio="xMidYMid slice"
         />
+
+        {/* ── 方案 A 動態羽化補丁圖層（僅在右圖且為動態 Slot 場景時繪製被抽中之相異補丁） ── */}
+        {!isLeft && scene?.isDynamicSlot && activeDifferences.map((diff) => {
+          if (!diff.slot || !diff.patchFile) return null;
+          const patchSrc = `${scene.patchDir || '/assets/spotter/patches/b1_s2'}/${diff.patchFile}`;
+          return (
+            <image
+              key={`scene-patch-${diff.word}`}
+              href={patchSrc}
+              x={diff.slot.x}
+              y={diff.slot.y}
+              width={diff.slot.w}
+              height={diff.slot.h}
+              preserveAspectRatio="none"
+            />
+          );
+        })}
 
         {/* ── 5. 聚光燈遮罩特效 (Phase 2 Spotlight Effect) ── */}
         {spotlightPos && (

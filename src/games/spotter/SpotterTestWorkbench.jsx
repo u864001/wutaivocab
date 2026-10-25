@@ -13,7 +13,7 @@ import {
 // 8 個冊次的標籤與名稱
 const BOOKS_CONFIG = [
   { id: '1', grade: '三上', title: '第 1 冊', sub: '彩虹文具 / 阿姆斯特丹果園集市' },
-  { id: '2', grade: '三下', title: '第 2 冊', sub: '陽光農莊公園 (圖2京都待繪)' },
+  { id: '2', grade: '三下', title: '第 2 冊', sub: '陽光農莊公園 / 京都職人小鎮' },
   { id: '3', grade: '四上', title: '第 3 冊', sub: '微風氣象野餐湖畔' },
   { id: '4', grade: '四下', title: '第 4 冊', sub: '英倫時鐘小鎮與家居' },
   { id: '5', grade: '五上', title: '第 5 冊', sub: '巴黎羅浮宮藝文廣場' },
@@ -40,7 +40,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
   const handleSelectBook = (bookId) => {
     setSelectedBookId(bookId);
     const scenes = getScenesForBook(bookId);
-    setSelectedSceneIdx(bookId === '1' && scenes.length > 1 ? 1 : 0);
+    setSelectedSceneIdx((bookId === '1' || bookId === '2') && scenes.length > 1 ? 1 : 0);
     setSelectedWord(null);
   };
 
@@ -236,7 +236,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
             <span className="text-[11px] font-black text-slate-400 shrink-0 mr-1">教材冊次:</span>
             {BOOKS_CONFIG.map((b) => {
               const isActive = selectedBookId === b.id;
-              const hasScene2 = b.id === '1'; // 目前 Book 1 實裝 Scene 2
+              const hasScene2 = b.id === '1' || b.id === '2'; // 目前 Book 1, Book 2 實裝 Scene 2
               return (
                 <button
                   key={b.id}
@@ -1017,7 +1017,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
                         <span className="text-slate-200 font-bold">
                           圖 2: {scenes[1] ? scenes[1].titleZh.split('（')[0] : (b.id === '2' ? '京都花見小路與職人小鎮' : `${b.title} 場景 2`)}
                         </span>
-                        {b.id === '1' ? (
+                        {scenes[1] && scenes[1].status !== 'roadmap' ? (
                           <span className="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold">
                             ⚡ 動態 Slot 實裝就緒
                           </span>
