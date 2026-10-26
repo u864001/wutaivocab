@@ -19,7 +19,7 @@ const BOOKS_CONFIG = [
   { id: '5', grade: '五上', title: '第 5 冊', sub: '巴黎羅浮宮藝文廣場 / 蒙馬特畫家村' },
   { id: '6', grade: '五下', title: '第 6 冊', sub: '自然歷史博物館 / 新加坡濱海灣花園' },
   { id: '7', grade: '六上', title: '第 7 冊', sub: '世界節慶環球港灣 / 都會捷運轉運站' },
-  { id: '8', grade: '六下', title: '第 8 冊', sub: '四季時光庭園' }
+  { id: '8', grade: '六下', title: '第 8 冊', sub: '四季時光庭園 / 紐約第五大道名店街' }
 ];
 
 export const SpotterTestWorkbench = ({ onBack }) => {
@@ -253,7 +253,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
             <span className="text-[11px] font-black text-slate-400 shrink-0 mr-1">教材冊次:</span>
             {BOOKS_CONFIG.map((b) => {
               const isActive = selectedBookId === b.id;
-              const hasScene2 = b.id === '1' || b.id === '2' || b.id === '3' || b.id === '4'; // 目前 Book 1, Book 2, Book 3, Book 4 實裝 Scene 2
+              const hasScene2 = true; // Book 1 到 Book 8 全系列皆已實裝 Scene 2
               return (
                 <button
                   key={b.id}

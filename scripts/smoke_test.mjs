@@ -190,12 +190,22 @@ async function run() {
   console.log('\n[3/5] Deep Functional Testing: VocabSpotterGame...');
 
   const waitForSpotterLoad = async () => {
-    for (let i = 0; i < 25; i++) {
-      const isSyncing = await client.evaluate(`document.body && (document.body.innerText.includes('正在同步雲端單字庫') || document.body.innerText.includes('Adventure World Loading'))`);
-      if (!isSyncing) break;
+    // 預留導航與 DOM 掛載起始緩衝
+    await new Promise(r => setTimeout(r, 400));
+    for (let i = 0; i < 35; i++) {
+      const status = await client.evaluate(`
+        (() => {
+          if (!document.body) return 'loading';
+          const text = document.body.innerText || '';
+          if (text.includes('正在同步雲端單字庫') || text.includes('Adventure World Loading')) return 'syncing';
+          if (text.includes('鷹眼神探') || text.includes('找不同') || document.querySelectorAll('svg').length >= 2) return 'ready';
+          return 'waiting';
+        })()
+      `);
+      if (status === 'ready') break;
       await new Promise(r => setTimeout(r, 300));
     }
-    await new Promise(r => setTimeout(r, 600));
+    await new Promise(r => setTimeout(r, 500));
   };
   
   // 3A. 一年級字母托盤模式

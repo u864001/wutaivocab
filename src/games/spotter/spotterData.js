@@ -2027,6 +2027,205 @@ export const BOOK2_KYOTO_SCENE = {
   ]
 };
 
+// ── 【Book 8 六年級下學期 • 場景 2】紐約第五大道時尚名店街（Here We Go Book 8 • A 方案動態 8 選 5） ──
+export const BOOK8_AVENUE_SCENE = {
+  id: 'book8_scene2',
+  book: '8',
+  sceneNumber: 2,
+  grade: 6,
+  titleZh: '紐約第五大道時尚名店街（六年級第 8 冊 • 圖 2 • A 方案）',
+  titleEn: 'Fifth Avenue Luxury Fashion Promenade & Sidewalk Cafe (Book 8 • Scene 2 • Dynamic Slot Engine)',
+  descZh: '在紐約第五大道時尚名店街前，找出 8 處相異點（全冊出題本位主義，100% 本冊全新單字，自然融入 14 個情境協調已學單字）！',
+  baseImage: '/assets/spotter/book8_scene2_base.jpg',
+  diffImage: '/assets/spotter/book8_scene2_diff.jpg',
+  diffImageVarB: '/assets/spotter/book8_scene2_diff_varb.jpg',
+  diffImageVarC: '/assets/spotter/book8_scene2_diff_varc.jpg',
+  width: 1376,
+  height: 768,
+  status: 'ready',
+  isDynamic: true,
+  isDynamicSlot: true,
+  patchDir: '/assets/spotter/patches/b8_s2',
+  targetItems: [
+    {
+      word: 'suit',
+      wordZh: '西裝',
+      x: 265,
+      y: 300,
+      radius: 75,
+      radiusX: 60,
+      radiusY: 75,
+      typeZh: '西裝款式',
+      descZh: '左側精品櫥窗內為海軍藍成套西裝，右圖轉為酒紅絲絨晚宴西裝',
+      slot: { x: 195, y: 215, w: 140, h: 170, rx: 16 },
+      patchFile: 'suit_variantA.png',
+      cropCompare: '/assets/spotter/crops/b8_s2/suit_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'suit_variantA.png', cropCompare: '/assets/spotter/crops/b8_s2/suit_compare.jpg', descZh: '深海軍藍西裝轉為酒紅絲絨晚宴禮服西裝' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'suit_variantB.png', cropCompare: '/assets/spotter/crops/b8_s2/suit_compare_var_b.jpg', descZh: '深海軍藍西裝轉為卡其米色雙排扣休閒西裝' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'suit_variantC.png', cropCompare: '/assets/spotter/crops/b8_s2/suit_compare_var_c.jpg', descZh: '深海軍藍西裝轉為祖母綠英倫紳士西裝' }
+      ]
+    },
+    {
+      word: 'jacket',
+      wordZh: '夾克',
+      x: 475,
+      y: 370,
+      radius: 68,
+      radiusX: 60,
+      radiusY: 68,
+      typeZh: '夾克款式',
+      descZh: '左側服飾立架上為棕色飛行皮夾克，右圖轉為亮黑重機皮夾克',
+      slot: { x: 405, y: 292, w: 140, h: 156, rx: 16 },
+      patchFile: 'jacket_variantA.png',
+      cropCompare: '/assets/spotter/crops/b8_s2/jacket_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'jacket_variantA.png', cropCompare: '/assets/spotter/crops/b8_s2/jacket_compare.jpg', descZh: '棕色飛行皮夾克轉為亮黑銀拉鍊重機夾克' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'jacket_variantB.png', cropCompare: '/assets/spotter/crops/b8_s2/jacket_compare_var_b.jpg', descZh: '棕色飛行皮夾克轉為陽光黃防風連帽休閒夾克' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'jacket_variantC.png', cropCompare: '/assets/spotter/crops/b8_s2/jacket_compare_var_c.jpg', descZh: '棕色飛行皮夾克轉為橄欖軍綠尼龍飛行夾克' }
+      ]
+    },
+    {
+      word: 'skirt',
+      wordZh: '裙子',
+      x: 170,
+      y: 515,
+      radius: 62,
+      radiusX: 50,
+      radiusY: 62,
+      typeZh: '裙款造型',
+      descZh: '左側人台模特兒為裸粉百褶裙，右圖轉為深藍白波點傘裙',
+      slot: { x: 110, y: 443, w: 120, h: 144, rx: 16 },
+      patchFile: 'skirt_variantA.png',
+      cropCompare: '/assets/spotter/crops/b8_s2/skirt_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'skirt_variantA.png', cropCompare: '/assets/spotter/crops/b8_s2/skirt_compare.jpg', descZh: '裸粉百褶裙轉為深海軍藍白波點傘裙' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'skirt_variantB.png', cropCompare: '/assets/spotter/crops/b8_s2/skirt_compare_var_b.jpg', descZh: '裸粉百褶裙轉為檸檬黃高腰A字裙' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'skirt_variantC.png', cropCompare: '/assets/spotter/crops/b8_s2/skirt_compare_var_c.jpg', descZh: '裸粉百褶裙轉為黑白英倫千鳥格毛呢裙' }
+      ]
+    },
+    {
+      word: 'jeans',
+      wordZh: '牛仔褲',
+      x: 305,
+      y: 585,
+      radius: 55,
+      radiusX: 55,
+      radiusY: 42,
+      typeZh: '丹寧褲款',
+      descZh: '左側展示桌上為經典深藍牛仔褲，右圖轉為淺水洗白灰破洞牛仔褲',
+      slot: { x: 240, y: 533, w: 130, h: 104, rx: 16 },
+      patchFile: 'jeans_variantA.png',
+      cropCompare: '/assets/spotter/crops/b8_s2/jeans_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'jeans_variantA.png', cropCompare: '/assets/spotter/crops/b8_s2/jeans_compare.jpg', descZh: '深藍牛仔褲轉為淺水洗刷白破洞牛仔褲' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'jeans_variantB.png', cropCompare: '/assets/spotter/crops/b8_s2/jeans_compare_var_b.jpg', descZh: '深藍牛仔褲轉為曜石黑修身丹寧褲' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'jeans_variantC.png', cropCompare: '/assets/spotter/crops/b8_s2/jeans_compare_var_c.jpg', descZh: '深藍牛仔褲轉為焦糖原色厚磅丹寧褲' }
+      ]
+    },
+    {
+      word: 'blanket',
+      wordZh: '薄毯',
+      x: 695,
+      y: 485,
+      radius: 62,
+      radiusX: 55,
+      radiusY: 62,
+      typeZh: '毛毯織紋',
+      descZh: '露天咖啡椅背為紅黑英倫格紋毛毯，右圖轉為鵝黃菱格編織毛毯',
+      slot: { x: 630, y: 413, w: 130, h: 144, rx: 16 },
+      patchFile: 'blanket_variantA.png',
+      cropCompare: '/assets/spotter/crops/b8_s2/blanket_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'blanket_variantA.png', cropCompare: '/assets/spotter/crops/b8_s2/blanket_compare.jpg', descZh: '紅黑格紋毛毯轉為鵝黃柔白菱格編織毛毯' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'blanket_variantB.png', cropCompare: '/assets/spotter/crops/b8_s2/blanket_compare_var_b.jpg', descZh: '紅黑格紋毛毯轉為湖水蔚藍雪花提花絨毛毯' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'blanket_variantC.png', cropCompare: '/assets/spotter/crops/b8_s2/blanket_compare_var_c.jpg', descZh: '紅黑格紋毛毯轉為摩登橘褐幾何羊毛披毯' }
+      ]
+    },
+    {
+      word: 'toast',
+      wordZh: '烤吐司',
+      x: 805,
+      y: 605,
+      radius: 45,
+      radiusX: 45,
+      radiusY: 38,
+      typeZh: '吐司口味',
+      descZh: '露天咖啡盤中為金黃焦香法式吐司，右圖轉為鮮紅草莓生乳酪吐司',
+      slot: { x: 750, y: 557, w: 110, h: 96, rx: 16 },
+      patchFile: 'toast_variantA.png',
+      cropCompare: '/assets/spotter/crops/b8_s2/toast_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'toast_variantA.png', cropCompare: '/assets/spotter/crops/b8_s2/toast_compare.jpg', descZh: '金黃法式吐司轉為草莓生乳酪厚片吐司' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'toast_variantB.png', cropCompare: '/assets/spotter/crops/b8_s2/toast_compare_var_b.jpg', descZh: '金黃法式吐司轉為酪梨水波蛋綠意熱烤吐司' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'toast_variantC.png', cropCompare: '/assets/spotter/crops/b8_s2/toast_compare_var_c.jpg', descZh: '金黃法式吐司轉為藍莓香蕉巧克力厚切吐司' }
+      ]
+    },
+    {
+      word: 'glass',
+      wordZh: '玻璃杯',
+      x: 905,
+      y: 545,
+      radius: 50,
+      radiusX: 25,
+      radiusY: 50,
+      typeZh: '杯型色澤',
+      descZh: '露天大理石桌為八角透明冰晶玻璃杯，右圖轉為寶石鈷藍復古杯',
+      slot: { x: 870, y: 485, w: 70, h: 120, rx: 16 },
+      patchFile: 'glass_variantA.png',
+      cropCompare: '/assets/spotter/crops/b8_s2/glass_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'glass_variantA.png', cropCompare: '/assets/spotter/crops/b8_s2/glass_compare.jpg', descZh: '透明冰晶玻璃杯轉為寶石鈷藍壓紋復古杯' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'glass_variantB.png', cropCompare: '/assets/spotter/crops/b8_s2/glass_compare_var_b.jpg', descZh: '透明冰晶玻璃杯轉為琥珀金光羅紋長飲杯' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'glass_variantC.png', cropCompare: '/assets/spotter/crops/b8_s2/glass_compare_var_c.jpg', descZh: '透明冰晶玻璃杯轉為翡翠晶綠浮雕氣泡水杯' }
+      ]
+    },
+    {
+      word: 'peach',
+      wordZh: '水蜜桃',
+      x: 1075,
+      y: 605,
+      radius: 40,
+      radiusX: 38,
+      radiusY: 40,
+      typeZh: '蜜桃品種',
+      descZh: '右側點心架上為粉嫩鮮採水蜜桃，右圖轉為深紅寶石蜜桃',
+      slot: { x: 1027, y: 555, w: 96, h: 100, rx: 16 },
+      patchFile: 'peach_variantA.png',
+      cropCompare: '/assets/spotter/crops/b8_s2/peach_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'peach_variantA.png', cropCompare: '/assets/spotter/crops/b8_s2/peach_compare.jpg', descZh: '粉嫩水蜜桃轉為深紅紫黑寶石蜜桃' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'peach_variantB.png', cropCompare: '/assets/spotter/crops/b8_s2/peach_compare_var_b.jpg', descZh: '粉嫩水蜜桃轉為黃金水蜜桃佐薄荷葉' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'peach_variantC.png', cropCompare: '/assets/spotter/crops/b8_s2/peach_compare_var_c.jpg', descZh: '粉嫩水蜜桃轉為法式焦糖蜜桃酥塔' }
+      ]
+    }
+  ],
+  distractors: [
+    { word: 'taxi', wordZh: '計程車' },
+    { word: 'car', wordZh: '禮車' },
+    { word: 'bus', wordZh: '觀光巴士' },
+    { word: 'gift', wordZh: '禮品盒' },
+    { word: 'box', wordZh: '鞋盒' },
+    { word: 'bag', wordZh: '精品提袋' },
+    { word: 'chair', wordZh: '咖啡椅' },
+    { word: 'table', wordZh: '咖啡圓桌' },
+    { word: 'lamp', wordZh: '歐風街燈' },
+    { word: 'umbrella', wordZh: '遮陽傘' },
+    { word: 'tree', wordZh: '林蔭盆栽' },
+    { word: 'cup', wordZh: '骨瓷咖啡杯' },
+    { word: 'clock', wordZh: '街頭立鐘' },
+    { word: 'book', wordZh: '時尚雜誌' }
+  ]
+};
+
 // ── 依冊次索引 (覆蓋 1 到 8 冊全系列教材，支援多場景切換) ──
 export const ALL_SCENES_BY_BOOK = {
   '1': [BOOK1_CLASSROOM_SCENE, BOOK1_AMSTERDAM_SCENE],
@@ -2036,7 +2235,7 @@ export const ALL_SCENES_BY_BOOK = {
   '5': [BOOK5_PARIS_SCENE, BOOK5_MONTMARTRE_SCENE],
   '6': [BOOK6_MUSEUM_SCENE, BOOK6_SINGAPORE_SCENE],
   '7': [BOOK7_HARBOR_SCENE, BOOK7_METRO_SCENE],
-  '8': [BOOK8_GARDEN_SCENE]
+  '8': [BOOK8_GARDEN_SCENE, BOOK8_AVENUE_SCENE]
 };
 
 // 取得該冊次所有場景
@@ -2072,7 +2271,8 @@ export const SPOTTER_SCENES = [
   BOOK6_SINGAPORE_SCENE,
   BOOK7_HARBOR_SCENE,
   BOOK7_METRO_SCENE,
-  BOOK8_GARDEN_SCENE
+  BOOK8_GARDEN_SCENE,
+  BOOK8_AVENUE_SCENE
 ];
 
 // 向後相容別名
