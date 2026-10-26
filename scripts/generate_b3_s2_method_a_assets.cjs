@@ -7,12 +7,12 @@ const TARGETS = [
   {
     word: 'cloud',
     wordZh: '白雲',
-    x: 239,
-    y: 103,
-    rx: 100,
+    x: 410,
+    y: 100,
+    rx: 110,
     ry: 65,
     typeZh: '天候景觀',
-    descVarA: '藍天山巔白雲轉為帶七彩彩虹浮現的白雲',
+    descVarA: '藍天山巔白雲轉為前後兩層立體疊加白雲',
     descVarB: '藍天山巔白雲轉為夕陽暖金鑲邊彩霞白雲',
     descVarC: '藍天山巔白雲轉為愛心形狀綿密夢幻白雲'
   },
@@ -67,14 +67,14 @@ const TARGETS = [
   {
     word: 'watermelon',
     wordZh: '西瓜',
-    x: 1039,
-    y: 530,
-    rx: 68,
-    ry: 50,
+    x: 980,
+    y: 625,
+    rx: 90,
+    ry: 80,
     typeZh: '當令水果',
-    descVarA: '右長凳瓷盤鮮紅切片西瓜轉為金黃小玉切片西瓜',
-    descVarB: '右長凳轉為翠綠條紋完整小西瓜',
-    descVarC: '右長凳轉為瓷碗裝西瓜方塊佐薄荷葉'
+    descVarA: '長凳白瓷盤上鮮紅切片西瓜轉為金黃小玉切片西瓜',
+    descVarB: '長凳白瓷盤上轉為翠綠條紋完整小西瓜',
+    descVarC: '長凳白瓷盤上轉為白瓷碗裝西瓜方塊佐薄荷葉'
   },
   {
     word: 'water',
@@ -91,14 +91,14 @@ const TARGETS = [
   {
     word: 'orange',
     wordZh: '柳橙',
-    x: 1007,
-    y: 665,
-    rx: 60,
-    ry: 45,
+    x: 1240,
+    y: 680,
+    rx: 90,
+    ry: 60,
     typeZh: '柑橘水果',
-    descVarA: '下層木盆鮮橙轉為晶透柳橙切片輪盤',
-    descVarB: '下層木盆轉為剝開飽滿橙肉果瓣',
-    descVarC: '下層木盆轉為原木果盤綜合黃金甜橙'
+    descVarA: '露台木碗鮮橙轉為玻璃盤晶透柳橙切片輪盤',
+    descVarB: '露台木碗轉為盛裝剝開飽滿橙肉果瓣',
+    descVarC: '露台轉為竹編籃盛裝金黃大甜橙'
   }
 ];
 

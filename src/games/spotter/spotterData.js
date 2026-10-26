@@ -403,19 +403,19 @@ export const BOOK3_ALPINE_SCENE = {
     {
       word: 'cloud',
       wordZh: '白雲',
-      x: 239,
-      y: 103,
-      radius: 100,
-      radiusX: 100,
+      x: 410,
+      y: 100,
+      radius: 105,
+      radiusX: 110,
       radiusY: 65,
       typeZh: '天候景觀',
-      descZh: '藍天山巔蓬鬆棉花白雲，右圖轉為帶七彩彩虹浮現的白雲',
-      slot: { x: 124, y: 23, w: 230, h: 160, rx: 16 },
+      descZh: '藍天山巔棉花白雲，右圖轉為前後兩層立體疊加白雲',
+      slot: { x: 295, y: 25, w: 230, h: 150, rx: 16 },
       patchFile: 'cloud_variantA.png',
       cropCompare: '/assets/spotter/crops/b3_s2/cloud_compare.jpg',
       variants: [
-        { id: 'base', name: '原圖基準', label: '棉花白雲', tag: 'Base' },
-        { id: 'varA', name: '變異 A', label: '彩虹白雲', tag: 'Variant A', patchFile: 'cloud_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/cloud_compare.jpg', descZh: '藍天山巔蓬鬆棉花白雲，右圖轉為帶七彩彩虹浮現的白雲' },
+        { id: 'base', name: '原圖基準', label: '單層棉花白雲', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '雙層立體疊加白雲', tag: 'Variant A', patchFile: 'cloud_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/cloud_compare.jpg', descZh: '藍天山巔白雲轉為前後兩層立體疊加白雲' },
         { id: 'varB', name: '變異 B', label: '夕陽金霞雲', tag: 'Variant B', patchFile: 'cloud_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/cloud_compare_varB.jpg', descZh: '藍天山巔白雲轉為夕陽暖金鑲邊彩霞白雲' },
         { id: 'varC', name: '變異 C', label: '愛心夢幻雲', tag: 'Variant C', patchFile: 'cloud_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/cloud_compare_varC.jpg', descZh: '藍天山巔白雲轉為愛心形狀綿密夢幻白雲' }
       ]
@@ -503,21 +503,21 @@ export const BOOK3_ALPINE_SCENE = {
     {
       word: 'watermelon',
       wordZh: '西瓜',
-      x: 1039,
-      y: 530,
-      radius: 68,
-      radiusX: 68,
-      radiusY: 50,
+      x: 980,
+      y: 625,
+      radius: 85,
+      radiusX: 90,
+      radiusY: 80,
       typeZh: '當令水果',
-      descZh: '右長凳瓷盤鮮紅切片西瓜，右圖轉為金黃小玉切片西瓜',
-      slot: { x: 956, y: 465, w: 166, h: 130, rx: 16 },
+      descZh: '長凳白瓷盤上鮮紅切片西瓜，右圖轉為金黃小玉切片西瓜',
+      slot: { x: 875, y: 535, w: 210, h: 180, rx: 16 },
       patchFile: 'watermelon_variantA.png',
       cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare.jpg',
       variants: [
         { id: 'base', name: '原圖基準', label: '紅肉切片西瓜', tag: 'Base' },
-        { id: 'varA', name: '變異 A', label: '金黃小玉西瓜', tag: 'Variant A', patchFile: 'watermelon_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare.jpg', descZh: '右長凳瓷盤鮮紅切片西瓜轉為金黃小玉切片西瓜' },
-        { id: 'varB', name: '變異 B', label: '條紋完整西瓜', tag: 'Variant B', patchFile: 'watermelon_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare_varB.jpg', descZh: '右長凳轉為翠綠條紋完整小西瓜' },
-        { id: 'varC', name: '變異 C', label: '薄荷西瓜切塊', tag: 'Variant C', patchFile: 'watermelon_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare_varC.jpg', descZh: '右長凳轉為瓷碗裝西瓜方塊佐薄荷葉' }
+        { id: 'varA', name: '變異 A', label: '金黃小玉西瓜', tag: 'Variant A', patchFile: 'watermelon_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare.jpg', descZh: '長凳白瓷盤上鮮紅切片西瓜轉為金黃小玉切片西瓜' },
+        { id: 'varB', name: '變異 B', label: '條紋完整西瓜', tag: 'Variant B', patchFile: 'watermelon_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare_varB.jpg', descZh: '長凳白瓷盤上轉為翠綠條紋完整小西瓜' },
+        { id: 'varC', name: '變異 C', label: '薄荷西瓜切塊', tag: 'Variant C', patchFile: 'watermelon_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare_varC.jpg', descZh: '長凳上轉為白瓷碗盛裝西瓜方塊佐薄荷葉' }
       ]
     },
     {
@@ -543,21 +543,21 @@ export const BOOK3_ALPINE_SCENE = {
     {
       word: 'orange',
       wordZh: '柳橙',
-      x: 1007,
-      y: 665,
-      radius: 60,
-      radiusX: 60,
-      radiusY: 45,
+      x: 1240,
+      y: 680,
+      radius: 75,
+      radiusX: 90,
+      radiusY: 60,
       typeZh: '柑橘水果',
-      descZh: '下層木盆鮮橙，右圖轉為晶透柳橙切片輪盤',
-      slot: { x: 932, y: 605, w: 150, h: 120, rx: 16 },
+      descZh: '露台木碗盛裝帶葉飽滿鮮橙，右圖轉為玻璃盤晶透柳橙切片輪盤',
+      slot: { x: 1140, y: 610, w: 200, h: 140, rx: 16 },
       patchFile: 'orange_variantA.png',
       cropCompare: '/assets/spotter/crops/b3_s2/orange_compare.jpg',
       variants: [
         { id: 'base', name: '原圖基準', label: '鮮採綠葉甜橙', tag: 'Base' },
-        { id: 'varA', name: '變異 A', label: '晶透切片輪盤', tag: 'Variant A', patchFile: 'orange_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/orange_compare.jpg', descZh: '下層木盆鮮橙轉為晶透柳橙切片輪盤' },
-        { id: 'varB', name: '變異 B', label: '剝開飽滿橙瓣', tag: 'Variant B', patchFile: 'orange_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/orange_compare_varB.jpg', descZh: '下層木盆轉為剝開飽滿橙肉果瓣' },
-        { id: 'varC', name: '變異 C', label: '果盤黃金甜橙', tag: 'Variant C', patchFile: 'orange_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/orange_compare_varC.jpg', descZh: '下層木盆轉為原木果盤綜合黃金甜橙' }
+        { id: 'varA', name: '變異 A', label: '晶透切片輪盤', tag: 'Variant A', patchFile: 'orange_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/orange_compare.jpg', descZh: '露台木碗鮮橙轉為玻璃盤晶透柳橙切片輪盤' },
+        { id: 'varB', name: '變異 B', label: '剝開飽滿橙瓣', tag: 'Variant B', patchFile: 'orange_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/orange_compare_varB.jpg', descZh: '露台木碗轉為盛裝剝開飽滿橙肉果瓣' },
+        { id: 'varC', name: '變異 C', label: '編籃黃金大橙', tag: 'Variant C', patchFile: 'orange_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/orange_compare_varC.jpg', descZh: '露台轉為竹編籃盛裝金黃大甜橙' }
       ]
     }
   ],
