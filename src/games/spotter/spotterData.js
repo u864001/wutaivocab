@@ -825,6 +825,536 @@ export const BOOK5_PARIS_SCENE = {
 };
 
 // ── 【Book 6 五年級下學期】世界自然歷史與星際探索博物館（Here We Go Book 6，無食物展館規範） ──
+
+// ── 【Book 5 場景 2 • A方案】巴黎蒙馬特小丘畫家村與聖心堂露天咖啡街（動態 8 選 5 插槽補丁引擎） ──
+export const BOOK5_MONTMARTRE_SCENE = {
+  id: 'book5_scene2',
+  book: '5',
+  sceneNumber: 2,
+  grade: 5,
+  titleZh: '巴黎蒙馬特小丘畫家村與聖心堂露天咖啡街（五年級第 5 冊 • 場景 2 • A方案）',
+  titleEn: 'Paris Montmartre Place du Tertre & Sacré-Cœur (Book 5 • Scene 2 • Dynamic Slot Engine)',
+  descZh: '在充滿藝術傳奇的蒙馬特特爾特廣場遠眺聖心堂白穹頂，尋找 8 處相異物件！（融入黑貓、法鬥、腳踏車、書本、咖啡杯、雪鐵龍老爺車等 16 個已學單字靜態干擾物，三層自然景深佈局）',
+  baseImage: '/assets/spotter/book5_scene2_base.jpg',
+  diffImage: '/assets/spotter/book5_scene2_diff.jpg',
+  diffImageVarB: '/assets/spotter/book5_scene2_diff_varb.jpg',
+  diffImageVarC: '/assets/spotter/book5_scene2_diff_varc.jpg',
+  width: 1376,
+  height: 768,
+  status: 'ready',
+  isDynamic: true,
+  isDynamicSlot: true,
+  patchDir: '/assets/spotter/patches/b5_s2',
+  targetItems: [
+  {
+    word: "bread",
+    wordZh: "法式麵包",
+    x: 65,
+    y: 615,
+    radius: 120,
+    radiusX: 55,
+    radiusY: 120,
+    typeZh: "麵包品項",
+    descZh: "烘焙坊前藤籃中的金黃法式長棍轉為滿籃香脆牛角可頌與巧克力麵包",
+    slot: {
+      x: 0,
+      y: 431,
+      w: 158,
+      h: 337,
+      rx: 16
+    },
+    patchFile: "bread_variantA.png",
+    cropCompare: "/assets/spotter/crops/b5_s2/bread_compare_var_a.jpg",
+    variants: [
+      {
+        id: "base",
+        name: "原圖基準",
+        label: "原圖樣式",
+        tag: "Base"
+      },
+      {
+        id: "varA",
+        name: "變異 A",
+        label: "型態 A",
+        tag: "Variant A",
+        patchFile: "bread_variantA.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/bread_compare_var_a.jpg",
+        descZh: "烘焙坊前藤籃中的金黃法式長棍轉為滿籃香脆牛角可頌與巧克力麵包"
+      },
+      {
+        id: "varB",
+        name: "變異 B",
+        label: "型態 B",
+        tag: "Variant B",
+        patchFile: "bread_variantB.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/bread_compare_var_b.jpg",
+        descZh: "烘焙坊前長棍麵包轉為剛出爐的圓形鄉村天然酵母麵包 (Boules)"
+      },
+      {
+        id: "varC",
+        name: "變異 C",
+        label: "型態 C",
+        tag: "Variant C",
+        patchFile: "bread_variantC.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/bread_compare_var_c.jpg",
+        descZh: "烘焙坊前長棍麵包轉為帶有金黃蛋液光澤的法式編織布里歐麵包 (Brioche)"
+      }
+    ]
+  },
+  {
+    word: "guitar",
+    wordZh: "木吉他",
+    x: 445,
+    y: 530,
+    radius: 90,
+    radiusX: 40,
+    radiusY: 90,
+    typeZh: "吉他琴款",
+    descZh: "倚靠在復古街燈旁的雲杉民謠木吉他轉為日落漸層色雙 f 孔爵士吉他",
+    slot: {
+      x: 373,
+      y: 388,
+      w: 144,
+      h: 284,
+      rx: 16
+    },
+    patchFile: "guitar_variantA.png",
+    cropCompare: "/assets/spotter/crops/b5_s2/guitar_compare_var_a.jpg",
+    variants: [
+      {
+        id: "base",
+        name: "原圖基準",
+        label: "原圖樣式",
+        tag: "Base"
+      },
+      {
+        id: "varA",
+        name: "變異 A",
+        label: "型態 A",
+        tag: "Variant A",
+        patchFile: "guitar_variantA.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/guitar_compare_var_a.jpg",
+        descZh: "倚靠在復古街燈旁的雲杉民謠木吉他轉為日落漸層色雙 f 孔爵士吉他"
+      },
+      {
+        id: "varB",
+        name: "變異 B",
+        label: "型態 B",
+        tag: "Variant B",
+        patchFile: "guitar_variantB.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/guitar_compare_var_b.jpg",
+        descZh: "街燈旁民謠吉他轉為櫻桃紅西班牙佛朗明哥古典吉他"
+      },
+      {
+        id: "varC",
+        name: "變異 C",
+        label: "型態 C",
+        tag: "Variant C",
+        patchFile: "guitar_variantC.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/guitar_compare_var_c.jpg",
+        descZh: "街燈旁民謠吉他轉為收納於天鵝絨琴盒中的日落色半空心電吉他"
+      }
+    ]
+  },
+  {
+    word: "palette",
+    wordZh: "調色盤",
+    x: 560,
+    y: 620,
+    radius: 65,
+    radiusX: 65,
+    radiusY: 42,
+    typeZh: "調色盤樣式",
+    descZh: "木凳上的橢圓木質油畫調色盤轉為現代透明壓克力水彩調色盤",
+    slot: {
+      x: 453,
+      y: 545,
+      w: 214,
+      h: 150,
+      rx: 16
+    },
+    patchFile: "palette_variantA.png",
+    cropCompare: "/assets/spotter/crops/b5_s2/palette_compare_var_a.jpg",
+    variants: [
+      {
+        id: "base",
+        name: "原圖基準",
+        label: "原圖樣式",
+        tag: "Base"
+      },
+      {
+        id: "varA",
+        name: "變異 A",
+        label: "型態 A",
+        tag: "Variant A",
+        patchFile: "palette_variantA.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/palette_compare_var_a.jpg",
+        descZh: "木凳上的橢圓木質油畫調色盤轉為現代透明壓克力水彩調色盤"
+      },
+      {
+        id: "varB",
+        name: "變異 B",
+        label: "型態 B",
+        tag: "Variant B",
+        patchFile: "palette_variantB.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/palette_compare_var_b.jpg",
+        descZh: "木凳上的木質調色盤轉為陶瓷花瓣造形水彩調色盤"
+      },
+      {
+        id: "varC",
+        name: "變異 C",
+        label: "型態 C",
+        tag: "Variant C",
+        patchFile: "palette_variantC.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/palette_compare_var_c.jpg",
+        descZh: "木凳上的調色盤轉為開啟的古典黃銅扣手提調色顏料箱"
+      }
+    ]
+  },
+  {
+    word: "painting",
+    wordZh: "畫作",
+    x: 765,
+    y: 385,
+    radius: 100,
+    radiusX: 70,
+    radiusY: 100,
+    typeZh: "畫布題材",
+    descZh: "畫架上的藍天聖心堂油畫轉為點亮街燈與星空的巴黎夜景艾菲爾鐵塔",
+    slot: {
+      x: 651,
+      y: 229,
+      w: 228,
+      h: 312,
+      rx: 16
+    },
+    patchFile: "painting_variantA.png",
+    cropCompare: "/assets/spotter/crops/b5_s2/painting_compare_var_a.jpg",
+    variants: [
+      {
+        id: "base",
+        name: "原圖基準",
+        label: "原圖樣式",
+        tag: "Base"
+      },
+      {
+        id: "varA",
+        name: "變異 A",
+        label: "型態 A",
+        tag: "Variant A",
+        patchFile: "painting_variantA.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/painting_compare_var_a.jpg",
+        descZh: "畫架上的藍天聖心堂油畫轉為點亮街燈與星空的巴黎夜景艾菲爾鐵塔"
+      },
+      {
+        id: "varB",
+        name: "變異 B",
+        label: "型態 B",
+        tag: "Variant B",
+        patchFile: "painting_variantB.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/painting_compare_var_b.jpg",
+        descZh: "畫架上的聖心堂風景油畫轉為立體派鮮黃向日葵花瓶靜物畫"
+      },
+      {
+        id: "varC",
+        name: "變異 C",
+        label: "型態 C",
+        tag: "Variant C",
+        patchFile: "painting_variantC.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/painting_compare_var_c.jpg",
+        descZh: "畫架上的油畫轉為戴著紅色畫家貝雷帽的俏皮黑貓水彩插畫"
+      }
+    ]
+  },
+  {
+    word: "cake",
+    wordZh: "法式蛋糕",
+    x: 755,
+    y: 625,
+    radius: 60,
+    radiusX: 60,
+    radiusY: 45,
+    typeZh: "法式甜點",
+    descZh: "大理石咖啡桌上的草莓水果千層塔轉為頂級黑巧克力歐培拉 (Opera) 蛋糕",
+    slot: {
+      x: 655,
+      y: 546,
+      w: 200,
+      h: 158,
+      rx: 16
+    },
+    patchFile: "cake_variantA.png",
+    cropCompare: "/assets/spotter/crops/b5_s2/cake_compare_var_a.jpg",
+    variants: [
+      {
+        id: "base",
+        name: "原圖基準",
+        label: "原圖樣式",
+        tag: "Base"
+      },
+      {
+        id: "varA",
+        name: "變異 A",
+        label: "型態 A",
+        tag: "Variant A",
+        patchFile: "cake_variantA.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/cake_compare_var_a.jpg",
+        descZh: "大理石咖啡桌上的草莓水果千層塔轉為頂級黑巧克力歐培拉 (Opera) 蛋糕"
+      },
+      {
+        id: "varB",
+        name: "變異 B",
+        label: "型態 B",
+        tag: "Variant B",
+        patchFile: "cake_variantB.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/cake_compare_var_b.jpg",
+        descZh: "咖啡桌上的草莓蛋糕轉為多層彩色法式馬卡龍塔 (Macarons)"
+      },
+      {
+        id: "varC",
+        name: "變異 C",
+        label: "型態 C",
+        tag: "Variant C",
+        patchFile: "cake_variantC.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/cake_compare_var_c.jpg",
+        descZh: "咖啡桌上的蛋糕轉為鋪滿新鮮藍莓的重乳酪起司蛋糕切片"
+      }
+    ]
+  },
+  {
+    word: "flag",
+    wordZh: "旗幟",
+    x: 995,
+    y: 60,
+    radius: 55,
+    radiusX: 55,
+    radiusY: 35,
+    typeZh: "屋頂旗幟",
+    descZh: "屋頂旗桿飄揚的法國藍白紅三色旗轉為歐盟十二金星深藍底旗",
+    slot: {
+      x: 902,
+      y: 0,
+      w: 186,
+      h: 125,
+      rx: 16
+    },
+    patchFile: "flag_variantA.png",
+    cropCompare: "/assets/spotter/crops/b5_s2/flag_compare_var_a.jpg",
+    variants: [
+      {
+        id: "base",
+        name: "原圖基準",
+        label: "原圖樣式",
+        tag: "Base"
+      },
+      {
+        id: "varA",
+        name: "變異 A",
+        label: "型態 A",
+        tag: "Variant A",
+        patchFile: "flag_variantA.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/flag_compare_var_a.jpg",
+        descZh: "屋頂旗桿飄揚的法國藍白紅三色旗轉為歐盟十二金星深藍底旗"
+      },
+      {
+        id: "varB",
+        name: "變異 B",
+        label: "型態 B",
+        tag: "Variant B",
+        patchFile: "flag_variantB.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/flag_compare_var_b.jpg",
+        descZh: "屋頂法國三色旗轉為巴黎市徽紅藍雙色風帆船旗幟"
+      },
+      {
+        id: "varC",
+        name: "變異 C",
+        label: "型態 C",
+        tag: "Variant C",
+        patchFile: "flag_variantC.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/flag_compare_var_c.jpg",
+        descZh: "屋頂三色旗轉為海軍藍飾金邊的藝術節燕尾三角錦旗"
+      }
+    ]
+  },
+  {
+    word: "bell",
+    wordZh: "歷史銅鐘",
+    x: 1125,
+    y: 290,
+    radius: 85,
+    radiusX: 55,
+    radiusY: 85,
+    typeZh: "拱門鐘款",
+    descZh: "建築外牆拱門吊掛的古樸青銅鐘轉為拋光亮金黃銅鐘綴飾紅流蘇",
+    slot: {
+      x: 1032,
+      y: 155,
+      w: 186,
+      h: 270,
+      rx: 16
+    },
+    patchFile: "bell_variantA.png",
+    cropCompare: "/assets/spotter/crops/b5_s2/bell_compare_var_a.jpg",
+    variants: [
+      {
+        id: "base",
+        name: "原圖基準",
+        label: "原圖樣式",
+        tag: "Base"
+      },
+      {
+        id: "varA",
+        name: "變異 A",
+        label: "型態 A",
+        tag: "Variant A",
+        patchFile: "bell_variantA.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/bell_compare_var_a.jpg",
+        descZh: "建築外牆拱門吊掛的古樸青銅鐘轉為拋光亮金黃銅鐘綴飾紅流蘇"
+      },
+      {
+        id: "varB",
+        name: "變異 B",
+        label: "型態 B",
+        tag: "Variant B",
+        patchFile: "bell_variantB.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/bell_compare_var_b.jpg",
+        descZh: "外牆拱門青銅鐘旁增設成對的雙聯排音雙銅鐘"
+      },
+      {
+        id: "varC",
+        name: "變異 C",
+        label: "型態 C",
+        tag: "Variant C",
+        patchFile: "bell_variantC.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/bell_compare_var_c.jpg",
+        descZh: "外牆青銅鐘轉為帶有浮雕十字紋章的中世紀重型鐵質教堂鐘"
+      }
+    ]
+  },
+  {
+    word: "camera",
+    wordZh: "相機",
+    x: 1120,
+    y: 695,
+    radius: 60,
+    radiusX: 60,
+    radiusY: 50,
+    typeZh: "相機機型",
+    descZh: "編織藤椅上的黑銀復古旁軸相機轉為亮紅色拍立得相機吐出小相片",
+    slot: {
+      x: 1020,
+      y: 609,
+      w: 200,
+      h: 159,
+      rx: 16
+    },
+    patchFile: "camera_variantA.png",
+    cropCompare: "/assets/spotter/crops/b5_s2/camera_compare_var_a.jpg",
+    variants: [
+      {
+        id: "base",
+        name: "原圖基準",
+        label: "原圖樣式",
+        tag: "Base"
+      },
+      {
+        id: "varA",
+        name: "變異 A",
+        label: "型態 A",
+        tag: "Variant A",
+        patchFile: "camera_variantA.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/camera_compare_var_a.jpg",
+        descZh: "編織藤椅上的黑銀復古旁軸相機轉為亮紅色拍立得相機吐出小相片"
+      },
+      {
+        id: "varB",
+        name: "變異 B",
+        label: "型態 B",
+        tag: "Variant B",
+        patchFile: "camera_variantB.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/camera_compare_var_b.jpg",
+        descZh: "藤椅上的旁軸相機轉為復古雙鏡頭反光 (TLR) 相機"
+      },
+      {
+        id: "varC",
+        name: "變異 C",
+        label: "型態 C",
+        tag: "Variant C",
+        patchFile: "camera_variantC.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/camera_compare_var_c.jpg",
+        descZh: "藤椅上的旁軸相機轉為金象牙配色奢華相機佐銀色鏡頭蓋"
+      }
+    ]
+  }
+],
+  distractors: [
+  {
+    word: "cat",
+    wordZh: "黑貓"
+  },
+  {
+    word: "dog",
+    wordZh: "法鬥犬"
+  },
+  {
+    word: "bike",
+    wordZh: "腳踏車"
+  },
+  {
+    word: "book",
+    wordZh: "畫冊"
+  },
+  {
+    word: "cup",
+    wordZh: "咖啡杯"
+  },
+  {
+    word: "flower",
+    wordZh: "窗台繁花"
+  },
+  {
+    word: "tree",
+    wordZh: "梧桐樹"
+  },
+  {
+    word: "car",
+    wordZh: "老爺車"
+  },
+  {
+    word: "chair",
+    wordZh: "藤椅"
+  },
+  {
+    word: "table",
+    wordZh: "咖啡桌"
+  },
+  {
+    word: "bag",
+    wordZh: "提包"
+  },
+  {
+    word: "lamp",
+    wordZh: "街燈"
+  },
+  {
+    word: "bird",
+    wordZh: "白鴿"
+  },
+  {
+    word: "apple",
+    wordZh: "蘋果"
+  },
+  {
+    word: "clock",
+    wordZh: "掛鐘"
+  },
+  {
+    word: "umbrella",
+    wordZh: "遮陽傘"
+  }
+]
+};
+
 export const BOOK6_MUSEUM_SCENE = {
   id: 'book6_museum',
   book: '6',
@@ -1108,7 +1638,8 @@ export const ALL_SCENES_BY_BOOK = {
   '2': [BOOK2_PARK_SCENE, BOOK2_KYOTO_SCENE],
   '3': [BOOK3_PARK_SCENE, BOOK3_ALPINE_SCENE],
   '4': [BOOK4_LONDON_SCENE, BOOK4_RIVERSIDE_SCENE],
-  '5': [BOOK5_PARIS_SCENE],
+  '5': [BOOK5_PARIS_SCENE,
+  BOOK5_MONTMARTRE_SCENE, BOOK5_MONTMARTRE_SCENE],
   '6': [BOOK6_MUSEUM_SCENE],
   '7': [BOOK7_HARBOR_SCENE],
   '8': [BOOK8_GARDEN_SCENE]

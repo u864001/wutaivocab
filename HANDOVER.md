@@ -339,6 +339,30 @@
 * **Vercel 推送禁令生效**：
   * 因 Vercel Hobby 方案構建額度有限，日常微調頻繁推送容易導致配額耗盡。正式確立：**日常開發嚴格禁止執行 `git push vercel`**，所有發布與構建一律由 Cloudflare Pages (`origin/main`) 承載；僅在重大里程碑經 Mark 裁示時方可推送 Vercel。
 
+#### 24. 鷹眼神探 第 5 冊場景 2【巴黎蒙馬特小丘畫家村與聖心堂露天咖啡街】A 方案動態 8 選 5 多型態 (Var A/B/C) 全量實裝與單字普及覆蓋率實踐 (`spotterData.js`, `SpotterTestWorkbench.jsx`, `public/assets/spotter/*`)
+* **單字出現率與涵蓋率深度審查 (Mark 指導原則)**：
+  * 全面清查 12 個既有場景目標字頻率，淘汰高頻重複詞（如 `bird` 4次, `umbrella` 4次, `bag` 3次），保留其作為真實靜態背景。
+  * 精選 8 大五年級藝文、活動與生活核心欲測單字，歷史平均出題次數降至 **0.88 次**：
+    - `palette` (調色盤, 0 次初登場)
+    - `guitar` (木吉他, 0 次初登場)
+    - `bell` (銅鐘, 0 次初登場)
+    - `camera` (相機, 1 次)
+    - `painting` (畫作, 1 次)
+    - `bread` (長棍麵包, 1 次)
+    - `flag` (法國三色旗, 1 次)
+    - `cake` (法式蛋糕, 2 次)
+* **16 個 100% 靜態背景干擾單字融入（真實世界剪影，拒絕生硬風箏）**：
+  * `cat` (黑貓), `dog` (法鬥), `bike`, `book`, `cup`, `flower`, `tree`, `car` (雪鐵龍 2CV), `chair`, `table`, `bag`, `lamp`, `bird` (白鴿), `apple`, `clock`, `umbrella`。
+  * 左右圖在非欲測區完全靜態，100% 像元鎖定不變。
+* **三大多態變異 (Variants A / B / C) 與 24 羽化補丁全量產出**：
+  * 產出 `book5_scene2_base.jpg`, `book5_scene2_diff.jpg`, `book5_scene2_diff_varb.jpg`, `book5_scene2_diff_varc.jpg` (1376x768)。
+  * 產出 24 個透明羽化 PNG 補丁 (`public/assets/spotter/patches/b5_s2/`) 與 24 張特寫比較卡 (`public/assets/spotter/crops/b5_s2/`)。
+* **幾何驗證零交疊**：
+  * 全數 28 對幾何距離均維持正距，最小間隙達 24.9px (`guitar` <-> `palette`)，Total Overlaps = 0 / 28 pairs。
+* **進度里程碑**：
+  * 累積就緒關卡達到 **13 / 40**！
+
+
 ---
 
 ### 四、核心目錄與關鍵模組結構

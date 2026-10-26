@@ -16,7 +16,7 @@ const BOOKS_CONFIG = [
   { id: '2', grade: '三下', title: '第 2 冊', sub: '陽光農莊公園 / 京都職人小鎮' },
   { id: '3', grade: '四上', title: '第 3 冊', sub: '微風氣象湖畔 / 阿爾卑斯野餐台' },
   { id: '4', grade: '四下', title: '第 4 冊', sub: '英倫時鐘家居 / 泰晤士皇家地標廣場' },
-  { id: '5', grade: '五上', title: '第 5 冊', sub: '巴黎羅浮宮藝文廣場' },
+  { id: '5', grade: '五上', title: '第 5 冊', sub: '巴黎羅浮宮藝文廣場 / 蒙馬特畫家村' },
   { id: '6', grade: '五下', title: '第 6 冊', sub: '世界自然歷史博物館 (無食物)' },
   { id: '7', grade: '六上', title: '第 7 冊', sub: '世界節慶與環球港灣' },
   { id: '8', grade: '六下', title: '第 8 冊', sub: '四季時光庭園' }
