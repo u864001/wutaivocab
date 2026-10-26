@@ -1,7 +1,7 @@
 const targets = [
   { name: 'bread', x: 65, y: 615, rx: 55, ry: 120 },
   { name: 'guitar', x: 445, y: 530, rx: 40, ry: 90 },
-  { name: 'palette', x: 560, y: 620, rx: 65, ry: 42 },
+  { name: 'brush', x: 560, y: 620, rx: 65, ry: 42 },
   { name: 'painting', x: 765, y: 415, rx: 78, ry: 115 },
   { name: 'cake', x: 755, y: 625, rx: 60, ry: 45 },
   { name: 'flag', x: 995, y: 60, rx: 55, ry: 35 },

@@ -168,7 +168,7 @@ export const SPOTTER_CURRICULUM_MATRIX = {
       { en: 'milk', zh: '牛奶', type: 'concrete' },
       { en: 'football', zh: '足球', type: 'concrete' },
       { en: 'painting', zh: '畫作', type: 'concrete' },
-      { en: 'palette', zh: '調色盤', type: 'concrete' },
+      { en: 'brush', zh: '畫筆', type: 'concrete' },
       { en: 'camera', zh: '相機', type: 'concrete' },
       // 待登場候選
       { en: 'supermarket', zh: '超級市場', type: 'environment' },

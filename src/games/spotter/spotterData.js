@@ -957,15 +957,15 @@ export const BOOK5_MONTMARTRE_SCENE = {
     ]
   },
   {
-    word: "palette",
-    wordZh: "調色盤",
+    word: "brush",
+    wordZh: "畫筆",
     x: 560,
     y: 620,
     radius: 65,
     radiusX: 65,
     radiusY: 42,
-    typeZh: "調色盤樣式",
-    descZh: "木凳上的橢圓木質油畫調色盤轉為現代透明壓克力水彩調色盤",
+    typeZh: "畫筆樣式",
+    descZh: "木凳調色盤上的古典木質油畫筆轉為現代透明水彩畫筆組",
     slot: {
       x: 453,
       y: 545,
@@ -973,8 +973,8 @@ export const BOOK5_MONTMARTRE_SCENE = {
       h: 150,
       rx: 16
     },
-    patchFile: "palette_variantA.png",
-    cropCompare: "/assets/spotter/crops/b5_s2/palette_compare_var_a.jpg",
+    patchFile: "brush_variantA.png",
+    cropCompare: "/assets/spotter/crops/b5_s2/brush_compare_var_a.jpg",
     variants: [
       {
         id: "base",
@@ -987,27 +987,27 @@ export const BOOK5_MONTMARTRE_SCENE = {
         name: "變異 A",
         label: "型態 A",
         tag: "Variant A",
-        patchFile: "palette_variantA.png",
-        cropCompare: "/assets/spotter/crops/b5_s2/palette_compare_var_a.jpg",
-        descZh: "木凳上的橢圓木質油畫調色盤轉為現代透明壓克力水彩調色盤"
+        patchFile: "brush_variantA.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/brush_compare_var_a.jpg",
+        descZh: "木凳調色盤上的古典木質油畫筆轉為現代透明水彩畫筆組"
       },
       {
         id: "varB",
         name: "變異 B",
         label: "型態 B",
         tag: "Variant B",
-        patchFile: "palette_variantB.png",
-        cropCompare: "/assets/spotter/crops/b5_s2/palette_compare_var_b.jpg",
-        descZh: "木凳上的木質調色盤轉為陶瓷花瓣造形水彩調色盤"
+        patchFile: "brush_variantB.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/brush_compare_var_b.jpg",
+        descZh: "木凳上的畫筆轉為陶瓷花瓣調色盤上的細緻水彩毛筆"
       },
       {
         id: "varC",
         name: "變異 C",
         label: "型態 C",
         tag: "Variant C",
-        patchFile: "palette_variantC.png",
-        cropCompare: "/assets/spotter/crops/b5_s2/palette_compare_var_c.jpg",
-        descZh: "木凳上的調色盤轉為開啟的古典黃銅扣手提調色顏料箱"
+        patchFile: "brush_variantC.png",
+        cropCompare: "/assets/spotter/crops/b5_s2/brush_compare_var_c.jpg",
+        descZh: "木凳上的畫筆轉為開啟的古典黃銅手提箱內各色長桿油畫筆"
       }
     ]
   },

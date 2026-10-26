@@ -29,16 +29,16 @@ const TARGETS = [
     descVarC: '街燈旁民謠吉他轉為收納於天鵝絨琴盒中的日落色半空心電吉他'
   },
   {
-    word: 'palette',
-    wordZh: '調色盤',
+    word: 'brush',
+    wordZh: '畫筆',
     x: 560,
     y: 620,
     rx: 65,
     ry: 42,
-    typeZh: '調色盤樣式',
-    descVarA: '木凳上的橢圓木質油畫調色盤轉為現代透明壓克力水彩調色盤',
-    descVarB: '木凳上的木質調色盤轉為陶瓷花瓣造形水彩調色盤',
-    descVarC: '木凳上的調色盤轉為開啟的古典黃銅扣手提調色顏料箱'
+    typeZh: '畫筆樣式',
+    descVarA: '木凳調色盤上的古典木質油畫筆轉為現代透明水彩畫筆組',
+    descVarB: '木凳上的畫筆轉為陶瓷花瓣調色盤上的細緻水彩毛筆',
+    descVarC: '木凳上的畫筆轉為開啟的古典黃銅手提箱內各色長桿油畫筆'
   },
   {
     word: 'painting',
