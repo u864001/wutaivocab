@@ -348,60 +348,94 @@ export const ESCAPE_VOICE_PERSONAS = [
   }
 ];
 
+// ── 密室專屬語音快取與異步就緒監聽 (徹底根絕 Chromium 初始 getVoices 空陣列與語系誤選) ──
+let escapeCachedVoices = [];
+const initEscapeVoices = () => {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      const v = window.speechSynthesis.getVoices() || [];
+      if (v.length > 0) {
+        escapeCachedVoices = v;
+      }
+    } catch (e) {
+      escapeCachedVoices = [];
+    }
+  }
+};
+
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  initEscapeVoices();
+  window.speechSynthesis.onvoiceschanged = () => initEscapeVoices();
+}
+
 /**
  * 密室外師神秘語音播報：隨機使用 8 種美語腔調與 2 種英語腔調 (7男聲 3女聲)
+ * ★★★ 核心安全防線：100% 嚴格限縮於純英文 (en-*) 語音包，杜絕任何玩家本機非英語系（法、德、意、西、中文等）之干擾 ★★★
  */
 export const speakMysteriousEnglish = (text) => {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !text) return;
   try {
+    // 1. 純淨化文字，徹底排除意外傳入的中文字串，避免英文語音嘗試唸中文
+    const cleanText = String(text).replace(/[\u4e00-\u9fa5]/g, '').trim();
+    if (!cleanText) return;
+
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
+    const utterance = new SpeechSynthesisUtterance(cleanText);
 
     // 隨機抽選 10 大外師人格 (80% 美語 en-US，20% 英語 en-GB；70% 男聲，30% 女聲)
     const persona = ESCAPE_VOICE_PERSONAS[Math.floor(Math.random() * ESCAPE_VOICE_PERSONAS.length)];
 
-    utterance.lang = persona.lang;
     utterance.pitch = persona.pitch;
     utterance.rate = persona.rate;
 
-    const allVoices = window.speechSynthesis.getVoices() || [];
-    if (allVoices.length > 0) {
-      let matchedVoice = null;
+    if (escapeCachedVoices.length === 0) {
+      initEscapeVoices();
+    }
+    const allVoices = escapeCachedVoices.length > 0 ? escapeCachedVoices : (window.speechSynthesis.getVoices() || []);
 
-      // 1. 優先嘗試喜好名稱精確匹配
+    // ★★★ 關鍵防護 1：第一道門檻即強制排除所有非英語音（如 Microsoft Daniel 法語、Steffan 德語、Hanhan 國語）★★★
+    const englishVoices = allVoices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+
+    let matchedVoice = null;
+
+    if (englishVoices.length > 0) {
+      // 1. 優先在【純英文候選池】中比對外師喜好名稱 (如 David, Guy, Zira 等)
       for (const prefName of persona.preferredNames) {
-        matchedVoice = allVoices.find(v => v.name.toLowerCase().includes(prefName.toLowerCase()));
+        matchedVoice = englishVoices.find(v => (v.name || '').toLowerCase().includes(prefName.toLowerCase()));
         if (matchedVoice) break;
       }
 
-      // 2. 次優嘗試依語系與性別線索匹配
+      // 2. 次優嘗試依指定英文腔調 (en-US 或 en-GB) 與性別特徵精確匹配
       if (!matchedVoice) {
-        const langVoices = allVoices.filter(v => v.lang.startsWith(persona.lang));
-        if (langVoices.length > 0) {
-          if (persona.gender === 'female') {
-            matchedVoice = langVoices.find(v => {
-              const n = v.name.toLowerCase();
-              return n.includes('female') || n.includes('woman') || n.includes('jenny') || n.includes('zira') || n.includes('aria') || n.includes('samantha') || n.includes('susan') || n.includes('hazel');
-            }) || langVoices[0];
-          } else {
-            matchedVoice = langVoices.find(v => {
-              const n = v.name.toLowerCase();
-              return n.includes('male') || n.includes('david') || n.includes('guy') || n.includes('mark') || n.includes('george') || n.includes('alex') || n.includes('daniel') || n.includes('christopher');
-            }) || langVoices[0];
-          }
+        const langVoices = englishVoices.filter(v => v.lang.toLowerCase().startsWith(persona.lang.toLowerCase()));
+        const targetPool = langVoices.length > 0 ? langVoices : englishVoices;
+
+        if (persona.gender === 'female') {
+          matchedVoice = targetPool.find(v => {
+            const n = (v.name || '').toLowerCase();
+            return n.includes('female') || n.includes('woman') || n.includes('jenny') || n.includes('zira') || n.includes('aria') || n.includes('samantha') || n.includes('susan') || n.includes('hazel');
+          }) || targetPool[0];
+        } else {
+          matchedVoice = targetPool.find(v => {
+            const n = (v.name || '').toLowerCase();
+            return n.includes('male') || n.includes('david') || n.includes('guy') || n.includes('mark') || n.includes('george') || n.includes('alex') || n.includes('daniel') || n.includes('christopher');
+          }) || targetPool[0];
         }
       }
 
-      // 3. 若找不到特定語系，退回美語或任何英文語音
+      // 3. 最末備選：任何合法的 en-US 或 en 英語發音
       if (!matchedVoice) {
-        matchedVoice = allVoices.find(v => v.lang.startsWith('en-US')) ||
-                       allVoices.find(v => v.lang.startsWith('en'));
+        matchedVoice = englishVoices.find(v => v.lang.toLowerCase().startsWith('en-us')) || englishVoices[0];
       }
+    }
 
-      if (matchedVoice) {
-        utterance.voice = matchedVoice;
-        utterance.lang = matchedVoice.lang || persona.lang;
-      }
+    if (matchedVoice) {
+      utterance.voice = matchedVoice;
+      utterance.lang = matchedVoice.lang || persona.lang;
+    } else {
+      // 若本機裝置完全未安裝任何英文語音包（極少數精簡版系統），絕不指派本機中文語音，強制指定 en-US
+      utterance.voice = null;
+      utterance.lang = 'en-US';
     }
 
     window.speechSynthesis.speak(utterance);

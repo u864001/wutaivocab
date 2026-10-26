@@ -334,7 +334,7 @@ export const VocabEscapeGame = ({
         setHintCount(prev => Math.max(0, prev - 1));
       }
     } else if (currentPuzzle.type === 'spelling') {
-      speakMysteriousEnglish(currentPuzzle.voiceText || currentPuzzle.englishPrompt || currentPuzzle.targetWord?.en);
+      speakMysteriousEnglish(currentPuzzle.voiceText || currentPuzzle.targetWord?.en || currentPuzzle.targetText || '');
       setHintCount(prev => Math.max(0, prev - 1));
     } else if (currentPuzzle.type === 'sentence_order') {
       speakMysteriousEnglish(currentPuzzle.voiceText);

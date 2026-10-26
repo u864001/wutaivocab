@@ -205,8 +205,14 @@ class VoiceManager {
     }
     if (!this.voices || this.voices.length === 0) return null;
 
+    const isTargetEnglish = !persona.lang || persona.lang.toLowerCase().startsWith('en');
     const englishVoices = this.voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
-    const pool = englishVoices.length > 0 ? englishVoices : this.voices;
+
+    // 若目標語系為英語，強制只從英文語音池篩選，嚴禁退回本地非英語系（如中文）
+    const pool = isTargetEnglish ? englishVoices : this.voices;
+    if (pool.length === 0) {
+      return null;
+    }
 
     // 1. 優先在音色候選名單中逐一精確匹配
     if (persona.preferredVoices && persona.preferredVoices.length > 0) {
