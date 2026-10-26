@@ -272,6 +272,26 @@
   * 全套 15 款羽化透明補丁（`public/assets/spotter/patches/b2_s2/`）與對應對照卡全數生成就緒。
   * `npm run lint` 0 錯誤、`npm run build` 通過、`scripts/smoke_test.mjs`（14 款遊戲 4 身分）與 `test_spotter_workbench.mjs` 均 100% 通過。
 
+#### 21. 鷹眼神探 第 3 冊場景 2【瑞士阿爾卑斯湖畔與木屋野餐台】A 方案動態 8 選 5 多型態 (Var A/B/C) 全量實裝 (`spotterData.js`, `SpotterTestWorkbench.jsx`, `public/assets/spotter/*`)
+* **背景與課綱單字配置**：
+  * 遵照 Mark 規範與「同一底圖工作流一次出完自然不勉強」原則，推進 Here We Go 第 3 冊（四年級上學期）場景 2。
+  * **主題**：瑞士阿爾卑斯湖畔與木屋野餐台（Swiss Alpine Lake & Chalet Picnic Terrace，1376×768 3D 立體紙雕 diorama）。
+  * **8 大相異目標（100% 符合第 3 冊課綱核心單字）**：
+    1. `cloud` (白雲，`x: 239, y: 103, rx: 100, ry: 65`)：Base 棉花白雲 $\to$ Var A: 彩虹白雲 $\to$ Var B: 夕陽金霞雲 $\to$ Var C: 愛心夢幻雲。
+    2. `milk` (牛奶，`x: 124, y: 493, rx: 50, ry: 75`)：Base 玻璃奶瓶 $\to$ Var A: 藍白紙盒牛奶 $\to$ Var B: 肉桂熱牛奶 $\to$ Var C: 吸管隨行杯。
+    3. `tea` (茶，`x: 440, y: 584, rx: 75, ry: 58`)：Base 琥珀熱紅茶 $\to$ Var A: 薄荷綠茶杯 $\to$ Var B: 黃檸檬冰茶 $\to$ Var C: 茶包馬克杯。
+    4. `sandwich` (三明治，`x: 648, y: 553, rx: 72, ry: 52`)：Base 雙層三明治 $\to$ Var A: 法式潛艇堡 $\to$ Var B: 火腿可頌堡 $\to$ Var C: 芝麻貝果堡。
+    5. `rice` (飯糰，`x: 820, y: 553, rx: 58, ry: 52`)：Base 海苔三角飯糰 $\to$ Var A: 櫻花醃漬飯糰 $\to$ Var B: 瓷碗香米飯 $\to$ Var C: 醬油烤飯糰。
+    6. `watermelon` (西瓜，`x: 1039, y: 530, rx: 68, ry: 50`)：Base 紅肉切片西瓜 $\to$ Var A: 金黃小玉西瓜 $\to$ Var B: 條紋完整西瓜 $\to$ Var C: 薄荷西瓜切塊。
+    7. `water` (水壺，`x: 1228, y: 468, rx: 48, ry: 80`)：Base 玻璃冷水壺 $\to$ Var A: 金屬保溫水壺 $\to$ Var B: 高腳氣泡水杯 $\to$ Var C: 刻度運動水瓶。
+    8. `orange` (柳橙，`x: 1007, y: 665, rx: 60, ry: 45`)：Base 鮮採綠葉甜橙 $\to$ Var A: 晶透切片輪盤 $\to$ Var B: 剝開飽滿橙瓣 $\to$ Var C: 果盤黃金甜橙。
+  * **兩兩空間零交疊檢驗**：相鄰最近目標淨間距均 $\ge 40$px，全場景交疊數嚴格為 0。
+* **動態合成與工作台支援**：
+  * 生成全套 24 款羽化透明 PNG 補丁（`public/assets/spotter/patches/b3_s2/`）與高解析裁切對比卡（`public/assets/spotter/crops/b3_s2/`）。
+  * 生成全幅標籤判定外框圖（`book3_scene2_side_by_side_boxes.jpg`、`_varb.jpg`、`_varc.jpg`）。
+  * 工作台（`/spotter-test`）支援第 3 冊圖 1 與圖 2 切換、全幅成對變異底圖切換、顯微矩陣多型態卡片互動切換、以及動態 8 選 5 抽題模擬器。
+  * 藍圖總覽（Master Roadmap）更新進度為「11 場景已就緒 / 29 場景排程中」。
+
 ---
 
 ### 四、核心目錄與關鍵模組結構

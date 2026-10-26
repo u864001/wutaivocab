@@ -380,6 +380,195 @@ export const BOOK3_PARK_SCENE = {
   ]
 };
 
+// ── 【Book 3 場景 2 • A 方案動態 8 選 5 補丁引擎】瑞士阿爾卑斯湖畔與木屋野餐台 (Swiss Alpine Lake & Chalet Picnic Terrace) ──
+export const BOOK3_ALPINE_SCENE = {
+  id: 'book3_alpine',
+  book: '3',
+  sceneNumber: 2,
+  grade: 4,
+  titleZh: '瑞士阿爾卑斯湖畔與木屋野餐台（四年級第 3 冊 • 場景 2）',
+  titleEn: 'Swiss Alpine Lake & Chalet Picnic Terrace (Book 3 • Scene 2)',
+  descZh: '在壯麗的瑞士冰川湖畔與阿爾卑斯木屋野餐台上，尋找美味野餐食物與高山景觀相異之處！',
+  baseImage: '/assets/spotter/book3_scene2_base.jpg',
+  diffImage: '/assets/spotter/book3_scene2_diff.jpg',
+  diffImageVarB: '/assets/spotter/book3_scene2_diff_varb.jpg',
+  diffImageVarC: '/assets/spotter/book3_scene2_diff_varc.jpg',
+  width: 1376,
+  height: 768,
+  status: 'ready',
+  isDynamic: true,
+  isDynamicSlot: true,
+  patchDir: '/assets/spotter/patches/b3_s2',
+  targetItems: [
+    {
+      word: 'cloud',
+      wordZh: '白雲',
+      x: 239,
+      y: 103,
+      radius: 100,
+      radiusX: 100,
+      radiusY: 65,
+      typeZh: '天候景觀',
+      descZh: '藍天山巔蓬鬆棉花白雲，右圖轉為帶七彩彩虹浮現的白雲',
+      slot: { x: 124, y: 23, w: 230, h: 160, rx: 16 },
+      patchFile: 'cloud_variantA.png',
+      cropCompare: '/assets/spotter/crops/b3_s2/cloud_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '棉花白雲', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '彩虹白雲', tag: 'Variant A', patchFile: 'cloud_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/cloud_compare.jpg', descZh: '藍天山巔蓬鬆棉花白雲，右圖轉為帶七彩彩虹浮現的白雲' },
+        { id: 'varB', name: '變異 B', label: '夕陽金霞雲', tag: 'Variant B', patchFile: 'cloud_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/cloud_compare_varB.jpg', descZh: '藍天山巔白雲轉為夕陽暖金鑲邊彩霞白雲' },
+        { id: 'varC', name: '變異 C', label: '愛心夢幻雲', tag: 'Variant C', patchFile: 'cloud_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/cloud_compare_varC.jpg', descZh: '藍天山巔白雲轉為愛心形狀綿密夢幻白雲' }
+      ]
+    },
+    {
+      word: 'milk',
+      wordZh: '牛奶',
+      x: 124,
+      y: 493,
+      radius: 50,
+      radiusX: 50,
+      radiusY: 75,
+      typeZh: '乳品包裝',
+      descZh: '左側木欄托盤玻璃牛奶瓶，右圖轉為瑞士高山藍白紙盒牛奶',
+      slot: { x: 59, y: 403, w: 130, h: 180, rx: 16 },
+      patchFile: 'milk_variantA.png',
+      cropCompare: '/assets/spotter/crops/b3_s2/milk_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '玻璃奶瓶', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '藍白紙盒牛奶', tag: 'Variant A', patchFile: 'milk_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/milk_compare.jpg', descZh: '左側木欄托盤玻璃牛奶瓶轉為瑞士高山藍白紙盒牛奶' },
+        { id: 'varB', name: '變異 B', label: '肉桂熱牛奶', tag: 'Variant B', patchFile: 'milk_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/milk_compare_varB.jpg', descZh: '左側木欄托盤轉為暖心馬克杯熱牛奶佐肉桂' },
+        { id: 'varC', name: '變異 C', label: '吸管隨行杯', tag: 'Variant C', patchFile: 'milk_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/milk_compare_varC.jpg', descZh: '左側木欄托盤轉為帶吸管玻璃隨行杯牛奶' }
+      ]
+    },
+    {
+      word: 'tea',
+      wordZh: '茶',
+      x: 440,
+      y: 584,
+      radius: 75,
+      radiusX: 75,
+      radiusY: 58,
+      typeZh: '茶品品項',
+      descZh: '野餐桌上琥珀紅茶壺組，右圖轉為翠綠高山薄荷綠茶杯',
+      slot: { x: 350, y: 511, w: 180, h: 146, rx: 16 },
+      patchFile: 'tea_variantA.png',
+      cropCompare: '/assets/spotter/crops/b3_s2/tea_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '琥珀熱紅茶', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '薄荷綠茶杯', tag: 'Variant A', patchFile: 'tea_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/tea_compare.jpg', descZh: '野餐桌上琥珀紅茶壺組轉為翠綠高山薄荷綠茶杯' },
+        { id: 'varB', name: '變異 B', label: '黃檸檬冰茶', tag: 'Variant B', patchFile: 'tea_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/tea_compare_varB.jpg', descZh: '野餐桌上轉為鮮黃檸檬片冰紅茶杯' },
+        { id: 'varC', name: '變異 C', label: '茶包馬克杯', tag: 'Variant C', patchFile: 'tea_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/tea_compare_varC.jpg', descZh: '野餐桌上轉為陶瓷馬克杯佐茶包吊牌' }
+      ]
+    },
+    {
+      word: 'sandwich',
+      wordZh: '三明治',
+      x: 648,
+      y: 553,
+      radius: 72,
+      radiusX: 72,
+      radiusY: 52,
+      typeZh: '麵包餐點',
+      descZh: '木切板上雙層三明治，右圖轉為長棍法式潛艇三明治',
+      slot: { x: 561, y: 486, w: 174, h: 134, rx: 16 },
+      patchFile: 'sandwich_variantA.png',
+      cropCompare: '/assets/spotter/crops/b3_s2/sandwich_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '雙層三明治', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '法式潛艇堡', tag: 'Variant A', patchFile: 'sandwich_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/sandwich_compare.jpg', descZh: '木切板上雙層三明治轉為長棍法式潛艇三明治' },
+        { id: 'varB', name: '變異 B', label: '火腿可頌堡', tag: 'Variant B', patchFile: 'sandwich_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/sandwich_compare_varB.jpg', descZh: '木切板上轉為香酥金黃可頌三明治' },
+        { id: 'varC', name: '變異 C', label: '芝麻貝果堡', tag: 'Variant C', patchFile: 'sandwich_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/sandwich_compare_varC.jpg', descZh: '木切板上轉為香烤芝麻貝果三明治' }
+      ]
+    },
+    {
+      word: 'rice',
+      wordZh: '飯糰',
+      x: 820,
+      y: 553,
+      radius: 58,
+      radiusX: 58,
+      radiusY: 52,
+      typeZh: '米飯主食',
+      descZh: '竹蓆上海苔三角飯糰，右圖轉為櫻花粉櫻花醃漬飯糰',
+      slot: { x: 747, y: 486, w: 146, h: 134, rx: 16 },
+      patchFile: 'rice_variantA.png',
+      cropCompare: '/assets/spotter/crops/b3_s2/rice_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '海苔三角飯糰', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '櫻花醃漬飯糰', tag: 'Variant A', patchFile: 'rice_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/rice_compare.jpg', descZh: '竹蓆上海苔三角飯糰轉為櫻花粉櫻花醃漬飯糰' },
+        { id: 'varB', name: '變異 B', label: '瓷碗香米飯', tag: 'Variant B', patchFile: 'rice_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/rice_compare_varB.jpg', descZh: '竹蓆上轉為青花瓷碗裝熱騰騰白米飯' },
+        { id: 'varC', name: '變異 C', label: '醬油烤飯糰', tag: 'Variant C', patchFile: 'rice_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/rice_compare_varC.jpg', descZh: '竹蓆上轉為烤香黃金醬油燒飯糰' }
+      ]
+    },
+    {
+      word: 'watermelon',
+      wordZh: '西瓜',
+      x: 1039,
+      y: 530,
+      radius: 68,
+      radiusX: 68,
+      radiusY: 50,
+      typeZh: '當令水果',
+      descZh: '右長凳瓷盤鮮紅切片西瓜，右圖轉為金黃小玉切片西瓜',
+      slot: { x: 956, y: 465, w: 166, h: 130, rx: 16 },
+      patchFile: 'watermelon_variantA.png',
+      cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '紅肉切片西瓜', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '金黃小玉西瓜', tag: 'Variant A', patchFile: 'watermelon_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare.jpg', descZh: '右長凳瓷盤鮮紅切片西瓜轉為金黃小玉切片西瓜' },
+        { id: 'varB', name: '變異 B', label: '條紋完整西瓜', tag: 'Variant B', patchFile: 'watermelon_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare_varB.jpg', descZh: '右長凳轉為翠綠條紋完整小西瓜' },
+        { id: 'varC', name: '變異 C', label: '薄荷西瓜切塊', tag: 'Variant C', patchFile: 'watermelon_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/watermelon_compare_varC.jpg', descZh: '右長凳轉為瓷碗裝西瓜方塊佐薄荷葉' }
+      ]
+    },
+    {
+      word: 'water',
+      wordZh: '水壺',
+      x: 1228,
+      y: 468,
+      radius: 48,
+      radiusX: 48,
+      radiusY: 80,
+      typeZh: '飲水器皿',
+      descZh: '右側木欄玻璃冷水壺，右圖轉為亮銀高山金屬運動水壺',
+      slot: { x: 1165, y: 373, w: 126, h: 190, rx: 16 },
+      patchFile: 'water_variantA.png',
+      cropCompare: '/assets/spotter/crops/b3_s2/water_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '玻璃冷水壺', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '金屬保溫水壺', tag: 'Variant A', patchFile: 'water_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/water_compare.jpg', descZh: '右側木欄玻璃冷水壺轉為亮銀高山金屬運動水壺' },
+        { id: 'varB', name: '變異 B', label: '高腳氣泡水杯', tag: 'Variant B', patchFile: 'water_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/water_compare_varB.jpg', descZh: '右側木欄轉為澄澈高腳氣泡水杯佐青檸' },
+        { id: 'varC', name: '變異 C', label: '刻度運動水瓶', tag: 'Variant C', patchFile: 'water_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/water_compare_varC.jpg', descZh: '右側木欄轉為戶外透明刻度運動水瓶' }
+      ]
+    },
+    {
+      word: 'orange',
+      wordZh: '柳橙',
+      x: 1007,
+      y: 665,
+      radius: 60,
+      radiusX: 60,
+      radiusY: 45,
+      typeZh: '柑橘水果',
+      descZh: '下層木盆鮮橙，右圖轉為晶透柳橙切片輪盤',
+      slot: { x: 932, y: 605, w: 150, h: 120, rx: 16 },
+      patchFile: 'orange_variantA.png',
+      cropCompare: '/assets/spotter/crops/b3_s2/orange_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '鮮採綠葉甜橙', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '晶透切片輪盤', tag: 'Variant A', patchFile: 'orange_variantA.png', cropCompare: '/assets/spotter/crops/b3_s2/orange_compare.jpg', descZh: '下層木盆鮮橙轉為晶透柳橙切片輪盤' },
+        { id: 'varB', name: '變異 B', label: '剝開飽滿橙瓣', tag: 'Variant B', patchFile: 'orange_variantB.png', cropCompare: '/assets/spotter/crops/b3_s2/orange_compare_varB.jpg', descZh: '下層木盆轉為剝開飽滿橙肉果瓣' },
+        { id: 'varC', name: '變異 C', label: '果盤黃金甜橙', tag: 'Variant C', patchFile: 'orange_variantC.png', cropCompare: '/assets/spotter/crops/b3_s2/orange_compare_varC.jpg', descZh: '下層木盆轉為原木果盤綜合黃金甜橙' }
+      ]
+    }
+  ],
+  distractors: [
+    { word: 'apple', wordZh: '蘋果' },
+    { word: 'banana', wordZh: '香蕉' },
+    { word: 'grape', wordZh: '葡萄' },
+    { word: 'cake', wordZh: '蛋糕' }
+  ]
+};
+
 // ── 【Book 4 四年級下學期】英倫時鐘小鎮與透視溫馨家居 (Here We Go Book 4) ──
 export const BOOK4_LONDON_SCENE = {
   id: 'book4_london',
@@ -722,7 +911,7 @@ export const BOOK2_KYOTO_SCENE = {
 export const ALL_SCENES_BY_BOOK = {
   '1': [BOOK1_CLASSROOM_SCENE, BOOK1_AMSTERDAM_SCENE],
   '2': [BOOK2_PARK_SCENE, BOOK2_KYOTO_SCENE],
-  '3': [BOOK3_PARK_SCENE],
+  '3': [BOOK3_PARK_SCENE, BOOK3_ALPINE_SCENE],
   '4': [BOOK4_LONDON_SCENE],
   '5': [BOOK5_PARIS_SCENE],
   '6': [BOOK6_MUSEUM_SCENE],
@@ -754,6 +943,7 @@ export const SPOTTER_SCENES = [
   BOOK2_PARK_SCENE,
   BOOK2_KYOTO_SCENE,
   BOOK3_PARK_SCENE,
+  BOOK3_ALPINE_SCENE,
   BOOK4_LONDON_SCENE,
   BOOK5_PARIS_SCENE,
   BOOK6_MUSEUM_SCENE,
