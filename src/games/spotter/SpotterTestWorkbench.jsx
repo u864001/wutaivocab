@@ -15,7 +15,7 @@ const BOOKS_CONFIG = [
   { id: '1', grade: '三上', title: '第 1 冊', sub: '彩虹文具 / 阿姆斯特丹果園集市' },
   { id: '2', grade: '三下', title: '第 2 冊', sub: '陽光農莊公園 / 京都職人小鎮' },
   { id: '3', grade: '四上', title: '第 3 冊', sub: '微風氣象湖畔 / 阿爾卑斯野餐台' },
-  { id: '4', grade: '四下', title: '第 4 冊', sub: '英倫時鐘小鎮與家居' },
+  { id: '4', grade: '四下', title: '第 4 冊', sub: '英倫時鐘家居 / 泰晤士皇家地標廣場' },
   { id: '5', grade: '五上', title: '第 5 冊', sub: '巴黎羅浮宮藝文廣場' },
   { id: '6', grade: '五下', title: '第 6 冊', sub: '世界自然歷史博物館 (無食物)' },
   { id: '7', grade: '六上', title: '第 7 冊', sub: '世界節慶與環球港灣' },
@@ -45,7 +45,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
   const handleSelectBook = (bookId) => {
     setSelectedBookId(bookId);
     const scenes = getScenesForBook(bookId);
-    setSelectedSceneIdx((bookId === '1' || bookId === '2' || bookId === '3') && scenes.length > 1 ? 1 : 0);
+    setSelectedSceneIdx((bookId === '1' || bookId === '2' || bookId === '3' || bookId === '4') && scenes.length > 1 ? 1 : 0);
     setSelectedWord(null);
     setSelectedSideBySideVariant('varA');
     setGlobalMatrixVariant('varA');
@@ -253,7 +253,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
             <span className="text-[11px] font-black text-slate-400 shrink-0 mr-1">教材冊次:</span>
             {BOOKS_CONFIG.map((b) => {
               const isActive = selectedBookId === b.id;
-              const hasScene2 = b.id === '1' || b.id === '2' || b.id === '3'; // 目前 Book 1, Book 2, Book 3 實裝 Scene 2
+              const hasScene2 = b.id === '1' || b.id === '2' || b.id === '3' || b.id === '4'; // 目前 Book 1, Book 2, Book 3, Book 4 實裝 Scene 2
               return (
                 <button
                   key={b.id}
@@ -1109,7 +1109,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
                 </p>
               </div>
               <div className="flex items-center gap-2 text-xs font-bold text-emerald-300">
-                <span>目前進度：11 場景已就緒 / 29 場景排程中</span>
+                <span>目前進度：12 場景已就緒 / 28 場景排程中</span>
               </div>
             </div>
 

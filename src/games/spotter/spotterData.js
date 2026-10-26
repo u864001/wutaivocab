@@ -599,6 +599,195 @@ export const BOOK4_LONDON_SCENE = {
   ]
 };
 
+// ── 【Book 4 場景 2 • A 方案動態 8 選 5 槽位】倫敦泰晤士河畔與皇家地標公園街景 ──
+export const BOOK4_RIVERSIDE_SCENE = {
+  id: 'book4_scene2',
+  book: '4',
+  sceneNumber: 2,
+  grade: 4,
+  titleZh: '倫敦泰晤士河畔與皇家地標公園（四年級第 4 冊 • 場景 2 • A方案）',
+  titleEn: 'London Thames Riverside & Royal Landmark Plaza (Book 4 • Scene 2 • Dynamic Slot Engine)',
+  descZh: '在壯麗的泰晤士河畔遠眺大笨鐘與石欄拱門廣場，尋找 8 處相異物件！（近中遠三層自然景深佈局）',
+  baseImage: '/assets/spotter/book4_scene2_base.jpg',
+  diffImage: '/assets/spotter/book4_scene2_diff.jpg',
+  diffImageVarB: '/assets/spotter/book4_scene2_diff_varb.jpg',
+  diffImageVarC: '/assets/spotter/book4_scene2_diff_varc.jpg',
+  width: 1376,
+  height: 768,
+  status: 'ready',
+  isDynamic: true,
+  isDynamicSlot: true,
+  patchDir: '/assets/spotter/patches/b4_s2',
+  targetItems: [
+    {
+      word: 'chair',
+      wordZh: '椅子',
+      x: 185,
+      y: 598,
+      radius: 140,
+      radiusX: 140,
+      radiusY: 110,
+      typeZh: '椅款樣式',
+      descZh: '前景墨綠英倫長椅，右圖轉為白色維多利亞鐵藝雕花椅',
+      slot: { x: 30, y: 473, w: 310, h: 250, rx: 16 },
+      patchFile: 'chair_variantA.png',
+      cropCompare: '/assets/spotter/crops/b4_s2/chair_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '墨綠英倫長椅', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '白色鐵藝雕花椅', tag: 'Variant A', patchFile: 'chair_variantA.png', cropCompare: '/assets/spotter/crops/b4_s2/chair_compare.jpg', descZh: '前景墨綠英倫長椅轉為白色維多利亞鐵藝雕花椅' },
+        { id: 'varB', name: '變異 B', label: '實木格紋單人椅', tag: 'Variant B', patchFile: 'chair_variantB.png', cropCompare: '/assets/spotter/crops/b4_s2/chair_compare_varB.jpg', descZh: '前景長椅轉為暖木色實木單人椅佐蘇格蘭格紋軟墊' },
+        { id: 'varC', name: '變異 C', label: '咖啡館金屬椅', tag: 'Variant C', patchFile: 'chair_variantC.png', cropCompare: '/assets/spotter/crops/b4_s2/chair_compare_varC.jpg', descZh: '前景長椅轉為熱情亮紅街角露天咖啡館金屬椅' }
+      ]
+    },
+    {
+      word: 'hat',
+      wordZh: '帽子',
+      x: 383,
+      y: 219,
+      radius: 80,
+      radiusX: 65,
+      radiusY: 80,
+      typeZh: '紳士帽款',
+      descZh: '路燈臂懸掛紳士黑圓頂帽，右圖轉為金棕毛呢獵鹿帽',
+      slot: { x: 303, y: 124, w: 160, h: 190, rx: 16 },
+      patchFile: 'hat_variantA.png',
+      cropCompare: '/assets/spotter/crops/b4_s2/hat_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '紳士黑圓頂帽', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '金棕毛呢獵鹿帽', tag: 'Variant A', patchFile: 'hat_variantA.png', cropCompare: '/assets/spotter/crops/b4_s2/hat_compare.jpg', descZh: '路燈臂掛著的紳士黑圓頂帽轉為金棕毛呢獵鹿帽' },
+        { id: 'varB', name: '變異 B', label: '海軍藍緞帶草帽', tag: 'Variant B', patchFile: 'hat_variantB.png', cropCompare: '/assets/spotter/crops/b4_s2/hat_compare_varB.jpg', descZh: '路燈臂禮帽轉為米白平頂草帽佐海軍藍緞帶' },
+        { id: 'varC', name: '變異 C', label: '羽毛圓頂禮帽', tag: 'Variant C', patchFile: 'hat_variantC.png', cropCompare: '/assets/spotter/crops/b4_s2/hat_compare_varC.jpg', descZh: '路燈臂禮帽轉為深墨綠針織圓頂禮帽佐羽毛' }
+      ]
+    },
+    {
+      word: 'bus',
+      wordZh: '公車',
+      x: 540,
+      y: 322,
+      radius: 115,
+      radiusX: 115,
+      radiusY: 80,
+      typeZh: '公車外觀',
+      descZh: '河畔街道行駛經典紅雙層巴士，右圖轉為皇家海軍藍觀光巴士',
+      slot: { x: 410, y: 227, w: 260, h: 190, rx: 16 },
+      patchFile: 'bus_variantA.png',
+      cropCompare: '/assets/spotter/crops/b4_s2/bus_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '經典紅雙層巴士', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '海軍藍觀光巴士', tag: 'Variant A', patchFile: 'bus_variantA.png', cropCompare: '/assets/spotter/crops/b4_s2/bus_compare.jpg', descZh: '河畔街道行駛經典紅雙層巴士轉為皇家海軍藍觀光巴士' },
+        { id: 'varB', name: '變異 B', label: '雙層敞篷巴士', tag: 'Variant B', patchFile: 'bus_variantB.png', cropCompare: '/assets/spotter/crops/b4_s2/bus_compare_varB.jpg', descZh: '街道紅雙層巴士轉為復古奶油白與酒紅雙層敞篷巴士' },
+        { id: 'varC', name: '變異 C', label: '銀亮油電雙層車', tag: 'Variant C', patchFile: 'bus_variantC.png', cropCompare: '/assets/spotter/crops/b4_s2/bus_compare_varC.jpg', descZh: '街道紅雙層巴士轉為銀亮金屬流線雙層油電巴士' }
+      ]
+    },
+    {
+      word: 'table',
+      wordZh: '桌子',
+      x: 635,
+      y: 620,
+      radius: 90,
+      radiusX: 80,
+      radiusY: 90,
+      typeZh: '咖啡桌款',
+      descZh: '露天原木咖啡圓桌，右圖披覆典雅白色波浪蕾絲桌巾',
+      slot: { x: 540, y: 515, w: 190, h: 210, rx: 16 },
+      patchFile: 'table_variantA.png',
+      cropCompare: '/assets/spotter/crops/b4_s2/table_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '原木咖啡圓桌', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '蕾絲桌巾咖啡桌', tag: 'Variant A', patchFile: 'table_variantA.png', cropCompare: '/assets/spotter/crops/b4_s2/table_compare.jpg', descZh: '露天原木咖啡圓桌披覆典雅白色波浪蕾絲桌巾' },
+        { id: 'varB', name: '變異 B', label: '馬賽克拼花六角桌', tag: 'Variant B', patchFile: 'table_variantB.png', cropCompare: '/assets/spotter/crops/b4_s2/table_compare_varB.jpg', descZh: '咖啡圓桌轉為彩色地中海馬賽克瓷磚拼花六角桌' },
+        { id: 'varC', name: '變異 C', label: '粗獷方型野餐桌', tag: 'Variant C', patchFile: 'table_variantC.png', cropCompare: '/assets/spotter/crops/b4_s2/table_compare_varC.jpg', descZh: '咖啡圓桌轉為原木風粗獷方型野餐實木小桌' }
+      ]
+    },
+    {
+      word: 'box',
+      wordZh: '禮盒',
+      x: 885,
+      y: 382,
+      radius: 90,
+      radiusX: 90,
+      radiusY: 70,
+      typeZh: '禮品盒裝',
+      descZh: '石欄基座紫色金緞帶禮盒，右圖轉為英倫花草彩繪鐵盒茶罐',
+      slot: { x: 780, y: 297, w: 210, h: 170, rx: 16 },
+      patchFile: 'box_variantA.png',
+      cropCompare: '/assets/spotter/crops/b4_s2/box_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '紫絲絨金緞帶禮盒', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '花草彩繪鐵盒茶罐', tag: 'Variant A', patchFile: 'box_variantA.png', cropCompare: '/assets/spotter/crops/b4_s2/box_compare.jpg', descZh: '石欄基座紫色金緞帶禮盒轉為英倫花草彩繪鐵盒茶罐' },
+        { id: 'varB', name: '變異 B', label: '紅木雕花珠寶盒', tag: 'Variant B', patchFile: 'box_variantB.png', cropCompare: '/assets/spotter/crops/b4_s2/box_compare_varB.jpg', descZh: '石欄基座禮盒轉為溫潤紅木雕花珠寶盒佐黃銅鎖扣' },
+        { id: 'varC', name: '變異 C', label: '米字旗金屬紀念盒', tag: 'Variant C', patchFile: 'box_variantC.png', cropCompare: '/assets/spotter/crops/b4_s2/box_compare_varC.jpg', descZh: '石欄基座禮盒轉為亮麗英國米字旗彩繪金屬紀念盒' }
+      ]
+    },
+    {
+      word: 'bag',
+      wordZh: '提包',
+      x: 890,
+      y: 635,
+      radius: 85,
+      radiusX: 85,
+      radiusY: 85,
+      typeZh: '提包種類',
+      descZh: '石板路上焦糖皮質公事包，右圖轉為橄欖綠帆布休閒後背包',
+      slot: { x: 790, y: 535, w: 200, h: 200, rx: 16 },
+      patchFile: 'bag_variantA.png',
+      cropCompare: '/assets/spotter/crops/b4_s2/bag_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '焦糖皮質公事包', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '帆布休閒後背包', tag: 'Variant A', patchFile: 'bag_variantA.png', cropCompare: '/assets/spotter/crops/b4_s2/bag_compare.jpg', descZh: '石板路上焦糖皮質公事包轉為橄欖綠帆布休閒後背包' },
+        { id: 'varB', name: '變異 B', label: '硬挺英式雙肩包', tag: 'Variant B', patchFile: 'bag_variantB.png', cropCompare: '/assets/spotter/crops/b4_s2/bag_compare_varB.jpg', descZh: '石板路皮質公事包轉為海軍藍深紅英式硬挺學生雙肩包' },
+        { id: 'varC', name: '變異 C', label: '刺繡提花托特包', tag: 'Variant C', patchFile: 'bag_variantC.png', cropCompare: '/assets/spotter/crops/b4_s2/bag_compare_varC.jpg', descZh: '石板路皮質公事包轉為復古刺繡提花大容量托特包' }
+      ]
+    },
+    {
+      word: 'clock',
+      wordZh: '時鐘',
+      x: 1147,
+      y: 153,
+      radius: 75,
+      radiusX: 75,
+      radiusY: 75,
+      typeZh: '鐘樓時鐘',
+      descZh: '遠景大笨鐘金色羅馬鐘面，右圖轉為珍珠白簡約夜光鐘面',
+      slot: { x: 1057, y: 63, w: 180, h: 180, rx: 16 },
+      patchFile: 'clock_variantA.png',
+      cropCompare: '/assets/spotter/crops/b4_s2/clock_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '金色羅馬鐘面', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '珍珠白夜光鐘面', tag: 'Variant A', patchFile: 'clock_variantA.png', cropCompare: '/assets/spotter/crops/b4_s2/clock_compare.jpg', descZh: '遠景大笨鐘金色羅馬鐘面轉為珍珠白簡約夜光鐘面' },
+        { id: 'varB', name: '變異 B', label: '墨綠金漆花絲鐘面', tag: 'Variant B', patchFile: 'clock_variantB.png', cropCompare: '/assets/spotter/crops/b4_s2/clock_compare_varB.jpg', descZh: '遠景大笨鐘鐘面轉為維多利亞墨綠底金漆花絲古典鐘面' },
+        { id: 'varC', name: '變異 C', label: '暖橘金色夕陽鐘面', tag: 'Variant C', patchFile: 'clock_variantC.png', cropCompare: '/assets/spotter/crops/b4_s2/clock_compare_varC.jpg', descZh: '遠景大笨鐘鐘面轉為夕陽暖橘金色背光三點鐘下午茶鐘面' }
+      ]
+    },
+    {
+      word: 'basket',
+      wordZh: '提籃',
+      x: 1210,
+      y: 645,
+      radius: 100,
+      radiusX: 100,
+      radiusY: 90,
+      typeZh: '編織野餐籃',
+      descZh: '右側石階旁蜂蜜色藤編野餐籃，右圖轉為盛滿薰衣草與玫瑰白鐵絲花籃',
+      slot: { x: 1095, y: 540, w: 230, h: 210, rx: 16 },
+      patchFile: 'basket_variantA.png',
+      cropCompare: '/assets/spotter/crops/b4_s2/basket_compare.jpg',
+      variants: [
+        { id: 'base', name: '原圖基準', label: '蜂蜜色藤編野餐籃', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '薰衣草白鐵絲花籃', tag: 'Variant A', patchFile: 'basket_variantA.png', cropCompare: '/assets/spotter/crops/b4_s2/basket_compare.jpg', descZh: '右側蜂蜜色藤編野餐籃轉為盛滿薰衣草與玫瑰白鐵絲花籃' },
+        { id: 'varB', name: '變異 B', label: '鮮果香酥深褐藤籃', tag: 'Variant B', patchFile: 'basket_variantB.png', cropCompare: '/assets/spotter/crops/b4_s2/basket_compare_varB.jpg', descZh: '右側野餐籃轉為裝滿鮮紅蘋果與香酥英式糕點深褐色藤籃' },
+        { id: 'varC', name: '變異 C', label: '竹編提把購物提籃', tag: 'Variant C', patchFile: 'basket_variantC.png', cropCompare: '/assets/spotter/crops/b4_s2/basket_compare_varC.jpg', descZh: '右側野餐籃轉為原色竹編圓弧提把野餐購物提籃' }
+      ]
+    }
+  ],
+  distractors: [
+    { word: 'sofa', wordZh: '沙發' },
+    { word: 'bed', wordZh: '床鋪' },
+    { word: 'computer', wordZh: '電腦' },
+    { word: 'book', wordZh: '書本' }
+  ]
+};
+
 // ── 【Book 5 五年級上學期】巴黎羅浮宮藝文廣場（Here We Go Book 5） ──
 export const BOOK5_PARIS_SCENE = {
   id: 'book5_paris',
@@ -912,7 +1101,7 @@ export const ALL_SCENES_BY_BOOK = {
   '1': [BOOK1_CLASSROOM_SCENE, BOOK1_AMSTERDAM_SCENE],
   '2': [BOOK2_PARK_SCENE, BOOK2_KYOTO_SCENE],
   '3': [BOOK3_PARK_SCENE, BOOK3_ALPINE_SCENE],
-  '4': [BOOK4_LONDON_SCENE],
+  '4': [BOOK4_LONDON_SCENE, BOOK4_RIVERSIDE_SCENE],
   '5': [BOOK5_PARIS_SCENE],
   '6': [BOOK6_MUSEUM_SCENE],
   '7': [BOOK7_HARBOR_SCENE],
@@ -945,6 +1134,7 @@ export const SPOTTER_SCENES = [
   BOOK3_PARK_SCENE,
   BOOK3_ALPINE_SCENE,
   BOOK4_LONDON_SCENE,
+  BOOK4_RIVERSIDE_SCENE,
   BOOK5_PARIS_SCENE,
   BOOK6_MUSEUM_SCENE,
   BOOK7_HARBOR_SCENE,
