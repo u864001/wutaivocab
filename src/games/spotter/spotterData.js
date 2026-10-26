@@ -1615,6 +1615,199 @@ export const BOOK7_HARBOR_SCENE = {
   ]
 };
 
+// ── 【Book 7 六年級上學期 • 場景 2】現代都會捷運轉運站與景觀大道（Here We Go Book 7 • A 方案動態 8 選 5） ──
+export const BOOK7_METRO_SCENE = {
+  id: 'book7_scene2',
+  book: '7',
+  sceneNumber: 2,
+  grade: 6,
+  titleZh: '現代都會捷運轉運站與景觀大道（六年級第 7 冊 • 圖 2 • A 方案）',
+  titleEn: 'Metropolitan Metro Transit Hub & Modern Plaza (Book 7 • Scene 2 • Dynamic Slot Engine)',
+  descZh: '在現代都會捷運轉運站前，找出 8 處相異點（全冊出題本位主義，100% 本冊全新單字，融入 18 個真實背景已學單字）！',
+  baseImage: '/assets/spotter/book7_scene2_base.jpg',
+  diffImage: '/assets/spotter/book7_scene2_diff.jpg',
+  diffImageVarB: '/assets/spotter/book7_scene2_diff_varb.jpg',
+  diffImageVarC: '/assets/spotter/book7_scene2_diff_varc.jpg',
+  width: 1376,
+  height: 768,
+  status: 'ready',
+  isDynamic: true,
+  isDynamicSlot: true,
+  patchDir: '/assets/spotter/patches/b7_s2',
+  targetItems: [
+    {
+      word: 'metro',
+      wordZh: '捷運列車',
+      x: 302,
+      y: 158,
+      radius: 140,
+      radiusX: 140,
+      radiusY: 42,
+      typeZh: '列車型態',
+      descZh: '左圖高架軌道為藍綠塗裝都會捷運，右圖轉為深紅流線高鐵列車',
+      slot: { x: 150, y: 104, w: 304, h: 108, rx: 16 },
+      patchFile: 'metro_variantA.png',
+      cropCompare: '/assets/spotter/crops/b7_s2/metro_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'metro_variantA.png', cropCompare: '/assets/spotter/crops/b7_s2/metro_compare.jpg', descZh: '高架軌道捷運轉為深紅流線高鐵列車' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'metro_variantB.png', cropCompare: '/assets/spotter/crops/b7_s2/metro_compare_var_b.jpg', descZh: '高架軌道轉為亮黃黑紋單軌列車' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'metro_variantC.png', cropCompare: '/assets/spotter/crops/b7_s2/metro_compare_var_c.jpg', descZh: '高架軌道轉為翡翠綠未來磁浮列車' }
+      ]
+    },
+    {
+      word: 'taxi',
+      wordZh: '計程車',
+      x: 650,
+      y: 405,
+      radius: 75,
+      radiusX: 75,
+      radiusY: 45,
+      typeZh: '計程車塗裝',
+      descZh: '左圖轉運車道為亮黃色計程車，右圖轉為海軍藍與銀灰城市計程車',
+      slot: { x: 563, y: 348, w: 174, h: 114, rx: 16 },
+      patchFile: 'taxi_variantA.png',
+      cropCompare: '/assets/spotter/crops/b7_s2/taxi_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'taxi_variantA.png', cropCompare: '/assets/spotter/crops/b7_s2/taxi_compare.jpg', descZh: '亮黃色計程車轉為海軍藍頂燈計程車' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'taxi_variantB.png', cropCompare: '/assets/spotter/crops/b7_s2/taxi_compare_var_b.jpg', descZh: '亮黃色計程車轉為經典英倫黑頂計程車' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'taxi_variantC.png', cropCompare: '/assets/spotter/crops/b7_s2/taxi_compare_var_c.jpg', descZh: '亮黃色計程車轉為珍珠白綠頂燈計程車' }
+      ]
+    },
+    {
+      word: 'car',
+      wordZh: '汽車',
+      x: 940,
+      y: 455,
+      radius: 75,
+      radiusX: 75,
+      radiusY: 48,
+      typeZh: '汽車款式',
+      descZh: '左圖車道為銀綠綠能休旅車，右圖轉為亮紅跑車風格小型電動車',
+      slot: { x: 853, y: 395, w: 174, h: 120, rx: 16 },
+      patchFile: 'car_variantA.png',
+      cropCompare: '/assets/spotter/crops/b7_s2/car_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'car_variantA.png', cropCompare: '/assets/spotter/crops/b7_s2/car_compare.jpg', descZh: '銀綠休旅車轉為亮紅跑車型電動車' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'car_variantB.png', cropCompare: '/assets/spotter/crops/b7_s2/car_compare_var_b.jpg', descZh: '銀綠休旅車轉為水藍白頂都會代步車' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'car_variantC.png', cropCompare: '/assets/spotter/crops/b7_s2/car_compare_var_c.jpg', descZh: '銀綠休旅車轉為金屬古銅橘跨界小車' }
+      ]
+    },
+    {
+      word: 'scooter',
+      wordZh: '機車',
+      x: 1205,
+      y: 460,
+      radius: 68,
+      radiusX: 68,
+      radiusY: 60,
+      typeZh: '機車型態',
+      descZh: '左圖路側停泊薄荷綠速克達，右圖轉為火紅運動跑車機車',
+      slot: { x: 1125, y: 388, w: 160, h: 144, rx: 16 },
+      patchFile: 'scooter_variantA.png',
+      cropCompare: '/assets/spotter/crops/b7_s2/scooter_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'scooter_variantA.png', cropCompare: '/assets/spotter/crops/b7_s2/scooter_compare.jpg', descZh: '薄荷綠速克達轉為火紅運動跑車機車' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'scooter_variantB.png', cropCompare: '/assets/spotter/crops/b7_s2/scooter_compare_var_b.jpg', descZh: '薄荷綠速克達轉為陽光黃經典復古機車' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'scooter_variantC.png', cropCompare: '/assets/spotter/crops/b7_s2/scooter_compare_var_c.jpg', descZh: '薄荷綠速克達轉為地中海蔚藍皮座機車' }
+      ]
+    },
+    {
+      word: 'bike',
+      wordZh: '自行車',
+      x: 560,
+      y: 570,
+      radius: 58,
+      radiusX: 58,
+      radiusY: 58,
+      typeZh: '自行車款',
+      descZh: '左圖步道停靠亮橘色共享單車，右圖轉為青藍色公共租賃單車',
+      slot: { x: 490, y: 500, w: 140, h: 140, rx: 16 },
+      patchFile: 'bike_variantA.png',
+      cropCompare: '/assets/spotter/crops/b7_s2/bike_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'bike_variantA.png', cropCompare: '/assets/spotter/crops/b7_s2/bike_compare.jpg', descZh: '亮橘色共享單車轉為青藍色公共租賃單車' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'bike_variantB.png', cropCompare: '/assets/spotter/crops/b7_s2/bike_compare_var_b.jpg', descZh: '亮橘色共享單車轉為青檸綠環保自行車' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'bike_variantC.png', cropCompare: '/assets/spotter/crops/b7_s2/bike_compare_var_c.jpg', descZh: '亮橘色共享單車轉為亮紅城市通勤公路車' }
+      ]
+    },
+    {
+      word: 'ticket',
+      wordZh: '車票',
+      x: 350,
+      y: 470,
+      radius: 24,
+      radiusX: 24,
+      radiusY: 22,
+      typeZh: '票卡樣式',
+      descZh: '左圖售票機口伸出彩虹磁條票卡，右圖轉為閃亮黃金VIP智慧車票',
+      slot: { x: 314, y: 436, w: 72, h: 68, rx: 16 },
+      patchFile: 'ticket_variantA.png',
+      cropCompare: '/assets/spotter/crops/b7_s2/ticket_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'ticket_variantA.png', cropCompare: '/assets/spotter/crops/b7_s2/ticket_compare.jpg', descZh: '彩虹票卡轉為黃金VIP徽章感應卡' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'ticket_variantB.png', cropCompare: '/assets/spotter/crops/b7_s2/ticket_compare_var_b.jpg', descZh: '彩虹票卡轉為霓虹青藍條碼乘車券' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'ticket_variantC.png', cropCompare: '/assets/spotter/crops/b7_s2/ticket_compare_var_c.jpg', descZh: '彩虹票卡轉為粉紅吉祥物卡通定期票' }
+      ]
+    },
+    {
+      word: 'sandwich',
+      wordZh: '三明治',
+      x: 250,
+      y: 655,
+      radius: 48,
+      radiusX: 48,
+      radiusY: 32,
+      typeZh: '三明治型態',
+      descZh: '左圖木盤為切片三明治，右圖轉為法式金黃可頌鮭魚三明治',
+      slot: { x: 190, y: 611, w: 120, h: 88, rx: 16 },
+      patchFile: 'sandwich_variantA.png',
+      cropCompare: '/assets/spotter/crops/b7_s2/sandwich_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'sandwich_variantA.png', cropCompare: '/assets/spotter/crops/b7_s2/sandwich_compare.jpg', descZh: '切片三明治轉為法式可頌鮭魚三明治' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'sandwich_variantB.png', cropCompare: '/assets/spotter/crops/b7_s2/sandwich_compare_var_b.jpg', descZh: '切片三明治轉為芝麻貝果起司蛋三明治' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'sandwich_variantC.png', cropCompare: '/assets/spotter/crops/b7_s2/sandwich_compare_var_c.jpg', descZh: '切片三明治轉為雜糧三層總匯三明治' }
+      ]
+    },
+    {
+      word: 'soda',
+      wordZh: '蘇打汽水',
+      x: 338,
+      y: 590,
+      radius: 20,
+      radiusX: 20,
+      radiusY: 50,
+      typeZh: '汽水瓶型',
+      descZh: '左圖吧台為沁藍氣泡水瓶，右圖轉為紅寶石櫻桃蘇打瓶',
+      slot: { x: 306, y: 528, w: 64, h: 124, rx: 16 },
+      patchFile: 'soda_variantA.png',
+      cropCompare: '/assets/spotter/crops/b7_s2/soda_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'soda_variantA.png', cropCompare: '/assets/spotter/crops/b7_s2/soda_compare.jpg', descZh: '沁藍氣泡水瓶轉為櫻桃紅蘇打氣泡瓶' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'soda_variantB.png', cropCompare: '/assets/spotter/crops/b7_s2/soda_compare_var_b.jpg', descZh: '沁藍氣泡水瓶轉為青檸綠霜滴氣泡易開罐' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'soda_variantC.png', cropCompare: '/assets/spotter/crops/b7_s2/soda_compare_var_c.jpg', descZh: '沁藍氣泡水瓶轉為黃金熱帶芒果蘇打瓶' }
+      ]
+    }
+  ],
+  distractors: [
+    { word: 'dog', wordZh: '導盲小狗' },
+    { word: 'cat', wordZh: '睡覺貓咪' },
+    { word: 'bird', wordZh: '白鴿' },
+    { word: 'clock', wordZh: '車站時鐘' },
+    { word: 'tree', wordZh: '林蔭路樹' },
+    { word: 'bridge', wordZh: '天橋' },
+    { word: 'map', wordZh: '導覽地圖' },
+    { word: 'cup', wordZh: '紙杯' }
+  ]
+};
+
 // ── 【Book 8 六年級下學期】四季時光庭園與畢業留影（Here We Go Book 8） ──
 export const BOOK8_GARDEN_SCENE = {
   id: 'book8_garden',
@@ -1841,7 +2034,7 @@ export const ALL_SCENES_BY_BOOK = {
   '4': [BOOK4_LONDON_SCENE, BOOK4_RIVERSIDE_SCENE],
   '5': [BOOK5_PARIS_SCENE, BOOK5_MONTMARTRE_SCENE],
   '6': [BOOK6_MUSEUM_SCENE, BOOK6_SINGAPORE_SCENE],
-  '7': [BOOK7_HARBOR_SCENE],
+  '7': [BOOK7_HARBOR_SCENE, BOOK7_METRO_SCENE],
   '8': [BOOK8_GARDEN_SCENE]
 };
 
@@ -1877,6 +2070,7 @@ export const SPOTTER_SCENES = [
   BOOK6_MUSEUM_SCENE,
   BOOK6_SINGAPORE_SCENE,
   BOOK7_HARBOR_SCENE,
+  BOOK7_METRO_SCENE,
   BOOK8_GARDEN_SCENE
 ];
 
