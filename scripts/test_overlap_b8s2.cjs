@@ -1,44 +1,48 @@
-const items = [
-  { word: 'suit', x: 265, y: 300, rx: 60, ry: 75 },
-  { word: 'jacket', x: 475, y: 370, rx: 60, ry: 68 },
-  { word: 'skirt', x: 170, y: 515, rx: 50, ry: 62 },
-  { word: 'jeans', x: 305, y: 585, rx: 55, ry: 42 },
-  { word: 'blanket', x: 695, y: 485, rx: 55, ry: 62 },
-  { word: 'toast', x: 805, y: 605, rx: 45, ry: 38 },
-  { word: 'glass', x: 905, y: 545, rx: 25, ry: 50 },
-  { word: 'peach', x: 1075, y: 605, rx: 38, ry: 40 }
+const TARGET_ITEMS = [
+  { word: 'suit', x: 280, y: 305, rx: 75, ry: 130 },
+  { word: 'jacket', x: 500, y: 365, rx: 85, ry: 120 },
+  { word: 'skirt', x: 140, y: 440, rx: 70, ry: 115 },
+  { word: 'jeans', x: 235, y: 565, rx: 72, ry: 45 },
+  { word: 'blanket', x: 815, y: 515, rx: 70, ry: 105 },
+  { word: 'glass', x: 958, y: 565, rx: 32, ry: 65 },
+  { word: 'toast', x: 1085, y: 610, rx: 80, ry: 50 },
+  { word: 'peach', x: 1170, y: 505, rx: 45, ry: 55 }
 ];
 
-let overlaps = 0;
-let pairCount = 0;
+function ellipseRadiusAtAngle(rx, ry, theta) {
+  const cos = Math.cos(theta);
+  const sin = Math.sin(theta);
+  return (rx * ry) / Math.sqrt((ry * cos) ** 2 + (rx * sin) ** 2);
+}
 
-console.log('=== BOOK 8 SCENE 2 ZERO OVERLAP CHECK ===');
-for (let i = 0; i < items.length; i++) {
-  for (let j = i + 1; j < items.length; j++) {
-    pairCount++;
-    const a = items[i];
-    const b = items[j];
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
+let overlaps = 0;
+console.log('Testing 28 pairs of Book 8 Scene 2 calibrated coordinates:');
+for (let i = 0; i < TARGET_ITEMS.length; i++) {
+  for (let j = i + 1; j < TARGET_ITEMS.length; j++) {
+    const a = TARGET_ITEMS[i];
+    const b = TARGET_ITEMS[j];
+
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    const getRadiusAtAngle = (item, globalAngle) => {
-      const localAngle = globalAngle - ((item.rotate || 0) * Math.PI / 180);
-      return (item.rx * item.ry) / Math.sqrt((item.ry * Math.cos(localAngle))**2 + (item.rx * Math.sin(localAngle))**2);
-    };
+    const angleAB = Math.atan2(dy, dx);
+    const angleBA = Math.atan2(-dy, -dx);
 
-    const angle = Math.atan2(dy, dx);
-    const ra = getRadiusAtAngle(a, angle);
-    const rb = getRadiusAtAngle(b, angle + Math.PI);
+    const rA = ellipseRadiusAtAngle(a.rx, a.ry, angleAB);
+    const rB = ellipseRadiusAtAngle(b.rx, b.ry, angleBA);
 
-    const margin = dist - (ra + rb);
-    if (margin < 0) {
-      console.log(`[OVERLAP DETECTED] ${a.word} <-> ${b.word}: margin = ${margin.toFixed(1)}px (dist=${dist.toFixed(1)}, ra+rb=${(ra+rb).toFixed(1)})`);
-      overlaps++;
-    } else {
-      console.log(`[OK] ${a.word.padEnd(8)} <-> ${b.word.padEnd(8)}: margin = +${margin.toFixed(1)}px`);
-    }
+    const margin = dist - (rA + rB);
+    const isOverlapping = margin < 0;
+    if (isOverlapping) overlaps++;
+
+    console.log(`Pair (${a.word.padEnd(8)} <-> ${b.word.padEnd(8)}): dist=${dist.toFixed(1).padStart(5)}px, sumR=${(rA + rB).toFixed(1).padStart(5)}px, margin=${margin.toFixed(1).padStart(5)}px ${isOverlapping ? '❌ OVERLAP' : '✓ OK'}`);
   }
 }
 
-console.log(`\nChecked ${pairCount} pairs. Total Overlaps: ${overlaps}`);
+console.log(`\nTotal overlaps: ${overlaps}`);
+if (overlaps > 0) {
+  process.exit(1);
+} else {
+  console.log('✓ All 28 pairs verified with positive margins. Zero overlap guaranteed!');
+}

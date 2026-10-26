@@ -5,14 +5,14 @@ const path = require('path');
 const ARTIFACT_DIR = 'C:/Users/user/.gemini/antigravity/brain/95c0c83b-453d-4566-961c-af611538f9f3';
 
 const TARGET_ITEMS = [
-  { word: 'suit', wordZh: '西裝', x: 265, y: 300, rx: 60, ry: 75, typeZh: '西裝款式', descZh: '左側櫥窗內為海軍藍深色西裝，右圖依變異為酒紅絲絨晚宴西裝/卡其米色雙排扣/翠綠英倫西裝' },
-  { word: 'jacket', wordZh: '夾克', x: 475, y: 370, rx: 60, ry: 68, typeZh: '夾克款式', descZh: '左側立架上為棕色飛行皮夾克，右圖依變異為亮黑重機皮夾克/陽光黃防風連帽/橄欖軍綠飛行夾克' },
-  { word: 'skirt', wordZh: '裙子', x: 170, y: 515, rx: 50, ry: 62, typeZh: '裙款造型', descZh: '左側人台為浪漫裸粉百褶裙，右圖依變異為深海軍藍白波點裙/檸檬黃A字裙/黑白千鳥格裙' },
-  { word: 'jeans', wordZh: '牛仔褲', x: 305, y: 585, rx: 55, ry: 42, typeZh: '丹寧褲款', descZh: '左側展示桌上為經典深藍牛仔褲，右圖依變異為淺水洗白灰破洞牛仔褲/炭黑修身褲/焦糖厚磅原色褲' },
-  { word: 'blanket', wordZh: '薄毯', x: 695, y: 485, rx: 55, ry: 62, typeZh: '毛毯織紋', descZh: '露天咖啡椅背為紅黑英倫格紋毛毯，右圖依變異為鵝黃菱格編織毯/蔚藍雪花緹花毯/摩登橘褐幾何披毯' },
-  { word: 'toast', wordZh: '烤吐司', x: 805, y: 605, rx: 45, ry: 38, typeZh: '吐司口味', descZh: '露天咖啡盤中為金黃焦香法式吐司，右圖依變異為鮮紅草莓生乳酪吐司/酪梨水波蛋吐司/藍莓香蕉巧克力吐司' },
-  { word: 'glass', wordZh: '玻璃杯', x: 905, y: 545, rx: 25, ry: 50, typeZh: '杯型色澤', descZh: '露天大理石桌為八角透明冰晶玻璃杯，右圖依變異為寶石鈷藍復古杯/琥珀金光羅紋杯/翡翠晶綠浮雕杯' },
-  { word: 'peach', wordZh: '水蜜桃', x: 1075, y: 605, rx: 38, ry: 40, typeZh: '蜜桃品種', descZh: '右側點心架上為粉嫩鮮採水蜜桃，右圖依變異為深紅寶石蜜桃/黃金水蜜桃/法式蜜桃酥塔' }
+  { word: 'suit', wordZh: '西裝', x: 280, y: 305, rx: 75, ry: 130, typeZh: '西裝款式', descZh: '左側櫥窗內為海軍藍深色西裝，右圖依變異為酒紅絲絨晚宴西裝/卡其米色雙排扣/翠綠英倫西裝' },
+  { word: 'jacket', wordZh: '夾克', x: 500, y: 365, rx: 85, ry: 120, typeZh: '夾克款式', descZh: '左側立架上為棕色飛行皮夾克，右圖依變異為亮黑重機皮夾克/陽光黃防風連帽/橄欖軍綠飛行夾克' },
+  { word: 'skirt', wordZh: '裙子', x: 140, y: 440, rx: 70, ry: 115, typeZh: '裙款造型', descZh: '左側人台為浪漫裸粉百褶裙，右圖依變異為深海軍藍白波點裙/檸檬黃A字裙/黑白千鳥格裙' },
+  { word: 'jeans', wordZh: '牛仔褲', x: 235, y: 565, rx: 72, ry: 45, typeZh: '丹寧褲款', descZh: '左側展示桌上為經典深藍牛仔褲，右圖依變異為淺水洗白灰破洞牛仔褲/炭黑修身褲/焦糖厚磅原色褲' },
+  { word: 'blanket', wordZh: '薄毯', x: 815, y: 515, rx: 70, ry: 105, typeZh: '毛毯織紋', descZh: '露天咖啡椅背為紅黑英倫格紋毛毯，右圖依變異為鵝黃菱格編織毯/蔚藍雪花緹花毯/摩登橘褐幾何披毯' },
+  { word: 'glass', wordZh: '玻璃杯', x: 958, y: 565, rx: 32, ry: 65, typeZh: '杯型色澤', descZh: '露天大理石桌為透明冰晶玻璃杯，右圖依變異為寶石鈷藍復古杯/琥珀金光羅紋杯/翡翠晶綠浮雕杯' },
+  { word: 'toast', wordZh: '烤吐司', x: 1085, y: 610, rx: 80, ry: 50, typeZh: '吐司口味', descZh: '露天大理石桌盤中為金黃焦香烤吐司，右圖依變異為鮮紅草莓生乳酪吐司/酪梨水波蛋吐司/藍莓香蕉巧克力吐司' },
+  { word: 'peach', wordZh: '水蜜桃', x: 1170, y: 505, rx: 45, ry: 55, typeZh: '蜜桃品種', descZh: '金色甜點架上為粉嫩鮮採水蜜桃，右圖依變異為深紅紫黑寶石蜜桃/黃金水蜜桃/法式焦糖蜜桃酥塔' }
 ];
 
 const VARIANTS = [
