@@ -1638,21 +1638,22 @@ export const BOOK7_METRO_SCENE = {
     {
       word: 'metro',
       wordZh: '捷運列車',
-      x: 302,
-      y: 158,
-      radius: 140,
-      radiusX: 140,
-      radiusY: 42,
+      x: 423,
+      y: 185,
+      radius: 258,
+      radiusX: 258,
+      radiusY: 40,
+      rotate: 4.8,
       typeZh: '列車型態',
-      descZh: '左圖高架軌道為藍綠塗裝都會捷運，右圖轉為深紅流線高鐵列車',
-      slot: { x: 150, y: 104, w: 304, h: 108, rx: 16 },
+      descZh: '左圖高架軌道為整列藍綠塗裝都會捷運，右圖依變異為深紅高鐵/耀眼黃單軌/翡翠綠磁浮',
+      slot: { x: 153, y: 133, w: 540, h: 104, rx: 16 },
       patchFile: 'metro_variantA.png',
       cropCompare: '/assets/spotter/crops/b7_s2/metro_compare.jpg',
       variants: [
         { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
-        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'metro_variantA.png', cropCompare: '/assets/spotter/crops/b7_s2/metro_compare.jpg', descZh: '高架軌道捷運轉為深紅流線高鐵列車' },
-        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'metro_variantB.png', cropCompare: '/assets/spotter/crops/b7_s2/metro_compare_var_b.jpg', descZh: '高架軌道轉為亮黃黑紋單軌列車' },
-        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'metro_variantC.png', cropCompare: '/assets/spotter/crops/b7_s2/metro_compare_var_c.jpg', descZh: '高架軌道轉為翡翠綠未來磁浮列車' }
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'metro_variantA.png', cropCompare: '/assets/spotter/crops/b7_s2/metro_compare.jpg', descZh: '高架軌道捷運轉為整列深紅流線高鐵列車' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'metro_variantB.png', cropCompare: '/assets/spotter/crops/b7_s2/metro_compare_var_b.jpg', descZh: '高架軌道轉為整列亮黃黑紋單軌列車' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'metro_variantC.png', cropCompare: '/assets/spotter/crops/b7_s2/metro_compare_var_c.jpg', descZh: '高架軌道轉為整列翡翠綠未來磁浮列車' }
       ]
     },
     {

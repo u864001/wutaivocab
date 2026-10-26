@@ -2,8 +2,10 @@ const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
 
+const ARTIFACT_DIR = 'C:/Users/user/.gemini/antigravity/brain/95c0c83b-453d-4566-961c-af611538f9f3';
+
 const TARGET_ITEMS = [
-  { word: 'metro', wordZh: '捷運列車', x: 302, y: 158, rx: 140, ry: 42, typeZh: '列車型態', descZh: '左圖為藍綠塗裝都會捷運，右圖依變異為高鐵紅/耀眼黃/翡翠綠' },
+  { word: 'metro', wordZh: '捷運列車', x: 423, y: 185, rx: 258, ry: 40, rotate: 4.8, typeZh: '列車型態', descZh: '左圖高架軌道為整列藍綠塗裝都會捷運，右圖依變異為深紅高鐵/耀眼黃單軌/翡翠綠磁浮' },
   { word: 'taxi', wordZh: '計程車', x: 650, y: 405, rx: 75, ry: 45, typeZh: '計程車塗裝', descZh: '左圖為亮黃色計程車，右圖依變異為海軍藍/英倫黑/珍珠白' },
   { word: 'car', wordZh: '汽車', x: 940, y: 455, rx: 75, ry: 48, typeZh: '汽車型態', descZh: '左圖為銀綠綠能休旅車，右圖依變異為亮紅跑車/水藍休旅/古銅跨界車' },
   { word: 'scooter', wordZh: '機車', x: 1205, y: 460, rx: 68, ry: 60, typeZh: '機車款式', descZh: '左圖為薄荷綠速克達，右圖依變異為火紅跑車機車/陽光黃/蔚藍復古車' },
@@ -37,56 +39,75 @@ async function generateAssets() {
     }
 
     console.log(`\nProcessing Variant ${v.key} (${v.diffFile})...`);
-    const diffImg = sharp(v.diffFile);
 
     for (const item of TARGET_ITEMS) {
-      // 1. Generate feathered patch
-      const pad = 12;
-      const x0 = Math.max(0, Math.floor(item.x - item.rx - pad));
-      const y0 = Math.max(0, Math.floor(item.y - item.ry - pad));
-      const x1 = Math.min(baseMeta.width, Math.ceil(item.x + item.rx + pad));
-      const y1 = Math.min(baseMeta.height, Math.ceil(item.y + item.ry + pad));
-      const w = x1 - x0;
-      const h = y1 - y0;
+      // 1. Generate feathered patch with exact rotated ellipse geometry
+      const rot = item.rotate || 0;
+      const rotRad = (rot * Math.PI) / 180;
+      const cos = Math.cos(rotRad);
+      const sin = Math.sin(rotRad);
 
-      // Create SVG radial gradient feather mask
-      const cx = item.x - x0;
-      const cy = item.y - y0;
-      const maskSvg = `
-        <svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="feather" cx="${cx}" cy="${cy}" r="${item.rx + pad}" fx="${cx}" fy="${cy}" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#fff" stop-opacity="1" />
-              <stop offset="75%" stop-color="#fff" stop-opacity="1" />
-              <stop offset="90%" stop-color="#fff" stop-opacity="0.7" />
-              <stop offset="100%" stop-color="#fff" stop-opacity="0" />
-            </radialGradient>
-          </defs>
-          <ellipse cx="${cx}" cy="${cy}" rx="${item.rx + pad}" ry="${item.ry + pad}" fill="url(#feather)" />
-        </svg>
-      `;
+      const halfW = Math.ceil(Math.sqrt((item.rx * cos) ** 2 + (item.ry * sin) ** 2)) + 15;
+      const halfH = Math.ceil(Math.sqrt((item.rx * sin) ** 2 + (item.ry * cos) ** 2)) + 15;
+      const patchW = halfW * 2;
+      const patchH = halfH * 2;
+
+      const left = Math.max(0, Math.min(baseMeta.width - patchW, Math.round(item.x - halfW)));
+      const top = Math.max(0, Math.min(baseMeta.height - patchH, Math.round(item.y - halfH)));
+
+      const diffPiece = await sharp(v.diffFile)
+        .extract({ left, top, width: patchW, height: patchH })
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+
+      const maskBuf = Buffer.alloc(patchW * patchH);
+      const cx = item.x - left;
+      const cy = item.y - top;
+      const innerRx = item.rx * 0.90;
+      const innerRy = item.ry * 0.90;
+      const outerRx = item.rx * 1.05;
+      const outerRy = item.ry * 1.05;
+
+      for (let py = 0; py < patchH; py++) {
+        for (let px = 0; px < patchW; px++) {
+          const dx = px - cx;
+          const dy = py - cy;
+          const rxRot = dx * cos + dy * sin;
+          const ryRot = -dx * sin + dy * cos;
+          const dInner = (rxRot * rxRot) / (innerRx * innerRx) + (ryRot * ryRot) / (innerRy * innerRy);
+          const dOuter = (rxRot * rxRot) / (outerRx * outerRx) + (ryRot * ryRot) / (outerRy * outerRy);
+
+          let alpha = 0;
+          if (dInner <= 1.0) {
+            alpha = 255;
+          } else if (dOuter >= 1.0) {
+            alpha = 0;
+          } else {
+            const tFactor = (Math.sqrt(dOuter) - 1.0) / (Math.sqrt(outerRx / innerRx) - 1.0);
+            alpha = Math.round(255 * (1 - Math.max(0, Math.min(1, tFactor))));
+          }
+          maskBuf[py * patchW + px] = alpha;
+        }
+      }
+
+      const rgbaBuf = Buffer.alloc(patchW * patchH * 4);
+      for (let p = 0; p < patchW * patchH; p++) {
+        rgbaBuf[p * 4] = diffPiece.data[p * 3];
+        rgbaBuf[p * 4 + 1] = diffPiece.data[p * 3 + 1];
+        rgbaBuf[p * 4 + 2] = diffPiece.data[p * 3 + 2];
+        rgbaBuf[p * 4 + 3] = maskBuf[p];
+      }
 
       const patchName = `${item.word}_variant${v.key}.png`;
       const patchPath = path.join(patchDir, patchName);
 
-      const diffCrop = await sharp(v.diffFile)
-        .extract({ left: x0, top: y0, width: w, height: h })
-        .ensureAlpha()
-        .toBuffer();
-
-      const maskBuffer = await sharp(Buffer.from(maskSvg))
-        .resize(w, h)
-        .toColourspace('b-w')
-        .toBuffer();
-
-      await sharp(diffCrop)
-        .composite([{ input: maskBuffer, blend: 'dest-in' }])
-        .png()
+      await sharp(rgbaBuf, { raw: { width: patchW, height: patchH, channels: 4 } })
+        .png({ compressionLevel: 8 })
         .toFile(patchPath);
 
       // 2. Generate 650x276 comparison card
-      const cropW = Math.max(160, Math.round(item.rx * 2 + 60));
-      const cropH = Math.max(140, Math.round(item.ry * 2 + 50));
+      const cropW = Math.max(160, Math.min(baseMeta.width, Math.round(halfW * 2 + 40)));
+      const cropH = Math.max(140, Math.min(baseMeta.height, Math.round(halfH * 2 + 40)));
       const cLeft = Math.max(0, Math.min(baseMeta.width - cropW, Math.round(item.x - cropW / 2)));
       const cTop = Math.max(0, Math.min(baseMeta.height - cropH, Math.round(item.y - cropH / 2)));
 
@@ -103,8 +124,8 @@ async function generateAssets() {
       const cardSvg = `
         <svg width="650" height="276" xmlns="http://www.w3.org/2000/svg">
           <rect width="650" height="276" fill="#0f172a" rx="12" />
-          <text x="162" y="260" font-family="sans-serif" font-size="14" font-weight="bold" fill="#38bdf8" text-anchor="middle">BASE (基準圖素)</text>
-          <text x="487" y="260" font-family="sans-serif" font-size="14" font-weight="bold" fill="#f43f5e" text-anchor="middle">VARIANT ${v.key} (${item.word})</text>
+          <text x="162" y="260" font-family="sans-serif" font-size="14" font-weight="bold" fill="#38bdf8" text-anchor="middle">BASE (基準圖素) • ${item.wordZh}</text>
+          <text x="487" y="260" font-family="sans-serif" font-size="14" font-weight="bold" fill="#f43f5e" text-anchor="middle">VAR ${v.key} (${item.word.toUpperCase()})</text>
         </svg>
       `;
 
@@ -118,6 +139,11 @@ async function generateAssets() {
         ])
         .jpeg({ quality: 92 })
         .toFile(cardPath);
+
+      // Also copy card to artifacts
+      if (fs.existsSync(ARTIFACT_DIR)) {
+        fs.copyFileSync(cardPath, path.join(ARTIFACT_DIR, cardName));
+      }
 
       console.log(`  ✓ Generated patch & crop for ${item.word} (Var ${v.key})`);
     }
@@ -139,11 +165,12 @@ async function generateSideBySide(variant) {
   let diffSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
 
   TARGET_ITEMS.forEach(it => {
-    baseSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}" fill="none" stroke="#00ff66" stroke-width="3" stroke-dasharray="6,4" />`;
-    baseSvg += `<text x="${it.x}" y="${it.y - it.ry - 8}" font-family="sans-serif" font-size="18" font-weight="bold" fill="#00ff66" text-anchor="middle">${it.word}</text>`;
+    const rotAttr = it.rotate ? ` transform="rotate(${it.rotate} ${it.x} ${it.y})"` : '';
+    baseSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}"${rotAttr} fill="none" stroke="#00ff66" stroke-width="3" stroke-dasharray="6,4" />`;
+    baseSvg += `<text x="${it.x}" y="${Math.max(25, it.y - it.ry - 10)}" font-family="sans-serif" font-size="18" font-weight="bold" fill="#00ff66" text-anchor="middle">${it.word}</text>`;
 
-    diffSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}" fill="none" stroke="#f43f5e" stroke-width="3" />`;
-    diffSvg += `<text x="${it.x}" y="${it.y - it.ry - 8}" font-family="sans-serif" font-size="18" font-weight="bold" fill="#f43f5e" text-anchor="middle">${it.word}</text>`;
+    diffSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}"${rotAttr} fill="none" stroke="#f43f5e" stroke-width="3" />`;
+    diffSvg += `<text x="${it.x}" y="${Math.max(25, it.y - it.ry - 10)}" font-family="sans-serif" font-size="18" font-weight="bold" fill="#f43f5e" text-anchor="middle">${it.word}</text>`;
   });
 
   baseSvg += `
@@ -166,7 +193,7 @@ async function generateSideBySide(variant) {
 
   const fileName = variant.key === 'A' ? 'book7_scene2_side_by_side_boxes.jpg' : `book7_scene2_side_by_side_boxes_var${variant.key.toLowerCase()}.jpg`;
   const outPublic = path.join('public/assets/spotter', fileName);
-  const outArtifact = path.join('C:/Users/user/.gemini/antigravity/brain/95c0c83b-453d-4566-961c-af611538f9f3', fileName);
+  const outArtifact = path.join(ARTIFACT_DIR, fileName);
 
   await sharp({
     create: {
@@ -183,7 +210,9 @@ async function generateSideBySide(variant) {
     .jpeg({ quality: 90 })
     .toFile(outPublic);
 
-  fs.copyFileSync(outPublic, outArtifact);
+  if (fs.existsSync(ARTIFACT_DIR)) {
+    fs.copyFileSync(outPublic, outArtifact);
+  }
   console.log(`  ✓ Side-by-side labeled image generated: ${outPublic}`);
 }
 

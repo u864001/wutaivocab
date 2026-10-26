@@ -1,5 +1,5 @@
 const items = [
-  { word: 'metro', x: 302, y: 158, rx: 140, ry: 42 },
+  { word: 'metro', x: 423, y: 185, rx: 258, ry: 40, rotate: 4.8 },
   { word: 'taxi', x: 650, y: 405, rx: 75, ry: 45 },
   { word: 'car', x: 940, y: 455, rx: 75, ry: 48 },
   { word: 'scooter', x: 1205, y: 460, rx: 68, ry: 60 },
@@ -12,7 +12,7 @@ const items = [
 let overlaps = 0;
 let pairCount = 0;
 
-console.log('=== BOOK 7 SCENE 2 ZERO OVERLAP CHECK ===');
+console.log('=== BOOK 7 SCENE 2 ZERO OVERLAP CHECK (EXPANDED ROTATED METRO) ===');
 for (let i = 0; i < items.length; i++) {
   for (let j = i + 1; j < items.length; j++) {
     pairCount++;
@@ -22,9 +22,15 @@ for (let i = 0; i < items.length; i++) {
     const dy = a.y - b.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     
+    // Effective radius with rotation
+    const getRadiusAtAngle = (item, globalAngle) => {
+      const localAngle = globalAngle - ((item.rotate || 0) * Math.PI / 180);
+      return (item.rx * item.ry) / Math.sqrt((item.ry * Math.cos(localAngle))**2 + (item.rx * Math.sin(localAngle))**2);
+    };
+
     const angle = Math.atan2(dy, dx);
-    const ra = (a.rx * a.ry) / Math.sqrt((a.ry * Math.cos(angle))**2 + (a.rx * Math.sin(angle))**2);
-    const rb = (b.rx * b.ry) / Math.sqrt((b.ry * Math.cos(angle))**2 + (b.rx * Math.sin(angle))**2);
+    const ra = getRadiusAtAngle(a, angle);
+    const rb = getRadiusAtAngle(b, angle + Math.PI);
     
     const margin = dist - (ra + rb);
     if (margin < 0) {
