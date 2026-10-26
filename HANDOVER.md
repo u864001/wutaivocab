@@ -368,7 +368,36 @@
   * 全數 28 對幾何距離均維持正距，`painting` 與下方大理石桌上的 `cake` 垂直淨距保持 50.3px，全圖最小間隙為 24.9px (`guitar` <-> `brush`)，Total Overlaps = 0 / 28 pairs。
 * **進度里程碑**：
   * 累積就緒關卡達到 **13 / 40**！
-  * B5S2（巴黎蒙馬特小丘畫家村）經 Mark 審查全項通過！下一步朝 Book 6 Scene 2（六年級上學期場景 2）推進。
+  * B5S2（巴黎蒙馬特小丘畫家村）經 Mark 審查全項通過！
+
+#### 25. 鷹眼神探 第 6 冊場景 2【新加坡濱海灣花園超級樹與戶外美食步道】A 方案動態 8 選 5 實裝與下輪交接規範儲備 (`spotterData.js`, `SpotterTestWorkbench.jsx`, `public/assets/spotter/*`)
+* **單字選用最高權威階層規範 (Mark 確立之最高準則)**：
+  1. **必出現範圍 (Mandatory Scope - 首選題目)**：翰林《Here We Go》第 1～8 冊教材核心單字。
+  2. **可出現、可練習範圍 (Permissible Scope - 次選題目)**：教育部國民中小學基本 1,200 核心單字。
+  3. **超綱詞彙嚴格禁令**：超出教育部 1,200 字與 Here We Go 教材之高中、成人或專門領域單字（如原暫訂之 palette），一律禁止作為題目！
+* **找不同繪圖與遊戲性高階規範 (Mark 核心指導原則)**：
+  1. **拒絕「看字點物」**：整張圖絕不能只有 8 個目標物。必須將學生已學過的單元（包含本冊與前冊 15～25 個單字）作為自然景物畫入背景。
+  2. **真實可見的靜態干擾物 (Real Visible Distractors)**：左右兩圖的背景物件保持 100% 相同像元（絕對不發生變異）。Word Bank 的干擾選項必須是畫面中真實存在的背景物件，迫使學生同時進行視覺搜索、單字對應與細節比對。
+  3. **自然三層景深錨定 (Foreground / Midground / Background)**：避免物件過度集中在前景平台，遠景地標/天空、中景建築/車輛/雕塑、近景桌椅/道具錯落有致。
+  4. **因地制宜、真實世界剪影 (Diegetic Realism)**：道具必須契合地景故事，絕不在不合理場景硬塞風箏或紙箱。
+  5. **場景特例規範**：博物館展館內嚴格禁止畫食物 (`No food inside museum`)。
+* **第 6 冊場景 2 主題與目標配置（方案 A：新加坡超級樹與戶外美食步道）**：
+  * **主題**：新加坡濱海灣花園超級樹與戶外美食步道 (Singapore Gardens by the Bay & Waterfront Promenade，1376x768 3D 立體紙雕 diorama)。
+  * **課本出處**：Book 6 Unit 3（食物與渴餓：`noodles`, `soup`, `salad`, `water`）＋ Culture Explore（新加坡超級樹 Supertrees、魚尾獅 Merlion）。
+  * **8 大相異目標物（100% 符 Here We Go 6 或教育部 1200 字）**：
+    1. **前景層**：`noodles` (麵條，B6 U3)、`salad` (沙拉，B6 U3)、`soup` (熱湯，B6 U3)、`water` (隨身水瓶，B6 U3)、`fan` (手持小風扇，熱帶避暑必備，教育部 1200 字)。
+    2. **中景層**：`statue` (噴水魚尾獅雕像，B6 探索單元)、`boat` (觀光遊船/復古駁船，教育部 1200 字)、`tree` (熱帶雞蛋花樹/超級樹，B6 U3)。
+  * **16 個完全靜態背景已學干擾物**：
+    * `bird`, `cat`, `dog`, `bike`, `cup`, `table`, `chair`, `bag`, `lamp`, `bridge`, `clock`, `flower`, `umbrella`, `box`, `apple`, `book`。
+* **未來方案儲備庫（留待下一輪討論之候選企劃）**：
+  * **【方案 B：肯亞馬賽馬拉非洲大草原探險營地 (Kenya Safari Camp)】**：
+    * **課本對應**：Book 6 Unit 4（野生動物與冒險：斑馬、大象、午餐炸雞、後背包、太陽眼鏡掉落情節）＋ Culture Explore（肯亞非洲大五霸）。
+    * **核心目標單字**：`zebra` (斑馬), `chicken` (烤雞), `sunglasses` (墨鏡), `backpack` (登山包), `tent` (帳篷), `jeep/truck` (越野車), `hat` (探險帽), `lion` (獅子)。
+    * **靜態背景物**：金合歡樹、犀鳥、遠景大象、野營折疊桌、導演椅、露營鋼杯、望遠鏡、煤油營燈。
+  * **【Book 7 候選方案：威尼斯水都大運河貢多拉與聖馬可廣場 (Venice Grand Canal)】**：
+    * 對應教材：Book 7 Unit 1~4（交通工具、旅行明信片、相機、地圖）。
+  * **【Book 8 候選方案：紐約中央公園與時代廣場畢業旅行 (New York Central Park)】**：
+    * 對應教材：Book 8 Unit 1~4（四季、畢業、活動、城市生活）。
 
 
 ---

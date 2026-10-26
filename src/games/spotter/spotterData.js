@@ -1384,6 +1384,207 @@ export const BOOK6_MUSEUM_SCENE = {
   ]
 };
 
+// ── 【Book 6 場景 2 • A方案】新加坡濱海灣花園超級樹與戶外美食步道（動態 8 選 5 插槽補丁引擎） ──
+export const BOOK6_SINGAPORE_SCENE = {
+  id: 'book6_scene2',
+  book: '6',
+  sceneNumber: 2,
+  grade: 5,
+  titleZh: '新加坡濱海灣花園超級樹與戶外美食步道（五年級第 6 冊 • 場景 2 • A方案）',
+  titleEn: 'Singapore Gardens by the Bay & Waterfront Promenade (Book 6 • Scene 2 • Dynamic Slot Engine)',
+  descZh: '在暮色迷人的濱海灣遠眺超級樹與金沙天際線，尋找 8 處相異物件！（融入海鳥、花貓、寵物犬、自行車、餐桌、藤椅、景觀燈、蘭花花台等 16 個已學單字靜態干擾物，三層自然景深佈局）',
+  baseImage: '/assets/spotter/book6_scene2_base.jpg',
+  diffImage: '/assets/spotter/book6_scene2_diff.jpg',
+  diffImageVarB: '/assets/spotter/book6_scene2_diff_varb.jpg',
+  diffImageVarC: '/assets/spotter/book6_scene2_diff_varc.jpg',
+  width: 1376,
+  height: 768,
+  status: 'ready',
+  isDynamic: true,
+  isDynamicSlot: true,
+  patchDir: '/assets/spotter/patches/b6_s2',
+  targetItems: [
+    {
+      word: "tree",
+      wordZh: "熱帶樹花",
+      x: 230,
+      y: 220,
+      radius: 150,
+      radiusX: 150,
+      radiusY: 115,
+      typeZh: "枝頭樣態",
+      descZh: "雞蛋花樹盛開粉紅花朵轉為白瓣金黃花蕊的夏威夷白金雞蛋花",
+      slot: { x: 4, y: 43, w: 452, h: 354, rx: 16 },
+      patchFile: "tree_variantA.png",
+      cropCompare: "/assets/spotter/crops/b6_s2/tree_compare_var_a.jpg",
+      variants: [
+        { id: "base", name: "原圖基準", label: "原圖樣式", tag: "Base" },
+        { id: "varA", name: "變異 A", label: "型態 A", tag: "Variant A", patchFile: "tree_variantA.png", cropCompare: "/assets/spotter/crops/b6_s2/tree_compare_var_a.jpg", descZh: "雞蛋花樹盛開粉紅花朵轉為白瓣金黃花蕊的夏威夷白金雞蛋花" },
+        { id: "varB", name: "變異 B", label: "型態 B", tag: "Variant B", patchFile: "tree_variantB.png", cropCompare: "/assets/spotter/crops/b6_s2/tree_compare_var_b.jpg", descZh: "雞蛋花樹枝頭結滿熟透金黃的熱帶香甜芒果與青翠嫩葉" },
+        { id: "varC", name: "變異 C", label: "型態 C", tag: "Variant C", patchFile: "tree_variantC.png", cropCompare: "/assets/spotter/crops/b6_s2/tree_compare_var_c.jpg", descZh: "枝頭轉為盛開深紫色熱帶蘭花並棲息著一隻色彩繽紛的巨嘴鳥" }
+      ]
+    },
+    {
+      word: "statue",
+      wordZh: "魚尾獅雕像",
+      x: 460,
+      y: 335,
+      radius: 85,
+      radiusX: 45,
+      radiusY: 85,
+      typeZh: "雕像裝飾",
+      descZh: "白色魚尾獅身披新加坡星月節慶紅絲帶與璀璨金色桂冠",
+      slot: { x: 381, y: 200, w: 158, h: 270, rx: 16 },
+      patchFile: "statue_variantA.png",
+      cropCompare: "/assets/spotter/crops/b6_s2/statue_compare_var_a.jpg",
+      variants: [
+        { id: "base", name: "原圖基準", label: "原圖樣式", tag: "Base" },
+        { id: "varA", name: "變異 A", label: "型態 A", tag: "Variant A", patchFile: "statue_variantA.png", cropCompare: "/assets/spotter/crops/b6_s2/statue_compare_var_a.jpg", descZh: "白色魚尾獅身披新加坡星月節慶紅絲帶與璀璨金色桂冠" },
+        { id: "varB", name: "變異 B", label: "型態 B", tag: "Variant B", patchFile: "statue_variantB.png", cropCompare: "/assets/spotter/crops/b6_s2/statue_compare_var_b.jpg", descZh: "白色石雕魚尾獅轉為金光閃閃的高雅拋光黃銅青銅雕像" },
+        { id: "varC", name: "變異 C", label: "型態 C", tag: "Variant C", patchFile: "statue_variantC.png", cropCompare: "/assets/spotter/crops/b6_s2/statue_compare_var_c.jpg", descZh: "魚尾獅融入夜間燈光秀，點亮霓虹電光紫藍色極光漸層光暈" }
+      ]
+    },
+    {
+      word: "boat",
+      wordZh: "觀光渡輪",
+      x: 880,
+      y: 390,
+      radius: 118,
+      radiusX: 118,
+      radiusY: 48,
+      typeZh: "船隻款式",
+      descZh: "傳統黃褐木造駁船轉為流線型純白雙層現代豪華觀光遊艇",
+      slot: { x: 699, y: 307, w: 362, h: 166, rx: 16 },
+      patchFile: "boat_variantA.png",
+      cropCompare: "/assets/spotter/crops/b6_s2/boat_compare_var_a.jpg",
+      variants: [
+        { id: "base", name: "原圖基準", label: "原圖樣式", tag: "Base" },
+        { id: "varA", name: "變異 A", label: "型態 A", tag: "Variant A", patchFile: "boat_variantA.png", cropCompare: "/assets/spotter/crops/b6_s2/boat_compare_var_a.jpg", descZh: "傳統黃褐木造駁船轉為流線型純白雙層現代豪華觀光遊艇" },
+        { id: "varB", name: "變異 B", label: "型態 B", tag: "Variant B", patchFile: "boat_variantB.png", cropCompare: "/assets/spotter/crops/b6_s2/boat_compare_var_b.jpg", descZh: "傳統駁船轉為翠綠與純白雙色的環保太陽能綠能觀光渡輪" },
+        { id: "varC", name: "變異 C", label: "型態 C", tag: "Variant C", patchFile: "boat_variantC.png", cropCompare: "/assets/spotter/crops/b6_s2/boat_compare_var_c.jpg", descZh: "傳統駁船轉為深海軍藍飾以黃銅欄杆與節慶燕尾旗的尊爵迎賓船" }
+      ]
+    },
+    {
+      word: "water",
+      wordZh: "冰涼水瓶",
+      x: 585,
+      y: 515,
+      radius: 50,
+      radiusX: 25,
+      radiusY: 48,
+      typeZh: "飲品杯款",
+      descZh: "晶透檸檬冰水轉為粉紅漸層葡萄柚氣泡水果水佐清涼薄荷葉",
+      slot: { x: 534, y: 432, w: 102, h: 166, rx: 16 },
+      patchFile: "water_variantA.png",
+      cropCompare: "/assets/spotter/crops/b6_s2/water_compare_var_a.jpg",
+      variants: [
+        { id: "base", name: "原圖基準", label: "原圖樣式", tag: "Base" },
+        { id: "varA", name: "變異 A", label: "型態 A", tag: "Variant A", patchFile: "water_variantA.png", cropCompare: "/assets/spotter/crops/b6_s2/water_compare_var_a.jpg", descZh: "晶透檸檬冰水轉為粉紅漸層葡萄柚氣泡水果水佐清涼薄荷葉" },
+        { id: "varB", name: "變異 B", label: "型態 B", tag: "Variant B", patchFile: "water_variantB.png", cropCompare: "/assets/spotter/crops/b6_s2/water_compare_var_b.jpg", descZh: "晶透水杯轉為現榨金黃柳橙汁配紅白相間復古條紋環保吸管" },
+        { id: "varC", name: "變異 C", label: "型態 C", tag: "Variant C", patchFile: "water_variantC.png", cropCompare: "/assets/spotter/crops/b6_s2/water_compare_var_c.jpg", descZh: "冰水杯轉為夢幻藍色蝶豆花檸檬冰茶綻放清澈漸層色彩" }
+      ]
+    },
+    {
+      word: "noodles",
+      wordZh: "南洋炒麵",
+      x: 525,
+      y: 600,
+      radius: 66,
+      radiusX: 66,
+      radiusY: 50,
+      typeZh: "麵食風味",
+      descZh: "金黃南洋炒麵轉為香濃椰奶紅油叻沙湯麵佐金黃油豆腐泡",
+      slot: { x: 417, y: 514, w: 216, h: 172, rx: 16 },
+      patchFile: "noodles_variantA.png",
+      cropCompare: "/assets/spotter/crops/b6_s2/noodles_compare_var_a.jpg",
+      variants: [
+        { id: "base", name: "原圖基準", label: "原圖樣式", tag: "Base" },
+        { id: "varA", name: "變異 A", label: "型態 A", tag: "Variant A", patchFile: "noodles_variantA.png", cropCompare: "/assets/spotter/crops/b6_s2/noodles_compare_var_a.jpg", descZh: "金黃南洋炒麵轉為香濃椰奶紅油叻沙湯麵佐金黃油豆腐泡" },
+        { id: "varB", name: "變異 B", label: "型態 B", tag: "Variant B", patchFile: "noodles_variantB.png", cropCompare: "/assets/spotter/crops/b6_s2/noodles_compare_var_b.jpg", descZh: "炒麵轉為乾拌黑醬油撈麵佐鮮甜大蝦雲吞與青江菜" },
+        { id: "varC", name: "變異 C", label: "型態 C", tag: "Variant C", patchFile: "noodles_variantC.png", cropCompare: "/assets/spotter/crops/b6_s2/noodles_compare_var_c.jpg", descZh: "炒麵轉為石鍋韓風香菇時蔬炒冬粉撒上香脆熟白芝麻" }
+      ]
+    },
+    {
+      word: "salad",
+      wordZh: "鮮蔬沙拉",
+      x: 710,
+      y: 550,
+      radius: 65,
+      radiusX: 65,
+      radiusY: 50,
+      typeZh: "沙拉配料",
+      descZh: "田園生菜沙拉滿鋪純白菲達起司塊、黑橄欖與初榨橄欖油",
+      slot: { x: 603, y: 464, w: 214, h: 172, rx: 16 },
+      patchFile: "salad_variantA.png",
+      cropCompare: "/assets/spotter/crops/b6_s2/salad_compare_var_a.jpg",
+      variants: [
+        { id: "base", name: "原圖基準", label: "原圖樣式", tag: "Base" },
+        { id: "varA", name: "變異 A", label: "型態 A", tag: "Variant A", patchFile: "salad_variantA.png", cropCompare: "/assets/spotter/crops/b6_s2/salad_compare_var_a.jpg", descZh: "田園生菜沙拉滿鋪純白菲達起司塊、黑橄欖與初榨橄欖油" },
+        { id: "varB", name: "變異 B", label: "型態 B", tag: "Variant B", patchFile: "salad_variantB.png", cropCompare: "/assets/spotter/crops/b6_s2/salad_compare_var_b.jpg", descZh: "生菜沙拉轉為泰式青木瓜絲沙拉滿撒香脆花生碎與新鮮香菜" },
+        { id: "varC", name: "變異 C", label: "型態 C", tag: "Variant C", patchFile: "salad_variantC.png", cropCompare: "/assets/spotter/crops/b6_s2/salad_compare_var_c.jpg", descZh: "生菜沙拉轉為挪威煙燻鮭魚凱薩沙拉滿覆金黃蒜香脆麵包丁" }
+      ]
+    },
+    {
+      word: "soup",
+      wordZh: "熱騰騰熱湯",
+      x: 865,
+      y: 550,
+      radius: 65,
+      radiusX: 65,
+      radiusY: 52,
+      typeZh: "熱湯風味",
+      descZh: "青花瓷清湯轉為砂鍋胡椒肉骨茶佐香酥油條與燉排骨",
+      slot: { x: 758, y: 461, w: 214, h: 178, rx: 16 },
+      patchFile: "soup_variantA.png",
+      cropCompare: "/assets/spotter/crops/b6_s2/soup_compare_var_a.jpg",
+      variants: [
+        { id: "base", name: "原圖基準", label: "原圖樣式", tag: "Base" },
+        { id: "varA", name: "變異 A", label: "型態 A", tag: "Variant A", patchFile: "soup_variantA.png", cropCompare: "/assets/spotter/crops/b6_s2/soup_compare_var_a.jpg", descZh: "青花瓷清湯轉為砂鍋胡椒肉骨茶佐香酥油條與燉排骨" },
+        { id: "varB", name: "變異 B", label: "型態 B", tag: "Variant B", patchFile: "soup_variantB.png", cropCompare: "/assets/spotter/crops/b6_s2/soup_compare_var_b.jpg", descZh: "清湯轉為溫潤金黃奶油南瓜濃湯點綴純白鮮奶油花紋" },
+        { id: "varC", name: "變異 C", label: "型態 C", tag: "Variant C", patchFile: "soup_variantC.png", cropCompare: "/assets/spotter/crops/b6_s2/soup_compare_var_c.jpg", descZh: "清湯轉為紅豔酸辣泰式冬陰功海鮮湯浮現飽滿鮮蝦與香茅" }
+      ]
+    },
+    {
+      word: "fan",
+      wordZh: "手持風扇",
+      x: 670,
+      y: 650,
+      radius: 70,
+      radiusX: 70,
+      radiusY: 40,
+      typeZh: "風扇外觀",
+      descZh: "柔和粉藍手持風扇轉為俏皮櫻花粉色貓耳造型隨身小風扇",
+      slot: { x: 556, y: 578, w: 228, h: 144, rx: 16 },
+      patchFile: "fan_variantA.png",
+      cropCompare: "/assets/spotter/crops/b6_s2/fan_compare_var_a.jpg",
+      variants: [
+        { id: "base", name: "原圖基準", label: "原圖樣式", tag: "Base" },
+        { id: "varA", name: "變異 A", label: "型態 A", tag: "Variant A", patchFile: "fan_variantA.png", cropCompare: "/assets/spotter/crops/b6_s2/fan_compare_var_a.jpg", descZh: "柔和粉藍手持風扇轉為俏皮櫻花粉色貓耳造型隨身小風扇" },
+        { id: "varB", name: "變異 B", label: "型態 B", tag: "Variant B", patchFile: "fan_variantB.png", cropCompare: "/assets/spotter/crops/b6_s2/fan_compare_var_b.jpg", descZh: "粉藍風扇轉為復古奶油黃簡約工業風渦輪隨身手提電風扇" },
+        { id: "varC", name: "變異 C", label: "型態 C", tag: "Variant C", patchFile: "fan_variantC.png", cropCompare: "/assets/spotter/crops/b6_s2/fan_compare_var_c.jpg", descZh: "粉藍風扇轉為清新薄荷嫩綠色運動摺疊頸掛隨身多功能風扇" }
+      ]
+    }
+  ],
+  distractors: [
+    { word: "bird", wordZh: "海鳥" },
+    { word: "cat", wordZh: "花貓" },
+    { word: "dog", wordZh: "寵物犬" },
+    { word: "bike", wordZh: "單車" },
+    { word: "cup", wordZh: "咖啡杯" },
+    { word: "table", wordZh: "戶外餐桌" },
+    { word: "chair", wordZh: "編織藤椅" },
+    { word: "bag", wordZh: "手提布袋" },
+    { word: "lamp", wordZh: "景觀街燈" },
+    { word: "bridge", wordZh: "雙螺旋橋" },
+    { word: "clock", wordZh: "鐘塔" },
+    { word: "flower", wordZh: "熱帶盆花" },
+    { word: "umbrella", wordZh: "遮陽大傘" },
+    { word: "box", wordZh: "面紙盒" },
+    { word: "apple", wordZh: "紅蘋果" },
+    { word: "book", wordZh: "旅行指南" }
+  ]
+};
+
 // ── 【Book 7 六年級上學期】世界節慶與環球港灣（Here We Go Book 7） ──
 export const BOOK7_HARBOR_SCENE = {
   id: 'book7_harbor',
@@ -1638,9 +1839,8 @@ export const ALL_SCENES_BY_BOOK = {
   '2': [BOOK2_PARK_SCENE, BOOK2_KYOTO_SCENE],
   '3': [BOOK3_PARK_SCENE, BOOK3_ALPINE_SCENE],
   '4': [BOOK4_LONDON_SCENE, BOOK4_RIVERSIDE_SCENE],
-  '5': [BOOK5_PARIS_SCENE,
-  BOOK5_MONTMARTRE_SCENE, BOOK5_MONTMARTRE_SCENE],
-  '6': [BOOK6_MUSEUM_SCENE],
+  '5': [BOOK5_PARIS_SCENE, BOOK5_MONTMARTRE_SCENE],
+  '6': [BOOK6_MUSEUM_SCENE, BOOK6_SINGAPORE_SCENE],
   '7': [BOOK7_HARBOR_SCENE],
   '8': [BOOK8_GARDEN_SCENE]
 };
@@ -1673,7 +1873,9 @@ export const SPOTTER_SCENES = [
   BOOK4_LONDON_SCENE,
   BOOK4_RIVERSIDE_SCENE,
   BOOK5_PARIS_SCENE,
+  BOOK5_MONTMARTRE_SCENE,
   BOOK6_MUSEUM_SCENE,
+  BOOK6_SINGAPORE_SCENE,
   BOOK7_HARBOR_SCENE,
   BOOK8_GARDEN_SCENE
 ];
