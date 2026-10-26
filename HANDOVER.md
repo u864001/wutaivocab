@@ -12,12 +12,14 @@
 若你是接收此專案的新對話 AI 助理，請依下列步驟快速就位：
 1. **工作目錄**：`c:\Users\user\.gemini\antigravity\scratch\wutaivocab`
 2. **驗證指令**：任何代碼變更後，請一律執行 `npm run verify`（包含 ESLint 靜態語法檢查、Vite 生產級打包構建、以及無頭 Chrome 深度自動化測試 14 款遊戲全冊各身分）。
-3. **雙遠端推播**：
+3. **Git 推播流程 (僅限 origin，嚴禁日常推送 vercel)**：
+   > [!WARNING]
+   > **【嚴禁日常推送 Vercel】** 因 Vercel Hobby 方案每日/每月構建配額極易耗盡，日常開發中**一律只推送到 `origin` 遠端**！正式生產環境以 Cloudflare Pages (`wutaivocab.pages.dev` 綁定 `origin/main`) 為準。除非有重大版本發布且經 Mark 特別指示，否則**切勿執行 `git push vercel`**。
    ```powershell
    git add <files>
    git commit -m "<type>(<scope>): <description>"
-   git push origin dev ; git push vercel dev
-   git checkout main ; git merge dev ; git push origin main ; git push vercel main ; git checkout dev
+   git push origin dev
+   git checkout main ; git merge dev ; git push origin main ; git checkout dev
    ```
 4. **Cloudflare 生產部署**：
    ```powershell
@@ -323,6 +325,19 @@
   * 生成全幅標籤判定外框圖（`book4_scene2_side_by_side_boxes.jpg`、`_varb.jpg`、`_varc.jpg`）。
   * 工作台（`/spotter-test`）支援第 4 冊圖 1（英倫家居）與圖 2（泰晤士皇家地標廣場）快速切換、成對底圖與動態 8 選 5 抽題模擬器。
   * 藍圖總覽（Master Roadmap）更新進度為「12 場景已就緒 / 28 場景排程中」。
+
+#### 23. 找不同高階繪圖規範確立：已學單字全環境融入與真實視覺干擾物架構 (Mark 指導原則) 及 Vercel 部署禁令
+* **核心遊戲性缺陷反思 (Mark 深度指導)**：
+  * Mark 指出：若畫面中「除了欲測的 8 個單字外，完全沒有其他可辨識之單字物件」，學生只要照著單字庫把畫面上僅有的 8 個東西各點一遍即通關，失去「找不同」的搜索與細部比對精神。尤其在四、五、六年級中高年級教材中，缺乏足夠的細節與干擾物，無法體現「鷹眼神探」的探索價值。
+* **高階繪圖新規範 (自後續新圖起全面落實)**：
+  1. **全單字庫背景融入 (15～25 個背景靜態已學物件)**：
+     * 畫面構圖時，必須將學生已經學過的單元（包含本冊其他單元以及**所有前冊**單字，如低年級學過的 `dog`, `cat`, `bird`, `apple`, `book`, `pencil`, `bike`, `umbrella`, `boat`, `tree`, `flower`, `ball` 等）作為自然景物畫入背景。
+     * 這些背景物件在左右兩圖**完全靜態、左右保持 100% 相同像素（不發生變異）**。
+  2. **真實可見的干擾選項 (Real Visible Distractors)**：
+     * Word Bank 提供的干擾單字（Distractors）不再是畫面中不存在的單字，而是學生**在畫面上確實能看見該物體、但仔細比對後發現左右完全相同**的已學單字。
+     * 學生必須同時進行「視覺搜索＋單字對應＋微觀比對」，徹底杜絕「看字點物」的無腦通關現象。
+* **Vercel 推送禁令生效**：
+  * 因 Vercel Hobby 方案構建額度有限，日常微調頻繁推送容易導致配額耗盡。正式確立：**日常開發嚴格禁止執行 `git push vercel`**，所有發布與構建一律由 Cloudflare Pages (`origin/main`) 承載；僅在重大里程碑經 Mark 裁示時方可推送 Vercel。
 
 ---
 
