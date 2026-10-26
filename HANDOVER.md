@@ -357,10 +357,14 @@
 * **三大多態變異 (Variants A / B / C) 與 24 羽化補丁全量產出**：
   * 產出 `book5_scene2_base.jpg`, `book5_scene2_diff.jpg`, `book5_scene2_diff_varb.jpg`, `book5_scene2_diff_varc.jpg` (1376x768)。
   * 產出 24 個透明羽化 PNG 補丁 (`public/assets/spotter/patches/b5_s2/`) 與 24 張特寫比較卡 (`public/assets/spotter/crops/b5_s2/`)。
+* **判定框精密校準（Mark 深度驗收反饋）**：
+  * 遵照 Mark 指導：「畫架的判定框再低一些，要含括整個畫布。其餘均通過。」
+  * `painting` 判定框精準下調並延伸垂直半徑：由 `(x: 765, y: 385, rx: 70, ry: 100)` 調整為 `(x: 765, y: 415, rx: 78, ry: 115)`，頂部至 `y = 300`、底部延伸至 `y = 530`，將整個畫布本體與下方木畫架托架完整涵蓋，徹底避免學生點擊畫作下緣判定無效之情形。
 * **幾何驗證零交疊**：
-  * 全數 28 對幾何距離均維持正距，最小間隙達 24.9px (`guitar` <-> `palette`)，Total Overlaps = 0 / 28 pairs。
+  * 全數 28 對幾何距離均維持正距，`painting` 與下方大理石桌上的 `cake` 垂直淨距保持 50.3px，全圖最小間隙為 24.9px (`guitar` <-> `palette`)，Total Overlaps = 0 / 28 pairs。
 * **進度里程碑**：
   * 累積就緒關卡達到 **13 / 40**！
+  * B5S2（巴黎蒙馬特小丘畫家村）經 Mark 審查全項通過！下一步朝 Book 6 Scene 2（六年級上學期場景 2）推進。
 
 
 ---
