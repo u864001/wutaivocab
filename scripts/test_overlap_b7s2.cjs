@@ -1,12 +1,12 @@
 const items = [
   { word: 'metro', x: 423, y: 185, rx: 258, ry: 40, rotate: 4.8 },
   { word: 'taxi', x: 650, y: 405, rx: 75, ry: 45 },
-  { word: 'car', x: 940, y: 455, rx: 75, ry: 48 },
+  { word: 'car', x: 940, y: 435, rx: 88, ry: 80 },
   { word: 'scooter', x: 1205, y: 460, rx: 68, ry: 60 },
-  { word: 'bike', x: 560, y: 570, rx: 58, ry: 58 },
+  { word: 'bike', x: 560, y: 550, rx: 72, ry: 82 },
   { word: 'ticket', x: 350, y: 470, rx: 24, ry: 22 },
-  { word: 'sandwich', x: 250, y: 655, rx: 48, ry: 32 },
-  { word: 'soda', x: 338, y: 590, rx: 20, ry: 50 }
+  { word: 'sandwich', x: 250, y: 655, rx: 46, ry: 30 },
+  { word: 'soda', x: 340, y: 585, rx: 32, ry: 78 }
 ];
 
 let overlaps = 0;

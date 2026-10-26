@@ -7,12 +7,12 @@ const ARTIFACT_DIR = 'C:/Users/user/.gemini/antigravity/brain/95c0c83b-453d-4566
 const TARGET_ITEMS = [
   { word: 'metro', wordZh: '捷運列車', x: 423, y: 185, rx: 258, ry: 40, rotate: 4.8, typeZh: '列車型態', descZh: '左圖高架軌道為整列藍綠塗裝都會捷運，右圖依變異為深紅高鐵/耀眼黃單軌/翡翠綠磁浮' },
   { word: 'taxi', wordZh: '計程車', x: 650, y: 405, rx: 75, ry: 45, typeZh: '計程車塗裝', descZh: '左圖為亮黃色計程車，右圖依變異為海軍藍/英倫黑/珍珠白' },
-  { word: 'car', wordZh: '汽車', x: 940, y: 455, rx: 75, ry: 48, typeZh: '汽車型態', descZh: '左圖為銀綠綠能休旅車，右圖依變異為亮紅跑車/水藍休旅/古銅跨界車' },
+  { word: 'car', wordZh: '汽車', x: 940, y: 435, rx: 88, ry: 80, typeZh: '汽車型態', descZh: '左圖為銀綠綠能休旅車，右圖依變異為亮紅跑車/水藍休旅/古銅跨界車' },
   { word: 'scooter', wordZh: '機車', x: 1205, y: 460, rx: 68, ry: 60, typeZh: '機車款式', descZh: '左圖為薄荷綠速克達，右圖依變異為火紅跑車機車/陽光黃/蔚藍復古車' },
-  { word: 'bike', wordZh: '自行車', x: 560, y: 570, rx: 58, ry: 58, typeZh: '自行車款', descZh: '左圖為亮橘色共享單車，右圖依變異為青藍單車/青檸綠/艷紅公路車' },
+  { word: 'bike', wordZh: '自行車', x: 560, y: 550, rx: 72, ry: 82, typeZh: '自行車款', descZh: '左圖為亮橘色共享單車，右圖依變異為青藍單車/青檸綠/艷紅公路車' },
   { word: 'ticket', wordZh: '車票', x: 350, y: 470, rx: 24, ry: 22, typeZh: '票卡型態', descZh: '左圖為彩虹磁條票卡，右圖依變異為黃金VIP卡/霓虹條碼/粉紅吉祥物卡' },
-  { word: 'sandwich', wordZh: '三明治', x: 250, y: 655, rx: 48, ry: 32, typeZh: '三明治款式', descZh: '左圖為切片三明治，右圖依變異為法式可頌堡/芝麻貝果堡/總匯三明治' },
-  { word: 'soda', wordZh: '蘇打汽水', x: 338, y: 590, rx: 20, ry: 50, typeZh: '飲料瓶型', descZh: '左圖為沁藍氣泡水瓶，右圖依變異為櫻桃紅蘇打/青檸氣泡罐/熱帶芒果蘇打' }
+  { word: 'sandwich', wordZh: '三明治', x: 250, y: 655, rx: 46, ry: 30, typeZh: '三明治款式', descZh: '左圖為切片三明治，右圖依變異為法式可頌堡/芝麻貝果堡/總匯三明治' },
+  { word: 'soda', wordZh: '蘇打汽水', x: 340, y: 585, rx: 32, ry: 78, typeZh: '飲料瓶型', descZh: '左圖為沁藍氣泡水瓶，右圖依變異為櫻桃紅蘇打/青檸氣泡罐/熱帶芒果蘇打' }
 ];
 
 const VARIANTS = [
@@ -140,7 +140,6 @@ async function generateAssets() {
         .jpeg({ quality: 92 })
         .toFile(cardPath);
 
-      // Also copy card to artifacts
       if (fs.existsSync(ARTIFACT_DIR)) {
         fs.copyFileSync(cardPath, path.join(ARTIFACT_DIR, cardName));
       }
@@ -148,7 +147,7 @@ async function generateAssets() {
       console.log(`  ✓ Generated patch & crop for ${item.word} (Var ${v.key})`);
     }
 
-    // 3. Generate side-by-side verification image
+    // 3. Generate side-by-side verification images (Both labeled and clean!)
     await generateSideBySide(v);
   }
 
@@ -161,16 +160,27 @@ async function generateSideBySide(variant) {
   const width = baseMeta.width;
   const height = baseMeta.height;
 
+  // Labeled SVGs
   let baseSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
   let diffSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
 
+  // Clean SVGs (boxes only, NO text labels)
+  let cleanBaseSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
+  let cleanDiffSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
+
   TARGET_ITEMS.forEach(it => {
     const rotAttr = it.rotate ? ` transform="rotate(${it.rotate} ${it.x} ${it.y})"` : '';
-    baseSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}"${rotAttr} fill="none" stroke="#00ff66" stroke-width="3" stroke-dasharray="6,4" />`;
-    baseSvg += `<text x="${it.x}" y="${Math.max(25, it.y - it.ry - 10)}" font-family="sans-serif" font-size="18" font-weight="bold" fill="#00ff66" text-anchor="middle">${it.word}</text>`;
+    
+    // Labeled
+    baseSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}"${rotAttr} fill="none" stroke="#00ff66" stroke-width="2.5" stroke-dasharray="6,4" />`;
+    baseSvg += `<text x="${it.x}" y="${Math.max(20, it.y - it.ry - 10)}" font-family="sans-serif" font-size="16" font-weight="bold" fill="#00ff66" text-anchor="middle">${it.word}</text>`;
 
-    diffSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}"${rotAttr} fill="none" stroke="#f43f5e" stroke-width="3" />`;
-    diffSvg += `<text x="${it.x}" y="${Math.max(25, it.y - it.ry - 10)}" font-family="sans-serif" font-size="18" font-weight="bold" fill="#f43f5e" text-anchor="middle">${it.word}</text>`;
+    diffSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}"${rotAttr} fill="none" stroke="#f43f5e" stroke-width="2.5" />`;
+    diffSvg += `<text x="${it.x}" y="${Math.max(20, it.y - it.ry - 10)}" font-family="sans-serif" font-size="16" font-weight="bold" fill="#f43f5e" text-anchor="middle">${it.word}</text>`;
+
+    // Clean
+    cleanBaseSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}"${rotAttr} fill="none" stroke="#00ff66" stroke-width="2.5" stroke-dasharray="6,4" />`;
+    cleanDiffSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}"${rotAttr} fill="none" stroke="#f43f5e" stroke-width="2.5" />`;
   });
 
   baseSvg += `
@@ -183,10 +193,20 @@ async function generateSideBySide(variant) {
     <text x="130" y="46" font-family="sans-serif" font-size="20" font-weight="bold" fill="#f43f5e" text-anchor="middle">VARIANT ${variant.key}</text>
   </svg>`;
 
+  cleanBaseSvg += `
+    <rect x="20" y="20" width="240" height="40" fill="rgba(0,0,0,0.7)" rx="8" />
+    <text x="140" y="46" font-family="sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">BASE (NO LABELS)</text>
+  </svg>`;
+
+  cleanDiffSvg += `
+    <rect x="20" y="20" width="260" height="40" fill="rgba(0,0,0,0.7)" rx="8" />
+    <text x="150" y="46" font-family="sans-serif" font-size="18" font-weight="bold" fill="#f43f5e" text-anchor="middle">VARIANT ${variant.key} (NO LABELS)</text>
+  </svg>`;
+
+  // Render Labeled
   const baseLabeled = await sharp('public/assets/spotter/book7_scene2_base.jpg')
     .composite([{ input: Buffer.from(baseSvg), top: 0, left: 0 }])
     .toBuffer();
-
   const diffLabeled = await sharp(variant.diffFile)
     .composite([{ input: Buffer.from(diffSvg), top: 0, left: 0 }])
     .toBuffer();
@@ -196,24 +216,40 @@ async function generateSideBySide(variant) {
   const outArtifact = path.join(ARTIFACT_DIR, fileName);
 
   await sharp({
-    create: {
-      width: width * 2 + 20,
-      height: height,
-      channels: 3,
-      background: '#0a0f1d'
-    }
-  })
-    .composite([
-      { input: baseLabeled, left: 0, top: 0 },
-      { input: diffLabeled, left: width + 20, top: 0 }
-    ])
-    .jpeg({ quality: 90 })
-    .toFile(outPublic);
+    create: { width: width * 2 + 20, height: height, channels: 3, background: '#0a0f1d' }
+  }).composite([
+    { input: baseLabeled, left: 0, top: 0 },
+    { input: diffLabeled, left: width + 20, top: 0 }
+  ]).jpeg({ quality: 90 }).toFile(outPublic);
 
   if (fs.existsSync(ARTIFACT_DIR)) {
     fs.copyFileSync(outPublic, outArtifact);
   }
-  console.log(`  ✓ Side-by-side labeled image generated: ${outPublic}`);
+
+  // Render Clean (No labels)
+  const cleanBaseBuf = await sharp('public/assets/spotter/book7_scene2_base.jpg')
+    .composite([{ input: Buffer.from(cleanBaseSvg), top: 0, left: 0 }])
+    .toBuffer();
+  const cleanDiffBuf = await sharp(variant.diffFile)
+    .composite([{ input: Buffer.from(cleanDiffSvg), top: 0, left: 0 }])
+    .toBuffer();
+
+  const cleanFileName = variant.key === 'A' ? 'book7_scene2_clean_boxes.jpg' : `book7_scene2_clean_boxes_var${variant.key.toLowerCase()}.jpg`;
+  const cleanOutPublic = path.join('public/assets/spotter', cleanFileName);
+  const cleanOutArtifact = path.join(ARTIFACT_DIR, cleanFileName);
+
+  await sharp({
+    create: { width: width * 2 + 20, height: height, channels: 3, background: '#0a0f1d' }
+  }).composite([
+    { input: cleanBaseBuf, left: 0, top: 0 },
+    { input: cleanDiffBuf, left: width + 20, top: 0 }
+  ]).jpeg({ quality: 92 }).toFile(cleanOutPublic);
+
+  if (fs.existsSync(ARTIFACT_DIR)) {
+    fs.copyFileSync(cleanOutPublic, cleanOutArtifact);
+  }
+
+  console.log(`  ✓ Side-by-side labeled & clean images generated for Var ${variant.key}`);
 }
 
 generateAssets().catch(console.error);
