@@ -2108,23 +2108,23 @@ export const BOOK8_AVENUE_SCENE = {
       ]
     },
     {
-      word: 'jeans',
-      wordZh: '牛仔褲',
+      word: 'T-shirt',
+      wordZh: 'T恤',
       x: 235,
       y: 565,
-      radius: 72,
-      radiusX: 72,
+      radius: 70,
+      radiusX: 70,
       radiusY: 45,
-      typeZh: '丹寧褲款',
-      descZh: '左側展示桌上為經典深藍牛仔褲，右圖轉為淺水洗白灰破洞牛仔褲',
-      slot: { x: 163, y: 520, w: 144, h: 90, rx: 16 },
-      patchFile: 'jeans_variantA.png',
-      cropCompare: '/assets/spotter/crops/b8_s2/jeans_compare.jpg',
+      typeZh: '短袖款式',
+      descZh: '左側展示桌上為純白設計師棉質T恤，右圖轉為亮橘衝浪印花T恤',
+      slot: { x: 165, y: 520, w: 140, h: 90, rx: 16 },
+      patchFile: 'T-shirt_variantA.png',
+      cropCompare: '/assets/spotter/crops/b8_s2/T-shirt_compare.jpg',
       variants: [
         { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
-        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'jeans_variantA.png', cropCompare: '/assets/spotter/crops/b8_s2/jeans_compare.jpg', descZh: '深藍牛仔褲轉為淺水洗刷白破洞牛仔褲' },
-        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'jeans_variantB.png', cropCompare: '/assets/spotter/crops/b8_s2/jeans_compare_var_b.jpg', descZh: '深藍牛仔褲轉為曜石黑修身丹寧褲' },
-        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'jeans_variantC.png', cropCompare: '/assets/spotter/crops/b8_s2/jeans_compare_var_c.jpg', descZh: '深藍牛仔褲轉為焦糖原色厚磅丹寧褲' }
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'T-shirt_variantA.png', cropCompare: '/assets/spotter/crops/b8_s2/T-shirt_compare.jpg', descZh: '純白設計師棉質T恤轉為亮橘加州衝浪印花T恤' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'T-shirt_variantB.png', cropCompare: '/assets/spotter/crops/b8_s2/T-shirt_compare_var_b.jpg', descZh: '純白設計師棉質T恤轉為巴黎深藍白水手細橫條紋T恤' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'T-shirt_variantC.png', cropCompare: '/assets/spotter/crops/b8_s2/T-shirt_compare_var_c.jpg', descZh: '純白設計師棉質T恤轉為復古美式墨綠學院徽章T恤' }
       ]
     },
     {
