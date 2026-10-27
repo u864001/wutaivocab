@@ -324,29 +324,188 @@ export const BOOK1_AMSTERDAM_SCENE = {
 export const BOOK2_PARK_SCENE = {
   id: 'book2_park',
   book: '2',
+  sceneNumber: 1,
   grade: 3,
-  titleZh: '陽光農莊與可愛動物公園（三年級第 2 冊）',
-  titleEn: 'Sunny Farm & Pet Park (Book 2)',
-  descZh: '在溫暖的陽光農莊與綠草如茵的公園中，找出 8 處相異動物與玩具！',
+  titleZh: '南法普羅旺斯莊園慶典（三年級第 2 冊 • 圖 1 • 普羅旺斯）',
+  titleEn: 'French Provence Courtyard Celebration (Book 2 • Scene 1 • Dynamic Slot Engine)',
+  descZh: '在陽光明媚的法國普羅旺斯莊園庭院中，找出 8 處相異之處（100% 本冊全新單字）！',
   baseImage: '/assets/spotter/book2_base.jpg',
   diffImage: '/assets/spotter/book2_diff.jpg',
+  diffImageVarB: '/assets/spotter/book2_diff_varb.jpg',
+  diffImageVarC: '/assets/spotter/book2_diff_varc.jpg',
   width: 1376,
   height: 768,
+  status: 'ready',
+  isDynamic: true,
+  isDynamicSlot: true,
+  patchDir: '/assets/spotter/patches/b2_s1',
   targetItems: [
-    { word: 'cat', wordZh: '貓咪', x: 153, y: 417, radius: 75, radiusX: 75, radiusY: 55, typeZh: '花色品種', descZh: '左圖長椅上是三花貓，右圖轉為橘色虎斑貓', cropCompare: '/assets/spotter/crops/b2_s1/cat_compare.jpg' },
-    { word: 'ball', wordZh: '球', x: 441, y: 645, radius: 65, radiusX: 65, radiusY: 65, typeZh: '球類樣式', descZh: '左圖野餐墊旁是黑白足球，右圖轉為橘黑籃球', cropCompare: '/assets/spotter/crops/b2_s1/ball_compare.jpg' },
-    { word: 'dog', wordZh: '狗狗', x: 596, y: 492, radius: 75, radiusX: 65, radiusY: 75, typeZh: '神態配件', descZh: '左圖小狗戴紅色項圈，右圖轉為藍色項圈且俏皮眨眼', cropCompare: '/assets/spotter/crops/b2_s1/dog_compare.jpg' },
-    { word: 'rabbit', wordZh: '兔子', x: 735, y: 485, radius: 55, radiusX: 55, radiusY: 50, typeZh: '毛色外觀', descZh: '左圖幸運草堆是純白小兔，右圖轉為灰色小兔', cropCompare: '/assets/spotter/crops/b2_s1/rabbit_compare.jpg' },
-    { word: 'turtle', wordZh: '烏龜', x: 805, y: 580, radius: 55, radiusX: 55, radiusY: 50, typeZh: '甲殼花紋', descZh: '左圖池塘岩石是青綠小龜，右圖轉為金黃暖橘花紋烏龜（已下移置中於烏龜本體）', cropCompare: '/assets/spotter/crops/b2_s1/turtle_compare.jpg' },
-    { word: 'frog', wordZh: '青蛙', x: 1115, y: 605, radius: 55, radiusX: 55, radiusY: 50, typeZh: '飾品裝飾', descZh: '左圖荷葉上是普通綠青蛙，右圖頭戴閃耀金皇冠轉為青蛙王子（已下移半徑置中於荷葉青蛙）', cropCompare: '/assets/spotter/crops/b2_s1/frog_compare.jpg' },
-    { word: 'kite', wordZh: '風箏', x: 830, y: 185, radius: 155, radiusX: 95, radiusY: 155, typeZh: '風箏圖樣', descZh: '左圖晴空是幾何條紋風箏，右圖轉為彩虹蝴蝶彩繪風箏（已全域擴大完整涵蓋風箏菱面與飄逸尾穗）', cropCompare: '/assets/spotter/crops/b2_s1/kite_compare.jpg' },
-    { word: 'bird', wordZh: '小鳥', x: 1245, y: 395, radius: 50, radiusX: 50, radiusY: 45, typeZh: '數量品種', descZh: '左圖木柵欄上棲息2隻小鳥，右圖右側新增第3隻粉紅小鳥', cropCompare: '/assets/spotter/crops/b2_s1/bird_compare.jpg' }
+    {
+      word: 'heart',
+      wordZh: '愛心',
+      x: 172,
+      y: 250,
+      radius: 115,
+      radiusX: 82,
+      radiusY: 115,
+      typeZh: '愛心氣球',
+      descZh: '左側紫藤花架上為粉紅愛心金屬氣球，右圖轉為暖金箔愛心氣球',
+      slot: { x: 90, y: 135, w: 164, h: 230, rx: 16 },
+      patchFile: 'heart.png',
+      cropCompare: '/assets/spotter/crops/b2_s1/heart_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'heart.png', cropCompare: '/assets/spotter/crops/b2_s1/heart_compare.jpg', descZh: '粉紅愛心金屬氣球轉為暖金箔愛心氣球配深紅緞帶' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'heart_varb.png', cropCompare: '/assets/spotter/crops/b2_s1/heart_compare_varb.jpg', descZh: '粉紅愛心金屬氣球轉為深紅絲絨愛心配金色流蘇流光蝴蝶結' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'heart_varc.png', cropCompare: '/assets/spotter/crops/b2_s1/heart_compare_varc.jpg', descZh: '粉紅愛心金屬氣球轉為夢幻薰衣草紫愛心氣球配白色蕾絲緞帶' }
+      ]
+    },
+    {
+      word: 'cat',
+      wordZh: '貓咪',
+      x: 270,
+      y: 615,
+      radius: 105,
+      radiusX: 105,
+      radiusY: 60,
+      typeZh: '貓咪毛色',
+      descZh: '左側休閒椅坐墊上為安睡的三花貓，右圖轉為暖橘色虎斑貓',
+      slot: { x: 165, y: 555, w: 210, h: 120, rx: 16 },
+      patchFile: 'cat.png',
+      cropCompare: '/assets/spotter/crops/b2_s1/cat_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'cat.png', cropCompare: '/assets/spotter/crops/b2_s1/cat_compare.jpg', descZh: '三花貓轉為暖橘色虎斑貓蜷曲安睡' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'cat_varb.png', cropCompare: '/assets/spotter/crops/b2_s1/cat_compare_varb.jpg', descZh: '三花貓轉為黑白燕尾服貓安睡在椅墊上' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'cat_varc.png', cropCompare: '/assets/spotter/crops/b2_s1/cat_compare_varc.jpg', descZh: '三花貓轉為純白長毛波斯貓蜷縮甜睡' }
+      ]
+    },
+    {
+      word: 'dog',
+      wordZh: '小狗',
+      x: 410,
+      y: 480,
+      radius: 92,
+      radiusX: 78,
+      radiusY: 92,
+      typeZh: '小狗品種',
+      descZh: '草坪上端坐著開心的金毛幼犬，右圖轉為可愛的威爾斯柯基幼犬',
+      slot: { x: 332, y: 388, w: 156, h: 184, rx: 16 },
+      patchFile: 'dog.png',
+      cropCompare: '/assets/spotter/crops/b2_s1/dog_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'dog.png', cropCompare: '/assets/spotter/crops/b2_s1/dog_compare.jpg', descZh: '金毛尋回犬幼犬轉為紅白雙色立耳柯基犬' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'dog_varb.png', cropCompare: '/assets/spotter/crops/b2_s1/dog_compare_varb.jpg', descZh: '金毛尋回犬幼犬轉為黑斑大麥町斑點幼犬' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'dog_varc.png', cropCompare: '/assets/spotter/crops/b2_s1/dog_compare_varc.jpg', descZh: '金毛尋回犬幼犬轉為雪白捲毛比熊幼犬戴小紅項圈' }
+      ]
+    },
+    {
+      word: 'fish',
+      wordZh: '魚',
+      x: 684,
+      y: 508,
+      radius: 150,
+      radiusX: 150,
+      radiusY: 52,
+      typeZh: '魚類品種',
+      descZh: '石造雙層噴泉水池中悠游著錦鯉與金魚，右圖轉為湖水藍鬥魚與黑金錦鯉',
+      slot: { x: 534, y: 456, w: 300, h: 104, rx: 16 },
+      patchFile: 'fish.png',
+      cropCompare: '/assets/spotter/crops/b2_s1/fish_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'fish.png', cropCompare: '/assets/spotter/crops/b2_s1/fish_compare.jpg', descZh: '紅白錦鯉與金魚轉為湖水藍鬥魚與黑金錦鯉' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'fish_varb.png', cropCompare: '/assets/spotter/crops/b2_s1/fish_compare_varb.jpg', descZh: '紅白錦鯉與金魚轉為寶石紅劍旗魚與黑白條紋神仙魚' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'fish_varc.png', cropCompare: '/assets/spotter/crops/b2_s1/fish_compare_varc.jpg', descZh: '紅白錦鯉與金魚轉為藍寶石霓虹魚與翡翠綠紋金魚' }
+      ]
+    },
+    {
+      word: 'card',
+      wordZh: '卡片',
+      x: 948,
+      y: 612,
+      radius: 95,
+      radiusX: 65,
+      radiusY: 95,
+      typeZh: '立體卡片',
+      descZh: '大理石圓桌上立著花卉祝賀卡片，右圖轉為立體生日蛋糕慶祝卡片',
+      slot: { x: 883, y: 517, w: 130, h: 190, rx: 16 },
+      patchFile: 'card.png',
+      cropCompare: '/assets/spotter/crops/b2_s1/card_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'card.png', cropCompare: '/assets/spotter/crops/b2_s1/card_compare.jpg', descZh: '手繪花卉慶祝卡轉為金黃立體生日蛋糕蠟燭卡片' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'card_varb.png', cropCompare: '/assets/spotter/crops/b2_s1/card_compare_varb.jpg', descZh: '手繪花卉慶祝卡轉為粉藍立體彩蝶飛舞 With Love 卡片' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'card_varc.png', cropCompare: '/assets/spotter/crops/b2_s1/card_compare_varc.jpg', descZh: '手繪花卉慶祝卡轉為珊瑚粉立體盛開玫瑰 Best Wishes 卡片' }
+      ]
+    },
+    {
+      word: 'gift',
+      wordZh: '禮物',
+      x: 1150,
+      y: 430,
+      radius: 85,
+      radiusX: 78,
+      radiusY: 85,
+      typeZh: '禮盒款式',
+      descZh: '實木長凳上擺放米色雕花禮盒配水藍緞帶，右圖轉為酒紅雙層禮盒配亮金緞帶',
+      slot: { x: 1072, y: 345, w: 156, h: 170, rx: 16 },
+      patchFile: 'gift.png',
+      cropCompare: '/assets/spotter/crops/b2_s1/gift_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'gift.png', cropCompare: '/assets/spotter/crops/b2_s1/gift_compare.jpg', descZh: '米色水藍緞帶禮盒轉為典雅酒紅禮盒配金色緞帶蝴蝶結' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'gift_varb.png', cropCompare: '/assets/spotter/crops/b2_s1/gift_compare_varb.jpg', descZh: '米色水藍緞帶禮盒轉為粉紫雙層禮盒配淡粉絲綢緞帶' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'gift_varc.png', cropCompare: '/assets/spotter/crops/b2_s1/gift_compare_varc.jpg', descZh: '米色水藍緞帶禮盒轉為祖母綠禮盒配銀白緞帶蝴蝶結' }
+      ]
+    },
+    {
+      word: 'flower',
+      wordZh: '花朵',
+      x: 1270,
+      y: 630,
+      radius: 125,
+      radiusX: 105,
+      radiusY: 125,
+      typeZh: '花卉盆栽',
+      descZh: '陶盆中盛開著粉紅康乃馨與向日葵，右圖轉為普羅旺斯紫薰衣草與白色小雛菊',
+      slot: { x: 1165, y: 505, w: 210, h: 250, rx: 16 },
+      patchFile: 'flower.png',
+      cropCompare: '/assets/spotter/crops/b2_s1/flower_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'flower.png', cropCompare: '/assets/spotter/crops/b2_s1/flower_compare.jpg', descZh: '粉紅康乃馨與向日葵轉為普羅旺斯紫薰衣草與白色小雛菊' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'flower_varb.png', cropCompare: '/assets/spotter/crops/b2_s1/flower_compare_varb.jpg', descZh: '粉紅康乃馨與向日葵轉為亮橘萬壽菊與深天藍繡球花' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'flower_varc.png', cropCompare: '/assets/spotter/crops/b2_s1/flower_compare_varc.jpg', descZh: '粉紅康乃馨與向日葵轉為濃情深紅玫瑰與滿天星花簇' }
+      ]
+    },
+    {
+      word: 'bird',
+      wordZh: '小鳥',
+      x: 1265,
+      y: 120,
+      radius: 70,
+      radiusX: 70,
+      radiusY: 50,
+      typeZh: '鳥類品種',
+      descZh: '橄欖樹枝頭上停棲著黃腹藍翅歐亞鳴鳥，右圖轉為鮮豔的北美紅雀',
+      slot: { x: 1195, y: 70, w: 140, h: 100, rx: 16 },
+      patchFile: 'bird.png',
+      cropCompare: '/assets/spotter/crops/b2_s1/bird_compare.jpg',
+      variants: [
+        { id: 'base', name: '基準', label: '基準型態', tag: 'Base' },
+        { id: 'varA', name: '變異 A', label: '型態 A', tag: 'Variant A', patchFile: 'bird.png', cropCompare: '/assets/spotter/crops/b2_s1/bird_compare.jpg', descZh: '黃腹藍翅鳴鳥轉為頭戴羽冠的鮮紅北美紅雀' },
+        { id: 'varB', name: '變異 B', label: '型態 B', tag: 'Variant B', patchFile: 'bird_varb.png', cropCompare: '/assets/spotter/crops/b2_s1/bird_compare_varb.jpg', descZh: '黃腹藍翅鳴鳥轉為羽色耀眼的翡翠綠與湖水藍蜂鳥' },
+        { id: 'varC', name: '變異 C', label: '型態 C', tag: 'Variant C', patchFile: 'bird_varc.png', cropCompare: '/assets/spotter/crops/b2_s1/bird_compare_varc.jpg', descZh: '黃腹藍翅鳴鳥轉為陽光金黃色金絲雀配白色羽翼' }
+      ]
+    }
   ],
   distractors: [
-    { word: 'fish', wordZh: '小魚' },
-    { word: 'bear', wordZh: '玩具熊' },
-    { word: 'doll', wordZh: '洋娃娃' },
-    { word: 'yo-yo', wordZh: '溜溜球' }
+    { word: 'balloon', wordZh: '氣球' },
+    { word: 'cake', wordZh: '蛋糕' },
+    { word: 'candle', wordZh: '蠟燭' },
+    { word: 'candy', wordZh: '糖果' }
   ]
 };
 
