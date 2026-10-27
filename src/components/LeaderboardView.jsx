@@ -327,8 +327,10 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
               : books;
             fetchedList = await fetchLeaderboard(selectedWeek, m.modeKeys, queryBooks, 50);
             if (Array.isArray(fetchedList)) {
-              // 密室逃脫與找不同：秒數為 0 或負數者屬異常髒資料，強制過濾排除
-              if (m.id === 'escape' || m.id === 'spotter') {
+              // 密室逃脫 (需 > 1 秒) 與找不同 (需 > 0 秒)：秒數異常髒資料強制過濾排除
+              if (m.id === 'escape') {
+                fetchedList = fetchedList.filter(row => row.time && Number(row.time) > 1);
+              } else if (m.id === 'spotter') {
                 fetchedList = fetchedList.filter(row => row.time && Number(row.time) > 0);
               }
               if (isPastWeek) {
@@ -368,7 +370,9 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
 
   const activeModalRanks = useMemo(() => {
     let list = modalModeId ? (boardData[modalModeId] || []) : [];
-    if (modalModeId === 'escape' || modalModeId === 'spotter') {
+    if (modalModeId === 'escape') {
+      list = list.filter(row => row.time && Number(row.time) > 1);
+    } else if (modalModeId === 'spotter') {
       list = list.filter(row => row.time && Number(row.time) > 0);
     }
     if (isPastWeek && Array.isArray(list)) {

@@ -55,13 +55,25 @@ export const VocabEscapeGame = ({
   const [solvedPuzzleIds, setSolvedPuzzleIds] = useState(new Set());
   const [lives, setLives] = useState(3);
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [finalTime, setFinalTime] = useState(null);
   const [hintCount, setHintCount] = useState(2);
   const [eliminatedOptions, setEliminatedOptions] = useState({});
   const [isBgmMuted, setIsBgmMuted] = useState(false);
 
   const timerRef = useRef(null);
   const startTimeRef = useRef(null);
+  const finalTimeRef = useRef(null);
   const hasAddedQuestPointsRef = useRef(false);
+  const gameStateRef = useRef(gameState);
+  const campaignDataRef = useRef(campaignData);
+
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
+
+  useEffect(() => {
+    campaignDataRef.current = campaignData;
+  }, [campaignData]);
 
   // 進入密室館時，背景預先載入所有 12 張超高壓縮 WebP 底圖，消滅任何黑屏與載入延遲
   useEffect(() => {
@@ -79,26 +91,37 @@ export const VocabEscapeGame = ({
     return currentStudent?.grade || '03';
   });
 
+  const studentGrade = selectedGrade || currentStudent?.grade || '03';
+
   // 初始化連續 3 室逃脫會話
-  const initCampaign = useCallback((overrideThemeId = null, overrideGrade = null) => {
-    const studentGrade = overrideGrade || selectedGrade || currentStudent?.grade || '03';
+  const initCampaign = useCallback((overrideThemeId = null, overrideGrade = null, force = false) => {
+    // 嚴格守護防線：若遊戲進行中或已進入勝利結算畫面，且已有戰役資料，嚴禁重置遊戲進度與計時器！
+    if (!force && gameStateRef.current !== 'briefing' && campaignDataRef.current) {
+      console.warn('initCampaign blocked: game is currently active or in victory screen');
+      return;
+    }
+
+    const targetGrade = overrideGrade || studentGrade;
     const themeToUse = overrideThemeId || selectedThemeId;
     const campaign = generateEscapeRoomCampaign(words, {
-      grade: studentGrade,
+      grade: targetGrade,
       selectedUnits: settings.selectedUnits || [],
       themeId: themeToUse
     });
 
     setCampaignData(campaign);
+    campaignDataRef.current = campaign;
     setCurrentChapterIndex(0);
     setSolvedPuzzleIds(new Set());
     setActivePuzzleId(null);
     setLives(3);
     setTimeElapsed(0);
+    setFinalTime(null);
+    finalTimeRef.current = null;
     setHintCount(2);
     setEliminatedOptions({});
     hasAddedQuestPointsRef.current = false;
-  }, [words, currentStudent, selectedGrade, settings.selectedUnits, selectedThemeId]);
+  }, [words, studentGrade, settings.selectedUnits, selectedThemeId]);
 
   // 切換密室風格主題
   const handleSelectTheme = (themeId) => {
@@ -107,12 +130,14 @@ export const VocabEscapeGame = ({
     try {
       localStorage.setItem('wutai_escape_theme', themeId);
     } catch (e) {}
-    initCampaign(themeId);
+    initCampaign(themeId, null, true);
   };
 
   useEffect(() => {
-    initCampaign();
-  }, [initCampaign]);
+    if (!campaignData && gameState === 'briefing') {
+      initCampaign();
+    }
+  }, [campaignData, gameState, initCampaign]);
 
   // 卸載時還原全螢幕、停止計時器與停止合成音樂
   useEffect(() => {
@@ -205,7 +230,10 @@ export const VocabEscapeGame = ({
     } catch (e) {}
 
     setGameState('playing');
+    setFinalTime(null);
+    finalTimeRef.current = null;
     startTimeRef.current = Date.now();
+    setTimeElapsed(0);
 
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
@@ -223,9 +251,15 @@ export const VocabEscapeGame = ({
   const handleExitToEscapeLobby = () => {
     soundEngine.click();
     stopMysteriousSpeech();
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     escapeAudio.stopCurrentMusic();
     exitFullscreen();
+    setFinalTime(null);
+    finalTimeRef.current = null;
+    setTimeElapsed(0);
     setGameState('briefing');
   };
 
@@ -233,7 +267,10 @@ export const VocabEscapeGame = ({
   const handleQuitGameToVocabLobby = () => {
     soundEngine.click();
     stopMysteriousSpeech();
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     escapeAudio.stopCurrentMusic();
     exitFullscreen();
     onBack();
@@ -244,9 +281,15 @@ export const VocabEscapeGame = ({
     const handlePopState = () => {
       if (gameState !== 'briefing') {
         stopMysteriousSpeech();
-        if (timerRef.current) clearInterval(timerRef.current);
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
         escapeAudio.stopCurrentMusic();
         exitFullscreen();
+        setFinalTime(null);
+        finalTimeRef.current = null;
+        setTimeElapsed(0);
         setGameState('briefing');
       }
     };
@@ -344,11 +387,23 @@ export const VocabEscapeGame = ({
 
   // 終極大脫逃通關結算
   const handleGrandVictory = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     soundEngine.win();
     try {
       confetti({ particleCount: 160, spread: 90, origin: { y: 0.5 } });
     } catch (e) {}
+
+    // 嚴格確保通關耗時計算精準 (以起始時間戳記差值為準，防禦任何 0 秒異常)
+    const finalSeconds = startTimeRef.current
+      ? Math.max(1, Math.floor((Date.now() - startTimeRef.current) / 1000))
+      : Math.max(1, timeElapsed);
+
+    finalTimeRef.current = finalSeconds;
+    setFinalTime(finalSeconds);
+    setTimeElapsed(finalSeconds);
 
     // 發放探索積分 +5
     if (addQuestPoints && !hasAddedQuestPointsRef.current) {
@@ -356,20 +411,17 @@ export const VocabEscapeGame = ({
       addQuestPoints(5);
     }
 
-    // 嚴格確保通關耗時計算精準且 >= 1 秒，防禦任何 0 秒異常
-    const finalSeconds = startTimeRef.current
-      ? Math.max(1, Math.floor((Date.now() - startTimeRef.current) / 1000))
-      : Math.max(1, timeElapsed);
-    setTimeElapsed(finalSeconds);
-
     setGameState('victory');
   };
 
   // 再挑戰一局全新的連續密室
   const handlePlayAgain = () => {
     soundEngine.click();
-    initCampaign();
+    setFinalTime(null);
+    finalTimeRef.current = null;
+    setTimeElapsed(0);
     setGameState('briefing');
+    initCampaign(null, null, true);
   };
 
   if (!campaignData || !currentChapter) {
@@ -524,7 +576,7 @@ export const VocabEscapeGame = ({
                     onClick={() => {
                       soundEngine.click();
                       setSelectedGrade(g.grade);
-                      initCampaign(null, g.grade);
+                      initCampaign(null, g.grade, true);
                     }}
                     className={`py-1.5 px-1 rounded-xl text-[11px] font-black transition-all cursor-pointer text-center leading-tight ${
                       isActive
@@ -819,7 +871,7 @@ export const VocabEscapeGame = ({
               🎉 逃脫成功！
             </h2>
             <p className="text-xs font-bold text-slate-400 mb-3">
-              探險家 <strong className="text-amber-400">{playerName}</strong> 歷時 <span className="text-amber-400 font-black text-base">{timeElapsed} 秒</span>（剩餘愛心 <span className="text-rose-400 font-black">❤️ x {lives}</span>）破解三連環全部封印！
+              探險家 <strong className="text-amber-400">{playerName}</strong> 歷時 <span className="text-amber-400 font-black text-base">{finalTime ?? finalTimeRef.current ?? timeElapsed} 秒</span>（剩餘愛心 <span className="text-rose-400 font-black">❤️ x {lives}</span>）破解三連環全部封印！
             </p>
 
             {/* 三大古老符印全數集齊 */}
@@ -851,7 +903,7 @@ export const VocabEscapeGame = ({
                 mode="escape"
                 book={qualifyingBook}
                 score={lives}
-                time={Math.max(1, timeElapsed)}
+                time={finalTime ?? finalTimeRef.current ?? timeElapsed}
                 totalCount={3}
                 rangeText={qualifyingBook === 'abc' ? 'Aa 字母神石密室大脫逃' : `第 ${qualifyingBook} 冊 - 三連環密室大脫逃`}
                 reviewWords={allWordsInvolved.map(w => ({

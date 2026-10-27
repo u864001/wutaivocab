@@ -52,8 +52,8 @@ export const HonorSubmissionCard = ({
   useEffect(() => {
     if (status === 'checking') return;
 
-    // 防刷門檻 (Anti-exploit Gate)：答題數 >= 5、總題數 >= 10，或挑戰時間 >= 20 秒
-    const isLegitimateSession = totalCount >= 10 || score >= 5 || time >= 20;
+    // 防刷門檻 (Anti-exploit Gate)：答題數 >= 5、總題數 >= 10，或挑戰時間 >= 20 秒，或密室逃脫通關
+    const isLegitimateSession = totalCount >= 10 || score >= 5 || time >= 20 || actualMode === 'escape';
     const isOwnGrade = isBookInOwnGrade(effectiveBook, currentStudent?.grade, actualMode);
 
     if (!isLegitimateSession) {
