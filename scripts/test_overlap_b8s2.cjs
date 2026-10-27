@@ -2,11 +2,11 @@ const TARGET_ITEMS = [
   { word: 'suit', x: 280, y: 305, rx: 75, ry: 130 },
   { word: 'jacket', x: 500, y: 365, rx: 85, ry: 120 },
   { word: 'skirt', x: 140, y: 440, rx: 70, ry: 115 },
-  { word: 'T-shirt', x: 235, y: 565, rx: 70, ry: 45 },
+  { word: 'T-shirt', x: 235, y: 572, rx: 70, ry: 55 },
   { word: 'blanket', x: 815, y: 515, rx: 70, ry: 105 },
   { word: 'glass', x: 958, y: 565, rx: 32, ry: 65 },
   { word: 'toast', x: 1085, y: 610, rx: 80, ry: 50 },
-  { word: 'peach', x: 1170, y: 505, rx: 45, ry: 55 }
+  { word: 'peach', x: 1185, y: 505, rx: 65, ry: 55 }
 ];
 
 function ellipseRadiusAtAngle(rx, ry, theta) {
