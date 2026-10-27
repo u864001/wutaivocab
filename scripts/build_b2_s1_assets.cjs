@@ -8,12 +8,12 @@ const TARGET_ITEMS = [
   {
     word: 'heart',
     wordZh: '愛心',
-    x: 182,
-    y: 245,
-    rx: 100,
-    ry: 140,
-    rotate: 12,
-    patchRect: { left: 45, top: 80, width: 270, height: 330, pad: 18 },
+    x: 190,
+    y: 243,
+    rx: 110,
+    ry: 142,
+    rotate: 10,
+    patchRect: { left: 45, top: 75, width: 275, height: 335, pad: 18 },
     typeZh: '愛心氣球',
     descZh: '左側紫藤花架上為粉紅愛心氣球，右圖變異依序為暖金愛心/深紅絲絨愛心/夢幻薰衣草紫愛心'
   },
@@ -283,7 +283,9 @@ async function generateAssets() {
       { input: boxedDiff, left: baseMeta.width + 10, top: 0 }
     ])
     .jpeg({ quality: 88 })
-    .toFile(v.sbsFile);
+    .toBuffer();
+
+    fs.writeFileSync(v.sbsFile, sbsFullBuf);
     console.log(`  ✓ Saved Side-by-Side preview: ${v.sbsFile}`);
 
     // Also copy to brain artifact directory for Mark review

@@ -1,5 +1,5 @@
 const TARGET_ITEMS = [
-  { word: 'heart', wordZh: '愛心', x: 182, y: 245, rx: 100, ry: 140, rotate: 12 },
+  { word: 'heart', wordZh: '愛心', x: 190, y: 243, rx: 110, ry: 142, rotate: 10 },
   { word: 'cat', wordZh: '貓咪', x: 270, y: 615, rx: 105, ry: 60 },
   { word: 'dog', wordZh: '小狗', x: 410, y: 480, rx: 78, ry: 92 },
   { word: 'fish', wordZh: '魚', x: 684, y: 508, rx: 150, ry: 52 },
@@ -16,7 +16,7 @@ function ellipseRadiusAtAngle(rx, ry, theta, rot = 0) {
   return (rx * ry) / Math.sqrt((ry * cos) ** 2 + (rx * sin) ** 2);
 }
 
-console.log('Testing 28 pairs of Book 2 Scene 1 coordinates (Final Provence Calibration):');
+console.log('Testing 28 pairs of Book 2 Scene 1 coordinates (Wider Right Heart):');
 let overlaps = 0;
 for (let i = 0; i < TARGET_ITEMS.length; i++) {
   for (let j = i + 1; j < TARGET_ITEMS.length; j++) {
