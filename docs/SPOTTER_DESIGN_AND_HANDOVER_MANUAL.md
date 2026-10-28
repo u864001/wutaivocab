@@ -8,6 +8,13 @@
 
 ## 一、 當前全專案改版進度與總結
 
+### 0. 專案負責人 Mark 專屬「隱藏變異工作台入口」(重要傳承)
+> [!TIP]
+> **【如何進入找不同測試工作台 (SpotterTestWorkbench)】**：
+> 1. **遊戲內放大鏡連點後門**：在遊戲首頁或遊戲畫面中，找到**「放大鏡圖標 (Magnifier)」連續快速點擊 5 下**（2 秒內），系統會響起過關提示音並直接開啟全功能 `SpotterTestWorkbench` 變異調校工作台！
+> 2. **URL 參數直達法**：在瀏覽器網址末端加上 `?view=spotter-test`（例如 `http://localhost:5173/?view=spotter-test` 或 `https://wutaivocab.pages.dev/?view=spotter-test`）。
+> 3. **核心用途**：可在後台檢視各冊場景的 Base 基準圖、Variant A / B / C 變異相異圖、4 格切片對比卡、Side-by-Side 判定框對照圖，並可直接點擊抓取目標物件座標！
+
 ### 1. 已完成並已推送到生產環境之成果
 - **第 2 冊圖 1（`book2_park`，南法普羅旺斯莊園慶典）**：
   - **題材理念**：結合 Culture 國際名勝（法國普羅旺斯古石莊園），擺脫單調課室，融入綠意藤蔓、石造噴泉拱門與歐風慶典氛圍。

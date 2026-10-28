@@ -16,7 +16,8 @@
 1. 第 2 冊圖 1（南法普羅旺斯莊園）已驗收上線（commit: c574140）。
 2. 密室逃脫排行榜秒數歸零/1秒的 Bug 已徹底根治並通過自動化測試（commit: 344c818）。
 3. 本地主專案目錄：C:\Users\user\.gemini\antigravity\scratch\wutaivocab
-4. 工作分支：dev 與 main（嚴禁推送至 Vercel，僅限 origin/dev 與 origin/main）。
+4. 工作分支：dev 與 main（推送到 origin/dev 與 vercel/dev）。
+5. **Mark 專屬後門入口**：遊戲中在「**放大鏡圖標 (Magnifier)**」連續快速點擊 5 下（或網址帶 `?view=spotter-test`），可隨時直達 `SpotterTestWorkbench` 檢視 Base 與 ABCD 變異、切片對比與判定框。
 
 【本次新對話的首要核心任務】：
 進行【第 2 冊圖 2】的大改重製！
