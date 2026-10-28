@@ -56,43 +56,49 @@ export const SPOTTER_CURRICULUM_MATRIX = {
   },
 
   // ── 第 2 冊 (三年級下學期) ──
+  // 單字候選五級金字塔：1. Unit 1~4 主單元字 > 2. Starter/Festival 節慶字 > 3. Phonics 具象字 > 4. 教育部300字 > 5. GEPT Kids
   '2': {
     bookTitle: 'Here We Go 第 2 冊',
     words: [
-      { en: 'balloon', zh: '氣球', type: 'concrete' },
-      { en: 'card', zh: '卡片', type: 'concrete' },
-      { en: 'cake', zh: '蛋糕', type: 'concrete' },
-      { en: 'candle', zh: '蠟燭', type: 'concrete' },
-      { en: 'flower', zh: '花朵', type: 'concrete' },
-      { en: 'gift', zh: '禮物', type: 'concrete' },
-      { en: 'candy', zh: '糖果', type: 'concrete' },
-      { en: 'party', zh: '派對帽', type: 'concrete' },
-      // 待登場候選
-      { en: 'bird', zh: '鳥', type: 'concrete' },
-      { en: 'cat', zh: '貓', type: 'concrete' },
-      { en: 'dog', zh: '狗', type: 'concrete' },
-      { en: 'fish', zh: '魚', type: 'concrete' },
-      { en: 'doctor', zh: '醫生', type: 'concrete' },
-      { en: 'nurse', zh: '護理師', type: 'concrete' },
-      { en: 'cook', zh: '廚師', type: 'concrete' },
-      { en: 'driver', zh: '司機', type: 'concrete' },
-      { en: 'student', zh: '學生', type: 'concrete' },
-      { en: 'teacher', zh: '教師', type: 'concrete' },
-      { en: 'grandfather', zh: '爺爺', type: 'concrete' },
-      { en: 'grandmother', zh: '奶奶', type: 'concrete' },
-      { en: 'father', zh: '爸爸', type: 'concrete' },
-      { en: 'mother', zh: '媽媽', type: 'concrete' },
-      { en: 'brother', zh: '兄弟', type: 'concrete' },
-      { en: 'sister', zh: '姊妹', type: 'concrete' },
-      { en: 'heart', zh: '愛心', type: 'concrete' },
-      { en: 'dance', zh: '跳舞', type: 'abstract' },
-      { en: 'draw', zh: '畫畫', type: 'abstract' },
-      { en: 'jump', zh: '跳', type: 'abstract' },
-      { en: 'sing', zh: '唱歌', type: 'abstract' },
-      { en: 'swim', zh: '游泳', type: 'abstract' },
-      { en: 'write', zh: '寫字', type: 'abstract' },
-      { en: 'tall', zh: '高的', type: 'abstract' },
-      { en: 'short', zh: '矮的', type: 'abstract' }
+      // ── 圖 1 已登場單字 (Unit 1 動物 + Festival 母親節) ──
+      { en: 'cat', zh: '貓咪', type: 'concrete', tier: 1, unit: 'Unit 1' },
+      { en: 'dog', zh: '小狗', type: 'concrete', tier: 1, unit: 'Unit 1' },
+      { en: 'bird', zh: '小鳥', type: 'concrete', tier: 1, unit: 'Unit 1' },
+      { en: 'fish', zh: '魚', type: 'concrete', tier: 1, unit: 'Unit 1' },
+      { en: 'card', zh: '卡片', type: 'concrete', tier: 2, unit: 'Festival' },
+      { en: 'flower', zh: '花朵', type: 'concrete', tier: 2, unit: 'Festival' },
+      { en: 'gift', zh: '禮物', type: 'concrete', tier: 2, unit: 'Festival' },
+      { en: 'heart', zh: '愛心', type: 'concrete', tier: 2, unit: 'Festival' },
+
+      // ── 圖 2 登場單字 (Unit 4 職業全套 + Phonics 具象 + Unit 2 動作) ──
+      { en: 'cook', zh: '廚師', type: 'concrete', tier: 1, unit: 'Unit 4' },
+      { en: 'driver', zh: '司機', type: 'concrete', tier: 1, unit: 'Unit 4' },
+      { en: 'doctor', zh: '醫生', type: 'concrete', tier: 1, unit: 'Unit 4' },
+      { en: 'nurse', zh: '護理師', type: 'concrete', tier: 1, unit: 'Unit 4' },
+      { en: 'teacher', zh: '教師', type: 'concrete', tier: 1, unit: 'Unit 4' },
+      { en: 'student', zh: '學生', type: 'concrete', tier: 1, unit: 'Unit 4' },
+      { en: 'pot', zh: '鍋子', type: 'concrete', tier: 3, unit: 'Unit 3 Phonics' },
+      { en: 'draw', zh: '畫畫', type: 'concrete', tier: 1, unit: 'Unit 2' },
+
+      // ── 待登場與複習候選 ──
+      { en: 'top', zh: '陀螺', type: 'concrete', tier: 3, unit: 'Unit 3 Phonics' },
+      { en: 'bed', zh: '床', type: 'concrete', tier: 3, unit: 'Unit 1 Phonics' },
+      { en: 'pet', zh: '寵物', type: 'concrete', tier: 3, unit: 'Unit 1 Phonics' },
+      { en: 'pig', zh: '豬', type: 'concrete', tier: 3, unit: 'Unit 2 Phonics' },
+      { en: 'grandfather', zh: '爺爺', type: 'concrete', tier: 1, unit: 'Unit 3' },
+      { en: 'grandmother', zh: '奶奶', type: 'concrete', tier: 1, unit: 'Unit 3' },
+      { en: 'father', zh: '爸爸', type: 'concrete', tier: 1, unit: 'Unit 3' },
+      { en: 'mother', zh: '媽媽', type: 'concrete', tier: 1, unit: 'Unit 3' },
+      { en: 'brother', zh: '兄弟', type: 'concrete', tier: 1, unit: 'Unit 3' },
+      { en: 'sister', zh: '姊妹', type: 'concrete', tier: 1, unit: 'Unit 3' },
+      { en: 'dance', zh: '跳舞', type: 'abstract', tier: 1, unit: 'Unit 2' },
+      { en: 'jump', zh: '跳', type: 'abstract', tier: 1, unit: 'Unit 2' },
+      { en: 'sing', zh: '唱歌', type: 'abstract', tier: 1, unit: 'Unit 2' },
+      { en: 'swim', zh: '游泳', type: 'abstract', tier: 1, unit: 'Unit 2' },
+      { en: 'write', zh: '寫字', type: 'abstract', tier: 1, unit: 'Unit 2' },
+      { en: 'read', zh: '閱讀', type: 'abstract', tier: 1, unit: 'Unit 2' },
+      { en: 'tall', zh: '高的', type: 'abstract', tier: 1, unit: 'Unit 3' },
+      { en: 'short', zh: '矮的', type: 'abstract', tier: 1, unit: 'Unit 3' }
     ]
   },
 
