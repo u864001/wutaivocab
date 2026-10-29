@@ -656,55 +656,57 @@ export const fetchStudentProfile = async (studentId) => {
   const localProfile = getLocalStudentProfile(studentId);
 
   try {
-    // 1. 優先嘗試專屬 student_profiles 資料表
-    const { data, error } = await supabase
-      .from('student_profiles')
-      .select('*')
-      .eq('student_id', studentId)
-      .maybeSingle();
+    // 1. 同時查詢專屬 student_profiles 資料表與 leaderboard (profile-sync 雙軌備份)，自動取最高值融合、絕不打架！
+    const [{ data: spData, error: spError }, syncProfile] = await Promise.all([
+      supabase.from('student_profiles').select('*').eq('student_id', studentId).maybeSingle(),
+      fetchProfileFromLeaderboard(studentId)
+    ]);
 
-    if (data) {
-      // 成功讀取遠端檔案，同步檢查學期換日並更新本機快取
+    if (spData || syncProfile) {
+      const parsedId = parseStudentId(studentId);
       const rawNormalized = {
-        student_id: data.student_id,
-        grade: data.grade,
-        class: data.class,
-        seat: data.seat,
-        nickname: data.nickname,
-        coins: Math.max(Number(data.coins) || 0, Number(localProfile?.coins) || 0),
-        quest_points: Math.max(Number(data.quest_points) || 0, Number(localProfile?.quest_points) || 0),
-        semester_id: data.semester_id || null,
-        semester_history: Array.isArray(data.semester_history) ? data.semester_history : (localProfile?.semester_history || []),
-        inventory: Array.isArray(data.inventory) && data.inventory.length > 0 ? data.inventory : (localProfile?.inventory || []),
-        daily_quest: (typeof data.daily_quest === 'object' && data.daily_quest) ? data.daily_quest : (localProfile?.daily_quest || {}),
-        updated_at: data.updated_at
+        ...(localProfile || {}),
+        student_id: studentId,
+        grade: spData?.grade || localProfile?.grade || syncProfile?.grade || parsedId.grade,
+        class: spData?.class || localProfile?.class || syncProfile?.class || parsedId.classNum,
+        seat: spData?.seat || localProfile?.seat || syncProfile?.seat || parsedId.seat,
+        nickname: spData?.nickname || localProfile?.nickname || syncProfile?.nickname || '好學生',
+        coins: Math.max(Number(spData?.coins) || 0, Number(syncProfile?.coins) || 0, Number(localProfile?.coins) || 0),
+        quest_points: Math.max(Number(spData?.quest_points) || 0, Number(syncProfile?.quest_points) || 0, Number(localProfile?.quest_points) || 0),
+        semester_id: spData?.semester_id || localProfile?.semester_id || syncProfile?.semester_id || null,
+        semester_history: (Array.isArray(spData?.semester_history) && spData.semester_history.length > 0)
+          ? spData.semester_history
+          : ((Array.isArray(localProfile?.semester_history) && localProfile.semester_history.length > 0) ? localProfile.semester_history : (syncProfile?.semester_history || [])),
+        inventory: (Array.isArray(spData?.inventory) && spData.inventory.length > 0)
+          ? spData.inventory
+          : ((Array.isArray(localProfile?.inventory) && localProfile.inventory.length > 0) ? localProfile.inventory : (syncProfile?.inventory || [])),
+        daily_quest: (spData?.daily_quest && Object.keys(spData.daily_quest).length > 0)
+          ? spData.daily_quest
+          : ((localProfile?.daily_quest && Object.keys(localProfile.daily_quest).length > 0) ? localProfile.daily_quest : (syncProfile?.daily_quest || {})),
+        updated_at: spData?.updated_at || new Date().toISOString()
       };
       const normalized = checkAndApplySemesterReset(rawNormalized);
       setLocalStudentProfile(studentId, normalized);
       syncProfileToLeaderboard(normalized).catch(() => {});
-      return normalized;
-    }
 
-    // 2. 若 student_profiles 表尚未建立或無資料，嘗試從 leaderboard (profile-sync 雙軌備份) 讀取！
-    const syncProfile = await fetchProfileFromLeaderboard(studentId);
-    if (syncProfile) {
-      const parsedId = parseStudentId(studentId);
-      const combined = {
-        ...(localProfile || {}),
-        student_id: studentId,
-        grade: localProfile?.grade || parsedId.grade,
-        class: localProfile?.class || parsedId.classNum,
-        seat: localProfile?.seat || parsedId.seat,
-        nickname: localProfile?.nickname || syncProfile.nickname || '好學生',
-        coins: Math.max(Number(syncProfile.coins) || 0, Number(localProfile?.coins) || 0),
-        quest_points: Math.max(Number(syncProfile.quest_points) || 0, Number(localProfile?.quest_points) || 0),
-        semester_id: localProfile?.semester_id || syncProfile.semester_id,
-        semester_history: (Array.isArray(localProfile?.semester_history) && localProfile.semester_history.length > 0) ? localProfile.semester_history : (syncProfile.semester_history || []),
-        inventory: (Array.isArray(localProfile?.inventory) && localProfile.inventory.length > 0) ? localProfile.inventory : (syncProfile.inventory || []),
-        daily_quest: (localProfile?.daily_quest && Object.keys(localProfile.daily_quest).length > 0) ? localProfile.daily_quest : (syncProfile.daily_quest || {})
-      };
-      const normalized = checkAndApplySemesterReset(combined);
-      setLocalStudentProfile(studentId, normalized);
+      // 若老師已建立 student_profiles 表，自動將融合後的最新資料回寫同步至 student_profiles
+      if (!spError && (!spData || Number(spData.coins) < normalized.coins || Number(spData.quest_points) < normalized.quest_points)) {
+        supabase.from('student_profiles').upsert({
+          student_id: normalized.student_id,
+          grade: normalized.grade,
+          class: normalized.class,
+          seat: normalized.seat,
+          nickname: normalized.nickname,
+          coins: normalized.coins,
+          quest_points: normalized.quest_points,
+          semester_id: normalized.semester_id || getCurrentSemesterId(),
+          semester_history: normalized.semester_history || [],
+          inventory: normalized.inventory || [],
+          daily_quest: normalized.daily_quest || {},
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'student_id' }).then(() => {}).catch(() => {});
+      }
+
       return normalized;
     }
 
@@ -917,37 +919,48 @@ export const fetchMonopolyLeaderboard = async (grade = null, limit = 50) => {
       query = query.eq('grade', String(grade).padStart(2, '0'));
     }
 
-    const { data, error } = await query
-      .order('coins', { ascending: false })
-      .limit(limit);
+    const [{ data, error }, { data: syncRows }] = await Promise.all([
+      query.order('coins', { ascending: false }).limit(limit),
+      supabase
+        .from('leaderboard')
+        .select('book, name, score, time, created_at')
+        .eq('mode', 'profile-sync')
+        .order('score', { ascending: false })
+        .limit(limit * 2)
+    ]);
 
-    if (!error && data && data.length > 0) {
-      return data;
+    const mergedMap = new Map();
+
+    if (!error && Array.isArray(data)) {
+      data.forEach(item => {
+        if (item?.student_id) mergedMap.set(String(item.student_id), { ...item, coins: Number(item.coins) || 0 });
+      });
     }
 
-    // 雙軌雲端備份讀取：自 leaderboard (mode: 'profile-sync') 即時產生全校金幣排行
-    const { data: syncRows } = await supabase
-      .from('leaderboard')
-      .select('book, name, score, time, created_at')
-      .eq('mode', 'profile-sync')
-      .order('score', { ascending: false })
-      .limit(limit);
-
-    if (syncRows && syncRows.length > 0) {
-      const mapped = syncRows.map(r => {
-        const p = parseStudentId(r.book);
-        return {
-          student_id: r.book,
-          grade: p.grade,
-          class: p.classNum,
-          seat: p.seat,
-          nickname: r.name,
-          coins: Number(r.score) || 0,
-          updated_at: r.created_at
-        };
-      }).filter(s => !grade || grade === '00' || grade === 'all' || s.grade === String(grade).padStart(2, '0'));
-      if (mapped.length > 0) return mapped;
+    if (Array.isArray(syncRows)) {
+      syncRows.forEach(r => {
+        if (!r?.book) return;
+        const sid = String(r.book);
+        const p = parseStudentId(sid);
+        if (grade && grade !== '00' && grade !== 'all' && p.grade !== String(grade).padStart(2, '0')) return;
+        const syncCoins = Number(r.score) || 0;
+        const existing = mergedMap.get(sid);
+        if (!existing || syncCoins > existing.coins) {
+          mergedMap.set(sid, {
+            student_id: sid,
+            grade: existing?.grade || p.grade,
+            class: existing?.class || p.classNum,
+            seat: existing?.seat || p.seat,
+            nickname: existing?.nickname || r.name,
+            coins: Math.max(syncCoins, existing?.coins || 0),
+            updated_at: r.created_at || existing?.updated_at
+          });
+        }
+      });
     }
+
+    const combined = Array.from(mergedMap.values()).sort((a, b) => b.coins - a.coins).slice(0, limit);
+    if (combined.length > 0) return combined;
 
     return getLocalLeaderboardProfiles('coins', grade, limit);
   } catch (err) {
@@ -968,37 +981,48 @@ export const fetchQuestPointsLeaderboard = async (grade = null, limit = 50) => {
       query = query.eq('grade', String(grade).padStart(2, '0'));
     }
 
-    const { data, error } = await query
-      .order('quest_points', { ascending: false })
-      .limit(limit);
+    const [{ data, error }, { data: syncRows }] = await Promise.all([
+      query.order('quest_points', { ascending: false }).limit(limit),
+      supabase
+        .from('leaderboard')
+        .select('book, name, score, time, created_at')
+        .eq('mode', 'profile-sync')
+        .order('time', { ascending: false })
+        .limit(limit * 2)
+    ]);
 
-    if (!error && data && data.length > 0) {
-      return data;
+    const mergedMap = new Map();
+
+    if (!error && Array.isArray(data)) {
+      data.forEach(item => {
+        if (item?.student_id) mergedMap.set(String(item.student_id), { ...item, quest_points: Number(item.quest_points) || 0 });
+      });
     }
 
-    // 雙軌雲端備份讀取：自 leaderboard (mode: 'profile-sync') 即時產生全校探索積分排行
-    const { data: syncRows } = await supabase
-      .from('leaderboard')
-      .select('book, name, score, time, created_at')
-      .eq('mode', 'profile-sync')
-      .order('time', { ascending: false })
-      .limit(limit);
-
-    if (syncRows && syncRows.length > 0) {
-      const mapped = syncRows.map(r => {
-        const p = parseStudentId(r.book);
-        return {
-          student_id: r.book,
-          grade: p.grade,
-          class: p.classNum,
-          seat: p.seat,
-          nickname: r.name,
-          quest_points: Number(r.time) || 0,
-          updated_at: r.created_at
-        };
-      }).filter(s => !grade || grade === '00' || grade === 'all' || s.grade === String(grade).padStart(2, '0'));
-      if (mapped.length > 0) return mapped;
+    if (Array.isArray(syncRows)) {
+      syncRows.forEach(r => {
+        if (!r?.book) return;
+        const sid = String(r.book);
+        const p = parseStudentId(sid);
+        if (grade && grade !== '00' && grade !== 'all' && p.grade !== String(grade).padStart(2, '0')) return;
+        const syncPoints = Number(r.time) || 0;
+        const existing = mergedMap.get(sid);
+        if (!existing || syncPoints > existing.quest_points) {
+          mergedMap.set(sid, {
+            student_id: sid,
+            grade: existing?.grade || p.grade,
+            class: existing?.class || p.classNum,
+            seat: existing?.seat || p.seat,
+            nickname: existing?.nickname || r.name,
+            quest_points: Math.max(syncPoints, existing?.quest_points || 0),
+            updated_at: r.created_at || existing?.updated_at
+          });
+        }
+      });
     }
+
+    const combined = Array.from(mergedMap.values()).sort((a, b) => b.quest_points - a.quest_points).slice(0, limit);
+    if (combined.length > 0) return combined;
 
     return getLocalLeaderboardProfiles('quest_points', grade, limit);
   } catch (err) {
