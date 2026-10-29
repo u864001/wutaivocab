@@ -291,7 +291,7 @@ export const Lobby = ({
       enTitle: 'CLASSIC ARENA',
       icon: Keyboard,
       bgImage: POSTER_QUIZ,
-      tag: '5 款挑戰',
+      tag: '4 款挑戰',
       colorName: 'blue',
       titleGlow: 'bg-gradient-to-b from-white via-sky-200 to-indigo-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_18px_rgba(56,189,248,0.7)]',
       spineTextColor: 'text-sky-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]',
@@ -302,7 +302,6 @@ export const Lobby = ({
       summary: '星空書閣 • 智慧結晶 • 全能評測',
       isDirectJump: false,
       games: [
-        { id: 'mcq-exam', name: '課本選擇題庫檢定', iconComp: BookOpen, iconColor: 'text-indigo-300', iconBg: 'bg-indigo-500/25 border-indigo-400/40', badge: '一頁一題' },
         { id: 'quiz-choice', name: '中英字義速辨', iconComp: Keyboard, iconColor: 'text-sky-400', iconBg: 'bg-sky-500/25 border-sky-400/40', badge: '雙向速測' },
         { id: 'quiz-listening', name: '英語聽力', iconComp: Volume2, iconColor: 'text-cyan-400', iconBg: 'bg-cyan-500/25 border-cyan-400/40', badge: '聽音辨字' },
         { id: 'spelling', name: '單字積木拼裝', iconComp: Puzzle, iconColor: 'text-amber-400', iconBg: 'bg-amber-500/25 border-amber-400/40', badge: '積木拼字' },
@@ -767,36 +766,21 @@ export const Lobby = ({
             </span>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                soundEngine.click();
-                onOpenLeaderboard();
-              }}
-              className="p-1.5 sm:px-4 sm:py-1.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/35 hover:to-yellow-500/45 border-2 border-amber-500/60 text-amber-800 dark:text-amber-200 font-heading text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-lg active:scale-95 transition-all cursor-pointer backdrop-blur-md shrink-0"
-              title="查看全校與年級英雄榜"
-            >
-              <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-bounce shrink-0" />
-              <span className="tracking-wide hidden sm:inline">英雄榜</span>
-              <span className="hidden md:inline text-[11px] text-amber-700 dark:text-amber-300 font-mono">
-                (看{studentGradeNum}年級排行)
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                soundEngine.click();
-                onNavigate('mcq-exam');
-              }}
-              className="p-1.5 sm:px-3.5 sm:py-1.5 rounded-2xl bg-gradient-to-r from-indigo-500/25 via-blue-500/30 to-indigo-500/25 hover:from-indigo-500/40 hover:to-blue-500/45 border-2 border-indigo-400/60 text-indigo-800 dark:text-indigo-200 font-heading text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-lg active:scale-95 transition-all cursor-pointer backdrop-blur-md shrink-0"
-              title="進入課本 1~9 冊一頁一題無干擾選擇題庫檢定專區"
-            >
-              <BookOpen className="w-4 h-4 text-indigo-500 dark:text-indigo-300 shrink-0" />
-              <span className="tracking-wide">選擇題庫檢定</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              soundEngine.click();
+              onOpenLeaderboard();
+            }}
+            className="p-1.5 sm:px-4 sm:py-1.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/35 hover:to-yellow-500/45 border-2 border-amber-500/60 text-amber-800 dark:text-amber-200 font-heading text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-lg active:scale-95 transition-all cursor-pointer backdrop-blur-md shrink-0"
+            title="查看全校與年級英雄榜"
+          >
+            <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400 animate-bounce shrink-0" />
+            <span className="tracking-wide hidden sm:inline">英雄榜</span>
+            <span className="hidden md:inline text-[11px] text-amber-700 dark:text-amber-300 font-mono">
+              (看{studentGradeNum}年級排行)
+            </span>
+          </button>
         )}
 
         {/* 右上角控制群組：業界標準統一排序（聲音 ➔ 雙語 ➔ 日夜主題 ➔ 勇士探險通行證） */}

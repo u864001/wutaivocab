@@ -28,7 +28,7 @@ const BG_IMAGE = '/assets/langlab/bg_language_lab.jpg';
 const MENTOR_OWL = '/assets/langlab/mentor_owl_standee.webp';
 const STUDENT_BEAR = '/assets/langlab/student_bear_standee.webp';
 
-export const LanguageLabHub = ({ onBack }) => {
+export const LanguageLabHub = ({ onBack, onNavigate }) => {
   const { coins, questPoints, addCoins, addQuestPoints } = useStudent();
 
   // ── 畫面導航狀態機 ──
@@ -688,22 +688,22 @@ export const LanguageLabHub = ({ onBack }) => {
                     setActiveMode('listening');
                     setViewState('grade_select');
                   }}
-                  className="group w-full p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-blue-900/90 to-indigo-900/90 hover:from-blue-800 hover:to-indigo-800 border-2 border-blue-400/50 hover:border-blue-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 sm:gap-4 active:scale-98"
+                  className="group w-full p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-blue-900/90 to-indigo-900/90 hover:from-blue-800 hover:to-indigo-800 border-2 border-blue-400/50 hover:border-blue-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 active:scale-98"
                 >
-                  <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-blue-600/30 border border-blue-400/50 flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition-transform shrink-0">
+                  <div className="w-11 h-11 rounded-2xl bg-blue-600/30 border border-blue-400/50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
                     🎧
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-base sm:text-lg font-black text-blue-200 font-heading">
+                      <h3 className="text-sm sm:text-base font-black text-blue-200 font-heading">
                         聽力測驗 (Listening Quiz)
                       </h3>
                       <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-mono font-bold">
                         15 題特訓
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 font-bold mt-0.5 line-clamp-1 sm:line-clamp-none">
-                      包含低年級字母聽音、中高年級生活會話，訓練敏銳英語耳！
+                    <p className="text-xs text-slate-300 font-bold mt-0.5 truncate">
+                      包含字母聽音與全冊生活會話聽力選答
                     </p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-blue-300 group-hover:translate-x-1 transition-transform shrink-0" />
@@ -718,28 +718,57 @@ export const LanguageLabHub = ({ onBack }) => {
                     setActiveMode('speaking');
                     setViewState('grade_select');
                   }}
-                  className="group w-full p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-rose-900/90 to-pink-900/90 hover:from-rose-800 hover:to-pink-800 border-2 border-rose-400/50 hover:border-rose-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 sm:gap-4 active:scale-98"
+                  className="group w-full p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-rose-900/90 to-pink-900/90 hover:from-rose-800 hover:to-pink-800 border-2 border-rose-400/50 hover:border-rose-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 active:scale-98"
                 >
-                  <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-rose-600/30 border border-rose-400/50 flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition-transform shrink-0">
+                  <div className="w-11 h-11 rounded-2xl bg-rose-600/30 border border-rose-400/50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
                     🎙️
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-base sm:text-lg font-black text-rose-200 font-heading">
+                      <h3 className="text-sm sm:text-base font-black text-rose-200 font-heading">
                         口說測驗 (Speaking Challenge)
                       </h3>
                       <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-mono font-bold">
                         AI 即時評測
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 font-bold mt-0.5 line-clamp-1 sm:line-clamp-none">
-                      大聲開口念出字母與句子，黑熊學伴與 AI 星級即時評分！
+                    <p className="text-xs text-slate-300 font-bold mt-0.5 truncate">
+                      大聲開口跟讀字母與課文句子，AI 即時發音評分
                     </p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-rose-300 group-hover:translate-x-1 transition-transform shrink-0" />
                 </button>
 
-                {/* 3. 影音播放專區 */}
+                {/* 3. 課本題庫檢定 (B 入口直通課本題庫檢定館) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    stopSpeech();
+                    soundEngine.click();
+                    if (onNavigate) onNavigate('mcq-exam');
+                  }}
+                  className="group w-full p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-emerald-900/90 to-teal-900/90 hover:from-emerald-800 hover:to-teal-800 border-2 border-emerald-400/50 hover:border-emerald-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 active:scale-98"
+                >
+                  <div className="w-11 h-11 rounded-2xl bg-emerald-600/30 border border-emerald-400/50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
+                    📝
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm sm:text-base font-black text-emerald-200 font-heading">
+                        課本題庫檢定 (Grammar & Dialogue Exam)
+                      </h3>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold">
+                        1～8 冊＋國一先修
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 font-bold mt-0.5 truncate">
+                      一頁一題專業檢定、個人易錯題複習與金幣獎勵
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-emerald-300 group-hover:translate-x-1 transition-transform shrink-0" />
+                </button>
+
+                {/* 4. 影音播放專區 */}
                 <button
                   type="button"
                   onClick={() => {
@@ -747,22 +776,22 @@ export const LanguageLabHub = ({ onBack }) => {
                     soundEngine.click();
                     setViewState('video_room');
                   }}
-                  className="group w-full p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-900/90 to-orange-900/90 hover:from-amber-800 hover:to-orange-800 border-2 border-amber-400/50 hover:border-amber-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 sm:gap-4 active:scale-98"
+                  className="group w-full p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-900/90 to-orange-900/90 hover:from-amber-800 hover:to-orange-800 border-2 border-amber-400/50 hover:border-amber-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 active:scale-98"
                 >
-                  <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-amber-600/30 border border-amber-400/50 flex items-center justify-center text-2xl sm:text-3xl group-hover:scale-110 transition-transform shrink-0">
+                  <div className="w-11 h-11 rounded-2xl bg-amber-600/30 border border-amber-400/50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
                     🎬
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-base sm:text-lg font-black text-amber-200 font-heading">
-                        🎬 影音館 • 原音原片測驗與放映
+                      <h3 className="text-sm sm:text-base font-black text-amber-200 font-heading">
+                        單元微電影與歌謠館 (Video Lab)
                       </h3>
-                      <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-mono font-bold animate-pulse">
+                      <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold">
                         看影片選句子
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 font-bold mt-0.5 line-clamp-1 sm:line-clamp-none">
-                      播放 YouTube 原片畫面與角色母語原音剪輯，進行微秒聽力選答特訓！
+                    <p className="text-xs text-slate-300 font-bold mt-0.5 truncate">
+                      播放原片畫面與角色原音剪輯，進行視聽選答特訓
                     </p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-amber-300 group-hover:translate-x-1 transition-transform shrink-0" />

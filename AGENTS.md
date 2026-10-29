@@ -34,7 +34,7 @@
 | **鷹眼神探 • 找不同** (`spotter`) | `src/games/spotter/` | [`docs/SPOTTER_DESIGN_AND_HANDOVER_MANUAL.md`](docs/SPOTTER_DESIGN_AND_HANDOVER_MANUAL.md) |
 | **多人連線對戰 & 3D 隕石防衛戰** (`battle`, `meteor`) | `src/games/battle/`, `src/games/meteor/` | [`docs/games/BATTLE_AND_METEOR_SPEC.md`](docs/games/BATTLE_AND_METEOR_SPEC.md) |
 | **叢林貪食蛇、打地鼠、極速滑卡** (`snake`, `mole`, `swipe`) | `src/games/snake/`, `mole/`, `swipe/` | [`docs/games/SNAKE_AND_ARCADE_SPEC.md`](docs/games/SNAKE_AND_ARCADE_SPEC.md) |
-| **經典/聽力選擇題、拼字、手寫檢定** (`quiz`, `spelling`, `handwriting`) | `src/games/quiz/`, `spelling/`, `handwriting/` | [`docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md`](docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md) |
+| **課本題庫檢定館、經典選擇、拼字、手寫** (`mcq-exam`, `quiz`, `spelling`, `handwriting`) | `src/games/exam/`, `quiz/`, `spelling/`, `handwriting/` | [`docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md`](docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md) |
 | **密室逃脫、字母迷宮、星際記憶翻牌** (`escape`, `maze`, `memory`) | `src/games/escape/`, `maze/`, `memory/` | [`docs/games/ESCAPE_MAZE_MEMORY_SPEC.md`](docs/games/ESCAPE_MAZE_MEMORY_SPEC.md) |
 | **霧臺家園、聽說實驗室、自然發音、電子書** (`town`, `langlab`, `phonics`) | `src/games/town/`, `src/features/` | [`docs/games/TOWN_AND_LANGLAB_SPEC.md`](docs/games/TOWN_AND_LANGLAB_SPEC.md) |
 | **霧臺三大專案生態與雲端架構總覽** | `src/services/` | [`docs/ECOSYSTEM_OVERVIEW.md`](docs/ECOSYSTEM_OVERVIEW.md) |

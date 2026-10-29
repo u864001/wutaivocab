@@ -9,8 +9,8 @@ export const GRADE_OPTIONS = [
   { id: '03', zh: '三年級', en: 'Grade 3', shortZh: '3年', books: ['1', '2'], descZh: '三年級第1~2冊綜合' },
   { id: '04', zh: '四年級', en: 'Grade 4', shortZh: '4年', books: ['3', '4'], descZh: '四年級第3~4冊進階' },
   { id: '05', zh: '五年級', en: 'Grade 5', shortZh: '5年', books: ['5', '6'], descZh: '五年級第5~6冊高年級' },
-  { id: '06', zh: '六年級', en: 'Grade 6', shortZh: '6年', books: ['7', '8'], descZh: '六年級第7~8冊畢業會考' },
-  { id: '99', zh: '訪客體驗', en: 'Guest Mode', shortZh: '訪客', books: ['1', '2', '3', '4', '5', '6', '7', '8', 'abc'], isGuest: true, descZh: '全校自由體驗與遊客試玩' }
+  { id: '06', zh: '六年級', en: 'Grade 6', shortZh: '6年', books: ['7', '8', '9'], descZh: '六年級第7~8冊畢業會考與國一先修' },
+  { id: '99', zh: '訪客體驗', en: 'Guest Mode', shortZh: '訪客', books: ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'abc'], isGuest: true, descZh: '全校自由體驗與遊客試玩' }
 ];
 
 export const CLASS_OPTIONS = [
@@ -201,6 +201,6 @@ export const getGradeFromBook = (book) => {
   if (b === '1' || b === '2') return '03'; // 國小三年級啟蒙第 1, 2 冊
   if (b === '3' || b === '4') return '04'; // 四年級第 3, 4 冊
   if (b === '5' || b === '6') return '05'; // 五年級第 5, 6 冊
-  if (b === '7' || b === '8') return '06'; // 六年級第 7, 8 冊
+  if (b === '7' || b === '8' || b === '9') return '06'; // 六年級第 7, 8 冊與國一先修
   return '00';
 };

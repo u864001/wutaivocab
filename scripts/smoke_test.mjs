@@ -168,8 +168,29 @@ async function run() {
       failures.push({ target: 'Static Contract: premature onBack() on empty queue', file: f });
     }
   }
+  // 驗證課本題庫檢定館 (HERE_WE_GO_MCQ_BANK) 7 道品質閘門與每冊百題契約
+  const { HERE_WE_GO_MCQ_BANK } = await import('../src/data/hereWeGoMcqBank.js');
+  const mcqIds = new Set();
+  const mcqBookCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+  for (const q of HERE_WE_GO_MCQ_BANK) {
+    if (!q.id || mcqIds.has(q.id)) failures.push({ target: 'Static Contract: Duplicate MCQ ID', id: q.id });
+    mcqIds.add(q.id);
+    if (!mcqBookCounts[q.book] && mcqBookCounts[q.book] !== 0) failures.push({ target: 'Static Contract: Invalid MCQ book', id: q.id });
+    else mcqBookCounts[q.book]++;
+    if (!Array.isArray(q.options) || q.options.length < 3 || new Set(q.options).size !== q.options.length) {
+      failures.push({ target: 'Static Contract: Invalid MCQ options', id: q.id });
+    }
+    if (typeof q.answer !== 'number' || q.answer < 0 || q.answer >= q.options.length) {
+      failures.push({ target: 'Static Contract: Invalid MCQ answer index', id: q.id });
+    }
+  }
+  for (let b = 1; b <= 9; b++) {
+    if (mcqBookCounts[b] < 100) {
+      failures.push({ target: `Static Contract: MCQ Book ${b} count < 100`, count: mcqBookCounts[b] });
+    }
+  }
   if (failures.length === 0) {
-    console.log('  ✓ Static Contract Gate passed (all soundEngine methods & game lifecycle hooks verified)');
+    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks & ${HERE_WE_GO_MCQ_BANK.length} MCQs across Books 1-9 verified)`);
   }
 
   // ── 檢查點 1: 排行榜視圖與互動 ──
@@ -463,18 +484,18 @@ async function run() {
   }
   console.log('  ✓ Interactive gameplay clicks verified for quiz-choice, spelling, memory, meteor, swipe, mole');
 
-  // 5E. 課本選擇題庫檢定專區 (mcq-exam) 一頁一題選範圍 -> 開始作答 -> 選答案 -> 下一題 深度驗證
+  // 5E. 課本題庫檢定館 (mcq-exam) 一頁式免捲動選範圍 -> 開始檢定 -> 選答案 -> 下一題 深度驗證
   client.exceptions = [];
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
   await new Promise(r => setTimeout(r, 800));
   const mcqExamCheck = await client.evaluate(`
     (async () => {
-      const startBtn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('開始作答'));
+      const startBtn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('開始檢定') || (b.innerText || '').includes('開始作答'));
       if (!startBtn) return { ok: false, reason: 'No start button on setup view' };
       startBtn.click();
       await new Promise(r => setTimeout(r, 400));
       const body1 = document.body.innerText || '';
-      const onQ1 = body1.includes('第 1 題');
+      const onQ1 = body1.includes('1 / 20') || body1.includes('Question 1');
       // 點選第一個選項 (A)
       const optBtns = Array.from(document.querySelectorAll('button')).filter(b => (b.innerText || '').trim().startsWith('A'));
       if (optBtns[0]) optBtns[0].click();
@@ -483,14 +504,14 @@ async function run() {
       if (nextBtn) nextBtn.click();
       await new Promise(r => setTimeout(r, 300));
       const body2 = document.body.innerText || '';
-      const onQ2 = body2.includes('第 2 題') && body2.includes('已作答：1 /');
+      const onQ2 = body2.includes('2 / 20') || body2.includes('Question 2');
       return { ok: onQ1 && onQ2, onQ1, onQ2 };
     })()
   `);
   if (!mcqExamCheck?.ok || client.exceptions.length > 0) {
     failures.push({ target: 'PureMcqExamView (mcq-exam) One-Page Flow', details: mcqExamCheck, exceptions: client.exceptions });
   } else {
-    console.log('  ✓ PureMcqExamView (mcq-exam): Scope setup -> Q1 answer -> Next page Q2 verified');
+    console.log('  ✓ PureMcqExamView (mcq-exam): Zero-scroll setup -> Q1 answer -> Next page Q2 verified');
   }
 
   // ── 檢查點 6: 全部 14 款遊戲跨角色矩陣全量啟動 ──

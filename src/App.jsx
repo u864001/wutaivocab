@@ -265,8 +265,8 @@ export function App() {
 
   const handleGoParent = () => {
     // 依層級關係精確返回上一層：
-    // 若當前在單字學習館大廳 (lobby)、自然發音 (phonics)、小鎮 (town)、電子書 (textbook) 或聽說館 (langlab)，上一層為學習宇宙首頁 (portal)
-    if (currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab') {
+    // 若當前在單字學習館大廳 (lobby)、自然發音 (phonics)、小鎮 (town)、電子書 (textbook)、聽說館 (langlab) 或題庫檢定館 (mcq-exam)，上一層為學習宇宙首頁 (portal)
+    if (currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab' || currentView === 'mcq-exam') {
       handleNavigate('portal');
     } else if (currentView !== 'portal') {
       // 若當前在任何單字遊戲、字母迷宮、排行榜或教師後台，上一層為單字學習館 (lobby)
@@ -276,8 +276,8 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-300">
-      {/* 全域統一導覽列 (大廳、排行榜與打地鼠擁有沉浸式 HUD，其餘頁面維持標準 Header) */}
-      {currentView !== 'lobby' && currentView !== 'leaderboard' && currentView !== 'mole' && (
+      {/* 全域統一導覽列 (大廳、排行榜、打地鼠與課本題庫檢定館擁有專屬零干擾頂欄，其餘頁面維持標準 Header) */}
+      {currentView !== 'lobby' && currentView !== 'leaderboard' && currentView !== 'mole' && currentView !== 'mcq-exam' && (
         <Header
           onOpenTeacherHub={handleOpenTeacherHub}
           onOpenLeaderboard={() => handleNavigate('leaderboard')}
@@ -453,7 +453,7 @@ export function App() {
           {currentView === 'mcq-exam' && (
             <PureMcqExamView
               settings={settings}
-              onBack={() => handleNavigate('lobby')}
+              onBack={() => handleNavigate('portal')}
             />
           )}
 
@@ -472,6 +472,7 @@ export function App() {
           {currentView === 'langlab' && (
             <LanguageLabHub
               onBack={() => handleNavigate('portal')}
+              onNavigate={handleNavigate}
             />
           )}
 
