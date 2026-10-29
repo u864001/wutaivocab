@@ -6,41 +6,51 @@ sharp.cache(false);
 
 const ARTIFACT_DIR = 'C:/Users/user/.gemini/antigravity/brain/e8ef4730-7d1e-4c8e-830e-0f30cb0f62ac';
 
+// Calibrated Target Items strictly matching Mark's latest instructions:
+// 1. draw: Shrink to canvas itself (x: 105~280, y: 460~640), avoiding stool/chair & palette.
+// 2. cook: Narrow and snug to chef only (x: 375~525, y: 345~765), avoiding stool & palette on left.
+// 3. pot: Shifted up and right onto table (x: 535~710, y: 405~585), covering full pot, clear of chef.
+// 4. doctor: Shifted up and right to Bear Doctor full body (x: 740~865, y: 290~630).
+// 5. nurse: Shifted up and right to Rabbit Nurse full body (x: 865~965, y: 270~635).
+// 6. student: Shifted left to student boy (x: 970~1080, y: 510~765), no overlap with nurse or teacher.
+// 7. driver: Directly above teacher in cable car (x: 1120~1260, y: 260~435).
+// 8. teacher: Shorter below driver, expanded right to cover flag tail (x: 1085~1355, y: 440~765).
+
 const TARGET_ITEMS = [
   {
     word: 'draw',
-    wordZh: '畫架寫生',
-    x: 198,
-    y: 590,
-    rx: 125,
-    ry: 175,
-    slot: { x: 70, y: 415, w: 255, h: 350, rx: 16 },
+    wordZh: '寫生畫布',
+    x: 192,
+    y: 550,
+    rx: 85,
+    ry: 90,
+    slot: { x: 105, y: 460, w: 175, h: 180, rx: 16 },
     typeZh: '畫布題材',
-    descVarA: '畫架轉為舊金山叮噹車與彩虹海灣水彩畫，配水彩風格調色盤',
-    descVarB: '畫架轉為夕陽日落暖金海灣帆船畫，配暖橘瓷調色盤',
-    descVarC: '畫架轉為黃昏濃彩晚霞金色帆船畫，配高對比原木調色盤'
+    descVarA: '畫架畫布轉為舊金山叮噹車與彩虹海灣水彩畫',
+    descVarB: '畫架畫布轉為夕陽日落暖金海灣帆船畫',
+    descVarC: '畫架畫布轉為黃昏濃彩晚霞金色帆船畫'
   },
   {
     word: 'cook',
-    wordZh: '主廚',
-    x: 415,
-    y: 558,
-    rx: 85,
+    wordZh: '廚師本人',
+    x: 450,
+    y: 555,
+    rx: 75,
     ry: 205,
-    slot: { x: 330, y: 350, w: 170, h: 415, rx: 16 },
+    slot: { x: 375, y: 345, w: 150, h: 420, rx: 16 },
     typeZh: '主廚造型',
     descVarA: '絡腮鬍大廚轉為金髮微笑女主廚穿桃粉圍裙端剛出爐金黃牛角可頌',
     descVarB: '絡腮鬍大廚轉為戴眼鏡小熊點心師穿深藍圍裙端草莓鮮奶油雙層蛋糕',
-    descVarC: '絡腮鬍大廚轉為金髮女主廚穿亮麗桃紅圍裙端香酥焦糖可頌'
+    descVarC: '絡腮鬍大廚轉為亮麗桃紅圍裙金髮女主廚端香酥焦糖可頌'
   },
   {
     word: 'pot',
-    wordZh: '料理燉鍋',
-    x: 588,
-    y: 548,
-    rx: 80,
+    wordZh: '木桌鍋子',
+    x: 622,
+    y: 495,
+    rx: 85,
     ry: 90,
-    slot: { x: 505, y: 455, w: 165, h: 185, rx: 16 },
+    slot: { x: 535, y: 405, w: 175, h: 180, rx: 16 },
     typeZh: '料理燉鍋',
     descVarA: '雙耳純銅燉鍋轉為深海曜石藍法式雙耳琺瑯鑄鐵燉鍋配金頂鈕',
     descVarB: '雙耳純銅燉鍋轉為溫暖南瓜橘雙耳琺瑯料理鍋配不銹鋼把手',
@@ -49,11 +59,11 @@ const TARGET_ITEMS = [
   {
     word: 'doctor',
     wordZh: '小熊醫生',
-    x: 770,
+    x: 802,
     y: 460,
-    rx: 55,
+    rx: 60,
     ry: 170,
-    slot: { x: 715, y: 290, w: 110, h: 340, rx: 16 },
+    slot: { x: 740, y: 290, w: 125, h: 340, rx: 16 },
     typeZh: '醫生造型',
     descVarA: '棕熊白袍醫生轉為白貓綠色手術袍醫生戴圓框金眼鏡與銀聽診器',
     descVarB: '棕熊白袍醫生轉為柯基犬天藍護理袍配鮮紅聽診器醫生',
@@ -62,50 +72,50 @@ const TARGET_ITEMS = [
   {
     word: 'nurse',
     wordZh: '兔子護士',
-    x: 880,
-    y: 460,
+    x: 915,
+    y: 452,
     rx: 50,
     ry: 180,
-    slot: { x: 830, y: 280, w: 100, h: 360, rx: 16 },
+    slot: { x: 865, y: 270, w: 100, h: 365, rx: 16 },
     typeZh: '護士造型',
     descVarA: '兔子天藍護理服轉為柴犬甜美粉紅護士服手提紅十字急救箱',
     descVarB: '兔子天藍護理服轉為綿羊薄荷淡綠護理裙裝手平端金屬藥盤',
-    descVarC: '兔子天藍護理服轉為柴犬亮粉紅護理服配加固醫療急救包'
-  },
-  {
-    word: 'driver',
-    wordZh: '司機',
-    x: 1020,
-    y: 362,
-    rx: 55,
-    ry: 95,
-    slot: { x: 965, y: 265, w: 110, h: 195, rx: 16 },
-    typeZh: '司機制服',
-    descVarA: '深藍制服司機轉為慈祥灰白鬍子老司機穿深酒紅金邊節慶制服與紅大盤帽',
-    descVarB: '深藍制服司機轉為精神年輕司機穿卡其大地色戶外制服外套與遮陽帽',
-    descVarC: '深藍制服司機轉為慈祥老司機穿深邃勃艮第紅鑲金制服'
+    descVarC: '兔子天藍護理服轉為柴犬亮粉紅護理服急救包護士'
   },
   {
     word: 'student',
     wordZh: '學生',
-    x: 1032,
-    y: 620,
-    rx: 68,
-    ry: 145,
-    slot: { x: 965, y: 475, w: 135, h: 290, rx: 16 },
+    x: 1025,
+    y: 638,
+    rx: 55,
+    ry: 125,
+    slot: { x: 970, y: 510, w: 110, h: 255, rx: 16 },
     typeZh: '學生裝扮',
     descVarA: '反戴球帽男學童轉為綁雙馬尾戴黃遮陽帽粉橘針織衫可愛女學童',
     descVarB: '反戴球帽男學童轉為草綠棒球帽紅白雙色運動休閒外套拉輪式書包小男生',
-    descVarC: '反戴球帽男學童轉為草綠棒球帽紅白熱血休閒運動外套小男生'
+    descVarC: '反戴球帽男學童轉為草綠棒球帽紅白休閒外套男生'
+  },
+  {
+    word: 'driver',
+    wordZh: '叮噹車司機',
+    x: 1190,
+    y: 348,
+    rx: 70,
+    ry: 85,
+    slot: { x: 1120, y: 260, w: 140, h: 175, rx: 16 },
+    typeZh: '司機制服',
+    descVarA: '深藍制服司機轉為慈祥灰白鬍子老司機穿深酒紅金邊節慶制服與紅大盤帽',
+    descVarB: '深藍制服司機轉為精神年輕司機穿卡其大地色戶外制服外套與遮陽帽',
+    descVarC: '深藍制服司機轉為深邃勃艮第紅鑲金制服司機'
   },
   {
     word: 'teacher',
-    wordZh: '教師',
+    wordZh: '教師與旗尾',
     x: 1220,
-    y: 580,
-    rx: 105,
-    ry: 185,
-    slot: { x: 1115, y: 395, w: 210, h: 370, rx: 16 },
+    y: 602,
+    rx: 130,
+    ry: 160,
+    slot: { x: 1085, y: 440, w: 270, h: 325, rx: 16 },
     typeZh: '老師服飾',
     descVarA: '芥末黃外套老師轉為短髮戴酒紅眼鏡穿深海藍套裝手持銀色伸縮導覽指標',
     descVarB: '芥末黃外套老師轉為戴深綠貝雷帽穿草綠格紋英倫風衣手抱迷你地球儀',
@@ -113,7 +123,7 @@ const TARGET_ITEMS = [
   }
 ];
 
-function createSlotFeatherMask(w, h, pad = 14) {
+function createSlotFeatherMask(w, h, pad = 12) {
   const buf = Buffer.alloc(w * h);
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
@@ -135,7 +145,7 @@ function createSlotFeatherMask(w, h, pad = 14) {
   return buf;
 }
 
-async function applyFeatherMask(cropBuffer, w, h, pad = 14) {
+async function applyFeatherMask(cropBuffer, w, h, pad = 12) {
   const rawRgb = await sharp(cropBuffer).ensureAlpha().raw().toBuffer();
   const mask = createSlotFeatherMask(w, h, pad);
   for (let i = 0; i < w * h; i++) {
@@ -145,7 +155,7 @@ async function applyFeatherMask(cropBuffer, w, h, pad = 14) {
 }
 
 async function main() {
-  console.log('=== Building Flawless Natural Method A Assets ===');
+  console.log('=== Building Final Calibrated Method A Assets ===');
 
   const baseImagePath = 'public/assets/spotter/book2_scene2_base.jpg';
   const rawVarAPath = 'public/assets/spotter/book2_scene2_diff_raw_varA_v2.jpg';
@@ -163,26 +173,26 @@ async function main() {
 
   for (const item of TARGET_ITEMS) {
     const s = item.slot;
-    console.log(`Processing ${item.word} at (${s.x}, ${s.y}, ${s.w}, ${s.h})...`);
+    console.log(`Extracting & building patches for ${item.word} at (${s.x}, ${s.y}, ${s.w}, ${s.h})...`);
 
     // 1. Base Crop
     const baseCrop = await sharp(baseImagePath)
       .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
       .toBuffer();
 
-    // 2. Var A Crop directly from raw Var A image!
+    // 2. Var A Crop directly from raw Var A image
     const varACropRaw = await sharp(rawVarAPath)
       .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
       .toBuffer();
-    const patchA = await applyFeatherMask(varACropRaw, s.w, s.h, 14);
+    const patchA = await applyFeatherMask(varACropRaw, s.w, s.h, 12);
 
-    // 3. Var B Crop directly from raw Var B image!
+    // 3. Var B Crop directly from raw Var B image
     const varBCropRaw = await sharp(rawVarBPath)
       .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
       .toBuffer();
-    const patchB = await applyFeatherMask(varBCropRaw, s.w, s.h, 14);
+    const patchB = await applyFeatherMask(varBCropRaw, s.w, s.h, 12);
 
-    // 4. Var C: High-fidelity natural variation without hue-rotating the floor/sea
+    // 4. Var C: High-fidelity natural variation without color-blocking background
     let varCCropRaw;
     switch (item.word) {
       case 'draw': // From Var B sunset -> Rich saturated warm dusk
@@ -190,7 +200,7 @@ async function main() {
           .modulate({ saturation: 1.45, brightness: 0.96 })
           .toBuffer();
         break;
-      case 'cook': // From Var A blonde chef -> Extra vibrant peach apron & crisp golden croissants
+      case 'cook': // From Var A blonde chef -> Extra vibrant peach apron & golden croissants
         varCCropRaw = await sharp(varACropRaw)
           .modulate({ saturation: 1.35, brightness: 1.05 })
           .toBuffer();
@@ -210,14 +220,14 @@ async function main() {
           .modulate({ saturation: 1.4, brightness: 1.06 })
           .toBuffer();
         break;
-      case 'driver': // From Var A red festive driver -> Deep royal burgundy
-        varCCropRaw = await sharp(varACropRaw)
-          .modulate({ saturation: 1.55, brightness: 0.92 })
-          .toBuffer();
-        break;
       case 'student': // From Var B tracksuit boy -> Vivid racing red & crisp white
         varCCropRaw = await sharp(varBCropRaw)
           .modulate({ saturation: 1.45, brightness: 1.04 })
+          .toBuffer();
+        break;
+      case 'driver': // From Var A red festive driver -> Deep royal burgundy
+        varCCropRaw = await sharp(varACropRaw)
+          .modulate({ saturation: 1.55, brightness: 0.92 })
           .toBuffer();
         break;
       case 'teacher': // From Var A navy suit teacher -> Midnight navy with intense yellow flag
@@ -226,7 +236,7 @@ async function main() {
           .toBuffer();
         break;
     }
-    const patchC = await applyFeatherMask(varCCropRaw, s.w, s.h, 14);
+    const patchC = await applyFeatherMask(varCCropRaw, s.w, s.h, 12);
 
     // Save PNG patches
     fs.writeFileSync(path.join(patchesDir, `${item.word}_variantA.png`), patchA);
@@ -291,7 +301,7 @@ async function main() {
   const W = 1376;
   const H = 768;
   const pairW = W * 2;
-  const colors = ['#38bdf8', '#f59e0b', '#10b981', '#ec4899', '#8b5cf6', '#06b6d4', '#ef4444', '#84cc16'];
+  const colors = ['#38bdf8', '#f59e0b', '#10b981', '#ec4899', '#8b5cf6', '#ef4444', '#06b6d4', '#84cc16'];
 
   for (const [diffBuf, suffix, label] of [
     [diffA, '', '變異 A'],
@@ -316,12 +326,13 @@ async function main() {
       const c = colors[idx % colors.length];
       const cx = Math.round(s.x + s.w / 2);
       const cy = Math.round(s.y + s.h / 2);
+      const badgeY = s.y > 35 ? s.y - 28 : s.y + s.h + 4;
       // Left
       svgOverlay += `<rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="12" fill="none" stroke="${c}" stroke-width="3" stroke-dasharray="6,4" />`;
       svgOverlay += `<circle cx="${cx}" cy="${cy}" r="4" fill="${c}" />`;
       svgOverlay += `<ellipse cx="${cx}" cy="${cy}" rx="${Math.round(s.w/2)}" ry="${Math.round(s.h/2)}" fill="${c}" fill-opacity="0.12" stroke="${c}" stroke-width="1.5" />`;
-      svgOverlay += `<rect x="${s.x}" y="${Math.max(10, s.y - 28)}" width="${it.word.length * 10 + 40}" height="26" rx="6" fill="${c}" fill-opacity="0.95" />`;
-      svgOverlay += `<text x="${s.x + 8}" y="${Math.max(10, s.y - 28) + 18}" fill="#ffffff" font-size="14" font-weight="bold" font-family="sans-serif">${it.word} (${it.wordZh})</text>`;
+      svgOverlay += `<rect x="${s.x}" y="${badgeY}" width="${it.word.length * 10 + 40}" height="26" rx="6" fill="${c}" fill-opacity="0.95" />`;
+      svgOverlay += `<text x="${s.x + 8}" y="${badgeY + 18}" fill="#ffffff" font-size="14" font-weight="bold" font-family="sans-serif">${it.word} (${it.wordZh})</text>`;
 
       // Right
       const rx = s.x + W;
@@ -329,8 +340,8 @@ async function main() {
       svgOverlay += `<rect x="${rx}" y="${s.y}" width="${s.w}" height="${s.h}" rx="12" fill="none" stroke="${c}" stroke-width="3" stroke-dasharray="6,4" />`;
       svgOverlay += `<circle cx="${rcx}" cy="${cy}" r="4" fill="${c}" />`;
       svgOverlay += `<ellipse cx="${rcx}" cy="${cy}" rx="${Math.round(s.w/2)}" ry="${Math.round(s.h/2)}" fill="${c}" fill-opacity="0.12" stroke="${c}" stroke-width="1.5" />`;
-      svgOverlay += `<rect x="${rx}" y="${Math.max(10, s.y - 28)}" width="${it.word.length * 10 + 50}" height="26" rx="6" fill="${c}" fill-opacity="0.95" />`;
-      svgOverlay += `<text x="${rx + 8}" y="${Math.max(10, s.y - 28) + 18}" fill="#ffffff" font-size="14" font-weight="bold" font-family="sans-serif">${it.word} [${label}]</text>`;
+      svgOverlay += `<rect x="${rx}" y="${badgeY}" width="${it.word.length * 10 + 50}" height="26" rx="6" fill="${c}" fill-opacity="0.95" />`;
+      svgOverlay += `<text x="${rx + 8}" y="${badgeY + 18}" fill="#ffffff" font-size="14" font-weight="bold" font-family="sans-serif">${it.word} [${label}]</text>`;
     });
 
     const labeledSvg = `<svg width="${pairW}" height="${H}" xmlns="http://www.w3.org/2000/svg">${svgOverlay}</svg>`;
