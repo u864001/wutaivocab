@@ -616,13 +616,13 @@ export const OlympianAwakeningStage = ({ activeAwakening, onComplete }) => {
     const duration = 1350; // 1.35 秒震撼演出後立即回歸靜止
 
     const render = (now) => {
-      const elapsed = now - startTime;
-      const p = Math.min(1, elapsed / duration);
+      const elapsed = Math.max(0, now - startTime);
+      const p = Math.max(0, Math.min(1, elapsed / duration));
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      const fadeOut = p > 0.72 ? 1 - (p - 0.72) / 0.28 : 1;
+      const fadeOut = p > 0.72 ? Math.max(0, 1 - (p - 0.72) / 0.28) : 1;
       const id = activeAwakening.cardId;
 
       ctx.save();
@@ -694,7 +694,7 @@ export const OlympianAwakeningStage = ({ activeAwakening, onComplete }) => {
         }
       } else if (id === 'radar') {
         // 📡 赫利奧斯全視天眼：360 度翠綠黃金星盤掃描波擴散全場
-        const radius = p * Math.max(w, h) * 0.75;
+        const radius = Math.max(1, p * Math.max(w, h) * 0.75);
         ctx.strokeStyle = '#4ade80';
         ctx.shadowColor = '#22c55e';
         ctx.shadowBlur = 24;
@@ -704,7 +704,7 @@ export const OlympianAwakeningStage = ({ activeAwakening, onComplete }) => {
         ctx.stroke();
       } else if (id === 'bonus' || id === 'coin' || id === 'lock' || id === 'winwin') {
         // ☀️ 阿波羅 / 普路托斯 / 赫菲斯托斯 / 雙子神：神聖金色能量光環爆發
-        const radius = p * Math.min(w, h) * 0.55;
+        const radius = Math.max(1, p * Math.min(w, h) * 0.55);
         ctx.strokeStyle = id === 'winwin' ? '#f472b6' : '#fbbf24';
         ctx.shadowColor = '#fef08a';
         ctx.shadowBlur = 25;

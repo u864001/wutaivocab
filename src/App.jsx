@@ -21,6 +21,7 @@ import { Portal } from './components/Portal';
 import { WutaiTownGame } from './games/town/WutaiTownGame';
 import { TextbookViewer } from './components/TextbookViewer';
 import { LanguageLabHub } from './features/langlab/LanguageLabHub';
+import { PureMcqExamView } from './games/exam/PureMcqExamView';
 import { TeacherAuthModal } from './components/TeacherAuthModal';
 import { StudentProfileModal } from './components/StudentProfileModal';
 import { InactivityGuard } from './components/common/InactivityGuard';
@@ -104,7 +105,7 @@ export function App() {
       if (target === 'vocab' || target === 'lobby') return 'lobby';
 
       const VALID_VIEWS = [
-        'phonics', 'lobby', 'town', 'textbook', 'langlab',
+        'phonics', 'lobby', 'town', 'textbook', 'langlab', 'mcq-exam',
         'escape', 'spotter', 'spotter-test', 'maze', 'memory',
         'mole', 'swipe', 'meteor', 'snake', 'spelling', 'handwriting',
         'battle', 'leaderboard', 'teacher-hub'
@@ -248,7 +249,7 @@ export function App() {
   }, []);
 
   // 當處於單字學習遊戲或大廳且單字尚未同步完成時顯示輕量載入動畫
-  if (isLoading && words.length === 0 && currentView !== 'portal' && currentView !== 'phonics' && currentView !== 'textbook' && currentView !== 'langlab' && currentView !== 'town') {
+  if (isLoading && words.length === 0 && currentView !== 'portal' && currentView !== 'phonics' && currentView !== 'textbook' && currentView !== 'langlab' && currentView !== 'town' && currentView !== 'mcq-exam') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
         <div className="w-16 h-16 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin mb-4" />
@@ -445,6 +446,13 @@ export function App() {
               settings={settings}
               words={words}
               qualifyingBook={qualifyingBook}
+              onBack={() => handleNavigate('lobby')}
+            />
+          )}
+
+          {currentView === 'mcq-exam' && (
+            <PureMcqExamView
+              settings={settings}
               onBack={() => handleNavigate('lobby')}
             />
           )}

@@ -302,21 +302,24 @@ async function run() {
   // ── 檢查點 4: 雙語聽說口說測驗功能性流程驗收 (錄音、反饋與重測) ──
   console.log('\n[4/5] Deep Functional Testing: Speaking Lab...');
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=langlab` });
-  await new Promise(r => setTimeout(r, 1000));
 
-  // 點選進入口說跟讀
-  const enteredSpeaking = await client.evaluate(`
-    (() => {
-      const btns = Array.from(document.querySelectorAll('button'));
-      const speakBtn = btns.find(b => b.innerText.includes('口說測驗') || b.innerText.includes('口說跟讀'));
-      if (speakBtn) {
-        speakBtn.click();
-        return true;
-      }
-      return false;
-    })()
-  `);
-  await new Promise(r => setTimeout(r, 600));
+  // 等待並點選進入口說跟讀
+  for (let i = 0; i < 15; i++) {
+    await new Promise(r => setTimeout(r, 250));
+    const clicked = await client.evaluate(`
+      (() => {
+        const nodes = Array.from(document.querySelectorAll('button, div[class*="cursor-pointer"]'));
+        const speakBtn = nodes.find(b => (b.innerText || '').includes('口說測驗') || (b.innerText || '').includes('口說跟讀') || (b.innerText || '').includes('Speaking'));
+        if (speakBtn) {
+          speakBtn.click();
+          return true;
+        }
+        return false;
+      })()
+    `);
+    if (clicked) break;
+  }
+  await new Promise(r => setTimeout(r, 700));
 
   // 點選挑戰模式第一項 (大寫字母或第一關)
   await client.evaluate(`
@@ -412,15 +415,22 @@ async function run() {
   client.exceptions = [];
   await client.evaluate(`localStorage.setItem('wutai_player_name', '測試勇士');`);
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=battle&grade=3&book=1` });
-  await new Promise(r => setTimeout(r, 900));
+  await new Promise(r => setTimeout(r, 1000));
   const battleCheck = await client.evaluate(`
     (async () => {
       const btns = Array.from(document.querySelectorAll('button'));
       const openBtn = btns.find(b => (b.innerText || '').includes('開立此擂台') || (b.innerText || '').includes('進入此擂台'));
       if (openBtn) openBtn.click();
-      await new Promise(r => setTimeout(r, 1200));
+      let hasWaitingRoom = false;
+      for (let i = 0; i < 12; i++) {
+        await new Promise(r => setTimeout(r, 350));
+        const body = document.body.innerText || '';
+        if (body.includes('等待各路英雄入座') || body.includes('開始對戰') || body.includes('房主') || body.includes('備戰大廳')) {
+          hasWaitingRoom = true;
+          break;
+        }
+      }
       const body = document.body.innerText || '';
-      const hasWaitingRoom = body.includes('等待各路英雄入座') || body.includes('開始對戰') || body.includes('房主') || body.includes('備戰大廳');
       const hasRedundantHeader = body.includes('PIN 碼直接加入');
       return { hasWaitingRoom, hasRedundantHeader };
     })()
@@ -452,6 +462,36 @@ async function run() {
     }
   }
   console.log('  ✓ Interactive gameplay clicks verified for quiz-choice, spelling, memory, meteor, swipe, mole');
+
+  // 5E. 課本選擇題庫檢定專區 (mcq-exam) 一頁一題選範圍 -> 開始作答 -> 選答案 -> 下一題 深度驗證
+  client.exceptions = [];
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
+  await new Promise(r => setTimeout(r, 800));
+  const mcqExamCheck = await client.evaluate(`
+    (async () => {
+      const startBtn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('開始作答'));
+      if (!startBtn) return { ok: false, reason: 'No start button on setup view' };
+      startBtn.click();
+      await new Promise(r => setTimeout(r, 400));
+      const body1 = document.body.innerText || '';
+      const onQ1 = body1.includes('第 1 題');
+      // 點選第一個選項 (A)
+      const optBtns = Array.from(document.querySelectorAll('button')).filter(b => (b.innerText || '').trim().startsWith('A'));
+      if (optBtns[0]) optBtns[0].click();
+      await new Promise(r => setTimeout(r, 250));
+      const nextBtn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('下一題'));
+      if (nextBtn) nextBtn.click();
+      await new Promise(r => setTimeout(r, 300));
+      const body2 = document.body.innerText || '';
+      const onQ2 = body2.includes('第 2 題') && body2.includes('已作答：1 /');
+      return { ok: onQ1 && onQ2, onQ1, onQ2 };
+    })()
+  `);
+  if (!mcqExamCheck?.ok || client.exceptions.length > 0) {
+    failures.push({ target: 'PureMcqExamView (mcq-exam) One-Page Flow', details: mcqExamCheck, exceptions: client.exceptions });
+  } else {
+    console.log('  ✓ PureMcqExamView (mcq-exam): Scope setup -> Q1 answer -> Next page Q2 verified');
+  }
 
   // ── 檢查點 6: 全部 14 款遊戲跨角色矩陣全量啟動 ──
   console.log('\n[6/6] Testing All 14 Games Across 4 Profiles...');
