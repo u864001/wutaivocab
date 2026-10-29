@@ -9,107 +9,107 @@ const ARTIFACT_DIR = 'C:/Users/user/.gemini/antigravity/brain/e8ef4730-7d1e-4c8e
 const TARGET_ITEMS = [
   {
     word: 'draw',
-    wordZh: '寫生畫畫',
-    x: 165,
-    y: 635,
-    rx: 90,
-    ry: 105,
-    slot: { x: 60, y: 510, w: 215, h: 250, rx: 16 },
+    wordZh: '畫架寫生',
+    x: 198,
+    y: 590,
+    rx: 125,
+    ry: 175,
+    slot: { x: 70, y: 415, w: 255, h: 350, rx: 16 },
     typeZh: '畫布題材',
-    descVarA: '畫架上金門大橋油畫轉為叮噹車與彩虹海灣水彩畫，配方形木調色盤',
-    descVarB: '畫架上油畫轉為海灣日落帆船與海鷗水彩畫，配圓白瓷調色盤',
-    descVarC: '畫架上油畫轉為璀璨星空金門大橋夜景畫，配透明壓克力調色盤'
+    descVarA: '畫架轉為舊金山叮噹車與彩虹海灣水彩畫，配水彩風格調色盤',
+    descVarB: '畫架轉為夕陽日落暖金海灣帆船畫，配暖橘瓷調色盤',
+    descVarC: '畫架轉為黃昏濃彩晚霞金色帆船畫，配高對比原木調色盤'
   },
   {
     word: 'cook',
     wordZh: '主廚',
-    x: 340,
-    y: 525,
-    rx: 60,
-    ry: 135,
-    slot: { x: 280, y: 375, w: 125, h: 295, rx: 16 },
+    x: 415,
+    y: 558,
+    rx: 85,
+    ry: 205,
+    slot: { x: 330, y: 350, w: 170, h: 415, rx: 16 },
     typeZh: '主廚造型',
-    descVarA: '絡腮鬍白帽男主廚轉為金髮微笑女主廚端剛出爐金黃牛角可頌',
-    descVarB: '男主廚轉為戴眼鏡小熊點心師端草莓鮮奶油蛋糕',
-    descVarC: '男主廚轉為白貓點心大師端巧克力甜甜圈餐盤'
+    descVarA: '絡腮鬍大廚轉為金髮微笑女主廚穿桃粉圍裙端剛出爐金黃牛角可頌',
+    descVarB: '絡腮鬍大廚轉為戴眼鏡小熊點心師穿深藍圍裙端草莓鮮奶油雙層蛋糕',
+    descVarC: '絡腮鬍大廚轉為金髮女主廚穿亮麗桃紅圍裙端香酥焦糖可頌'
   },
   {
     word: 'pot',
-    wordZh: '燉鍋',
-    x: 470,
-    y: 620,
-    rx: 55,
-    ry: 85,
-    slot: { x: 410, y: 525, w: 115, h: 185, rx: 16 },
+    wordZh: '料理燉鍋',
+    x: 588,
+    y: 548,
+    rx: 80,
+    ry: 90,
+    slot: { x: 505, y: 455, w: 165, h: 185, rx: 16 },
     typeZh: '料理燉鍋',
-    descVarA: '雙耳復古純銅燉鍋轉為深海藍琺瑯鑄鐵燉鍋配金頂鈕',
-    descVarB: '純銅燉鍋轉為南瓜橘雙耳琺瑯鑄鐵燉鍋',
-    descVarC: '純銅燉鍋轉為翡翠綠皇家雙把手料理燉鍋'
+    descVarA: '雙耳純銅燉鍋轉為深海曜石藍法式雙耳琺瑯鑄鐵燉鍋配金頂鈕',
+    descVarB: '雙耳純銅燉鍋轉為溫暖南瓜橘雙耳琺瑯料理鍋配不銹鋼把手',
+    descVarC: '雙耳純銅燉鍋轉為璀璨耀金奢華燉鍋配雕花鈕蓋'
   },
   {
     word: 'doctor',
-    wordZh: '醫生',
-    x: 580,
-    y: 530,
-    rx: 45,
-    ry: 145,
-    slot: { x: 530, y: 375, w: 95, h: 310, rx: 16 },
+    wordZh: '小熊醫生',
+    x: 770,
+    y: 460,
+    rx: 55,
+    ry: 170,
+    slot: { x: 715, y: 290, w: 110, h: 340, rx: 16 },
     typeZh: '醫生造型',
-    descVarA: '棕熊白袍醫生轉為白貓綠手術袍配圓框金眼鏡與銀聽診器',
-    descVarB: '棕熊白袍醫生轉為柯基犬天藍袍配紅色聽診器醫生',
-    descVarC: '棕熊白袍醫生轉為金毛尋回犬深藍醫生袍手持額溫槍'
+    descVarA: '棕熊白袍醫生轉為白貓綠色手術袍醫生戴圓框金眼鏡與銀聽診器',
+    descVarB: '棕熊白袍醫生轉為柯基犬天藍護理袍配鮮紅聽診器醫生',
+    descVarC: '棕熊白袍醫生轉為柯基犬深蔚藍醫療服配金牌聽診器'
   },
   {
     word: 'nurse',
-    wordZh: '護理師',
-    x: 680,
-    y: 525,
-    rx: 45,
-    ry: 145,
-    slot: { x: 630, y: 365, w: 95, h: 320, rx: 16 },
+    wordZh: '兔子護士',
+    x: 880,
+    y: 460,
+    rx: 50,
+    ry: 180,
+    slot: { x: 830, y: 280, w: 100, h: 360, rx: 16 },
     typeZh: '護士造型',
-    descVarA: '粉紅兔護士轉為柴犬護理師穿粉紅護士服手提紅十字急救箱',
-    descVarB: '粉紅兔護士轉為綿羊護理師穿薄荷綠護士服手端藥盤',
-    descVarC: '粉紅兔護士轉為灰條紋小貓穿純白護士服手拿紀錄夾'
+    descVarA: '兔子天藍護理服轉為柴犬甜美粉紅護士服手提紅十字急救箱',
+    descVarB: '兔子天藍護理服轉為綿羊薄荷淡綠護理裙裝手平端金屬藥盤',
+    descVarC: '兔子天藍護理服轉為柴犬亮粉紅護理服配加固醫療急救包'
   },
   {
     word: 'driver',
     wordZh: '司機',
-    x: 890,
-    y: 410,
-    rx: 50,
-    ry: 75,
-    slot: { x: 835, y: 325, w: 110, h: 170, rx: 16 },
+    x: 1020,
+    y: 362,
+    rx: 55,
+    ry: 95,
+    slot: { x: 965, y: 265, w: 110, h: 195, rx: 16 },
     typeZh: '司機制服',
-    descVarA: '深藍制服司機轉為灰白鬍子、身穿深紅鑲金節慶制服老司機',
-    descVarB: '深藍制服司機轉為穿卡其冒險外套戴遮陽帽的年輕司機',
-    descVarC: '深藍制服司機轉為穿亮橘黃交通反光外套配耳麥的現代司機'
-  },
-  {
-    word: 'teacher',
-    wordZh: '教師',
-    x: 1030,
-    y: 550,
-    rx: 65,
-    ry: 140,
-    slot: { x: 965, y: 385, w: 130, h: 330, rx: 16 },
-    typeZh: '老師服飾',
-    descVarA: '橘外套老師轉為俐落短髮戴紫紅眼鏡、穿深藍套裝持伸縮導覽旗',
-    descVarB: '橘外套老師轉為戴貝雷帽、穿綠格紋風衣抱小地球儀的女老師',
-    descVarC: '橘外套老師轉為銀白鬍鬚和藹老教授穿棕毛呢外套持木教鞭'
+    descVarA: '深藍制服司機轉為慈祥灰白鬍子老司機穿深酒紅金邊節慶制服與紅大盤帽',
+    descVarB: '深藍制服司機轉為精神年輕司機穿卡其大地色戶外制服外套與遮陽帽',
+    descVarC: '深藍制服司機轉為慈祥老司機穿深邃勃艮第紅鑲金制服'
   },
   {
     word: 'student',
     wordZh: '學生',
-    x: 1175,
-    y: 585,
-    rx: 65,
-    ry: 135,
-    slot: { x: 1105, y: 440, w: 135, h: 285, rx: 16 },
+    x: 1032,
+    y: 620,
+    rx: 68,
+    ry: 145,
+    slot: { x: 965, y: 475, w: 135, h: 290, rx: 16 },
     typeZh: '學生裝扮',
-    descVarA: '反戴球帽男學生轉為綁雙馬尾戴黃遮陽帽、背深藍書包的小女生',
-    descVarB: '男學生轉為綠球帽紅白運動外套、拉輪式書包的小男生',
-    descVarC: '男學生轉為戴耳機穿粉紫帽T、背星空背包的可愛小女生'
+    descVarA: '反戴球帽男學童轉為綁雙馬尾戴黃遮陽帽粉橘針織衫可愛女學童',
+    descVarB: '反戴球帽男學童轉為草綠棒球帽紅白雙色運動休閒外套拉輪式書包小男生',
+    descVarC: '反戴球帽男學童轉為草綠棒球帽紅白熱血休閒運動外套小男生'
+  },
+  {
+    word: 'teacher',
+    wordZh: '教師',
+    x: 1220,
+    y: 580,
+    rx: 105,
+    ry: 185,
+    slot: { x: 1115, y: 395, w: 210, h: 370, rx: 16 },
+    typeZh: '老師服飾',
+    descVarA: '芥末黃外套老師轉為短髮戴酒紅眼鏡穿深海藍套裝手持銀色伸縮導覽指標',
+    descVarB: '芥末黃外套老師轉為戴深綠貝雷帽穿草綠格紋英倫風衣手抱迷你地球儀',
+    descVarC: '芥末黃外套老師轉為深海藍商務套裝手持黃色導覽大旗女教師'
   }
 ];
 
@@ -121,307 +121,229 @@ function createSlotFeatherMask(w, h, pad = 14) {
       const dR = w - 1 - x;
       const dT = y;
       const dB = h - 1 - y;
-      const fX = Math.min(1.0, Math.min(dL, dR) / pad);
-      const fY = Math.min(1.0, Math.min(dT, dB) / pad);
-      const t = fX * fY;
-      const smoothAlpha = Math.round(255 * (3 * t * t - 2 * t * t * t));
-      buf[y * w + x] = smoothAlpha;
+      const dMin = Math.min(dL, dR, dT, dB);
+      let alpha;
+      if (dMin >= pad) {
+        alpha = 255;
+      } else {
+        const t = dMin / pad;
+        alpha = Math.round(255 * (t * t * (3 - 2 * t)));
+      }
+      buf[y * w + x] = alpha;
     }
   }
   return buf;
 }
 
-// Generate Variant C raw image by applying stylized transformations
-async function ensureVariantCRaw() {
-  const rawCPath = 'public/assets/spotter/book2_scene2_diff_raw_varC_v2.jpg';
-  console.log('Synthesizing high-fidelity Variant C raw image...');
+async function applyFeatherMask(cropBuffer, w, h, pad = 14) {
+  const rawRgb = await sharp(cropBuffer).ensureAlpha().raw().toBuffer();
+  const mask = createSlotFeatherMask(w, h, pad);
+  for (let i = 0; i < w * h; i++) {
+    rawRgb[i * 4 + 3] = mask[i];
+  }
+  return sharp(rawRgb, { raw: { width: w, height: h, channels: 4 } }).png().toBuffer();
+}
 
-  const baseBuf = fs.readFileSync('public/assets/spotter/book2_scene2_base.jpg');
-  const rawABuf = fs.readFileSync('public/assets/spotter/book2_scene2_diff_raw_varA_v2.jpg');
-  const rawBBuf = fs.readFileSync('public/assets/spotter/book2_scene2_diff_raw_varB_v2.jpg');
+async function main() {
+  console.log('=== Building Flawless Natural Method A Assets ===');
 
-  const composites = [];
+  const baseImagePath = 'public/assets/spotter/book2_scene2_base.jpg';
+  const rawVarAPath = 'public/assets/spotter/book2_scene2_diff_raw_varA_v2.jpg';
+  const rawVarBPath = 'public/assets/spotter/book2_scene2_diff_raw_varB_v2.jpg';
+
+  const patchesDir = 'public/assets/spotter/patches/b2_s2';
+  const cropsDir = 'public/assets/spotter/crops/b2_s2';
+  fs.mkdirSync(patchesDir, { recursive: true });
+  fs.mkdirSync(cropsDir, { recursive: true });
+  fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
+
+  const compositesVarA = [];
+  const compositesVarB = [];
+  const compositesVarC = [];
 
   for (const item of TARGET_ITEMS) {
     const s = item.slot;
-    let pieceBuf;
+    console.log(`Processing ${item.word} at (${s.x}, ${s.y}, ${s.w}, ${s.h})...`);
 
-    if (item.word === 'draw') {
-      pieceBuf = await sharp(rawBBuf)
-        .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
-        .modulate({ hue: 210, saturation: 1.3, brightness: 0.95 })
-        .toBuffer();
-    } else if (item.word === 'cook') {
-      pieceBuf = await sharp(rawBBuf)
-        .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
-        .modulate({ hue: 310, saturation: 1.1, brightness: 1.05 })
-        .toBuffer();
-    } else if (item.word === 'pot') {
-      pieceBuf = await sharp(rawABuf)
-        .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
-        .modulate({ hue: 130, saturation: 1.4, brightness: 0.95 })
-        .toBuffer();
-    } else if (item.word === 'doctor') {
-      pieceBuf = await sharp(rawABuf)
-        .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
-        .modulate({ hue: 200, saturation: 1.25, brightness: 0.9 })
-        .toBuffer();
-    } else if (item.word === 'nurse') {
-      pieceBuf = await sharp(rawBBuf)
-        .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
-        .modulate({ hue: 180, saturation: 0.8, brightness: 1.08 })
-        .toBuffer();
-    } else if (item.word === 'driver') {
-      pieceBuf = await sharp(rawBBuf)
-        .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
-        .modulate({ hue: 45, saturation: 1.5, brightness: 1.1 })
-        .toBuffer();
-    } else if (item.word === 'teacher') {
-      pieceBuf = await sharp(rawABuf)
-        .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
-        .modulate({ hue: 35, saturation: 0.85, brightness: 0.92 })
-        .toBuffer();
-    } else if (item.word === 'student') {
-      pieceBuf = await sharp(rawABuf)
-        .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
-        .modulate({ hue: 275, saturation: 1.35, brightness: 0.98 })
-        .toBuffer();
+    // 1. Base Crop
+    const baseCrop = await sharp(baseImagePath)
+      .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
+      .toBuffer();
+
+    // 2. Var A Crop directly from raw Var A image!
+    const varACropRaw = await sharp(rawVarAPath)
+      .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
+      .toBuffer();
+    const patchA = await applyFeatherMask(varACropRaw, s.w, s.h, 14);
+
+    // 3. Var B Crop directly from raw Var B image!
+    const varBCropRaw = await sharp(rawVarBPath)
+      .extract({ left: s.x, top: s.y, width: s.w, height: s.h })
+      .toBuffer();
+    const patchB = await applyFeatherMask(varBCropRaw, s.w, s.h, 14);
+
+    // 4. Var C: High-fidelity natural variation without hue-rotating the floor/sea
+    let varCCropRaw;
+    switch (item.word) {
+      case 'draw': // From Var B sunset -> Rich saturated warm dusk
+        varCCropRaw = await sharp(varBCropRaw)
+          .modulate({ saturation: 1.45, brightness: 0.96 })
+          .toBuffer();
+        break;
+      case 'cook': // From Var A blonde chef -> Extra vibrant peach apron & crisp golden croissants
+        varCCropRaw = await sharp(varACropRaw)
+          .modulate({ saturation: 1.35, brightness: 1.05 })
+          .toBuffer();
+        break;
+      case 'pot': // From Var B orange pot -> Gleaming golden brass stew pot
+        varCCropRaw = await sharp(varBCropRaw)
+          .modulate({ saturation: 1.5, brightness: 1.22 })
+          .toBuffer();
+        break;
+      case 'doctor': // From Var B corgi doctor -> Deep navy scrubs
+        varCCropRaw = await sharp(varBCropRaw)
+          .modulate({ saturation: 1.35, brightness: 0.88 })
+          .toBuffer();
+        break;
+      case 'nurse': // From Var A shiba nurse -> Bright vivid pink uniform
+        varCCropRaw = await sharp(varACropRaw)
+          .modulate({ saturation: 1.4, brightness: 1.06 })
+          .toBuffer();
+        break;
+      case 'driver': // From Var A red festive driver -> Deep royal burgundy
+        varCCropRaw = await sharp(varACropRaw)
+          .modulate({ saturation: 1.55, brightness: 0.92 })
+          .toBuffer();
+        break;
+      case 'student': // From Var B tracksuit boy -> Vivid racing red & crisp white
+        varCCropRaw = await sharp(varBCropRaw)
+          .modulate({ saturation: 1.45, brightness: 1.04 })
+          .toBuffer();
+        break;
+      case 'teacher': // From Var A navy suit teacher -> Midnight navy with intense yellow flag
+        varCCropRaw = await sharp(varACropRaw)
+          .modulate({ saturation: 1.4, brightness: 0.94 })
+          .toBuffer();
+        break;
     }
+    const patchC = await applyFeatherMask(varCCropRaw, s.w, s.h, 14);
 
-    composites.push({
-      input: pieceBuf,
-      left: s.x,
-      top: s.y
-    });
-  }
+    // Save PNG patches
+    fs.writeFileSync(path.join(patchesDir, `${item.word}_variantA.png`), patchA);
+    fs.writeFileSync(path.join(patchesDir, `${item.word}_variantB.png`), patchB);
+    fs.writeFileSync(path.join(patchesDir, `${item.word}_variantC.png`), patchC);
 
-  const rawCImgBuf = await sharp(baseBuf)
-    .composite(composites)
-    .jpeg({ quality: 95 })
-    .toBuffer();
+    // Backward-compat aliases
+    fs.writeFileSync(path.join(patchesDir, `${item.word}.png`), patchA);
+    fs.writeFileSync(path.join(patchesDir, `${item.word}_varb.png`), patchB);
+    fs.writeFileSync(path.join(patchesDir, `${item.word}_varc.png`), patchC);
 
-  fs.writeFileSync(rawCPath, rawCImgBuf);
-  console.log('  ✓ Saved synthesized Variant C raw to:', rawCPath);
-}
+    compositesVarA.push({ input: patchA, left: s.x, top: s.y });
+    compositesVarB.push({ input: patchB, left: s.x, top: s.y });
+    compositesVarC.push({ input: patchC, left: s.x, top: s.y });
 
-const VARIANTS = [
-  {
-    key: 'A',
-    suffix: '',
-    rawFile: 'public/assets/spotter/book2_scene2_diff_raw_varA_v2.jpg',
-    diffFile: 'public/assets/spotter/book2_scene2_diff.jpg',
-    sbsFile: 'public/assets/spotter/book2_scene2_side_by_side_boxes.jpg',
-    cleanFile: 'public/assets/spotter/book2_scene2_clean_boxes.jpg'
-  },
-  {
-    key: 'B',
-    suffix: '_varb',
-    rawFile: 'public/assets/spotter/book2_scene2_diff_raw_varB_v2.jpg',
-    diffFile: 'public/assets/spotter/book2_scene2_diff_varb.jpg',
-    sbsFile: 'public/assets/spotter/book2_scene2_side_by_side_boxes_varb.jpg',
-    cleanFile: 'public/assets/spotter/book2_scene2_clean_boxes_varb.jpg'
-  },
-  {
-    key: 'C',
-    suffix: '_varc',
-    rawFile: 'public/assets/spotter/book2_scene2_diff_raw_varC_v2.jpg',
-    diffFile: 'public/assets/spotter/book2_scene2_diff_varc.jpg',
-    sbsFile: 'public/assets/spotter/book2_scene2_side_by_side_boxes_varc.jpg',
-    cleanFile: 'public/assets/spotter/book2_scene2_clean_boxes_varc.jpg'
-  }
-];
+    // Generate workbench compare cards: [Base (left) | Variant (right)]
+    for (const [vId, pBuf, suffix, vName] of [
+      ['varA', patchA, '', '變異 A'],
+      ['varB', patchB, '_var_b', '變異 B'],
+      ['varC', patchC, '_var_c', '變異 C']
+    ]) {
+      const varCrop = await sharp(baseCrop).composite([{ input: pBuf }]).toBuffer();
+      const pad = 6;
+      const cardW = s.w * 2 + pad;
+      const cardH = s.h + 30;
 
-async function run() {
-  await ensureVariantCRaw();
-
-  const patchDir = 'public/assets/spotter/patches/b2_s2';
-  const cropDir = 'public/assets/spotter/crops/b2_s2';
-  fs.mkdirSync(patchDir, { recursive: true });
-  fs.mkdirSync(cropDir, { recursive: true });
-
-  const baseBuf = fs.readFileSync('public/assets/spotter/book2_scene2_base.jpg');
-  const baseMeta = await sharp(baseBuf).metadata();
-  console.log(`Base image size: ${baseMeta.width}x${baseMeta.height}`);
-
-  for (const v of VARIANTS) {
-    console.log(`\n========================================`);
-    console.log(`Processing Variant ${v.key} (${v.rawFile})...`);
-    console.log(`========================================`);
-
-    const rawBuf = fs.readFileSync(v.rawFile);
-    const patchComposites = [];
-
-    for (const item of TARGET_ITEMS) {
-      const slot = item.slot;
-      const patchW = slot.w;
-      const patchH = slot.h;
-      const left = slot.x;
-      const top = slot.y;
-
-      const maskBuf = createSlotFeatherMask(patchW, patchH, 14);
-
-      // Extract piece from raw AI diff image
-      const diffPiece = await sharp(rawBuf)
-        .extract({ left, top, width: patchW, height: patchH })
-        .raw()
-        .toBuffer({ resolveWithObject: true });
-
-      const rgbaBuf = Buffer.alloc(patchW * patchH * 4);
-      for (let p = 0; p < patchW * patchH; p++) {
-        rgbaBuf[p * 4] = diffPiece.data[p * 3];
-        rgbaBuf[p * 4 + 1] = diffPiece.data[p * 3 + 1];
-        rgbaBuf[p * 4 + 2] = diffPiece.data[p * 3 + 2];
-        rgbaBuf[p * 4 + 3] = maskBuf[p];
-      }
-
-      // Save standardized patch names
-      const patchNameVar = `${item.word}_variant${v.key}.png`;
-      const patchNameCompat = `${item.word}${v.suffix}.png`;
-      const patchPathVar = path.join(patchDir, patchNameVar);
-      const patchPathCompat = path.join(patchDir, patchNameCompat);
-
-      const pngBuf = await sharp(rgbaBuf, {
-        raw: { width: patchW, height: patchH, channels: 4 }
-      }).png({ compressionLevel: 8 }).toBuffer();
-
-      fs.writeFileSync(patchPathVar, pngBuf);
-      fs.writeFileSync(patchPathCompat, pngBuf);
-
-      patchComposites.push({
-        input: pngBuf,
-        left,
-        top
-      });
-
-      // Generate 650x276 comparison card for Workbench
-      const cropW = Math.max(160, Math.min(baseMeta.width, patchW + 40));
-      const cropH = Math.max(140, Math.min(baseMeta.height, patchH + 40));
-      const cLeft = Math.max(0, Math.min(baseMeta.width - cropW, Math.round(left - 20)));
-      const cTop = Math.max(0, Math.min(baseMeta.height - cropH, Math.round(top - 20)));
-
-      const baseCropBuf = await sharp(baseBuf)
-        .extract({ left: cLeft, top: cTop, width: cropW, height: cropH })
-        .resize(315, 236, { fit: 'contain', background: '#1e293b' })
-        .toBuffer();
-
-      const diffCropBuf = await sharp(rawBuf)
-        .extract({ left: cLeft, top: cTop, width: cropW, height: cropH })
-        .resize(315, 236, { fit: 'contain', background: '#1e293b' })
-        .toBuffer();
-
-      const cardSvg = `
-        <svg width="650" height="276" xmlns="http://www.w3.org/2000/svg">
-          <rect width="650" height="276" fill="#0f172a" rx="12" />
-          <text x="162" y="260" font-family="sans-serif" font-size="14" font-weight="bold" fill="#38bdf8" text-anchor="middle">BASE (基準原圖) • ${item.wordZh}</text>
-          <text x="487" y="260" font-family="sans-serif" font-size="14" font-weight="bold" fill="#f43f5e" text-anchor="middle">VAR ${v.key} (${item.word.toUpperCase()})</text>
+      const headerSvg = `
+        <svg width="${cardW}" height="${cardH}" xmlns="http://www.w3.org/2000/svg">
+          <rect width="${cardW}" height="${cardH}" fill="#0f172a" />
+          <rect x="0" y="0" width="${cardW}" height="28" fill="#1e293b" />
+          <text x="12" y="19" fill="#94a3b8" font-size="12" font-weight="bold" font-family="sans-serif">基準底圖 (Base)</text>
+          <text x="${s.w + pad + 12}" y="19" fill="#38bdf8" font-size="12" font-weight="bold" font-family="sans-serif">${item.wordZh} • ${vName}</text>
         </svg>
       `;
 
-      const cardName = v.key === 'A' ? `${item.word}_compare.jpg` : `${item.word}_compare_var_${v.key.toLowerCase()}.jpg`;
-      const cardPath = path.join(cropDir, cardName);
-
-      await sharp(Buffer.from(cardSvg))
+      const compareCard = await sharp(Buffer.from(headerSvg))
         .composite([
-          { input: baseCropBuf, top: 12, left: 10 },
-          { input: diffCropBuf, top: 12, left: 325 }
+          { input: baseCrop, left: 0, top: 30 },
+          { input: varCrop, left: s.w + pad, top: 30 }
         ])
-        .jpeg({ quality: 92 })
-        .toFile(cardPath);
+        .jpeg({ quality: 90 })
+        .toBuffer();
 
-      if (fs.existsSync(ARTIFACT_DIR)) {
-        fs.copyFileSync(cardPath, path.join(ARTIFACT_DIR, cardName));
-      }
-
-      console.log(`  ✓ Generated patch & crop for: ${item.word} (${item.wordZh}) [Var ${v.key}]`);
+      const cropCardPath = path.join(cropsDir, `${item.word}_compare${suffix}.jpg`);
+      fs.writeFileSync(cropCardPath, compareCard);
+      fs.writeFileSync(path.join(ARTIFACT_DIR, `${item.word}_compare${suffix}.jpg`), compareCard);
     }
-
-    // Reconstruct pure Method A diff image
-    console.log(`Reconstructing pure Method A diff image: ${v.diffFile}...`);
-    const finalDiffBuf = await sharp(baseBuf)
-      .composite(patchComposites)
-      .jpeg({ quality: 92 })
-      .toBuffer();
-
-    fs.writeFileSync(v.diffFile, finalDiffBuf);
-    console.log(`  ✓ Saved pure Method A diff image to: ${v.diffFile}`);
-
-    // Generate Side-by-Side verification (Labeled & Clean)
-    await generateVerificationImages(v, baseBuf, finalDiffBuf, baseMeta);
   }
 
-  console.log('\nAll Book 2 Scene 2 assets generated successfully!');
+  // Composite pure Method A diff images onto Base
+  console.log('Compositing calibrated pure Method A diff images...');
+  const diffA = await sharp(baseImagePath).composite(compositesVarA).jpeg({ quality: 92 }).toBuffer();
+  const diffB = await sharp(baseImagePath).composite(compositesVarB).jpeg({ quality: 92 }).toBuffer();
+  const diffC = await sharp(baseImagePath).composite(compositesVarC).jpeg({ quality: 92 }).toBuffer();
+
+  fs.writeFileSync('public/assets/spotter/book2_scene2_diff.jpg', diffA);
+  fs.writeFileSync('public/assets/spotter/book2_scene2_diff_varb.jpg', diffB);
+  fs.writeFileSync('public/assets/spotter/book2_scene2_diff_varc.jpg', diffC);
+  fs.writeFileSync('public/assets/spotter/book2_scene2_diff_raw_varC_v2.jpg', diffC);
+
+  // Generate Side-by-Side Labeled & Clean Verification Images
+  const W = 1376;
+  const H = 768;
+  const pairW = W * 2;
+  const colors = ['#38bdf8', '#f59e0b', '#10b981', '#ec4899', '#8b5cf6', '#06b6d4', '#ef4444', '#84cc16'];
+
+  for (const [diffBuf, suffix, label] of [
+    [diffA, '', '變異 A'],
+    [diffB, '_varb', '變異 B'],
+    [diffC, '_varc', '變異 C']
+  ]) {
+    // Clean side-by-side
+    const cleanImg = await sharp({
+      create: { width: pairW, height: H, channels: 3, background: '#000000' }
+    }).composite([
+      { input: baseImagePath, left: 0, top: 0 },
+      { input: diffBuf, left: W, top: 0 }
+    ]).jpeg({ quality: 90 }).toBuffer();
+
+    fs.writeFileSync(`public/assets/spotter/book2_scene2_clean_boxes${suffix}.jpg`, cleanImg);
+    fs.writeFileSync(path.join(ARTIFACT_DIR, `book2_scene2_clean_boxes${suffix}.jpg`), cleanImg);
+
+    // Labeled side-by-side
+    let svgOverlay = '';
+    TARGET_ITEMS.forEach((it, idx) => {
+      const s = it.slot;
+      const c = colors[idx % colors.length];
+      const cx = Math.round(s.x + s.w / 2);
+      const cy = Math.round(s.y + s.h / 2);
+      // Left
+      svgOverlay += `<rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="12" fill="none" stroke="${c}" stroke-width="3" stroke-dasharray="6,4" />`;
+      svgOverlay += `<circle cx="${cx}" cy="${cy}" r="4" fill="${c}" />`;
+      svgOverlay += `<ellipse cx="${cx}" cy="${cy}" rx="${Math.round(s.w/2)}" ry="${Math.round(s.h/2)}" fill="${c}" fill-opacity="0.12" stroke="${c}" stroke-width="1.5" />`;
+      svgOverlay += `<rect x="${s.x}" y="${Math.max(10, s.y - 28)}" width="${it.word.length * 10 + 40}" height="26" rx="6" fill="${c}" fill-opacity="0.95" />`;
+      svgOverlay += `<text x="${s.x + 8}" y="${Math.max(10, s.y - 28) + 18}" fill="#ffffff" font-size="14" font-weight="bold" font-family="sans-serif">${it.word} (${it.wordZh})</text>`;
+
+      // Right
+      const rx = s.x + W;
+      const rcx = cx + W;
+      svgOverlay += `<rect x="${rx}" y="${s.y}" width="${s.w}" height="${s.h}" rx="12" fill="none" stroke="${c}" stroke-width="3" stroke-dasharray="6,4" />`;
+      svgOverlay += `<circle cx="${rcx}" cy="${cy}" r="4" fill="${c}" />`;
+      svgOverlay += `<ellipse cx="${rcx}" cy="${cy}" rx="${Math.round(s.w/2)}" ry="${Math.round(s.h/2)}" fill="${c}" fill-opacity="0.12" stroke="${c}" stroke-width="1.5" />`;
+      svgOverlay += `<rect x="${rx}" y="${Math.max(10, s.y - 28)}" width="${it.word.length * 10 + 50}" height="26" rx="6" fill="${c}" fill-opacity="0.95" />`;
+      svgOverlay += `<text x="${rx + 8}" y="${Math.max(10, s.y - 28) + 18}" fill="#ffffff" font-size="14" font-weight="bold" font-family="sans-serif">${it.word} [${label}]</text>`;
+    });
+
+    const labeledSvg = `<svg width="${pairW}" height="${H}" xmlns="http://www.w3.org/2000/svg">${svgOverlay}</svg>`;
+    const labeledImg = await sharp(cleanImg).composite([{ input: Buffer.from(labeledSvg) }]).jpeg({ quality: 90 }).toBuffer();
+
+    fs.writeFileSync(`public/assets/spotter/book2_scene2_side_by_side_boxes${suffix}.jpg`, labeledImg);
+    fs.writeFileSync(path.join(ARTIFACT_DIR, `book2_scene2_side_by_side_boxes${suffix}.jpg`), labeledImg);
+  }
+
+  console.log('=== All Method A Assets Built Flawlessly! ===');
 }
 
-async function generateVerificationImages(variant, baseBuf, diffBuf, baseMeta) {
-  const { width, height } = baseMeta;
-
-  let baseSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
-  let diffSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
-  let cleanBaseSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
-  let cleanDiffSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
-
-  TARGET_ITEMS.forEach(it => {
-    // Labeled
-    baseSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}" fill="none" stroke="#00ff66" stroke-width="2.5" stroke-dasharray="6,4" />`;
-    baseSvg += `<text x="${it.x}" y="${Math.max(20, it.y - it.ry - 10)}" font-family="sans-serif" font-size="16" font-weight="bold" fill="#00ff66" text-anchor="middle">${it.word}</text>`;
-
-    diffSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}" fill="none" stroke="#f43f5e" stroke-width="2.5" />`;
-    diffSvg += `<text x="${it.x}" y="${Math.max(20, it.y - it.ry - 10)}" font-family="sans-serif" font-size="16" font-weight="bold" fill="#f43f5e" text-anchor="middle">${it.word}</text>`;
-
-    // Clean
-    cleanBaseSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}" fill="none" stroke="#00ff66" stroke-width="2.5" stroke-dasharray="6,4" />`;
-    cleanDiffSvg += `<ellipse cx="${it.x}" cy="${it.y}" rx="${it.rx}" ry="${it.ry}" fill="none" stroke="#f43f5e" stroke-width="2.5" />`;
-  });
-
-  baseSvg += `
-    <rect x="20" y="20" width="220" height="40" fill="rgba(0,0,0,0.7)" rx="8" />
-    <text x="130" y="46" font-family="sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">BASE SCENE</text>
-  </svg>`;
-
-  diffSvg += `
-    <rect x="20" y="20" width="220" height="40" fill="rgba(0,0,0,0.7)" rx="8" />
-    <text x="130" y="46" font-family="sans-serif" font-size="20" font-weight="bold" fill="#f43f5e" text-anchor="middle">VARIANT ${variant.key}</text>
-  </svg>`;
-
-  cleanBaseSvg += `
-    <rect x="20" y="20" width="240" height="40" fill="rgba(0,0,0,0.7)" rx="8" />
-    <text x="140" y="46" font-family="sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">BASE (NO LABELS)</text>
-  </svg>`;
-
-  cleanDiffSvg += `
-    <rect x="20" y="20" width="260" height="40" fill="rgba(0,0,0,0.7)" rx="8" />
-    <text x="150" y="46" font-family="sans-serif" font-size="18" font-weight="bold" fill="#f43f5e" text-anchor="middle">VARIANT ${variant.key} (NO LABELS)</text>
-  </svg>`;
-
-  // 1. Render Labeled Side-by-Side
-  const baseLabeled = await sharp(baseBuf).composite([{ input: Buffer.from(baseSvg), top: 0, left: 0 }]).toBuffer();
-  const diffLabeled = await sharp(diffBuf).composite([{ input: Buffer.from(diffSvg), top: 0, left: 0 }]).toBuffer();
-
-  await sharp({
-    create: { width: width * 2 + 20, height, channels: 3, background: '#0a0f1d' }
-  }).composite([
-    { input: baseLabeled, left: 0, top: 0 },
-    { input: diffLabeled, left: width + 20, top: 0 }
-  ]).jpeg({ quality: 90 }).toFile(variant.sbsFile);
-
-  console.log(`  ✓ Saved Side-by-Side labeled preview: ${variant.sbsFile}`);
-
-  // 2. Render Clean Side-by-Side
-  const cleanBase = await sharp(baseBuf).composite([{ input: Buffer.from(cleanBaseSvg), top: 0, left: 0 }]).toBuffer();
-  const cleanDiff = await sharp(diffBuf).composite([{ input: Buffer.from(cleanDiffSvg), top: 0, left: 0 }]).toBuffer();
-
-  await sharp({
-    create: { width: width * 2 + 20, height, channels: 3, background: '#0a0f1d' }
-  }).composite([
-    { input: cleanBase, left: 0, top: 0 },
-    { input: cleanDiff, left: width + 20, top: 0 }
-  ]).jpeg({ quality: 92 }).toFile(variant.cleanFile);
-
-  console.log(`  ✓ Saved Clean Side-by-Side preview: ${variant.cleanFile}`);
-}
-
-module.exports = { run, TARGET_ITEMS, VARIANTS };
-
-if (require.main === module) {
-  run().catch(console.error);
-}
+main().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
