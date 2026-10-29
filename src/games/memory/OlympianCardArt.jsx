@@ -5,12 +5,24 @@ import { POWER_UP_DEFS } from './powerUpData';
  * 1. 收藏級 TCG 主題卡背 (魯凱百合日之章 / 霧臺古老石板夜之章 / 奧林帕斯聖殿)
  */
 export const RukaiCardBackFace = ({ motif = 'rukai_day' }) => {
+  const [imgOk, setImgOk] = useState(true);
   const isNight = motif === 'slate_night';
   const isOlympus = motif === 'olympus_gold';
   const isEmerald = motif === 'emerald_totem';
+  const bananaSrc = isNight
+    ? '/assets/memory/card_back_slate_night.jpg'
+    : '/assets/memory/card_back_rukai_day.jpg';
 
   return (
     <div className="w-full h-full relative overflow-hidden rounded-xl sm:rounded-2xl select-none pointer-events-none">
+      {imgOk && (
+        <img
+          src={bananaSrc}
+          alt=""
+          onError={() => setImgOk(false)}
+          className="absolute inset-0 w-full h-full object-cover z-10"
+        />
+      )}
       <svg
         viewBox="0 0 240 180"
         className="w-full h-full block"
@@ -201,6 +213,7 @@ export const RukaiCardBackFace = ({ motif = 'rukai_day' }) => {
  * - 確保文字 100% 清晰易讀，長單字自動無段縮放，翻開時閃過一道柔和金光即完全靜止
  */
 export const OrnateWordCardFace = ({ text = '', type = 'en' }) => {
+  const [imgOk, setImgOk] = useState(true);
   const len = (text || '').length;
   // 依據單字長度智慧調節字級，保證絕不爆框、絕不截斷
   let fontSizeClass = 'text-base sm:text-xl';
@@ -214,6 +227,14 @@ export const OrnateWordCardFace = ({ text = '', type = 'en' }) => {
 
   return (
     <div className="w-full h-full relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-b from-[#fffdf7] via-[#fef9e7] to-[#f9eebc] flex flex-col items-center justify-center p-2 select-none">
+      {imgOk && (
+        <img
+          src="/assets/memory/word_card_frame.jpg"
+          alt=""
+          onError={() => setImgOk(false)}
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none z-[1]"
+        />
+      )}
       {/* 古典希臘月桂與回紋金框 SVG */}
       <svg
         viewBox="0 0 240 180"
@@ -279,7 +300,9 @@ export const OrnateWordCardFace = ({ text = '', type = 'en' }) => {
  */
 export const OlympianDeityCardFace = ({ powerId, size = 'normal' }) => {
   const [justFlipped, setJustFlipped] = useState(true);
+  const [imgOk, setImgOk] = useState(true);
   const def = POWER_UP_DEFS[powerId] || POWER_UP_DEFS.lightning;
+  const bananaSrc = `/assets/memory/god_${powerId}.jpg`;
 
   useEffect(() => {
     setJustFlipped(true);
@@ -291,6 +314,16 @@ export const OlympianDeityCardFace = ({ powerId, size = 'normal' }) => {
 
   return (
     <div className="w-full h-full relative overflow-hidden rounded-xl sm:rounded-2xl select-none flex flex-col justify-between p-1.5 sm:p-2">
+      {imgOk && (
+        <img
+          src={bananaSrc}
+          alt={def.name}
+          onError={() => setImgOk(false)}
+          className={`absolute inset-0 w-full h-full object-cover z-[5] transition-transform duration-700 ${
+            justFlipped ? 'scale-110 brightness-125' : 'scale-100'
+          }`}
+        />
+      )}
       {/* 各神專屬神話場景與神力插畫 SVG */}
       <svg
         viewBox="0 0 240 180"
