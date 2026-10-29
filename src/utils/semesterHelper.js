@@ -59,7 +59,7 @@ export const getSemesterDisplayName = (semesterId = null, lang = 'zh-TW') => {
 };
 
 /**
- * 檢查學生 Profile 是否經歷學期換日，若跨學期則自動歸零金幣與積分並封存歷史
+ * 檢查學生 Profile：完整守護學生一整學期的金幣與積分，並提供歷史誤歸零自動復原機制
  * @param {Object} profile 學生存檔資料
  * @returns {Object} 處理後的學生存檔資料
  */
@@ -67,42 +67,57 @@ export const checkAndApplySemesterReset = (profile) => {
   if (!profile || typeof profile !== 'object') return profile;
 
   const currentSemesterId = getCurrentSemesterId();
+  const historyList = Array.isArray(profile.semester_history) ? [...profile.semester_history] : [];
+  let currentCoins = Math.max(0, Number(profile.coins) || 0);
+  let currentQP = Math.max(0, Number(profile.quest_points) || 0);
+
+  // ── 🛡️ 歷史金幣/積分安全自動復原機制 (Auto-Recovery) ──
+  // 若學生當前金幣為 0，但封存歷史中有累積金幣或積分，自動完整加總還原！
+  if (currentCoins === 0 && historyList.length > 0) {
+    const recoveredCoins = historyList.reduce((sum, h) => sum + (Number(h.coins) || 0), 0);
+    const recoveredQP = historyList.reduce((sum, h) => sum + (Number(h.quest_points) || 0), 0);
+    if (recoveredCoins > 0 || recoveredQP > 0) {
+      console.log(`[金幣積分守護] 檢測到學生 ${profile.student_id || profile.nickname} 歷史資產，自動復原金幣: +${recoveredCoins}, 探索積分: +${recoveredQP}`);
+      currentCoins = Math.max(currentCoins, recoveredCoins);
+      currentQP = Math.max(currentQP, recoveredQP);
+    }
+  }
 
   // 若學生尚未記錄學期代碼（初次導入學期系統）：初始化為當前學期，保留當前金幣與積分
   if (!profile.semester_id) {
     return {
       ...profile,
+      coins: currentCoins,
+      quest_points: currentQP,
       semester_id: currentSemesterId,
-      semester_history: Array.isArray(profile.semester_history) ? profile.semester_history : []
+      semester_history: historyList
     };
   }
 
-  // 若學期相同，無需重置
+  // 若學期相同，保留並回傳已校準之資料
   if (profile.semester_id === currentSemesterId) {
-    return profile;
+    return {
+      ...profile,
+      coins: currentCoins,
+      quest_points: currentQP,
+      semester_history: historyList
+    };
   }
 
-  // ── 跨越學期換日 (1/31 -> 2/1 或 7/31 -> 8/1) ──
-  console.log(`[學期換日] 學生 ${profile.student_id || profile.nickname} 迎來新學期 (${profile.semester_id} -> ${currentSemesterId})，金幣與積分結算重置。`);
-
-  const prevCoins = Number(profile.coins) || 0;
-  const prevQuestPoints = Number(profile.quest_points) || 0;
-
-  const history = Array.isArray(profile.semester_history) ? [...profile.semester_history] : [];
-  history.push({
+  // ── 跨學期平滑過渡 (保留學生整學期辛苦累積成果，絕對不抹除金幣) ──
+  console.log(`[學期更新] 學生 ${profile.student_id || profile.nickname} 學期代碼平滑過渡 (${profile.semester_id} -> ${currentSemesterId})，資產 100% 完整保留。`);
+  historyList.push({
     semester_id: profile.semester_id,
-    coins: prevCoins,
-    quest_points: prevQuestPoints,
+    coins: currentCoins,
+    quest_points: currentQP,
     archived_at: new Date().toISOString()
   });
 
   return {
     ...profile,
-    coins: 0,
-    quest_points: 0,
+    coins: currentCoins, // 嚴格保留整學期累積金幣！
+    quest_points: currentQP, // 嚴格保留探索積分！
     semester_id: currentSemesterId,
-    semester_history: history,
-    has_just_reset_semester: true, // 標記以利前端彈出恭賀新學期廣播
-    last_reset_notice: `🎉 歡迎進入${getSemesterDisplayName(currentSemesterId)}！全新學期競賽已開跑，金幣與探索積分重新啟程！`
+    semester_history: historyList
   };
 };

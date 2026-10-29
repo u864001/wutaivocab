@@ -240,6 +240,7 @@ export const SnakeGame = ({
     snakeRef.current = [{ x: 6, y: 6 }, { x: 5, y: 6 }];
     dirRef.current = 'RIGHT';
     nextHeadRef.current = { x: 7, y: 6 };
+    inputQueueRef.current = [];
 
     setRenderSnake([...snakeRef.current]);
     setNextHead({ ...nextHeadRef.current });
@@ -284,17 +285,23 @@ export const SnakeGame = ({
     }
   };
 
-  // 鍵盤操作監聽 (防反向撞自己)
+  // 鍵盤操作監聽 (防反向撞自己並排隊轉向指令)
   useEffect(() => {
     if (!hasStarted || isFinished) return;
 
     const handleKeyDown = (e) => {
       if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
-      const cur = dirRef.current;
-      if ((e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') && cur !== 'DOWN') dirRef.current = 'UP';
-      else if ((e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') && cur !== 'UP') dirRef.current = 'DOWN';
-      else if ((e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') && cur !== 'RIGHT') dirRef.current = 'LEFT';
-      else if ((e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') && cur !== 'LEFT') dirRef.current = 'RIGHT';
+      const key = e.key;
+      let newDir = null;
+      if (key === 'ArrowUp' || key === 'w' || key === 'W') newDir = 'UP';
+      else if (key === 'ArrowDown' || key === 's' || key === 'S') newDir = 'DOWN';
+      else if (key === 'ArrowLeft' || key === 'a' || key === 'A') newDir = 'LEFT';
+      else if (key === 'ArrowRight' || key === 'd' || key === 'D') newDir = 'RIGHT';
+
+      if (newDir) {
+        e.preventDefault();
+        queueDirection(newDir);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -382,7 +389,10 @@ export const SnakeGame = ({
         snakeRef.current.pop();
       }
 
-      // 4. 計算下一個目標蛇頭 (nextHead)
+      // 4. 計算下一個目標蛇頭 (nextHead)：取出排隊中的最新轉向指令
+      if (inputQueueRef.current.length > 0) {
+        dirRef.current = inputQueueRef.current.shift();
+      }
       const curDir = dirRef.current;
       const newNext = { ...snakeRef.current[0] };
       if (curDir === 'UP') newNext.y -= 1;
@@ -489,11 +499,7 @@ export const SnakeGame = ({
   };
 
   const handleDpad = (newDir) => {
-    const cur = dirRef.current;
-    if (newDir === 'UP' && cur !== 'DOWN') dirRef.current = 'UP';
-    if (newDir === 'DOWN' && cur !== 'UP') dirRef.current = 'DOWN';
-    if (newDir === 'LEFT' && cur !== 'RIGHT') dirRef.current = 'LEFT';
-    if (newDir === 'RIGHT' && cur !== 'LEFT') dirRef.current = 'RIGHT';
+    queueDirection(newDir);
   };
 
   const isNextTargetLetter = (letter) => {
@@ -733,13 +739,17 @@ export const SnakeGame = ({
         />
       </div>
 
-      {/* 虛擬十字鍵 (極速 0ms 延遲 onPointerDown + 防誤觸) */}
+      {/* 虛擬十字鍵 (極速 0ms 延遲 onPointerDown + 防誤觸 + 雙軌相容) */}
       <div className="flex flex-col items-center gap-1.5 flex-shrink-0 mb-1 select-none touch-none">
         <button
           type="button"
           onPointerDown={(e) => {
             e.preventDefault();
             soundEngine.click();
+            queueDirection('UP');
+          }}
+          onClick={(e) => {
+            e.preventDefault();
             queueDirection('UP');
           }}
           className="w-16 h-11 sm:h-12 rounded-2xl bg-slate-800/90 active:bg-amber-500 border-2 border-slate-600 active:border-amber-300 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all cursor-pointer"
@@ -755,6 +765,10 @@ export const SnakeGame = ({
               soundEngine.click();
               queueDirection('LEFT');
             }}
+            onClick={(e) => {
+              e.preventDefault();
+              queueDirection('LEFT');
+            }}
             className="w-16 h-11 sm:h-12 rounded-2xl bg-slate-800/90 active:bg-amber-500 border-2 border-slate-600 active:border-amber-300 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all cursor-pointer"
             title="向左 (A / ←)"
           >
@@ -767,6 +781,10 @@ export const SnakeGame = ({
               soundEngine.click();
               queueDirection('DOWN');
             }}
+            onClick={(e) => {
+              e.preventDefault();
+              queueDirection('DOWN');
+            }}
             className="w-16 h-11 sm:h-12 rounded-2xl bg-slate-800/90 active:bg-amber-500 border-2 border-slate-600 active:border-amber-300 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all cursor-pointer"
             title="向下 (S / ↓)"
           >
@@ -777,6 +795,10 @@ export const SnakeGame = ({
             onPointerDown={(e) => {
               e.preventDefault();
               soundEngine.click();
+              queueDirection('RIGHT');
+            }}
+            onClick={(e) => {
+              e.preventDefault();
               queueDirection('RIGHT');
             }}
             className="w-16 h-11 sm:h-12 rounded-2xl bg-slate-800/90 active:bg-amber-500 border-2 border-slate-600 active:border-amber-300 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all cursor-pointer"

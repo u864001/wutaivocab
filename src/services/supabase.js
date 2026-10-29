@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { containsProfanity } from './profanityFilter';
 import { getCurrentSemesterId, checkAndApplySemesterReset } from '../utils/semesterHelper';
+import { parseStudentId } from '../utils/studentIdHelper';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://fqkdkmcqjswufzbvkram.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_M9phUn6LH1yeVA9NbIXesg_tVABCW5z';
@@ -550,22 +551,106 @@ const setLocalStudentProfile = (studentId, profile) => {
 };
 
 /**
+ * 雲端雙軌同步備份：寫入 leaderboard 資料表 (mode: 'profile-sync')
+ * 即使 student_profiles 專屬表尚未手動建表，也能透過現有 leaderboard 表即時達成跨裝置雲端漫遊！
+ */
+export const syncProfileToLeaderboard = async (profile) => {
+  if (!profile?.student_id) return;
+  try {
+    const studentId = String(profile.student_id);
+    const coins = Math.max(0, Number(profile.coins) || 0);
+    const questPoints = Math.max(0, Number(profile.quest_points) || 0);
+    const currentWeek = getWeekNumber();
+    const deviceId = getDeviceId();
+    const cleanNick = String(profile.nickname || '好學生').trim();
+
+    const { data: existing } = await supabase
+      .from('leaderboard')
+      .select('id, score, time')
+      .eq('mode', 'profile-sync')
+      .eq('book', studentId)
+      .limit(1)
+      .maybeSingle();
+
+    if (existing) {
+      const targetScore = Math.max(coins, Number(existing.score) || 0);
+      const targetTime = Math.max(questPoints, Number(existing.time) || 0);
+      await supabase
+        .from('leaderboard')
+        .update({
+          score: targetScore,
+          time: targetTime,
+          name: cleanNick,
+          created_at: new Date().toISOString()
+        })
+        .eq('id', existing.id);
+    } else {
+      await supabase.from('leaderboard').insert([{
+        device_id: deviceId,
+        name: cleanNick,
+        mode: 'profile-sync',
+        book: studentId,
+        score: coins,
+        time: questPoints,
+        week: currentWeek
+      }]);
+    }
+  } catch (err) {
+    console.warn('雲端雙軌同步護航提示:', err);
+  }
+};
+
+/**
+ * 自 leaderboard (profile-sync 雙軌備份) 讀取學生雲端漫遊資料
+ */
+export const fetchProfileFromLeaderboard = async (studentId) => {
+  if (!studentId) return null;
+  try {
+    const { data: syncData } = await supabase
+      .from('leaderboard')
+      .select('*')
+      .eq('mode', 'profile-sync')
+      .eq('book', studentId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (syncData) {
+      const parsedId = parseStudentId(studentId);
+      return {
+        student_id: studentId,
+        grade: parsedId.grade,
+        class: parsedId.classNum,
+        seat: parsedId.seat,
+        nickname: syncData.name || '好學生',
+        coins: Math.max(0, Number(syncData.score) || 0),
+        quest_points: Math.max(0, Number(syncData.time) || 0),
+        semester_id: getCurrentSemesterId(),
+        semester_history: [],
+        inventory: [],
+        daily_quest: {}
+      };
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+};
+
+/**
  * 讀取學生雲端漫遊檔案 (含本機快取與無損離線回退)
  */
 export const fetchStudentProfile = async (studentId) => {
   if (!studentId) return null;
+  const localProfile = getLocalStudentProfile(studentId);
+
   try {
+    // 1. 優先嘗試專屬 student_profiles 資料表
     const { data, error } = await supabase
       .from('student_profiles')
       .select('*')
       .eq('student_id', studentId)
       .maybeSingle();
-
-    if (error) {
-      // 若資料表尚未於 Supabase 建立或網路中斷，平滑回退本機快取
-      console.warn('雲端讀取學生檔案提示 (回退本機快取):', error.message);
-      return getLocalStudentProfile(studentId);
-    }
 
     if (data) {
       // 成功讀取遠端檔案，同步檢查學期換日並更新本機快取
@@ -575,24 +660,49 @@ export const fetchStudentProfile = async (studentId) => {
         class: data.class,
         seat: data.seat,
         nickname: data.nickname,
-        coins: Number(data.coins) || 0,
-        quest_points: Number(data.quest_points) || 0,
+        coins: Math.max(Number(data.coins) || 0, Number(localProfile?.coins) || 0),
+        quest_points: Math.max(Number(data.quest_points) || 0, Number(localProfile?.quest_points) || 0),
         semester_id: data.semester_id || null,
-        semester_history: Array.isArray(data.semester_history) ? data.semester_history : [],
-        inventory: Array.isArray(data.inventory) ? data.inventory : [],
-        daily_quest: (typeof data.daily_quest === 'object' && data.daily_quest) ? data.daily_quest : {},
+        semester_history: Array.isArray(data.semester_history) ? data.semester_history : (localProfile?.semester_history || []),
+        inventory: Array.isArray(data.inventory) && data.inventory.length > 0 ? data.inventory : (localProfile?.inventory || []),
+        daily_quest: (typeof data.daily_quest === 'object' && data.daily_quest) ? data.daily_quest : (localProfile?.daily_quest || {}),
         updated_at: data.updated_at
       };
       const normalized = checkAndApplySemesterReset(rawNormalized);
       setLocalStudentProfile(studentId, normalized);
-      if (normalized?.has_just_reset_semester) {
-        upsertStudentProfile(normalized).catch(() => {});
-      }
+      syncProfileToLeaderboard(normalized).catch(() => {});
       return normalized;
     }
 
-    // 遠端尚無紀錄，查看本機是否有快取
-    return getLocalStudentProfile(studentId);
+    // 2. 若 student_profiles 表尚未建立或無資料，嘗試從 leaderboard (profile-sync 雙軌備份) 讀取！
+    const syncProfile = await fetchProfileFromLeaderboard(studentId);
+    if (syncProfile) {
+      const parsedId = parseStudentId(studentId);
+      const combined = {
+        ...(localProfile || {}),
+        student_id: studentId,
+        grade: localProfile?.grade || parsedId.grade,
+        class: localProfile?.class || parsedId.classNum,
+        seat: localProfile?.seat || parsedId.seat,
+        nickname: localProfile?.nickname || syncProfile.nickname || '好學生',
+        coins: Math.max(Number(syncProfile.coins) || 0, Number(localProfile?.coins) || 0),
+        quest_points: Math.max(Number(syncProfile.quest_points) || 0, Number(localProfile?.quest_points) || 0),
+        semester_id: localProfile?.semester_id || syncProfile.semester_id,
+        semester_history: localProfile?.semester_history || [],
+        inventory: localProfile?.inventory || [],
+        daily_quest: localProfile?.daily_quest || {}
+      };
+      const normalized = checkAndApplySemesterReset(combined);
+      setLocalStudentProfile(studentId, normalized);
+      return normalized;
+    }
+
+    // 3. 遠端尚無紀錄，回退本機快取
+    if (localProfile) {
+      return checkAndApplySemesterReset(localProfile);
+    }
+
+    return null;
   } catch (err) {
     console.warn('讀取學生檔案連線異常，回退本機快取:', err);
     return getLocalStudentProfile(studentId);
@@ -624,7 +734,10 @@ export const upsertStudentProfile = async (profileData) => {
   // 1. 立即寫入本機快取保證即時響應
   setLocalStudentProfile(sanitized.student_id, sanitized);
 
-  // 2. 嘗試非同步同步至 Supabase
+  // 2. 雲端雙軌同步護航：同時寫入 leaderboard 的 profile-sync 模式！
+  syncProfileToLeaderboard(sanitized).catch(() => {});
+
+  // 3. 嘗試非同步同步至 Supabase 專屬 student_profiles 資料表
   try {
     const { data, error } = await supabase
       .from('student_profiles')
@@ -633,7 +746,7 @@ export const upsertStudentProfile = async (profileData) => {
       .maybeSingle();
 
     if (error) {
-      console.warn('Supabase upsert 學生檔案提示 (資料已安全暫存本機):', error.message);
+      console.warn('Supabase upsert 學生檔案提示 (資料已安全暫存本機與雙軌備份):', error.message);
       return sanitized;
     }
     return data || sanitized;
@@ -797,10 +910,35 @@ export const fetchMonopolyLeaderboard = async (grade = null, limit = 50) => {
       .order('coins', { ascending: false })
       .limit(limit);
 
-    if (error || !data || data.length === 0) {
-      return getLocalLeaderboardProfiles('coins', grade, limit);
+    if (!error && data && data.length > 0) {
+      return data;
     }
-    return data;
+
+    // 雙軌雲端備份讀取：自 leaderboard (mode: 'profile-sync') 即時產生全校金幣排行
+    const { data: syncRows } = await supabase
+      .from('leaderboard')
+      .select('book, name, score, time, created_at')
+      .eq('mode', 'profile-sync')
+      .order('score', { ascending: false })
+      .limit(limit);
+
+    if (syncRows && syncRows.length > 0) {
+      const mapped = syncRows.map(r => {
+        const p = parseStudentId(r.book);
+        return {
+          student_id: r.book,
+          grade: p.grade,
+          class: p.classNum,
+          seat: p.seat,
+          nickname: r.name,
+          coins: Number(r.score) || 0,
+          updated_at: r.created_at
+        };
+      }).filter(s => !grade || grade === '00' || grade === 'all' || s.grade === String(grade).padStart(2, '0'));
+      if (mapped.length > 0) return mapped;
+    }
+
+    return getLocalLeaderboardProfiles('coins', grade, limit);
   } catch (err) {
     return getLocalLeaderboardProfiles('coins', grade, limit);
   }
@@ -823,10 +961,35 @@ export const fetchQuestPointsLeaderboard = async (grade = null, limit = 50) => {
       .order('quest_points', { ascending: false })
       .limit(limit);
 
-    if (error || !data || data.length === 0) {
-      return getLocalLeaderboardProfiles('quest_points', grade, limit);
+    if (!error && data && data.length > 0) {
+      return data;
     }
-    return data;
+
+    // 雙軌雲端備份讀取：自 leaderboard (mode: 'profile-sync') 即時產生全校探索積分排行
+    const { data: syncRows } = await supabase
+      .from('leaderboard')
+      .select('book, name, score, time, created_at')
+      .eq('mode', 'profile-sync')
+      .order('time', { ascending: false })
+      .limit(limit);
+
+    if (syncRows && syncRows.length > 0) {
+      const mapped = syncRows.map(r => {
+        const p = parseStudentId(r.book);
+        return {
+          student_id: r.book,
+          grade: p.grade,
+          class: p.classNum,
+          seat: p.seat,
+          nickname: r.name,
+          quest_points: Number(r.time) || 0,
+          updated_at: r.created_at
+        };
+      }).filter(s => !grade || grade === '00' || grade === 'all' || s.grade === String(grade).padStart(2, '0'));
+      if (mapped.length > 0) return mapped;
+    }
+
+    return getLocalLeaderboardProfiles('quest_points', grade, limit);
   } catch (err) {
     return getLocalLeaderboardProfiles('quest_points', grade, limit);
   }

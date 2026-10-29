@@ -59,6 +59,8 @@ export const StudentProvider = ({ children }) => {
               classNum: parsed.classNum,
               seat: parsed.seat,
               nickname: parsed.isGuest ? '神秘訪客勇士' : `學生${lastId.slice(-2)}`,
+              coins: 0,
+              quest_points: 0,
               avatar_id: localStorage.getItem(`wutai_avatar_${lastId}`) || 'boy_scout',
               avatar_frame: localStorage.getItem(`wutai_frame_${lastId}`) || 'frame_slate'
             };
