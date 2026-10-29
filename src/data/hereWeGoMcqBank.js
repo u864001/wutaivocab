@@ -1,11 +1,13 @@
 /**
- * Here We Go 1 ~ 8 冊 + 國一先修 (Book 9) 全冊百題原創類題選擇題庫 (100% Copyright-Safe Parallel MCQ Bank)
- * - 每冊均超過 100 題（全站共 1044 題），通過 7 道自動化品質閘門驗證
- * - 涵蓋各冊各單元之「文法選擇 (grammar)」與「依題意與情境對話選答 (dialogue)」
- * - 每題均具唯一固定編號 (id) 與完整中文文法解析 (explanation)
+ * 課本題庫檢定館全冊百題題庫 (一年級大寫字母、二年級大小寫字母、Here We Go 1 ~ 8 冊 + 國一先修)
+ * - 全部 11 冊每冊均超過 100 題（全站共 1289 題），通過 7 道自動化品質閘門驗證
+ * - 一、二年級為純字母順序、填空、大小寫配對與轉換題（零單字門檻、中文題幹＋語音讀題）
+ * - 三～六年級涵蓋各冊各單元之「文法選擇 (grammar)」與「依題意與情境對話選答 (dialogue)」
  */
 
 export const HERE_WE_GO_BOOK_META = {
+  g1: { title: '一年級大寫字母檢定 (A~Z)', shortLabel: '1年級大寫', grade: 1, subtitle: '大寫字母 A~Z 前後順序、空格填空与正確排列（純字母無單字）', units: ['Unit 1 (A~G)', 'Unit 2 (H~N)', 'Unit 3 (O~T)', 'Unit 4 (U~Z)'] },
+  g2: { title: '二年級大小寫字母檢定 (Aa~Zz)', shortLabel: '2年級大小寫', grade: 2, subtitle: '大小寫配對、大轉小、小轉大與小寫字母順序填空（純字母無單字）', units: ['Unit 1 (Aa~Gg)', 'Unit 2 (Hh~Nn)', 'Unit 3 (Oo~Tt)', 'Unit 4 (Uu~Zz)'] },
   1: { title: '第 1 冊 (Book 1)', shortLabel: '第 1 冊', grade: 3, subtitle: '打招呼、年齡、文具與顏色', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
   2: { title: '第 2 冊 (Book 2)', shortLabel: '第 2 冊', grade: 3, subtitle: '寵物大小、能力 Can、家人與職業', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
   3: { title: '第 3 冊 (Book 3)', shortLabel: '第 3 冊', grade: 4, subtitle: '天氣、飢渴感覺、複數食物與點餐', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
@@ -15422,5 +15424,3668 @@ export const HERE_WE_GO_MCQ_BANK = [
     ],
     "answer": 0,
     "explanation": "僅指出「月份（December）」而無日期數字時，介系詞固定用「in」。"
+  },
+  {
+    "id": "hwg_bg1_1045",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「A」後面的字母是哪一個？",
+    "options": [
+      "D",
+      "P",
+      "R",
+      "B"
+    ],
+    "answer": 3,
+    "explanation": "依照字母順序 A 接下來的字母是「B」。"
+  },
+  {
+    "id": "hwg_bg1_1046",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「B」後面的字母是哪一個？",
+    "options": [
+      "O",
+      "Q",
+      "C",
+      "G"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序 B 接下來的字母是「C」。"
+  },
+  {
+    "id": "hwg_bg1_1047",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「C」後面的字母是哪一個？",
+    "options": [
+      "P",
+      "D",
+      "B",
+      "O"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序 C 接下來的字母是「D」。"
+  },
+  {
+    "id": "hwg_bg1_1048",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「D」後面的字母是哪一個？",
+    "options": [
+      "E",
+      "F",
+      "B",
+      "H"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序 D 接下來的字母是「E」。"
+  },
+  {
+    "id": "hwg_bg1_1049",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「E」後面的字母是哪一個？",
+    "options": [
+      "P",
+      "F",
+      "T"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序 E 接下來的字母是「F」。"
+  },
+  {
+    "id": "hwg_bg1_1050",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「F」後面的字母是哪一個？",
+    "options": [
+      "O",
+      "Q",
+      "G",
+      "C"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序 F 接下來的字母是「G」。"
+  },
+  {
+    "id": "hwg_bg1_1051",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「G」後面的字母是哪一個？",
+    "options": [
+      "A",
+      "H",
+      "N",
+      "M"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序 G 接下來的字母是「H」。"
+  },
+  {
+    "id": "hwg_bg1_1052",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「H」後面的字母是哪一個？",
+    "options": [
+      "I",
+      "J",
+      "L",
+      "T"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序 H 接下來的字母是「I」。"
+  },
+  {
+    "id": "hwg_bg1_1053",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「I」後面的字母是哪一個？",
+    "options": [
+      "J",
+      "L",
+      "U"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序 I 接下來的字母是「J」。"
+  },
+  {
+    "id": "hwg_bg1_1054",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「J」後面的字母是哪一個？",
+    "options": [
+      "Y",
+      "R",
+      "K",
+      "X"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序 J 接下來的字母是「K」。"
+  },
+  {
+    "id": "hwg_bg1_1055",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「K」後面的字母是哪一個？",
+    "options": [
+      "T",
+      "L",
+      "I",
+      "J"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序 K 接下來的字母是「L」。"
+  },
+  {
+    "id": "hwg_bg1_1056",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「L」後面的字母是哪一個？",
+    "options": [
+      "M",
+      "W",
+      "N",
+      "V"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序 L 接下來的字母是「M」。"
+  },
+  {
+    "id": "hwg_bg1_1057",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「M」後面的字母是哪一個？",
+    "options": [
+      "Z",
+      "H",
+      "N"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序 M 接下來的字母是「N」。"
+  },
+  {
+    "id": "hwg_bg1_1058",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「N」後面的字母是哪一個？",
+    "options": [
+      "C",
+      "D",
+      "O",
+      "Q"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序 N 接下來的字母是「O」。"
+  },
+  {
+    "id": "hwg_bg1_1059",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「O」後面的字母是哪一個？",
+    "options": [
+      "F",
+      "P",
+      "R",
+      "B"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序 O 接下來的字母是「P」。"
+  },
+  {
+    "id": "hwg_bg1_1060",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「P」後面的字母是哪一個？",
+    "options": [
+      "Q",
+      "O",
+      "G",
+      "C"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序 P 接下來的字母是「Q」。"
+  },
+  {
+    "id": "hwg_bg1_1061",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「Q」後面的字母是哪一個？",
+    "options": [
+      "P",
+      "B",
+      "K",
+      "R"
+    ],
+    "answer": 3,
+    "explanation": "依照字母順序 Q 接下來的字母是「R」。"
+  },
+  {
+    "id": "hwg_bg1_1062",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「R」後面的字母是哪一個？",
+    "options": [
+      "C",
+      "G",
+      "S",
+      "Z"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序 R 接下來的字母是「S」。"
+  },
+  {
+    "id": "hwg_bg1_1063",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「S」後面的字母是哪一個？",
+    "options": [
+      "L",
+      "T",
+      "I",
+      "F"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序 S 接下來的字母是「T」。"
+  },
+  {
+    "id": "hwg_bg1_1064",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「T」後面的字母是哪一個？",
+    "options": [
+      "U",
+      "V",
+      "W",
+      "J"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序 T 接下來的字母是「U」。"
+  },
+  {
+    "id": "hwg_bg1_1065",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「U」後面的字母是哪一個？",
+    "options": [
+      "V",
+      "W",
+      "Y"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序 U 接下來的字母是「V」。"
+  },
+  {
+    "id": "hwg_bg1_1066",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「V」後面的字母是哪一個？",
+    "options": [
+      "M",
+      "U",
+      "W"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序 V 接下來的字母是「W」。"
+  },
+  {
+    "id": "hwg_bg1_1067",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「W」後面的字母是哪一個？",
+    "options": [
+      "Z",
+      "X",
+      "K",
+      "Y"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序 W 接下來的字母是「X」。"
+  },
+  {
+    "id": "hwg_bg1_1068",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「X」後面的字母是哪一個？",
+    "options": [
+      "Y",
+      "V",
+      "T"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序 X 接下來的字母是「Y」。"
+  },
+  {
+    "id": "hwg_bg1_1069",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「Y」後面的字母是哪一個？",
+    "options": [
+      "S",
+      "N",
+      "X",
+      "Z"
+    ],
+    "answer": 3,
+    "explanation": "依照字母順序 Y 接下來的字母是「Z」。"
+  },
+  {
+    "id": "hwg_bg1_1070",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「B」前面的字母是哪一個？",
+    "options": [
+      "H",
+      "X",
+      "A",
+      "V"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序排在 B 前面的字母是「A」。"
+  },
+  {
+    "id": "hwg_bg1_1071",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「C」前面的字母是哪一個？",
+    "options": [
+      "R",
+      "B",
+      "D",
+      "P"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序排在 C 前面的字母是「B」。"
+  },
+  {
+    "id": "hwg_bg1_1072",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「D」前面的字母是哪一個？",
+    "options": [
+      "C",
+      "G",
+      "O",
+      "Q"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序排在 D 前面的字母是「C」。"
+  },
+  {
+    "id": "hwg_bg1_1073",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「E」前面的字母是哪一個？",
+    "options": [
+      "B",
+      "O",
+      "P",
+      "D"
+    ],
+    "answer": 3,
+    "explanation": "依照字母順序排在 E 前面的字母是「D」。"
+  },
+  {
+    "id": "hwg_bg1_1074",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「F」前面的字母是哪一個？",
+    "options": [
+      "E",
+      "B",
+      "H"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序排在 F 前面的字母是「E」。"
+  },
+  {
+    "id": "hwg_bg1_1075",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請問在大寫字母「G」前面的字母是哪一個？",
+    "options": [
+      "P",
+      "F",
+      "E",
+      "T"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序排在 G 前面的字母是「F」。"
+  },
+  {
+    "id": "hwg_bg1_1076",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「H」前面的字母是哪一個？",
+    "options": [
+      "G",
+      "C",
+      "O",
+      "Q"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序排在 H 前面的字母是「G」。"
+  },
+  {
+    "id": "hwg_bg1_1077",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「I」前面的字母是哪一個？",
+    "options": [
+      "N",
+      "M",
+      "A",
+      "H"
+    ],
+    "answer": 3,
+    "explanation": "依照字母順序排在 I 前面的字母是「H」。"
+  },
+  {
+    "id": "hwg_bg1_1078",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「J」前面的字母是哪一個？",
+    "options": [
+      "L",
+      "T",
+      "I"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序排在 J 前面的字母是「I」。"
+  },
+  {
+    "id": "hwg_bg1_1079",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「K」前面的字母是哪一個？",
+    "options": [
+      "U",
+      "J",
+      "I",
+      "L"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序排在 K 前面的字母是「J」。"
+  },
+  {
+    "id": "hwg_bg1_1080",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「L」前面的字母是哪一個？",
+    "options": [
+      "K",
+      "X",
+      "Y",
+      "R"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序排在 L 前面的字母是「K」。"
+  },
+  {
+    "id": "hwg_bg1_1081",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「M」前面的字母是哪一個？",
+    "options": [
+      "I",
+      "J",
+      "T",
+      "L"
+    ],
+    "answer": 3,
+    "explanation": "依照字母順序排在 M 前面的字母是「L」。"
+  },
+  {
+    "id": "hwg_bg1_1082",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請問在大寫字母「N」前面的字母是哪一個？",
+    "options": [
+      "V",
+      "M",
+      "W"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序排在 N 前面的字母是「M」。"
+  },
+  {
+    "id": "hwg_bg1_1083",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「O」前面的字母是哪一個？",
+    "options": [
+      "H",
+      "N",
+      "M",
+      "Z"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序排在 O 前面的字母是「N」。"
+  },
+  {
+    "id": "hwg_bg1_1084",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「P」前面的字母是哪一個？",
+    "options": [
+      "O",
+      "Q",
+      "C",
+      "D"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序排在 P 前面的字母是「O」。"
+  },
+  {
+    "id": "hwg_bg1_1085",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「Q」前面的字母是哪一個？",
+    "options": [
+      "R",
+      "B",
+      "F",
+      "P"
+    ],
+    "answer": 3,
+    "explanation": "依照字母順序排在 Q 前面的字母是「P」。"
+  },
+  {
+    "id": "hwg_bg1_1086",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「R」前面的字母是哪一個？",
+    "options": [
+      "G",
+      "C",
+      "Q",
+      "O"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序排在 R 前面的字母是「Q」。"
+  },
+  {
+    "id": "hwg_bg1_1087",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「S」前面的字母是哪一個？",
+    "options": [
+      "K",
+      "R",
+      "P",
+      "B"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序排在 S 前面的字母是「R」。"
+  },
+  {
+    "id": "hwg_bg1_1088",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請問在大寫字母「T」前面的字母是哪一個？",
+    "options": [
+      "S",
+      "Z",
+      "C",
+      "G"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序排在 T 前面的字母是「S」。"
+  },
+  {
+    "id": "hwg_bg1_1089",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「U」前面的字母是哪一個？",
+    "options": [
+      "I",
+      "F",
+      "L",
+      "T"
+    ],
+    "answer": 3,
+    "explanation": "依照字母順序排在 U 前面的字母是「T」。"
+  },
+  {
+    "id": "hwg_bg1_1090",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「V」前面的字母是哪一個？",
+    "options": [
+      "W",
+      "J",
+      "U"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序排在 V 前面的字母是「U」。"
+  },
+  {
+    "id": "hwg_bg1_1091",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「W」前面的字母是哪一個？",
+    "options": [
+      "Y",
+      "V",
+      "U"
+    ],
+    "answer": 1,
+    "explanation": "依照字母順序排在 W 前面的字母是「V」。"
+  },
+  {
+    "id": "hwg_bg1_1092",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「X」前面的字母是哪一個？",
+    "options": [
+      "W",
+      "M",
+      "V",
+      "U"
+    ],
+    "answer": 0,
+    "explanation": "依照字母順序排在 X 前面的字母是「W」。"
+  },
+  {
+    "id": "hwg_bg1_1093",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「Y」前面的字母是哪一個？",
+    "options": [
+      "K",
+      "Z",
+      "X"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序排在 Y 前面的字母是「X」。"
+  },
+  {
+    "id": "hwg_bg1_1094",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請問在大寫字母「Z」前面的字母是哪一個？",
+    "options": [
+      "X",
+      "T",
+      "Y",
+      "V"
+    ],
+    "answer": 2,
+    "explanation": "依照字母順序排在 Z 前面的字母是「Y」。"
+  },
+  {
+    "id": "hwg_bg1_1095",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：A, ______, C, D",
+    "options": [
+      "R",
+      "B",
+      "D",
+      "P"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：A, B, C, D，故空格應填「B」。"
+  },
+  {
+    "id": "hwg_bg1_1096",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：A, B, ______, D",
+    "options": [
+      "C",
+      "G",
+      "O",
+      "Q"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：A, B, C, D，故空格應填「C」。"
+  },
+  {
+    "id": "hwg_bg1_1097",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：B, ______, D, E",
+    "options": [
+      "G",
+      "O",
+      "Q",
+      "C"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：B, C, D, E，故空格應填「C」。"
+  },
+  {
+    "id": "hwg_bg1_1098",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：B, C, ______, E",
+    "options": [
+      "O",
+      "P",
+      "D",
+      "B"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：B, C, D, E，故空格應填「D」。"
+  },
+  {
+    "id": "hwg_bg1_1099",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：C, ______, E, F",
+    "options": [
+      "P",
+      "D",
+      "B",
+      "O"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：C, D, E, F，故空格應填「D」。"
+  },
+  {
+    "id": "hwg_bg1_1100",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：C, D, ______, F",
+    "options": [
+      "E",
+      "F",
+      "B",
+      "H"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：C, D, E, F，故空格應填「E」。"
+  },
+  {
+    "id": "hwg_bg1_1101",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：D, ______, F, G",
+    "options": [
+      "F",
+      "B",
+      "H",
+      "E"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：D, E, F, G，故空格應填「E」。"
+  },
+  {
+    "id": "hwg_bg1_1102",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：D, E, ______, G",
+    "options": [
+      "T",
+      "P",
+      "F",
+      "E"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：D, E, F, G，故空格應填「F」。"
+  },
+  {
+    "id": "hwg_bg1_1103",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：E, ______, G, H",
+    "options": [
+      "P",
+      "F",
+      "E",
+      "T"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：E, F, G, H，故空格應填「F」。"
+  },
+  {
+    "id": "hwg_bg1_1104",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：E, F, ______, H",
+    "options": [
+      "G",
+      "C",
+      "O",
+      "Q"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：E, F, G, H，故空格應填「G」。"
+  },
+  {
+    "id": "hwg_bg1_1105",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：F, ______, H, I",
+    "options": [
+      "C",
+      "O",
+      "Q",
+      "G"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：F, G, H, I，故空格應填「G」。"
+  },
+  {
+    "id": "hwg_bg1_1106",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：F, G, ______, I",
+    "options": [
+      "M",
+      "A",
+      "H",
+      "N"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：F, G, H, I，故空格應填「H」。"
+  },
+  {
+    "id": "hwg_bg1_1107",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：G, ______, I, J",
+    "options": [
+      "A",
+      "H",
+      "N",
+      "M"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：G, H, I, J，故空格應填「H」。"
+  },
+  {
+    "id": "hwg_bg1_1108",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：G, H, ______, J",
+    "options": [
+      "I",
+      "J",
+      "L",
+      "T"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：G, H, I, J，故空格應填「I」。"
+  },
+  {
+    "id": "hwg_bg1_1109",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：H, ______, J, K",
+    "options": [
+      "J",
+      "L",
+      "T",
+      "I"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：H, I, J, K，故空格應填「I」。"
+  },
+  {
+    "id": "hwg_bg1_1110",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：H, I, ______, K",
+    "options": [
+      "L",
+      "U",
+      "J",
+      "I"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：H, I, J, K，故空格應填「J」。"
+  },
+  {
+    "id": "hwg_bg1_1111",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：I, ______, K, L",
+    "options": [
+      "U",
+      "J",
+      "I",
+      "L"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：I, J, K, L，故空格應填「J」。"
+  },
+  {
+    "id": "hwg_bg1_1112",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：I, J, ______, L",
+    "options": [
+      "K",
+      "X",
+      "Y",
+      "R"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：I, J, K, L，故空格應填「K」。"
+  },
+  {
+    "id": "hwg_bg1_1113",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：J, ______, L, M",
+    "options": [
+      "X",
+      "Y",
+      "R",
+      "K"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：J, K, L, M，故空格應填「K」。"
+  },
+  {
+    "id": "hwg_bg1_1114",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：J, K, ______, M",
+    "options": [
+      "J",
+      "T",
+      "L",
+      "I"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：J, K, L, M，故空格應填「L」。"
+  },
+  {
+    "id": "hwg_bg1_1115",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：K, ______, M, N",
+    "options": [
+      "T",
+      "L",
+      "I",
+      "J"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：K, L, M, N，故空格應填「L」。"
+  },
+  {
+    "id": "hwg_bg1_1116",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：K, L, ______, N",
+    "options": [
+      "M",
+      "W",
+      "N",
+      "V"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：K, L, M, N，故空格應填「M」。"
+  },
+  {
+    "id": "hwg_bg1_1117",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：L, ______, N, O",
+    "options": [
+      "W",
+      "N",
+      "V",
+      "M"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：L, M, N, O，故空格應填「M」。"
+  },
+  {
+    "id": "hwg_bg1_1118",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：L, M, ______, O",
+    "options": [
+      "Z",
+      "H",
+      "N",
+      "M"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：L, M, N, O，故空格應填「N」。"
+  },
+  {
+    "id": "hwg_bg1_1119",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：M, ______, O, P",
+    "options": [
+      "H",
+      "N",
+      "M",
+      "Z"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：M, N, O, P，故空格應填「N」。"
+  },
+  {
+    "id": "hwg_bg1_1120",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：M, N, ______, P",
+    "options": [
+      "O",
+      "Q",
+      "C",
+      "D"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：M, N, O, P，故空格應填「O」。"
+  },
+  {
+    "id": "hwg_bg1_1121",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：N, ______, P, Q",
+    "options": [
+      "Q",
+      "C",
+      "D",
+      "O"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：N, O, P, Q，故空格應填「O」。"
+  },
+  {
+    "id": "hwg_bg1_1122",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：N, O, ______, Q",
+    "options": [
+      "B",
+      "F",
+      "P",
+      "R"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：N, O, P, Q，故空格應填「P」。"
+  },
+  {
+    "id": "hwg_bg1_1123",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：O, ______, Q, R",
+    "options": [
+      "F",
+      "P",
+      "R",
+      "B"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：O, P, Q, R，故空格應填「P」。"
+  },
+  {
+    "id": "hwg_bg1_1124",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：O, P, ______, R",
+    "options": [
+      "Q",
+      "O",
+      "G",
+      "C"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：O, P, Q, R，故空格應填「Q」。"
+  },
+  {
+    "id": "hwg_bg1_1125",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：P, ______, R, S",
+    "options": [
+      "O",
+      "G",
+      "C",
+      "Q"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：P, Q, R, S，故空格應填「Q」。"
+  },
+  {
+    "id": "hwg_bg1_1126",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：P, Q, ______, S",
+    "options": [
+      "B",
+      "K",
+      "R",
+      "P"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：P, Q, R, S，故空格應填「R」。"
+  },
+  {
+    "id": "hwg_bg1_1127",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：Q, ______, S, T",
+    "options": [
+      "K",
+      "R",
+      "P",
+      "B"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：Q, R, S, T，故空格應填「R」。"
+  },
+  {
+    "id": "hwg_bg1_1128",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：Q, R, ______, T",
+    "options": [
+      "S",
+      "Z",
+      "C",
+      "G"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：Q, R, S, T，故空格應填「S」。"
+  },
+  {
+    "id": "hwg_bg1_1129",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：R, ______, T, U",
+    "options": [
+      "Z",
+      "C",
+      "G",
+      "S"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：R, S, T, U，故空格應填「S」。"
+  },
+  {
+    "id": "hwg_bg1_1130",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：R, S, ______, U",
+    "options": [
+      "F",
+      "L",
+      "T",
+      "I"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：R, S, T, U，故空格應填「T」。"
+  },
+  {
+    "id": "hwg_bg1_1131",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：S, ______, U, V",
+    "options": [
+      "L",
+      "T",
+      "I",
+      "F"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：S, T, U, V，故空格應填「T」。"
+  },
+  {
+    "id": "hwg_bg1_1132",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：S, T, ______, V",
+    "options": [
+      "U",
+      "V",
+      "W",
+      "J"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：S, T, U, V，故空格應填「U」。"
+  },
+  {
+    "id": "hwg_bg1_1133",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：T, ______, V, W",
+    "options": [
+      "V",
+      "W",
+      "J",
+      "U"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：T, U, V, W，故空格應填「U」。"
+  },
+  {
+    "id": "hwg_bg1_1134",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：T, U, ______, W",
+    "options": [
+      "W",
+      "Y",
+      "V",
+      "U"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：T, U, V, W，故空格應填「V」。"
+  },
+  {
+    "id": "hwg_bg1_1135",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：U, ______, W, X",
+    "options": [
+      "Y",
+      "V",
+      "U",
+      "W"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：U, V, W, X，故空格應填「V」。"
+  },
+  {
+    "id": "hwg_bg1_1136",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：U, V, ______, X",
+    "options": [
+      "W",
+      "M",
+      "V",
+      "U"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：U, V, W, X，故空格應填「W」。"
+  },
+  {
+    "id": "hwg_bg1_1137",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：V, ______, X, Y",
+    "options": [
+      "M",
+      "V",
+      "U",
+      "W"
+    ],
+    "answer": 3,
+    "explanation": "依照大寫字母順序為：V, W, X, Y，故空格應填「W」。"
+  },
+  {
+    "id": "hwg_bg1_1138",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：V, W, ______, Y",
+    "options": [
+      "Y",
+      "Z",
+      "X",
+      "K"
+    ],
+    "answer": 2,
+    "explanation": "依照大寫字母順序為：V, W, X, Y，故空格應填「X」。"
+  },
+  {
+    "id": "hwg_bg1_1139",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：W, ______, Y, Z",
+    "options": [
+      "Z",
+      "X",
+      "K",
+      "Y"
+    ],
+    "answer": 1,
+    "explanation": "依照大寫字母順序為：W, X, Y, Z，故空格應填「X」。"
+  },
+  {
+    "id": "hwg_bg1_1140",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "grammar",
+    "question": "請選出空格中正確的大寫字母：W, X, ______, Z",
+    "options": [
+      "Y",
+      "V",
+      "X",
+      "T"
+    ],
+    "answer": 0,
+    "explanation": "依照大寫字母順序為：W, X, Y, Z，故空格應填「Y」。"
+  },
+  {
+    "id": "hwg_bg1_1141",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "A, C, B",
+      "B, A, C",
+      "C, B, A",
+      "A, B, C"
+    ],
+    "answer": 3,
+    "explanation": "正確的大寫字母順序為「A, B, C」。"
+  },
+  {
+    "id": "hwg_bg1_1142",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "C, B, D",
+      "D, C, B",
+      "B, C, D",
+      "B, D, C"
+    ],
+    "answer": 2,
+    "explanation": "正確的大寫字母順序為「B, C, D」。"
+  },
+  {
+    "id": "hwg_bg1_1143",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "E, D, C",
+      "C, D, E",
+      "C, E, D",
+      "D, C, E"
+    ],
+    "answer": 1,
+    "explanation": "正確的大寫字母順序為「C, D, E」。"
+  },
+  {
+    "id": "hwg_bg1_1144",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "D, E, F",
+      "D, F, E",
+      "E, D, F",
+      "F, E, D"
+    ],
+    "answer": 0,
+    "explanation": "正確的大寫字母順序為「D, E, F」。"
+  },
+  {
+    "id": "hwg_bg1_1145",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "E, G, F",
+      "F, E, G",
+      "G, F, E",
+      "E, F, G"
+    ],
+    "answer": 3,
+    "explanation": "正確的大寫字母順序為「E, F, G」。"
+  },
+  {
+    "id": "hwg_bg1_1146",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "G, F, H",
+      "H, G, F",
+      "F, G, H",
+      "F, H, G"
+    ],
+    "answer": 2,
+    "explanation": "正確的大寫字母順序為「F, G, H」。"
+  },
+  {
+    "id": "hwg_bg1_1147",
+    "book": "g1",
+    "unit": "Unit 1 (A~G)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "I, H, G",
+      "G, H, I",
+      "G, I, H",
+      "H, G, I"
+    ],
+    "answer": 1,
+    "explanation": "正確的大寫字母順序為「G, H, I」。"
+  },
+  {
+    "id": "hwg_bg1_1148",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "H, I, J",
+      "H, J, I",
+      "I, H, J",
+      "J, I, H"
+    ],
+    "answer": 0,
+    "explanation": "正確的大寫字母順序為「H, I, J」。"
+  },
+  {
+    "id": "hwg_bg1_1149",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "I, K, J",
+      "J, I, K",
+      "K, J, I",
+      "I, J, K"
+    ],
+    "answer": 3,
+    "explanation": "正確的大寫字母順序為「I, J, K」。"
+  },
+  {
+    "id": "hwg_bg1_1150",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "K, J, L",
+      "L, K, J",
+      "J, K, L",
+      "J, L, K"
+    ],
+    "answer": 2,
+    "explanation": "正確的大寫字母順序為「J, K, L」。"
+  },
+  {
+    "id": "hwg_bg1_1151",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "M, L, K",
+      "K, L, M",
+      "K, M, L",
+      "L, K, M"
+    ],
+    "answer": 1,
+    "explanation": "正確的大寫字母順序為「K, L, M」。"
+  },
+  {
+    "id": "hwg_bg1_1152",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "L, M, N",
+      "L, N, M",
+      "M, L, N",
+      "N, M, L"
+    ],
+    "answer": 0,
+    "explanation": "正確的大寫字母順序為「L, M, N」。"
+  },
+  {
+    "id": "hwg_bg1_1153",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "M, O, N",
+      "N, M, O",
+      "O, N, M",
+      "M, N, O"
+    ],
+    "answer": 3,
+    "explanation": "正確的大寫字母順序為「M, N, O」。"
+  },
+  {
+    "id": "hwg_bg1_1154",
+    "book": "g1",
+    "unit": "Unit 2 (H~N)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "O, N, P",
+      "P, O, N",
+      "N, O, P",
+      "N, P, O"
+    ],
+    "answer": 2,
+    "explanation": "正確的大寫字母順序為「N, O, P」。"
+  },
+  {
+    "id": "hwg_bg1_1155",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "Q, P, O",
+      "O, P, Q",
+      "O, Q, P",
+      "P, O, Q"
+    ],
+    "answer": 1,
+    "explanation": "正確的大寫字母順序為「O, P, Q」。"
+  },
+  {
+    "id": "hwg_bg1_1156",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "P, Q, R",
+      "P, R, Q",
+      "Q, P, R",
+      "R, Q, P"
+    ],
+    "answer": 0,
+    "explanation": "正確的大寫字母順序為「P, Q, R」。"
+  },
+  {
+    "id": "hwg_bg1_1157",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "Q, S, R",
+      "R, Q, S",
+      "S, R, Q",
+      "Q, R, S"
+    ],
+    "answer": 3,
+    "explanation": "正確的大寫字母順序為「Q, R, S」。"
+  },
+  {
+    "id": "hwg_bg1_1158",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "S, R, T",
+      "T, S, R",
+      "R, S, T",
+      "R, T, S"
+    ],
+    "answer": 2,
+    "explanation": "正確的大寫字母順序為「R, S, T」。"
+  },
+  {
+    "id": "hwg_bg1_1159",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "U, T, S",
+      "S, T, U",
+      "S, U, T",
+      "T, S, U"
+    ],
+    "answer": 1,
+    "explanation": "正確的大寫字母順序為「S, T, U」。"
+  },
+  {
+    "id": "hwg_bg1_1160",
+    "book": "g1",
+    "unit": "Unit 3 (O~T)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "T, U, V",
+      "T, V, U",
+      "U, T, V",
+      "V, U, T"
+    ],
+    "answer": 0,
+    "explanation": "正確的大寫字母順序為「T, U, V」。"
+  },
+  {
+    "id": "hwg_bg1_1161",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "U, W, V",
+      "V, U, W",
+      "W, V, U",
+      "U, V, W"
+    ],
+    "answer": 3,
+    "explanation": "正確的大寫字母順序為「U, V, W」。"
+  },
+  {
+    "id": "hwg_bg1_1162",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "W, V, X",
+      "X, W, V",
+      "V, W, X",
+      "V, X, W"
+    ],
+    "answer": 2,
+    "explanation": "正確的大寫字母順序為「V, W, X」。"
+  },
+  {
+    "id": "hwg_bg1_1163",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "Y, X, W",
+      "W, X, Y",
+      "W, Y, X",
+      "X, W, Y"
+    ],
+    "answer": 1,
+    "explanation": "正確的大寫字母順序為「W, X, Y」。"
+  },
+  {
+    "id": "hwg_bg1_1164",
+    "book": "g1",
+    "unit": "Unit 4 (U~Z)",
+    "category": "dialogue",
+    "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
+    "options": [
+      "X, Y, Z",
+      "X, Z, Y",
+      "Y, X, Z",
+      "Z, Y, X"
+    ],
+    "answer": 0,
+    "explanation": "正確的大寫字母順序為「X, Y, Z」。"
+  },
+  {
+    "id": "hwg_bg2_1165",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問大寫字母「A」的小寫是哪一個？",
+    "options": [
+      "o",
+      "e",
+      "c",
+      "a"
+    ],
+    "answer": 3,
+    "explanation": "大寫字母「A」對應的小寫字母為「a」。"
+  },
+  {
+    "id": "hwg_bg2_1166",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問大寫字母「B」的小寫是哪一個？",
+    "options": [
+      "p",
+      "q",
+      "b",
+      "d"
+    ],
+    "answer": 2,
+    "explanation": "大寫字母「B」對應的小寫字母為「b」。"
+  },
+  {
+    "id": "hwg_bg2_1167",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問大寫字母「C」的小寫是哪一個？",
+    "options": [
+      "a",
+      "c",
+      "o",
+      "e"
+    ],
+    "answer": 1,
+    "explanation": "大寫字母「C」對應的小寫字母為「c」。"
+  },
+  {
+    "id": "hwg_bg2_1168",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問大寫字母「D」的小寫是哪一個？",
+    "options": [
+      "d",
+      "b",
+      "p",
+      "q"
+    ],
+    "answer": 0,
+    "explanation": "大寫字母「D」對應的小寫字母為「d」。"
+  },
+  {
+    "id": "hwg_bg2_1169",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問大寫字母「E」的小寫是哪一個？",
+    "options": [
+      "c",
+      "a",
+      "o",
+      "e"
+    ],
+    "answer": 3,
+    "explanation": "大寫字母「E」對應的小寫字母為「e」。"
+  },
+  {
+    "id": "hwg_bg2_1170",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問大寫字母「F」的小寫是哪一個？",
+    "options": [
+      "r",
+      "l",
+      "f",
+      "t"
+    ],
+    "answer": 2,
+    "explanation": "大寫字母「F」對應的小寫字母為「f」。"
+  },
+  {
+    "id": "hwg_bg2_1171",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問大寫字母「G」的小寫是哪一個？",
+    "options": [
+      "y",
+      "g",
+      "q",
+      "j"
+    ],
+    "answer": 1,
+    "explanation": "大寫字母「G」對應的小寫字母為「g」。"
+  },
+  {
+    "id": "hwg_bg2_1172",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問大寫字母「H」的小寫是哪一個？",
+    "options": [
+      "h",
+      "n",
+      "r",
+      "b"
+    ],
+    "answer": 0,
+    "explanation": "大寫字母「H」對應的小寫字母為「h」。"
+  },
+  {
+    "id": "hwg_bg2_1173",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問大寫字母「I」的小寫是哪一個？",
+    "options": [
+      "j",
+      "l",
+      "t",
+      "i"
+    ],
+    "answer": 3,
+    "explanation": "大寫字母「I」對應的小寫字母為「i」。"
+  },
+  {
+    "id": "hwg_bg2_1174",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問大寫字母「J」的小寫是哪一個？",
+    "options": [
+      "g",
+      "y",
+      "j",
+      "i"
+    ],
+    "answer": 2,
+    "explanation": "大寫字母「J」對應的小寫字母為「j」。"
+  },
+  {
+    "id": "hwg_bg2_1175",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問大寫字母「K」的小寫是哪一個？",
+    "options": [
+      "r",
+      "k",
+      "h",
+      "x"
+    ],
+    "answer": 1,
+    "explanation": "大寫字母「K」對應的小寫字母為「k」。"
+  },
+  {
+    "id": "hwg_bg2_1176",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問大寫字母「L」的小寫是哪一個？",
+    "options": [
+      "l",
+      "i",
+      "t",
+      "j"
+    ],
+    "answer": 0,
+    "explanation": "大寫字母「L」對應的小寫字母為「l」。"
+  },
+  {
+    "id": "hwg_bg2_1177",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問大寫字母「M」的小寫是哪一個？",
+    "options": [
+      "n",
+      "w",
+      "u",
+      "m"
+    ],
+    "answer": 3,
+    "explanation": "大寫字母「M」對應的小寫字母為「m」。"
+  },
+  {
+    "id": "hwg_bg2_1178",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問大寫字母「N」的小寫是哪一個？",
+    "options": [
+      "u",
+      "h",
+      "n",
+      "m"
+    ],
+    "answer": 2,
+    "explanation": "大寫字母「N」對應的小寫字母為「n」。"
+  },
+  {
+    "id": "hwg_bg2_1179",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問大寫字母「O」的小寫是哪一個？",
+    "options": [
+      "e",
+      "o",
+      "c",
+      "a"
+    ],
+    "answer": 1,
+    "explanation": "大寫字母「O」對應的小寫字母為「o」。"
+  },
+  {
+    "id": "hwg_bg2_1180",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問大寫字母「P」的小寫是哪一個？",
+    "options": [
+      "p",
+      "q",
+      "b",
+      "d"
+    ],
+    "answer": 0,
+    "explanation": "大寫字母「P」對應的小寫字母為「p」。"
+  },
+  {
+    "id": "hwg_bg2_1181",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問大寫字母「Q」的小寫是哪一個？",
+    "options": [
+      "p",
+      "g",
+      "d",
+      "q"
+    ],
+    "answer": 3,
+    "explanation": "大寫字母「Q」對應的小寫字母為「q」。"
+  },
+  {
+    "id": "hwg_bg2_1182",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問大寫字母「R」的小寫是哪一個？",
+    "options": [
+      "v",
+      "f",
+      "r",
+      "n"
+    ],
+    "answer": 2,
+    "explanation": "大寫字母「R」對應的小寫字母為「r」。"
+  },
+  {
+    "id": "hwg_bg2_1183",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問大寫字母「S」的小寫是哪一個？",
+    "options": [
+      "x",
+      "s",
+      "z",
+      "c"
+    ],
+    "answer": 1,
+    "explanation": "大寫字母「S」對應的小寫字母為「s」。"
+  },
+  {
+    "id": "hwg_bg2_1184",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問大寫字母「T」的小寫是哪一個？",
+    "options": [
+      "t",
+      "f",
+      "l",
+      "i"
+    ],
+    "answer": 0,
+    "explanation": "大寫字母「T」對應的小寫字母為「t」。"
+  },
+  {
+    "id": "hwg_bg2_1185",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問大寫字母「U」的小寫是哪一個？",
+    "options": [
+      "n",
+      "v",
+      "w",
+      "u"
+    ],
+    "answer": 3,
+    "explanation": "大寫字母「U」對應的小寫字母為「u」。"
+  },
+  {
+    "id": "hwg_bg2_1186",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問大寫字母「V」的小寫是哪一個？",
+    "options": [
+      "w",
+      "y",
+      "v",
+      "u"
+    ],
+    "answer": 2,
+    "explanation": "大寫字母「V」對應的小寫字母為「v」。"
+  },
+  {
+    "id": "hwg_bg2_1187",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問大寫字母「W」的小寫是哪一個？",
+    "options": [
+      "u",
+      "w",
+      "m",
+      "v"
+    ],
+    "answer": 1,
+    "explanation": "大寫字母「W」對應的小寫字母為「w」。"
+  },
+  {
+    "id": "hwg_bg2_1188",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問大寫字母「X」的小寫是哪一個？",
+    "options": [
+      "x",
+      "k",
+      "z",
+      "s"
+    ],
+    "answer": 0,
+    "explanation": "大寫字母「X」對應的小寫字母為「x」。"
+  },
+  {
+    "id": "hwg_bg2_1189",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問大寫字母「Y」的小寫是哪一個？",
+    "options": [
+      "g",
+      "j",
+      "v",
+      "y"
+    ],
+    "answer": 3,
+    "explanation": "大寫字母「Y」對應的小寫字母為「y」。"
+  },
+  {
+    "id": "hwg_bg2_1190",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問大寫字母「Z」的小寫是哪一個？",
+    "options": [
+      "x",
+      "n",
+      "z",
+      "s"
+    ],
+    "answer": 2,
+    "explanation": "大寫字母「Z」對應的小寫字母為「z」。"
+  },
+  {
+    "id": "hwg_bg2_1191",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問小寫字母「a」的大寫是哪一個？",
+    "options": [
+      "C",
+      "A",
+      "O",
+      "E"
+    ],
+    "answer": 1,
+    "explanation": "小寫字母「a」對應的大寫字母為「A」。"
+  },
+  {
+    "id": "hwg_bg2_1192",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問小寫字母「b」的大寫是哪一個？",
+    "options": [
+      "B",
+      "D",
+      "P",
+      "Q"
+    ],
+    "answer": 0,
+    "explanation": "小寫字母「b」對應的大寫字母為「B」。"
+  },
+  {
+    "id": "hwg_bg2_1193",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問小寫字母「c」的大寫是哪一個？",
+    "options": [
+      "O",
+      "E",
+      "A",
+      "C"
+    ],
+    "answer": 3,
+    "explanation": "小寫字母「c」對應的大寫字母為「C」。"
+  },
+  {
+    "id": "hwg_bg2_1194",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問小寫字母「d」的大寫是哪一個？",
+    "options": [
+      "P",
+      "Q",
+      "D",
+      "B"
+    ],
+    "answer": 2,
+    "explanation": "小寫字母「d」對應的大寫字母為「D」。"
+  },
+  {
+    "id": "hwg_bg2_1195",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問小寫字母「e」的大寫是哪一個？",
+    "options": [
+      "O",
+      "E",
+      "C",
+      "A"
+    ],
+    "answer": 1,
+    "explanation": "小寫字母「e」對應的大寫字母為「E」。"
+  },
+  {
+    "id": "hwg_bg2_1196",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問小寫字母「f」的大寫是哪一個？",
+    "options": [
+      "F",
+      "T",
+      "R",
+      "L"
+    ],
+    "answer": 0,
+    "explanation": "小寫字母「f」對應的大寫字母為「F」。"
+  },
+  {
+    "id": "hwg_bg2_1197",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請問小寫字母「g」的大寫是哪一個？",
+    "options": [
+      "Q",
+      "J",
+      "Y",
+      "G"
+    ],
+    "answer": 3,
+    "explanation": "小寫字母「g」對應的大寫字母為「G」。"
+  },
+  {
+    "id": "hwg_bg2_1198",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問小寫字母「h」的大寫是哪一個？",
+    "options": [
+      "R",
+      "B",
+      "H",
+      "N"
+    ],
+    "answer": 2,
+    "explanation": "小寫字母「h」對應的大寫字母為「H」。"
+  },
+  {
+    "id": "hwg_bg2_1199",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問小寫字母「i」的大寫是哪一個？",
+    "options": [
+      "T",
+      "I",
+      "J",
+      "L"
+    ],
+    "answer": 1,
+    "explanation": "小寫字母「i」對應的大寫字母為「I」。"
+  },
+  {
+    "id": "hwg_bg2_1200",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問小寫字母「j」的大寫是哪一個？",
+    "options": [
+      "J",
+      "I",
+      "G",
+      "Y"
+    ],
+    "answer": 0,
+    "explanation": "小寫字母「j」對應的大寫字母為「J」。"
+  },
+  {
+    "id": "hwg_bg2_1201",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問小寫字母「k」的大寫是哪一個？",
+    "options": [
+      "H",
+      "X",
+      "R",
+      "K"
+    ],
+    "answer": 3,
+    "explanation": "小寫字母「k」對應的大寫字母為「K」。"
+  },
+  {
+    "id": "hwg_bg2_1202",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問小寫字母「l」的大寫是哪一個？",
+    "options": [
+      "T",
+      "J",
+      "L",
+      "I"
+    ],
+    "answer": 2,
+    "explanation": "小寫字母「l」對應的大寫字母為「L」。"
+  },
+  {
+    "id": "hwg_bg2_1203",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問小寫字母「m」的大寫是哪一個？",
+    "options": [
+      "U",
+      "M",
+      "N",
+      "W"
+    ],
+    "answer": 1,
+    "explanation": "小寫字母「m」對應的大寫字母為「M」。"
+  },
+  {
+    "id": "hwg_bg2_1204",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請問小寫字母「n」的大寫是哪一個？",
+    "options": [
+      "N",
+      "M",
+      "U",
+      "H"
+    ],
+    "answer": 0,
+    "explanation": "小寫字母「n」對應的大寫字母為「N」。"
+  },
+  {
+    "id": "hwg_bg2_1205",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問小寫字母「o」的大寫是哪一個？",
+    "options": [
+      "C",
+      "A",
+      "E",
+      "O"
+    ],
+    "answer": 3,
+    "explanation": "小寫字母「o」對應的大寫字母為「O」。"
+  },
+  {
+    "id": "hwg_bg2_1206",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問小寫字母「p」的大寫是哪一個？",
+    "options": [
+      "B",
+      "D",
+      "P",
+      "Q"
+    ],
+    "answer": 2,
+    "explanation": "小寫字母「p」對應的大寫字母為「P」。"
+  },
+  {
+    "id": "hwg_bg2_1207",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問小寫字母「q」的大寫是哪一個？",
+    "options": [
+      "D",
+      "Q",
+      "P",
+      "G"
+    ],
+    "answer": 1,
+    "explanation": "小寫字母「q」對應的大寫字母為「Q」。"
+  },
+  {
+    "id": "hwg_bg2_1208",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問小寫字母「r」的大寫是哪一個？",
+    "options": [
+      "R",
+      "N",
+      "V",
+      "F"
+    ],
+    "answer": 0,
+    "explanation": "小寫字母「r」對應的大寫字母為「R」。"
+  },
+  {
+    "id": "hwg_bg2_1209",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問小寫字母「s」的大寫是哪一個？",
+    "options": [
+      "Z",
+      "C",
+      "X",
+      "S"
+    ],
+    "answer": 3,
+    "explanation": "小寫字母「s」對應的大寫字母為「S」。"
+  },
+  {
+    "id": "hwg_bg2_1210",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請問小寫字母「t」的大寫是哪一個？",
+    "options": [
+      "L",
+      "I",
+      "T",
+      "F"
+    ],
+    "answer": 2,
+    "explanation": "小寫字母「t」對應的大寫字母為「T」。"
+  },
+  {
+    "id": "hwg_bg2_1211",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問小寫字母「u」的大寫是哪一個？",
+    "options": [
+      "W",
+      "U",
+      "N",
+      "V"
+    ],
+    "answer": 1,
+    "explanation": "小寫字母「u」對應的大寫字母為「U」。"
+  },
+  {
+    "id": "hwg_bg2_1212",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問小寫字母「v」的大寫是哪一個？",
+    "options": [
+      "V",
+      "U",
+      "W",
+      "Y"
+    ],
+    "answer": 0,
+    "explanation": "小寫字母「v」對應的大寫字母為「V」。"
+  },
+  {
+    "id": "hwg_bg2_1213",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問小寫字母「w」的大寫是哪一個？",
+    "options": [
+      "M",
+      "V",
+      "U",
+      "W"
+    ],
+    "answer": 3,
+    "explanation": "小寫字母「w」對應的大寫字母為「W」。"
+  },
+  {
+    "id": "hwg_bg2_1214",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問小寫字母「x」的大寫是哪一個？",
+    "options": [
+      "Z",
+      "S",
+      "X",
+      "K"
+    ],
+    "answer": 2,
+    "explanation": "小寫字母「x」對應的大寫字母為「X」。"
+  },
+  {
+    "id": "hwg_bg2_1215",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問小寫字母「y」的大寫是哪一個？",
+    "options": [
+      "V",
+      "Y",
+      "G",
+      "J"
+    ],
+    "answer": 1,
+    "explanation": "小寫字母「y」對應的大寫字母為「Y」。"
+  },
+  {
+    "id": "hwg_bg2_1216",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請問小寫字母「z」的大寫是哪一個？",
+    "options": [
+      "Z",
+      "S",
+      "X",
+      "N"
+    ],
+    "answer": 0,
+    "explanation": "小寫字母「z」對應的大寫字母為「Z」。"
+  },
+  {
+    "id": "hwg_bg2_1217",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "A o",
+      "A e",
+      "A c",
+      "A a"
+    ],
+    "answer": 3,
+    "explanation": "大寫「A」與小寫「a」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1218",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "B p",
+      "B q",
+      "B b",
+      "B d"
+    ],
+    "answer": 2,
+    "explanation": "大寫「B」與小寫「b」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1219",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "C a",
+      "C c",
+      "C o",
+      "C e"
+    ],
+    "answer": 1,
+    "explanation": "大寫「C」與小寫「c」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1220",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "D d",
+      "D b",
+      "D p",
+      "D q"
+    ],
+    "answer": 0,
+    "explanation": "大寫「D」與小寫「d」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1221",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "E c",
+      "E a",
+      "E o",
+      "E e"
+    ],
+    "answer": 3,
+    "explanation": "大寫「E」與小寫「e」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1222",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "F r",
+      "F l",
+      "F f",
+      "F t"
+    ],
+    "answer": 2,
+    "explanation": "大寫「F」與小寫「f」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1223",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "G y",
+      "G g",
+      "G q",
+      "G j"
+    ],
+    "answer": 1,
+    "explanation": "大寫「G」與小寫「g」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1224",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "H h",
+      "H n",
+      "H r",
+      "H b"
+    ],
+    "answer": 0,
+    "explanation": "大寫「H」與小寫「h」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1225",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "I j",
+      "I l",
+      "I t",
+      "I i"
+    ],
+    "answer": 3,
+    "explanation": "大寫「I」與小寫「i」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1226",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "J g",
+      "J y",
+      "J j",
+      "J i"
+    ],
+    "answer": 2,
+    "explanation": "大寫「J」與小寫「j」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1227",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "K r",
+      "K k",
+      "K h",
+      "K x"
+    ],
+    "answer": 1,
+    "explanation": "大寫「K」與小寫「k」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1228",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "L l",
+      "L i",
+      "L t",
+      "L j"
+    ],
+    "answer": 0,
+    "explanation": "大寫「L」與小寫「l」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1229",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "M n",
+      "M w",
+      "M u",
+      "M m"
+    ],
+    "answer": 3,
+    "explanation": "大寫「M」與小寫「m」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1230",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "N u",
+      "N h",
+      "N n",
+      "N m"
+    ],
+    "answer": 2,
+    "explanation": "大寫「N」與小寫「n」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1231",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "O e",
+      "O o",
+      "O c",
+      "O a"
+    ],
+    "answer": 1,
+    "explanation": "大寫「O」與小寫「o」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1232",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "P p",
+      "P q",
+      "P b",
+      "P d"
+    ],
+    "answer": 0,
+    "explanation": "大寫「P」與小寫「p」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1233",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "Q p",
+      "Q g",
+      "Q d",
+      "Q q"
+    ],
+    "answer": 3,
+    "explanation": "大寫「Q」與小寫「q」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1234",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "R v",
+      "R f",
+      "R r",
+      "R n"
+    ],
+    "answer": 2,
+    "explanation": "大寫「R」與小寫「r」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1235",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "S x",
+      "S s",
+      "S z",
+      "S c"
+    ],
+    "answer": 1,
+    "explanation": "大寫「S」與小寫「s」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1236",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "T t",
+      "T f",
+      "T l",
+      "T i"
+    ],
+    "answer": 0,
+    "explanation": "大寫「T」與小寫「t」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1237",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "U n",
+      "U v",
+      "U w",
+      "U u"
+    ],
+    "answer": 3,
+    "explanation": "大寫「U」與小寫「u」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1238",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "V w",
+      "V y",
+      "V v",
+      "V u"
+    ],
+    "answer": 2,
+    "explanation": "大寫「V」與小寫「v」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1239",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "W u",
+      "W w",
+      "W m",
+      "W v"
+    ],
+    "answer": 1,
+    "explanation": "大寫「W」與小寫「w」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1240",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "X x",
+      "X k",
+      "X z",
+      "X s"
+    ],
+    "answer": 0,
+    "explanation": "大寫「X」與小寫「x」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1241",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "Y g",
+      "Y j",
+      "Y v",
+      "Y y"
+    ],
+    "answer": 3,
+    "explanation": "大寫「Y」與小寫「y」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1242",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "dialogue",
+    "question": "請問下列哪一組「大小寫字母配對」是正確的？",
+    "options": [
+      "Z x",
+      "Z n",
+      "Z z",
+      "Z s"
+    ],
+    "answer": 2,
+    "explanation": "大寫「Z」與小寫「z」才是正確的大小寫配對。"
+  },
+  {
+    "id": "hwg_bg2_1243",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：a, b, ______, d",
+    "options": [
+      "a",
+      "c",
+      "o",
+      "e"
+    ],
+    "answer": 1,
+    "explanation": "依照小寫字母順序為：a, b, c, d，故空格應填「c」。"
+  },
+  {
+    "id": "hwg_bg2_1244",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：b, c, ______, e",
+    "options": [
+      "d",
+      "b",
+      "p",
+      "q"
+    ],
+    "answer": 0,
+    "explanation": "依照小寫字母順序為：b, c, d, e，故空格應填「d」。"
+  },
+  {
+    "id": "hwg_bg2_1245",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：c, d, ______, f",
+    "options": [
+      "c",
+      "a",
+      "o",
+      "e"
+    ],
+    "answer": 3,
+    "explanation": "依照小寫字母順序為：c, d, e, f，故空格應填「e」。"
+  },
+  {
+    "id": "hwg_bg2_1246",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：d, e, ______, g",
+    "options": [
+      "r",
+      "l",
+      "f",
+      "t"
+    ],
+    "answer": 2,
+    "explanation": "依照小寫字母順序為：d, e, f, g，故空格應填「f」。"
+  },
+  {
+    "id": "hwg_bg2_1247",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：e, f, ______, h",
+    "options": [
+      "y",
+      "g",
+      "q",
+      "j"
+    ],
+    "answer": 1,
+    "explanation": "依照小寫字母順序為：e, f, g, h，故空格應填「g」。"
+  },
+  {
+    "id": "hwg_bg2_1248",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：f, g, ______, i",
+    "options": [
+      "h",
+      "n",
+      "r",
+      "b"
+    ],
+    "answer": 0,
+    "explanation": "依照小寫字母順序為：f, g, h, i，故空格應填「h」。"
+  },
+  {
+    "id": "hwg_bg2_1249",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：g, h, ______, j",
+    "options": [
+      "j",
+      "l",
+      "t",
+      "i"
+    ],
+    "answer": 3,
+    "explanation": "依照小寫字母順序為：g, h, i, j，故空格應填「i」。"
+  },
+  {
+    "id": "hwg_bg2_1250",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：h, i, ______, k",
+    "options": [
+      "g",
+      "y",
+      "j",
+      "i"
+    ],
+    "answer": 2,
+    "explanation": "依照小寫字母順序為：h, i, j, k，故空格應填「j」。"
+  },
+  {
+    "id": "hwg_bg2_1251",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：i, j, ______, l",
+    "options": [
+      "r",
+      "k",
+      "h",
+      "x"
+    ],
+    "answer": 1,
+    "explanation": "依照小寫字母順序為：i, j, k, l，故空格應填「k」。"
+  },
+  {
+    "id": "hwg_bg2_1252",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：j, k, ______, m",
+    "options": [
+      "l",
+      "i",
+      "t",
+      "j"
+    ],
+    "answer": 0,
+    "explanation": "依照小寫字母順序為：j, k, l, m，故空格應填「l」。"
+  },
+  {
+    "id": "hwg_bg2_1253",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：k, l, ______, n",
+    "options": [
+      "n",
+      "w",
+      "u",
+      "m"
+    ],
+    "answer": 3,
+    "explanation": "依照小寫字母順序為：k, l, m, n，故空格應填「m」。"
+  },
+  {
+    "id": "hwg_bg2_1254",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：l, m, ______, o",
+    "options": [
+      "u",
+      "h",
+      "n",
+      "m"
+    ],
+    "answer": 2,
+    "explanation": "依照小寫字母順序為：l, m, n, o，故空格應填「n」。"
+  },
+  {
+    "id": "hwg_bg2_1255",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：m, n, ______, p",
+    "options": [
+      "e",
+      "o",
+      "c",
+      "a"
+    ],
+    "answer": 1,
+    "explanation": "依照小寫字母順序為：m, n, o, p，故空格應填「o」。"
+  },
+  {
+    "id": "hwg_bg2_1256",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：n, o, ______, q",
+    "options": [
+      "p",
+      "q",
+      "b",
+      "d"
+    ],
+    "answer": 0,
+    "explanation": "依照小寫字母順序為：n, o, p, q，故空格應填「p」。"
+  },
+  {
+    "id": "hwg_bg2_1257",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：o, p, ______, r",
+    "options": [
+      "p",
+      "g",
+      "d",
+      "q"
+    ],
+    "answer": 3,
+    "explanation": "依照小寫字母順序為：o, p, q, r，故空格應填「q」。"
+  },
+  {
+    "id": "hwg_bg2_1258",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：p, q, ______, s",
+    "options": [
+      "v",
+      "f",
+      "r",
+      "n"
+    ],
+    "answer": 2,
+    "explanation": "依照小寫字母順序為：p, q, r, s，故空格應填「r」。"
+  },
+  {
+    "id": "hwg_bg2_1259",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：q, r, ______, t",
+    "options": [
+      "x",
+      "s",
+      "z",
+      "c"
+    ],
+    "answer": 1,
+    "explanation": "依照小寫字母順序為：q, r, s, t，故空格應填「s」。"
+  },
+  {
+    "id": "hwg_bg2_1260",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：r, s, ______, u",
+    "options": [
+      "t",
+      "f",
+      "l",
+      "i"
+    ],
+    "answer": 0,
+    "explanation": "依照小寫字母順序為：r, s, t, u，故空格應填「t」。"
+  },
+  {
+    "id": "hwg_bg2_1261",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：s, t, ______, v",
+    "options": [
+      "n",
+      "v",
+      "w",
+      "u"
+    ],
+    "answer": 3,
+    "explanation": "依照小寫字母順序為：s, t, u, v，故空格應填「u」。"
+  },
+  {
+    "id": "hwg_bg2_1262",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：t, u, ______, w",
+    "options": [
+      "w",
+      "y",
+      "v",
+      "u"
+    ],
+    "answer": 2,
+    "explanation": "依照小寫字母順序為：t, u, v, w，故空格應填「v」。"
+  },
+  {
+    "id": "hwg_bg2_1263",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：u, v, ______, x",
+    "options": [
+      "u",
+      "w",
+      "m",
+      "v"
+    ],
+    "answer": 1,
+    "explanation": "依照小寫字母順序為：u, v, w, x，故空格應填「w」。"
+  },
+  {
+    "id": "hwg_bg2_1264",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：v, w, ______, y",
+    "options": [
+      "x",
+      "k",
+      "z",
+      "s"
+    ],
+    "answer": 0,
+    "explanation": "依照小寫字母順序為：v, w, x, y，故空格應填「x」。"
+  },
+  {
+    "id": "hwg_bg2_1265",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "grammar",
+    "question": "請選出空格中正確的小寫字母：w, x, ______, z",
+    "options": [
+      "g",
+      "j",
+      "v",
+      "y"
+    ],
+    "answer": 3,
+    "explanation": "依照小寫字母順序為：w, x, y, z，故空格應填「y」。"
+  },
+  {
+    "id": "hwg_bg2_1266",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "b, a, c",
+      "c, b, a",
+      "a, b, c",
+      "a, c, b"
+    ],
+    "answer": 2,
+    "explanation": "正確的小寫字母順序為「a, b, c」。"
+  },
+  {
+    "id": "hwg_bg2_1267",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "d, c, b",
+      "b, c, d",
+      "b, d, c",
+      "c, b, d"
+    ],
+    "answer": 1,
+    "explanation": "正確的小寫字母順序為「b, c, d」。"
+  },
+  {
+    "id": "hwg_bg2_1268",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "c, d, e",
+      "c, e, d",
+      "d, c, e",
+      "e, d, c"
+    ],
+    "answer": 0,
+    "explanation": "正確的小寫字母順序為「c, d, e」。"
+  },
+  {
+    "id": "hwg_bg2_1269",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "d, f, e",
+      "e, d, f",
+      "f, e, d",
+      "d, e, f"
+    ],
+    "answer": 3,
+    "explanation": "正確的小寫字母順序為「d, e, f」。"
+  },
+  {
+    "id": "hwg_bg2_1270",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "f, e, g",
+      "g, f, e",
+      "e, f, g",
+      "e, g, f"
+    ],
+    "answer": 2,
+    "explanation": "正確的小寫字母順序為「e, f, g」。"
+  },
+  {
+    "id": "hwg_bg2_1271",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "h, g, f",
+      "f, g, h",
+      "f, h, g",
+      "g, f, h"
+    ],
+    "answer": 1,
+    "explanation": "正確的小寫字母順序為「f, g, h」。"
+  },
+  {
+    "id": "hwg_bg2_1272",
+    "book": "g2",
+    "unit": "Unit 1 (Aa~Gg)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "g, h, i",
+      "g, i, h",
+      "h, g, i",
+      "i, h, g"
+    ],
+    "answer": 0,
+    "explanation": "正確的小寫字母順序為「g, h, i」。"
+  },
+  {
+    "id": "hwg_bg2_1273",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "h, j, i",
+      "i, h, j",
+      "j, i, h",
+      "h, i, j"
+    ],
+    "answer": 3,
+    "explanation": "正確的小寫字母順序為「h, i, j」。"
+  },
+  {
+    "id": "hwg_bg2_1274",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "j, i, k",
+      "k, j, i",
+      "i, j, k",
+      "i, k, j"
+    ],
+    "answer": 2,
+    "explanation": "正確的小寫字母順序為「i, j, k」。"
+  },
+  {
+    "id": "hwg_bg2_1275",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "l, k, j",
+      "j, k, l",
+      "j, l, k",
+      "k, j, l"
+    ],
+    "answer": 1,
+    "explanation": "正確的小寫字母順序為「j, k, l」。"
+  },
+  {
+    "id": "hwg_bg2_1276",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "k, l, m",
+      "k, m, l",
+      "l, k, m",
+      "m, l, k"
+    ],
+    "answer": 0,
+    "explanation": "正確的小寫字母順序為「k, l, m」。"
+  },
+  {
+    "id": "hwg_bg2_1277",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "l, n, m",
+      "m, l, n",
+      "n, m, l",
+      "l, m, n"
+    ],
+    "answer": 3,
+    "explanation": "正確的小寫字母順序為「l, m, n」。"
+  },
+  {
+    "id": "hwg_bg2_1278",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "n, m, o",
+      "o, n, m",
+      "m, n, o",
+      "m, o, n"
+    ],
+    "answer": 2,
+    "explanation": "正確的小寫字母順序為「m, n, o」。"
+  },
+  {
+    "id": "hwg_bg2_1279",
+    "book": "g2",
+    "unit": "Unit 2 (Hh~Nn)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "p, o, n",
+      "n, o, p",
+      "n, p, o",
+      "o, n, p"
+    ],
+    "answer": 1,
+    "explanation": "正確的小寫字母順序為「n, o, p」。"
+  },
+  {
+    "id": "hwg_bg2_1280",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "o, p, q",
+      "o, q, p",
+      "p, o, q",
+      "q, p, o"
+    ],
+    "answer": 0,
+    "explanation": "正確的小寫字母順序為「o, p, q」。"
+  },
+  {
+    "id": "hwg_bg2_1281",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "p, r, q",
+      "q, p, r",
+      "r, q, p",
+      "p, q, r"
+    ],
+    "answer": 3,
+    "explanation": "正確的小寫字母順序為「p, q, r」。"
+  },
+  {
+    "id": "hwg_bg2_1282",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "r, q, s",
+      "s, r, q",
+      "q, r, s",
+      "q, s, r"
+    ],
+    "answer": 2,
+    "explanation": "正確的小寫字母順序為「q, r, s」。"
+  },
+  {
+    "id": "hwg_bg2_1283",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "t, s, r",
+      "r, s, t",
+      "r, t, s",
+      "s, r, t"
+    ],
+    "answer": 1,
+    "explanation": "正確的小寫字母順序為「r, s, t」。"
+  },
+  {
+    "id": "hwg_bg2_1284",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "s, t, u",
+      "s, u, t",
+      "t, s, u",
+      "u, t, s"
+    ],
+    "answer": 0,
+    "explanation": "正確的小寫字母順序為「s, t, u」。"
+  },
+  {
+    "id": "hwg_bg2_1285",
+    "book": "g2",
+    "unit": "Unit 3 (Oo~Tt)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "t, v, u",
+      "u, t, v",
+      "v, u, t",
+      "t, u, v"
+    ],
+    "answer": 3,
+    "explanation": "正確的小寫字母順序為「t, u, v」。"
+  },
+  {
+    "id": "hwg_bg2_1286",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "v, u, w",
+      "w, v, u",
+      "u, v, w",
+      "u, w, v"
+    ],
+    "answer": 2,
+    "explanation": "正確的小寫字母順序為「u, v, w」。"
+  },
+  {
+    "id": "hwg_bg2_1287",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "x, w, v",
+      "v, w, x",
+      "v, x, w",
+      "w, v, x"
+    ],
+    "answer": 1,
+    "explanation": "正確的小寫字母順序為「v, w, x」。"
+  },
+  {
+    "id": "hwg_bg2_1288",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "w, x, y",
+      "w, y, x",
+      "x, w, y",
+      "y, x, w"
+    ],
+    "answer": 0,
+    "explanation": "正確的小寫字母順序為「w, x, y」。"
+  },
+  {
+    "id": "hwg_bg2_1289",
+    "book": "g2",
+    "unit": "Unit 4 (Uu~Zz)",
+    "category": "dialogue",
+    "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
+    "options": [
+      "x, z, y",
+      "y, x, z",
+      "z, y, x",
+      "x, y, z"
+    ],
+    "answer": 3,
+    "explanation": "正確的小寫字母順序為「x, y, z」。"
   }
 ];

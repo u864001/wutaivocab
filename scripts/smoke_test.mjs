@@ -171,7 +171,7 @@ async function run() {
   // 驗證課本題庫檢定館 (HERE_WE_GO_MCQ_BANK) 7 道品質閘門與每冊百題契約
   const { HERE_WE_GO_MCQ_BANK } = await import('../src/data/hereWeGoMcqBank.js');
   const mcqIds = new Set();
-  const mcqBookCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+  const mcqBookCounts = { g1: 0, g2: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
   for (const q of HERE_WE_GO_MCQ_BANK) {
     if (!q.id || mcqIds.has(q.id)) failures.push({ target: 'Static Contract: Duplicate MCQ ID', id: q.id });
     mcqIds.add(q.id);
@@ -184,13 +184,13 @@ async function run() {
       failures.push({ target: 'Static Contract: Invalid MCQ answer index', id: q.id });
     }
   }
-  for (let b = 1; b <= 9; b++) {
+  for (const b of ['g1', 'g2', 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
     if (mcqBookCounts[b] < 100) {
       failures.push({ target: `Static Contract: MCQ Book ${b} count < 100`, count: mcqBookCounts[b] });
     }
   }
   if (failures.length === 0) {
-    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks & ${HERE_WE_GO_MCQ_BANK.length} MCQs across Books 1-9 verified)`);
+    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks & ${HERE_WE_GO_MCQ_BANK.length} MCQs across 11 books [g1, g2, 1-9] verified)`);
   }
 
   // ── 檢查點 1: 排行榜視圖與互動 ──

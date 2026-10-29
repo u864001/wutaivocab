@@ -4,13 +4,13 @@
  */
 
 export const GRADE_OPTIONS = [
-  { id: '01', zh: '一年級', en: 'Grade 1', shortZh: '1年', books: ['1', 'abc'], descZh: '一年級字母啟蒙樂園' },
-  { id: '02', zh: '二年級', en: 'Grade 2', shortZh: '2年', books: ['2', 'abc'], descZh: '二年級字母進階樂園' },
+  { id: '01', zh: '一年級', en: 'Grade 1', shortZh: '1年', books: ['g1', '1', 'abc'], descZh: '一年級字母啟蒙樂園' },
+  { id: '02', zh: '二年級', en: 'Grade 2', shortZh: '2年', books: ['g2', '2', 'abc'], descZh: '二年級字母進階樂園' },
   { id: '03', zh: '三年級', en: 'Grade 3', shortZh: '3年', books: ['1', '2'], descZh: '三年級第1~2冊綜合' },
   { id: '04', zh: '四年級', en: 'Grade 4', shortZh: '4年', books: ['3', '4'], descZh: '四年級第3~4冊進階' },
   { id: '05', zh: '五年級', en: 'Grade 5', shortZh: '5年', books: ['5', '6'], descZh: '五年級第5~6冊高年級' },
   { id: '06', zh: '六年級', en: 'Grade 6', shortZh: '6年', books: ['7', '8', '9'], descZh: '六年級第7~8冊畢業會考與國一先修' },
-  { id: '99', zh: '訪客體驗', en: 'Guest Mode', shortZh: '訪客', books: ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'abc'], isGuest: true, descZh: '全校自由體驗與遊客試玩' }
+  { id: '99', zh: '訪客體驗', en: 'Guest Mode', shortZh: '訪客', books: ['g1', 'g2', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'abc'], isGuest: true, descZh: '全校自由體驗與遊客試玩' }
 ];
 
 export const CLASS_OPTIONS = [
@@ -177,6 +177,12 @@ export const isBookInOwnGrade = (book, grade, mode = null) => {
   const cleanGrade = pad2(grade);
   if (cleanGrade === '00' || cleanGrade === '99') return true; // 訪客全開放
 
+  // 課本題庫檢定館：一年級嚴格對應 g1 (大寫字母)、二年級嚴格對應 g2 (大小寫字母)
+  if (mode === 'mcq-exam') {
+    if (cleanGrade === '01') return String(book) === 'g1';
+    if (cleanGrade === '02') return String(book) === 'g2';
+  }
+
   // 一、二年級核心範圍：所有字母類遊戲均直接認定為本年級合格範圍！
   if ((cleanGrade === '01' || cleanGrade === '02') && isAlphabetGameMode(mode, book)) {
     return true;
@@ -197,7 +203,8 @@ export const isBookInOwnGrade = (book, grade, mode = null) => {
  */
 export const getGradeFromBook = (book) => {
   const b = String(book);
-  if (b === 'abc') return '01'; // 字母類歸屬低年級啟蒙
+  if (b === 'abc' || b === 'g1') return '01'; // 一年級大寫字母與字母啟蒙
+  if (b === 'g2') return '02'; // 二年級大小寫字母
   if (b === '1' || b === '2') return '03'; // 國小三年級啟蒙第 1, 2 冊
   if (b === '3' || b === '4') return '04'; // 四年級第 3, 4 冊
   if (b === '5' || b === '6') return '05'; // 五年級第 5, 6 冊

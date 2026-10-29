@@ -340,6 +340,107 @@ export const recordBattleWin = async ({ book, name }) => {
   }
 };
 
+// ── 課本題庫檢定三大累計榜同步紀錄 (測驗王 mcq-king、勤學王 mcq-diligent、精準王 mcq-accurate) ──
+export const recordMcqExamStats = async ({ grade, book, name, correctCount, totalCount }) => {
+  const deviceId = getDeviceId();
+  const currentWeek = getWeekNumber();
+  let cleanName = (name || '').trim();
+  if (!cleanName) return null;
+  if (containsProfanity(cleanName)) {
+    cleanName = '文明好學生';
+  }
+
+  const gNum = parseInt(grade, 10) || 0;
+  let canonicalBook = String(book || '1');
+  if (gNum === 1) canonicalBook = 'g1';
+  else if (gNum === 2) canonicalBook = 'g2';
+  else if (gNum === 3) canonicalBook = '1';
+  else if (gNum === 4) canonicalBook = '3';
+  else if (gNum === 5) canonicalBook = '5';
+  else if (gNum === 6) canonicalBook = '7';
+
+  try {
+    // 讀取本週已累計之答對題數 (score) 與作答總題數 (time)
+    const { data: existingDiligent } = await supabase
+      .from('leaderboard')
+      .select('id, score, time')
+      .eq('device_id', deviceId)
+      .eq('name', cleanName)
+      .eq('week', currentWeek)
+      .eq('mode', 'mcq-diligent')
+      .eq('book', canonicalBook)
+      .maybeSingle();
+
+    const prevCorrect = Number(existingDiligent?.score || 0);
+    const prevAttempted = Number(existingDiligent?.time || 0);
+    const totalCorrect = prevCorrect + Number(correctCount || 0);
+    const totalAttempted = prevAttempted + Number(totalCount || 0);
+    if (totalAttempted <= 0) return null;
+
+    const accuracyRatio = totalCorrect / totalAttempted;
+    const accuracyPct = Math.round(accuracyRatio * 100);
+    const kingScore = Math.max(1, Math.round(totalCorrect * accuracyRatio));
+
+    const upsertModeRow = async (modeKey, scoreVal, timeVal) => {
+      const { data: row } = await supabase
+        .from('leaderboard')
+        .select('id')
+        .eq('device_id', deviceId)
+        .eq('name', cleanName)
+        .eq('week', currentWeek)
+        .eq('mode', modeKey)
+        .eq('book', canonicalBook)
+        .maybeSingle();
+
+      if (row?.id) {
+        await supabase
+          .from('leaderboard')
+          .update({
+            score: scoreVal,
+            time: timeVal,
+            created_at: new Date().toISOString()
+          })
+          .eq('id', row.id);
+      } else {
+        await supabase.from('leaderboard').insert([
+          {
+            device_id: deviceId,
+            name: cleanName,
+            mode: modeKey,
+            book: canonicalBook,
+            score: scoreVal,
+            time: timeVal,
+            week: currentWeek
+          }
+        ]);
+      }
+    };
+
+    await Promise.all([
+      upsertModeRow('mcq-diligent', totalCorrect, totalAttempted),
+      upsertModeRow('mcq-king', kingScore, totalAttempted),
+      totalAttempted >= 20
+        ? upsertModeRow('mcq-accurate', accuracyPct, totalAttempted)
+        : Promise.resolve()
+    ]);
+
+    // 清除本機排行榜快取，確保切換至英雄榜時立即顯示最新累計成績
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('lb_g4_')) {
+          localStorage.removeItem(k);
+        }
+      }
+    } catch (e) {}
+
+    return { totalCorrect, totalAttempted, accuracyPct, kingScore };
+  } catch (err) {
+    console.error('題庫檢定累計榜同步失敗:', err);
+    return null;
+  }
+};
+
 // ── 讀取排行榜 (支援單冊/多冊與單模式/多模式合併，每位同學取最高成績) ──
 export const fetchLeaderboard = async (week, mode, bookOrBooks, limit = 50) => {
   try {
@@ -362,12 +463,16 @@ export const fetchLeaderboard = async (week, mode, bookOrBooks, limit = 50) => {
 
     const isTimeAscending = (Array.isArray(mode) ? mode.includes('spotter') : mode === 'spotter') ||
                             (Array.isArray(mode) ? mode.includes('escape') : mode === 'escape');
+    const isTimeDescending = (Array.isArray(mode) ? mode.includes('mcq-accurate') : mode === 'mcq-accurate');
 
     if (isTimeAscending) {
       // 密室逃脫三連關正常秒數必 > 1 秒，查詢時直接過濾歷史 0 秒與 1 秒異常髒資料
       const isEscapeOnly = Array.isArray(mode) ? mode.every(m => m === 'escape') : mode === 'escape';
       const minQueryTime = isEscapeOnly ? 1 : 0;
       query = query.gt('time', minQueryTime).order('time', { ascending: true }).order('score', { ascending: false });
+    } else if (isTimeDescending) {
+      // 精準王 (mcq-accurate)：先比總答對率 (score DESC)，同答對率時比累計總題數越多越前 (time DESC)
+      query = query.order('score', { ascending: false }).order('time', { ascending: false });
     } else {
       query = query.order('score', { ascending: false }).order('time', { ascending: true });
     }

@@ -23,12 +23,12 @@ import {
 } from 'lucide-react';
 
 export const GRADE_LEADERBOARD_TABS = [
-  { id: '01', zh: '一年級', en: 'Grade 1', books: ['abc', '1'], isAlphabet: true },
-  { id: '02', zh: '二年級', en: 'Grade 2', books: ['abc', '2'], isAlphabet: true },
+  { id: '01', zh: '一年級', en: 'Grade 1', books: ['g1', 'abc', '1'], isAlphabet: true },
+  { id: '02', zh: '二年級', en: 'Grade 2', books: ['g2', 'abc', '2'], isAlphabet: true },
   { id: '03', zh: '三年級', en: 'Grade 3', books: ['1', '2'] },
   { id: '04', zh: '四年級', en: 'Grade 4', books: ['3', '4'] },
   { id: '05', zh: '五年級', en: 'Grade 5', books: ['5', '6'] },
-  { id: '06', zh: '六年級', en: 'Grade 6', books: ['7', '8'] },
+  { id: '06', zh: '六年級', en: 'Grade 6', books: ['7', '8', '9'] },
   { id: 'all', zh: '全校大亂鬥', en: 'All School', books: null, isAllSchool: true }
 ];
 
@@ -38,7 +38,8 @@ const THEME_WALLPAPERS = {
   speed: '/assets/lobby/theme_speed.jpg',
   quiz: '/assets/lobby/theme_quiz.jpg',
   battle: '/assets/lobby/theme_battle.jpg',
-  langlab: '/assets/lobby/theme_town.jpg'
+  langlab: '/assets/lobby/theme_town.jpg',
+  mcq_exam: '/assets/lobby/theme_quiz.jpg'
 };
 
 export const DOMAIN_CATEGORIES = [
@@ -47,7 +48,8 @@ export const DOMAIN_CATEGORIES = [
   { id: 'speed', zh: '極速反應', en: 'Speed' },
   { id: 'quiz', zh: '經典測驗', en: 'Quiz' },
   { id: 'battle', zh: '多人對戰', en: 'Battle' },
-  { id: 'langlab', zh: '雙語聽說', en: 'Language Lab' }
+  { id: 'langlab', zh: '雙語聽說', en: 'Language Lab' },
+  { id: 'mcq_exam', zh: '題庫檢定', en: 'Exam Hub' }
 ];
 
 export const CONSOLIDATED_GAME_MODES = [
@@ -249,6 +251,38 @@ export const CONSOLIDATED_GAME_MODES = [
     category: 'langlab',
     modeKeys: ['speaking_lab'],
     subModes: [{ key: 'speaking_lab', label: '口說跟讀' }]
+  },
+
+  // ── 課本題庫檢定 (Exam Hub - 三大累計榜) ──
+  {
+    id: 'mcq_king',
+    label: '檢定測驗王',
+    icon: Crown,
+    color: 'text-amber-400',
+    unit: '分',
+    category: 'mcq_exam',
+    modeKeys: ['mcq-king'],
+    subModes: [{ key: 'mcq-king', label: '綜合實力 (答對×準確率)' }]
+  },
+  {
+    id: 'mcq_diligent',
+    label: '刷題勤學王',
+    icon: Flame,
+    color: 'text-emerald-400',
+    unit: '題',
+    category: 'mcq_exam',
+    modeKeys: ['mcq-diligent'],
+    subModes: [{ key: 'mcq-diligent', label: '本週累計答對題數' }]
+  },
+  {
+    id: 'mcq_accurate',
+    label: '百發精準王',
+    icon: Award,
+    color: 'text-indigo-400',
+    unit: '%',
+    category: 'mcq_exam',
+    modeKeys: ['mcq-accurate'],
+    subModes: [{ key: 'mcq-accurate', label: '滿20題總答對率' }]
   }
 ];
 
@@ -319,9 +353,11 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
           } else if (m.isSpecial === 'quest') {
             fetchedList = await fetchQuestPointsLeaderboard(isAll ? null : selectedGrade, 50);
           } else {
-            // 一、二年級字母模式：若為字母遊戲模式或聽說測驗，不限冊別（包含 abc 與基礎冊別）；若為全校大亂鬥則不限冊別
+            // 一、二年級字母模式：若為字母遊戲模式或聽說測驗，不限冊別；課本題庫檢定則嚴格依 g1 / g2 篩選；全校大亂鬥不限冊別
             const queryBooks = isAll
               ? null
+              : m.category === 'mcq_exam'
+              ? (selectedGrade === '01' ? ['g1'] : selectedGrade === '02' ? ['g2'] : books)
               : (isAlphabetGrade && (m.id === 'maze' || m.id === 'swipe' || m.id === 'meteor' || m.id === 'memory' || m.id === 'listening_lab' || m.id === 'speaking_lab'))
               ? null
               : books;
@@ -402,6 +438,26 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
       const sm = modeObj.subModes?.find(s => s.key === row.mode);
       const modeLabel = sm?.label || (modeObj.id === 'listening_lab' ? '聽力特訓' : '口說跟讀');
       return [bookLabel, modeLabel].filter(Boolean).join(' • ');
+    }
+
+    if (modeObj.category === 'mcq_exam') {
+      const bStr = String(row.book || '');
+      const gradeTag =
+        bStr === 'g1'
+          ? '1年級'
+          : bStr === 'g2'
+            ? '2年級'
+            : bStr === '1' || bStr === '2'
+              ? '3年級'
+              : bStr === '3' || bStr === '4'
+                ? '4年級'
+                : bStr === '5' || bStr === '6'
+                  ? '5年級'
+                  : bStr === '7' || bStr === '8' || bStr === '9'
+                    ? '6年級'
+                    : '';
+      const totalQTag = row.time ? `累計${row.time}題` : '';
+      return [gradeTag, totalQTag].filter(Boolean).join(' • ');
     }
 
     const sm = modeObj.subModes?.find(s => s.key === row.mode);
@@ -853,6 +909,14 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
           );
         }
 
+        if (selectedDomain === 'mcq_exam') {
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 animate-fadeIn">
+              {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'mcq_exam').map(m => renderModeCard(m, true))}
+            </div>
+          );
+        }
+
         if (selectedDomain !== 'all') {
           return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-fadeIn">
@@ -996,6 +1060,33 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                 {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'langlab').map(m => renderModeCard(m, true))}
+              </div>
+            </div>
+
+            {/* 6. 課本題庫檢定 */}
+            <div>
+              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-indigo-500/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">📝</span>
+                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-indigo-300">
+                    課本題庫檢定 (Exam Hub)
+                  </h4>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 font-bold">
+                    本年級 ≥ 60% 累計三冠榜
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    soundEngine.click();
+                    setSelectedDomain('mcq_exam');
+                  }}
+                  className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>聚焦此主題 ➔</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'mcq_exam').map(m => renderModeCard(m, true))}
               </div>
             </div>
           </div>

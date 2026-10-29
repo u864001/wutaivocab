@@ -19,16 +19,29 @@ import {
 } from 'lucide-react';
 import { HERE_WE_GO_BOOK_META, HERE_WE_GO_MCQ_BANK } from '../../data/hereWeGoMcqBank';
 import { useStudent } from '../../context/StudentContext';
-import { isBookInOwnGrade, formatStudentBadge } from '../../utils/studentIdHelper';
+import {
+  isBookInOwnGrade,
+  formatStudentBadge,
+  formatStudentDisplayName
+} from '../../utils/studentIdHelper';
+import { recordMcqExamStats } from '../../services/supabase';
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D'];
-const formatBookLabel = (bNum) => (Number(bNum) === 9 ? '國一先修' : `第 ${bNum} 冊`);
+const ALL_BOOK_OPTIONS = ['g1', 'g2', 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const formatBookLabel = (bKey) => {
+  if (bKey === 'g1') return '1年大寫';
+  if (bKey === 'g2') return '2年大小寫';
+  if (Number(bKey) === 9) return '國一先修';
+  return `第 ${bKey} 冊`;
+};
 
 /**
  * 依據學生年級取得預設對應冊別陣列
  */
 function getDefaultBooksForGrade(grade) {
   const g = Number(grade) || 0;
+  if (g === 1) return ['g1'];
+  if (g === 2) return ['g2'];
   if (g === 3) return [1, 2];
   if (g === 4) return [3, 4];
   if (g === 5) return [5, 6];
@@ -142,6 +155,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     addedMistakeCount: 0
   });
   const hasAwardedCoinsRef = useRef(false);
+
+  // 當學生登入身分或年級變更時，自動同步預設冊別
+  useEffect(() => {
+    setSelectedBook(initialBook);
+    setSelectedUnits(HERE_WE_GO_BOOK_META[initialBook]?.units || []);
+  }, [initialBook]);
 
   // 切換冊別時預設全選該冊所有單元
   const handleSelectBook = (bookNum) => {
@@ -261,17 +280,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     setPhase('exam');
   }, [questionCountOpt, scopeMode, mistakeQuestions, currentStudent?.grade, curriculumPool]);
 
-  // 語音朗讀題幹（排除填空底線）
+  // 語音朗讀題幹（一、二年級中文題幹自動使用 zh-TW 語音讀題；三～六年級英文題幹使用 en-US 朗讀）
   const speakQuestion = (text) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     try {
       window.speechSynthesis.cancel();
-      const clean = String(text || '')
-        .replace(/_{2,}/g, ' blank ')
+      const raw = String(text || '');
+      const hasChinese = /[\u4e00-\u9fa5]/.test(raw);
+      const clean = raw
+        .replace(/_{2,}/g, hasChinese ? ' 空格 ' : ' blank ')
         .replace(/\bA:\s*/g, '')
         .replace(/\bB:\s*/g, '');
       const utter = new SpeechSynthesisUtterance(clean);
-      utter.lang = 'en-US';
+      utter.lang = hasChinese ? 'zh-TW' : 'en-US';
       utter.rate = 0.9;
       window.speechSynthesis.speak(utter);
     } catch {
@@ -288,7 +309,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     setFlagged((prev) => ({ ...prev, [currentIndex]: !prev[currentIndex] }));
   };
 
-  // 交卷結算：更新易錯題池＋計算金幣獎勵
+  // 交卷結算：更新易錯題池＋計算金幣獎勵＋同步三大累計排行榜 (測驗王、勤學王、精準王)
   const finalizeExam = useCallback(() => {
     let correctCount = 0;
     const nextMistakes = { ...mistakeMap };
@@ -341,14 +362,24 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     let reason = '';
     if (!isOwnGradeBook) {
       coinsEarned = 0;
-      reason = '跨年級自主練習不發放金幣（選擇本年級冊別或易錯題複習即可獲得金幣）';
+      reason = '跨年級自主練習不發放金幣與排行積分（選擇本年級冊別或易錯題複習即可計分）';
     } else if (finalScore < 60) {
       coinsEarned = 0;
-      reason = '答對率需達 60% 以上方可獲得檢定金幣，看詳解訂正後再挑戰一次！';
+      reason = '答對率需達 60% 以上方可獲得檢定金幣與累計排行，看詳解訂正後再挑戰一次！';
     } else {
       // 題數 × 答對率 × 0.4（10題全對=4、20題全對=8、50題全對=20，單次上限 20 金幣）
       coinsEarned = Math.min(20, Math.max(1, Math.round(total * accuracyRatio * 0.4)));
-      reason = `通過檢定標準（答對率 ${finalScore}%），獲得 +${coinsEarned} 枚學習金幣！`;
+      reason = `通過檢定標準（答對率 ${finalScore}%），獲得 +${coinsEarned} 金幣並計入本週三大榜！`;
+
+      // 自動同步至課本檢定三大累計排行榜（測驗王、勤學王、精準王）
+      const displayName = formatStudentDisplayName(currentStudent);
+      recordMcqExamStats({
+        grade: currentStudent?.grade,
+        book: selectedBook,
+        name: displayName,
+        correctCount,
+        totalCount: total
+      }).catch(() => {});
     }
 
     if (coinsEarned > 0 && isLoggedIn && !hasAwardedCoinsRef.current) {
@@ -584,8 +615,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-1.5">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((bNum) => {
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-11 gap-1.5">
+                    {ALL_BOOK_OPTIONS.map((bNum) => {
                       const isSelected = selectedBook === bNum;
                       const isOwn = isBookInOwnGrade(
                         String(bNum),
@@ -594,16 +625,16 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       );
                       return (
                         <button
-                          key={bNum}
+                          key={String(bNum)}
                           type="button"
                           onClick={() => handleSelectBook(bNum)}
-                          className={`py-2 px-1.5 rounded-xl border text-center transition flex flex-col items-center justify-center relative ${
+                          className={`py-1.5 px-1 rounded-xl border text-center transition flex flex-col items-center justify-center relative ${
                             isSelected
                               ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
                               : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 text-slate-700 dark:text-slate-200'
                           }`}
                         >
-                          <span className="text-xs sm:text-sm font-black leading-tight">
+                          <span className="text-[11px] sm:text-xs font-black leading-tight">
                             {formatBookLabel(bNum)}
                           </span>
                           {isOwn && (
@@ -639,27 +670,31 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         type="button"
                         onClick={() =>
                           setSelectedUnits(
-                            bookMeta.units.filter((u) =>
-                              ['Starter', 'Unit 1', 'Unit 2', 'Review 1'].includes(u)
-                            )
+                            selectedBook === 'g1' || selectedBook === 'g2'
+                              ? bookMeta.units.slice(0, 2)
+                              : bookMeta.units.filter((u) =>
+                                  ['Starter', 'Unit 1', 'Unit 2', 'Review 1'].includes(u)
+                                )
                           )
                         }
                         className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white hover:bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
                       >
-                        期中(U1~R1)
+                        上半冊
                       </button>
                       <button
                         type="button"
                         onClick={() =>
                           setSelectedUnits(
-                            bookMeta.units.filter((u) =>
-                              ['Unit 3', 'Unit 4', 'Review 2', 'Festival'].includes(u)
-                            )
+                            selectedBook === 'g1' || selectedBook === 'g2'
+                              ? bookMeta.units.slice(2)
+                              : bookMeta.units.filter((u) =>
+                                  ['Unit 3', 'Unit 4', 'Review 2', 'Festival'].includes(u)
+                                )
                           )
                         }
                         className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white hover:bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
                       >
-                        期末(U3~R2)
+                        下半冊
                       </button>
                     </div>
                   </div>
