@@ -14,7 +14,7 @@ export const HERE_WE_GO_BOOK_META = {
   6: { title: '第 6 冊 (Book 6)', subtitle: '身體部位疼痛、疾病症狀、三餐與所屬物 Whose', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
   7: { title: '第 7 冊 (Book 7)', subtitle: '國家來源、交通方式、休閒活動與作息時間', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
   8: { title: '第 8 冊 (Book 8)', subtitle: '過去式地點 Was/Were、過去動作、服飾價格與四季', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
-  9: { title: '第 9 冊 (Book 9)', subtitle: '不規則過去式旅遊活動、食物量詞與生日日期序數', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2'] }
+  9: { title: '國一先修 (Book 9)', shortLabel: '國一先修', subtitle: '不規則過去式旅遊活動、食物量詞與生日日期序數', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2'] }
 };
 
 export const HERE_WE_GO_MCQ_BANK = [

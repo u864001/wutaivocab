@@ -21,6 +21,7 @@ import { soundEngine } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D'];
+const formatBookLabel = (bNum) => (Number(bNum) === 9 ? '國一先修' : `第 ${bNum} 冊`);
 
 /**
  * 將 A: ... B: ... 對話題幹自動分行呈現，提升學生閱讀清晰度
@@ -303,7 +304,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   課本選擇題庫檢定專區
                 </h1>
                 <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400">
-                  一頁一題無干擾作答 • 涵蓋 Here We Go 第 1～9 冊各單元文法選擇與情境對話類題
+                  一頁一題無干擾作答 • 涵蓋 Here We Go 第 1～8 冊與國一先修各單元文法選擇、情境對話類題
                 </p>
               </div>
             </div>
@@ -319,7 +320,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-black">
                   1
                 </span>
-                選擇冊別 (Book 1 ~ Book 9)
+                選擇冊別 (第 1～8 冊 / 國一先修)
               </h2>
               <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
                 {bookMeta.subtitle}
@@ -340,7 +341,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:border-indigo-300 text-slate-700 dark:text-slate-200'
                     }`}
                   >
-                    <span className="text-sm font-black">第 {bNum} 冊</span>
+                    <span className="text-sm font-black">{formatBookLabel(bNum)}</span>
                     <span
                       className={`text-[11px] font-semibold ${
                         isSelected ? 'text-indigo-100' : 'text-slate-400 dark:text-slate-500'
@@ -589,7 +590,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 重設範圍
               </button>
               <span className="px-3 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-xs font-black border border-indigo-200 dark:border-indigo-800">
-                第 {currentQ.book} 冊 • {currentQ.unit}
+                {formatBookLabel(currentQ.book)} • {currentQ.unit}
               </span>
               <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
                 {currentQ.category === 'grammar' ? '文法與句意選擇' : '情境對話選擇'}
@@ -854,7 +855,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           <div className="space-y-2 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-xs font-black">
               <Award size={15} />
-              第 {selectedBook} 冊選擇題檢定成績單
+              {formatBookLabel(selectedBook)}選擇題檢定成績單
             </div>
             <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">
               {score === 100
@@ -885,7 +886,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             score={correctList.length}
             time={elapsedSec}
             totalCount={totalQ}
-            rangeText={`第 ${selectedBook} 冊 (${selectedUnits.join(', ')})`}
+            rangeText={`${formatBookLabel(selectedBook)} (${selectedUnits.join(', ')})`}
           />
         </div>
 
@@ -968,7 +969,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     第 {idx + 1} 題 • {isCorrect ? '✓ 答對' : '✗ 答錯'}
                   </span>
                   <span className="text-xs font-bold text-slate-400">
-                    第 {q.book} 冊 • {q.unit}
+                    {formatBookLabel(q.book)} • {q.unit}
                   </span>
                 </div>
                 <button
