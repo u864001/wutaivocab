@@ -31,5 +31,7 @@
 3. **多人突襲隕石防塞車機制 (`EmergencyRaidMeteor.jsx`)**：
    - 畫面上同時最多僅允許 **1 顆**同學突襲隕石正在下墜，等待隊列最多暫存 **1 顆**，超量直接拋棄（Drop），每顆結束後保留 1.5 秒冷卻緩衝。
    - 突襲隕石落點限制於左翼安全空域（18%~30%），避開中央題目區（35%~65%）與右上角 Combo 氣球區（74%~96%）。
-4. **3D 視野參數 (`MeteorCanvas3D.jsx`)**：
+4. **3D 視野參數與 GPU GLSL 著色器架構 (`MeteorCanvas3D.jsx`, `proceduralAsteroid.js`)**：
    - 攝影機深度 `z: 27`，隕石生成起點 `-75`，給予學生充足判讀時間。
+   - **隕石本體 (`proceduralAsteroid.js`)**：採用 `IcosahedronGeometry(radius, 4)` 搭配自訂 **GLSL Per-Pixel 3D FBM 熔岩裂谷著色器** 與 **BackSide Fresnel 電漿日冕著色器**，徹底消除多邊形稜角感，並拖曳柔和圓形發光火焰粒子尾跡。
+   - **深空與地球 (`MeteorCanvas3D.jsx`)**：背景採用 GPU 星雲著色器（紫藍與琥珀星塵雲），下方地球採用 **瑞利大氣散射（Atmospheric Limb Glow）＋ 大陸雲帶 ＋ 夜間黃金城市燈火 GLSL 著色器**。

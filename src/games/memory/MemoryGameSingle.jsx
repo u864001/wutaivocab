@@ -8,6 +8,12 @@ import { UPPERCASE_ALPHABET, SHUFFLE } from '../../services/alphabetEngine';
 import { CARD_THEMES } from './memoryThemes';
 import { POWER_UP_DEFS, AnnouncementBanner } from './PowerUpEffects';
 import { PowerUpCodexModal } from './PowerUpCodexModal';
+import {
+  RukaiCardBackFace,
+  OrnateWordCardFace,
+  OlympianDeityCardFace,
+  OlympianAwakeningStage
+} from './OlympianCardArt';
 import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import confetti from 'canvas-confetti';
 import {
@@ -15,12 +21,15 @@ import {
   BookOpen, Eye, Zap, Gem, Satellite, Palette, CheckCircle2, AlertCircle
 } from 'lucide-react';
 
-// ── 金幣雨 10 秒挑戰小遊戲 ──
+// ── 普路托斯「黃金豐饒之角」10 秒天界金幣雨與冥界黑火炸彈小遊戲 ──
 const CoinRainModal = ({ onComplete }) => {
   const [items, setItems] = useState([]);
+  const [popups, setPopups] = useState([]);
   const [coinScore, setCoinScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(10);
+  const [bombExploded, setBombExploded] = useState(false);
   const isFinishedRef = useRef(false);
+  const scoreRef = useRef(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -29,7 +38,7 @@ const CoinRainModal = ({ onComplete }) => {
           clearInterval(timer);
           if (!isFinishedRef.current) {
             isFinishedRef.current = true;
-            onComplete(coinScore);
+            onComplete(scoreRef.current);
           }
           return 0;
         }
@@ -39,54 +48,91 @@ const CoinRainModal = ({ onComplete }) => {
 
     const spawner = setInterval(() => {
       if (isFinishedRef.current) return;
+      const roll = Math.random();
+      const itemType = roll < 0.22 ? 'bomb' : roll < 0.38 ? 'gem' : 'coin';
       setItems(prev => [
         ...prev,
         {
-          id: Math.random().toString(),
-          type: Math.random() < 0.22 ? 'bomb' : 'coin',
-          x: Math.floor(Math.random() * 82) + 8,
-          duration: Math.random() * 1.5 + 2.0
+          id: `${Date.now()}-${Math.random()}`,
+          type: itemType,
+          x: Math.floor(Math.random() * 80) + 10,
+          duration: itemType === 'gem' ? 1.85 : Math.random() * 1.2 + 1.9
         }
       ]);
-    }, 400);
+    }, 340);
 
     return () => {
       clearInterval(timer);
       clearInterval(spawner);
     };
-  }, [coinScore, onComplete]);
+  }, [onComplete]);
 
-  const handleClickItem = (id, type) => {
+  const handleClickItem = (item, e) => {
     if (isFinishedRef.current) return;
+    const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+    const px = rect ? e.clientX - rect.left : 200;
+    const py = rect ? e.clientY - rect.top : 200;
 
-    if (type === 'coin') {
+    if (item.type === 'coin' || item.type === 'gem') {
+      const gain = item.type === 'gem' ? 3 : 1;
       soundEngine.correct();
-      setCoinScore(s => s + 1);
-      setItems(prev => prev.filter(i => i.id !== id));
+      scoreRef.current += gain;
+      setCoinScore(scoreRef.current);
+      setItems(prev => prev.filter(i => i.id !== item.id));
+      const popId = `${Date.now()}-${Math.random()}`;
+      setPopups(prev => [...prev, { id: popId, x: px, y: py, text: item.type === 'gem' ? '+3 聖石暴擊!' : '+1 金幣', isGem: item.type === 'gem' }]);
+      setTimeout(() => {
+        setPopups(prev => prev.filter(p => p.id !== popId));
+      }, 650);
     } else {
       soundEngine.explosion();
       isFinishedRef.current = true;
-      setTimeout(() => onComplete(coinScore), 500);
+      setBombExploded(true);
+      setPopups(prev => [...prev, { id: 'bomb-pop', x: px, y: py, text: '💥 誤觸冥界黑火炸彈！', isBomb: true }]);
+      setTimeout(() => onComplete(scoreRef.current), 750);
     }
   };
 
   return (
-    <div className="absolute inset-0 z-50 bg-slate-950/95 rounded-3xl flex flex-col items-center justify-between p-6 overflow-hidden animate-fadeIn">
+    <div className={`absolute inset-0 z-50 rounded-3xl flex flex-col items-center justify-between p-4 sm:p-6 overflow-hidden animate-fadeIn select-none ${
+      bombExploded ? 'bg-rose-950/95' : 'bg-gradient-to-b from-amber-950 via-slate-950 to-indigo-950'
+    }`}>
+      {/* 奧林帕斯黃金神殿背景光柱與豐饒之角 */}
+      <svg viewBox="0 0 800 500" className="absolute inset-0 w-full h-full pointer-events-none opacity-35" preserveAspectRatio="none">
+        <defs>
+          <radialGradient id="plutus_halo" cx="50%" cy="12%" r="65%">
+            <stop offset="0%" stopColor="#fde047" stopOpacity="0.85" />
+            <stop offset="50%" stopColor="#d97706" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#020617" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <rect width="800" height="500" fill="url(#plutus_halo)" />
+        {/* 希臘神殿大石柱 */}
+        <rect x="35" y="40" width="38" height="460" fill="#78350f" opacity="0.4" />
+        <rect x="727" y="40" width="38" height="460" fill="#78350f" opacity="0.4" />
+        {/* 頂部中央黃金豐饒之角圖騰 */}
+        <path d="M350,55 C340,20 390,5 425,22 C445,32 460,12 475,5 C480,28 460,65 420,82 C380,95 358,80 350,55 Z" fill="#facc15" stroke="#fef08a" strokeWidth="3" />
+      </svg>
+
+      {/* 頂部神殿計分 HUD */}
       <div className="flex items-center justify-between w-full z-20">
-        <span className="px-4 py-2 rounded-xl bg-amber-400 text-amber-950 font-black text-sm flex items-center gap-1.5 shadow-lg">
-          <Coins className="w-4 h-4" /> 金幣狂收: {coinScore}
-        </span>
-        <span className="px-4 py-2 rounded-xl bg-blue-500 text-white font-black text-sm shadow-lg">
-          ⏱ 倒數計時: {timeLeft}s
-        </span>
+        <div className="px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-950 font-black text-sm sm:text-base flex items-center gap-2 shadow-[0_0_25px_rgba(251,191,36,0.6)] border-2 border-amber-200">
+          <Coins className="w-5 h-5" />
+          <span>普路托斯神殿接幣: {coinScore} 枚 (+{coinScore * 2} 分)</span>
+        </div>
+        <div className="px-4 py-2 rounded-2xl bg-indigo-900/90 border-2 border-amber-300/70 text-amber-200 font-black text-sm sm:text-base shadow-lg">
+          ⏱ 豐饒神力倒數: {timeLeft}s
+        </div>
       </div>
 
+      {/* 互動掉落區 */}
       <div className="absolute inset-0 pointer-events-auto overflow-hidden">
         {items.map(item => (
           <button
             key={item.id}
-            onClick={() => handleClickItem(item.id, item.type)}
-            className="absolute -top-12 animate-fall p-3 cursor-pointer transition-transform active:scale-75"
+            type="button"
+            onPointerDown={(e) => handleClickItem(item, e)}
+            className="absolute -top-16 p-2 cursor-pointer transition-transform active:scale-75 focus:outline-none"
             style={{
               left: `${item.x}%`,
               animationDuration: `${item.duration}s`,
@@ -96,19 +142,58 @@ const CoinRainModal = ({ onComplete }) => {
             }}
           >
             {item.type === 'coin' ? (
-              <Coins className="w-11 h-11 text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.9)] animate-spin-slow" />
+              /* 🪙 古希臘雅典娜貓頭鷹立體金幣 */
+              <svg viewBox="0 0 64 64" className="w-14 h-14 sm:w-16 sm:h-16 drop-shadow-[0_0_14px_rgba(250,204,21,0.95)]">
+                <circle cx="32" cy="32" r="28" fill="#facc15" stroke="#fef08a" strokeWidth="3.5" />
+                <circle cx="32" cy="32" r="22" fill="#eab308" stroke="#b45309" strokeWidth="1.5" strokeDasharray="4 2" />
+                <polygon points="32,14 44,32 32,50 20,32" fill="#fef08a" stroke="#b45309" strokeWidth="1.5" />
+                <circle cx="32" cy="32" r="5" fill="#b45309" />
+              </svg>
+            ) : item.type === 'gem' ? (
+              /* 💎 阿波羅太陽翡翠聖石 (+3 暴擊) */
+              <svg viewBox="0 0 64 64" className="w-14 h-14 sm:w-16 sm:h-16 drop-shadow-[0_0_18px_rgba(52,211,153,1)] animate-pulse">
+                <polygon points="32,4 56,22 46,56 18,56 8,22" fill="#10b981" stroke="#a7f3d0" strokeWidth="3" />
+                <polygon points="32,12 46,24 39,48 25,48 18,24" fill="#34d399" />
+                <text x="32" y="38" textAnchor="middle" fill="#ffffff" fontSize="16" fontWeight="900">+3</text>
+              </svg>
             ) : (
-              <Bomb className="w-11 h-11 text-rose-500 drop-shadow-[0_0_10px_rgba(244,63,94,0.9)] animate-pulse" />
+              /* 💣 冥界塔耳塔羅斯黑火炸彈 (誤觸即引爆) */
+              <svg viewBox="0 0 64 64" className="w-14 h-14 sm:w-16 sm:h-16 drop-shadow-[0_0_16px_rgba(244,63,94,0.95)] animate-bounce">
+                <circle cx="32" cy="36" r="22" fill="#1e1b4b" stroke="#f43f5e" strokeWidth="3" />
+                <path d="M32,14 Q38,4 48,8" fill="none" stroke="#fde047" strokeWidth="3" />
+                <circle cx="48" cy="8" r="5" fill="#f43f5e" />
+                <polygon points="22,30 28,33 24,38" fill="#f43f5e" />
+                <polygon points="42,30 36,33 40,38" fill="#f43f5e" />
+                <path d="M23,45 Q32,39 41,45" fill="none" stroke="#f43f5e" strokeWidth="2.5" />
+              </svg>
             )}
           </button>
         ))}
+
+        {/* 點擊爆分浮動粒子文字 */}
+        {popups.map(p => (
+          <div
+            key={p.id}
+            style={{ left: p.x, top: p.y }}
+            className={`absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none font-black text-base sm:text-xl animate-bounce z-30 ${
+              p.isBomb ? 'text-rose-400 scale-125' : p.isGem ? 'text-emerald-300' : 'text-amber-300'
+            } drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]`}
+          >
+            {p.text}
+          </div>
+        ))}
+      </div>
+
+      {/* 底部神諭提示 */}
+      <div className="relative z-20 px-4 py-1.5 rounded-full bg-black/65 border border-amber-400/50 text-xs font-bold text-amber-200">
+        ✨ 狂點古希臘金幣 (+1) 與翡翠聖石 (+3)，千萬別點到紫紅冥界炸彈！
       </div>
 
       <style dangerouslySetInnerHTML={{
         __html: `
           @keyframes fallDown {
-            from { top: -10%; }
-            to { top: 110%; }
+            from { top: -12%; transform: rotate(0deg); }
+            to { top: 112%; transform: rotate(360deg); }
           }
         `
       }} />
@@ -235,8 +320,8 @@ export const MemoryGameSingle = ({
       });
     }
 
-    // 4 張精選功能卡 (偷看卡、加分卡、金幣雨、雷達卡、閃電卡)
-    const availablePowerUps = ['peek', 'bonus', 'coin', 'radar', 'lightning'];
+    // 4 張隨機奧林帕斯希臘神話神卡 (從完整 8 大眾神池中抽取 4 張入局)
+    const availablePowerUps = ['lightning', 'peek', 'freeze', 'coin', 'lock', 'bonus', 'radar', 'winwin'];
     const chosenPowerUps = [...availablePowerUps].sort(() => 0.5 - Math.random()).slice(0, 4);
 
     chosenPowerUps.forEach((pId, pIdx) => {
@@ -385,9 +470,37 @@ export const MemoryGameSingle = ({
     const pid = card.powerId;
 
     if (pid === 'bonus') {
-      // 💎 加分卡：立即 +30 分
+      // 💎 阿波羅加分卡：立即 +30 分
       setScore(s => s + 30);
       confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 } });
+    } else if (pid === 'freeze') {
+      // ❄️ 博雷阿斯極北寒霜：賜予冰晶護盾 +20 分並開啟 Bonus 回合
+      setScore(s => s + 20);
+      setIsBonusTurn(true);
+      setTurnWordsFlipped(0);
+      setBonusNotification('❄️ 博雷阿斯降下極北冰晶祝福！獲得 +20 分並開啟 Bonus 回合！');
+      setTimeout(() => setBonusNotification(''), 3000);
+    } else if (pid === 'lock') {
+      // 🔒 赫菲斯托斯神匠金鎖：鎖定並直接透視一組配對的 2 張字卡 5 秒 (+15 分)
+      setScore(s => s + 15);
+      const unmatchedWords = cards.filter(c => !c.isPowerUp && !matched.includes(c.id));
+      if (unmatchedWords.length > 0) {
+        const targetPairId = unmatchedWords[0].matchId;
+        const pairIndices = cards
+          .map((c, idx) => (c.matchId === targetPairId ? idx : -1))
+          .filter(idx => idx !== -1);
+        setPeekIndices(pairIndices);
+        setTimeout(() => setPeekIndices([]), 5000);
+      }
+      setBonusNotification('🔒 赫菲斯托斯鍛造神鎖！已為您精準鎖定並透視一組配對 5 秒 (+15 分)！');
+      setTimeout(() => setBonusNotification(''), 3000);
+    } else if (pid === 'winwin') {
+      // 🤝 雙子神星辰同盟：雙子座祝福 +25 分並開啟 Bonus 回合
+      setScore(s => s + 25);
+      setIsBonusTurn(true);
+      setTurnWordsFlipped(0);
+      setBonusNotification('🤝 雙子座守護神締結星辰契約！獲得 +25 雙贏祝福並開啟 Bonus 回合！');
+      setTimeout(() => setBonusNotification(''), 3000);
     } else if (pid === 'radar') {
       // 📡 雷達卡：全場透視 5 秒 (僅發動者可見)
       setRadarActive(true);
@@ -486,11 +599,12 @@ export const MemoryGameSingle = ({
         {/* 八大卡牌精靈圖鑑彈窗 */}
         <PowerUpCodexModal isOpen={showCodex} onClose={() => setShowCodex(false)} />
 
-        {/* 翻到卡牌時上方滑入宣告橫幅 (2 秒後滑出) */}
+        {/* 翻到卡牌時上方滑入宣告橫幅 (2 秒後滑出) + 1.35 秒全場眾神降臨神力動畫 */}
         <AnnouncementBanner
           announcement={announcement}
           onComplete={() => setAnnouncement(null)}
         />
+        <OlympianAwakeningStage activeAwakening={announcement} />
 
         {/* 金幣雨小遊戲全螢幕 */}
         {showCoinRain && (
@@ -527,8 +641,16 @@ export const MemoryGameSingle = ({
           )}
         </div>
 
-        {/* 總分與圖鑑按鈕 */}
-        <div className="flex items-center gap-2">
+        {/* 總分、卡背主題切換(日/夜)與眾神圖鑑按鈕 */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => handleToggleCardTheme(cardThemeId === 'noble_gold' ? 'cyber_blue' : 'noble_gold')}
+            title="切換卡背：魯凱百合(日) / 古老石板(夜)"
+            className="px-2.5 py-1 rounded-xl bg-slate-800 border border-amber-400/50 text-amber-200 hover:bg-slate-700 font-black text-xs transition-colors flex items-center gap-1"
+          >
+            <span>{cardThemeId === 'noble_gold' ? '🌙 石板夜' : '☀️ 百合日'}</span>
+          </button>
           <span className="px-3 py-1 rounded-xl bg-amber-500 text-stone-950 font-black text-xs sm:text-sm shadow-md">
             得分: {score}
           </span>
@@ -537,7 +659,7 @@ export const MemoryGameSingle = ({
               soundEngine.click();
               setShowCodex(true);
             }}
-            title="查看卡牌圖鑑"
+            title="查看奧林帕斯眾神圖鑑"
             className="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
           >
             <BookOpen className="w-4 h-4 text-amber-400" />
@@ -569,58 +691,45 @@ export const MemoryGameSingle = ({
               disabled={isCardMatched}
               onClick={() => handleCardClick(idx)}
               className={`
-                aspect-[4/3] rounded-2xl sm:rounded-3xl p-2 font-heading font-black text-xs sm:text-sm flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-md max-h-[96px] relative overflow-hidden
+                aspect-[4/3] rounded-2xl sm:rounded-3xl p-0.5 font-heading font-black text-xs sm:text-sm flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-lg max-h-[104px] relative overflow-hidden
                 ${isCardMatched
-                  ? 'bg-slate-800 text-white opacity-30 border border-slate-700 scale-95 pointer-events-none'
-                  : showFront
                   ? isPowerUpCard
-                    ? `bg-gradient-to-br ${card.powerDef?.gradient || 'from-amber-500 to-yellow-600'} text-white border-2 border-white scale-105 shadow-xl`
-                    : `${currentCardTheme.cardFrontClass} scale-105 border-2 shadow-xl`
+                    ? 'ring-2 ring-amber-400/90 shadow-amber-500/30 scale-[0.98] pointer-events-none'
+                    : 'ring-2 ring-emerald-400/80 opacity-85 scale-[0.97] pointer-events-none'
+                  : showFront
+                  ? 'scale-105 ring-2 ring-amber-300 shadow-2xl z-10'
                   : `btn-3d ${currentCardTheme.cardBackClass} border-b-4 hover:scale-105 active:border-b-0`}
               `}
-              style={
-                !showFront && !isCardMatched
-                  ? { backgroundImage: currentCardTheme.cardBackPattern }
-                  : undefined
-              }
             >
               {showFront ? (
-                /* 翻開正面 */
-                <div className="flex flex-col items-center justify-center w-full h-full">
+                /* 翻開正面：希臘眾神史詩卡面 或 古典雕花金框單字卡面 (動一次即回歸靜止) */
+                <div className="w-full h-full relative">
                   {isPowerUpCard ? (
-                    <>
-                      <card.powerDef.icon className="w-5 h-5 sm:w-6 sm:h-6 mb-1 text-white animate-bounce" />
-                      <span className="text-[11px] sm:text-xs font-black tracking-tight leading-tight">
-                        {card.text}
-                      </span>
-                    </>
+                    <OlympianDeityCardFace powerId={card.powerId} />
                   ) : (
-                    <>
-                      <span className="line-clamp-2 leading-tight px-1 font-bold">
-                        {card.text}
-                      </span>
-                      <span className="text-[10px] opacity-60 font-semibold uppercase mt-0.5">
-                        {card.type === 'en' ? 'EN' : 'ZH'}
-                      </span>
-                    </>
+                    <OrnateWordCardFace text={card.text} type={card.type} />
+                  )}
+                  {isCardMatched && !isPowerUpCard && (
+                    <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow">
+                      <CheckCircle2 className="w-3 h-3" />
+                    </div>
                   )}
                 </div>
               ) : (
-                /* 蓋牌背面 */
+                /* 蓋牌背面：魯凱族百合花(日) / 霧臺古老石板(夜) 高細節 TCG 卡背 */
                 <div className="flex flex-col items-center justify-center w-full h-full relative">
-                  {/* 雷達卡發動時：僅發動者畫面上浮現全息微光提示！ */}
+                  <RukaiCardBackFace motif={currentCardTheme.motif} />
+                  {/* 赫利奧斯全視雷達發動時：僅發動者畫面上浮現全息微光提示 */}
                   {radarActive && !card.isPowerUp && (
-                    <div className="absolute inset-0 bg-emerald-500/20 backdrop-blur-[1px] rounded-2xl flex flex-col items-center justify-center p-1 animate-pulse border border-emerald-400/60 z-10">
-                      <span className="text-[10px] font-black text-emerald-200 line-clamp-1">
+                    <div className="absolute inset-0 bg-emerald-950/75 backdrop-blur-[1px] rounded-xl flex flex-col items-center justify-center p-1 animate-pulse border-2 border-emerald-400/80 z-10">
+                      <span className="text-[11px] sm:text-xs font-black text-emerald-200 line-clamp-1">
                         {card.text}
                       </span>
-                      <span className="text-[9px] font-extrabold text-emerald-300">
+                      <span className="text-[9px] font-extrabold text-amber-300">
                         [{card.type === 'en' ? 'EN' : 'ZH'}]
                       </span>
                     </div>
                   )}
-
-                  <HelpCircle className="w-5 h-5 sm:w-7 sm:h-7 opacity-50" style={{ color: currentCardTheme.accentColor }} />
                 </div>
               )}
             </button>

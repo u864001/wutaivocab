@@ -3,6 +3,7 @@ import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { speakEnglish, soundEngine } from '../../services/audio';
 import { POWER_UP_DEFS, MiniSandboxCanvas } from './PowerUpEffects';
+import { OlympianDeityCardFace } from './OlympianCardArt';
 import {
   X, Volume2, Sparkles, HelpCircle, ArrowLeft,
   ChevronRight, Shield, Zap
@@ -76,38 +77,10 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
           {selectedCard ? (
             /* ─── 單一卡牌巨幅展開詳細面板 (含微縮實戰動畫) ─── */
             <div className="animate-scaleUp flex flex-col md:flex-row gap-6 items-start">
-              {/* 左側：精靈立繪卡面與微縮動畫沙盒 */}
+              {/* 左側：奧林帕斯希臘神祇立繪卡面與微縮動畫沙盒 */}
               <div className="w-full md:w-72 shrink-0 flex flex-col items-center">
-                <div
-                  className={`w-full aspect-[3/4] rounded-3xl p-6 flex flex-col items-center justify-between border-2 shadow-2xl relative overflow-hidden bg-gradient-to-b ${selectedCard.gradient} ${selectedCard.border}`}
-                >
-                  <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-
-                  {/* 頂部精靈編號與圖示 */}
-                  <div className="w-full flex items-center justify-between z-10">
-                    <span className="text-xs font-black tracking-widest text-white/80 uppercase">
-                      MAGIC POWER-UP
-                    </span>
-                    <selectedCard.icon className="w-7 h-7 text-white drop-shadow-md" />
-                  </div>
-
-                  {/* 中央巨大精靈標誌 */}
-                  <div className="my-auto flex flex-col items-center text-center z-10">
-                    <div className="w-20 h-20 rounded-3xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-inner mb-3">
-                      <selectedCard.icon className="w-12 h-12 text-white drop-shadow-lg" />
-                    </div>
-                    <span className="text-2xl font-black text-white font-heading">
-                      {selectedCard.name}
-                    </span>
-                    <span className="text-xs font-bold text-white/70">
-                      {selectedCard.enName}
-                    </span>
-                  </div>
-
-                  {/* 底部化身稱號 */}
-                  <div className="w-full py-1.5 px-3 rounded-xl bg-black/30 backdrop-blur-md text-center text-xs font-extrabold text-amber-300 border border-white/10 z-10">
-                    {selectedCard.spirit}
-                  </div>
+                <div className="w-full aspect-[4/3] rounded-3xl shadow-2xl relative overflow-hidden border-2 border-amber-300">
+                  <OlympianDeityCardFace powerId={selectedCard.id} size="large" />
                 </div>
 
                 {/* 卡牌角落實戰微縮循環動畫模擬 */}
@@ -215,16 +188,8 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
                     className={`group cursor-pointer rounded-2xl p-4 border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col justify-between ${card.bg} ${card.border} hover:border-white/60`}
                   >
                     <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"
-                          style={{ backgroundColor: `${card.color}25`, border: `1.5px solid ${card.color}` }}
-                        >
-                          <Icon className="w-6 h-6" style={{ color: card.color }} />
-                        </div>
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-white/10 text-slate-300 uppercase">
-                          POWER-UP
-                        </span>
+                      <div className="w-full aspect-[4/3] rounded-xl overflow-hidden mb-3 border border-amber-400/50 shadow-md group-hover:scale-[1.03] transition-transform">
+                        <OlympianDeityCardFace powerId={card.id} />
                       </div>
 
                       <h3 className="text-lg font-black text-white font-heading mb-0.5 group-hover:text-amber-400 transition-colors">

@@ -1,13 +1,7 @@
 import * as THREE from 'three';
 
-// ── 簡易 3D 偽噪波演算法 (生成自然岩石起伏與撞擊坑) ──
-function pseudoNoise3D(x, y, z) {
-  const p = Math.sin(x * 1.7 + y * 2.3 + z * 3.1) * 43758.5453;
-  return p - Math.floor(p);
-}
-
+// ── 3D 複合諧波噪波（供頂點自然有機雕塑，消除正多面體對稱感） ──
 function smoothNoise3D(x, y, z) {
-  // 多階諧波複合噪波 (Octave Harmonic Noise)
   let total = 0;
   let frequency = 1.0;
   let amplitude = 1.0;
@@ -26,147 +20,204 @@ function smoothNoise3D(x, y, z) {
   return total / maxValue;
 }
 
-/**
- * 動態生成程序化熔岩裂紋與玄武岩紋理 (記憶體 Canvas，零外部檔案)
- */
-function createProceduralTextures() {
-  const size = 512;
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d');
+// ── GPU 原生 GLSL 3D 熔岩裂谷與電漿日冕著色器 (零多邊形感、60FPS 電影級畫質) ──
+const ASTEROID_VERTEX_SHADER = `
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
+  varying vec3 vObjectPos;
+  varying vec3 vWorldNormal;
 
-  // 1. 底層玄武岩石質感 (深炭灰與微小噪點)
-  ctx.fillStyle = '#222226';
-  ctx.fillRect(0, 0, size, size);
-
-  // 斑駁岩石微紋
-  const imgData = ctx.getImageData(0, 0, size, size);
-  const data = imgData.data;
-  for (let i = 0; i < data.length; i += 4) {
-    const grain = (Math.random() - 0.5) * 40;
-    data[i] = Math.min(255, Math.max(0, data[i] + grain));
-    data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + grain * 0.8));
-    data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + grain * 0.7));
+  void main() {
+    vObjectPos = position;
+    vNormal = normalize(normalMatrix * normal);
+    vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    vViewPosition = -mvPosition.xyz;
+    gl_Position = projectionMatrix * mvPosition;
   }
-  ctx.putImageData(imgData, 0, 0);
+`;
 
-  // 2. 繪製熾熱岩漿裂紋 (Magma Veins)
-  const emissiveCanvas = document.createElement('canvas');
-  emissiveCanvas.width = size;
-  emissiveCanvas.height = size;
-  const eCtx = emissiveCanvas.getContext('2d');
-  eCtx.fillStyle = '#000000';
-  eCtx.fillRect(0, 0, size, size);
+const ASTEROID_FRAGMENT_SHADER = `
+  uniform float uTime;
+  uniform float uHeat;
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
+  varying vec3 vObjectPos;
+  varying vec3 vWorldNormal;
 
-  // 隨機分支裂紋
-  eCtx.strokeStyle = '#ff5500';
-  eCtx.lineWidth = 4;
-  eCtx.shadowColor = '#ff2200';
-  eCtx.shadowBlur = 10;
+  // 3D 偽隨機雜湊與平滑梯度噪波 (GPU Per-Pixel FBM)
+  float hash(vec3 p) {
+    p = fract(p * 0.3183099 + 0.1);
+    p *= 17.0;
+    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+  }
 
-  for (let c = 0; c < 8; c++) {
-    let px = Math.random() * size;
-    let py = Math.random() * size;
-    eCtx.beginPath();
-    eCtx.moveTo(px, py);
-    const steps = 15 + Math.floor(Math.random() * 15);
-    for (let s = 0; s < steps; s++) {
-      px += (Math.random() - 0.5) * 50;
-      py += (Math.random() - 0.5) * 50;
-      eCtx.lineTo(px, py);
+  float noise(vec3 x) {
+    vec3 i = floor(x);
+    vec3 f = fract(x);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(
+      mix(
+        mix(hash(i + vec3(0,0,0)), hash(i + vec3(1,0,0)), f.x),
+        mix(hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x),
+        f.y
+      ),
+      mix(
+        mix(hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x),
+        mix(hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x),
+        f.y
+      ),
+      f.z
+    );
+  }
+
+  float fbm(vec3 p) {
+    float v = 0.0;
+    float a = 0.5;
+    vec3 shift = vec3(100.0);
+    for (int i = 0; i < 4; ++i) {
+      v += a * noise(p);
+      p = p * 2.03 + shift;
+      a *= 0.5;
     }
-    eCtx.stroke();
+    return v;
   }
 
-  // 裂隙高亮內核 (白金色高溫)
-  eCtx.strokeStyle = '#ffee88';
-  eCtx.lineWidth = 1.5;
-  eCtx.stroke();
+  // 模擬玄武岩板塊裂谷 (Voronoi / Ridge Cracks)
+  float ridgeNoise(vec3 p) {
+    float n = fbm(p);
+    return 1.0 - abs(n * 2.0 - 1.0);
+  }
 
-  // 將裂紋繪製回漫反射貼圖
-  ctx.globalAlpha = 0.8;
-  ctx.drawImage(emissiveCanvas, 0, 0);
-  ctx.globalAlpha = 1.0;
+  void main() {
+    vec3 viewDir = normalize(vViewPosition);
+    vec3 normal = normalize(vNormal);
 
-  const diffuseTexture = new THREE.CanvasTexture(canvas);
-  const emissiveTexture = new THREE.CanvasTexture(emissiveCanvas);
+    // 多尺度岩石與動態岩漿流座標
+    vec3 pos = vObjectPos * 0.78;
+    float rockGrain = fbm(pos * 2.6);
+    float crater = fbm(pos * 0.95);
 
-  diffuseTexture.wrapS = THREE.RepeatWrapping;
-  diffuseTexture.wrapT = THREE.RepeatWrapping;
-  emissiveTexture.wrapS = THREE.RepeatWrapping;
-  emissiveTexture.wrapT = THREE.RepeatWrapping;
+    // 熔岩裂隙網路 (隨時間緩慢湧動)
+    float ridge1 = ridgeNoise(pos * 1.35 + vec3(uTime * 0.12, -uTime * 0.08, uTime * 0.1));
+    float ridge2 = ridgeNoise(pos * 2.7 - vec3(uTime * 0.18));
+    float crackMask = smoothstep(0.62, 0.92, ridge1 * 0.75 + ridge2 * 0.35);
 
-  return { diffuseTexture, emissiveTexture };
-}
+    // 法線微擾動，產生高細節玄武岩凹凸立體光影
+    vec3 perturbedNormal = normalize(normal + vec3(rockGrain - 0.5) * 0.35);
+    vec3 lightDir = normalize(vec3(0.6, 0.7, 0.5));
+    float diff = max(dot(perturbedNormal, lightDir), 0.0);
+
+    // 玄武岩深邃礦物色澤
+    vec3 coldRock = vec3(0.09, 0.08, 0.11);
+    vec3 litRock = vec3(0.26, 0.22, 0.24);
+    vec3 rockColor = mix(coldRock, litRock, diff * 0.85 + crater * 0.25);
+
+    // 內部沸騰岩漿色階：深紅 ➔ 烈焰橙 ➔ 熾白金核
+    float magmaCore = smoothstep(0.75, 0.98, ridge1 * 0.8 + ridge2 * 0.3);
+    vec3 magmaDark = vec3(0.85, 0.12, 0.02);
+    vec3 magmaOrange = vec3(1.0, 0.48, 0.04);
+    vec3 magmaWhiteGold = vec3(1.0, 0.95, 0.65);
+
+    vec3 magmaColor = mix(magmaDark, magmaOrange, crackMask);
+    magmaColor = mix(magmaColor, magmaWhiteGold, magmaCore) * uHeat;
+
+    // 進入大氣層的高溫摩擦電漿邊緣光 (Fresnel Rim Heating)
+    float fresnel = pow(1.0 - max(dot(viewDir, perturbedNormal), 0.0), 2.4);
+    vec3 rimPlasma = mix(vec3(1.0, 0.32, 0.02), vec3(1.0, 0.78, 0.25), fresnel) * fresnel * (1.1 + uHeat * 0.45);
+
+    vec3 finalColor = mix(rockColor, magmaColor, crackMask * 0.92) + rimPlasma;
+    gl_FragColor = vec4(finalColor, 1.0);
+  }
+`;
+
+// ── 外圍無稜角柔和電漿日冕著色器 (消除多邊形外殼邊界) ──
+const CORONA_VERTEX_SHADER = `
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    vViewPosition = -mvPosition.xyz;
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const CORONA_FRAGMENT_SHADER = `
+  uniform float uPulse;
+  varying vec3 vNormal;
+  varying vec3 vViewPosition;
+  void main() {
+    vec3 viewDir = normalize(vViewPosition);
+    vec3 normal = normalize(vNormal);
+    // BackSide 渲染時，中心向邊緣自然衰減為 0，絕無多邊形硬邊！
+    float intensity = pow(max(dot(-viewDir, normal), 0.0), 2.6);
+    vec3 glowColor = mix(vec3(1.0, 0.25, 0.0), vec3(1.0, 0.72, 0.2), intensity);
+    gl_FragColor = vec4(glowColor, intensity * 0.52 * uPulse);
+  }
+`;
 
 /**
- * 建立一顆高細分度、流暢天然的 3D 星際隕石 Mesh
+ * 建立一顆 GPU GLSL 著色器驅動的高精細 3D 熔岩隕石 Mesh
  * @param {number} radius - 隕石基準半徑
- * @returns {THREE.Group} - 包含隕石本體、岩漿材質與大氣電漿光暈的物件組
  */
 export function createProceduralAsteroid(radius = 3.2) {
   const group = new THREE.Group();
 
-  // 1. 高細分度幾何球體 (detail=3 約 642 頂點，兼具平滑曲面與極速效能)
-  const geometry = new THREE.IcosahedronGeometry(radius, 3);
+  // 1. 提高細分度至 detail=4 (約 2562 頂點，輪廓圓潤無折角，GPU 瞬間渲染)
+  const geometry = new THREE.IcosahedronGeometry(radius, 4);
   const posAttr = geometry.attributes.position;
   const vertex = new THREE.Vector3();
 
-  // 2. 3D 多重噪波雕刻：生成撞擊坑 (Craters) 與自然岩脊
+  // 2. 3D 有機岩體雕塑
   for (let i = 0; i < posAttr.count; i++) {
     vertex.fromBufferAttribute(posAttr, i);
 
-    // 局部橢圓不對稱形變
-    vertex.x *= 1.0 + Math.sin(vertex.y * 0.3) * 0.15;
-    vertex.z *= 0.95 + Math.cos(vertex.x * 0.3) * 0.12;
+    vertex.x *= 1.0 + Math.sin(vertex.y * 0.32) * 0.14;
+    vertex.z *= 0.94 + Math.cos(vertex.x * 0.28) * 0.12;
 
-    // 噪波擾動：大坑窪 + 小岩石顆粒
-    const n = smoothNoise3D(vertex.x * 0.45, vertex.y * 0.45, vertex.z * 0.45);
-    const detailNoise = smoothNoise3D(vertex.x * 1.8, vertex.y * 1.8, vertex.z * 1.8) * 0.35;
-    
-    // 向法線方向凸出或凹陷
-    const displacement = (n + detailNoise) * 0.9;
+    const n = smoothNoise3D(vertex.x * 0.42, vertex.y * 0.42, vertex.z * 0.42);
+    const detailNoise = smoothNoise3D(vertex.x * 1.65, vertex.y * 1.65, vertex.z * 1.65) * 0.28;
+
+    const displacement = (n + detailNoise) * 0.78;
     vertex.addScaledVector(vertex.clone().normalize(), displacement);
 
     posAttr.setXYZ(i, vertex.x, vertex.y, vertex.z);
   }
 
-  // 關鍵：法線平滑計算，消除任何摺紙般的多邊形稜角，產生天然鵝卵石/星際巨石的平滑感
   geometry.computeVertexNormals();
 
-  // 3. PBR 物理光照材質 (玄武岩 + 動態熾熱岩漿)
-  const { diffuseTexture, emissiveTexture } = createProceduralTextures();
-
-  const rockMaterial = new THREE.MeshStandardMaterial({
-    map: diffuseTexture,
-    emissive: new THREE.Color(0xff4400),
-    emissiveMap: emissiveTexture,
-    emissiveIntensity: 1.6,
-    roughness: 0.85,
-    metalness: 0.2,
-    flatShading: false // 絕對不使用 flatShading！保證流暢圓滑
+  // 3. GLSL 熔岩裂谷著色器材質
+  const rockMaterial = new THREE.ShaderMaterial({
+    vertexShader: ASTEROID_VERTEX_SHADER,
+    fragmentShader: ASTEROID_FRAGMENT_SHADER,
+    uniforms: {
+      uTime: { value: Math.random() * 100.0 },
+      uHeat: { value: 1.35 }
+    }
   });
 
   const rockMesh = new THREE.Mesh(geometry, rockMaterial);
-  rockMesh.castShadow = true;
-  rockMesh.receiveShadow = true;
   group.add(rockMesh);
 
-  // 4. 大氣摩擦電漿外光暈 (Fresnel Atmospheric Glow)
-  const glowGeo = new THREE.IcosahedronGeometry(radius * 1.18, 2);
-  const glowMat = new THREE.MeshBasicMaterial({
-    color: 0xff6600,
+  // 4. 無縫漸層大氣摩擦電漿日冕 (Smooth Fresnel Corona)
+  const glowGeo = new THREE.SphereGeometry(radius * 1.38, 32, 32);
+  const glowMat = new THREE.ShaderMaterial({
+    vertexShader: CORONA_VERTEX_SHADER,
+    fragmentShader: CORONA_FRAGMENT_SHADER,
+    uniforms: {
+      uPulse: { value: 1.0 }
+    },
     transparent: true,
-    opacity: 0.28,
     side: THREE.BackSide,
+    depthWrite: false,
     blending: THREE.AdditiveBlending
   });
   const glowMesh = new THREE.Mesh(glowGeo, glowMat);
   group.add(glowMesh);
 
-  // 5. 核心動態點光源 (讓燃燒的隕石在太空中散發暖橙色光暈照亮周遭)
-  const pointLight = new THREE.PointLight(0xff7722, 2.8, 25);
+  // 5. 核心動態點光源
+  const pointLight = new THREE.PointLight(0xff7722, 3.0, 28);
   group.add(pointLight);
 
   return {
@@ -176,24 +227,22 @@ export function createProceduralAsteroid(radius = 3.2) {
     pointLight,
     material: rockMaterial,
     geometry,
-    update: (time, progress) => {
-      // 複合多軸自轉
-      rockMesh.rotation.x += 0.012;
-      rockMesh.rotation.y += 0.018;
-      rockMesh.rotation.z += 0.007;
+    update: (time, progress = 0.5) => {
+      rockMesh.rotation.x += 0.011;
+      rockMesh.rotation.y += 0.016;
+      rockMesh.rotation.z += 0.006;
 
-      // 隨下墜進度劇烈燃燒 (接近地表時岩漿光更刺眼)
-      const pulse = Math.sin(time * 6) * 0.35 + 1.65;
-      rockMaterial.emissiveIntensity = pulse + progress * 0.8;
-      glowMesh.scale.setScalar(1.0 + Math.sin(time * 8) * 0.05);
+      const pulse = Math.sin(time * 5.5) * 0.22 + 1.35;
+      rockMaterial.uniforms.uTime.value = time;
+      rockMaterial.uniforms.uHeat.value = pulse + progress * 0.65;
+      glowMat.uniforms.uPulse.value = 0.92 + Math.sin(time * 7.0) * 0.15 + progress * 0.25;
+      glowMesh.scale.setScalar(1.0 + Math.sin(time * 6.5) * 0.04);
     },
     dispose: () => {
       geometry.dispose();
       glowGeo.dispose();
       rockMaterial.dispose();
       glowMat.dispose();
-      if (diffuseTexture) diffuseTexture.dispose();
-      if (emissiveTexture) emissiveTexture.dispose();
     }
   };
 }

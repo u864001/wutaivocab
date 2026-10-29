@@ -126,9 +126,63 @@ export const MeteorCanvas3D = ({
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // 4. 深邃星空背景 (1,200 顆彩色星點)
+    // 4. 深空星雲天球 (GPU GLSL Nebula Backdrop) + 1,400 顆多色溫閃爍星海
+    const nebulaGeo = new THREE.PlaneGeometry(520, 320);
+    const nebulaMat = new THREE.ShaderMaterial({
+      uniforms: { uTime: { value: 0 } },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        varying vec2 vUv;
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          f = f * f * (3.0 - 2.0 * f);
+          return mix(
+            mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+            mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),
+            f.y
+          );
+        }
+        float fbm(vec2 p) {
+          float v = 0.0;
+          float a = 0.5;
+          for (int i = 0; i < 5; i++) {
+            v += a * noise(p);
+            p = p * 2.02 + vec2(17.3, 29.1);
+            a *= 0.5;
+          }
+          return v;
+        }
+        void main() {
+          vec2 uv = vUv * 2.0 - 1.0;
+          float n1 = fbm(uv * 1.8 + vec2(uTime * 0.008, -uTime * 0.005));
+          float n2 = fbm(uv * 3.4 - vec2(uTime * 0.012, uTime * 0.006) + n1);
+          vec3 deepSpace = vec3(0.015, 0.025, 0.075);
+          vec3 violetNebula = vec3(0.22, 0.07, 0.42) * smoothstep(0.35, 0.85, n1);
+          vec3 cyanNebula = vec3(0.04, 0.32, 0.55) * smoothstep(0.42, 0.88, n2);
+          vec3 goldCore = vec3(0.55, 0.25, 0.12) * smoothstep(0.62, 0.95, n1 * n2 * 1.6);
+          vec3 col = deepSpace + violetNebula * 0.65 + cyanNebula * 0.55 + goldCore * 0.45;
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `,
+      depthWrite: false
+    });
+    const nebulaMesh = new THREE.Mesh(nebulaGeo, nebulaMat);
+    nebulaMesh.position.set(0, 10, -240);
+    scene.add(nebulaMesh);
+
     const starGeo = new THREE.BufferGeometry();
-    const starCount = 1200;
+    const starCount = 1400;
     const starPos = new Float32Array(starCount * 3);
     const starColors = new Float32Array(starCount * 3);
 
@@ -143,7 +197,7 @@ export const MeteorCanvas3D = ({
       const idx = i * 3;
       starPos[idx] = (Math.random() - 0.5) * 400;
       starPos[idx + 1] = (Math.random() - 0.5) * 260;
-      starPos[idx + 2] = -50 - Math.random() * 300;
+      starPos[idx + 2] = -50 - Math.random() * 180;
 
       const c = colorChoices[Math.floor(Math.random() * colorChoices.length)];
       starColors[idx] = c.r;
@@ -158,32 +212,102 @@ export const MeteorCanvas3D = ({
       size: 1.8,
       vertexColors: true,
       transparent: true,
-      opacity: 0.85
+      opacity: 0.9
     });
     const starField = new THREE.Points(starGeo, starMat);
     scene.add(starField);
 
-    // 5. 地球大氣防衛圈 (地平線弧形大氣發光層)
-    const earthGeo = new THREE.SphereGeometry(75, 48, 24);
-    const earthMat = new THREE.MeshStandardMaterial({
-      color: 0x0c2554,
-      emissive: 0x003366,
-      emissiveIntensity: 0.6,
-      roughness: 0.9,
-      metalness: 0.1
+    // 5. 地球大氣防衛圈 (GLSL 大氣瑞利散射 + 大陸海洋雲層 + 夜間黃金城市燈火)
+    const earthGeo = new THREE.SphereGeometry(75, 64, 48);
+    const earthMat = new THREE.ShaderMaterial({
+      uniforms: { uTime: { value: 0 } },
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewPos;
+        varying vec3 vObjPos;
+        void main() {
+          vObjPos = position;
+          vNormal = normalize(normalMatrix * normal);
+          vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+          vViewPos = -mvPos.xyz;
+          gl_Position = projectionMatrix * mvPos;
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        varying vec3 vNormal;
+        varying vec3 vViewPos;
+        varying vec3 vObjPos;
+        float hash(vec3 p) {
+          p = fract(p * 0.3183099 + 0.1);
+          p *= 17.0;
+          return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+        }
+        float noise(vec3 x) {
+          vec3 i = floor(x);
+          vec3 f = fract(x);
+          f = f * f * (3.0 - 2.0 * f);
+          return mix(
+            mix(mix(hash(i), hash(i+vec3(1,0,0)), f.x), mix(hash(i+vec3(0,1,0)), hash(i+vec3(1,1,0)), f.x), f.y),
+            mix(mix(hash(i+vec3(0,0,1)), hash(i+vec3(1,0,1)), f.x), mix(hash(i+vec3(0,1,1)), hash(i+vec3(1,1,1)), f.x), f.y),
+            f.z
+          );
+        }
+        float fbm(vec3 p) {
+          float v = 0.0; float a = 0.5;
+          for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.05; a *= 0.5; }
+          return v;
+        }
+        void main() {
+          vec3 n = normalize(vNormal);
+          vec3 v = normalize(vViewPos);
+          vec3 p = vObjPos * 0.055 + vec3(uTime * 0.015, 0.0, 0.0);
+          float continent = smoothstep(0.47, 0.56, fbm(p));
+          float clouds = smoothstep(0.52, 0.78, fbm(p * 1.8 + vec3(uTime * 0.025, 0.0, 0.0)));
+          float cityCluster = smoothstep(0.62, 0.76, noise(p * 9.5)) * continent;
+
+          vec3 oceanCol = vec3(0.02, 0.14, 0.38);
+          vec3 landCol = vec3(0.04, 0.28, 0.24);
+          vec3 baseCol = mix(oceanCol, landCol, continent);
+          // 夜間黃金城市燈火網絡
+          baseCol += vec3(1.0, 0.78, 0.32) * cityCluster * 0.65;
+          // 柔和白雲帶
+          baseCol = mix(baseCol, vec3(0.82, 0.92, 1.0), clouds * 0.42);
+
+          // 瑞利大氣層邊緣散射藍青輝光 (Atmospheric Limb Glow)
+          float fresnel = pow(1.0 - max(dot(v, n), 0.0), 2.2);
+          vec3 atmoGlow = mix(vec3(0.12, 0.55, 1.0), vec3(0.45, 0.92, 1.0), fresnel) * fresnel * 1.45;
+
+          gl_FragColor = vec4(baseCol + atmoGlow, 1.0);
+        }
+      `
     });
     const earthMesh = new THREE.Mesh(earthGeo, earthMat);
     earthMesh.position.set(0, -78, 5);
     scene.add(earthMesh);
     earthMeshRef.current = earthMesh;
 
-    // 地球大氣發光環
-    const atmoGeo = new THREE.RingGeometry(74.5, 76.5, 64);
-    const atmoMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
+    // 地球高空電離層柔和光環
+    const atmoGeo = new THREE.RingGeometry(74.2, 77.2, 96);
+    const atmoMat = new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec2 vUv;
+        void main() {
+          float dist = length(vUv - vec2(0.5)) * 2.0;
+          float alpha = smoothstep(0.92, 0.965, dist) * (1.0 - smoothstep(0.965, 1.0, dist));
+          gl_FragColor = vec4(0.25, 0.78, 1.0, alpha * 0.65);
+        }
+      `,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.45,
+      depthWrite: false,
       blending: THREE.AdditiveBlending
     });
     const atmoMesh = new THREE.Mesh(atmoGeo, atmoMat);
@@ -242,8 +366,21 @@ export const MeteorCanvas3D = ({
     const ufo = createUfoSystem(scene, camera, renderer.domElement, onUfoSuccess);
     ufoRef.current = ufo;
 
-    // 8. 火焰尾跡粒子系統 (Trail Particles)
-    const maxTrail = 80;
+    // 8. 柔和圓形光暈火焰尾跡粒子系統 (Volumetric Fireball Trail Particles)
+    const particleCanvas = document.createElement('canvas');
+    particleCanvas.width = 64;
+    particleCanvas.height = 64;
+    const pCtx = particleCanvas.getContext('2d');
+    const pGrad = pCtx.createRadialGradient(32, 32, 2, 32, 32, 30);
+    pGrad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+    pGrad.addColorStop(0.35, 'rgba(255, 200, 80, 0.85)');
+    pGrad.addColorStop(0.7, 'rgba(255, 80, 10, 0.35)');
+    pGrad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
+    pCtx.fillStyle = pGrad;
+    pCtx.fillRect(0, 0, 64, 64);
+    const particleTex = new THREE.CanvasTexture(particleCanvas);
+
+    const maxTrail = 110;
     const trailGeo = new THREE.BufferGeometry();
     const trailPositions = new Float32Array(maxTrail * 3);
     const trailColors = new Float32Array(maxTrail * 3);
@@ -254,10 +391,12 @@ export const MeteorCanvas3D = ({
     trailGeo.setAttribute('size', new THREE.BufferAttribute(trailSizes, 1));
 
     const trailMat = new THREE.PointsMaterial({
-      size: 2.2,
+      size: 4.2,
+      map: particleTex,
       vertexColors: true,
       transparent: true,
-      opacity: 0.8,
+      depthWrite: false,
+      opacity: 0.9,
       blending: THREE.AdditiveBlending
     });
     const trailPoints = new THREE.Points(trailGeo, trailMat);
@@ -289,8 +428,11 @@ export const MeteorCanvas3D = ({
       const delta = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
-      // 緩慢自轉星空
+      // 緩慢自轉星空與推進星雲/地球時間軸
       starField.rotation.y += 0.0003;
+      const elapsedSec = now * 0.001;
+      nebulaMat.uniforms.uTime.value = elapsedSec;
+      earthMat.uniforms.uTime.value = elapsedSec;
 
       // 更新 3D 彩蛋 (流星、衛星、UFO)
       if (shootingStarRef.current) shootingStarRef.current.update(delta, now);
