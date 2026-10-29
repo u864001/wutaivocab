@@ -13,8 +13,9 @@
 2. **強制 6 階段全自動防回歸測試（杜絕改 A 壞 B、免除人工重測）**：
    - 任何程式碼變更後、推送前，**必須執行**：
      ```powershell
-     npm run build ; if ($?) { node scripts/smoke_test.mjs }
+     npm run build ; if ($LASTEXITCODE -eq 0) { node scripts/smoke_test.mjs }
      ```
+   - **以 `$LASTEXITCODE` 判斷 build 成敗**（勿用 `$?`）：PowerShell 的 `$?` 在 stderr 被重導（如 `2>&1 | Select-Object`）時，會把 Vite 警告誤判為失敗而跳過 smoke test。另**勿同時啟動兩個 smoke test**（共用 port 4198，會互相干擾產生假失敗）。
    - 必須 100% 通過 6 大階段：(0) 靜態契約檢查（所有 `soundEngine.xxx()` 必須存在於 `src/services/audio.js`，嚴禁 `if (queue.length === 0) return onBack()` 閃退寫法）、(1) 排行榜、(2) 大廳與教師台、(3) 鷹眼神探、(4) 口說評測、(5) 核心遊戲真實互動點擊/按鍵/開房模擬、(6) 14 款遊戲 × 4 身分全量矩陣。
 3. **React 與狀態安全規範**：
    - 嚴禁在 `setState(prev => ...)` updater 函式內執行副作用（如 `soundEngine`、Supabase 廣播、`onBack()`）。

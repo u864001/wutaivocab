@@ -10,7 +10,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    chunkSizeWarningLimit: 700,
+    // 主 bundle 含 1,289+ 題課本題庫，約 2MB；提高門檻避免 Vite 警告寫入 stderr
+    // 導致 PowerShell 誤判 build 失敗、跳過 smoke test。
+    chunkSizeWarningLimit: 3000,
     rollupOptions: {
       output: {
         manualChunks(id) {
