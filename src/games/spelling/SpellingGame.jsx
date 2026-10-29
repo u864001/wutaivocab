@@ -160,9 +160,8 @@ export const SpellingGame = ({
     if (!queue || queue.length === 0) {
       if (words && words.length > 0) {
         loadWord(words[0]);
-        return;
       }
-      return onBack();
+      return;
     }
     setHasStarted(true);
     hasStartedRef.current = true;
@@ -175,8 +174,10 @@ export const SpellingGame = ({
 
   // 自動直接開局（零二次彈窗）
   useEffect(() => {
-    handleStart();
-  }, [queue.length]);
+    if (queue && queue.length > 0 && !hasStartedRef.current) {
+      handleStart();
+    }
+  }, [queue?.length]);
 
   // 點擊字母自動填入第一個空格 (平板友善)
   const handleLetterClick = (letter) => {

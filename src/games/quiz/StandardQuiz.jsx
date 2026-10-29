@@ -147,7 +147,7 @@ export const StandardQuiz = ({
   }, [currentQuestion, hasStarted, mode, isFinished]);
 
   const handleStart = () => {
-    if (queue.length === 0) return onBack();
+    if (queue.length === 0) return;
     setHasStarted(true);
     setStartTime(Date.now());
     setTimeout(() => inputRef.current?.focus(), 150);
@@ -155,8 +155,10 @@ export const StandardQuiz = ({
 
   // 自動直接開局（依據 Lobby 整備室設定，零二次彈窗）
   useEffect(() => {
-    handleStart();
-  }, [queue.length]);
+    if (queue.length > 0 && !hasStarted) {
+      handleStart();
+    }
+  }, [queue.length, hasStarted]);
 
   // 重新播放當前題目語音
   const handleReplayAudio = useCallback(() => {
