@@ -561,32 +561,37 @@ export const syncProfileToLeaderboard = async (profile) => {
     const coins = Math.max(0, Number(profile.coins) || 0);
     const questPoints = Math.max(0, Number(profile.quest_points) || 0);
     const currentWeek = getWeekNumber();
-    const deviceId = getDeviceId();
     const cleanNick = String(profile.nickname || '好學生').trim();
+    const metaPayload = JSON.stringify({
+      v: 1,
+      inv: Array.isArray(profile.inventory) ? profile.inventory : [],
+      dq: (typeof profile.daily_quest === 'object' && profile.daily_quest) ? profile.daily_quest : {},
+      sem: profile.semester_id || getCurrentSemesterId(),
+      hist: Array.isArray(profile.semester_history) ? profile.semester_history : []
+    });
 
     const { data: existing } = await supabase
       .from('leaderboard')
-      .select('id, score, time')
+      .select('id, score, time, device_id')
       .eq('mode', 'profile-sync')
       .eq('book', studentId)
       .limit(1)
       .maybeSingle();
 
     if (existing) {
-      const targetScore = Math.max(coins, Number(existing.score) || 0);
-      const targetTime = Math.max(questPoints, Number(existing.time) || 0);
       await supabase
         .from('leaderboard')
         .update({
-          score: targetScore,
-          time: targetTime,
+          score: coins,
+          time: questPoints,
           name: cleanNick,
+          device_id: metaPayload,
           created_at: new Date().toISOString()
         })
         .eq('id', existing.id);
     } else {
       await supabase.from('leaderboard').insert([{
-        device_id: deviceId,
+        device_id: metaPayload,
         name: cleanNick,
         mode: 'profile-sync',
         book: studentId,
@@ -617,6 +622,12 @@ export const fetchProfileFromLeaderboard = async (studentId) => {
 
     if (syncData) {
       const parsedId = parseStudentId(studentId);
+      let extraMeta = {};
+      if (typeof syncData.device_id === 'string' && syncData.device_id.startsWith('{')) {
+        try {
+          extraMeta = JSON.parse(syncData.device_id);
+        } catch (e) {}
+      }
       return {
         student_id: studentId,
         grade: parsedId.grade,
@@ -625,10 +636,10 @@ export const fetchProfileFromLeaderboard = async (studentId) => {
         nickname: syncData.name || '好學生',
         coins: Math.max(0, Number(syncData.score) || 0),
         quest_points: Math.max(0, Number(syncData.time) || 0),
-        semester_id: getCurrentSemesterId(),
-        semester_history: [],
-        inventory: [],
-        daily_quest: {}
+        semester_id: extraMeta.sem || getCurrentSemesterId(),
+        semester_history: Array.isArray(extraMeta.hist) ? extraMeta.hist : [],
+        inventory: Array.isArray(extraMeta.inv) ? extraMeta.inv : [],
+        daily_quest: (typeof extraMeta.dq === 'object' && extraMeta.dq) ? extraMeta.dq : {}
       };
     }
     return null;
@@ -688,9 +699,9 @@ export const fetchStudentProfile = async (studentId) => {
         coins: Math.max(Number(syncProfile.coins) || 0, Number(localProfile?.coins) || 0),
         quest_points: Math.max(Number(syncProfile.quest_points) || 0, Number(localProfile?.quest_points) || 0),
         semester_id: localProfile?.semester_id || syncProfile.semester_id,
-        semester_history: localProfile?.semester_history || [],
-        inventory: localProfile?.inventory || [],
-        daily_quest: localProfile?.daily_quest || {}
+        semester_history: (Array.isArray(localProfile?.semester_history) && localProfile.semester_history.length > 0) ? localProfile.semester_history : (syncProfile.semester_history || []),
+        inventory: (Array.isArray(localProfile?.inventory) && localProfile.inventory.length > 0) ? localProfile.inventory : (syncProfile.inventory || []),
+        daily_quest: (localProfile?.daily_quest && Object.keys(localProfile.daily_quest).length > 0) ? localProfile.daily_quest : (syncProfile.daily_quest || {})
       };
       const normalized = checkAndApplySemesterReset(combined);
       setLocalStudentProfile(studentId, normalized);

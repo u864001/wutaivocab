@@ -611,6 +611,18 @@ class SoundEngine {
     });
   }
 
+  // 防護罩生成 / 能量升級音效
+  powerUp() {
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((freq, idx) => {
+      setTimeout(() => this.playTone(freq, 'sine', 0.16, 0.18), idx * 70);
+    });
+  }
+
+  powerup() {
+    this.powerUp();
+  }
+
   // 按鈕點擊反饋
   click() {
     this.playTone(400, 'triangle', 0.04, 0.08);

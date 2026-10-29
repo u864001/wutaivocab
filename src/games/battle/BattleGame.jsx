@@ -434,6 +434,23 @@ export const BattleGame = ({
     return () => clearInterval(timer);
   }, [view, isHost, playerName]);
 
+  // ── 強制同步驅逐指定 Topic 的舊 RealtimeChannel 實例（徹底杜絕重複訂閱與 cannot add presence callbacks after subscribe 崩潰） ──
+  const syncEvictChannel = useCallback((topicName) => {
+    try {
+      const fullTopic = `realtime:${topicName}`;
+      const all = supabase.getChannels();
+      for (let i = all.length - 1; i >= 0; i--) {
+        const ch = all[i];
+        if (ch.topic === fullTopic || ch.topic === topicName) {
+          all.splice(i, 1);
+          try { if (ch.untrack) ch.untrack(); } catch (e) {}
+          try { supabase.removeChannel(ch); } catch (e) {}
+          try { if (typeof ch.teardown === 'function') ch.teardown(); } catch (e) {}
+        }
+      }
+    } catch (e) {}
+  }, []);
+
   // ── 大廳零長連線架構：1-Shot 快照探測 ──
   useEffect(() => {
     if (view !== 'menu') return;
@@ -441,50 +458,65 @@ export const BattleGame = ({
     let isCancelled = false;
     setIsProbing(true);
 
-    const probeChannels = FIXED_ARENAS.map(arena => {
-      const ch = supabase.channel(`battle-${arena.id}`);
-      ch.on('presence', { event: 'sync' }, () => {
-        if (isCancelled) return;
-        const state = ch.presenceState();
-        const list = Object.values(state).flat();
-        const host = list.find(p => p.isHost);
+    const probeChannels = [];
+    FIXED_ARENAS.forEach(arena => {
+      try {
+        const topic = `battle-${arena.id}`;
+        syncEvictChannel(topic);
+        const ch = supabase.channel(topic);
+        ch.on('presence', { event: 'sync' }, () => {
+          if (isCancelled) return;
+          const state = ch.presenceState();
+          const list = Object.values(state).flat();
+          const host = list.find(p => p.isHost);
 
-        const now = Date.now();
-        // 幽靈房精準判定：
-        // 1. 全體成員皆處於 'result'（已結算死房）
-        // 2. 或全體成員皆為 'waiting' 且加入時間已逾 5 分鐘（無人開局之幽靈大廳）
-        const allResult = list.length > 0 && list.every(p => p.status === 'result');
-        const isStaleWaiting = list.length > 0 && list.every(p => p.status === 'waiting' && (now - (p.joinedAt || now) > 5 * 60 * 1000));
-        const isGhost = allResult || isStaleWaiting;
+          const now = Date.now();
+          // 幽靈房精準判定：
+          // 1. 全體成員皆處於 'result'（已結算死房）
+          // 2. 或全體成員皆為 'waiting' 且加入時間已逾 5 分鐘（無人開局之幽靈大廳）
+          const allResult = list.length > 0 && list.every(p => p.status === 'result');
+          const isStaleWaiting = list.length > 0 && list.every(p => p.status === 'waiting' && (now - (p.joinedAt || now) > 5 * 60 * 1000));
+          const isGhost = allResult || isStaleWaiting;
 
-        const effectiveCount = isGhost ? 0 : list.length;
-        const isBattling = !isGhost && list.some(p => p.status === 'battling');
+          const effectiveCount = isGhost ? 0 : list.length;
+          const isBattling = !isGhost && list.some(p => p.status === 'battling');
 
-        setArenaStates(prev => ({
-          ...prev,
-          [arena.id]: {
-            count: effectiveCount,
-            rawCount: list.length,
-            isBattling,
-            isGhost,
-            ghostReason: allResult ? '已結算釋出' : (isStaleWaiting ? '超過5分鐘無活動' : null),
-            hostName: host && !isGhost ? host.name : '',
-            playerNames: isGhost ? [] : list.map(p => p.name)
-          }
-        }));
-      });
-      ch.subscribe();
-      return ch;
+          setArenaStates(prev => ({
+            ...prev,
+            [arena.id]: {
+              count: effectiveCount,
+              rawCount: list.length,
+              isBattling,
+              isGhost,
+              ghostReason: allResult ? '已結算釋出' : (isStaleWaiting ? '超過5分鐘無活動' : null),
+              hostName: host && !isGhost ? host.name : '',
+              playerNames: isGhost ? [] : list.map(p => p.name)
+            }
+          }));
+        });
+        ch.subscribe();
+        probeChannels.push(ch);
+      } catch (e) {}
     });
+
+    const cleanupProbes = () => {
+      probeChannels.forEach(ch => {
+        if (ch && ch !== channelRef.current) {
+          try {
+            const all = supabase.getChannels();
+            const idx = all.indexOf(ch);
+            if (idx !== -1) all.splice(idx, 1);
+            if (ch.untrack) ch.untrack();
+            supabase.removeChannel(ch);
+            if (typeof ch.teardown === 'function') ch.teardown();
+          } catch (e) {}
+        }
+      });
+    };
 
     const timer = setTimeout(() => {
       if (!isCancelled) {
-        probeChannels.forEach(ch => {
-          try {
-            if (ch.untrack) ch.untrack();
-            supabase.removeChannel(ch);
-          } catch (e) {}
-        });
+        cleanupProbes();
         setIsProbing(false);
       }
     }, 1500);
@@ -492,15 +524,10 @@ export const BattleGame = ({
     return () => {
       isCancelled = true;
       clearTimeout(timer);
-      probeChannels.forEach(ch => {
-        try {
-          if (ch.untrack) ch.untrack();
-          supabase.removeChannel(ch);
-        } catch (e) {}
-      });
+      cleanupProbes();
       setIsProbing(false);
     };
-  }, [view, probeCounter]);
+  }, [view, probeCounter, syncEvictChannel]);
 
   // 退出對戰清理
   const handleLeaveRoom = () => {
@@ -510,10 +537,15 @@ export const BattleGame = ({
 
     if (channelRef.current) {
       try {
-        if (channelRef.current.untrack) channelRef.current.untrack();
-        supabase.removeChannel(channelRef.current);
+        const ch = channelRef.current;
+        channelRef.current = null;
+        const all = supabase.getChannels();
+        const idx = all.indexOf(ch);
+        if (idx !== -1) all.splice(idx, 1);
+        if (ch.untrack) ch.untrack();
+        supabase.removeChannel(ch);
+        if (typeof ch.teardown === 'function') ch.teardown();
       } catch (e) {}
-      channelRef.current = null;
     }
     setIsHost(false);
     setIsConnecting(null);
@@ -551,28 +583,12 @@ export const BattleGame = ({
       return;
     }
 
-    // 若為幽靈房，主動先向該頻道發送 reset 指令清除殘留幽靈 presence
-    if (cur?.isGhost) {
-      try {
-        const cleanupCh = supabase.channel(`battle-${arena.id}`);
-        cleanupCh.subscribe(async (status) => {
-          if (status === 'SUBSCRIBED') {
-            await cleanupCh.send({
-              type: 'broadcast',
-              event: 'admin_force_reset',
-              payload: { reason: 'stale_ghost_override', timestamp: Date.now() }
-            });
-            supabase.removeChannel(cleanupCh);
-          }
-        });
-      } catch (e) {}
-    }
-
+    const wasGhost = Boolean(cur?.isGhost);
     localStorage.setItem('wutai_player_name', cleanName);
     setSelectedArena(arena);
     setIsHost(true);
     battleUnitsRef.current = settings.selectedUnits;
-    connectToArenaChannel(arena, true);
+    connectToArenaChannel(arena, true, wasGhost);
   };
 
   // 加入指定擂台 (成員：無須選取範圍或模式，依先後順序加入，額滿 4 人防護)
@@ -785,33 +801,29 @@ export const BattleGame = ({
     raidMissStreakRef.current = nextStreak;
 
     // 扣分機制：每次扣 10 + streak，最低不低於 0 分
-    setMyScore(s => {
-      const nextScore = Math.max(0, s - penalty);
-      broadcastMyStats({ score: nextScore });
-      return nextScore;
-    });
+    const nextScore = Math.max(0, scoreRef.current - penalty);
+    scoreRef.current = nextScore;
+    setMyScore(nextScore);
+    broadcastMyStats({ score: nextScore });
 
     // 致命機制：若為連續 5 顆未理會之烈焰大隕石 (isMega)，優先由地球防護罩抵擋，無防護罩才扣心！
     if (isMega) {
       soundEngine.wrong();
       if (shieldsRef.current > 0) {
-        setMyShields(curr => {
-          const nextShields = Math.max(0, curr - 1);
-          shieldsRef.current = nextShields;
-          broadcastMyStats({ shields: nextShields });
-          return nextShields;
-        });
-        showNotice(`🛡️ 地球防護罩發動！成功吸收毀滅烈焰隕石致命傷害（剩餘 ${shieldsRef.current - 1} 層）！扣除 ${penalty} 分。`, 'warning');
+        const nextShields = Math.max(0, shieldsRef.current - 1);
+        shieldsRef.current = nextShields;
+        setMyShields(nextShields);
+        broadcastMyStats({ shields: nextShields });
+        showNotice(`🛡️ 地球防護罩發動！成功吸收毀滅烈焰隕石致命傷害（剩餘 ${nextShields} 層）！扣除 ${penalty} 分。`, 'warning');
       } else {
         showNotice(`💥 毀滅烈焰隕石撞地！扣除 ${penalty} 分並扣除 1 顆愛心💔！`, 'danger');
-        setMyLives(prev => {
-          const nextLives = Math.max(0, prev - 1);
-          broadcastMyStats({ lives: nextLives });
-          if (nextLives <= 0) {
-            handlePlayerDead();
-          }
-          return nextLives;
-        });
+        const nextLives = Math.max(0, livesRef.current - 1);
+        livesRef.current = nextLives;
+        setMyLives(nextLives);
+        broadcastMyStats({ lives: nextLives });
+        if (nextLives <= 0) {
+          handlePlayerDead();
+        }
       }
     } else {
       showNotice(`💥 突襲隕石撞地！扣除 ${penalty} 分（連續未防禦 ${nextStreak} 顆）！`, 'danger');
@@ -886,7 +898,7 @@ export const BattleGame = ({
   }, [calculateLeaderboard, playerName]);
 
   // 連接至特定擂台頻道 (即時連線、滿員防爆、房主繼承與競態仲裁)
-  const connectToArenaChannel = (arena, hostFlag) => {
+  const connectToArenaChannel = (arena, hostFlag, wasGhost = false) => {
     setErrorMsg('');
     setIsConnecting(arena.id);
 
@@ -900,16 +912,24 @@ export const BattleGame = ({
     setRaidMissStreak(0);
     raidMissStreakRef.current = 0;
     setMyScore(0);
+    scoreRef.current = 0;
     setMyLives(3);
+    livesRef.current = 3;
     setMyShields(0);
     shieldsRef.current = 0;
     lastShieldMilestoneRef.current = 0;
     setMyCombo(0);
+    comboRef.current = 0;
     setHorizonOffset(0);
+    horizonRef.current = 0;
     setIsDead(false);
+    isDeadRef.current = false;
     setHideDeadModal(false);
 
     const channelName = `battle-${arena.id}`;
+    // 關鍵防護：在建立連線前，同步清除任何同名殘留探測頻道，杜絕 cannot add presence callbacks after subscribe 崩潰
+    syncEvictChannel(channelName);
+
     const channel = supabase.channel(channelName, {
       config: { presence: { key: myDeviceIdRef.current } }
     });
@@ -917,218 +937,244 @@ export const BattleGame = ({
     const myJoinTimestamp = Date.now();
     myJoinTimestampRef.current = myJoinTimestamp;
 
-    channel
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        const activeList = Object.values(state).flat();
-        setPlayers(prev => {
-          // 合併既有戰鬥數據，保留實時分數與血量
-          const merged = activeList.map(item => {
-            const existing = prev.find(p => p.deviceId === item.deviceId);
-            return existing ? { ...item, ...existing, name: item.name, isHost: item.isHost } : item;
+    try {
+      channel
+        .on('presence', { event: 'sync' }, () => {
+          const state = channel.presenceState();
+          const activeList = Object.values(state).flat();
+          setPlayers(prev => {
+            // 合併既有戰鬥數據，保留實時分數與血量
+            const merged = activeList.map(item => {
+              const existing = prev.find(p => p.deviceId === item.deviceId);
+              return existing ? { ...item, ...existing, name: item.name, isHost: item.isHost } : item;
+            });
+            return merged;
           });
-          return merged;
-        });
 
-        // 1. 激戰中防插隊判定 (僅防範外部中途插隊，絕不踢除本房成員)
-        if (viewRef.current === 'menu') {
-          const isBattlingNow = activeList.some(p => p.status === 'battling' && p.deviceId !== myDeviceIdRef.current);
-          if (isBattlingNow) {
-            setErrorMsg(`【${arena.name}】正在激烈決戰中 (已鎖定)，請選擇其他擂台或稍後再戰！`);
+          // 1. 激戰中防插隊判定 (僅防範外部中途插隊，絕不踢除本房成員)
+          if (viewRef.current === 'menu') {
+            const isBattlingNow = activeList.some(p => p.status === 'battling' && p.deviceId !== myDeviceIdRef.current);
+            if (isBattlingNow) {
+              setErrorMsg(`【${arena.name}】正在激烈決戰中 (已鎖定)，請選擇其他擂台或稍後再戰！`);
+              handleLeaveRoom();
+              return;
+            }
+          }
+
+          // 2. 超員即時退出判定 (全校每房最多 4 人)
+          if (activeList.length > 4) {
+            setErrorMsg(`【${arena.name}】已滿員 (4/4 人)！請選擇其他擂台或先挑戰單人模式。`);
             handleLeaveRoom();
             return;
           }
-        }
 
-        // 2. 超員即時退出判定 (全校每房最多 4 人)
-        if (activeList.length > 4) {
-          setErrorMsg(`【${arena.name}】已滿員 (4/4 人)！請選擇其他擂台或先挑戰單人模式。`);
+          // 3. 雙房主競態仲裁 (Deterministic Tie-Breaker)
+          const hosts = activeList.filter(p => p.isHost);
+          if (hosts.length > 1) {
+            hosts.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0) || a.deviceId.localeCompare(b.deviceId));
+            const trueHost = hosts[0];
+            if (myDeviceIdRef.current !== trueHost.deviceId) {
+              setIsHost(false);
+              channel.track({
+                deviceId: myDeviceIdRef.current,
+                name: playerName.trim(),
+                isHost: false,
+                status: 'waiting',
+                isDead: false,
+                lives: 3,
+                score: 0,
+                joinedAt: myJoinTimestamp
+              });
+              setErrorMsg(`同學 ${trueHost.name} 搶先開立，已為您自動轉為加入挑戰！`);
+            }
+          }
+
+          // 4. 房主繼承機制 (Host Migration)：若房主離開，最早加入之存活成員接管
+          const hasHost = activeList.some(p => p.isHost);
+          if (!hasHost && activeList.length > 0) {
+            const aliveCandidates = activeList.filter(p => !p.isDead);
+            const pool = aliveCandidates.length > 0 ? aliveCandidates : activeList;
+            pool.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0) || a.deviceId.localeCompare(b.deviceId));
+            const successor = pool[0];
+
+            if (successor && successor.deviceId === myDeviceIdRef.current) {
+              setIsHost(true);
+              channel.track({
+                ...successor,
+                deviceId: myDeviceIdRef.current,
+                name: playerName.trim(),
+                isHost: true
+              });
+              showNotice('👑 原房主已離線，你已自動接任為新房主！', 'warning');
+            }
+          }
+
+          // 5. 存活人數即時判定 (支援 2 人、3 人、4 人對決結算與中途全員離線處理)
+          if (viewRef.current === 'playing') {
+            const alive = activeList.filter(p => !p.isDead && p.status !== 'result');
+            // 若全房只剩 1 人，且該人正是自己（所有對手皆斷線或關閉分頁）
+            if (activeList.length === 1 && activeList[0].deviceId === myDeviceIdRef.current) {
+              showNotice('🏆 所有對手均已離線，判定您奪得本場擂台勝利！', 'success');
+              setTimeout(() => {
+                triggerGameOver(activeList);
+              }, 800);
+            } else if (activeList.length >= 1 && alive.length <= 1) {
+              setTimeout(() => {
+                triggerGameOver(activeList);
+              }, 600);
+            }
+          }
+        })
+        .on('broadcast', { event: 'room-timeout' }, () => {
+          soundEngine.wrong();
           handleLeaveRoom();
-          return;
-        }
-
-        // 3. 雙房主競態仲裁 (Deterministic Tie-Breaker)
-        const hosts = activeList.filter(p => p.isHost);
-        if (hosts.length > 1) {
-          hosts.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0) || a.deviceId.localeCompare(b.deviceId));
-          const trueHost = hosts[0];
-          if (myDeviceIdRef.current !== trueHost.deviceId) {
-            setIsHost(false);
+          setErrorMsg('⏰ 該擂台在大廳等待超過 5 分鐘無操作，房間已自動解散釋出。');
+        })
+        .on('broadcast', { event: 'admin_force_reset' }, ({ payload }) => {
+          if (payload?.senderId && payload.senderId === myDeviceIdRef.current) return;
+          soundEngine.wrong();
+          handleLeaveRoom();
+          setErrorMsg('⚠️ 此擂台已由教師後台強制重置並釋放。');
+        })
+        .on('broadcast', { event: 'kick-player' }, ({ payload }) => {
+          if (payload?.targetDeviceId === myDeviceIdRef.current) {
+            soundEngine.wrong();
+            handleLeaveRoom();
+            setErrorMsg('您已被房主移出該擂台房間。');
+          } else if (payload?.targetDeviceId) {
+            setPlayers(prev => prev.filter(p => p.deviceId !== payload.targetDeviceId));
+          }
+        })
+        .on('broadcast', { event: 'mode-change' }, ({ payload }) => {
+          if (payload?.gameMode) {
+            setGameMode(payload.gameMode);
+            showNotice(`房主已切換對決模式為：${payload.gameMode === 'meteor' ? '☄️ 星空防衛戰' : '🃏 星際記憶翻牌'}`, 'info');
+          }
+        })
+        .on('broadcast', { event: 'game-start' }, ({ payload }) => {
+          if (payload?.selectedUnits && payload.selectedUnits.length > 0) {
+            battleUnitsRef.current = payload.selectedUnits;
+          }
+          if (payload?.gameMode) {
+            setGameMode(payload.gameMode);
+          }
+          // 同步更新本機成員狀態為 battling
+          try {
             channel.track({
               deviceId: myDeviceIdRef.current,
               name: playerName.trim(),
               isHost: false,
+              status: 'battling',
+              isDead: false,
+              lives: 3,
+              score: 0,
+              joinedAt: myJoinTimestampRef.current
+            });
+          } catch (e) {}
+          startGame();
+        })
+        .on('broadcast', { event: 'meteor-raid' }, ({ payload }) => {
+          // 收到來自對手的突襲赤紅隕石
+          if (payload.attackerId !== myDeviceIdRef.current && !isDeadRef.current) {
+            soundEngine.wrong();
+
+            const currentStreak = raidMissStreakRef.current;
+            const isMega = currentStreak >= 5;
+
+            if (isMega) {
+              showNotice(`🚨 致命警告！來自【${payload.attackerName}】的毀滅烈焰空襲！墜地將扣心！`, 'danger');
+            } else {
+              showNotice(`⚠️ 來自【${payload.attackerName}】的突襲空襲！速點 3 下防衛！`, 'warning');
+            }
+
+            if (raidQueueRef.current.length < 15) {
+              raidQueueRef.current.push({
+                id: payload.raidId || Math.random(),
+                attackerName: payload.attackerName
+              });
+            }
+            processNextRaid();
+          }
+        })
+        .on('broadcast', { event: 'gravity-shift' }, ({ payload }) => {
+          // 受到敵方 5 連擊重力壓制：地平線防線上升 2%
+          if (payload.attackerId !== myDeviceIdRef.current && !isDeadRef.current) {
+            soundEngine.wrong();
+            const nextHorizon = Math.min(30, horizonRef.current + 2);
+            horizonRef.current = nextHorizon;
+            setHorizonOffset(nextHorizon);
+            broadcastMyStats({ horizonOffset: nextHorizon });
+            showNotice(`🌌 受到【${payload.attackerName}】重力壓制！防線上升 2%！`, 'warning');
+          }
+        })
+        .on('broadcast', { event: 'player-stats' }, ({ payload }) => {
+          // 更新其他玩家即時戰況
+          setPlayers(prev =>
+            prev.map(p => (p.deviceId === payload.deviceId ? { ...p, ...payload } : p))
+          );
+        })
+        .on('broadcast', { event: 'player-dead' }, ({ payload }) => {
+          // 標記該玩家陣亡
+          setPlayers(prev => {
+            const updated = prev.map(p =>
+              p.deviceId === payload.deviceId ? { ...p, ...payload, isDead: true, lives: 0 } : p
+            );
+
+            // 檢查是否只剩 <= 1 位存活者 (提早結束結算判定)
+            const alive = updated.filter(p => !p.isDead);
+            if (updated.length >= 2 && alive.length <= 1) {
+              setTimeout(() => {
+                triggerGameOver(updated);
+              }, 600);
+            }
+
+            return updated;
+          });
+        })
+        .on('broadcast', { event: 'game-over' }, ({ payload }) => {
+          // 收到全房結束結算指令
+          if (payload?.leaderboard) {
+            setFinalLeaderboard(payload.leaderboard);
+            setWinnerName(payload.winnerName || '比賽結束');
+            setView('result');
+            soundEngine.win();
+          }
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            if (wasGhost) {
+              try {
+                await channel.send({
+                  type: 'broadcast',
+                  event: 'admin_force_reset',
+                  payload: { reason: 'stale_ghost_override', senderId: myDeviceIdRef.current, timestamp: Date.now() }
+                });
+              } catch (e) {}
+            }
+            await channel.track({
+              deviceId: myDeviceIdRef.current,
+              name: playerName.trim(),
+              isHost: hostFlag,
               status: 'waiting',
               isDead: false,
               lives: 3,
               score: 0,
               joinedAt: myJoinTimestamp
             });
-            setErrorMsg(`同學 ${trueHost.name} 搶先開立，已為您自動轉為加入挑戰！`);
+            setIsConnecting(null);
+            setView('lobby');
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            setIsConnecting(null);
+            setErrorMsg('連線異常，請檢查網路或稍後重試。');
           }
-        }
-
-        // 4. 房主繼承機制 (Host Migration)：若房主離開，最早加入之存活成員接管
-        const hasHost = activeList.some(p => p.isHost);
-        if (!hasHost && activeList.length > 0) {
-          const aliveCandidates = activeList.filter(p => !p.isDead);
-          const pool = aliveCandidates.length > 0 ? aliveCandidates : activeList;
-          pool.sort((a, b) => (a.joinedAt || 0) - (b.joinedAt || 0) || a.deviceId.localeCompare(b.deviceId));
-          const successor = pool[0];
-
-          if (successor && successor.deviceId === myDeviceIdRef.current) {
-            setIsHost(true);
-            channel.track({
-              ...successor,
-              deviceId: myDeviceIdRef.current,
-              name: playerName.trim(),
-              isHost: true
-            });
-            showNotice('👑 原房主已離線，你已自動接任為新房主！', 'warning');
-          }
-        }
-
-        // 5. 存活人數即時判定 (支援 2 人、3 人、4 人對決結算與中途全員離線處理)
-        if (viewRef.current === 'playing') {
-          const alive = activeList.filter(p => !p.isDead && p.status !== 'result');
-          // 若全房只剩 1 人，且該人正是自己（所有對手皆斷線或關閉分頁）
-          if (activeList.length === 1 && activeList[0].deviceId === myDeviceIdRef.current) {
-            showNotice('🏆 所有對手均已離線，判定您奪得本場擂台勝利！', 'success');
-            setTimeout(() => {
-              triggerGameOver(activeList);
-            }, 800);
-          } else if (activeList.length >= 1 && alive.length <= 1) {
-            setTimeout(() => {
-              triggerGameOver(activeList);
-            }, 600);
-          }
-        }
-      })
-      .on('broadcast', { event: 'room-timeout' }, () => {
-        soundEngine.wrong();
-        handleLeaveRoom();
-        setErrorMsg('⏰ 該擂台在大廳等待超過 5 分鐘無操作，房間已自動解散釋出。');
-      })
-      .on('broadcast', { event: 'admin_force_reset' }, () => {
-        soundEngine.wrong();
-        handleLeaveRoom();
-        setErrorMsg('⚠️ 此擂台已由教師後台強制重置並釋放。');
-      })
-      .on('broadcast', { event: 'kick-player' }, ({ payload }) => {
-        if (payload?.targetDeviceId === myDeviceIdRef.current) {
-          soundEngine.wrong();
-          handleLeaveRoom();
-          setErrorMsg('您已被房主移出該擂台房間。');
-        } else if (payload?.targetDeviceId) {
-          setPlayers(prev => prev.filter(p => p.deviceId !== payload.targetDeviceId));
-        }
-      })
-      .on('broadcast', { event: 'mode-change' }, ({ payload }) => {
-        if (payload?.gameMode) {
-          setGameMode(payload.gameMode);
-          showNotice(`房主已切換對決模式為：${payload.gameMode === 'meteor' ? '☄️ 星空防衛戰' : '🃏 星際記憶翻牌'}`, 'info');
-        }
-      })
-      .on('broadcast', { event: 'game-start' }, ({ payload }) => {
-        if (payload?.selectedUnits && payload.selectedUnits.length > 0) {
-          battleUnitsRef.current = payload.selectedUnits;
-        }
-        if (payload?.gameMode) {
-          setGameMode(payload.gameMode);
-        }
-        startGame();
-      })
-      .on('broadcast', { event: 'meteor-raid' }, ({ payload }) => {
-        // 收到來自對手的突襲赤紅隕石
-        if (payload.attackerId !== myDeviceIdRef.current && !isDeadRef.current) {
-          soundEngine.wrong();
-
-          const currentStreak = raidMissStreakRef.current;
-          const isMega = currentStreak >= 5;
-
-          if (isMega) {
-            showNotice(`🚨 致命警告！來自【${payload.attackerName}】的毀滅烈焰空襲！墜地將扣心！`, 'danger');
-          } else {
-            showNotice(`⚠️ 來自【${payload.attackerName}】的突襲空襲！速點 3 下防衛！`, 'warning');
-          }
-
-          // 待掉落待命佇列：保留所有同學送來的隕石，依序排隊下墜，畫面永遠維持最多單顆
-          // 保證多人同時達到 5 連擊時，互射的隕石 100% 完整排隊，絕不遺漏任何同學的心意
-          if (raidQueueRef.current.length < 15) {
-            raidQueueRef.current.push({
-              id: payload.raidId || Math.random(),
-              attackerName: payload.attackerName
-            });
-          }
-          processNextRaid();
-        }
-      })
-      .on('broadcast', { event: 'gravity-shift' }, ({ payload }) => {
-        // 受到敵方 5 連擊重力壓制：地平線防線上升 2%
-        if (payload.attackerId !== myDeviceIdRef.current && !isDeadRef.current) {
-          soundEngine.wrong();
-          setHorizonOffset(h => {
-            const next = Math.min(30, h + 2);
-            broadcastMyStats({ horizonOffset: next });
-            return next;
-          });
-          showNotice(`🌌 受到【${payload.attackerName}】重力壓制！防線上升 2%！`, 'warning');
-        }
-      })
-      .on('broadcast', { event: 'player-stats' }, ({ payload }) => {
-        // 更新其他玩家即時戰況
-        setPlayers(prev =>
-          prev.map(p => (p.deviceId === payload.deviceId ? { ...p, ...payload } : p))
-        );
-      })
-      .on('broadcast', { event: 'player-dead' }, ({ payload }) => {
-        // 標記該玩家陣亡
-        setPlayers(prev => {
-          const updated = prev.map(p =>
-            p.deviceId === payload.deviceId ? { ...p, ...payload, isDead: true, lives: 0 } : p
-          );
-
-          // 檢查是否只剩 <= 1 位存活者 (提早結束結算判定)
-          const alive = updated.filter(p => !p.isDead);
-          if (updated.length >= 2 && alive.length <= 1) {
-            setTimeout(() => {
-              triggerGameOver(updated);
-            }, 600);
-          }
-
-          return updated;
         });
-      })
-      .on('broadcast', { event: 'game-over' }, ({ payload }) => {
-        // 收到全房結束結算指令
-        if (payload?.leaderboard) {
-          setFinalLeaderboard(payload.leaderboard);
-          setWinnerName(payload.winnerName || '比賽結束');
-          setView('result');
-          soundEngine.win();
-        }
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.track({
-            deviceId: myDeviceIdRef.current,
-            name: playerName.trim(),
-            isHost: hostFlag,
-            status: 'waiting',
-            isDead: false,
-            lives: 3,
-            score: 0,
-            joinedAt: myJoinTimestamp
-          });
-          setIsConnecting(null);
-          setView('lobby');
-        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          setIsConnecting(null);
-          setErrorMsg('連線異常，請檢查網路或稍後重試。');
-        }
-      });
 
-    channelRef.current = channel;
+      channelRef.current = channel;
+    } catch (err) {
+      console.error('Arena channel connection error:', err);
+      setIsConnecting(null);
+      setErrorMsg('進入擂台時發生連線異常，請再點一次重試。');
+    }
   };
 
   // 房主啟動遊戲並廣播 (鎖定房間)
@@ -1162,18 +1208,49 @@ export const BattleGame = ({
     }
   };
 
+  // 取得安全非空對戰單字池
+  const getBattleWordPool = useCallback(() => {
+    const units = battleUnitsRef.current || [];
+    const isAlpha = units.includes('abc');
+    let pool = isAlpha
+      ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c => ({
+          id: `abc-${c}`,
+          en: c,
+          zh: `字母 ${c}`,
+          isAlphabet: true
+        }))
+      : words.filter(w => units.includes(`${w.book}-${w.lesson}`));
+    if (!pool || pool.length === 0) {
+      pool = words && words.length > 0
+        ? words
+        : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c => ({
+            id: `abc-${c}`,
+            en: c,
+            zh: `字母 ${c}`,
+            isAlphabet: true
+          }));
+    }
+    return pool;
+  }, [words]);
+
   // ── 開始戰鬥 (Playing Mode Initialization) ──
   const startGame = () => {
     setView('playing');
     setMyLives(3);
+    livesRef.current = 3;
     setMyShields(0);
     shieldsRef.current = 0;
     lastShieldMilestoneRef.current = 0;
     setMyScore(0);
+    scoreRef.current = 0;
     setMyMeteorsDestroyed(0);
+    destroyedRef.current = 0;
     setMyCombo(0);
+    comboRef.current = 0;
     setHorizonOffset(0);
+    horizonRef.current = 0;
     setIsDead(false);
+    isDeadRef.current = false;
     setHideDeadModal(false);
     setActiveRaid(null);
     raidQueueRef.current = [];
@@ -1186,23 +1263,14 @@ export const BattleGame = ({
     enterFullscreen();
 
     // 準備單字題庫
-    const units = battleUnitsRef.current;
-    const isAlpha = units.includes('abc');
-    let pool = isAlpha
-      ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c => ({
-          id: `abc-${c}`,
-          en: c,
-          zh: `字母 ${c}`,
-          isAlphabet: true
-        }))
-      : words.filter(w => units.includes(`${w.book}-${w.lesson}`));
-    if (pool.length === 0) pool = words;
-
+    const pool = getBattleWordPool();
     const shuffled = [...pool].sort(() => 0.5 - Math.random());
     setWordQueue(shuffled);
     const firstWord = shuffled[0];
-    updateOptionsFor(firstWord, pool);
-    spawnMeteor(firstWord, 0);
+    if (firstWord) {
+      updateOptionsFor(firstWord, pool);
+      spawnMeteor(firstWord, 0);
+    }
   };
 
   // 產生 4 誘答選項
@@ -1279,30 +1347,28 @@ export const BattleGame = ({
     soundEngine.wrong();
     setIsExploding(true);
     setMyCombo(0); // 自己題目的隕石若墜地或答錯，連擊必須歸零重算！
+    comboRef.current = 0;
 
     // 檢查是否有地球防護罩承受撞擊 (每50分獲得1層)
     if (shieldsRef.current > 0) {
-      setMyShields(curr => {
-        const nextShields = Math.max(0, curr - 1);
-        shieldsRef.current = nextShields;
-        broadcastMyStats({ shields: nextShields, combo: 0 });
-        return nextShields;
-      });
-      showNotice(`🛡️ 地球防護罩承受了隕石撞擊（剩餘 ${shieldsRef.current - 1} 層）！愛心無損，但連擊重新計算。`, 'warning');
+      const nextShields = Math.max(0, shieldsRef.current - 1);
+      shieldsRef.current = nextShields;
+      setMyShields(nextShields);
+      broadcastMyStats({ shields: nextShields, combo: 0 });
+      showNotice(`🛡️ 地球防護罩承受了隕石撞擊（剩餘 ${nextShields} 層）！愛心無損，但連擊重新計算。`, 'warning');
       setTimeout(() => nextTurn(destroyedRef.current), 800);
       return;
     }
 
-    setMyLives(prev => {
-      const next = Math.max(0, prev - 1);
-      broadcastMyStats({ lives: next, combo: 0 });
-      if (next <= 0) {
-        handlePlayerDead();
-      } else {
-        setTimeout(() => nextTurn(destroyedRef.current), 800);
-      }
-      return next;
-    });
+    const nextLives = Math.max(0, livesRef.current - 1);
+    livesRef.current = nextLives;
+    setMyLives(nextLives);
+    broadcastMyStats({ lives: nextLives, combo: 0 });
+    if (nextLives <= 0) {
+      handlePlayerDead();
+    } else {
+      setTimeout(() => nextTurn(destroyedRef.current), 800);
+    }
   };
 
   // 點擊選項答題
@@ -1325,6 +1391,10 @@ export const BattleGame = ({
       const nextDestroyed = destroyedRef.current + 1;
       const nextCombo = comboRef.current + 1;
 
+      scoreRef.current = nextScore;
+      destroyedRef.current = nextDestroyed;
+      comboRef.current = nextCombo;
+
       setMyScore(nextScore);
       setMyMeteorsDestroyed(nextDestroyed);
       setMyCombo(nextCombo);
@@ -1334,14 +1404,12 @@ export const BattleGame = ({
       if (nextScore >= milestone) {
         const gained = Math.floor((nextScore - lastShieldMilestoneRef.current) / 50);
         lastShieldMilestoneRef.current += gained * 50;
-        setMyShields(curr => {
-          const nextShields = curr + gained;
-          shieldsRef.current = nextShields;
-          broadcastMyStats({ shields: nextShields });
-          soundEngine.powerUp();
-          showNotice(`🛡️ 地球能量達到 ${lastShieldMilestoneRef.current} 分！生成第 ${nextShields} 層白色呼吸防護罩！`, 'success');
-          return nextShields;
-        });
+        const nextShields = shieldsRef.current + gained;
+        shieldsRef.current = nextShields;
+        setMyShields(nextShields);
+        broadcastMyStats({ shields: nextShields });
+        soundEngine.powerUp?.();
+        showNotice(`🛡️ 地球能量達到 ${lastShieldMilestoneRef.current} 分！生成第 ${nextShields} 層白色呼吸防護罩！`, 'success');
       }
 
       if (nextCombo >= 2) soundEngine.combo(nextCombo);
@@ -1371,6 +1439,7 @@ export const BattleGame = ({
         soundEngine.combo(5);
         // 降低自身地平線 10% (爭取更多緩衝時間)
         updatedHorizon = Math.max(-30, horizonRef.current - 10);
+        horizonRef.current = updatedHorizon;
         setHorizonOffset(updatedHorizon);
 
         showNotice('🌌 5連擊重力壓制！自身防線下調10%，對手防線上升2%！', 'success');
@@ -1419,21 +1488,24 @@ export const BattleGame = ({
 
   // 下一顆題目單字
   const nextTurn = (currentCount) => {
-    const units = battleUnitsRef.current;
-    let pool = words.filter(w => units.includes(`${w.book}-${w.lesson}`));
-    if (pool.length === 0) pool = words;
+    const pool = getBattleWordPool();
+    setWordQueue(prevQueue => {
+      const newQueue = [...prevQueue];
+      newQueue.shift();
 
-    const newQueue = [...wordQueue];
-    newQueue.shift();
+      if (newQueue.length === 0) {
+        newQueue.push(...[...pool].sort(() => 0.5 - Math.random()));
+      }
 
-    if (newQueue.length === 0) {
-      newQueue.push(...[...pool].sort(() => 0.5 - Math.random()));
-    }
-
-    setWordQueue(newQueue);
-    const nextWord = newQueue[0];
-    updateOptionsFor(nextWord, pool);
-    spawnMeteor(nextWord, currentCount);
+      const nextWord = newQueue[0];
+      if (nextWord) {
+        setTimeout(() => {
+          updateOptionsFor(nextWord, pool);
+          spawnMeteor(nextWord, currentCount);
+        }, 0);
+      }
+      return newQueue;
+    });
   };
 
   // 攔截 UFO 彩蛋處理 (+5分 + 當前連擊加成)
@@ -1442,11 +1514,10 @@ export const BattleGame = ({
     const ufoBonus = Math.max(0, comboRef.current - 1);
     const total = 5 + ufoBonus;
 
-    setMyScore(s => {
-      const next = s + total;
-      broadcastMyStats({ score: next });
-      return next;
-    });
+    const nextScore = scoreRef.current + total;
+    scoreRef.current = nextScore;
+    setMyScore(nextScore);
+    broadcastMyStats({ score: nextScore });
 
     showNotice(`🛸 攔截外星幽浮！+5 ${ufoBonus > 0 ? `(+${ufoBonus} 連擊加成)` : ''}`, 'success');
   };
@@ -1802,19 +1873,97 @@ export const BattleGame = ({
               </p>
             </div>
           )}
+
+          {/* 自訂單元範圍彈窗 */}
+          {isScopeModalOpen && (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
+              <div className="w-full max-w-lg rounded-3xl bg-slate-900 border-2 border-indigo-500/50 p-5 shadow-2xl text-left">
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+                  <h3 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                    <span>🎯 選擇對戰出題冊次與單元</span>
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setIsScopeModalOpen(false)}
+                    className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {BATTLE_BOOKS.map(b => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      onClick={() => setModalBookId(b.id)}
+                      className={`px-2.5 py-1 rounded-xl text-xs font-black border cursor-pointer transition-all ${
+                        modalBookId === b.id
+                          ? 'bg-amber-500 text-stone-950 border-amber-300'
+                          : 'bg-slate-800 text-slate-300 border-white/10 hover:bg-slate-700'
+                      }`}
+                    >
+                      {b.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-slate-400">勾選欲納入對戰的單元：</span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectAllUnitsOfBook(modalBookId)}
+                    className="text-xs font-black text-amber-400 hover:text-amber-300 cursor-pointer"
+                  >
+                    全選本冊單元
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-52 overflow-y-auto p-1 mb-4">
+                  {getLessonsForBook(modalBookId).map(lesson => {
+                    const checked = selectedUnits.includes(lesson.id);
+                    return (
+                      <button
+                        key={lesson.id}
+                        type="button"
+                        onClick={() => handleToggleUnitInModal(lesson.id)}
+                        className={`p-2.5 rounded-xl border text-xs font-black flex items-center justify-between cursor-pointer transition-all ${
+                          checked
+                            ? 'bg-indigo-600/40 border-indigo-400 text-white'
+                            : 'bg-slate-950/70 border-white/10 text-slate-400 hover:border-white/30'
+                        }`}
+                      >
+                        <span className="truncate">{lesson.label}</span>
+                        {checked && <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <Button3D
+                  variant="emerald"
+                  size="md"
+                  onClick={() => setIsScopeModalOpen(false)}
+                  className="w-full"
+                >
+                  確認範圍 ({currentScopeInfo.count} 個單字)
+                </Button3D>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
-  // ── 畫面 2：擂台等待備戰室 (Waiting Room - 100dvh iPad 單頁全景自適應) ──
+  // ── 畫面 2：擂台等待備戰室 (Waiting Room - 移除重複頂列，避免與全域導覽列重疊) ──
   if (view === 'lobby') {
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
       window.location.origin + '?join=' + selectedArena.code
     )}`;
 
     return (
-      <div onClick={recordLobbyActivity} className="fixed inset-0 w-full h-[100dvh] flex flex-col justify-between p-2.5 sm:p-3 md:p-4 text-white font-sans overflow-hidden select-none z-10 animate-fadeIn">
+      <div onClick={recordLobbyActivity} className="relative min-h-[calc(100vh-64px)] w-full flex flex-col justify-between p-2.5 sm:p-4 text-white font-sans overflow-x-hidden select-none z-10 animate-fadeIn">
         {/* 電影級多人連線競技場海報背景 */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
           <img
@@ -1825,41 +1974,8 @@ export const BattleGame = ({
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-purple-950/40 to-slate-950/95 backdrop-blur-[1px]" />
         </div>
 
-        {/* ── 頂部 HUD 狀態導覽列 ── */}
-        <header className="relative z-20 w-full max-w-5xl mx-auto flex items-center justify-between pb-2 border-b border-white/15 shrink-0">
-          <div className="flex items-center gap-2">
-            <span className={`text-xs sm:text-sm font-black px-3 py-1 rounded-full ${
-              selectedArena.color === 'rose'
-                ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                : selectedArena.color === 'emerald'
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                : 'bg-blue-500/20 text-blue-300 border border-blue-500/40'
-            }`}>
-              {selectedArena.name} 備戰中
-            </span>
-            <span className="font-mono text-xs font-black text-slate-300 bg-slate-900/80 px-2.5 py-0.5 rounded-lg border border-white/10">
-              {players.length}/4 人
-            </span>
-            <span className="font-mono text-[11px] font-bold text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded-lg border border-amber-500/40 hidden sm:inline-flex items-center gap-1 shadow-sm">
-              ⏳ 閒置釋出：{Math.floor(lobbyIdleCountdown / 60)}:{String(lobbyIdleCountdown % 60).padStart(2, '0')}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-purple-300 font-bold hidden sm:inline">
-              PIN 碼直接加入：
-            </span>
-            <span className="font-mono text-base sm:text-lg font-black text-pink-300 tracking-wider bg-purple-950/80 px-2.5 py-0.5 rounded-lg border border-purple-400/50">
-              {selectedArena.code}
-            </span>
-            <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} className="ml-2">
-              退出擂台
-            </Button3D>
-          </div>
-        </header>
-
-        {/* ── 核心雙欄舞台 (iPad 768px+ 與電腦水平並排，手機垂直並排，嚴格自適應 100dvh) ── */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto flex-1 min-h-0 my-2 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 items-stretch overflow-hidden">
+        {/* ── 核心雙欄舞台 (已移除與頂列重疊的重複備戰頂欄，直接由主視窗呈現 PIN 碼與 QR Code) ── */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto flex-1 min-h-0 my-1 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 items-stretch">
           
           {/* ════ 左欄：PIN 碼、QR 碼與對決模式指定 ════ */}
           <div className="p-3 sm:p-4 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-purple-500/40 shadow-xl flex flex-col justify-between overflow-y-auto">
@@ -1867,7 +1983,18 @@ export const BattleGame = ({
             {/* 上半部：大型 PIN 與掃碼區 */}
             <div className="flex items-center justify-between gap-3 bg-purple-950/40 p-2.5 sm:p-3 rounded-2xl border border-purple-500/30">
               <div className="flex flex-col text-left">
-                <span className="text-[11px] font-bold text-purple-300">房間 PIN 碼</span>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className={`text-[11px] font-black px-2 py-0.5 rounded-full ${
+                    selectedArena.color === 'rose'
+                      ? 'bg-rose-500/25 text-rose-300 border border-rose-500/40'
+                      : selectedArena.color === 'emerald'
+                      ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-500/40'
+                      : 'bg-blue-500/25 text-blue-300 border border-blue-500/40'
+                  }`}>
+                    {selectedArena.name}
+                  </span>
+                  <span className="text-[11px] font-bold text-purple-300">房間 PIN 碼</span>
+                </div>
                 <span className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-200 via-purple-100 to-cyan-200 font-mono tracking-widest my-0.5 drop-shadow">
                   {selectedArena.code}
                 </span>
@@ -1961,14 +2088,21 @@ export const BattleGame = ({
           {/* ════ 右欄：參賽成員名單與開戰按鈕 ════ */}
           <div className="p-3 sm:p-4 rounded-3xl bg-slate-950/85 backdrop-blur-md border-2 border-purple-500/40 shadow-xl flex flex-col justify-between overflow-hidden">
             
-            {/* 上半部：成員清單 */}
+            {/* 上半部：成員清單與退出擂台鈕 */}
             <div className="flex-1 min-h-0 flex flex-col justify-start">
-              <div className="flex items-center justify-between text-xs font-black text-slate-300 pb-1.5 mb-1.5 border-b border-white/10 shrink-0">
-                <span className="flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5 text-purple-400" />
-                  <span>參賽成員 ({players.length}/4 人)</span>
-                </span>
-                <span className="text-[11px] text-slate-400">至少 2 人即可開戰</span>
+              <div className="flex items-center justify-between text-xs font-black text-slate-300 pb-2 mb-2 border-b border-white/10 shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3.5 h-3.5 text-purple-400" />
+                    <span>參賽成員 ({players.length}/4 人)</span>
+                  </span>
+                  <span className="font-mono text-[10px] font-bold text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded-lg border border-amber-500/40">
+                    ⏳ {Math.floor(lobbyIdleCountdown / 60)}:{String(lobbyIdleCountdown % 60).padStart(2, '0')}
+                  </span>
+                </div>
+                <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} className="!py-1 !px-2.5 !text-xs">
+                  退出擂台
+                </Button3D>
               </div>
 
               {/* 成員列表 (緊湊且不被切掉) */}

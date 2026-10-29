@@ -310,12 +310,12 @@ export const MeteorGame = ({
       if (nextScore >= milestone) {
         const gained = Math.floor((nextScore - lastShieldMilestoneRef.current) / 50);
         lastShieldMilestoneRef.current += gained * 50;
-        setShields(curr => {
-          const next = curr + gained;
-          shieldsRef.current = next;
-          soundEngine.powerUp();
-          return next;
-        });
+        const nextShields = shieldsRef.current + gained;
+        shieldsRef.current = nextShields;
+        setTimeout(() => {
+          setShields(nextShields);
+          soundEngine.powerUp?.();
+        }, 0);
       }
       return nextScore;
     });
@@ -354,12 +354,12 @@ export const MeteorGame = ({
         if (nextScore >= milestone) {
           const gained = Math.floor((nextScore - lastShieldMilestoneRef.current) / 50);
           lastShieldMilestoneRef.current += gained * 50;
-          setShields(curr => {
-            const next = curr + gained;
-            shieldsRef.current = next;
-            soundEngine.powerUp();
-            return next;
-          });
+          const nextShields = shieldsRef.current + gained;
+          shieldsRef.current = nextShields;
+          setTimeout(() => {
+            setShields(nextShields);
+            soundEngine.powerUp?.();
+          }, 0);
         }
         return nextScore;
       });
