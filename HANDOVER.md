@@ -1,9 +1,10 @@
 # 霧臺國小英語自主學習宇宙 (Wutai Vocab Adventure 2.0)
 ## 專案對話交接文檔 (Project Handover Document)
 
-> **產生時間**：2026-10-26
-> **當前分支**：`dev` (準備合併至 `main` 並部署至正式線上環境)
+> **產生時間**：2026-10-29
+> **當前分支**：`dev` (與 `main` 完全同步並已部署至正式線上環境)
 > **線上正式環境網址**：https://wutaivocab.pages.dev
+> **Supabase 管理帳號**：`liguyt@wutps.ptc.edu.tw`（Project ID: `fqkdkmcqjswufzbvkram`，後台：https://supabase.com/dashboard/project/fqkdkmcqjswufzbvkram）
 
 ---
 
@@ -11,7 +12,15 @@
 
 若你是接收此專案的新對話 AI 助理，請依下列步驟快速就位：
 1. **工作目錄**：`c:\Users\user\.gemini\antigravity\scratch\wutaivocab`
-2. **驗證指令**：任何代碼變更後，請一律執行 `npm run verify`（包含 ESLint 靜態語法檢查、Vite 生產級打包構建、以及無頭 Chrome 深度自動化測試 14 款遊戲全冊各身分）。
+2. **強制自動化防回歸驗證指令（杜絕改 A 壞 B、免除人工重測）**：
+   任何代碼變更後、推送前，**必須執行 `npm run build` 與 `node scripts/smoke_test.mjs`**（或 `npm run verify`），通過全部 6 大階段：
+   - **[0/6] 靜態契約與防回歸語法檢查**：自動驗證全專案 `src/` 所有 `soundEngine.xxx()` 呼叫均存在於 `src/services/audio.js`，且無 `if (queue.length === 0) return onBack()` 閃退寫法。
+   - **[1/6] 排行榜視圖與年級篩選互動**。
+   - **[2/6] 首頁大廳與教師管理後台**。
+   - **[3/6] 鷹眼神探跨年級驗證**（一年級字母托盤、三年級紙雕雙圖、六年級第 7 冊）。
+   - **[4/6] 雙語聽說實驗室口說錄音與評分卡回饋**。
+   - **[5/6] 核心遊戲真實互動模擬**（大廳選冊 → 點擊「開始遊戲」不閃退、貪食蛇方向鍵/十字鍵實際轉彎、多人對戰開立擂台零頻道衝突與頂列不重疊、各遊戲實際點擊選項）。
+   - **[6/6] 全站 14 款遊戲 × 4 身分（共 56 組矩陣）全量啟動零崩潰**。
 3. **Git 推播流程 (僅限 origin，嚴禁日常推送 vercel)**：
    > [!WARNING]
    > **【嚴禁日常推送 Vercel】** 因 Vercel Hobby 方案每日/每月構建配額極易耗盡，日常開發中**一律只推送到 `origin` 遠端**！正式生產環境以 Cloudflare Pages (`wutaivocab.pages.dev` 綁定 `origin/main`) 為準。除非有重大版本發布且經 Mark 特別指示，否則**切勿執行 `git push vercel`**。
@@ -448,6 +457,39 @@
 * **幾何防重疊驗證**：全部 28 對兩兩目標外緣淨間距 $\ge 15.7$px（skirt 與 jeans 間隙 15.7px，suit 與 skirt 間隙 19.6px），**總重疊數：0**。
 * **動態圖層羽化補丁 (Method A)**：由 `scripts/build_b8_s2_assets.cjs` 產生 24 款透明 PNG 羽化補丁，基準靜態背景 100% 絕對一致。同時輸出純淨校準對比圖（`book8_scene2_clean_boxes.jpg`）。
 * **全系列 1~8 冊第 2 場景完成度**：**16 / 40 場景全面就緒（達成率 40%）**！
+
+#### 28. 鷹眼神探 第 2 冊場景 2【舊金山漁人碼頭 Pier 39 工藝廣場】8 大核心單字判定框微調與 Variant A/B/C 全量實裝 (`spotterData.js`, `public/assets/spotter/patches/b2_s2/*`)
+* **單字配置（100% 符合 Here We Go 第 2 冊五級金字塔）**：
+  * Unit 4 六大職業：`cook` (廚師), `driver` (司機), `doctor` (醫生), `nurse` (護理師), `teacher` (教師), `student` (學生)。
+  * Unit 2 動作字：`draw` (寫生畫畫) ＋ Phonics 具象字：`pot` (料理鍋)。
+* **Mark 老師驗收微調定位（防止干擾誘使誤點、零重疊完美包覆）**：
+  1. `draw` (`x: 118, y: 545, rx: 58, ry: 68`)：縮小至畫布本身，嚴格避開右側椅子上的調色盤，防止椅子調色盤變化誘使學生誤點。
+  2. `cook` (`x: 274, y: 495, rx: 46, ry: 155`)：窄身貼合廚師白帽頂至鞋底，完全不包到左側椅子與調色盤，亦不與桌上鍋子重疊。
+  3. `pot` (`x: 382, y: 516, rx: 46, ry: 44`)：往右上移至木桌料理鍋正中央，完整包覆鍋蓋、雙耳與鍋底，與廚師分離零沾染。
+  4. `doctor` (`x: 562, y: 462, rx: 58, ry: 118`)：往右上移完美包覆小熊醫生全身。
+  5. `nurse` (`x: 702, y: 448, rx: 54, ry: 122`)：往右上移完美包覆兔子護理師長耳至全身。
+  6. `driver` (`x: 915, y: 245, rx: 60, ry: 72`)：移至噹噹車司機本體、位於教師正上方處，與教師保留安全垂直間距。
+  7. `teacher` (`x: 928, y: 458, rx: 72, ry: 112`)：壓低高度留空間給上方司機，並往右擴張把導覽旗尾完整包覆。
+  8. `student` (`x: 804, y: 528, rx: 48, ry: 95`)：位於小學生本體，與左方護士、右方教師完全零交疊。
+* **24 款局部羽化透明補丁**：嚴格遵循鐵律 6，以 Base 圖為唯一底板合成 `book2_scene2_diff.jpg`、`_varb.jpg`、`_varc.jpg`（非目標背景 100% 像素鎖定不變）。
+
+#### 29. 學生金幣與探索積分雲端雙軌漫遊、歷史資料復原與學期制封存 (`src/services/supabase.js`, `src/utils/semesterHelper.js`, `src/context/StudentContext.jsx`)
+* **Supabase 專案歸屬確認**：位於 `liguyt@wutps.ptc.edu.tw` 帳號下（Project ID: `fqkdkmcqjswufzbvkram`）。
+* **雙軌雲端漫遊與無衝突聯集融合（Union Merge）**：
+  * 系統同時讀寫 `student_profiles` 資料表與 `leaderboard (mode = 'profile-sync')` 備份軌。
+  * 在 `fetchStudentProfile`、`fetchMonopolyLeaderboard` 與 `fetchQuestPointsLeaderboard` 中自動執行聯集融合，對同一學號永遠取最高金幣 (`Math.max`) 與最高探索積分，兩軌自動互補、絕不打架。
+* **整學期保留與跨學期榮譽封存（`semesterHelper.js`）**：
+  * 台灣學期制自動判定（2/1～7/31 為下學期如 `114-2`；8/1～隔年1/31 為上學期如 `115-1`）。
+  * 同一學期內無論版本怎麼更新或換平板登入，金幣與積分 100% 保留；跨學期時自動將舊學期紀錄封存至 `semester_history`。
+
+#### 30. 貪食蛇操控、經典測驗開局、多人連線對戰修復與 6 階段全自動防回歸守門員 (`scripts/smoke_test.mjs`)
+* **貪食蛇轉向修復 (`SnakeGame.jsx`)**：在 `advanceOneStep` 內從 `inputQueueRef.current.shift()` 取出方向指令，打通鍵盤 (`Arrow*`/`WASD`)、虛擬十字鍵 (`onPointerDown` + `onClick`) 與滑動手勢。
+* **經典選擇題與拼字開局防閃退 (`StandardQuiz.jsx`, `SpellingGame.jsx`)**：移除 `useEffect` 中在 `queue` 尚未非同步初始化完成時誤觸發的 `if (queue.length === 0) return onBack()`。
+* **多人連線對戰與隕石防衛修復 (`BattleGame.jsx`, `MeteorGame.jsx`, `audio.js`)**：
+  * 新增 `syncEvictChannel` 在加入/開立擂台前同步清除同名探測頻道，根治 `cannot add 'presence' callbacks after 'subscribe()'` 崩潰。
+  * 在 `SoundEngine` (`src/services/audio.js`) 補齊 `powerUp()` / `powerup()` 合成音效，並將副作用移出 React `setState` updater，根治滿 50 分獲得地球護盾時的崩潰。
+  * 移除對戰備戰室冗餘的「備戰中 / PIN 碼直接加入」頂部列並改為 `relative` 容器，徹底消除與全局 `<Header>` 重疊問題。
+* **6 階段全自動防回歸測試套件 (`scripts/smoke_test.mjs`)**：加入靜態契約檢查與真實點擊/按鍵/開房 E2E 模擬，確保往後任何修改皆自動測遍 14 款遊戲。
 
 
 ---

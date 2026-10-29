@@ -2,7 +2,7 @@
 
 > **專案代號**：WutaiVocab (霧台國小英語宇宙)  
 > **專案負責人**：Mark 老師  
-> **當前狀態**：第 2 冊圖 1（南法普羅旺斯莊園）完美驗收上線；密室逃脫秒數 Bug 徹底根治；準備無縫換檔至新對話以節約 Token。
+> **當前狀態**：第 2 冊圖 1（南法普羅旺斯莊園）與第 2 冊圖 2（舊金山漁人碼頭 Pier 39 工藝廣場，含 8 大單字精準判定框與 Variant A/B/C 24 張透明羽化補丁）均已 100% 驗收上線；學生金幣雙軌雲端漫遊 (`student_profiles` + `profile-sync`) 與 6 階段全自動防回歸測試 (`scripts/smoke_test.mjs`) 全面就緒。
 
 ---
 
@@ -177,26 +177,21 @@
 在新對話建立後，請將以下框內文字複製貼給 AI，即可立刻無縫銜接：
 
 ```markdown
-你好！我們正在進行 WutaiVocab 的《鷹眼神探 • 找不同》全冊大改版工程。
-我是專案負責人 Mark 老師，請先詳細研讀本地專案交接手冊：
-1. `docs/SPOTTER_DESIGN_AND_HANDOVER_MANUAL.md`（找不同核心心法、鐵律0~6、動態出題架構與各冊規範）
-2. `docs/ECOSYSTEM_OVERVIEW.md`（三大專案架構與安全規範）
+你好！我是屏東縣霧臺國小數位學習平台（WutaiVocab）的開發負責人 Mark 老師。
+請先詳細研讀本地專案交接手冊：
+1. `HANDOVER.md`（全專案最新里程碑、Supabase 架構與 6 階段全自動防回歸測試規範）
+2. `docs/SPOTTER_DESIGN_AND_HANDOVER_MANUAL.md`（找不同核心心法、鐵律 0~6、動態出題架構與各冊規範）
+3. `docs/ECOSYSTEM_OVERVIEW.md`（三大專案架構、Supabase 帳號 `liguyt@wutps.ptc.edu.tw` 與安全規範）
 
-【目前狀態摘要】：
-1. 第 2 冊圖 1（南法普羅旺斯莊園）已驗收上線（commit: c574140）。
-2. 第 2 冊圖 2（舊金山漁人碼頭 Pier 39 工藝廣場）**Base 基準圖已正式拍板驗收並部署至正式線上環境**（commit: 5ef0af8，`https://wutaivocab.pages.dev/assets/spotter/book2_scene2_base.jpg` HTTP 200 OK）。
-3. 8 大目標單字（100% 依循五級金字塔）：`cook` (廚師), `pot` (料理鍋), `doctor` (醫生), `nurse` (護理師), `teacher` (教師), `student` (學生), `driver` (司機), `draw` (寫生畫畫)。
-4. **Mark 專屬後門入口**：遊戲中在「**放大鏡圖標 (Magnifier)**」連續快速點擊 5 下（或網址帶 `?view=spotter-test`），可隨時直達 `SpotterTestWorkbench` 檢視 Base 與 ABCD 變異、切片對比與判定框。
-5. Git main 與 dev 分支均處於乾淨且最新狀態。
+【目前狀態摘要（截至 2026-10-29）】：
+1. 第 2 冊圖 1（南法普羅旺斯莊園）與第 2 冊圖 2（舊金山漁人碼頭 Pier 39 工藝廣場）的 Base 圖、8 大目標單字精準判定框（`cook`, `pot`, `doctor`, `nurse`, `teacher`, `student`, `driver`, `draw`）及 Variant A/B/C 共 24 張透明羽化 PNG 補丁均已 100% 完成並驗收上線！
+2. **Mark 專屬後門入口**：遊戲中在「**放大鏡圖標 (Magnifier)**」連續快速點擊 5 下（或網址帶 `?view=spotter-test`），可直達 `SpotterTestWorkbench` 檢視 Base 與 ABC 變異、切片對比與判定框。
+3. **學生雲端雙軌漫遊與整學期資料保留**：Supabase 位於帳號 `liguyt@wutps.ptc.edu.tw` 下（Project ID: `fqkdkmcqjswufzbvkram`），`student_profiles` 與 `leaderboard (mode = 'profile-sync')` 雙軌聯集融合（Union Merge 取最高值），金幣與探索積分保留一整個學期，嚴禁任何更新覆蓋或清空學生資料。
+4. **強制自動化防回歸驗證（杜絕改 A 壞 B、免除人工重測）**：任何程式碼修改後、推送前，必須執行 `npm run build` 與 `node scripts/smoke_test.mjs`，通過全部 6 階段檢測（靜態契約檢查、排行榜、大廳、找不同、口說、核心遊戲真實互動點擊/按鍵/開房模擬、14 款遊戲 × 4 身分全量矩陣）。
 
-【極重要出圖鐵律（鐵律 6）— 嚴禁全景重畫變異圖！】：
-- 找不同遊戲底層採用「8 取 5」動態插槽引擎（Dynamic Slot Engine）：
-  - 每一局從 8 個單字隨機選 5 個作為相異點，每個相異點隨機抽取 A/B/C 三種變異之一。
-  - 左圖渲染 Base 圖；右圖**底層同樣是 100% 相同的 Base 圖**，僅在被抽中的 5 個單字槽位覆蓋透明羽化 PNG 補丁！
-  - **未被抽中的另外 3 個單字與所有背景元素，左右兩圖完全一模一樣（100% 像素完全相同）！**
-- **嚴禁行為**：絕對不可要求生圖模型畫整張新的變異全景圖（背景會跑位、海水建築橋樑都會變）！
-- **正確做法**：基於 Base 圖，以 8 個單字各自製作/繪製 Variant A, B, C 的形態，切出 24 個透明羽化 PNG 補丁（存於 `public/assets/spotter/patches/b2_s2/`），再由 Sharp 腳本以 Base 為底蓋上補丁合成純淨的 `diff.jpg`、`diff_varb.jpg`、`diff_varc.jpg`。
+【極重要出圖鐵律（鐵律 5 & 6）】：
+- 先文字討論拍板，後調用生圖工具，絕不未溝通就擅自出圖消耗 Token。
+- 變異圖（Variant A/B/C）採用「8 取 5」動態插槽引擎，嚴禁全景重新畫變異圖！必須以 Base 圖為唯一底板，針對 8 個目標槽位產製透明羽化 PNG 補丁，再由 Sharp 合成 Diff 圖，確保未選中的 3 個單字與背景左右兩圖 100% 像素完全相同。
 
-【本次新對話的首要任務】：
-請依據上述鐵律，與我討論並完成【第 2 冊圖 2】8 個單字的 Variant A/B/C 變異形態規劃與透明補丁產製，嚴格禁止未溝通就擅自調用生圖工具消耗 Token！
+請確認你已閱讀上述手冊並完整理解所有架構與防回歸鐵律，準備好後請告訴我！
 ```
