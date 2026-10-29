@@ -567,7 +567,7 @@ export const SnakeGame = ({
             score={score}
             time={survivalTime}
             totalCount={Math.max(Math.floor(score / 10), completedWordsRef.current.size, 1)}
-            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', ')}
+            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : (settings?.selectedUnits || []).slice(0, 3).join(', ')}
             reviewWords={Array.from(completedWordsRef.current.values()).map(w => ({
               ...w,
               isMistake: mistakeIdsRef.current.has(w.id)

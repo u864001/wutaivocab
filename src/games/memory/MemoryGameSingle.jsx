@@ -183,7 +183,7 @@ export const MemoryGameSingle = ({
 
   // 初始化牌組 (8組中英單字 16張 + 4張功能卡牌 = 20張)
   const handleStart = () => {
-    let pool = words.filter(w => settings.selectedUnits.includes(`${w.book}-${w.lesson}`));
+    let pool = words.filter(w => (settings?.selectedUnits || []).includes(`${w.book}-${w.lesson}`));
     if (pool.length < 8) pool = words;
     const selected = [...pool].sort(() => 0.5 - Math.random()).slice(0, 8);
     selectedWordsRef.current = selected;
@@ -462,7 +462,7 @@ export const MemoryGameSingle = ({
             score={score}
             time={elapsedTime}
             totalCount={selectedWordsRef.current.length || 8}
-            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', ')}
+            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : (settings?.selectedUnits || []).slice(0, 3).join(', ')}
             reviewWords={selectedWordsRef.current.map(w => ({
               id: w.id,
               en: w.en,

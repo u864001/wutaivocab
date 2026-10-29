@@ -98,7 +98,7 @@ export const SpellingGame = ({
       filtered = words;
     }
     let shuffled = [...filtered].sort(() => 0.5 - Math.random());
-    if (settings.count !== 'all') {
+    if (settings?.count && settings.count !== 'all') {
       shuffled = shuffled.slice(0, parseInt(settings.count, 10));
     }
     setQueue(shuffled);
@@ -368,7 +368,7 @@ export const SpellingGame = ({
             score={firstAttemptPerfect}
             time={elapsedTime}
             totalCount={totalWords}
-            rangeText={isAlphabetMode ? 'Aa 字母連續序列拼裝' : (qualifyingBook ? `第 ${qualifyingBook} 冊` : settings.selectedUnits.slice(0, 3).join(', '))}
+            rangeText={isAlphabetMode ? 'Aa 字母連續序列拼裝' : (qualifyingBook ? `第 ${qualifyingBook} 冊` : (settings?.selectedUnits || []).slice(0, 3).join(', '))}
             reviewWords={Array.from(historyWordsRef.current.values()).map(w => ({
               ...w,
               isMistake: mistakeIdsRef.current.has(w.id)

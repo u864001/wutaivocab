@@ -473,7 +473,7 @@ export const MeteorGame = ({
             score={score}
             time={survivalTime}
             totalCount={totalCountForAccuracy}
-            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : (subMode === 'abc' ? '英文字母 ABC' : settings.selectedUnits.slice(0, 3).join(', '))}
+            rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : (subMode === 'abc' ? '英文字母 ABC' : (settings?.selectedUnits || []).slice(0, 3).join(', '))}
             reviewWords={Array.from(encounteredWordsRef.current.values()).map(w => ({
               ...w,
               isMistake: mistakeIdsRef.current.has(w.id)

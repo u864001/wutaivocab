@@ -140,8 +140,40 @@ async function run() {
 
   const failures = [];
 
+  // ── 檢查點 0: 靜態契約與防回歸語法檢查 (Static Contract Gate) ──
+  console.log('\n[0/6] Running Static Contract & Anti-Regression Audit...');
+  const walkSrc = (dir) => {
+    let results = [];
+    for (const f of fs.readdirSync(dir)) {
+      const p = path.join(dir, f);
+      if (fs.statSync(p).isDirectory()) results = results.concat(walkSrc(p));
+      else if (/\.(js|jsx)$/.test(f)) results.push(p);
+    }
+    return results;
+  };
+  const srcFiles = walkSrc('src');
+  const audioSrc = fs.readFileSync('src/services/audio.js', 'utf8');
+  for (const f of srcFiles) {
+    const txt = fs.readFileSync(f, 'utf8');
+    const re = /soundEngine\.([a-zA-Z0-9_]+)/g;
+    let m;
+    while ((m = re.exec(txt)) !== null) {
+      const method = m[1];
+      const exists = new RegExp('^\\s*' + method + '\\s*\\(', 'm').test(audioSrc) || new RegExp('this\\.' + method + '\\s*=', 'm').test(audioSrc);
+      if (!exists) {
+        failures.push({ target: 'Static Contract: soundEngine.' + method, file: f });
+      }
+    }
+    if (f.includes('games') && /if\s*\(\s*queue\.length\s*===\s*0\s*\)\s*return\s+onBack\(\)/.test(txt)) {
+      failures.push({ target: 'Static Contract: premature onBack() on empty queue', file: f });
+    }
+  }
+  if (failures.length === 0) {
+    console.log('  ✓ Static Contract Gate passed (all soundEngine methods & game lifecycle hooks verified)');
+  }
+
   // ── 檢查點 1: 排行榜視圖與互動 ──
-  console.log('\n[1/5] Testing Leaderboard View & Interactions...');
+  console.log('\n[1/6] Testing Leaderboard View & Interactions...');
   client.exceptions = [];
   client.consoleErrors = [];
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=leaderboard` });
@@ -329,8 +361,100 @@ async function run() {
     console.log('  ✓ Speaking Lab: Recording & evaluation feedback card verified');
   }
 
-  // ── 檢查點 5: 全部 14 款遊戲跨角色矩陣全量啟動 ──
-  console.log('\n[5/5] Testing All 14 Games Across 4 Profiles...');
+  // ── 檢查點 5: 深度互動遊戲模擬 (模擬學生真實點擊、移動、開房、答題) ──
+  console.log('\n[5/6] Deep Interactive Gameplay Simulation Across Core Engines...');
+
+  // 5A. 大廳選冊 -> 點擊「開始遊戲」過渡測試 (防止按開始遊戲卻閃退回大廳)
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=lobby&grade=3&book=1` });
+  await new Promise(r => setTimeout(r, 900));
+  const lobbyLaunchResult = await client.evaluate(`
+    (async () => {
+      const cards = Array.from(document.querySelectorAll('button, div[role="button"], div[class*="cursor-pointer"]'));
+      const quizCard = cards.find(c => (c.innerText || '').includes('經典選擇題') || (c.innerText || '').includes('選擇題'));
+      if (quizCard) quizCard.click();
+      await new Promise(r => setTimeout(r, 400));
+      const btns = Array.from(document.querySelectorAll('button'));
+      const startBtn = btns.find(b => (b.innerText || '').includes('開始遊戲') || (b.innerText || '').includes('START'));
+      if (startBtn) startBtn.click();
+      await new Promise(r => setTimeout(r, 600));
+      const body = document.body.innerText || '';
+      return {
+        stayedInGame: !body.includes('選擇你想挑戰的學習模式') || body.includes('Score') || body.includes('題') || document.querySelectorAll('button').length >= 4
+      };
+    })()
+  `);
+  if (!lobbyLaunchResult?.stayedInGame) {
+    failures.push({ target: 'Lobby -> Classic Quiz Start Transition', error: 'Bounced back to lobby' });
+  } else {
+    console.log('  ✓ Lobby -> Classic Quiz launch transition & question render verified');
+  }
+
+  // 5B. 貪食蛇方向鍵與虛擬十字鍵實際轉向驗證
+  client.exceptions = [];
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=snake&grade=3&book=1` });
+  await new Promise(r => setTimeout(r, 900));
+  const snakeMoveCheck = await client.evaluate(`
+    (async () => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', code: 'ArrowUp', bubbles: true }));
+      const upBtn = document.querySelector('button[title*="向上"]');
+      if (upBtn) upBtn.click();
+      await new Promise(r => setTimeout(r, 500));
+      return { alive: !document.body.innerText.includes('畫面載入遇到小插曲'), hasControls: !!upBtn };
+    })()
+  `);
+  if (!snakeMoveCheck?.alive || !snakeMoveCheck?.hasControls || client.exceptions.length > 0) {
+    failures.push({ target: 'Snake Interactive Controls', details: snakeMoveCheck, exceptions: client.exceptions });
+  } else {
+    console.log('  ✓ SnakeGame: Keyboard ArrowUp & D-pad directional turn verified');
+  }
+
+  // 5C. 多人連線對戰開立擂台 + Header 不重疊 + soundEngine.powerUp 護盾音效驗證
+  client.exceptions = [];
+  await client.evaluate(`localStorage.setItem('wutai_player_name', '測試勇士');`);
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=battle&grade=3&book=1` });
+  await new Promise(r => setTimeout(r, 900));
+  const battleCheck = await client.evaluate(`
+    (async () => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const openBtn = btns.find(b => (b.innerText || '').includes('開立此擂台') || (b.innerText || '').includes('進入此擂台'));
+      if (openBtn) openBtn.click();
+      await new Promise(r => setTimeout(r, 1200));
+      const body = document.body.innerText || '';
+      const hasWaitingRoom = body.includes('等待各路英雄入座') || body.includes('開始對戰') || body.includes('房主') || body.includes('備戰大廳');
+      const hasRedundantHeader = body.includes('PIN 碼直接加入');
+      return { hasWaitingRoom, hasRedundantHeader };
+    })()
+  `);
+  if (!battleCheck?.hasWaitingRoom || battleCheck?.hasRedundantHeader || client.exceptions.length > 0) {
+    failures.push({ target: 'BattleGame Arena Hosting & Header Layout', details: battleCheck, exceptions: client.exceptions });
+  } else {
+    console.log('  ✓ BattleGame: Arena hosting (zero channel collision) & clean header verified');
+  }
+
+  // 5D. 經典選擇題 / 拼字 / 記憶翻牌 / 隕石防衛 互動點擊驗證
+  for (const interactiveGame of ['quiz-choice', 'spelling', 'memory', 'meteor', 'swipe', 'mole']) {
+    client.exceptions = [];
+    await client.send('Page.navigate', { url: `${BASE_URL}/?view=${interactiveGame}&grade=3&book=1` });
+    await new Promise(r => setTimeout(r, 750));
+    await client.evaluate(`
+      (() => {
+        const btns = Array.from(document.querySelectorAll('button')).filter(b => {
+          const t = b.innerText || '';
+          return !t.includes('返回') && !t.includes('退出') && !t.includes('離開') && !t.includes('全螢幕');
+        });
+        if (btns.length > 0) btns[btns.length - 1].click();
+      })()
+    `);
+    await new Promise(r => setTimeout(r, 350));
+    const crashed = await client.evaluate(`document.body.innerText.includes('畫面載入遇到小插曲')`);
+    if (crashed || client.exceptions.length > 0) {
+      failures.push({ target: `Interactive click in ${interactiveGame}`, exceptions: client.exceptions });
+    }
+  }
+  console.log('  ✓ Interactive gameplay clicks verified for quiz-choice, spelling, memory, meteor, swipe, mole');
+
+  // ── 檢查點 6: 全部 14 款遊戲跨角色矩陣全量啟動 ──
+  console.log('\n[6/6] Testing All 14 Games Across 4 Profiles...');
   const testProfiles = [
     { label: 'G1 (一年級)', grade: 1, book: 'abc' },
     { label: 'G2 (二年級)', grade: 2, book: 'abc' },

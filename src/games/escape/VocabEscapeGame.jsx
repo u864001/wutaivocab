@@ -105,7 +105,7 @@ export const VocabEscapeGame = ({
     const themeToUse = overrideThemeId || selectedThemeId;
     const campaign = generateEscapeRoomCampaign(words, {
       grade: targetGrade,
-      selectedUnits: settings.selectedUnits || [],
+      selectedUnits: settings?.selectedUnits || [],
       themeId: themeToUse
     });
 
@@ -121,7 +121,7 @@ export const VocabEscapeGame = ({
     setHintCount(2);
     setEliminatedOptions({});
     hasAddedQuestPointsRef.current = false;
-  }, [words, studentGrade, settings.selectedUnits, selectedThemeId]);
+  }, [words, studentGrade, settings?.selectedUnits, selectedThemeId]);
 
   // 切換密室風格主題
   const handleSelectTheme = (themeId) => {
