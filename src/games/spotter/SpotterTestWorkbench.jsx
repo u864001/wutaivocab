@@ -13,7 +13,7 @@ import {
 // 8 個冊次的標籤與名稱
 const BOOKS_CONFIG = [
   { id: '1', grade: '三上', title: '第 1 冊', sub: '彩虹文具 / 阿姆斯特丹果園集市' },
-  { id: '2', grade: '三下', title: '第 2 冊', sub: '陽光農莊公園 / 京都職人小鎮' },
+  { id: '2', grade: '三下', title: '第 2 冊', sub: '陽光農莊公園 / 舊金山漁人碼頭 Pier 39' },
   { id: '3', grade: '四上', title: '第 3 冊', sub: '微風氣象湖畔 / 阿爾卑斯野餐台' },
   { id: '4', grade: '四下', title: '第 4 冊', sub: '英倫時鐘家居 / 泰晤士皇家地標廣場' },
   { id: '5', grade: '五上', title: '第 5 冊', sub: '巴黎羅浮宮藝文廣場 / 蒙馬特畫家村' },
@@ -1145,7 +1145,7 @@ export const SpotterTestWorkbench = ({ onBack }) => {
                       {/* 場景 2 */}
                       <div className="p-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
                         <span className="text-slate-200 font-bold">
-                          圖 2: {scenes[1] ? scenes[1].titleZh.split('（')[0] : (b.id === '2' ? '京都花見小路與職人小鎮' : `${b.title} 場景 2`)}
+                          圖 2: {scenes[1] ? scenes[1].titleZh.split('（')[0] : (b.id === '2' ? '舊金山漁人碼頭與 Pier 39' : `${b.title} 場景 2`)}
                         </span>
                         {scenes[1] && scenes[1].status !== 'roadmap' ? (
                           <span className="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold">
