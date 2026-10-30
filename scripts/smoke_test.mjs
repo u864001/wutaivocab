@@ -183,6 +183,12 @@ async function run() {
     if (typeof q.answer !== 'number' || q.answer < 0 || q.answer >= q.options.length) {
       failures.push({ target: 'Static Contract: Invalid MCQ answer index', id: q.id });
     }
+    if (!q.section || !q.taskType || !q.difficulty || q.reviewed !== true) {
+      failures.push({ target: 'Static Contract: Missing format v2 fields', id: q.id });
+    }
+    if (q.explanation && q.explanation.includes('依據本課核心句型')) {
+      failures.push({ target: 'Static Contract: Templated explanation found', id: q.id });
+    }
   }
   for (const b of ['g1', 'g2', 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
     if (mcqBookCounts[b] < 100) {
@@ -518,10 +524,16 @@ async function run() {
   await new Promise(r => setTimeout(r, 800));
   const mcqExamCheck = await client.evaluate(`
     (async () => {
-      const startBtn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('開始檢定') || (b.innerText || '').includes('開始作答'));
+      const startBtn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('開始檢定'));
       if (!startBtn) return { ok: false, reason: 'No start button on setup view' };
       startBtn.click();
       await new Promise(r => setTimeout(r, 400));
+      // 點擊第 0 頁（本次測驗說明與配置）之「正式開始作答」進入第 1 題
+      const beginBtn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('開始作答'));
+      if (beginBtn) {
+        beginBtn.click();
+        await new Promise(r => setTimeout(r, 400));
+      }
       const body1 = document.body.innerText || '';
       const onQ1 = body1.includes('1 / 20') || body1.includes('Question 1');
       // 點選第一個選項 (A)

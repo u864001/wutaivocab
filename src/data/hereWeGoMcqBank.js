@@ -1,30 +1,196 @@
 /**
  * 課本題庫檢定館全冊百題題庫 (一年級大寫字母、二年級大小寫字母、Here We Go 1 ~ 8 冊 + 國一先修)
- * - 全部 11 冊每冊均超過 100 題（全站共 1289 題），通過 7 道自動化品質閘門驗證
- * - 一、二年級為純字母順序、填空、大小寫配對與轉換題（零單字門檻、中文題幹＋語音讀題）
- * - 三～六年級涵蓋各冊各單元之「文法選擇 (grammar)」與「依題意與情境對話選答 (dialogue)」
+ * - 全部 11 冊每冊超過 100 題（全站共 1,289 題），通過 7 道自動化品質閘門驗證
+ * - 一、二年級：純字母先後、空格填空、大小寫配對轉換（零英語單字門檻、中文題幹、語音讀題）
+ * - 三～六年級：涵蓋文法選擇 (G-MC)、情境對話選答 (G-DLG)、情境選句 (G-CTX)、字彙選擇 (V-MEAN)
+ * - 格式升級為 v2 專業測驗藍圖規範 (track, section, taskType, difficulty, reviewed, media)
  */
 
 export const HERE_WE_GO_BOOK_META = {
-  g1: { title: '一年級大寫字母檢定 (A~Z)', shortLabel: '1年級大寫', grade: 1, subtitle: '大寫字母 A~Z 前後順序、空格填空与正確排列（純字母無單字）', units: ['Unit 1 (A~G)', 'Unit 2 (H~N)', 'Unit 3 (O~T)', 'Unit 4 (U~Z)'] },
-  g2: { title: '二年級大小寫字母檢定 (Aa~Zz)', shortLabel: '2年級大小寫', grade: 2, subtitle: '大小寫配對、大轉小、小轉大與小寫字母順序填空（純字母無單字）', units: ['Unit 1 (Aa~Gg)', 'Unit 2 (Hh~Nn)', 'Unit 3 (Oo~Tt)', 'Unit 4 (Uu~Zz)'] },
-  1: { title: '第 1 冊 (Book 1)', shortLabel: '第 1 冊', grade: 3, subtitle: '打招呼、年齡、文具與顏色', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
-  2: { title: '第 2 冊 (Book 2)', shortLabel: '第 2 冊', grade: 3, subtitle: '寵物大小、能力 Can、家人與職業', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
-  3: { title: '第 3 冊 (Book 3)', shortLabel: '第 3 冊', grade: 4, subtitle: '天氣、飢渴感覺、複數食物與點餐', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
-  4: { title: '第 4 冊 (Book 4)', shortLabel: '第 4 冊', grade: 4, subtitle: '時間、現在進行式、房間與方位介系詞', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
-  5: { title: '第 5 冊 (Book 5)', shortLabel: '第 5 冊', grade: 5, subtitle: '星期、學科課程、城鎮地點與動物數量', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
-  6: { title: '第 6 冊 (Book 6)', shortLabel: '第 6 冊', grade: 5, subtitle: '身體部位疼痛、疾病症狀、三餐與所屬物 Whose', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
-  7: { title: '第 7 冊 (Book 7)', shortLabel: '第 7 冊', grade: 6, subtitle: '國家來源、交通方式、休閒活動與作息時間', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
-  8: { title: '第 8 冊 (Book 8)', shortLabel: '第 8 冊', grade: 6, subtitle: '過去式地點 Was/Were、過去動作、服飾價格與四季', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2', 'Festival'] },
-  9: { title: '國一先修 (Book 9)', shortLabel: '國一先修', grade: 6, subtitle: '不規則過去式旅遊活動、食物量詞與生日日期序數', units: ['Starter', 'Unit 1', 'Unit 2', 'Review 1', 'Unit 3', 'Unit 4', 'Review 2'] }
+  "1": {
+    "title": "第 1 冊 (Book 1)",
+    "shortLabel": "第 1 冊",
+    "grade": 3,
+    "subtitle": "打招呼、年齡、文具與顏色",
+    "units": [
+      "Starter",
+      "Unit 1",
+      "Unit 2",
+      "Review 1",
+      "Unit 3",
+      "Unit 4",
+      "Review 2",
+      "Festival"
+    ]
+  },
+  "2": {
+    "title": "第 2 冊 (Book 2)",
+    "shortLabel": "第 2 冊",
+    "grade": 3,
+    "subtitle": "寵物大小、能力 Can、家人與職業",
+    "units": [
+      "Starter",
+      "Unit 1",
+      "Unit 2",
+      "Review 1",
+      "Unit 3",
+      "Unit 4",
+      "Review 2",
+      "Festival"
+    ]
+  },
+  "3": {
+    "title": "第 3 冊 (Book 3)",
+    "shortLabel": "第 3 冊",
+    "grade": 4,
+    "subtitle": "天氣、飢渴感覺、複數食物與點餐",
+    "units": [
+      "Starter",
+      "Unit 1",
+      "Unit 2",
+      "Review 1",
+      "Unit 3",
+      "Unit 4",
+      "Review 2",
+      "Festival"
+    ]
+  },
+  "4": {
+    "title": "第 4 冊 (Book 4)",
+    "shortLabel": "第 4 冊",
+    "grade": 4,
+    "subtitle": "時間、現在進行式、房間與方位介系詞",
+    "units": [
+      "Starter",
+      "Unit 1",
+      "Unit 2",
+      "Review 1",
+      "Unit 3",
+      "Unit 4",
+      "Review 2",
+      "Festival"
+    ]
+  },
+  "5": {
+    "title": "第 5 冊 (Book 5)",
+    "shortLabel": "第 5 冊",
+    "grade": 5,
+    "subtitle": "星期、學科課程、城鎮地點與動物數量",
+    "units": [
+      "Starter",
+      "Unit 1",
+      "Unit 2",
+      "Review 1",
+      "Unit 3",
+      "Unit 4",
+      "Review 2",
+      "Festival"
+    ]
+  },
+  "6": {
+    "title": "第 6 冊 (Book 6)",
+    "shortLabel": "第 6 冊",
+    "grade": 5,
+    "subtitle": "身體部位疼痛、疾病症狀、三餐與所屬物 Whose",
+    "units": [
+      "Starter",
+      "Unit 1",
+      "Unit 2",
+      "Review 1",
+      "Unit 3",
+      "Unit 4",
+      "Review 2",
+      "Festival"
+    ]
+  },
+  "7": {
+    "title": "第 7 冊 (Book 7)",
+    "shortLabel": "第 7 冊",
+    "grade": 6,
+    "subtitle": "國家來源、交通方式、休閒活動與作息時間",
+    "units": [
+      "Starter",
+      "Unit 1",
+      "Unit 2",
+      "Review 1",
+      "Unit 3",
+      "Unit 4",
+      "Review 2",
+      "Festival"
+    ]
+  },
+  "8": {
+    "title": "第 8 冊 (Book 8)",
+    "shortLabel": "第 8 冊",
+    "grade": 6,
+    "subtitle": "過去式地點 Was/Were、過去動作、服飾價格與四季",
+    "units": [
+      "Starter",
+      "Unit 1",
+      "Unit 2",
+      "Review 1",
+      "Unit 3",
+      "Unit 4",
+      "Review 2",
+      "Festival"
+    ]
+  },
+  "9": {
+    "title": "國一先修 (Book 9)",
+    "shortLabel": "國一先修",
+    "grade": 6,
+    "subtitle": "不規則過去式旅遊活動、食物量詞與生日日期序數",
+    "units": [
+      "Starter",
+      "Unit 1",
+      "Unit 2",
+      "Review 1",
+      "Unit 3",
+      "Unit 4",
+      "Review 2"
+    ]
+  },
+  "g1": {
+    "title": "一年級大寫字母檢定 (A~Z)",
+    "shortLabel": "1年級大寫",
+    "grade": 1,
+    "subtitle": "大寫字母 A~Z 前後順序、空格填空与正確排列（純字母無單字）",
+    "units": [
+      "Unit 1 (A~G)",
+      "Unit 2 (H~N)",
+      "Unit 3 (O~T)",
+      "Unit 4 (U~Z)"
+    ]
+  },
+  "g2": {
+    "title": "二年級大小寫字母檢定 (Aa~Zz)",
+    "shortLabel": "2年級大小寫",
+    "grade": 2,
+    "subtitle": "大小寫配對、大轉小、小轉大與小寫字母順序填空（純字母無單字）",
+    "units": [
+      "Unit 1 (Aa~Gg)",
+      "Unit 2 (Hh~Nn)",
+      "Unit 3 (Oo~Tt)",
+      "Unit 4 (Uu~Zz)"
+    ]
+  }
 };
 
 export const HERE_WE_GO_MCQ_BANK = [
   {
     "id": "hwg_b1_1",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ your name?",
     "options": [
       "What's",
@@ -36,9 +202,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_2",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "What's ______ name?",
     "options": [
       "you",
@@ -50,9 +225,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_3",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hello, ______ name is Kulas.",
     "options": [
       "you",
@@ -60,13 +244,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "my"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「my」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "自我介紹姓名時使用所有格「my（我的）」；「you」為代名詞主格／受格，「I'm」為 I am 之縮寫，後方不能直接接名詞 name。"
   },
   {
     "id": "hwg_b1_4",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hi, ______ Lucas.",
     "options": [
       "you",
@@ -74,13 +267,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "my"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「I'm」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "向他人打招呼並介紹自己是 Lucas，需用主詞加 Be 動詞「I'm (I am)」；「you」為你，「my」為所有格我的。"
   },
   {
     "id": "hwg_b1_5",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My name ______ Emma.",
     "options": [
       "you",
@@ -88,13 +290,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「is」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「My name（我的名字）」為第三人稱單數事物，Be 動詞搭配使用「is」；「am」僅用於第一人稱「I」，「you」非動詞。"
   },
   {
     "id": "hwg_b1_6",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's your name? B: ______",
     "options": [
       "I'm fine.",
@@ -106,9 +317,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_7",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's your name? B: ______",
     "options": [
       "I'm Lucas.",
@@ -120,9 +340,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_8",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: My name is Emma.",
     "options": [
       "Hello, I'm Emma.",
@@ -134,9 +363,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_9",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: I'm fine.",
     "options": [
       "How are you?",
@@ -148,9 +386,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_10",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ old are you?",
     "options": [
       "How",
@@ -158,13 +405,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What's"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「How」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "詢問對方年齡固定使用疑問詞片語「How old are you?」；「What」詢問事物或名稱，不可直接搭配 old 詢問年齡。"
   },
   {
     "id": "hwg_b1_11",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ nine years old.",
     "options": [
       "I",
@@ -172,13 +428,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "You"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「I'm」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "表達自己的年齡需用完整主詞加 Be 動詞「I'm (I am) nine years old.」；單獨代名詞「I」缺少 Be 動詞，「You」為第二人稱。"
   },
   {
     "id": "hwg_b1_12",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old are you? B: ______ six.",
     "options": [
       "I",
@@ -190,9 +455,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_13",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old are you______ B: I'm seven years old.",
     "options": [
       ".",
@@ -204,9 +478,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_14",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Thank you. B: ______ welcome.",
     "options": [
       "Your",
@@ -218,9 +501,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_15",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old are you? B: ______",
     "options": [
       "I'm fine.",
@@ -232,9 +524,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_16",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old are you? B: ______",
     "options": [
       "I'm six years old.",
@@ -246,9 +547,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_17",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: I'm eight.",
     "options": [
       "What's your name?",
@@ -260,9 +570,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_18",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: You're welcome.",
     "options": [
       "Thank you.",
@@ -274,9 +593,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_19",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old are you? B: ______",
     "options": [
       "My name is Leo.",
@@ -288,9 +616,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_20",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Hello, my name is Emma. B: ______",
     "options": [
       "I'm fine.",
@@ -298,13 +635,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Hi, I'm Nina."
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Hi, I'm Nina.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "對方打招呼並自我介紹姓名時，合宜的回應也是互相問候並介紹自己「Hi, I'm Nina.」；「I'm fine.」回答身體狀況，「Thank you.」表達感謝。"
   },
   {
     "id": "hwg_b1_21",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Hi, Ryan. How old are you? B: ______",
     "options": [
       "Hi, my name is Max.",
@@ -316,9 +662,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_22",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: I'm nine years old.",
     "options": [
       "What's your name?",
@@ -330,9 +685,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_23",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's that? B: It's ______ ruler.",
     "options": [
       "am",
@@ -344,9 +708,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_24",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: It's ______ eraser.",
     "options": [
       "a",
@@ -358,9 +731,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_25",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Look! ______ is that? B: It's a book.",
     "options": [
       "How",
@@ -368,13 +750,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「What」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「It's a book.（它是一本書）」可知問句詢問眼前物品是什麼，疑問詞使用「What」；「How」問方式，「This」為代名詞不可做問句開頭疑問詞。"
   },
   {
     "id": "hwg_b1_26",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Lucas, what's this? B: ______ a marker.",
     "options": [
       "It's",
@@ -382,13 +773,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "This"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「It's」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "回答「What's this?」詢問的物品，標準代名詞答句為「It's (It is) + 物品」；「I'm」指人，「This」若單獨使用需接 is 不能直接接名詞片語。"
   },
   {
     "id": "hwg_b1_27",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ is an eraser.",
     "options": [
       "I'm",
@@ -396,13 +796,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「It」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "句中已有 Be 動詞「is」，空格只需填入事物代名詞主格「It（它）」；「It's」為 It is 之縮寫會造成動詞重複，「I'm」為第一人稱指人。"
   },
   {
     "id": "hwg_b1_28",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: ______",
     "options": [
       "I'm fine.",
@@ -410,13 +819,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm ten."
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「It's a book.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句「What's this?」詢問物品名稱，回答需用代名詞指稱物品「It's a book.」；「I'm fine.」回答近況，「I'm ten.」回答年齡。"
   },
   {
     "id": "hwg_b1_29",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's that? B: ______",
     "options": [
       "It's cool!",
@@ -424,13 +842,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm Max."
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「It's an eraser.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句「What's that?」詢問遠處物品，回答以「It's an eraser.」說明物品名稱；「It's cool!」為讚美詞，「I'm Max.」為自我介紹。"
   },
   {
     "id": "hwg_b1_30",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: It's a pencil.",
     "options": [
       "How old are you?",
@@ -438,13 +865,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What's your name?"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「What's this?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「It's a pencil.（它是一支鉛筆）」可知問句是詢問眼前物品是什麼，故選「What's this?」；「How old are you?」問年齡，「What's your name?」問姓名。"
   },
   {
     "id": "hwg_b1_31",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Thanks!",
     "options": [
       "How are you?",
@@ -452,13 +888,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Good job!"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Good job!」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "答句為「Thanks!（謝謝！）」時，代表對方給予讚美或鼓勵，故前一句選「Good job!（做得好！）」最合宜；「You're welcome.」為不用謝。"
   },
   {
     "id": "hwg_b1_32",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is it? B: ______ red.",
     "options": [
       "I",
@@ -470,9 +915,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_33",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is ______? B: It's white.",
     "options": [
       "old",
@@ -484,9 +938,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_34",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ is it? B: It's black.",
     "options": [
       "name",
@@ -494,13 +957,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "color"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「color」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「It's black.（它是黑色的）」可知問句詢問物品顏色，需搭配名詞「color」組成「What color is it?」；「name」問姓名，「that」為代名詞。"
   },
   {
     "id": "hwg_b1_35",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is it? B: It's ______.",
     "options": [
       "fine",
@@ -512,9 +984,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_36",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ color is it? B: It's yellow.",
     "options": [
       "What's",
@@ -522,13 +1003,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「What」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "詢問顏色使用「What color is it?」；「What's」為 What is 之縮寫，若放在 color 前會造成動詞重複，「How」無法直接搭配 color 詢問顏色。"
   },
   {
     "id": "hwg_b1_37",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is it? B: ______",
     "options": [
       "It's a ruler.",
@@ -540,9 +1030,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_38",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: It's yellow.",
     "options": [
       "What's your name?",
@@ -554,9 +1053,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_39",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: ______",
     "options": [
       "It's red.",
@@ -564,13 +1072,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's yellow."
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「It's a pen.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句「What's this?」詢問「這是什麼？」，回答應說明物品種類「It's a pen.（它是一支筆）」；「It's red.」與「It's yellow.」僅回答顏色未回答物品。"
   },
   {
     "id": "hwg_b1_40",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Good morning. B: ______",
     "options": [
       "Good afternoon.",
@@ -578,13 +1095,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Good morning."
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Good morning.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "早晨見面問候「Good morning.」，合宜的禮貌回應同樣是「Good morning.」；「Good afternoon.」用於下午問候。"
   },
   {
     "id": "hwg_b1_41",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's that? B: ______",
     "options": [
       "It's a pen.",
@@ -592,13 +1118,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's blue."
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「It's a pen.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句「What's that?」詢問遠處物品名稱，回答需指出物品「It's a pen.」；「It's black.」與「It's blue.」僅回答顏色。"
   },
   {
     "id": "hwg_b1_42",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is it? B: ______",
     "options": [
       "It's green.",
@@ -610,9 +1145,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_43",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: It's a book.",
     "options": [
       "What's that?",
@@ -620,13 +1164,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What's your name?"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「What's that?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「It's a book.（它是一本書）」可知問句詢問物品是什麼，故選「What's that?」；「What color is it?」詢問顏色，「What's your name?」詢問姓名。"
   },
   {
     "id": "hwg_b1_44",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: It's black.",
     "options": [
       "What color is it?",
@@ -638,9 +1191,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_45",
+    "track": "textbook",
     "book": 3,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I ______ a student.",
     "options": [
       "am",
@@ -648,13 +1210,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「am」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為第一人稱單數「I（我）」，現在式 Be 動詞固定搭配「am」；「are」用於複數或 you，「is」用於第三人稱單數。"
   },
   {
     "id": "hwg_b3_46",
+    "track": "textbook",
     "book": 3,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Zoe ______ a teacher.",
     "options": [
       "are",
@@ -663,13 +1234,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「is」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「Zoe」為第三人稱單數人名（等於 she），現在式 Be 動詞搭配「is」；「are」用於複數，「my」為所有格代名詞。"
   },
   {
     "id": "hwg_b3_47",
+    "track": "textbook",
     "book": 3,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is the tall teacher? B: She's my grandmother.",
     "options": [
       "Let",
@@ -678,13 +1258,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How"
     ],
     "answer": 2,
-    "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
+    "explanation": "由答句「She's my grandmother.（她是我的祖母）」可知問句詢問那位老師是「誰」，疑問詞使用「Who」；「What」詢問事物或職業，「How」詢問狀況。"
   },
   {
     "id": "hwg_b3_48",
+    "track": "textbook",
     "book": 3,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ your sister a nurse? B: Yes, she is.",
     "options": [
       "Am",
@@ -693,13 +1282,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Is」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「your sister」為第三人稱單數（she），形成 Be 動詞疑問句開頭需用「Is」；「Am」搭配 I，「Are」搭配 you 或複數。"
   },
   {
     "id": "hwg_b3_49",
+    "track": "textbook",
     "book": 3,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Chloe's father a doctor? B: No, ______ isn't.",
     "options": [
       "I",
@@ -708,13 +1306,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "you"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「he」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句問「Chloe's father（克蘿伊的父親）」，代名詞為男性單數「he」；否定簡答為「No, he isn't.」；「she」為女性代名詞，「I」為第一人稱。"
   },
   {
     "id": "hwg_b3_50",
+    "track": "textbook",
     "book": 3,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: ______",
     "options": [
       "It's a board game.",
@@ -723,13 +1330,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm a teacher."
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「It's a board game.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句「What's this?」詢問眼前物品，回答應用代名詞指稱事物「It's a board game.（它是桌遊）」；其他選項皆在介紹人物職業，與問句不符。"
   },
   {
     "id": "hwg_b3_51",
+    "track": "textbook",
     "book": 3,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who's she? B: ______",
     "options": [
       "My mother is tall.",
@@ -738,13 +1354,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's not a nurse."
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「She's my mother.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句「Who's she?」詢問對方的身分關係，回答以「She's my mother.（她是我的媽媽）」最符合情境；「She's a doctor.」為回答職業（What does she do?）。"
   },
   {
     "id": "hwg_b3_52",
+    "track": "textbook",
     "book": 3,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is your grandfather a cook? B: ______",
     "options": [
       "No, you're not.",
@@ -753,13 +1378,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is."
     ],
     "answer": 3,
-    "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
+    "explanation": "以「Is your grandfather a cook?」提問，主詞 your grandfather 是男性單數，肯定簡答為「Yes, he is.」；「Yes, she is.」人稱代名詞錯誤。"
   },
   {
     "id": "hwg_b3_53",
+    "track": "textbook",
     "book": 3,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: No, she's not. She's a driver.",
     "options": [
       "Is your brother a cook?",
@@ -768,13 +1402,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is your father a teacher?"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Is your sister a nurse?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「No, she's not. She's a driver.（不，她不是。她是司機。）」可知問句詢問某位女性的職業，且原問職業非 driver，故選「Is your sister a nurse?」。"
   },
   {
     "id": "hwg_b3_54",
+    "track": "textbook",
     "book": 3,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: No, I'm not. I'm a student.",
     "options": [
       "Is your mother tall?",
@@ -783,13 +1426,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are you a nurse?"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「Are you a nurse?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「No, I'm not. I'm a student.（不，我不是。我是學生。）」可知問句直接詢問你是不是某職業，以「Are you ...?」提問且原問非 student，故選「Are you a nurse?」。"
   },
   {
     "id": "hwg_b3_55",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It ______ windy.",
     "options": [
       "is",
@@ -798,13 +1450,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「is」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為非人稱代名詞「It（天氣）」，形容詞 windy 前需搭配 Be 動詞「is」；「can」為助動詞後接原形動詞，「am」僅搭配第一人稱 I。"
   },
   {
     "id": "hwg_b3_56",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ cool and rainy.",
     "options": [
       "It",
@@ -813,13 +1474,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「It's」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "形容天氣涼爽又下雨，需用完整主詞與 Be 動詞「It's (It is) cool and rainy.」；單獨「It」缺少動詞，「I'm」指人感到涼爽而非天氣。"
   },
   {
     "id": "hwg_b3_57",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ the weather?",
     "options": [
       "What",
@@ -828,13 +1498,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「How's」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "詢問天氣固定使用疑問詞片語「How's the weather?」或「What's the weather like?」；單獨「What」缺少 Be 動詞，「How」缺少 is。"
   },
   {
     "id": "hwg_b3_58",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "How's the weather ______?",
     "options": [
       "at",
@@ -847,9 +1526,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_59",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ have some fun.",
     "options": [
       "How's",
@@ -858,13 +1546,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Let's」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "提議大家一起做某事使用祈使句句型「Let's (Let us) + 原形動詞」；「Let」單獨使用需接受格，「How's」為疑問詞縮寫。"
   },
   {
     "id": "hwg_b3_60",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's sunny ______ warm.",
     "options": [
       "✕ (不需填詞)",
@@ -873,13 +1570,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「and」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "連接兩個對等的形容詞 sunny（晴朗的）與 warm（溫暖的），使用對等連接詞「and（而且／和）」；「at」為介系詞。"
   },
   {
     "id": "hwg_b3_61",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How's the weather? B: ______",
     "options": [
       "It's a cat.",
@@ -892,9 +1598,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_62",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How's the weather in Osaka? B: ______",
     "options": [
       "I have an idea.",
@@ -907,9 +1622,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_63",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Look at this kimono. B: ______",
     "options": [
       "I'm a teacher.",
@@ -918,13 +1642,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's pretty."
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「It's pretty.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "對方說「Look at this kimono.（看這件和服）」，合宜的回應為稱讚衣物「It's pretty.（它真漂亮）」；其他選項描述職業、狗或陰天，與語意不符。"
   },
   {
     "id": "hwg_b3_64",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yeah! Let's go there.",
     "options": [
       "Look at this kimono.",
@@ -933,13 +1666,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's sunny in Kyoto."
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「It's sunny in Kyoto.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「Yeah! Let's go there.（好耶！我們去那裡吧）」可知前一句提到某個地點的好天氣，故選「It's sunny in Kyoto.（京都是晴天）」最自然。"
   },
   {
     "id": "hwg_b3_65",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: It's rainy and windy here.",
     "options": [
       "How's the weather?",
@@ -952,9 +1694,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_66",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Great! It's sunny there.",
     "options": [
       "I have an idea. Let's go to Osaka.",
@@ -963,13 +1714,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Look at the pretty teacher."
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「I have an idea. Let's go to Osaka.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「Great! It's sunny there.（太棒了！那裡天氣晴朗）」可知前句提出前往該地的提議，故選「I have an idea. Let's go to Osaka.（我有個好主意，我們去大阪吧）」。"
   },
   {
     "id": "hwg_b3_67",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ am happy.",
     "options": [
       "It's",
@@ -978,13 +1738,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「I」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "句中已有 Be 動詞「am」，空格需填入第一人稱單數主詞代名詞「I」；「I'm」是 I am 之縮寫會造成動詞重複，「He's」為第三人稱且不能接 am。"
   },
   {
     "id": "hwg_b3_68",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "He ______ not angry.",
     "options": [
       "isn't",
@@ -993,13 +1762,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「is」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「He」為第三人稱單數，否定句在 not 前搭配 Be 動詞「is」形成「He is not angry.」；「isn't」若再加 not 會造成雙重否定。"
   },
   {
     "id": "hwg_b3_69",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ you hungry, Jim?",
     "options": [
       "Am",
@@ -1008,13 +1786,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「Are」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為第二人稱「you」，形成 Be 動詞疑問句開頭使用「Are」；「Is」搭配第三人稱單數，「Am」搭配第一人稱 I。"
   },
   {
     "id": "hwg_b3_70",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Caleb tired? B: No, he ______.",
     "options": [
       "is",
@@ -1023,13 +1810,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "not"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「isn't」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「Caleb」為男性單數（he），否定簡答為「No, he isn't.」；「is」用於肯定簡答，「not」不能單獨做簡答結尾。"
   },
   {
     "id": "hwg_b3_71",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Chloe, are you full? B: No, I'm ______.",
     "options": [
       "isn't",
@@ -1037,13 +1833,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "not"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「not」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句為「are you full?」，第一人稱否定簡答為「No, I'm not.」；「isn't」用於第三人稱單數，「is」為肯定用法。"
   },
   {
     "id": "hwg_b3_72",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is he thirsty? B: No, ______ not.",
     "options": [
       "she's",
@@ -1052,13 +1857,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "he"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「he's」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "以「Is he thirsty?」提問，否定答句主詞維持「he」，縮寫為「No, he's not.」；「she」人稱錯誤，單獨「he」缺少 Be 動詞。"
   },
   {
     "id": "hwg_b3_73",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you angry? B: ______",
     "options": [
       "Yes, he is.",
@@ -1067,13 +1881,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she is."
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「Yes, I am.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "以「Are you angry?」直接詢問對方，肯定回答需以第一人稱「Yes, I am.」回答；其他選項代名詞人稱不合。"
   },
   {
     "id": "hwg_b3_74",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Rex, are you full? B: ______",
     "options": [
       "Yes, I can.",
@@ -1082,13 +1905,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I'm not. I'm hungry."
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「No, I'm not. I'm hungry.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句為「are you full?（你吃飽了嗎？）」，否定回答並補充說明自己很餓，合宜句子為「No, I'm not. I'm hungry.」；「Yes, I can.」助動詞不符。"
   },
   {
     "id": "hwg_b3_75",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is he happy? B: ______",
     "options": [
       "No, he is happy.",
@@ -1097,13 +1929,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is happy."
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「Yes, he is happy.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句「Is he happy?」詢問他的心情，肯定簡答為「Yes, he is.」或完整句「Yes, he is happy.」；「Yes, she is happy.」性別人稱不符。"
   },
   {
     "id": "hwg_b3_76",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, she is very tired.",
     "options": [
       "Is she very full?",
@@ -1112,13 +1953,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is Emma tired?"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「Is Emma tired?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「Yes, she is very tired.」可知問句詢問某位女性是否很累，故選「Is Emma tired?」；Lucas 為男性，you 答句應為 I am。"
   },
   {
     "id": "hwg_b3_77",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, I'm fine.",
     "options": [
       "Are you OK?",
@@ -1127,13 +1977,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are you sad?"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Are you OK?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「Yes, I'm fine.（是的，我很好）」可知問句是關心對方狀況「Are you OK?」；「Are you full?」問飽足感，「Are you sad?」問難過。"
   },
   {
     "id": "hwg_b3_78",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, he is. He's thirsty, too.",
     "options": [
       "Is your father hungry?",
@@ -1142,13 +2001,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is your brother thirsty?"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Is your father hungry?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「Yes, he is. He's thirsty, too.（是的，他是。他也口渴。）」可知問句詢問某位男性的感受，故選「Is your father hungry?」最合宜。"
   },
   {
     "id": "hwg_b3_79",
+    "track": "textbook",
     "book": 3,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How's the weather? B: It's ______. You need an umbrella.",
     "options": [
       "rainy",
@@ -1161,9 +2029,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_80",
+    "track": "textbook",
     "book": 3,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is ______ tired? B: No, she's not. She's sad.",
     "options": [
       "Sam",
@@ -1172,13 +2049,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "your brother"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Ava」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句代名詞「she's not. She's sad.」可知問句主詞必為女性單數，選項中只有女性人名「Ava」符合；Sam、father、brother 皆為男性。"
   },
   {
     "id": "hwg_b3_81",
+    "track": "textbook",
     "book": 3,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Oh, no! It's ______ outside. B: Let's play board games at home. A: Great! Let's have fun.",
     "options": [
       "sunny",
@@ -1187,13 +2073,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "windy"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「rainy」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由對話「外面……我們在家玩桌遊吧」可知戶外天氣不佳，故選下雨的「rainy」；sunny（晴天）、warm（溫暖）與句意相反。"
   },
   {
     "id": "hwg_b3_82",
+    "track": "textbook",
     "book": 3,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: It's hot. Are you thirsty? B: No, I'm not. I'm ______.",
     "options": [
       "tall",
@@ -1202,13 +2097,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "hungry"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「hungry」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "對話中詢問「你口渴嗎？」，回答「不，我不口渴。我很……」， hot 與前後文對比可知口渴與飢餓並列，選「hungry（飢餓的）」最合宜。"
   },
   {
     "id": "hwg_b3_83",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ are those?",
     "options": [
       "What",
@@ -1217,13 +2121,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「What」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "句末代名詞「those（那些）」為複數事物，詢問遠處那些物品是什麼使用疑問詞「What are those?」；「How」問狀況方式。"
   },
   {
     "id": "hwg_b3_84",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ you like oranges?",
     "options": [
       "Are",
@@ -1232,13 +2145,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What"
     ],
     "answer": 1,
-    "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
+    "explanation": "主詞為第二人稱「you」，動詞 like 為一般動詞，現在式形成疑問句需用助動詞「Do」；主詞非第三人稱單數故不可用 Does。"
   },
   {
     "id": "hwg_b3_85",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I ______ big watermelons.",
     "options": [
       "are",
@@ -1247,13 +2169,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am"
     ],
     "answer": 1,
-    "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
+    "explanation": "主詞為第一人稱「I」，表達喜愛喜好使用原形動詞「like」；主詞非第三人稱單數不可加 s。"
   },
   {
     "id": "hwg_b3_86",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ these? B: They're sandwiches.",
     "options": [
       "is",
@@ -1266,9 +2197,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_87",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Bonny, do you like apples? B: No, I ______.",
     "options": [
       "am",
@@ -1277,13 +2217,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "not"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「don't」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "以助動詞 Do 提問「do you like apples?」，第一人稱否定簡答為「No, I don't.」；「am」為 Be 動詞不可用於助動詞 Do 之簡答。"
   },
   {
     "id": "hwg_b3_88",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Toby, Look! What are those? B: ______ are hamburgers.",
     "options": [
       "You",
@@ -1296,9 +2245,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_89",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you like bananas? B: ______",
     "options": [
       "No, I'm not.",
@@ -1307,13 +2265,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am."
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「No, I don't.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "以助動詞提問「Do you like bananas?」，否定簡答為「No, I don't.」；「No, I'm not.」為 Be 動詞提問之簡答。"
   },
   {
     "id": "hwg_b3_90",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are these? B: ______",
     "options": [
       "I like sandwiches.",
@@ -1326,9 +2293,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_91",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I like apples. How about you? B: ______",
     "options": [
       "I don't like hot dogs.",
@@ -1337,13 +2313,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I like apples, too."
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「I like apples, too.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "A 說「我喜歡蘋果，你呢？」，B 回應自己也喜歡蘋果，使用副詞 too「I like apples, too.」；「They're apples.」回答物品名稱非偏好。"
   },
   {
     "id": "hwg_b3_92",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, I do.",
     "options": [
       "How's the weather?",
@@ -1352,13 +2337,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are you tired?"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Do you like hamburgers?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "答句為「Yes, I do.」，代表問句是以助動詞 Do 提問的一般動詞現在式問句，故選「Do you like hamburgers?」。"
   },
   {
     "id": "hwg_b3_93",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: No, I don't. I like bananas.",
     "options": [
       "Do you like bananas?",
@@ -1367,13 +2361,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are you hungry?"
     ],
     "answer": 2,
-    "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
+    "explanation": "答句為「No, I don't. I like bananas.」，可知問句是以助動詞 Do 詢問是否喜歡某種水果（非香蕉），故選「Do you like oranges?」。"
   },
   {
     "id": "hwg_b3_94",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Thank you.",
     "options": [
       "Oops, sorry!",
@@ -1386,9 +2389,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_95",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ you want some tea?",
     "options": [
       "Which",
@@ -1401,9 +2413,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_96",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I ______ some ice cream.",
     "options": [
       "do",
@@ -1412,13 +2433,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「want」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為第一人稱「I」，表達想要某物使用一般動詞「want」；後接名詞 ice cream，不能使用助動詞 do 或 Be 動詞 am。"
   },
   {
     "id": "hwg_b3_97",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I ______ want some milk.",
     "options": [
       "not",
@@ -1431,9 +2461,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_98",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some rice? B: No, ______ don't.",
     "options": [
       "you",
@@ -1446,9 +2485,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_99",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I want some pizza. B: ______ one? A: That one.",
     "options": [
       "How",
@@ -1461,9 +2509,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_100",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do ______ want some juice? B: Yes, we do.",
     "options": [
       "we",
@@ -1476,9 +2533,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_101",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some milk? B: ______",
     "options": [
       "No, I'm not.",
@@ -1491,9 +2557,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_102",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I'm very hungry. B: ______ A: Yes, I do.",
     "options": [
       "What are these?",
@@ -1506,9 +2581,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_103",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Tracy, do you want some water? B: ______",
     "options": [
       "No, we don't. We want some water.",
@@ -1521,9 +2605,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_104",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, we do. We're hungry.",
     "options": [
       "Fred, do you want some pizza?",
@@ -1536,9 +2629,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_105",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I want some tea. How about you, Rick? B: ______",
     "options": [
       "Yes, I do.",
@@ -1551,9 +2653,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_106",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I want some ice cream. B: ______ A: That one.",
     "options": [
       "Let's have fun!",
@@ -1566,9 +2677,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_107",
+    "track": "textbook",
     "book": 3,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Jane, what are these? B: They're red ______.",
     "options": [
       "apples",
@@ -1581,9 +2701,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_108",
+    "track": "textbook",
     "book": 3,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I'm thirsty. B: There's a tea shop. Do you want some ______? A: No, I don't. I want some orange juice.",
     "options": [
       "orange juice",
@@ -1596,9 +2725,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_109",
+    "track": "textbook",
     "book": 3,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I want some ______. I'm hungry. B: Me, too!",
     "options": [
       "hamburgers",
@@ -1611,9 +2749,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_110",
+    "track": "textbook",
     "book": 3,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some ______? B: Yes, I do. I'm very thirsty.",
     "options": [
       "rice",
@@ -1626,9 +2773,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_111",
+    "track": "textbook",
     "book": 3,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look, ______ Earth!",
     "options": [
       "I'm",
@@ -1637,13 +2793,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「it's」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "指著眼前地球並發出讚嘆，需用主詞加 Be 動詞「Look, it's Earth!（看，那是地球！）」；「it」單獨缺少動詞，「I'm」指自己是地球不合邏輯。"
   },
   {
     "id": "hwg_b3_112",
+    "track": "textbook",
     "book": 3,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I want to go to ______ Moon!",
     "options": [
       "✕ (不需填詞)",
@@ -1652,13 +2817,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "an"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「the」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "宇宙中獨一無二的天體「Moon（月球）」前方固定搭配定冠詞「the」；不可使用不定冠詞 a 或 an。"
   },
   {
     "id": "hwg_b3_113",
+    "track": "textbook",
     "book": 3,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Welcome, ______ Chang-O.",
     "options": [
       "she",
@@ -1667,13 +2841,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "this"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「I'm」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "嫦娥歡迎大家並自我介紹「我是嫦娥」，使用主詞與 Be 動詞「Welcome, I'm Chang-O.」；單獨「I」缺少動詞，「she」為第三人稱。"
   },
   {
     "id": "hwg_b3_114",
+    "track": "textbook",
     "book": 3,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ eat moon cakes.",
     "options": [
       "I'm",
@@ -1682,13 +2865,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「Let's」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "提議大家一起吃月餅，使用祈使句句型「Let's (Let us) + 原形動詞」；「Let」缺少受格縮寫 's。"
   },
   {
     "id": "hwg_b3_115",
+    "track": "textbook",
     "book": 3,
     "unit": "Festival",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: ______",
     "options": [
       "Look, it's big.",
@@ -1697,13 +2889,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's a pomelo."
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「It's a pomelo.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句詢問「What's this?」，回答眼前的事物需用代名詞「It's a pomelo.（它是一顆柚子）」；其他選項未回答物品名稱。"
   },
   {
     "id": "hwg_b3_116",
+    "track": "textbook",
     "book": 3,
     "unit": "Festival",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's your name? B: ______",
     "options": [
       "Chang-O is thirsty.",
@@ -1716,9 +2917,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_117",
+    "track": "textbook",
     "book": 3,
     "unit": "Festival",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Look at the Moon. B: ______",
     "options": [
       "It's a pomelo.",
@@ -1727,13 +2937,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Wow! It's big."
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「Wow! It's big.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "A 說「看那個月亮」，B 抬頭看並表達讚嘆，合宜回應為「Wow! It's big.（哇！它好大）」；其他選項指稱柚子或月餅，與月亮不符。"
   },
   {
     "id": "hwg_b3_118",
+    "track": "textbook",
     "book": 3,
     "unit": "Festival",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yeah! Let's go there.",
     "options": [
       "Let's eat moon cakes.",
@@ -1742,28 +2961,46 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Jade Rabbit is happy."
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「Let's go to the Moon!」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「Yeah! Let's go there.（好耶！我們去那裡吧）」可知提議前往某處，故選「Let's go to the Moon!（我們去月球吧！）」。"
   },
   {
     "id": "hwg_b5_119",
+    "track": "textbook",
     "book": 5,
     "unit": "Starter",
-    "category": "grammar",
-    "question": "______ Ryan?",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
+    "question": "A: ______ Ryan? B: He is in the library.",
     "options": [
-      "What",
+      "What's",
       "Where's",
-      "Where",
+      "How's",
       "Who"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「Where's」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「He is in the library.（他在圖書館）」可知問句詢問 Ryan 的所在位置，使用疑問詞與 Be 動詞縮寫「Where's (Where is)」；「What's」詢問事物，「How's」詢問狀況，「Who」缺少動詞 is。"
   },
   {
     "id": "hwg_b5_120",
+    "track": "textbook",
     "book": 5,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "He ______ sleeping.",
     "options": [
       "am",
@@ -1772,13 +3009,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "✕ (不需填詞)"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「is」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「He」為第三人稱單數，現在進行式（be + V-ing）的 Be 動詞需搭配「is」；「are」用於複數，「am」僅用於第一人稱 I。"
   },
   {
     "id": "hwg_b5_121",
+    "track": "textbook",
     "book": 5,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister is ______.",
     "options": [
       "drink",
@@ -1787,13 +3033,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "eat"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「eating」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "句中已有 Be 動詞「is」，構成現在進行式後方動詞需加 ing，故選「eating」；drink 與 read 為原形動詞不可直接接在 is 後方。"
   },
   {
     "id": "hwg_b5_122",
+    "track": "textbook",
     "book": 5,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "She's writing ______ the bedroom.",
     "options": [
       "at",
@@ -1802,13 +3057,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "in"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「in」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "在房間或封閉空間內進行活動，介系詞搭配使用「in the bedroom」；「on」指在表面上，「at」指特定點。"
   },
   {
     "id": "hwg_b5_123",
+    "track": "textbook",
     "book": 5,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "The dog is ______ running in the yard.",
     "options": [
       "✕ (不需填詞)",
@@ -1817,13 +3081,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「✕ (不需填詞)」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "句中已有主詞「The dog」與 Be 動詞「is」，後接現在分詞「running」，主詞與分詞之間不需再填任何介系詞或動詞，故選「✕ (不需填詞)」。"
   },
   {
     "id": "hwg_b5_124",
+    "track": "textbook",
     "book": 5,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where's Lily? B: ______",
     "options": [
       "She's sad and tired.",
@@ -1832,13 +3105,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's in the dining room."
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「She's in the dining room.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句「Where's Lily?」詢問 Lily 的所在位置，回答需指出地點「She's in the dining room.（她在飯廳）」；其他選項回答心情、年齡或動作。"
   },
   {
     "id": "hwg_b5_125",
+    "track": "textbook",
     "book": 5,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where's your brother? B: ______",
     "options": [
       "He's swimming.",
@@ -1847,13 +3129,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's one hundred."
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「He's in the kitchen.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句詢問「Where's your brother?（你哥哥在哪裡？）」，回答應指出地點「He's in the kitchen.（他在廚房）」；其他選項回答動作或年齡。"
   },
   {
     "id": "hwg_b5_126",
+    "track": "textbook",
     "book": 5,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old is your grandfather? B: ______",
     "options": [
       "He's in the yard.",
@@ -1866,9 +3157,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_127",
+    "track": "textbook",
     "book": 5,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: I'm in the bedroom.",
     "options": [
       "What is she doing?",
@@ -1877,13 +3177,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How old are you?"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「Where are you?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「I'm in the bedroom.（我在臥室）」可知問句詢問對方人在哪裡，疑問詞用 Where，故選「Where are you?」；「Who are you?」問身分。"
   },
   {
     "id": "hwg_b5_128",
+    "track": "textbook",
     "book": 5,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: It's eight forty.",
     "options": [
       "What's she doing?",
@@ -1892,13 +3201,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What time is it?"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「What time is it?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「It's eight forty.（現在八點四十分）」可知問句詢問時間，固定句型為「What time is it?」；「What day is it?」問星期。"
   },
   {
     "id": "hwg_b5_129",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "What day ______ today?",
     "options": [
       "am",
@@ -1911,9 +3229,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_130",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ not Monday.",
     "options": [
       "I'm",
@@ -1922,13 +3249,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「It's」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "表達今天不是星期一，主詞與 Be 動詞縮寫用「It's not Monday.」；「It」單獨缺少動詞，「I'm」指人而非時間。"
   },
   {
     "id": "hwg_b5_131",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ day is it?",
     "options": [
       "Where",
@@ -1937,13 +3273,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「What」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "詢問今天星期幾固定使用疑問詞片語「What day is it?」；「Where」問地點，「How」問方式，「Who」問人。"
   },
   {
     "id": "hwg_b5_132",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ it Thursday today?",
     "options": [
       "It",
@@ -1952,13 +3297,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「Is」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為第三人稱單數「it」，形成 Be 動詞疑問句開頭需用「Is」；「Are」用於複數或 you，「Am」僅用於第一人稱 I。"
   },
   {
     "id": "hwg_b5_133",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ is Saturday. Let's go out!",
     "options": [
       "It's",
@@ -1967,13 +3321,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「It」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "句中已有 Be 動詞「is」，空格只需填入事物與時間代名詞主格「It」；「It's」為 It is 之縮寫會造成動詞重複。"
   },
   {
     "id": "hwg_b5_134",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's Wednesday. It's ______ Tuesday.",
     "options": [
       "is",
@@ -1982,13 +3345,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "not"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「not」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "句子表達「今天是星期三。今天不是星期二。」，Be 動詞 is 後方加否定副詞「not」；「isn't」若接在 is 後會造成動詞重複。"
   },
   {
     "id": "hwg_b5_135",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: It's ______. We don't go to school. Let's go out! B: Good idea!",
     "options": [
       "Saturday",
@@ -1997,13 +3369,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Monday"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Saturday」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由後句「We don't go to school.（我們不上學）」可知是週末，選項中「Saturday（星期六）」為週末不上課的日子；Tuesday、Friday、Monday 皆為平日上課日。"
   },
   {
     "id": "hwg_b5_136",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: It's ______. It's Mother's Day. B: Happy Mother's Day!",
     "options": [
       "Sunday",
@@ -2012,13 +3393,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Saturday"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Sunday」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "母親節（Mother's Day）固定在五月的第二個「Sunday（星期日）」；平日不會是母親節。"
   },
   {
     "id": "hwg_b5_137",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ is it? B: It's Monday. I'm blue.",
     "options": [
       "color",
@@ -2027,13 +3417,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "time"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「day」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「It's Monday.（今天是星期一）」可知問句詢問星期幾，名詞填入「day」形成「What day is it?」；「color」問顏色，「time」問時刻。"
   },
   {
     "id": "hwg_b5_138",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is it ______ today? B: Yes. I like Thursday.",
     "options": [
       "Sunday",
@@ -2042,13 +3441,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Thursday"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「Thursday」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「Yes. I like Thursday.（是的。我喜歡星期四）」可知問句正是詢問今天是否為星期四，故填「Thursday」。"
   },
   {
     "id": "hwg_b5_139",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What day is today? B: ______",
     "options": [
       "It's Monday.",
@@ -2061,9 +3469,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_140",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is it Wednesday today? B: ______",
     "options": [
       "It's Wednesday.",
@@ -2072,13 +3489,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No. It's Wednesday."
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Yes, it is.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句以「Is it Wednesday today?」提問，肯定簡答為「Yes, it is.」；「No. It's Wednesday.」前後矛盾。"
   },
   {
     "id": "hwg_b5_141",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: It's Saturday. Let's play. B: ______",
     "options": [
       "Good idea!",
@@ -2087,13 +3513,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Have a good time."
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Good idea!」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "對方提議「今天是星期六，我們去玩吧！」，贊成對方的提議合宜回應「Good idea!（好主意！）」；「Time for lunch.」指該吃午餐了。"
   },
   {
     "id": "hwg_b5_142",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: It's Sunday. I want to watch a football game. B: ______",
     "options": [
       "Have a good time.",
@@ -2102,13 +3537,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Time for lunch."
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Have a good time.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "對方提到「我想去看美式足球賽」，祝對方玩得愉快合宜說「Have a good time.（祝你玩得開心！）」；「Wait a minute.」叫人等一下。"
   },
   {
     "id": "hwg_b5_143",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: It's Thursday.",
     "options": [
       "Where's Max?",
@@ -2121,9 +3565,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_144",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: No, it isn't. It's Saturday.",
     "options": [
       "What day is today?",
@@ -2132,13 +3585,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What time is it?"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Is it Sunday today?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「No, it isn't. It's Saturday.」可知問句是詢問今天是否為某個非週六的日子，故選「Is it Sunday today?」；「What day is today?」不能用 Yes/No 簡答。"
   },
   {
     "id": "hwg_b5_145",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I have art class ______ Thursday.",
     "options": [
       "in",
@@ -2151,9 +3613,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_146",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "We ______ have music class today.",
     "options": [
       "doesn't",
@@ -2162,13 +3633,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「don't」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為第一人稱複數「We」，現在式一般動詞 have 的否定句需搭配助動詞「don't」；「doesn't」僅用於第三人稱單數（he/she/it）。"
   },
   {
     "id": "hwg_b5_147",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "She ______ have science class on Sunday.",
     "options": [
       "does",
@@ -2181,9 +3661,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_148",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ you have PE class on Monday?",
     "options": [
       "Does",
@@ -2196,9 +3685,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_149",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ he have social studies class on Tuesday?",
     "options": [
       "Do",
@@ -2211,9 +3709,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_150",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Does she ______ Chinese class on Saturday?",
     "options": [
       "is",
@@ -2226,9 +3733,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_151",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I like drawing. I have ______ class on Friday.",
     "options": [
       "art",
@@ -2241,9 +3757,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_152",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does she have ______ class on Monday? B: Yes. She reads English books that day.",
     "options": [
       "English",
@@ -2256,9 +3781,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_153",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you have ______ class today? B: Yes, I do. I like to sing.",
     "options": [
       "music",
@@ -2267,13 +3801,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "English"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「music」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「Yes, I do. I like to sing.（是的，我喜歡唱歌）」可知涉及唱歌的課程為「music（音樂課）」；math 為數學，English 為英語。"
   },
   {
     "id": "hwg_b5_154",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does he have ______ class on Tuesday? B: Yes. He can swim that day.",
     "options": [
       "PE",
@@ -2286,9 +3829,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_155",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you have math class on Thursday? B: ______",
     "options": [
       "Yes, I do.",
@@ -2301,9 +3853,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_156",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does she have Chinese class on Monday? B: ______",
     "options": [
       "Yes, I do.",
@@ -2316,9 +3877,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_157",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I like ice cream. Can I try it? B: ______",
     "options": [
       "Sure!",
@@ -2327,13 +3897,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Have a good time."
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Sure!」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "對方禮貌請求「Can I try it?（我可以試試看嗎？）」，爽快答應回答「Sure!（當然可以！）」；「Follow me.」指跟我來。"
   },
   {
     "id": "hwg_b5_158",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where's the bathroom? B: ______",
     "options": [
       "Sure!",
@@ -2342,13 +3921,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Me, too."
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Follow me.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "對方詢問「洗手間在哪裡？」，帶對方前往合宜說「Follow me.（請跟我來）」；「Sure!」回答請求，「Good idea!」回答提議。"
   },
   {
     "id": "hwg_b5_159",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes. I have science class today.",
     "options": [
       "Do you have science class today?",
@@ -2357,13 +3945,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Do you have social studies class today?"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Do you have science class today?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「Yes. I have science class today.（是的。我今天有自然課）」可知問句直接以第二人稱詢問是否有自然課，故選「Do you have science class today?」。"
   },
   {
     "id": "hwg_b5_160",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: No, she doesn't.",
     "options": [
       "Do you have English class on Monday?",
@@ -2376,9 +3973,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_161",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Where ______ you going?",
     "options": [
       "am",
@@ -2387,13 +3993,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「are」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "現在進行式詢問對方要去哪裡，主詞為第二人稱「you」，Be 動詞需搭配「are」組成「Where are you going?」；「is」搭配第三人稱單數。"
   },
   {
     "id": "hwg_b5_162",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ are you going?",
     "options": [
       "Does",
@@ -2402,13 +4017,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「Where」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "詢問打算前往的地點使用疑問詞「Where（哪裡）」；「Does/Do」為助動詞不可放在句首引導特殊疑問詞問句，「What」詢問事物。"
   },
   {
     "id": "hwg_b5_163",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Where ______ the post office?",
     "options": [
       "✕ (不需填詞)",
@@ -2417,13 +4041,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「is」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「the post office（郵局）」為第三人稱單數事物，現在式 Be 動詞搭配「is」；「are」用於複數名詞。"
   },
   {
     "id": "hwg_b5_164",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I'm ______ to the supermarket.",
     "options": [
       "go",
@@ -2432,13 +4065,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "doing"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「going」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "現在進行式表達正打算前往某處，Be 動詞 am 後方搭配動詞 ing 形式「going」；「go」為原形動詞不可接在 am 後。"
   },
   {
     "id": "hwg_b5_165",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ going to the museum.",
     "options": [
       "They",
@@ -2451,9 +4093,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_166",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "The bank is ______ Maple Road.",
     "options": [
       "at",
@@ -2462,13 +4113,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "on"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「on」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "在某條街道或路上，美式英語介系詞固定搭配「on + 街名/路名」形成「on Maple Road」；「in」用於城市或建築物內，「at」用於確切門牌號碼。"
   },
   {
     "id": "hwg_b5_167",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are you going? B: I'm going to the ______. I'm thirsty.",
     "options": [
       "supermarket",
@@ -2481,9 +4141,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_168",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I'm going to the ______. B: Me, too. I like to read books.",
     "options": [
       "library",
@@ -2496,9 +4165,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_169",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Dad, I need a marker. B: Let's go to the ______. It's on Black Street.",
     "options": [
       "bookstore",
@@ -2507,13 +4185,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "library"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「bookstore」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "前句提到需要彩色筆（marker），買文具需前往「bookstore（書店/文具書店）」；post office 為郵局，museum 為博物館。"
   },
   {
     "id": "hwg_b5_170",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I'm going to the ______ to see the doctor. B: Take care.",
     "options": [
       "hospital",
@@ -2526,9 +4213,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_171",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are you going? B: ______",
     "options": [
       "I'm going to the bookstore.",
@@ -2541,9 +4237,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_172",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where's the hospital? B: ______",
     "options": [
       "We're going to the bank.",
@@ -2552,13 +4257,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Excuse me. I'm lost."
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「It's on Doctor Street.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句詢問醫院的位置「Where's the hospital?」，回答應指出地點所在街名「It's on Doctor Street.」；其他選項說明自己要去哪裡，未回答位置。"
   },
   {
     "id": "hwg_b5_173",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ Where's the bank? B: It's on Blue Street.",
     "options": [
       "Follow me.",
@@ -2567,13 +4281,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Say cheese!"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「Excuse me.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "向陌生人問路或引起他人注意時，禮貌發語詞使用「Excuse me.（不好意思／請問一下）」；「Follow me.」指跟我來，「Say cheese!」為拍照說笑一個。"
   },
   {
     "id": "hwg_b5_174",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: This museum is beautiful! B: Yes. Let's take a picture. ______",
     "options": [
       "Say cheese!",
@@ -2582,13 +4305,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Sorry, I'm late."
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Say cheese!」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "對方提議一起拍照（Let's take a picture.），拍照按快門時常說「Say cheese!（笑一個！）」；「Good idea!」通常在剛接受提議時說。"
   },
   {
     "id": "hwg_b5_175",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: We're going to the museum.",
     "options": [
       "The museum is on Green Street.",
@@ -2601,9 +4333,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_176",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: It's on Sunny Road.",
     "options": [
       "We're going to the bank.",
@@ -2612,13 +4353,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Where's the post office?"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「Where's the post office?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「It's on Sunny Road.（它在晴朗路上）」可知問句詢問某個公共場所的位置，故選「Where's the post office?（郵局在哪裡？）」。"
   },
   {
     "id": "hwg_b5_177",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "How many zebras ______ there?",
     "options": [
       "am",
@@ -2631,9 +4381,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_178",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ many lions are there?",
     "options": [
       "Where",
@@ -2642,13 +4401,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「How」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "詢問數量「有幾隻獅子」，固定使用疑問詞片語「How many + 複數名詞 + are there?」；「Where」問地點，「What」問事物。"
   },
   {
     "id": "hwg_b5_179",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "There ______ one tiger.",
     "options": [
       "does",
@@ -2657,13 +4425,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「is」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "「There is / There are」句型中，後方名詞為單數「one tiger（一隻老虎）」，Be 動詞搭配使用單數「is」；「are」用於複數名詞。"
   },
   {
     "id": "hwg_b5_180",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "There ______ sixty koalas.",
     "options": [
       "doesn't",
@@ -2672,13 +4449,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「are」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "「There is / There are」句型中，後方名詞為複數「sixty koalas（六十隻無尾熊）」，Be 動詞搭配使用複數「are」；「is」用於單數名詞。"
   },
   {
     "id": "hwg_b5_181",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ he like monkeys?",
     "options": [
       "Is",
@@ -2687,13 +4473,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「Does」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為第三人稱單數「he」，動詞 like 為一般動詞，現在式疑問句開頭助動詞需用「Does」；「Do」用於第一/第二人稱或複數。"
   },
   {
     "id": "hwg_b5_182",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Does she ______ elephants?",
     "options": [
       "likes",
@@ -2702,13 +4497,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「like」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "句首已有助動詞「Does」，後方的一般動詞必須還原為原形動詞「like」；不可再加 s 變成 likes。"
   },
   {
     "id": "hwg_b5_183",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How many ______ are there? B: There are two elephants. They're big and tall.",
     "options": [
       "monkeys",
@@ -2721,9 +4525,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_184",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does she like ______? B: Yes, she does. She likes zebras.",
     "options": [
       "tigers",
@@ -2732,13 +4545,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "horses"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「zebras」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「She likes zebras.（她喜歡斑馬）」可知問句詢問的動物也是「zebras」；tiger（老虎）、lion（獅子）、horse（馬）皆與答句不符。"
   },
   {
     "id": "hwg_b5_185",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: There is a hungry ______ coming. Run! B: Calm down. It's just a robot cat.",
     "options": [
       "elephant",
@@ -2747,13 +4569,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "turtle"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「tiger」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由對話「快跑！……別慌，只是機器貓」可知形容凶猛的大型貓科動物為「tiger（老虎）」；turtle 為烏龜，horse 為馬。"
   },
   {
     "id": "hwg_b5_186",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: There are two ______ jumping in the tree. B: They like your bananas.",
     "options": [
       "lions",
@@ -2762,13 +4593,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "koalas"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「monkeys」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由對話「在樹上跳……牠們喜歡你的香蕉」可知在樹上跳且愛吃香蕉的動物為「monkeys（猴子）」；lion 與 koala 不符合吃香蕉的習性特徵。"
   },
   {
     "id": "hwg_b5_187",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I feel sick. I'm going to the hospital. B: ______",
     "options": [
       "Take care!",
@@ -2781,9 +4621,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_188",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Dogs! Run! B: ______ They're small dogs.",
     "options": [
       "Say cheese!",
@@ -2792,13 +4641,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Have a good time."
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Calm down.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "對方看到狗感到害怕喊叫快跑，安慰對方放鬆別慌張說「Calm down.（冷靜點／別慌）」；「Take care!」為保重，「Say cheese!」為拍照說笑一個。"
   },
   {
     "id": "hwg_b5_189",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How many elephants are there? B: ______",
     "options": [
       "There are four elephants.",
@@ -2811,9 +4669,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_190",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does she like horses? B: ______",
     "options": [
       "Yes. She likes zebras.",
@@ -2822,13 +4689,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he doesn't."
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Yes, she does.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句以「Does she like horses?」詢問，女性第三人稱肯定簡答為「Yes, she does.」；「No, he doesn't.」性別人稱錯誤。"
   },
   {
     "id": "hwg_b5_191",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: There are ninety turtles.",
     "options": [
       "How many turtles are there?",
@@ -2841,9 +4717,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_192",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: No, he doesn't. He likes koalas.",
     "options": [
       "How many koalas are there?",
@@ -2852,13 +4737,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Does he like koalas?"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Does he like monkeys?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句「No, he doesn't. He likes koalas.」可知問句以 Does he 詢問他是否喜歡某種非無尾熊的動物，故選「Does he like monkeys?」。"
   },
   {
     "id": "hwg_b5_193",
+    "track": "textbook",
     "book": 5,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "How many stars ______ there?",
     "options": [
       "am",
@@ -2871,9 +4765,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_194",
+    "track": "textbook",
     "book": 5,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ open the gifts.",
     "options": [
       "Is",
@@ -2882,13 +4785,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Let's"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「Let's」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "提議大家一起打開禮物，祈使句使用「Let's (Let us) + 原形動詞」開頭；「Let」單獨缺少受格代名詞縮寫 's。"
   },
   {
     "id": "hwg_b5_195",
+    "track": "textbook",
     "book": 5,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "The Christmas tree is ______.",
     "options": [
       "✕ (不需填詞)",
@@ -2897,13 +4809,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "big"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「big」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "形容詞放在 Be 動詞 is 後方做主詞補詞，形容聖誕樹很大選「big」；bell（鈴鐺）與 star（星星）為名詞，前面缺少冠詞 a。"
   },
   {
     "id": "hwg_b5_196",
+    "track": "textbook",
     "book": 5,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "There ______ one candy cane.",
     "options": [
       "on",
@@ -2912,13 +4833,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「is」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "There is / There are 句型中，名詞為單數「one candy cane（一支拐杖糖）」，Be 動詞搭配使用單數「is」；「are」用於複數名詞。"
   },
   {
     "id": "hwg_b7_197",
+    "track": "textbook",
     "book": 7,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ you like some salad for lunch?",
     "options": [
       "Whose",
@@ -2927,13 +4857,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Would」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "禮貌詢問對方午餐是否想要吃沙拉，固定句型為「Would you like + 食物?」；「Whose」問擁有者，「What」問事物。"
   },
   {
     "id": "hwg_b7_198",
+    "track": "textbook",
     "book": 7,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ water bottle is this on the desk?",
     "options": [
       "Would",
@@ -2942,13 +4881,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Whose"
     ],
     "answer": 3,
-    "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
+    "explanation": "詢問桌上的水壺是「誰的」，疑問詞使用所有格代名詞「Whose」；「Who」為主格（誰），後方不能直接接名詞 water bottle。"
   },
   {
     "id": "hwg_b7_199",
+    "track": "textbook",
     "book": 7,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ like some beef noodles for dinner.",
     "options": [
       "I'd",
@@ -2957,13 +4905,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「I'd」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "禮貌表達自己晚餐想吃牛肉麵，使用縮寫「I'd (I would) like ...」；「I'm」是 I am，後接 like 會造成動詞重複，「It's」指事物。"
   },
   {
     "id": "hwg_b7_200",
+    "track": "textbook",
     "book": 7,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Whose workbooks ______ these?",
     "options": [
       "are",
@@ -2972,13 +4929,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「are」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為複數指示代名詞「these（這些）」，Be 動詞需搭配使用複數「are」；「is」僅用於單數主詞。"
   },
   {
     "id": "hwg_b7_201",
+    "track": "textbook",
     "book": 7,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ Hannah's shoes.",
     "options": [
       "It",
@@ -2987,13 +4953,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「They're」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "代指名詞複數「Hannah's shoes（漢娜的鞋子）」，主詞與 Be 動詞需用複數縮寫「They're (They are)」；「It's」指單數事物。"
   },
   {
     "id": "hwg_b7_202",
+    "track": "textbook",
     "book": 7,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Would you like some chicken? B: ______",
     "options": [
       "No. I'd like some soup.",
@@ -3006,9 +4981,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_203",
+    "track": "textbook",
     "book": 7,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose cap is that on the chair? B: ______",
     "options": [
       "It's Noah's pen.",
@@ -3017,13 +5001,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's my soup."
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「It's my cap.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句詢問「Whose cap is that on the chair?（椅子上的帽子是誰的？）」，回答需指稱該頂帽子「It's my cap.（那是我的帽子）」；其他選項指筆、書包或湯。"
   },
   {
     "id": "hwg_b7_204",
+    "track": "textbook",
     "book": 7,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's Luca's room number? B: ______",
     "options": [
       "Her room number is 305.",
@@ -3032,13 +5025,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Her phone number is 0912-358-901."
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Her room number is 305.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句詢問「Luca 的房號是幾號？」，回答說明房號「Her room number is 305.」；「Her phone number...」回答電話號碼，與問句不符。"
   },
   {
     "id": "hwg_b7_205",
+    "track": "textbook",
     "book": 7,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like for dinner? B: ______",
     "options": [
       "I'd like some chicken.",
@@ -3051,9 +5053,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_206",
+    "track": "textbook",
     "book": 7,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: It's Alex's water bottle.",
     "options": [
       "Whose backpack is this?",
@@ -3062,13 +5073,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Whose water bottles are those?"
     ],
     "answer": 1,
-    "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
+    "explanation": "答句為「It's Alex's water bottle.（那是 Alex 的水壺）」，說明物品歸屬，可知問句是詢問水壺是誰的「Whose water bottle is that?」。"
   },
   {
     "id": "hwg_b7_207",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ are the boys from?",
     "options": [
       "Where",
@@ -3077,13 +5097,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Whose"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Where」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由答句可知是詢問男孩們來自哪裡，句型為「Where are ... from?」，疑問詞選「Where」；「What」問事物，「Who」問人。"
   },
   {
     "id": "hwg_b7_208",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ivy, where ______ you from?",
     "options": [
       "is",
@@ -3092,13 +5121,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「are」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為第二人稱「you」，現在式 Be 動詞固定搭配「are」形成「where are you from?」；「is」用於第三人稱單數。"
   },
   {
     "id": "hwg_b7_209",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Is ______ from Taiwan?",
     "options": [
       "they",
@@ -3111,9 +5149,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_210",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ they from Spain?",
     "options": [
       "Do",
@@ -3122,13 +5169,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Are」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為第三人稱複數「they」，形成 Be 動詞疑問句開頭需用「Are」；from Spain 為介系詞片語，不能使用助動詞 Do。"
   },
   {
     "id": "hwg_b7_211",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is Uma from? B: She's from ______. She likes cheeseburgers very much.",
     "options": [
       "the USA",
@@ -3137,13 +5193,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "the park"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「the USA」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "後句提到「She likes cheeseburgers very much.（她非常喜歡起司漢堡）」，起司漢堡為美國的代表性代表食物，故選「the USA（美國）」。"
   },
   {
     "id": "hwg_b7_212",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are you from? B: I'm from ______. Taipei 101 is famous in my country.",
     "options": [
       "Spain",
@@ -3156,9 +5221,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_213",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Jason from ______? B: Yes, he is. There are many kangaroos in his country.",
     "options": [
       "the USA",
@@ -3166,13 +5240,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Australia"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Australia」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "後句說明「There are many kangaroos in his country.（他國家有許多袋鼠）」，袋鼠為澳洲特有代表性動物，故選「Australia（澳洲）」。"
   },
   {
     "id": "hwg_b7_214",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's that? B: It's the Taj Mahal. We're in ______ now.",
     "options": [
       "Taiwan",
@@ -3181,13 +5264,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Australia"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「India」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "前句提到「It's the Taj Mahal.（那是泰姬瑪哈陵）」，泰姬瑪哈陵為印度的世界著名古蹟，故選「India（印度）」。"
   },
   {
     "id": "hwg_b7_215",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are you from? B: ______",
     "options": [
       "I'm from Singapore.",
@@ -3200,9 +5292,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_216",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is your grandpa from? B: ______",
     "options": [
       "Yes, he is.",
@@ -3211,13 +5312,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's in the UK."
     ],
     "answer": 2,
-    "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
+    "explanation": "問句為「Where is your grandpa from?（你的爺爺來自哪裡？）」，主詞為男性單數，回答用「He's from Spain.（他來自西班牙）」；「No...」不能用於回答 Where 問句。"
   },
   {
     "id": "hwg_b7_217",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: They're from India.",
     "options": [
       "Where are Nick and Logan from?",
@@ -3230,9 +5340,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_218",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: No, she isn't. She's from the UK.",
     "options": [
       "Is your sister from Japan?",
@@ -3245,9 +5364,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_219",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where's Amy's brother from? B: ______",
     "options": [
       "No. He's from the USA.",
@@ -3256,13 +5384,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes. He's from the UK."
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「He's from Australia.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句為「Where's Amy's brother from?」，詢問來自何處不能用 Yes/No 簡答，直接回答國家「He's from Australia.（他來自澳洲）」。"
   },
   {
     "id": "hwg_b7_220",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Look! ____________ B: It's beautiful.",
     "options": [
       "I'm from Spain.",
@@ -3271,13 +5408,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like some sandwiches."
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「That's the Taj Mahal.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "A 說「看！那是……」，B 讚美「好漂亮」，結合後續對話選「That's the Taj Mahal.（那是泰姬瑪哈陵）」最符合語意。"
   },
   {
     "id": "hwg_b7_221",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "How ______ your sisters go to the park?",
     "options": [
       "are",
@@ -3286,13 +5432,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「do」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「your sisters（你的姊妹們）」為複數（they），現在式一般動詞 go 的疑問句，助動詞需搭配使用複數「do」；「does」僅用於單數主詞。"
   },
   {
     "id": "hwg_b7_222",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ Alex go to school on foot?",
     "options": [
       "Are",
@@ -3305,9 +5460,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_223",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Maya ______ to the supermarket by bus.",
     "options": [
       "go",
@@ -3320,9 +5484,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_224",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ do they go to the museum?",
     "options": [
       "Where",
@@ -3331,13 +5504,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「How」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "詢問搭乘何種交通工具前往某地，疑問詞使用「How（如何／用何種方式）」；「Where」問地點，「What」問事物。"
   },
   {
     "id": "hwg_b7_225",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: It's usually cold and rainy here in winter. How do you go to school? B: ______.",
     "options": [
       "By scooter",
@@ -3349,9 +5531,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_226",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How does your brother go to school? B: He goes to school ______. He can walk very fast.",
     "options": [
       "by train",
@@ -3363,9 +5554,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_227",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Uma go to school by car? B: No. She goes to school ______. There are many students on it every day.",
     "options": [
       "on foot",
@@ -3378,9 +5578,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_228",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How do you go to school? B: ______",
     "options": [
       "I go home by bus.",
@@ -3393,9 +5602,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_229",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does she go to school by metro? B: ______",
     "options": [
       "Yes, she does.",
@@ -3404,13 +5622,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, she isn't."
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「Yes, she does.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句以助動詞 Does 提問「Does she go to school by metro?」，肯定簡答為「Yes, she does.」；「No, she isn't.」助動詞不符。"
   },
   {
     "id": "hwg_b7_230",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How does Jerry go to the library? B: ______",
     "options": [
       "No. He goes to the library by bus.",
@@ -3423,9 +5650,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_231",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: We go to school by bus.",
     "options": [
       "How do you and Sara go to school?",
@@ -3438,9 +5674,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_232",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, she does. She goes to the bank on foot.",
     "options": [
       "Is Hazel going to the bank?",
@@ -3453,9 +5698,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_233",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: They go home by scooter.",
     "options": [
       "Where are they going?",
@@ -3464,13 +5718,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How do Ivy and Dylan go home?"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「How do Ivy and Dylan go home?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "答句為「They go home by scooter.（他們騎機車回家）」，說明交通方式，問句需以 How 詢問如何回家，故選「How do Ivy and Dylan go home?」。"
   },
   {
     "id": "hwg_b7_234",
+    "track": "textbook",
     "book": 7,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are you from? B: I'm from ______. We have a king.",
     "options": [
       "the USA",
@@ -3483,9 +5746,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_235",
+    "track": "textbook",
     "book": 7,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is she from Singapore? B: No. She's from ______. She doesn't speak English or Chinese at school.",
     "options": [
       "Taiwan",
@@ -3493,13 +5765,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Japan"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「Japan」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "後句說明「她在學校不說英文也不說中文」，推論她來自說日語的國家，故選「Japan（日本）」；台灣說中文，英國說英文。"
   },
   {
     "id": "hwg_b7_236",
+    "track": "textbook",
     "book": 7,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How do you and your sisters go to Taipei? B: We go there ______. We sit together and eat apples.",
     "options": [
       "by bike",
@@ -3508,13 +5789,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "on foot"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「by car」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "後句提到「We sit together and eat apples.（我們坐在一起吃蘋果）」，代表是在車廂內共坐，且前往台北距離較遠，故選「by car（搭車／開車）」最合情理。"
   },
   {
     "id": "hwg_b7_237",
+    "track": "textbook",
     "book": 7,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Let's go to ______. There are dragon boat races on Saturday.",
     "options": [
       "India",
@@ -3527,9 +5817,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_238",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "What ______ you do on weekends?",
     "options": [
       "does",
@@ -3538,13 +5837,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「do」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞為第二人稱「you」，動詞 do 為一般動詞，現在式疑問句需搭配助動詞「do」形成「What do you do ...?」；「does」僅用於第三人稱單數。"
   },
   {
     "id": "hwg_b7_239",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "What ______ he do in his free time?",
     "options": [
       "do",
@@ -3557,9 +5865,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_240",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Vicky ______ a bike after school.",
     "options": [
       "ride",
@@ -3568,13 +5885,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "don't ride"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「rides」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「Vicky」為第三人稱單數（she），現在式肯定句動詞需加 s 形成「rides」；ride 為原形動詞不可用於第三人稱單數。"
   },
   {
     "id": "hwg_b7_241",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "His sister watches TV in ______ free time.",
     "options": [
       "his",
@@ -3587,9 +5913,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_242",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What do you do on weekends? B: I ______ in the library.",
     "options": [
       "study English",
@@ -3598,13 +5933,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "go jogging"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「study English」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "在圖書館（in the library）進行的活動，最合宜的為「study English（研讀英語）」；ride a bike（騎單車）與 play basketball（打籃球）為戶外運動。"
   },
   {
     "id": "hwg_b7_243",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What does David do in his free time? B: He ______ in his free time. There are many games on it.",
     "options": [
       "surfs the Internet",
@@ -3617,9 +5961,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_244",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My legs hurt. I can't ______, but I can watch TV.",
     "options": [
       "ride a bike",
@@ -3628,13 +5981,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "read books"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「ride a bike」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "前句提到「My legs hurt.（我的雙腳受傷疼痛）」，因此無法進行使用腿部的運動「ride a bike（騎腳踏車）」；watch TV、listen to music、read books 皆不需過度用到雙腿。"
   },
   {
     "id": "hwg_b7_245",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Clara ______ in her free time. She can run fast.",
     "options": [
       "surfs the Internet",
@@ -3646,9 +6008,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_246",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What do the girls do on weekends? B: ______",
     "options": [
       "We watch TV.",
@@ -3657,13 +6028,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I study English."
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「They play basketball.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "問句詢問「the girls（女孩們，複數 they）」週末做什麼，答句代名詞需用「They」形成「They play basketball.」；「We」或「I」人稱不符。"
   },
   {
     "id": "hwg_b7_247",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What does Kevin do in his free time? B: ______",
     "options": [
       "He is sleeping in his room.",
@@ -3676,9 +6056,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_248",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What do you and Irene do in your free time? B: ______",
     "options": [
       "They're going to the bank.",
@@ -3691,9 +6080,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_249",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: She studies English in her free time.",
     "options": [
       "What is she doing in the kitchen?",
@@ -3706,9 +6104,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_250",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: We listen to music after school.",
     "options": [
       "What do the boys do after school?",
@@ -3717,13 +6124,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What would you like for dinner?"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「What do you do after school?」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "答句以第一人稱複數「We」回答放學後的活動，可知問句是直接詢問「你們（you）」，故選「What do you do after school?」。"
   },
   {
     "id": "hwg_b7_251",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Me, too. It's fun!",
     "options": [
       "I play basketball in my free time.",
@@ -3736,9 +6152,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_252",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "What time ______ your sister have lunch?",
     "options": [
       "is",
@@ -3747,13 +6172,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「does」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「your sister」為第三人稱單數（she），動詞 have 為一般動詞，現在式疑問句助動詞需搭配「does」；「is」不可直接搭配原形動詞 have。"
   },
   {
     "id": "hwg_b7_253",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "He ______ his homework at seven o'clock.",
     "options": [
       "do",
@@ -3762,13 +6196,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "doing"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「does」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "主詞「He」為第三人稱單數，表達做功課動詞需用三單形「does his homework」；「do」為原形動詞，「doing」缺少 Be 動詞。"
   },
   {
     "id": "hwg_b7_254",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ do Ryan and Emma go to school?",
     "options": [
       "Who",
@@ -3777,13 +6220,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What color"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「What time」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "由句意可知是詢問「幾點上學」，詢問具體時刻使用疑問詞片語「What time」；「What color」問顏色，「Who」問人。"
   },
   {
     "id": "hwg_b7_255",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "They go to bed ______ 10:30.",
     "options": [
       "at",
@@ -3792,13 +6244,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "under"
     ],
     "answer": 0,
-    "explanation": "依據本課核心句型與前後文語意，「at」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "在特定鐘點時刻（如 10:30）前面，介系詞固定搭配「at」；「on」用於特定日期或星期，「in」用於月份或年份。"
   },
   {
     "id": "hwg_b7_256",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time do you ______? B: At twelve o'clock. I eat beef sandwiches every Monday.",
     "options": [
       "go to school",
@@ -3811,9 +6272,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_257",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does Jeff usually ______? B: At 10:00. But he's not so tired today, so he wants to sleep at 11:00.",
     "options": [
       "get up",
@@ -3825,9 +6295,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_258",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does she ______? B: At 6:30. She likes to sing in the bathroom.",
     "options": [
       "go home",
@@ -3840,9 +6319,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_259",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Kate in the bedroom? B: Yes. She's ______.",
     "options": [
       "doing her homework",
@@ -3851,13 +6339,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "going home"
     ],
     "answer": 0,
-    "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
+    "explanation": "問句以 Be 動詞詢問 Kate 目前是否在臥室，答句以現在進行式說明「She's (She is) + V-ing」，故選「doing her homework（正在做功課）」。"
   },
   {
     "id": "hwg_b7_260",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time do you go to school? B: ______",
     "options": [
       "We go to bed at 9:30.",
@@ -3870,9 +6367,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_261",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does Caleb go home? B: ______",
     "options": [
       "He goes to bed at 10:30.",
@@ -3885,9 +6391,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_262",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time do you have dinner? B: ______",
     "options": [
       "I'd like some salad for lunch.",
@@ -3900,9 +6415,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_263",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: He does his homework at five.",
     "options": [
       "What does Logan do in his free time?",
@@ -3915,9 +6439,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_264",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: She gets up at eight o'clock.",
     "options": [
       "Does Grandma get up at eight o'clock?",
@@ -3930,9 +6463,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_265",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can I be an elf, too? B: Sure. ______",
     "options": [
       "Let's have a picnic.",
@@ -3941,13 +6483,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Let me show you how."
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「Let me show you how.」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "前句請求「Can I be an elf, too?（我也可以當精靈嗎？）」，對方答應並主動示範教學，說「Let me show you how.（讓我示範給你看）」最為合宜。"
   },
   {
     "id": "hwg_b7_266",
+    "track": "textbook",
     "book": 7,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What do you do in your free time? B: I ______. I love Beethoven.",
     "options": [
       "play baseball",
@@ -3960,9 +6511,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_267",
+    "track": "textbook",
     "book": 7,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does your brother ______? B: At eight o'clock. He likes to sing in the bathroom.",
     "options": [
       "take a shower",
@@ -3975,9 +6535,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_268",
+    "track": "textbook",
     "book": 7,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What does Barry do in his free time? B: He ______ with his friends in the park.",
     "options": [
       "watches TV",
@@ -3990,9 +6559,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_269",
+    "track": "textbook",
     "book": 7,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Andrew, ______! It's 8:00. Time for school! B: OK, Mom.",
     "options": [
       "have lunch",
@@ -4001,13 +6579,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "watch TV"
     ],
     "answer": 2,
-    "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
+    "explanation": "媽媽催促孩子已經八點該上學了，使用祈使句原形動詞開頭「Andrew, get up!（安德魯，快起床！）」；OK, Mom 為遵從回應。"
   },
   {
     "id": "hwg_b7_270",
+    "track": "textbook",
     "book": 7,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Amy and Sam go home at 4:30 by bike. They ______ on weekends, too. B: Wow! They like to ride very much.",
     "options": [
       "listen to music",
@@ -4020,9 +6607,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_271",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "We ______ to the night market yesterday.",
     "options": [
       "went",
@@ -4035,9 +6631,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_272",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ian went to the amusement park ______.",
     "options": [
       "every day",
@@ -4050,9 +6655,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_273",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Where did your father ______ yesterday evening?",
     "options": [
       "went",
@@ -4065,9 +6679,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_274",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Mom ______ juice last night.",
     "options": [
       "drinks",
@@ -4080,9 +6703,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_275",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Dylan ______ yesterday morning.",
     "options": [
       "goes shopping",
@@ -4095,9 +6727,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_276",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "What ______ you do yesterday?",
     "options": [
       "do",
@@ -4110,9 +6751,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_277",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ did Bella go yesterday? B: She went to Starlight Night Market. It was big and new.",
     "options": [
       "Who",
@@ -4125,9 +6775,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_278",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where did you go last weekend? B: I went to the ______. I rode a bike there.",
     "options": [
       "riverside park",
@@ -4140,9 +6799,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_279",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did Evan do at the movie theater last Friday? B: He ______.",
     "options": [
       "went shopping",
@@ -4155,9 +6823,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_280",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did you do last night? B: I was hungry, so I ______.",
     "options": [
       "rode a bike",
@@ -4170,9 +6847,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_281",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where did the girls go last Thursday? B: ______",
     "options": [
       "They saw a movie.",
@@ -4185,9 +6871,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_282",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: I went to the riverside park.",
     "options": [
       "What do you do on weekends?",
@@ -4200,9 +6895,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_283",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where did Alice go last Tuesday? B: ______",
     "options": [
       "She went to the department store.",
@@ -4215,9 +6919,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_284",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: She went shopping.",
     "options": [
       "Did Nina visit a friend?",
@@ -4230,9 +6943,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_285",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did your brother do last Sunday? B: ______",
     "options": [
       "I went to the zoo.",
@@ -4245,9 +6967,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_286",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did you do yesterday morning? B: ______",
     "options": [
       "They went to the library.",
@@ -4260,9 +6991,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_287",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "They ______ a picnic yesterday morning.",
     "options": [
       "having",
@@ -4275,9 +7015,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_288",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "We ______ after school last weekend.",
     "options": [
       "swim",
@@ -4290,9 +7039,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_289",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "What ______ Dora do last night?",
     "options": [
       "does",
@@ -4305,9 +7063,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_290",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Did Luke ______ a picture yesterday?",
     "options": [
       "draws",
@@ -4320,9 +7087,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_291",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I ______ get a haircut last Sunday.",
     "options": [
       "wasn't",
@@ -4335,9 +7111,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_292",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Did John run ______?",
     "options": [
       "every Friday",
@@ -4350,9 +7135,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_293",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ did Terry do yesterday afternoon? B: He wrote a letter.",
     "options": [
       "Whose",
@@ -4365,9 +7159,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_294",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Leo, what did you do last night? B: ______ ran with my brother and watched TV with my mom.",
     "options": [
       "She",
@@ -4380,9 +7183,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_295",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Sophie ______ this morning? B: Yes, she did. Her hair looks different.",
     "options": [
       "see a movie",
@@ -4395,9 +7207,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_296",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did they ______ yesterday? B: No, they didn't. It was a rainy day, so they stayed home.",
     "options": [
       "sing songs",
@@ -4410,9 +7231,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_297",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did you do last night? B: ______",
     "options": [
       "We took a walk.",
@@ -4425,9 +7255,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_298",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: He drew a picture.",
     "options": [
       "What did Logan do last Monday?",
@@ -4440,9 +7279,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_299",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did your mom do this morning? B: ______",
     "options": [
       "She got a haircut this morning.",
@@ -4455,9 +7303,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_300",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: No, we didn't. We swam yesterday.",
     "options": [
       "Do you run every day?",
@@ -4470,9 +7327,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_301",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Alex write a letter last Thursday? B: ______",
     "options": [
       "Yes, he did.",
@@ -4485,9 +7351,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_302",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did they take a walk last Monday? B: ______ They took a walk last Friday.",
     "options": [
       "No, we didn't.",
@@ -4500,9 +7375,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_303",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "What would Ian like to ______?",
     "options": [
       "eating",
@@ -4511,13 +7395,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "eats"
     ],
     "answer": 1,
-    "explanation": "依據本課核心句型與前後文語意，「eat」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "助動詞 would like to 後方需接原形動詞「eat」；「eating」為分詞，「ate」為過去式，「eats」為第三人稱單數式皆不可接在 to 後方。"
   },
   {
     "id": "hwg_b9_304",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ like a bowl of salad. B: Sure! Anything else?",
     "options": [
       "I can",
@@ -4530,9 +7423,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_305",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "They'd like three ______ of cookies.",
     "options": [
       "piece",
@@ -4541,13 +7443,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "bag"
     ],
     "answer": 2,
-    "explanation": "依據本課核心句型與前後文語意，「boxes」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "餅乾（cookies）為複數，前方接數字 three 時計量單位詞需用複數形「boxes（盒）」；piece、plate、bag 皆為單數形不可接在 three 後。"
   },
   {
     "id": "hwg_b9_306",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "We'd like a ______ of water.",
     "options": [
       "bowls",
@@ -4560,9 +7471,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_307",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Lily like to drink? B: ______ like a cup of milk.",
     "options": [
       "would, She'd",
@@ -4575,9 +7495,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_308",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like to drink? B: We'd like two ______ of tea.",
     "options": [
       "plate",
@@ -4590,9 +7519,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_309",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like to ______? B: I'd like a piece of ______.",
     "options": [
       "eat, cake",
@@ -4605,9 +7543,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_310",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Leo is hungry. He'd like two ______ of ______.",
     "options": [
       "glasses, water",
@@ -4616,13 +7563,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "bowls, rice"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「bowls, rice」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "白飯（rice）盛裝在碗中，單位詞用 bowl，兩碗飯使用複數單位「two bowls of rice」；不可數名詞 rice 本身不加 s。"
   },
   {
     "id": "hwg_b9_311",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I'm thirsty. I'd like a ______ of______.",
     "options": [
       "bottles, juice",
@@ -4635,9 +7591,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_312",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would Nina and Logan like to ______? B: They'd like four ______ of winter melon tea.",
     "options": [
       "eat, bowls",
@@ -4646,13 +7611,22 @@ export const HERE_WE_GO_MCQ_BANK = [
       "drink, glasses"
     ],
     "answer": 3,
-    "explanation": "依據本課核心句型與前後文語意，「drink, glasses」最符合主詞人稱、時態與情境搭配。"
+    "explanation": "冬瓜茶（winter melon tea）為液體飲料，動作使用「drink（喝）」，裝在玻璃杯中四杯使用複數單位詞「four glasses of ...」。"
   },
   {
     "id": "hwg_b9_313",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like to eat? B: ______",
     "options": [
       "We'd like a bottle of juice.",
@@ -4665,9 +7639,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_314",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: She'd like a bowl of soup.",
     "options": [
       "What would you like to drink?",
@@ -4680,9 +7663,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_315",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Terry hungry? B: Yes, he is. ______",
     "options": [
       "He'd like a box of sandwiches.",
@@ -4695,9 +7687,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_316",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: They'd like three bottles of water.",
     "options": [
       "Did they like water?",
@@ -4710,9 +7711,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_317",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like to drink? B: ______",
     "options": [
       "I'd like two pieces of cake.",
@@ -4725,9 +7735,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_318",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: I'm thirsty. ______ How about you? B: I'd like a bottle of water.",
     "options": [
       "I'd like two bowls of salad.",
@@ -4740,9 +7759,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_319",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ the date today?",
     "options": [
       "What's",
@@ -4755,9 +7783,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_320",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "______ January 31st.",
     "options": [
       "It",
@@ -4770,9 +7807,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_321",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Today is June ______.",
     "options": [
       "30th",
@@ -4785,9 +7831,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_322",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Dad's birthday is ______ March 7th.",
     "options": [
       "on",
@@ -4800,9 +7855,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_323",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Evan, when ______ your birthday?",
     "options": [
       "does",
@@ -4815,9 +7879,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_324",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Jessie's birthday is ______ August.",
     "options": [
       "on",
@@ -4830,9 +7903,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_325",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's the ______ today? B: It's March 2nd.",
     "options": [
       "date",
@@ -4845,9 +7927,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_326",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's the date today? B: It's ______ 31st.",
     "options": [
       "February",
@@ -4860,9 +7951,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_327",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is your birthday? B: It's on December 10th.",
     "options": [
       "What",
@@ -4875,9 +7975,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_328",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Teachers' Day is on ______ 28th. Students thank their teachers.",
     "options": [
       "May",
@@ -4890,9 +7999,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_329",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Today is February 28th. B: No. Yesterday was February 28th. ______",
     "options": [
       "Today is March 1st.",
@@ -4905,9 +8023,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_330",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: It's April 15th.",
     "options": [
       "What time is it?",
@@ -4920,9 +8047,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_331",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Excuse me. What's the date today? B: ______",
     "options": [
       "It's on October 20th.",
@@ -4935,9 +8071,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_332",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: When is your birthday? B: ______",
     "options": [
       "It's 17th.",
@@ -4950,9 +8095,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_333",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: When is Chloe's birthday? B: ______",
     "options": [
       "It's in July.",
@@ -4965,9 +8119,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_334",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: My birthday is on August 29th. B: ______ Our birthdays are in the same week.",
     "options": [
       "My birthday is on April 30th.",
@@ -4980,9 +8143,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_335",
+    "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Stand ______ , please.",
     "options": [
       "at",
@@ -4994,9 +8166,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_336",
+    "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Sit ______, please.",
     "options": [
       "down",
@@ -5008,9 +8189,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_337",
+    "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look ______ me, please.",
     "options": [
       "to",
@@ -5022,9 +8212,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_338",
+    "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Line ______, everyone.",
     "options": [
       "at",
@@ -5036,9 +8235,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_339",
+    "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Open ______ book, please.",
     "options": [
       "your",
@@ -5050,9 +8258,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_340",
+    "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Close ______ book, please.",
     "options": [
       "you",
@@ -5064,9 +8281,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_341",
+    "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "One, two, ______, four, five.",
     "options": [
       "eight",
@@ -5078,9 +8304,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_342",
+    "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Two, three, ______, five.",
     "options": [
       "four",
@@ -5092,9 +8327,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_343",
+    "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Listen, please! B: ______",
     "options": [
       "I'm seven.",
@@ -5106,9 +8350,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_344",
+    "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Hi, I am Lucas. B: ______",
     "options": [
       "It's a pen.",
@@ -5120,9 +8373,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_345",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hello! My name ______ Lucas.",
     "options": [
       "is",
@@ -5134,9 +8396,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_346",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hi, I ______ Emma.",
     "options": [
       "is",
@@ -5148,9 +8419,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_347",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's your name? B: ______",
     "options": [
       "You are welcome.",
@@ -5162,9 +8442,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_348",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How are you, Lucas? B: ______",
     "options": [
       "I'm fine, thank you.",
@@ -5176,9 +8465,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_349",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hello! My name ______ Max.",
     "options": [
       "am",
@@ -5190,9 +8488,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_350",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hi, I ______ Nina.",
     "options": [
       "your",
@@ -5204,9 +8511,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_351",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's your name? B: ______",
     "options": [
       "My name is Nina.",
@@ -5218,9 +8534,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_352",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How are you, Max? B: ______",
     "options": [
       "My name is Max.",
@@ -5232,9 +8557,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_353",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hello! My name ______ Leo.",
     "options": [
       "are",
@@ -5246,9 +8580,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_354",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hi, I ______ Chloe.",
     "options": [
       "am",
@@ -5260,9 +8603,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_355",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's your name? B: ______",
     "options": [
       "I'm eight.",
@@ -5274,9 +8626,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_356",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How are you, Leo? B: ______",
     "options": [
       "It's blue.",
@@ -5288,9 +8649,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_357",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hello! My name ______ Kulas.",
     "options": [
       "is",
@@ -5302,9 +8672,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_358",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hi, I ______ Sophie.",
     "options": [
       "is",
@@ -5316,9 +8695,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_359",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's your name? B: ______",
     "options": [
       "You are welcome.",
@@ -5330,9 +8718,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_360",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How are you, Kulas? B: ______",
     "options": [
       "I'm fine, thank you.",
@@ -5344,9 +8741,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_361",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hello! My name ______ Ryan.",
     "options": [
       "am",
@@ -5358,9 +8764,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_362",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hi, I ______ Hannah.",
     "options": [
       "your",
@@ -5372,9 +8787,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_363",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's your name? B: ______",
     "options": [
       "My name is Hannah.",
@@ -5386,9 +8810,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_364",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How are you, Ryan? B: ______",
     "options": [
       "My name is Ryan.",
@@ -5400,9 +8833,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_365",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old ______ you? B: I'm six.",
     "options": [
       "am",
@@ -5414,9 +8856,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_366",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I am six ______ old.",
     "options": [
       "years",
@@ -5428,9 +8879,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_367",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Happy birthday, Lucas! How old are you? B: ______",
     "options": [
       "I'm fine.",
@@ -5442,9 +8902,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_368",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old ______ you? B: I'm seven.",
     "options": [
       "am",
@@ -5456,9 +8925,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_369",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I am seven ______ old.",
     "options": [
       "years",
@@ -5470,9 +8948,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_370",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Happy birthday, Max! How old are you? B: ______",
     "options": [
       "I'm fine.",
@@ -5484,9 +8971,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_371",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old ______ you? B: I'm eight.",
     "options": [
       "am",
@@ -5498,9 +8994,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_372",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I am eight ______ old.",
     "options": [
       "years",
@@ -5512,9 +9017,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_373",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Happy birthday, Leo! How old are you? B: ______",
     "options": [
       "I'm fine.",
@@ -5526,9 +9040,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_374",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old ______ you? B: I'm nine.",
     "options": [
       "am",
@@ -5540,9 +9063,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_375",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I am nine ______ old.",
     "options": [
       "years",
@@ -5554,9 +9086,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_376",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Happy birthday, Kulas! How old are you? B: ______",
     "options": [
       "I'm fine.",
@@ -5568,9 +9109,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_377",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How old ______ you? B: I'm ten.",
     "options": [
       "am",
@@ -5582,9 +9132,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_378",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I am ten ______ old.",
     "options": [
       "years",
@@ -5596,9 +9155,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_379",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Happy birthday, Ryan! How old are you? B: ______",
     "options": [
       "I'm fine.",
@@ -5610,9 +9178,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_380",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Thank you very much! B: ______",
     "options": [
       "My name is Leo.",
@@ -5624,9 +9201,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_381",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ your name? B: I am Chloe.",
     "options": [
       "What's",
@@ -5638,9 +9224,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_382",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ old are you? B: I am nine.",
     "options": [
       "What",
@@ -5652,9 +9247,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_383",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: It's ______ book.",
     "options": [
       "am",
@@ -5666,9 +9270,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_384",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this a book? B: ______ It's a book.",
     "options": [
       "Yes, it is.",
@@ -5680,9 +9293,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_385",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that a book? B: ______ It's a bag.",
     "options": [
       "Yes, it is.",
@@ -5694,9 +9316,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_386",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: It's ______ pencil.",
     "options": [
       "am",
@@ -5708,9 +9339,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_387",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this a pencil? B: ______ It's a pencil.",
     "options": [
       "Yes, it is.",
@@ -5722,9 +9362,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_388",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that a pencil? B: ______ It's a eraser.",
     "options": [
       "Yes, it is.",
@@ -5736,9 +9385,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_389",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: It's ______ ruler.",
     "options": [
       "am",
@@ -5750,9 +9408,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_390",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this a ruler? B: ______ It's a ruler.",
     "options": [
       "Yes, it is.",
@@ -5764,9 +9431,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_391",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that a ruler? B: ______ It's a marker.",
     "options": [
       "Yes, it is.",
@@ -5778,9 +9454,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_392",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this an eraser? B: ______ It's an eraser.",
     "options": [
       "I'm seven.",
@@ -5792,9 +9477,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_393",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that an eraser? B: ______ It's a pencil.",
     "options": [
       "No, it's not.",
@@ -5806,9 +9500,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_394",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: It's ______ apple.",
     "options": [
       "a",
@@ -5820,9 +9523,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_395",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this an apple? B: ______ It's an apple.",
     "options": [
       "I'm seven.",
@@ -5834,9 +9546,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_396",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that an apple? B: ______ It's a book.",
     "options": [
       "No, it's not.",
@@ -5848,9 +9569,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_397",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: It's ______ bag.",
     "options": [
       "an",
@@ -5862,9 +9592,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_398",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this a bag? B: ______ It's a bag.",
     "options": [
       "I'm seven.",
@@ -5876,9 +9615,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_399",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that a bag? B: ______ It's a ruler.",
     "options": [
       "No, it's not.",
@@ -5890,9 +9638,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_400",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ is the pen? B: It's red.",
     "options": [
       "name",
@@ -5904,9 +9661,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_401",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is your bag? B: ______",
     "options": [
       "I'm nine years old.",
@@ -5918,9 +9684,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_402",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ is the pen? B: It's blue.",
     "options": [
       "color",
@@ -5932,9 +9707,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_403",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is your bag? B: ______",
     "options": [
       "It's a bag.",
@@ -5946,9 +9730,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_404",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ is the pen? B: It's yellow.",
     "options": [
       "old",
@@ -5960,9 +9753,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_405",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is your bag? B: ______",
     "options": [
       "It's yellow and green.",
@@ -5974,9 +9776,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_406",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ is the pen? B: It's green.",
     "options": [
       "name",
@@ -5988,9 +9799,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_407",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is your bag? B: ______",
     "options": [
       "I'm nine years old.",
@@ -6002,9 +9822,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_408",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ is the pen? B: It's black.",
     "options": [
       "color",
@@ -6016,9 +9845,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_409",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is your bag? B: ______",
     "options": [
       "It's a bag.",
@@ -6030,9 +9868,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_410",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ is the pen? B: It's white.",
     "options": [
       "old",
@@ -6044,9 +9891,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_411",
+    "track": "textbook",
     "book": 1,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is your bag? B: ______",
     "options": [
       "It's white and red.",
@@ -6058,9 +9914,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_412",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's this? B: ______ a yellow pencil.",
     "options": [
       "It",
@@ -6072,9 +9937,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_413",
+    "track": "textbook",
     "book": 1,
     "unit": "Review 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What color is the eraser? B: ______",
     "options": [
       "Yes, it is.",
@@ -6086,9 +9960,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_414",
+    "track": "textbook",
     "book": 1,
     "unit": "Festival",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Trick or treat! B: ______",
     "options": [
       "Happy Halloween! Here are some candies.",
@@ -6100,9 +9983,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b1_415",
+    "track": "textbook",
     "book": 1,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! It's ______ orange pumpkin.",
     "options": [
       "a",
@@ -6114,9 +10006,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_416",
+    "track": "textbook",
     "book": 2,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Eleven, ______, thirteen.",
     "options": [
       "twenty",
@@ -6128,9 +10029,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_417",
+    "track": "textbook",
     "book": 2,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Twelve, ______, fourteen.",
     "options": [
       "thirteen",
@@ -6142,9 +10052,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_418",
+    "track": "textbook",
     "book": 2,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Thirteen, ______, fifteen.",
     "options": [
       "seven",
@@ -6156,9 +10075,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_419",
+    "track": "textbook",
     "book": 2,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Count with me! Eleven, twelve, thirteen! B: ______",
     "options": [
       "No, I cannot.",
@@ -6170,9 +10098,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_420",
+    "track": "textbook",
     "book": 2,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Good job, Lucas! B: ______",
     "options": [
       "Thank you!",
@@ -6184,9 +10121,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_421",
+    "track": "textbook",
     "book": 2,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's that? B: It's ______ small cat.",
     "options": [
       "an",
@@ -6198,9 +10144,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_422",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ that a dog? B: Yes, it is.",
     "options": [
       "Can",
@@ -6212,9 +10167,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_423",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! It's a big ______.",
     "options": [
       "dog",
@@ -6226,9 +10190,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_424",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this a dog? B: ______ It's a cat.",
     "options": [
       "Yes, it is.",
@@ -6240,9 +10213,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_425",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that your dog? B: ______ It's very cute.",
     "options": [
       "I'm ten.",
@@ -6254,9 +10236,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_426",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ that a cat? B: Yes, it is.",
     "options": [
       "Is",
@@ -6268,9 +10259,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_427",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! It's a small ______.",
     "options": [
       "swim",
@@ -6282,9 +10282,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_428",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this a cat? B: ______ It's a bird.",
     "options": [
       "Yes, I can.",
@@ -6296,9 +10305,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_429",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that your cat? B: ______ It's very cute.",
     "options": [
       "Yes, it is.",
@@ -6310,9 +10328,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_430",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ that a bird? B: Yes, it is.",
     "options": [
       "Are",
@@ -6324,9 +10351,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_431",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! It's a big ______.",
     "options": [
       "tall",
@@ -6338,9 +10374,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_432",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this a bird? B: ______ It's a fish.",
     "options": [
       "No, it's not.",
@@ -6352,9 +10397,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_433",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that your bird? B: ______ It's very cute.",
     "options": [
       "No, I cannot.",
@@ -6366,9 +10420,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_434",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ that a fish? B: Yes, it is.",
     "options": [
       "Can",
@@ -6380,9 +10443,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_435",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! It's a small ______.",
     "options": [
       "fish",
@@ -6394,9 +10466,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_436",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this a fish? B: ______ It's a rabbit.",
     "options": [
       "Yes, it is.",
@@ -6408,9 +10489,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_437",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that your fish? B: ______ It's very cute.",
     "options": [
       "I'm ten.",
@@ -6422,9 +10512,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_438",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ that a rabbit? B: Yes, it is.",
     "options": [
       "Is",
@@ -6436,9 +10535,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_439",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! It's a big ______.",
     "options": [
       "swim",
@@ -6450,9 +10558,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_440",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this a rabbit? B: ______ It's a turtle.",
     "options": [
       "Yes, I can.",
@@ -6464,9 +10581,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_441",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that your rabbit? B: ______ It's very cute.",
     "options": [
       "Yes, it is.",
@@ -6478,9 +10604,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_442",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ that a turtle? B: Yes, it is.",
     "options": [
       "Are",
@@ -6492,9 +10627,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_443",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! It's a small ______.",
     "options": [
       "tall",
@@ -6506,9 +10650,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_444",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is this a turtle? B: ______ It's a dog.",
     "options": [
       "No, it's not.",
@@ -6520,9 +10673,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_445",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that your turtle? B: ______ It's very cute.",
     "options": [
       "No, I cannot.",
@@ -6534,9 +10696,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_446",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you dance? B: Yes, I ______.",
     "options": [
       "do",
@@ -6548,9 +10719,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_447",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lucas can ______ very well.",
     "options": [
       "dance",
@@ -6562,9 +10742,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_448",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can Lucas dance? B: ______",
     "options": [
       "Yes, he is.",
@@ -6576,9 +10765,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_449",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you dance, Leo? B: ______ But I can sing.",
     "options": [
       "It's a dog.",
@@ -6590,9 +10788,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_450",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you draw? B: Yes, I ______.",
     "options": [
       "can",
@@ -6604,9 +10811,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_451",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Nina can ______ very well.",
     "options": [
       "draws",
@@ -6618,9 +10834,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_452",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can Nina draw? B: ______",
     "options": [
       "No, it's not.",
@@ -6632,9 +10857,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_453",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you draw, Leo? B: ______ But I can sing.",
     "options": [
       "No, I can't.",
@@ -6646,9 +10880,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_454",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you jump? B: Yes, I ______.",
     "options": [
       "am",
@@ -6660,9 +10903,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_455",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Leo can ______ very well.",
     "options": [
       "jumping",
@@ -6674,9 +10926,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_456",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can Leo jump? B: ______",
     "options": [
       "Yes, he can.",
@@ -6688,9 +10949,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_457",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you jump, Leo? B: ______ But I can sing.",
     "options": [
       "Yes, I can.",
@@ -6702,9 +10972,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_458",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you read? B: Yes, I ______.",
     "options": [
       "do",
@@ -6716,9 +10995,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_459",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Sophie can ______ very well.",
     "options": [
       "read",
@@ -6730,9 +11018,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_460",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can Sophie read? B: ______",
     "options": [
       "Yes, she is.",
@@ -6744,9 +11041,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_461",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you read, Leo? B: ______ But I can sing.",
     "options": [
       "It's a dog.",
@@ -6758,9 +11064,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_462",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you sing? B: Yes, I ______.",
     "options": [
       "can",
@@ -6772,9 +11087,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_463",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ryan can ______ very well.",
     "options": [
       "sings",
@@ -6786,9 +11110,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_464",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can Ryan sing? B: ______",
     "options": [
       "No, it's not.",
@@ -6800,9 +11133,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_465",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you sing, Leo? B: ______ But I can sing.",
     "options": [
       "No, I can't.",
@@ -6814,9 +11156,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_466",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you swim? B: Yes, I ______.",
     "options": [
       "am",
@@ -6828,9 +11179,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_467",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Maya can ______ very well.",
     "options": [
       "swiming",
@@ -6842,9 +11202,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_468",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can Maya swim? B: ______",
     "options": [
       "Yes, she can.",
@@ -6856,9 +11225,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_469",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you swim, Leo? B: ______ But I can sing.",
     "options": [
       "Yes, I can.",
@@ -6870,9 +11248,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_470",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you write? B: Yes, I ______.",
     "options": [
       "do",
@@ -6884,9 +11271,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_471",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Noah can ______ very well.",
     "options": [
       "write",
@@ -6898,9 +11294,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_472",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can Noah write? B: ______",
     "options": [
       "Yes, he is.",
@@ -6912,9 +11317,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_473",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Can you write, Leo? B: ______ But I can sing.",
     "options": [
       "It's a dog.",
@@ -6926,9 +11340,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_474",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that a big dog? B: No, ______ isn't.",
     "options": [
       "it",
@@ -6940,9 +11363,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_475",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, I can. I can dance!",
     "options": [
       "Are you Lucas?",
@@ -6954,9 +11386,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_476",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that a big cat? B: No, ______ isn't.",
     "options": [
       "he",
@@ -6968,9 +11409,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_477",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, I can. I can draw!",
     "options": [
       "Can you draw?",
@@ -6982,9 +11432,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_478",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that a big bird? B: No, ______ isn't.",
     "options": [
       "that",
@@ -6996,9 +11455,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_479",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, I can. I can jump!",
     "options": [
       "What is that?",
@@ -7010,9 +11478,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_480",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that a big fish? B: No, ______ isn't.",
     "options": [
       "it",
@@ -7024,9 +11501,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_481",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, I can. I can read!",
     "options": [
       "Are you Kulas?",
@@ -7038,9 +11524,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_482",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that a big rabbit? B: No, ______ isn't.",
     "options": [
       "he",
@@ -7052,9 +11547,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_483",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, I can. I can sing!",
     "options": [
       "Can you sing?",
@@ -7066,9 +11570,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_484",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is that a big turtle? B: No, ______ isn't.",
     "options": [
       "that",
@@ -7080,9 +11593,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_485",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ B: Yes, I can. I can swim!",
     "options": [
       "What is that?",
@@ -7094,9 +11616,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_486",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is he? B: He's my father.",
     "options": [
       "Who",
@@ -7108,9 +11639,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_487",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who's he? B: ______ my father.",
     "options": [
       "She's",
@@ -7122,9 +11662,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_488",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who is that man? B: ______",
     "options": [
       "Yes, I can.",
@@ -7136,9 +11685,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_489",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is he your father? B: ______",
     "options": [
       "Yes, he is.",
@@ -7150,9 +11708,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_490",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is she? B: She's my mother.",
     "options": [
       "What",
@@ -7164,9 +11731,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_491",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who's she? B: ______ my mother.",
     "options": [
       "It's",
@@ -7178,9 +11754,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_492",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who is that woman? B: ______",
     "options": [
       "She's my mother.",
@@ -7192,9 +11777,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_493",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is she your mother? B: ______",
     "options": [
       "No, she can't.",
@@ -7206,9 +11800,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_494",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is he? B: He's my brother.",
     "options": [
       "How",
@@ -7220,9 +11823,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_495",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who's he? B: ______ my brother.",
     "options": [
       "He's",
@@ -7234,9 +11846,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_496",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who is that man? B: ______",
     "options": [
       "She's my brother.",
@@ -7248,9 +11869,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_497",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is he your brother? B: ______",
     "options": [
       "It's a bird.",
@@ -7262,9 +11892,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_498",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is she? B: She's my sister.",
     "options": [
       "Who",
@@ -7276,9 +11915,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_499",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who's she? B: ______ my sister.",
     "options": [
       "He's",
@@ -7290,9 +11938,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_500",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who is that woman? B: ______",
     "options": [
       "Yes, I can.",
@@ -7304,9 +11961,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_501",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is she your sister? B: ______",
     "options": [
       "Yes, she is.",
@@ -7318,9 +11984,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_502",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is he? B: He's my grandfather.",
     "options": [
       "What",
@@ -7332,9 +12007,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_503",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who's he? B: ______ my grandfather.",
     "options": [
       "It's",
@@ -7346,9 +12030,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_504",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who is that man? B: ______",
     "options": [
       "He's my grandfather.",
@@ -7360,9 +12053,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_505",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is he your grandfather? B: ______",
     "options": [
       "No, he can't.",
@@ -7374,9 +12076,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_506",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is she? B: She's my grandmother.",
     "options": [
       "How",
@@ -7388,9 +12099,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_507",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who's she? B: ______ my grandmother.",
     "options": [
       "She's",
@@ -7402,9 +12122,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_508",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who is that woman? B: ______",
     "options": [
       "He's my grandmother.",
@@ -7416,9 +12145,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_509",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is she your grandmother? B: ______",
     "options": [
       "It's a bird.",
@@ -7430,9 +12168,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_510",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My father is ______ doctor.",
     "options": [
       "a",
@@ -7444,9 +12191,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_511",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Lucas a doctor? B: No, he ______.",
     "options": [
       "not",
@@ -7458,9 +12214,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_512",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Lucas a doctor? B: ______ He's a cook.",
     "options": [
       "Yes, I am.",
@@ -7472,9 +12237,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_513",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you a doctor? B: ______",
     "options": [
       "Yes, I am.",
@@ -7486,9 +12260,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_514",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My mother is ______ nurse.",
     "options": [
       "an",
@@ -7500,9 +12283,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_515",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Nina a nurse? B: No, she ______.",
     "options": [
       "can't",
@@ -7514,9 +12306,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_516",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Nina a nurse? B: ______ She's a driver.",
     "options": [
       "No, she isn't.",
@@ -7528,9 +12329,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_517",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you a nurse? B: ______",
     "options": [
       "Yes, you are.",
@@ -7542,9 +12352,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_518",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My mother is ______ teacher.",
     "options": [
       "are",
@@ -7556,9 +12375,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_519",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Chloe a teacher? B: No, she ______.",
     "options": [
       "isn't",
@@ -7570,9 +12398,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_520",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Chloe a teacher? B: ______ She's a doctor.",
     "options": [
       "Yes, she is.",
@@ -7584,9 +12421,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_521",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you a teacher? B: ______",
     "options": [
       "No, he is not.",
@@ -7598,9 +12444,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_522",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My father is ______ student.",
     "options": [
       "a",
@@ -7612,9 +12467,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_523",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Kulas a student? B: No, he ______.",
     "options": [
       "not",
@@ -7626,9 +12490,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_524",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Kulas a student? B: ______ He's a teacher.",
     "options": [
       "Yes, I am.",
@@ -7640,9 +12513,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_525",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you a student? B: ______",
     "options": [
       "Yes, I am.",
@@ -7654,9 +12536,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_526",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My father is ______ driver.",
     "options": [
       "an",
@@ -7668,9 +12559,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_527",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Ryan a driver? B: No, he ______.",
     "options": [
       "can't",
@@ -7682,9 +12582,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_528",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Ryan a driver? B: ______ He's a nurse.",
     "options": [
       "No, he isn't.",
@@ -7696,9 +12605,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_529",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you a driver? B: ______",
     "options": [
       "Yes, you are.",
@@ -7710,9 +12628,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_530",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My mother is ______ cook.",
     "options": [
       "are",
@@ -7724,9 +12651,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_531",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Maya a cook? B: No, she ______.",
     "options": [
       "isn't",
@@ -7738,9 +12674,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_532",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is Maya a cook? B: ______ She's a student.",
     "options": [
       "Yes, she is.",
@@ -7752,9 +12697,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_533",
+    "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you a cook? B: ______",
     "options": [
       "No, he is not.",
@@ -7766,9 +12720,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_534",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Who's he? B: He is ______ brother. He's a doctor.",
     "options": [
       "my",
@@ -7780,9 +12743,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_535",
+    "track": "textbook",
     "book": 2,
     "unit": "Review 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Nice to meet you, Emma. B: ______",
     "options": [
       "I'm a student.",
@@ -7794,9 +12766,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_536",
+    "track": "textbook",
     "book": 2,
     "unit": "Festival",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Happy Mother's Day, Mom! This card is for you. B: ______",
     "options": [
       "Try again.",
@@ -7808,9 +12789,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b2_537",
+    "track": "textbook",
     "book": 2,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "I love ______ mother very much.",
     "options": [
       "my",
@@ -7822,9 +12812,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_538",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How ______ the weather in Taipei? B: It's sunny.",
     "options": [
       "am",
@@ -7837,9 +12836,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_539",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How's the weather today? B: ______ Let's take an umbrella.",
     "options": [
       "They're apples.",
@@ -7852,9 +12860,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_540",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How ______ the weather in Tokyo? B: It's rainy.",
     "options": [
       "is",
@@ -7867,9 +12884,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_541",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How ______ the weather in London? B: It's windy.",
     "options": [
       "are",
@@ -7882,9 +12908,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_542",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How ______ the weather in Sydney? B: It's cloudy.",
     "options": [
       "am",
@@ -7897,9 +12932,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_543",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How ______ the weather in New York? B: It's hot.",
     "options": [
       "can",
@@ -7912,9 +12956,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_544",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How ______ the weather in Seoul? B: It's cold.",
     "options": [
       "is",
@@ -7927,9 +12980,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_545",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How ______ the weather in Taipei? B: It's warm.",
     "options": [
       "are",
@@ -7942,9 +13004,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_546",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How ______ the weather in Tokyo? B: It's cool.",
     "options": [
       "am",
@@ -7957,9 +13028,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_547",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you hungry, Lucas? B: Yes, I ______.",
     "options": [
       "do",
@@ -7972,9 +13052,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_548",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you hungry? B: Yes, I am. I want to eat some noodles.",
     "options": [
       "Yes, I am.",
@@ -7987,9 +13076,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_549",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you thirsty, Max? B: Yes, I ______.",
     "options": [
       "are",
@@ -8002,9 +13100,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_550",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you thirsty? B: Yes, I am. I want to drink some juice.",
     "options": [
       "Yes, he is.",
@@ -8017,9 +13124,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_551",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you tired, Leo? B: Yes, I ______.",
     "options": [
       "do",
@@ -8032,9 +13148,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_552",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you tired? B: Yes, I am. I want to take a rest.",
     "options": [
       "Yes, I am.",
@@ -8047,9 +13172,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_553",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you happy, Kulas? B: Yes, I ______.",
     "options": [
       "are",
@@ -8062,9 +13196,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_554",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you happy? B: Yes, I am. I want to sing a song.",
     "options": [
       "Yes, he is.",
@@ -8077,9 +13220,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_555",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you sad, Ryan? B: Yes, I ______.",
     "options": [
       "do",
@@ -8092,9 +13244,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_556",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you sad? B: Yes, I am. I want to talk to Mom.",
     "options": [
       "Yes, I am.",
@@ -8107,9 +13268,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_557",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you full, Owen? B: Yes, I ______.",
     "options": [
       "are",
@@ -8122,9 +13292,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_558",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you full? B: Yes, I am. I want to take a walk.",
     "options": [
       "Yes, he is.",
@@ -8137,9 +13316,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_559",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are these? B: ______ are apples.",
     "options": [
       "That",
@@ -8152,9 +13340,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_560",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these apples? B: ______ They're sweet and yummy!",
     "options": [
       "Yes, they are.",
@@ -8167,9 +13364,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_561",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are those? B: ______ are bananas.",
     "options": [
       "It",
@@ -8182,9 +13388,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_562",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are those bananas? B: ______ They're sweet and yummy!",
     "options": [
       "No, they aren't.",
@@ -8197,9 +13412,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_563",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are these? B: ______ are oranges.",
     "options": [
       "That",
@@ -8212,9 +13436,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_564",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these oranges? B: ______ They're sweet and yummy!",
     "options": [
       "Yes, they are.",
@@ -8227,9 +13460,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_565",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are those? B: ______ are tomatoes.",
     "options": [
       "It",
@@ -8242,9 +13484,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_566",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are those tomatoes? B: ______ They're sweet and yummy!",
     "options": [
       "No, they aren't.",
@@ -8257,9 +13508,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_567",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are these? B: ______ are hamburgers.",
     "options": [
       "That",
@@ -8272,9 +13532,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_568",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these hamburgers? B: ______ They're sweet and yummy!",
     "options": [
       "Yes, they are.",
@@ -8287,9 +13556,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_569",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are those? B: ______ are hot dogs.",
     "options": [
       "It",
@@ -8302,9 +13580,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_570",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are those hot dogs? B: ______ They're sweet and yummy!",
     "options": [
       "No, they aren't.",
@@ -8317,9 +13604,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_571",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are these? B: ______ are sandwiches.",
     "options": [
       "That",
@@ -8332,9 +13628,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_572",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these sandwiches? B: ______ They're sweet and yummy!",
     "options": [
       "Yes, they are.",
@@ -8347,9 +13652,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_573",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are those? B: ______ are cookies.",
     "options": [
       "It",
@@ -8362,9 +13676,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_574",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are those cookies? B: ______ They're sweet and yummy!",
     "options": [
       "No, they aren't.",
@@ -8377,9 +13700,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_575",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you want some pizza? B: Yes, please.",
     "options": [
       "Can",
@@ -8392,9 +13724,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_576",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some pizza, Emma? B: ______ I want some water.",
     "options": [
       "No, thank you.",
@@ -8407,9 +13748,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_577",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you want some juice? B: Yes, please.",
     "options": [
       "Are",
@@ -8422,9 +13772,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_578",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some juice, Nina? B: ______ I want some water.",
     "options": [
       "Yes, I am.",
@@ -8437,9 +13796,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_579",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you want some milk? B: Yes, please.",
     "options": [
       "Can",
@@ -8452,9 +13820,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_580",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some milk, Chloe? B: ______ I want some water.",
     "options": [
       "No, thank you.",
@@ -8467,9 +13844,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_581",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you want some water? B: Yes, please.",
     "options": [
       "Are",
@@ -8482,9 +13868,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_582",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some water, Sophie? B: ______ I want some water.",
     "options": [
       "Yes, I am.",
@@ -8497,9 +13892,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_583",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you want some cake? B: Yes, please.",
     "options": [
       "Can",
@@ -8512,9 +13916,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_584",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some cake, Hannah? B: ______ I want some water.",
     "options": [
       "No, thank you.",
@@ -8527,9 +13940,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_585",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you want some ice cream? B: Yes, please.",
     "options": [
       "Are",
@@ -8542,9 +13964,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_586",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some ice cream, Maya? B: ______ I want some water.",
     "options": [
       "Yes, I am.",
@@ -8557,9 +13988,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_587",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you want some soup? B: Yes, please.",
     "options": [
       "Can",
@@ -8572,9 +14012,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_588",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some soup, Lily? B: ______ I want some water.",
     "options": [
       "No, thank you.",
@@ -8587,9 +14036,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_589",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you want some tea? B: Yes, please.",
     "options": [
       "Are",
@@ -8602,9 +14060,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b3_590",
+    "track": "textbook",
     "book": 3,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you want some tea, Ava? B: ______ I want some water.",
     "options": [
       "Yes, I am.",
@@ -8617,9 +14084,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_591",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's seven o'clock. Time ______ breakfast!",
     "options": [
       "in",
@@ -8632,9 +14108,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_592",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Excuse me. What time is it? B: ______",
     "options": [
       "It's seven o'clock.",
@@ -8647,9 +14132,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_593",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ time is it now? B: It's seven o'clock.",
     "options": [
       "How",
@@ -8662,9 +14156,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_594",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's twelve o'clock. Time ______ lunch!",
     "options": [
       "at",
@@ -8677,9 +14180,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_595",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Excuse me. What time is it? B: ______",
     "options": [
       "Yes, it is.",
@@ -8692,9 +14204,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_596",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ time is it now? B: It's twelve o'clock.",
     "options": [
       "What",
@@ -8707,9 +14228,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_597",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's six thirty. Time ______ dinner!",
     "options": [
       "to",
@@ -8722,9 +14252,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_598",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Excuse me. What time is it? B: ______",
     "options": [
       "I'm reading.",
@@ -8737,9 +14276,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_599",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ time is it now? B: It's six thirty.",
     "options": [
       "Who",
@@ -8752,9 +14300,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_600",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's nine thirty. Time ______ bed!",
     "options": [
       "for",
@@ -8767,9 +14324,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_601",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Excuse me. What time is it? B: ______",
     "options": [
       "It's under the chair.",
@@ -8782,9 +14348,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_602",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ time is it now? B: It's nine thirty.",
     "options": [
       "Where",
@@ -8797,9 +14372,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_603",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's eight o'clock. Time ______ school!",
     "options": [
       "in",
@@ -8812,9 +14396,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_604",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Excuse me. What time is it? B: ______",
     "options": [
       "It's eight o'clock.",
@@ -8827,9 +14420,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_605",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ time is it now? B: It's eight o'clock.",
     "options": [
       "How",
@@ -8842,9 +14444,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_606",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's four fifteen. Time ______ home!",
     "options": [
       "at",
@@ -8857,9 +14468,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_607",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Excuse me. What time is it? B: ______",
     "options": [
       "Yes, it is.",
@@ -8872,9 +14492,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_608",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ time is it now? B: It's four fifteen.",
     "options": [
       "What",
@@ -8887,9 +14516,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_609",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! Lucas is ______ in the kitchen.",
     "options": [
       "cook",
@@ -8902,9 +14540,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_610",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Emma doing? B: She is cooking.",
     "options": [
       "am",
@@ -8917,9 +14564,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_611",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are you doing, Lucas? B: ______",
     "options": [
       "It's ten o'clock.",
@@ -8932,9 +14588,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_612",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! Max is ______ in the dining room.",
     "options": [
       "eating",
@@ -8947,9 +14612,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_613",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Nina doing? B: She is eating.",
     "options": [
       "are",
@@ -8962,9 +14636,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_614",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are you doing, Max? B: ______",
     "options": [
       "I can eat.",
@@ -8977,9 +14660,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_615",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! Leo is ______ in the bedroom.",
     "options": [
       "to sleep",
@@ -8992,9 +14684,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_616",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Chloe doing? B: She is sleeping.",
     "options": [
       "is",
@@ -9007,9 +14708,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_617",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are you doing, Leo? B: ______",
     "options": [
       "He's sleeping.",
@@ -9022,9 +14732,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_618",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! Kulas is ______ in the living room.",
     "options": [
       "reads",
@@ -9037,9 +14756,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_619",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Sophie doing? B: She is reading.",
     "options": [
       "does",
@@ -9052,9 +14780,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_620",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are you doing, Kulas? B: ______",
     "options": [
       "I'm reading.",
@@ -9067,9 +14804,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_621",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! Ryan is ______ in the pool.",
     "options": [
       "swim",
@@ -9082,9 +14828,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_622",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Hannah doing? B: She is swimming.",
     "options": [
       "am",
@@ -9097,9 +14852,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_623",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are you doing, Ryan? B: ______",
     "options": [
       "It's ten o'clock.",
@@ -9112,9 +14876,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_624",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! Owen is ______ in the yard.",
     "options": [
       "running",
@@ -9127,9 +14900,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_625",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Maya doing? B: She is running.",
     "options": [
       "are",
@@ -9142,9 +14924,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_626",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are you doing, Owen? B: ______",
     "options": [
       "I can run.",
@@ -9157,9 +14948,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_627",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! Noah is ______ at the desk.",
     "options": [
       "to write",
@@ -9172,9 +14972,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_628",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Lily doing? B: She is writing.",
     "options": [
       "is",
@@ -9187,9 +14996,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_629",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are you doing, Noah? B: ______",
     "options": [
       "He's writing.",
@@ -9202,9 +15020,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_630",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! Alex is ______ some milk.",
     "options": [
       "drinks",
@@ -9217,9 +15044,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_631",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Ava doing? B: She is drinking.",
     "options": [
       "does",
@@ -9232,9 +15068,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_632",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are you doing, Alex? B: ______",
     "options": [
       "I'm drinking.",
@@ -9247,9 +15092,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_633",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! Ethan is ______ a picture.",
     "options": [
       "draw",
@@ -9262,9 +15116,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_634",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Bella doing? B: She is drawing.",
     "options": [
       "am",
@@ -9277,9 +15140,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_635",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are you doing, Ethan? B: ______",
     "options": [
       "It's ten o'clock.",
@@ -9292,9 +15164,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_636",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! Dylan is ______ in the room.",
     "options": [
       "dancing",
@@ -9307,9 +15188,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_637",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What ______ Uma doing? B: She is dancing.",
     "options": [
       "are",
@@ -9322,9 +15212,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_638",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What are you doing, Dylan? B: ______",
     "options": [
       "I can dance.",
@@ -9337,9 +15236,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_639",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is Lucas? B: He's in the bedroom.",
     "options": [
       "How",
@@ -9352,9 +15260,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_640",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Emma is reading ______ the bedroom.",
     "options": [
       "in",
@@ -9367,9 +15284,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_641",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is your brother in the bedroom? B: ______ He's in the kitchen.",
     "options": [
       "Yes, he is.",
@@ -9382,9 +15308,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_642",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is Max? B: He's in the bathroom.",
     "options": [
       "Who",
@@ -9397,9 +15332,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_643",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Nina is reading ______ the bathroom.",
     "options": [
       "to",
@@ -9412,9 +15356,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_644",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is your brother in the bathroom? B: ______ He's in the kitchen.",
     "options": [
       "No, he isn't.",
@@ -9427,9 +15380,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_645",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is Leo? B: He's in the living room.",
     "options": [
       "What",
@@ -9442,9 +15404,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_646",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Chloe is reading ______ the living room.",
     "options": [
       "under",
@@ -9457,9 +15428,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_647",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is your brother in the living room? B: ______ He's in the kitchen.",
     "options": [
       "He is cooking.",
@@ -9472,9 +15452,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_648",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is Kulas? B: He's in the dining room.",
     "options": [
       "Where",
@@ -9487,9 +15476,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_649",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Sophie is reading ______ the dining room.",
     "options": [
       "on",
@@ -9502,9 +15500,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_650",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is your brother in the dining room? B: ______ He's in the kitchen.",
     "options": [
       "No, she isn't.",
@@ -9517,9 +15524,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_651",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is Ryan? B: He's in the kitchen.",
     "options": [
       "How",
@@ -9532,9 +15548,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_652",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hannah is reading ______ the kitchen.",
     "options": [
       "in",
@@ -9547,9 +15572,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_653",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is your brother in the kitchen? B: ______ He's in the kitchen.",
     "options": [
       "Yes, he is.",
@@ -9562,9 +15596,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_654",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ is Owen? B: He's in the yard.",
     "options": [
       "Who",
@@ -9577,9 +15620,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_655",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Maya is reading ______ the yard.",
     "options": [
       "to",
@@ -9592,9 +15644,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_656",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is your brother in the yard? B: ______ He's in the kitchen.",
     "options": [
       "No, he isn't.",
@@ -9607,9 +15668,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_657",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is my hat? B: It's on the chair.",
     "options": [
       "are",
@@ -9622,9 +15692,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_658",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is the hat? B: ______",
     "options": [
       "I'm in the bedroom.",
@@ -9637,9 +15716,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_659",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is my bag? B: It's under the desk.",
     "options": [
       "do",
@@ -9652,9 +15740,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_660",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is the bag? B: ______",
     "options": [
       "It's under the desk.",
@@ -9667,9 +15764,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_661",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is my pencil case? B: It's in the box.",
     "options": [
       "are",
@@ -9682,9 +15788,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_662",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is the pencil case? B: ______",
     "options": [
       "I'm in the bedroom.",
@@ -9697,9 +15812,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_663",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is my watch? B: It's on the table.",
     "options": [
       "do",
@@ -9712,9 +15836,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_664",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is the watch? B: ______",
     "options": [
       "It's on the table.",
@@ -9727,9 +15860,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_665",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are my keys? B: They're in the bag.",
     "options": [
       "is",
@@ -9742,9 +15884,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_666",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are the keys? B: ______",
     "options": [
       "I'm in the bedroom.",
@@ -9757,9 +15908,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_667",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are my glasses? B: They're on the book.",
     "options": [
       "do",
@@ -9772,9 +15932,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_668",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are the glasses? B: ______",
     "options": [
       "They're on the book.",
@@ -9787,9 +15956,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_669",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are my shoes? B: They're under the bed.",
     "options": [
       "is",
@@ -9802,9 +15980,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_670",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are the shoes? B: ______",
     "options": [
       "I'm in the bedroom.",
@@ -9817,9 +16004,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_671",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are my socks? B: They're in the box.",
     "options": [
       "do",
@@ -9832,9 +16028,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_672",
+    "track": "textbook",
     "book": 4,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are the socks? B: ______",
     "options": [
       "They're in the box.",
@@ -9847,9 +16052,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_673",
+    "track": "textbook",
     "book": 4,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How many desks are there? B: Twenty, twenty-one, ______!",
     "options": [
       "twelve",
@@ -9862,9 +16076,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_674",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's eight o'clock. Lucas and Emma ______ reading in the living room.",
     "options": [
       "am",
@@ -9877,9 +16100,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_675",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you cooking, Lucas? B: ______ I'm doing my homework.",
     "options": [
       "It's nine o'clock.",
@@ -9892,9 +16124,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_676",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are my pencil case? B: Look! ______ under the chair.",
     "options": [
       "They're",
@@ -9907,9 +16148,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_677",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is the hat on the chair? B: ______ Here it is!",
     "options": [
       "Yes, they are.",
@@ -9922,9 +16172,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_678",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's eight o'clock. Max and Nina ______ reading in the living room.",
     "options": [
       "am",
@@ -9937,9 +16196,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_679",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you eating, Max? B: ______ I'm doing my homework.",
     "options": [
       "It's nine o'clock.",
@@ -9952,9 +16220,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_680",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are my watch? B: Look! ______ under the chair.",
     "options": [
       "They're",
@@ -9967,9 +16244,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_681",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is the bag under the desk? B: ______ Here it is!",
     "options": [
       "Yes, they are.",
@@ -9982,9 +16268,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_682",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's eight o'clock. Leo and Chloe ______ reading in the living room.",
     "options": [
       "am",
@@ -9997,9 +16292,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_683",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you sleeping, Leo? B: ______ I'm doing my homework.",
     "options": [
       "It's nine o'clock.",
@@ -10012,9 +16316,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_684",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are my keys? B: Look! ______ under the chair.",
     "options": [
       "They're",
@@ -10027,9 +16340,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_685",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is the pencil case in the box? B: ______ Here it is!",
     "options": [
       "Yes, they are.",
@@ -10042,9 +16364,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_686",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's eight o'clock. Kulas and Sophie ______ reading in the living room.",
     "options": [
       "am",
@@ -10057,9 +16388,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_687",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you reading, Kulas? B: ______ I'm doing my homework.",
     "options": [
       "It's nine o'clock.",
@@ -10072,9 +16412,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_688",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are my glasses? B: Look! ______ under the chair.",
     "options": [
       "They're",
@@ -10087,9 +16436,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_689",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is the watch on the table? B: ______ Here it is!",
     "options": [
       "Yes, they are.",
@@ -10102,9 +16460,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_690",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's eight o'clock. Ryan and Hannah ______ reading in the living room.",
     "options": [
       "am",
@@ -10117,9 +16484,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_691",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you swimming, Ryan? B: ______ I'm doing my homework.",
     "options": [
       "It's nine o'clock.",
@@ -10132,9 +16508,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_692",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are my shoes? B: Look! ______ under the chair.",
     "options": [
       "They're",
@@ -10147,9 +16532,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_693",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's eight o'clock. Owen and Maya ______ reading in the living room.",
     "options": [
       "is",
@@ -10162,9 +16556,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_694",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are you running, Owen? B: ______ I'm doing my homework.",
     "options": [
       "No, he isn't.",
@@ -10177,9 +16580,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_695",
+    "track": "textbook",
     "book": 4,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where are my socks? B: Look! ______ under the chair.",
     "options": [
       "She's",
@@ -10192,9 +16604,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_696",
+    "track": "textbook",
     "book": 4,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Twenty-five, twenty-six, ______, twenty-eight.",
     "options": [
       "twenty-seven",
@@ -10207,9 +16628,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_697",
+    "track": "textbook",
     "book": 4,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Hurry up! It is seven fifty! B: ______",
     "options": [
       "It's under the bed.",
@@ -10222,9 +16652,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_698",
+    "track": "textbook",
     "book": 4,
     "unit": "Festival",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Happy Dragon Boat Festival! Do you like rice dumplings? B: ______",
     "options": [
       "No, he isn't.",
@@ -10237,9 +16676,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b4_699",
+    "track": "textbook",
     "book": 4,
     "unit": "Festival",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Look! They ______ rowing a dragon boat on the river.",
     "options": [
       "do",
@@ -10252,9 +16700,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_700",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is today Monday? B: Yes, ______ is.",
     "options": [
       "it",
@@ -10267,9 +16724,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_701",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lucas ______ English class on Monday.",
     "options": [
       "have",
@@ -10282,9 +16748,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_702",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Lucas ______ English class on Monday? B: Yes, he does.",
     "options": [
       "having",
@@ -10297,9 +16772,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_703",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is today Tuesday? B: Yes, ______ is.",
     "options": [
       "he",
@@ -10312,9 +16796,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_704",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Max ______ math class on Tuesday.",
     "options": [
       "has",
@@ -10327,9 +16820,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_705",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Max ______ math class on Tuesday? B: Yes, he does.",
     "options": [
       "has",
@@ -10342,9 +16844,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_706",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is today Wednesday? B: Yes, ______ is.",
     "options": [
       "they",
@@ -10357,9 +16868,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_707",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Leo ______ music class on Wednesday.",
     "options": [
       "is",
@@ -10372,9 +16892,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_708",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Leo ______ music class on Wednesday? B: Yes, he does.",
     "options": [
       "have",
@@ -10387,9 +16916,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_709",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is today Thursday? B: Yes, ______ is.",
     "options": [
       "today",
@@ -10402,9 +16940,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_710",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Kulas ______ art class on Thursday.",
     "options": [
       "having",
@@ -10417,9 +16964,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_711",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Kulas ______ art class on Thursday? B: Yes, he does.",
     "options": [
       "had",
@@ -10432,9 +16988,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_712",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is today Friday? B: Yes, ______ is.",
     "options": [
       "it",
@@ -10447,9 +17012,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_713",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ryan ______ PE class on Friday.",
     "options": [
       "have",
@@ -10462,9 +17036,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_714",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Ryan ______ PE class on Friday? B: Yes, he does.",
     "options": [
       "having",
@@ -10477,9 +17060,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_715",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is today Saturday? B: Yes, ______ is.",
     "options": [
       "he",
@@ -10492,9 +17084,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_716",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Owen ______ science class on Saturday.",
     "options": [
       "has",
@@ -10507,9 +17108,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_717",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Owen ______ science class on Saturday? B: Yes, he does.",
     "options": [
       "has",
@@ -10522,9 +17132,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_718",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is today Sunday? B: Yes, ______ is.",
     "options": [
       "they",
@@ -10537,9 +17156,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_719",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Noah ______ social studies class on Sunday.",
     "options": [
       "is",
@@ -10552,9 +17180,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_720",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Noah ______ social studies class on Sunday? B: Yes, he does.",
     "options": [
       "have",
@@ -10567,9 +17204,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_721",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is Emma going? B: She ______ going to the library.",
     "options": [
       "are",
@@ -10582,9 +17228,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_722",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is Nina going? B: She ______ going to the post office.",
     "options": [
       "am",
@@ -10597,9 +17252,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_723",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is Chloe going? B: She ______ going to the hospital.",
     "options": [
       "does",
@@ -10612,9 +17276,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_724",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is Sophie going? B: She ______ going to the supermarket.",
     "options": [
       "is",
@@ -10627,9 +17300,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_725",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is Hannah going? B: She ______ going to the bookstore.",
     "options": [
       "are",
@@ -10642,9 +17324,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_726",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is Maya going? B: She ______ going to the museum.",
     "options": [
       "am",
@@ -10657,9 +17348,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_727",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is Lily going? B: She ______ going to the bank.",
     "options": [
       "does",
@@ -10672,9 +17372,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b5_728",
+    "track": "textbook",
     "book": 5,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where is Ava going? B: She ______ going to the park.",
     "options": [
       "is",
@@ -10687,9 +17396,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_729",
+    "track": "textbook",
     "book": 6,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What is Lucas doing? B: He ______ playing basketball.",
     "options": [
       "are",
@@ -10702,9 +17420,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_730",
+    "track": "textbook",
     "book": 6,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What is Max doing? B: He ______ playing basketball.",
     "options": [
       "does",
@@ -10717,9 +17444,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_731",
+    "track": "textbook",
     "book": 6,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What is Leo doing? B: He ______ playing basketball.",
     "options": [
       "can",
@@ -10732,9 +17468,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_732",
+    "track": "textbook",
     "book": 6,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What is Kulas doing? B: He ______ playing basketball.",
     "options": [
       "is",
@@ -10747,9 +17492,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_733",
+    "track": "textbook",
     "book": 6,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What is Ryan doing? B: He ______ playing basketball.",
     "options": [
       "are",
@@ -10762,9 +17516,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_734",
+    "track": "textbook",
     "book": 6,
     "unit": "Starter",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What is Owen doing? B: He ______ playing basketball.",
     "options": [
       "does",
@@ -10777,9 +17540,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_735",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ouch! My head ______!",
     "options": [
       "is hurt",
@@ -10792,9 +17564,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_736",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's wrong with Lucas? B: ______",
     "options": [
       "His head hurts.",
@@ -10807,9 +17588,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_737",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ouch! My right arm ______!",
     "options": [
       "hurt",
@@ -10822,9 +17612,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_738",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's wrong with Max? B: ______",
     "options": [
       "He is in the park.",
@@ -10837,9 +17636,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_739",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ouch! My left leg ______!",
     "options": [
       "is hurt",
@@ -10852,9 +17660,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_740",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's wrong with Leo? B: ______",
     "options": [
       "His left leg hurts.",
@@ -10867,9 +17684,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_741",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ouch! My right hand ______!",
     "options": [
       "hurt",
@@ -10882,9 +17708,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_742",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's wrong with Kulas? B: ______",
     "options": [
       "He is in the park.",
@@ -10897,9 +17732,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_743",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ouch! My left foot ______!",
     "options": [
       "is hurt",
@@ -10912,9 +17756,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_744",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's wrong with Ryan? B: ______",
     "options": [
       "His left foot hurts.",
@@ -10927,9 +17780,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_745",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ouch! My neck ______!",
     "options": [
       "hurt",
@@ -10942,9 +17804,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_746",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's wrong with Owen? B: ______",
     "options": [
       "He is in the park.",
@@ -10957,9 +17828,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_747",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ouch! My back ______!",
     "options": [
       "is hurt",
@@ -10972,9 +17852,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_748",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's wrong with Noah? B: ______",
     "options": [
       "His back hurts.",
@@ -10987,9 +17876,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_749",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ouch! My nose ______!",
     "options": [
       "hurt",
@@ -11002,9 +17900,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_750",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's wrong with Alex? B: ______",
     "options": [
       "He is in the park.",
@@ -11017,9 +17924,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_751",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Emma's eyes ______ very much.",
     "options": [
       "are hurt",
@@ -11032,9 +17948,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_752",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do your eyes hurt? B: ______ I need to see a doctor.",
     "options": [
       "Yes, they do.",
@@ -11047,9 +17972,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_753",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Nina's ears ______ very much.",
     "options": [
       "hurts",
@@ -11062,9 +17996,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_754",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do your ears hurt? B: ______ I need to see a doctor.",
     "options": [
       "No, they don't.",
@@ -11077,9 +18020,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_755",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Chloe's hands ______ very much.",
     "options": [
       "are hurt",
@@ -11092,9 +18044,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_756",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do your hands hurt? B: ______ I need to see a doctor.",
     "options": [
       "Yes, they do.",
@@ -11107,9 +18068,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_757",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Sophie's legs ______ very much.",
     "options": [
       "hurts",
@@ -11122,9 +18092,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_758",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do your legs hurt? B: ______ I need to see a doctor.",
     "options": [
       "No, they don't.",
@@ -11137,9 +18116,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_759",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hannah's feet ______ very much.",
     "options": [
       "are hurt",
@@ -11152,9 +18140,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_760",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do your feet hurt? B: ______ I need to see a doctor.",
     "options": [
       "Yes, they do.",
@@ -11167,9 +18164,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_761",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Maya's arms ______ very much.",
     "options": [
       "hurts",
@@ -11182,9 +18188,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_762",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do your arms hurt? B: ______ I need to see a doctor.",
     "options": [
       "No, they don't.",
@@ -11197,9 +18212,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_763",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lily's knees ______ very much.",
     "options": [
       "are hurt",
@@ -11212,9 +18236,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_764",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do your knees hurt? B: ______ I need to see a doctor.",
     "options": [
       "Yes, they do.",
@@ -11227,9 +18260,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_765",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ava's shoulders ______ very much.",
     "options": [
       "hurts",
@@ -11242,9 +18284,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_766",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do your shoulders hurt? B: ______ I need to see a doctor.",
     "options": [
       "No, they don't.",
@@ -11257,9 +18308,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_767",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Lucas have a headache? B: Yes, he ______.",
     "options": [
       "is",
@@ -11272,9 +18332,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_768",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Emma doesn't ______ a headache. She is fine.",
     "options": [
       "have",
@@ -11287,9 +18356,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_769",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you have a headache? B: ______ I feel great today!",
     "options": [
       "Yes, I do.",
@@ -11302,9 +18380,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_770",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Max have a toothache? B: Yes, he ______.",
     "options": [
       "has",
@@ -11317,9 +18404,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_771",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Nina doesn't ______ a toothache. She is fine.",
     "options": [
       "had",
@@ -11332,9 +18428,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_772",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you have a toothache? B: ______ I feel great today!",
     "options": [
       "No, I don't.",
@@ -11347,9 +18452,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_773",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Leo have a stomachache? B: Yes, he ______.",
     "options": [
       "do",
@@ -11362,9 +18476,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_774",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Chloe doesn't ______ a stomachache. She is fine.",
     "options": [
       "having",
@@ -11377,9 +18500,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_775",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you have a stomachache? B: ______ I feel great today!",
     "options": [
       "I'd like some soup.",
@@ -11392,9 +18524,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_776",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Kulas have a fever? B: Yes, he ______.",
     "options": [
       "does",
@@ -11407,9 +18548,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_777",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Sophie doesn't ______ a fever. She is fine.",
     "options": [
       "has",
@@ -11422,9 +18572,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_778",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you have a fever? B: ______ I feel great today!",
     "options": [
       "No, he doesn't.",
@@ -11437,9 +18596,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_779",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Ryan have a runny nose? B: Yes, he ______.",
     "options": [
       "is",
@@ -11452,9 +18620,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_780",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hannah doesn't ______ a runny nose. She is fine.",
     "options": [
       "have",
@@ -11467,9 +18644,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_781",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you have a runny nose? B: ______ I feel great today!",
     "options": [
       "Yes, I do.",
@@ -11482,9 +18668,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_782",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Owen have a sore throat? B: Yes, he ______.",
     "options": [
       "has",
@@ -11497,9 +18692,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_783",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Maya doesn't ______ a sore throat. She is fine.",
     "options": [
       "had",
@@ -11512,9 +18716,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_784",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you have a sore throat? B: ______ I feel great today!",
     "options": [
       "No, I don't.",
@@ -11527,9 +18740,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_785",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Does Noah have a cold? B: Yes, he ______.",
     "options": [
       "do",
@@ -11542,9 +18764,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_786",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lily doesn't ______ a cold. She is fine.",
     "options": [
       "having",
@@ -11557,9 +18788,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_787",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Do you have a cold? B: ______ I feel great today!",
     "options": [
       "I'd like some soup.",
@@ -11572,9 +18812,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_788",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My head ______, and I ______ a fever.",
     "options": [
       "hurts; have",
@@ -11587,9 +18836,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_789",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My right arm ______, and I ______ a fever.",
     "options": [
       "hurt; has",
@@ -11602,9 +18860,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_790",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My left leg ______, and I ______ a fever.",
     "options": [
       "hurts; has",
@@ -11617,9 +18884,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_791",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My right hand ______, and I ______ a fever.",
     "options": [
       "hurt; have",
@@ -11632,9 +18908,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_792",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My left foot ______, and I ______ a fever.",
     "options": [
       "hurts; have",
@@ -11647,9 +18932,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_793",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My neck ______, and I ______ a fever.",
     "options": [
       "hurt; has",
@@ -11662,9 +18956,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_794",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would Lucas like for breakfast? B: He ______ like some beef noodles.",
     "options": [
       "can",
@@ -11677,9 +18980,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_795",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you like some beef noodles for breakfast? B: Yes, please.",
     "options": [
       "What",
@@ -11692,9 +19004,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_796",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like for breakfast? B: ______",
     "options": [
       "I'd like some beef noodles.",
@@ -11707,9 +19028,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_797",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would Max like for lunch? B: He ______ like some pork rice.",
     "options": [
       "is",
@@ -11722,9 +19052,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_798",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you like some pork rice for lunch? B: Yes, please.",
     "options": [
       "Can",
@@ -11737,9 +19076,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_799",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like for lunch? B: ______",
     "options": [
       "My leg hurts.",
@@ -11752,9 +19100,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_800",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would Leo like for dinner? B: He ______ like some chicken soup.",
     "options": [
       "would",
@@ -11767,9 +19124,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_801",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you like some chicken soup for dinner? B: Yes, please.",
     "options": [
       "Are",
@@ -11782,9 +19148,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_802",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like for dinner? B: ______",
     "options": [
       "No, I don't.",
@@ -11797,9 +19172,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_803",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would Kulas like for breakfast? B: He ______ like some fried rice.",
     "options": [
       "does",
@@ -11812,9 +19196,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_804",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you like some fried rice for breakfast? B: Yes, please.",
     "options": [
       "Would",
@@ -11827,9 +19220,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_805",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like for breakfast? B: ______",
     "options": [
       "Yes, please.",
@@ -11842,9 +19244,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_806",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would Ryan like for lunch? B: He ______ like some vegetable salad.",
     "options": [
       "can",
@@ -11857,9 +19268,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_807",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you like some vegetable salad for lunch? B: Yes, please.",
     "options": [
       "What",
@@ -11872,9 +19292,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_808",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like for lunch? B: ______",
     "options": [
       "I'd like some vegetable salad.",
@@ -11887,9 +19316,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_809",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would Owen like for dinner? B: He ______ like some ham sandwiches.",
     "options": [
       "is",
@@ -11902,9 +19340,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_810",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you like some ham sandwiches for dinner? B: Yes, please.",
     "options": [
       "Can",
@@ -11917,9 +19364,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_811",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like for dinner? B: ______",
     "options": [
       "My leg hurts.",
@@ -11932,9 +19388,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_812",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would Noah like for breakfast? B: He ______ like some fish soup.",
     "options": [
       "would",
@@ -11947,9 +19412,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_813",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you like some fish soup for breakfast? B: Yes, please.",
     "options": [
       "Are",
@@ -11962,9 +19436,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_814",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like for breakfast? B: ______",
     "options": [
       "No, I don't.",
@@ -11977,9 +19460,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_815",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would Alex like for lunch? B: He ______ like some cheese burgers.",
     "options": [
       "does",
@@ -11992,9 +19484,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_816",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you like some cheese burgers for lunch? B: Yes, please.",
     "options": [
       "Would",
@@ -12007,9 +19508,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_817",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What would you like for lunch? B: ______",
     "options": [
       "Yes, please.",
@@ -12022,9 +19532,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_818",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ backpack is this? B: It's Emma's backpack.",
     "options": [
       "Who's",
@@ -12037,9 +19556,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_819",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose backpack is that on the desk? B: ______",
     "options": [
       "I'd like some rice.",
@@ -12052,9 +19580,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_820",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ umbrella is this? B: It's Nina's umbrella.",
     "options": [
       "Whose",
@@ -12067,9 +19604,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_821",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose umbrella is that on the desk? B: ______",
     "options": [
       "They're Nina's umbrella.",
@@ -12082,9 +19628,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_822",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ water bottle is this? B: It's Chloe's water bottle.",
     "options": [
       "Who's",
@@ -12097,9 +19652,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_823",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose water bottle is that on the desk? B: ______",
     "options": [
       "I'd like some rice.",
@@ -12112,9 +19676,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_824",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ cap is this? B: It's Sophie's cap.",
     "options": [
       "Whose",
@@ -12127,9 +19700,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_825",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose cap is that on the desk? B: ______",
     "options": [
       "They're Sophie's cap.",
@@ -12142,9 +19724,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_826",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ workbook is this? B: It's Hannah's workbook.",
     "options": [
       "Who's",
@@ -12157,9 +19748,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_827",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose workbook is that on the desk? B: ______",
     "options": [
       "I'd like some rice.",
@@ -12172,9 +19772,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_828",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ jacket is this? B: It's Maya's jacket.",
     "options": [
       "Whose",
@@ -12187,9 +19796,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_829",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose jacket is that on the desk? B: ______",
     "options": [
       "They're Maya's jacket.",
@@ -12202,9 +19820,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_830",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ lunchbox is this? B: It's Lily's lunchbox.",
     "options": [
       "Who's",
@@ -12217,9 +19844,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_831",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose lunchbox is that on the desk? B: ______",
     "options": [
       "I'd like some rice.",
@@ -12232,9 +19868,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_832",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ watch is this? B: It's Ava's watch.",
     "options": [
       "Whose",
@@ -12247,9 +19892,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_833",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose watch is that on the desk? B: ______",
     "options": [
       "They're Ava's watch.",
@@ -12262,9 +19916,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_834",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose glasses ______ those? B: They're Lucas's glasses.",
     "options": [
       "am",
@@ -12277,9 +19940,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_835",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these Lucas's glasses? B: ______ They're my glasses.",
     "options": [
       "Yes, it is.",
@@ -12292,9 +19964,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_836",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose shoes ______ those? B: They're Max's shoes.",
     "options": [
       "are",
@@ -12307,9 +19988,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_837",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these Max's shoes? B: ______ They're my shoes.",
     "options": [
       "Yes, they are.",
@@ -12322,9 +20012,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_838",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose socks ______ those? B: They're Leo's socks.",
     "options": [
       "am",
@@ -12337,9 +20036,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_839",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these Leo's socks? B: ______ They're my socks.",
     "options": [
       "Yes, it is.",
@@ -12352,9 +20060,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_840",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose gloves ______ those? B: They're Kulas's gloves.",
     "options": [
       "are",
@@ -12367,9 +20084,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_841",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these Kulas's gloves? B: ______ They're my gloves.",
     "options": [
       "Yes, they are.",
@@ -12382,9 +20108,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_842",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose pants ______ those? B: They're Ryan's pants.",
     "options": [
       "am",
@@ -12397,9 +20132,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_843",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these Ryan's pants? B: ______ They're my pants.",
     "options": [
       "Yes, it is.",
@@ -12412,9 +20156,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_844",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose notebooks ______ those? B: They're Owen's notebooks.",
     "options": [
       "are",
@@ -12427,9 +20180,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_845",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these Owen's notebooks? B: ______ They're my notebooks.",
     "options": [
       "Yes, they are.",
@@ -12442,9 +20204,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_846",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose brushes ______ those? B: They're Noah's brushes.",
     "options": [
       "am",
@@ -12457,9 +20228,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_847",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these Noah's brushes? B: ______ They're my brushes.",
     "options": [
       "Yes, it is.",
@@ -12472,9 +20252,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_848",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose keys ______ those? B: They're Alex's keys.",
     "options": [
       "are",
@@ -12487,9 +20276,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_849",
+    "track": "textbook",
     "book": 6,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Are these Alex's keys? B: ______ They're my keys.",
     "options": [
       "Yes, they are.",
@@ -12502,9 +20300,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_850",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose backpack is this? B: It's ______ backpack.",
     "options": [
       "he",
@@ -12517,9 +20324,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_851",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose umbrella is this? B: It's ______ umbrella.",
     "options": [
       "they",
@@ -12532,9 +20348,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_852",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose water bottle is this? B: It's ______ water bottle.",
     "options": [
       "Leo's",
@@ -12547,9 +20372,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_853",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose cap is this? B: It's ______ cap.",
     "options": [
       "Kulas",
@@ -12562,9 +20396,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_854",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose workbook is this? B: It's ______ workbook.",
     "options": [
       "he",
@@ -12577,9 +20420,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b6_855",
+    "track": "textbook",
     "book": 6,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Whose jacket is this? B: It's ______ jacket.",
     "options": [
       "they",
@@ -12592,9 +20444,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_856",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Lucas from? B: He's from Taiwan.",
     "options": [
       "is",
@@ -12607,9 +20468,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_857",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Max from? B: He's from Japan.",
     "options": [
       "are",
@@ -12622,9 +20492,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_858",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Leo from? B: He's from Australia.",
     "options": [
       "am",
@@ -12637,9 +20516,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_859",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Kulas from? B: He's from India.",
     "options": [
       "does",
@@ -12652,9 +20540,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_860",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Ryan from? B: He's from Singapore.",
     "options": [
       "is",
@@ -12667,9 +20564,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_861",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Owen from? B: He's from Spain.",
     "options": [
       "are",
@@ -12682,9 +20588,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_862",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Noah from? B: He's from the UK.",
     "options": [
       "am",
@@ -12697,9 +20612,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_863",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Alex from? B: He's from the USA.",
     "options": [
       "does",
@@ -12712,9 +20636,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_864",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Emma goes to school ______ bus every morning.",
     "options": [
       "by",
@@ -12727,9 +20660,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_865",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Nina goes to school ______ MRT every morning.",
     "options": [
       "on",
@@ -12742,9 +20684,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_866",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Chloe goes to school ______ bike every morning.",
     "options": [
       "in",
@@ -12757,9 +20708,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_867",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Sophie goes to school ______ car every morning.",
     "options": [
       "at",
@@ -12772,9 +20732,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_868",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hannah goes to school ______ train every morning.",
     "options": [
       "by",
@@ -12787,9 +20756,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_869",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Maya goes to school ______ scooter every morning.",
     "options": [
       "on",
@@ -12802,9 +20780,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_870",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lily goes to school ______ foot every morning.",
     "options": [
       "in",
@@ -12817,9 +20804,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_871",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lucas usually ______ at 6:30.",
     "options": [
       "to get up",
@@ -12832,9 +20828,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_872",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does Lucas get up? B: He gets up ______ 6:30.",
     "options": [
       "at",
@@ -12847,9 +20852,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_873",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Max usually ______ at 7:20.",
     "options": [
       "go to school",
@@ -12862,9 +20876,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_874",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does Max go to school? B: He goes to school ______ 7:20.",
     "options": [
       "in",
@@ -12877,9 +20900,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_875",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Leo usually ______ at 12:00.",
     "options": [
       "to have lunch",
@@ -12892,9 +20924,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_876",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does Leo have lunch? B: He has lunch ______ 12:00.",
     "options": [
       "at",
@@ -12907,9 +20948,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_877",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Kulas usually ______ at 4:15.",
     "options": [
       "go home",
@@ -12922,9 +20972,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_878",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does Kulas go home? B: He goes home ______ 4:15.",
     "options": [
       "in",
@@ -12937,9 +20996,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_879",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ryan usually ______ at 5:00.",
     "options": [
       "to do homework",
@@ -12952,9 +21020,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_880",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does Ryan do homework? B: He does homework ______ 5:00.",
     "options": [
       "at",
@@ -12967,9 +21044,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_881",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Owen usually ______ at 6:30.",
     "options": [
       "have dinner",
@@ -12982,9 +21068,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_882",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does Owen have dinner? B: He has dinner ______ 6:30.",
     "options": [
       "in",
@@ -12997,9 +21092,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_883",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Noah usually ______ at 8:00.",
     "options": [
       "to take a shower",
@@ -13012,9 +21116,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_884",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does Noah take a shower? B: He takes a shower ______ 8:00.",
     "options": [
       "at",
@@ -13027,9 +21140,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_885",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Alex usually ______ at 9:30.",
     "options": [
       "go to bed",
@@ -13042,9 +21164,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b7_886",
+    "track": "textbook",
     "book": 7,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What time does Alex go to bed? B: He goes to bed ______ 9:30.",
     "options": [
       "in",
@@ -13057,9 +21188,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_887",
+    "track": "textbook",
     "book": 8,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What do you do in your free time, Lucas? B: ______",
     "options": [
       "I like winter.",
@@ -13072,9 +21212,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_888",
+    "track": "textbook",
     "book": 8,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What do you do in your free time, Max? B: ______",
     "options": [
       "I do kung fu in my free time.",
@@ -13087,9 +21236,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_889",
+    "track": "textbook",
     "book": 8,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What do you do in your free time, Leo? B: ______",
     "options": [
       "I was at home yesterday.",
@@ -13102,9 +21260,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_890",
+    "track": "textbook",
     "book": 8,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What do you do in your free time, Kulas? B: ______",
     "options": [
       "It's five hundred dollars.",
@@ -13117,9 +21284,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_891",
+    "track": "textbook",
     "book": 8,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What do you do in your free time, Ryan? B: ______",
     "options": [
       "I like winter.",
@@ -13132,9 +21308,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_892",
+    "track": "textbook",
     "book": 8,
     "unit": "Starter",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What do you do in your free time, Owen? B: ______",
     "options": [
       "I go fishing in my free time.",
@@ -13147,9 +21332,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_893",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Lucas yesterday morning? B: He was at home.",
     "options": [
       "were",
@@ -13162,9 +21356,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_894",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lucas and Emma ______ at home yesterday afternoon.",
     "options": [
       "are",
@@ -13177,9 +21380,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_895",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Was Emma at home last night? B: ______ She was at home.",
     "options": [
       "No, they weren't.",
@@ -13192,9 +21404,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_896",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Max yesterday morning? B: He was at school.",
     "options": [
       "was",
@@ -13207,9 +21428,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_897",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Max and Nina ______ at school yesterday afternoon.",
     "options": [
       "was",
@@ -13222,9 +21452,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_898",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Was Nina at school last night? B: ______ She was at home.",
     "options": [
       "No, she didn't.",
@@ -13237,9 +21476,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_899",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Leo yesterday morning? B: He was at the mall.",
     "options": [
       "did",
@@ -13252,9 +21500,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_900",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Leo and Chloe ______ at the mall yesterday afternoon.",
     "options": [
       "were",
@@ -13267,9 +21524,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_901",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Was Chloe at the mall last night? B: ______ She was at home.",
     "options": [
       "Yes, she was.",
@@ -13282,9 +21548,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_902",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Kulas yesterday morning? B: He was at the movie theater.",
     "options": [
       "is",
@@ -13297,9 +21572,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_903",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Kulas and Sophie ______ at the movie theater yesterday afternoon.",
     "options": [
       "did",
@@ -13312,9 +21596,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_904",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Was Sophie at the movie theater last night? B: ______ She was at home.",
     "options": [
       "No, she wasn't.",
@@ -13327,9 +21620,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_905",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Ryan yesterday morning? B: He was at the restaurant.",
     "options": [
       "were",
@@ -13342,9 +21644,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_906",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ryan and Hannah ______ at the restaurant yesterday afternoon.",
     "options": [
       "are",
@@ -13357,9 +21668,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_907",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Was Hannah at the restaurant last night? B: ______ She was at home.",
     "options": [
       "No, they weren't.",
@@ -13372,9 +21692,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_908",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Owen yesterday morning? B: He was at the zoo.",
     "options": [
       "was",
@@ -13387,9 +21716,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_909",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Owen and Maya ______ at the zoo yesterday afternoon.",
     "options": [
       "was",
@@ -13402,9 +21740,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_910",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Was Maya at the zoo last night? B: ______ She was at home.",
     "options": [
       "No, she didn't.",
@@ -13417,9 +21764,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_911",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Noah yesterday morning? B: He was at the park.",
     "options": [
       "did",
@@ -13432,9 +21788,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_912",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Noah and Lily ______ at the park yesterday afternoon.",
     "options": [
       "were",
@@ -13447,9 +21812,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_913",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Was Lily at the park last night? B: ______ She was at home.",
     "options": [
       "Yes, she was.",
@@ -13462,9 +21836,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_914",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Where ______ Alex yesterday morning? B: He was at the library.",
     "options": [
       "is",
@@ -13477,9 +21860,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_915",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Alex and Ava ______ at the library yesterday afternoon.",
     "options": [
       "did",
@@ -13492,9 +21884,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_916",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 1",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Was Ava at the library last night? B: ______ She was at home.",
     "options": [
       "No, she wasn't.",
@@ -13507,9 +21908,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_917",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lucas ______ last night.",
     "options": [
       "play the piano",
@@ -13522,9 +21932,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_918",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Emma ______ yesterday? B: Yes, she did.",
     "options": [
       "plays the piano",
@@ -13537,9 +21956,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_919",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did Lucas do yesterday evening? B: ______",
     "options": [
       "Yes, he did.",
@@ -13552,9 +21980,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_920",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Max ______ last night.",
     "options": [
       "played baseball",
@@ -13567,9 +22004,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_921",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Nina ______ yesterday? B: Yes, she did.",
     "options": [
       "played baseball",
@@ -13582,9 +22028,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_922",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did Max do yesterday evening? B: ______",
     "options": [
       "He was at the mall.",
@@ -13597,9 +22052,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_923",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Leo ______ last night.",
     "options": [
       "is surfing",
@@ -13612,9 +22076,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_924",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Chloe ______ yesterday? B: Yes, she did.",
     "options": [
       "surf the Internet",
@@ -13627,9 +22100,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_925",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did Leo do yesterday evening? B: ______",
     "options": [
       "He surfs the Internet every day.",
@@ -13642,9 +22124,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_926",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Kulas ______ last night.",
     "options": [
       "waters the plants",
@@ -13657,9 +22148,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_927",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Sophie ______ yesterday? B: Yes, she did.",
     "options": [
       "watering",
@@ -13672,9 +22172,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_928",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did Kulas do yesterday evening? B: ______",
     "options": [
       "He watered the plants.",
@@ -13687,9 +22196,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_929",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ryan ______ last night.",
     "options": [
       "watch a movie",
@@ -13702,9 +22220,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_930",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Hannah ______ yesterday? B: Yes, she did.",
     "options": [
       "watches a movie",
@@ -13717,9 +22244,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_931",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did Ryan do yesterday evening? B: ______",
     "options": [
       "Yes, he did.",
@@ -13732,9 +22268,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_932",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Owen ______ last night.",
     "options": [
       "listened to music",
@@ -13747,9 +22292,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_933",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Maya ______ yesterday? B: Yes, she did.",
     "options": [
       "listened to music",
@@ -13762,9 +22316,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_934",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did Owen do yesterday evening? B: ______",
     "options": [
       "He was at the mall.",
@@ -13777,9 +22340,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_935",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Noah ______ last night.",
     "options": [
       "is cleaning",
@@ -13792,9 +22364,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_936",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Lily ______ yesterday? B: Yes, she did.",
     "options": [
       "clean the room",
@@ -13807,9 +22388,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_937",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did Noah do yesterday evening? B: ______",
     "options": [
       "He cleans the room every day.",
@@ -13822,9 +22412,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_938",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Alex ______ last night.",
     "options": [
       "walks the dog",
@@ -13837,9 +22436,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_939",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Ava ______ yesterday? B: Yes, she did.",
     "options": [
       "walking",
@@ -13852,9 +22460,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_940",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 2",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What did Alex do yesterday evening? B: ______",
     "options": [
       "He walked the dog.",
@@ -13867,9 +22484,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_941",
+    "track": "textbook",
     "book": 8,
     "unit": "Review 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: ______ you at home last night? B: Yes, I ______. I watched TV.",
     "options": [
       "Was; were",
@@ -13882,9 +22508,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_942",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ this T-shirt? B: It's two hundred dollars.",
     "options": [
       "does",
@@ -13897,9 +22532,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_943",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much is that T-shirt? B: ______",
     "options": [
       "It's warm in spring.",
@@ -13912,9 +22556,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_944",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ this coat? B: It's nine hundred dollars.",
     "options": [
       "is",
@@ -13927,9 +22580,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_945",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much is that coat? B: ______",
     "options": [
       "They're nine hundred dollars.",
@@ -13942,9 +22604,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_946",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ this dress? B: It's seven hundred fifty dollars.",
     "options": [
       "does",
@@ -13957,9 +22628,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_947",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much is that dress? B: ______",
     "options": [
       "It's warm in spring.",
@@ -13972,9 +22652,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_948",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ this skirt? B: It's four hundred dollars.",
     "options": [
       "is",
@@ -13987,9 +22676,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_949",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much is that skirt? B: ______",
     "options": [
       "They're four hundred dollars.",
@@ -14002,9 +22700,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_950",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ this jacket? B: It's eight hundred dollars.",
     "options": [
       "does",
@@ -14017,9 +22724,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_951",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much is that jacket? B: ______",
     "options": [
       "It's warm in spring.",
@@ -14032,9 +22748,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_952",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ this hat? B: It's one hundred fifty dollars.",
     "options": [
       "is",
@@ -14047,9 +22772,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_953",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much is that hat? B: ______",
     "options": [
       "They're one hundred fifty dollars.",
@@ -14062,9 +22796,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_954",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ this shirt? B: It's three hundred dollars.",
     "options": [
       "does",
@@ -14077,9 +22820,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_955",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much is that shirt? B: ______",
     "options": [
       "It's warm in spring.",
@@ -14092,9 +22844,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_956",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ this sweater? B: It's six hundred dollars.",
     "options": [
       "is",
@@ -14107,9 +22868,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_957",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much is that sweater? B: ______",
     "options": [
       "They're six hundred dollars.",
@@ -14122,9 +22892,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_958",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ these jeans? B: They're eight hundred dollars.",
     "options": [
       "do",
@@ -14137,9 +22916,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_959",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much are those jeans? B: ______",
     "options": [
       "I was at the department store.",
@@ -14152,9 +22940,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_960",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ these pants? B: They're five hundred dollars.",
     "options": [
       "are",
@@ -14167,9 +22964,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_961",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much are those pants? B: ______",
     "options": [
       "It's five hundred dollars.",
@@ -14182,9 +22988,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_962",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ these shorts? B: They're three hundred fifty dollars.",
     "options": [
       "do",
@@ -14197,9 +23012,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_963",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much are those shorts? B: ______",
     "options": [
       "I was at the department store.",
@@ -14212,9 +23036,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_964",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ these shoes? B: They're nine hundred ninety dollars.",
     "options": [
       "are",
@@ -14227,9 +23060,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_965",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much are those shoes? B: ______",
     "options": [
       "It's nine hundred ninety dollars.",
@@ -14242,9 +23084,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_966",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ these socks? B: They're one hundred dollars.",
     "options": [
       "do",
@@ -14257,9 +23108,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_967",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much are those socks? B: ______",
     "options": [
       "I was at the department store.",
@@ -14272,9 +23132,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_968",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ these boots? B: They're seven hundred dollars.",
     "options": [
       "are",
@@ -14287,9 +23156,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_969",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much are those boots? B: ______",
     "options": [
       "It's seven hundred dollars.",
@@ -14302,9 +23180,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_970",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ these glasses? B: They're six hundred fifty dollars.",
     "options": [
       "do",
@@ -14317,9 +23204,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_971",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much are those glasses? B: ______",
     "options": [
       "I was at the department store.",
@@ -14332,9 +23228,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_972",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much ______ these gloves? B: They're two hundred fifty dollars.",
     "options": [
       "are",
@@ -14347,9 +23252,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_973",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 3",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How much are those gloves? B: ______",
     "options": [
       "It's two hundred fifty dollars.",
@@ -14362,9 +23276,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_974",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How's the weather ______ spring? B: It's warm and rainy.",
     "options": [
       "at",
@@ -14377,9 +23300,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_975",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's Lucas's favorite season? B: ______ He likes to plant flowers.",
     "options": [
       "They're five hundred dollars.",
@@ -14392,9 +23324,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_976",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is it warm and rainy in spring there, Emma? B: ______",
     "options": [
       "Yes, it is.",
@@ -14407,9 +23348,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_977",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How's the weather ______ summer? B: It's hot and sunny.",
     "options": [
       "on",
@@ -14422,9 +23372,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_978",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's Max's favorite season? B: ______ He likes to go swimming at the beach.",
     "options": [
       "He was at the zoo.",
@@ -14437,9 +23396,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_979",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is it hot and sunny in summer there, Nina? B: ______",
     "options": [
       "My favorite season is summer.",
@@ -14452,9 +23420,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_980",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How's the weather ______ fall? B: It's cool and windy.",
     "options": [
       "in",
@@ -14467,9 +23444,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_981",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's Leo's favorite season? B: ______ He likes to fly a kite in the park.",
     "options": [
       "It's cool and windy.",
@@ -14482,9 +23468,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_982",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is it cool and windy in fall there, Chloe? B: ______",
     "options": [
       "No, I was not.",
@@ -14497,9 +23492,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_983",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: How's the weather ______ winter? B: It's cold and snowy.",
     "options": [
       "for",
@@ -14512,9 +23516,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_984",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: What's Kulas's favorite season? B: ______ He likes to make a snowman.",
     "options": [
       "He likes winter.",
@@ -14527,9 +23540,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_985",
+    "track": "textbook",
     "book": 8,
     "unit": "Unit 4",
-    "category": "dialogue",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Is it cold and snowy in winter there, Sophie? B: ______",
     "options": [
       "Yes, I do.",
@@ -14542,9 +23564,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_986",
+    "track": "textbook",
     "book": 8,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's very cold in winter. How much ______ those warm jeans?",
     "options": [
       "was",
@@ -14557,9 +23588,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_987",
+    "track": "textbook",
     "book": 8,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's very cold in winter. How much ______ those warm pants?",
     "options": [
       "do",
@@ -14572,9 +23612,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_988",
+    "track": "textbook",
     "book": 8,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's very cold in winter. How much ______ those warm shorts?",
     "options": [
       "are",
@@ -14587,9 +23636,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_989",
+    "track": "textbook",
     "book": 8,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's very cold in winter. How much ______ those warm shoes?",
     "options": [
       "is",
@@ -14602,9 +23660,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_990",
+    "track": "textbook",
     "book": 8,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's very cold in winter. How much ______ those warm socks?",
     "options": [
       "was",
@@ -14617,9 +23684,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b8_991",
+    "track": "textbook",
     "book": 8,
     "unit": "Review 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "It's very cold in winter. How much ______ those warm boots?",
     "options": [
       "do",
@@ -14632,9 +23708,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_992",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lucas ______ at the department store yesterday.",
     "options": [
       "went shopping",
@@ -14647,9 +23732,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_993",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Lucas ______ yesterday? B: No, he didn't.",
     "options": [
       "went shopping",
@@ -14662,9 +23756,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_994",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Max ______ at the night market yesterday.",
     "options": [
       "eats",
@@ -14677,9 +23780,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_995",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Max ______ yesterday? B: No, he didn't.",
     "options": [
       "to eat snacks",
@@ -14692,9 +23804,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_996",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Leo ______ at the restaurant yesterday.",
     "options": [
       "drank juice",
@@ -14707,9 +23828,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_997",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Leo ______ yesterday? B: No, he didn't.",
     "options": [
       "drank juice",
@@ -14722,9 +23852,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_998",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Kulas ______ at the riverside park yesterday.",
     "options": [
       "flys",
@@ -14737,9 +23876,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_999",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Kulas ______ yesterday? B: No, he didn't.",
     "options": [
       "to fly a kite",
@@ -14752,9 +23900,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1000",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ryan ______ in the park yesterday.",
     "options": [
       "rode a bike",
@@ -14767,9 +23924,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1001",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Ryan ______ yesterday? B: No, he didn't.",
     "options": [
       "rode a bike",
@@ -14782,9 +23948,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1002",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Owen ______ at the movie theater yesterday.",
     "options": [
       "sees",
@@ -14797,9 +23972,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1003",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 1",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Owen ______ yesterday? B: No, he didn't.",
     "options": [
       "to see a movie",
@@ -14812,9 +23996,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1004",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Noah ______ in the pool yesterday.",
     "options": [
       "swam",
@@ -14827,9 +24020,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1005",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Noah ______ yesterday? B: No, he didn't.",
     "options": [
       "swam",
@@ -14842,9 +24044,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1006",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Alex ______ at the party yesterday.",
     "options": [
       "sings",
@@ -14857,9 +24068,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1007",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Alex ______ yesterday? B: No, he didn't.",
     "options": [
       "to sing songs",
@@ -14872,9 +24092,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1008",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ethan ______ in art class yesterday.",
     "options": [
       "drew a picture",
@@ -14887,9 +24116,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1009",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Ethan ______ yesterday? B: No, he didn't.",
     "options": [
       "drew a picture",
@@ -14902,9 +24140,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1010",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Dylan ______ to Grandma yesterday.",
     "options": [
       "writes",
@@ -14917,9 +24164,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1011",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Dylan ______ yesterday? B: No, he didn't.",
     "options": [
       "to write a letter",
@@ -14932,9 +24188,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1012",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lucas ______ after dinner yesterday.",
     "options": [
       "took a walk",
@@ -14947,9 +24212,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1013",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Lucas ______ yesterday? B: No, he didn't.",
     "options": [
       "took a walk",
@@ -14962,9 +24236,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1014",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Max ______ last Sunday yesterday.",
     "options": [
       "haves",
@@ -14977,9 +24260,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1015",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 2",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-DLG",
+    "difficulty": 3,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "A: Did Max ______ yesterday? B: No, he didn't.",
     "options": [
       "to have a picnic",
@@ -14992,9 +24284,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1016",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Nina would like three ______ of water.",
     "options": [
       "bottles",
@@ -15007,9 +24308,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1017",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Chloe would like two ______ of tea.",
     "options": [
       "cup",
@@ -15022,9 +24332,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1018",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Hannah would like two ______ of soup.",
     "options": [
       "bowles",
@@ -15037,9 +24356,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1019",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Maya would like three ______ of noodles.",
     "options": [
       "piece",
@@ -15052,9 +24380,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1020",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 3",
-    "category": "grammar",
+    "section": "vocabulary",
+    "taskType": "V-MEAN",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lily would like two ______ of chips.",
     "options": [
       "bags",
@@ -15067,9 +24404,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1021",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lucas's birthday is ______ January 1st.",
     "options": [
       "in",
@@ -15082,9 +24428,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1022",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ January.",
     "options": [
       "at",
@@ -15097,9 +24452,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1023",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Max's birthday is ______ February 14th.",
     "options": [
       "of",
@@ -15112,9 +24476,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1024",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ February.",
     "options": [
       "in",
@@ -15127,9 +24500,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1025",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Leo's birthday is ______ March 8th.",
     "options": [
       "in",
@@ -15142,9 +24524,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1026",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ March.",
     "options": [
       "at",
@@ -15157,9 +24548,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1027",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Kulas's birthday is ______ April 22nd.",
     "options": [
       "of",
@@ -15172,9 +24572,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1028",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ April.",
     "options": [
       "in",
@@ -15187,9 +24596,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1029",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ryan's birthday is ______ May 12th.",
     "options": [
       "in",
@@ -15202,9 +24620,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1030",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ May.",
     "options": [
       "at",
@@ -15217,9 +24644,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1031",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Owen's birthday is ______ June 3rd.",
     "options": [
       "of",
@@ -15232,9 +24668,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1032",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ June.",
     "options": [
       "in",
@@ -15247,9 +24692,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1033",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Noah's birthday is ______ July 15th.",
     "options": [
       "in",
@@ -15262,9 +24716,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1034",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ July.",
     "options": [
       "at",
@@ -15277,9 +24740,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1035",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Alex's birthday is ______ August 23rd.",
     "options": [
       "of",
@@ -15292,9 +24764,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1036",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ August.",
     "options": [
       "in",
@@ -15307,9 +24788,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1037",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Ethan's birthday is ______ September 28th.",
     "options": [
       "in",
@@ -15322,9 +24812,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1038",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ September.",
     "options": [
       "at",
@@ -15337,9 +24836,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1039",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Dylan's birthday is ______ October 10th.",
     "options": [
       "of",
@@ -15352,9 +24860,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1040",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ October.",
     "options": [
       "in",
@@ -15367,9 +24884,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1041",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Lucas's birthday is ______ November 5th.",
     "options": [
       "in",
@@ -15382,9 +24908,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1042",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ November.",
     "options": [
       "at",
@@ -15397,9 +24932,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1043",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "Max's birthday is ______ December 25th.",
     "options": [
       "of",
@@ -15412,9 +24956,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_b9_1044",
+    "track": "textbook",
     "book": 9,
     "unit": "Unit 4",
-    "category": "grammar",
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "My sister's birthday is ______ December.",
     "options": [
       "in",
@@ -15427,9 +24980,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1045",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「A」後面的字母是哪一個？",
     "options": [
       "D",
@@ -15442,9 +25004,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1046",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「B」後面的字母是哪一個？",
     "options": [
       "O",
@@ -15457,9 +25028,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1047",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「C」後面的字母是哪一個？",
     "options": [
       "P",
@@ -15472,9 +25052,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1048",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「D」後面的字母是哪一個？",
     "options": [
       "E",
@@ -15487,9 +25076,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1049",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「E」後面的字母是哪一個？",
     "options": [
       "P",
@@ -15501,9 +25099,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1050",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「F」後面的字母是哪一個？",
     "options": [
       "O",
@@ -15516,9 +25123,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1051",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「G」後面的字母是哪一個？",
     "options": [
       "A",
@@ -15531,9 +25147,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1052",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「H」後面的字母是哪一個？",
     "options": [
       "I",
@@ -15546,9 +25171,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1053",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「I」後面的字母是哪一個？",
     "options": [
       "J",
@@ -15560,9 +25194,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1054",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「J」後面的字母是哪一個？",
     "options": [
       "Y",
@@ -15575,9 +25218,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1055",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「K」後面的字母是哪一個？",
     "options": [
       "T",
@@ -15590,9 +25242,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1056",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「L」後面的字母是哪一個？",
     "options": [
       "M",
@@ -15605,9 +25266,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1057",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「M」後面的字母是哪一個？",
     "options": [
       "Z",
@@ -15619,9 +25289,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1058",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「N」後面的字母是哪一個？",
     "options": [
       "C",
@@ -15634,9 +25313,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1059",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「O」後面的字母是哪一個？",
     "options": [
       "F",
@@ -15649,9 +25337,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1060",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「P」後面的字母是哪一個？",
     "options": [
       "Q",
@@ -15664,9 +25361,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1061",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「Q」後面的字母是哪一個？",
     "options": [
       "P",
@@ -15679,9 +25385,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1062",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「R」後面的字母是哪一個？",
     "options": [
       "C",
@@ -15694,9 +25409,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1063",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「S」後面的字母是哪一個？",
     "options": [
       "L",
@@ -15709,9 +25433,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1064",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「T」後面的字母是哪一個？",
     "options": [
       "U",
@@ -15724,9 +25457,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1065",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「U」後面的字母是哪一個？",
     "options": [
       "V",
@@ -15738,9 +25480,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1066",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「V」後面的字母是哪一個？",
     "options": [
       "M",
@@ -15752,9 +25503,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1067",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「W」後面的字母是哪一個？",
     "options": [
       "Z",
@@ -15767,9 +25527,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1068",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「X」後面的字母是哪一個？",
     "options": [
       "Y",
@@ -15781,9 +25550,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1069",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「Y」後面的字母是哪一個？",
     "options": [
       "S",
@@ -15796,9 +25574,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1070",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「B」前面的字母是哪一個？",
     "options": [
       "H",
@@ -15811,9 +25598,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1071",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「C」前面的字母是哪一個？",
     "options": [
       "R",
@@ -15826,9 +25622,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1072",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「D」前面的字母是哪一個？",
     "options": [
       "C",
@@ -15841,9 +25646,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1073",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「E」前面的字母是哪一個？",
     "options": [
       "B",
@@ -15856,9 +25670,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1074",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「F」前面的字母是哪一個？",
     "options": [
       "E",
@@ -15870,9 +25693,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1075",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「G」前面的字母是哪一個？",
     "options": [
       "P",
@@ -15885,9 +25717,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1076",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「H」前面的字母是哪一個？",
     "options": [
       "G",
@@ -15900,9 +25741,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1077",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「I」前面的字母是哪一個？",
     "options": [
       "N",
@@ -15915,9 +25765,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1078",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「J」前面的字母是哪一個？",
     "options": [
       "L",
@@ -15929,9 +25788,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1079",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「K」前面的字母是哪一個？",
     "options": [
       "U",
@@ -15944,9 +25812,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1080",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「L」前面的字母是哪一個？",
     "options": [
       "K",
@@ -15959,9 +25836,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1081",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「M」前面的字母是哪一個？",
     "options": [
       "I",
@@ -15974,9 +25860,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1082",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「N」前面的字母是哪一個？",
     "options": [
       "V",
@@ -15988,9 +25883,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1083",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「O」前面的字母是哪一個？",
     "options": [
       "H",
@@ -16003,9 +25907,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1084",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「P」前面的字母是哪一個？",
     "options": [
       "O",
@@ -16018,9 +25931,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1085",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「Q」前面的字母是哪一個？",
     "options": [
       "R",
@@ -16033,9 +25955,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1086",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「R」前面的字母是哪一個？",
     "options": [
       "G",
@@ -16048,9 +25979,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1087",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「S」前面的字母是哪一個？",
     "options": [
       "K",
@@ -16063,9 +26003,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1088",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「T」前面的字母是哪一個？",
     "options": [
       "S",
@@ -16078,9 +26027,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1089",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「U」前面的字母是哪一個？",
     "options": [
       "I",
@@ -16093,9 +26051,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1090",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「V」前面的字母是哪一個？",
     "options": [
       "W",
@@ -16107,9 +26074,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1091",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「W」前面的字母是哪一個？",
     "options": [
       "Y",
@@ -16121,9 +26097,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1092",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「X」前面的字母是哪一個？",
     "options": [
       "W",
@@ -16136,9 +26121,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1093",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「Y」前面的字母是哪一個？",
     "options": [
       "K",
@@ -16150,9 +26144,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1094",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問在大寫字母「Z」前面的字母是哪一個？",
     "options": [
       "X",
@@ -16165,9 +26168,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1095",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：A, ______, C, D",
     "options": [
       "R",
@@ -16180,9 +26192,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1096",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：A, B, ______, D",
     "options": [
       "C",
@@ -16195,9 +26216,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1097",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：B, ______, D, E",
     "options": [
       "G",
@@ -16210,9 +26240,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1098",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：B, C, ______, E",
     "options": [
       "O",
@@ -16225,9 +26264,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1099",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：C, ______, E, F",
     "options": [
       "P",
@@ -16240,9 +26288,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1100",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：C, D, ______, F",
     "options": [
       "E",
@@ -16255,9 +26312,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1101",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：D, ______, F, G",
     "options": [
       "F",
@@ -16270,9 +26336,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1102",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：D, E, ______, G",
     "options": [
       "T",
@@ -16285,9 +26360,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1103",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：E, ______, G, H",
     "options": [
       "P",
@@ -16300,9 +26384,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1104",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：E, F, ______, H",
     "options": [
       "G",
@@ -16315,9 +26408,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1105",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：F, ______, H, I",
     "options": [
       "C",
@@ -16330,9 +26432,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1106",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：F, G, ______, I",
     "options": [
       "M",
@@ -16345,9 +26456,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1107",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：G, ______, I, J",
     "options": [
       "A",
@@ -16360,9 +26480,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1108",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：G, H, ______, J",
     "options": [
       "I",
@@ -16375,9 +26504,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1109",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：H, ______, J, K",
     "options": [
       "J",
@@ -16390,9 +26528,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1110",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：H, I, ______, K",
     "options": [
       "L",
@@ -16405,9 +26552,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1111",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：I, ______, K, L",
     "options": [
       "U",
@@ -16420,9 +26576,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1112",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：I, J, ______, L",
     "options": [
       "K",
@@ -16435,9 +26600,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1113",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：J, ______, L, M",
     "options": [
       "X",
@@ -16450,9 +26624,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1114",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：J, K, ______, M",
     "options": [
       "J",
@@ -16465,9 +26648,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1115",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：K, ______, M, N",
     "options": [
       "T",
@@ -16480,9 +26672,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1116",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：K, L, ______, N",
     "options": [
       "M",
@@ -16495,9 +26696,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1117",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：L, ______, N, O",
     "options": [
       "W",
@@ -16510,9 +26720,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1118",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：L, M, ______, O",
     "options": [
       "Z",
@@ -16525,9 +26744,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1119",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：M, ______, O, P",
     "options": [
       "H",
@@ -16540,9 +26768,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1120",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：M, N, ______, P",
     "options": [
       "O",
@@ -16555,9 +26792,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1121",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：N, ______, P, Q",
     "options": [
       "Q",
@@ -16570,9 +26816,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1122",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：N, O, ______, Q",
     "options": [
       "B",
@@ -16585,9 +26840,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1123",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：O, ______, Q, R",
     "options": [
       "F",
@@ -16600,9 +26864,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1124",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：O, P, ______, R",
     "options": [
       "Q",
@@ -16615,9 +26888,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1125",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：P, ______, R, S",
     "options": [
       "O",
@@ -16630,9 +26912,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1126",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：P, Q, ______, S",
     "options": [
       "B",
@@ -16645,9 +26936,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1127",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：Q, ______, S, T",
     "options": [
       "K",
@@ -16660,9 +26960,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1128",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：Q, R, ______, T",
     "options": [
       "S",
@@ -16675,9 +26984,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1129",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：R, ______, T, U",
     "options": [
       "Z",
@@ -16690,9 +27008,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1130",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：R, S, ______, U",
     "options": [
       "F",
@@ -16705,9 +27032,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1131",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：S, ______, U, V",
     "options": [
       "L",
@@ -16720,9 +27056,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1132",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：S, T, ______, V",
     "options": [
       "U",
@@ -16735,9 +27080,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1133",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：T, ______, V, W",
     "options": [
       "V",
@@ -16750,9 +27104,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1134",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：T, U, ______, W",
     "options": [
       "W",
@@ -16765,9 +27128,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1135",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：U, ______, W, X",
     "options": [
       "Y",
@@ -16780,9 +27152,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1136",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：U, V, ______, X",
     "options": [
       "W",
@@ -16795,9 +27176,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1137",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：V, ______, X, Y",
     "options": [
       "M",
@@ -16810,9 +27200,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1138",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：V, W, ______, Y",
     "options": [
       "Y",
@@ -16825,9 +27224,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1139",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：W, ______, Y, Z",
     "options": [
       "Z",
@@ -16840,9 +27248,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1140",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的大寫字母：W, X, ______, Z",
     "options": [
       "Y",
@@ -16855,9 +27272,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1141",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "A, C, B",
@@ -16870,9 +27296,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1142",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "C, B, D",
@@ -16885,9 +27320,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1143",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "E, D, C",
@@ -16900,9 +27344,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1144",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "D, E, F",
@@ -16915,9 +27368,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1145",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "E, G, F",
@@ -16930,9 +27392,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1146",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "G, F, H",
@@ -16945,9 +27416,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1147",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 1 (A~G)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "I, H, G",
@@ -16960,9 +27440,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1148",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "H, I, J",
@@ -16975,9 +27464,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1149",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "I, K, J",
@@ -16990,9 +27488,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1150",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "K, J, L",
@@ -17005,9 +27512,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1151",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "M, L, K",
@@ -17020,9 +27536,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1152",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "L, M, N",
@@ -17035,9 +27560,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1153",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "M, O, N",
@@ -17050,9 +27584,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1154",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 2 (H~N)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "O, N, P",
@@ -17065,9 +27608,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1155",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "Q, P, O",
@@ -17080,9 +27632,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1156",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "P, Q, R",
@@ -17095,9 +27656,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1157",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "Q, S, R",
@@ -17110,9 +27680,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1158",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "S, R, T",
@@ -17125,9 +27704,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1159",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "U, T, S",
@@ -17140,9 +27728,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1160",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 3 (O~T)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "T, U, V",
@@ -17155,9 +27752,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1161",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "U, W, V",
@@ -17170,9 +27776,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1162",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "W, V, X",
@@ -17185,9 +27800,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1163",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "Y, X, W",
@@ -17200,9 +27824,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg1_1164",
+    "track": "textbook",
     "book": "g1",
     "unit": "Unit 4 (U~Z)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組大寫字母的「先後順序」是正確的？",
     "options": [
       "X, Y, Z",
@@ -17215,9 +27848,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1165",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「A」的小寫是哪一個？",
     "options": [
       "o",
@@ -17230,9 +27872,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1166",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「B」的小寫是哪一個？",
     "options": [
       "p",
@@ -17245,9 +27896,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1167",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「C」的小寫是哪一個？",
     "options": [
       "a",
@@ -17260,9 +27920,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1168",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「D」的小寫是哪一個？",
     "options": [
       "d",
@@ -17275,9 +27944,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1169",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「E」的小寫是哪一個？",
     "options": [
       "c",
@@ -17290,9 +27968,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1170",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「F」的小寫是哪一個？",
     "options": [
       "r",
@@ -17305,9 +27992,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1171",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「G」的小寫是哪一個？",
     "options": [
       "y",
@@ -17320,9 +28016,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1172",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「H」的小寫是哪一個？",
     "options": [
       "h",
@@ -17335,9 +28040,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1173",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「I」的小寫是哪一個？",
     "options": [
       "j",
@@ -17350,9 +28064,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1174",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「J」的小寫是哪一個？",
     "options": [
       "g",
@@ -17365,9 +28088,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1175",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「K」的小寫是哪一個？",
     "options": [
       "r",
@@ -17380,9 +28112,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1176",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「L」的小寫是哪一個？",
     "options": [
       "l",
@@ -17395,9 +28136,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1177",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「M」的小寫是哪一個？",
     "options": [
       "n",
@@ -17410,9 +28160,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1178",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「N」的小寫是哪一個？",
     "options": [
       "u",
@@ -17425,9 +28184,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1179",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「O」的小寫是哪一個？",
     "options": [
       "e",
@@ -17440,9 +28208,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1180",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「P」的小寫是哪一個？",
     "options": [
       "p",
@@ -17455,9 +28232,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1181",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「Q」的小寫是哪一個？",
     "options": [
       "p",
@@ -17470,9 +28256,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1182",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「R」的小寫是哪一個？",
     "options": [
       "v",
@@ -17485,9 +28280,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1183",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「S」的小寫是哪一個？",
     "options": [
       "x",
@@ -17500,9 +28304,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1184",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「T」的小寫是哪一個？",
     "options": [
       "t",
@@ -17515,9 +28328,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1185",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「U」的小寫是哪一個？",
     "options": [
       "n",
@@ -17530,9 +28352,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1186",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「V」的小寫是哪一個？",
     "options": [
       "w",
@@ -17545,9 +28376,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1187",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「W」的小寫是哪一個？",
     "options": [
       "u",
@@ -17560,9 +28400,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1188",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「X」的小寫是哪一個？",
     "options": [
       "x",
@@ -17575,9 +28424,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1189",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「Y」的小寫是哪一個？",
     "options": [
       "g",
@@ -17590,9 +28448,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1190",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問大寫字母「Z」的小寫是哪一個？",
     "options": [
       "x",
@@ -17605,9 +28472,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1191",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「a」的大寫是哪一個？",
     "options": [
       "C",
@@ -17620,9 +28496,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1192",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「b」的大寫是哪一個？",
     "options": [
       "B",
@@ -17635,9 +28520,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1193",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「c」的大寫是哪一個？",
     "options": [
       "O",
@@ -17650,9 +28544,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1194",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「d」的大寫是哪一個？",
     "options": [
       "P",
@@ -17665,9 +28568,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1195",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「e」的大寫是哪一個？",
     "options": [
       "O",
@@ -17680,9 +28592,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1196",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「f」的大寫是哪一個？",
     "options": [
       "F",
@@ -17695,9 +28616,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1197",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「g」的大寫是哪一個？",
     "options": [
       "Q",
@@ -17710,9 +28640,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1198",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「h」的大寫是哪一個？",
     "options": [
       "R",
@@ -17725,9 +28664,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1199",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「i」的大寫是哪一個？",
     "options": [
       "T",
@@ -17740,9 +28688,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1200",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「j」的大寫是哪一個？",
     "options": [
       "J",
@@ -17755,9 +28712,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1201",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「k」的大寫是哪一個？",
     "options": [
       "H",
@@ -17770,9 +28736,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1202",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「l」的大寫是哪一個？",
     "options": [
       "T",
@@ -17785,9 +28760,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1203",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「m」的大寫是哪一個？",
     "options": [
       "U",
@@ -17800,9 +28784,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1204",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「n」的大寫是哪一個？",
     "options": [
       "N",
@@ -17815,9 +28808,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1205",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「o」的大寫是哪一個？",
     "options": [
       "C",
@@ -17830,9 +28832,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1206",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「p」的大寫是哪一個？",
     "options": [
       "B",
@@ -17845,9 +28856,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1207",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「q」的大寫是哪一個？",
     "options": [
       "D",
@@ -17860,9 +28880,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1208",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「r」的大寫是哪一個？",
     "options": [
       "R",
@@ -17875,9 +28904,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1209",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「s」的大寫是哪一個？",
     "options": [
       "Z",
@@ -17890,9 +28928,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1210",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「t」的大寫是哪一個？",
     "options": [
       "L",
@@ -17905,9 +28952,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1211",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「u」的大寫是哪一個？",
     "options": [
       "W",
@@ -17920,9 +28976,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1212",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「v」的大寫是哪一個？",
     "options": [
       "V",
@@ -17935,9 +29000,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1213",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「w」的大寫是哪一個？",
     "options": [
       "M",
@@ -17950,9 +29024,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1214",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「x」的大寫是哪一個？",
     "options": [
       "Z",
@@ -17965,9 +29048,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1215",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「y」的大寫是哪一個？",
     "options": [
       "V",
@@ -17980,9 +29072,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1216",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問小寫字母「z」的大寫是哪一個？",
     "options": [
       "Z",
@@ -17995,9 +29096,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1217",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "A o",
@@ -18010,9 +29120,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1218",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "B p",
@@ -18025,9 +29144,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1219",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "C a",
@@ -18040,9 +29168,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1220",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "D d",
@@ -18055,9 +29192,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1221",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "E c",
@@ -18070,9 +29216,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1222",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "F r",
@@ -18085,9 +29240,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1223",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "G y",
@@ -18100,9 +29264,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1224",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "H h",
@@ -18115,9 +29288,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1225",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "I j",
@@ -18130,9 +29312,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1226",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "J g",
@@ -18145,9 +29336,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1227",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "K r",
@@ -18160,9 +29360,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1228",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "L l",
@@ -18175,9 +29384,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1229",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "M n",
@@ -18190,9 +29408,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1230",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "N u",
@@ -18205,9 +29432,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1231",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "O e",
@@ -18220,9 +29456,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1232",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "P p",
@@ -18235,9 +29480,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1233",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "Q p",
@@ -18250,9 +29504,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1234",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "R v",
@@ -18265,9 +29528,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1235",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "S x",
@@ -18280,9 +29552,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1236",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "T t",
@@ -18295,9 +29576,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1237",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "U n",
@@ -18310,9 +29600,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1238",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "V w",
@@ -18325,9 +29624,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1239",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "W u",
@@ -18340,9 +29648,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1240",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "X x",
@@ -18355,9 +29672,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1241",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "Y g",
@@ -18370,9 +29696,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1242",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-CASE",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組「大小寫字母配對」是正確的？",
     "options": [
       "Z x",
@@ -18385,9 +29720,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1243",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：a, b, ______, d",
     "options": [
       "a",
@@ -18400,9 +29744,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1244",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：b, c, ______, e",
     "options": [
       "d",
@@ -18415,9 +29768,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1245",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：c, d, ______, f",
     "options": [
       "c",
@@ -18430,9 +29792,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1246",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：d, e, ______, g",
     "options": [
       "r",
@@ -18445,9 +29816,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1247",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：e, f, ______, h",
     "options": [
       "y",
@@ -18460,9 +29840,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1248",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：f, g, ______, i",
     "options": [
       "h",
@@ -18475,9 +29864,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1249",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：g, h, ______, j",
     "options": [
       "j",
@@ -18490,9 +29888,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1250",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：h, i, ______, k",
     "options": [
       "g",
@@ -18505,9 +29912,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1251",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：i, j, ______, l",
     "options": [
       "r",
@@ -18520,9 +29936,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1252",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：j, k, ______, m",
     "options": [
       "l",
@@ -18535,9 +29960,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1253",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：k, l, ______, n",
     "options": [
       "n",
@@ -18550,9 +29984,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1254",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：l, m, ______, o",
     "options": [
       "u",
@@ -18565,9 +30008,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1255",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：m, n, ______, p",
     "options": [
       "e",
@@ -18580,9 +30032,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1256",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：n, o, ______, q",
     "options": [
       "p",
@@ -18595,9 +30056,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1257",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：o, p, ______, r",
     "options": [
       "p",
@@ -18610,9 +30080,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1258",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：p, q, ______, s",
     "options": [
       "v",
@@ -18625,9 +30104,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1259",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：q, r, ______, t",
     "options": [
       "x",
@@ -18640,9 +30128,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1260",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：r, s, ______, u",
     "options": [
       "t",
@@ -18655,9 +30152,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1261",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：s, t, ______, v",
     "options": [
       "n",
@@ -18670,9 +30176,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1262",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：t, u, ______, w",
     "options": [
       "w",
@@ -18685,9 +30200,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1263",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：u, v, ______, x",
     "options": [
       "u",
@@ -18700,9 +30224,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1264",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：v, w, ______, y",
     "options": [
       "x",
@@ -18715,9 +30248,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1265",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "grammar",
+    "section": "alphabet",
+    "taskType": "A-MISSING",
+    "difficulty": 1,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請選出空格中正確的小寫字母：w, x, ______, z",
     "options": [
       "g",
@@ -18730,9 +30272,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1266",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "b, a, c",
@@ -18745,9 +30296,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1267",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "d, c, b",
@@ -18760,9 +30320,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1268",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "c, d, e",
@@ -18775,9 +30344,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1269",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "d, f, e",
@@ -18790,9 +30368,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1270",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "f, e, g",
@@ -18805,9 +30392,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1271",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "h, g, f",
@@ -18820,9 +30416,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1272",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 1 (Aa~Gg)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "g, h, i",
@@ -18835,9 +30440,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1273",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "h, j, i",
@@ -18850,9 +30464,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1274",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "j, i, k",
@@ -18865,9 +30488,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1275",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "l, k, j",
@@ -18880,9 +30512,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1276",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "k, l, m",
@@ -18895,9 +30536,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1277",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "l, n, m",
@@ -18910,9 +30560,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1278",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "n, m, o",
@@ -18925,9 +30584,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1279",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 2 (Hh~Nn)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "p, o, n",
@@ -18940,9 +30608,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1280",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "o, p, q",
@@ -18955,9 +30632,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1281",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "p, r, q",
@@ -18970,9 +30656,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1282",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "r, q, s",
@@ -18985,9 +30680,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1283",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "t, s, r",
@@ -19000,9 +30704,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1284",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "s, t, u",
@@ -19015,9 +30728,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1285",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 3 (Oo~Tt)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "t, v, u",
@@ -19030,9 +30752,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1286",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "v, u, w",
@@ -19045,9 +30776,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1287",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "x, w, v",
@@ -19060,9 +30800,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1288",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "w, x, y",
@@ -19075,9 +30824,18 @@ export const HERE_WE_GO_MCQ_BANK = [
   },
   {
     "id": "hwg_bg2_1289",
+    "track": "textbook",
     "book": "g2",
     "unit": "Unit 4 (Uu~Zz)",
-    "category": "dialogue",
+    "section": "alphabet",
+    "taskType": "A-ORDER",
+    "difficulty": 2,
+    "reviewed": true,
+    "groupId": null,
+    "media": {
+      "audioText": null,
+      "imageId": null
+    },
     "question": "請問下列哪一組小寫字母的「先後順序」是正確的？",
     "options": [
       "x, z, y",

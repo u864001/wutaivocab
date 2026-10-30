@@ -25,6 +25,17 @@ import {
   formatStudentDisplayName
 } from '../../utils/studentIdHelper';
 import { recordMcqExamStats } from '../../services/supabase';
+import {
+  assembleExamForm,
+  buildFormOutline,
+  buildTaskBreakdown,
+  getInProgressKey,
+  loadInProgress,
+  saveInProgress,
+  clearInProgress,
+  purgeExpiredInProgress,
+  getTaskLabel
+} from './examBlueprint';
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D'];
 const ALL_BOOK_OPTIONS = ['g1', 'g2', 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -123,7 +134,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     [mistakeStorageKey]
   );
 
-  // Phase: 'setup' | 'exam' | 'result'
+  // Phase: 'setup' | 'instructions' | 'exam' | 'result'
   const [phase, setPhase] = useState('setup');
   // Scope Mode: 'curriculum' (課本範圍檢定) | 'mistakes' (個人易錯題複習)
   const [scopeMode, setScopeMode] = useState('curriculum');
@@ -133,6 +144,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   );
   // 測驗題數選項: 10 | 20 | 50
   const [questionCountOpt, setQuestionCountOpt] = useState(20);
+
+  // In-Progress Snapshot Key & State (6 小時內有效)
+  const inProgressKey = useMemo(() => getInProgressKey(currentStudent), [currentStudent]);
+  const [savedSession, setSavedSession] = useState(null);
 
   // Exam Runtime States
   const [questions, setQuestions] = useState([]);
@@ -147,6 +162,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // Result & Review States (單頁翻頁檢視，免上下捲動)
   const [reviewFilter, setReviewFilter] = useState('wrong'); // 'wrong' | 'all'
   const [reviewPageIndex, setReviewPageIndex] = useState(0);
+  const [taskBreakdown, setTaskBreakdown] = useState([]);
   const [sessionRewardInfo, setSessionRewardInfo] = useState({
     coinsEarned: 0,
     reason: '',
@@ -155,6 +171,15 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     addedMistakeCount: 0
   });
   const hasAwardedCoinsRef = useRef(false);
+
+  // 載入時清理過期快照並檢查是否有未完檢定
+  useEffect(() => {
+    purgeExpiredInProgress();
+    const snap = loadInProgress(inProgressKey);
+    if (snap && Array.isArray(snap.questions) && snap.questions.length > 0) {
+      setSavedSession(snap);
+    }
+  }, [inProgressKey]);
 
   // 當學生登入身分或年級變更時，自動同步預設冊別
   useEffect(() => {
@@ -196,6 +221,35 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     return () => clearInterval(timer);
   }, [phase, startTime]);
 
+  // 作答中自動保存進度至 LocalStorage（6小時內有效，維護健康回應機制）
+  useEffect(() => {
+    if (phase === 'exam' && questions.length > 0 && startTime) {
+      saveInProgress(inProgressKey, {
+        startedAt: startTime,
+        questions,
+        answers,
+        flagged,
+        currentIndex,
+        elapsedSec,
+        selectedBook,
+        scopeMode,
+        questionCountOpt
+      });
+    }
+  }, [
+    phase,
+    questions,
+    answers,
+    flagged,
+    currentIndex,
+    elapsedSec,
+    inProgressKey,
+    startTime,
+    selectedBook,
+    scopeMode,
+    questionCountOpt
+  ]);
+
   // 若在成績單頁面剛登入，自動補發當次應得金幣
   useEffect(() => {
     if (
@@ -210,75 +264,79 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   }, [phase, isLoggedIn, sessionRewardInfo.coinsEarned, addCoins]);
 
   // 組建測驗題目並啟動測驗
-  const startExamSession = useCallback((customPool = null, customTargetCount = null) => {
-    const targetCount = Number(customTargetCount || questionCountOpt) || 20;
-    let sourceList = [];
+  const startExamSession = useCallback(
+    (customPool = null, customTargetCount = null, skipInstructions = false) => {
+      const targetCount = Number(customTargetCount || questionCountOpt) || 20;
+      let sourceList = [];
 
-    if (customPool && Array.isArray(customPool) && customPool.length > 0) {
-      sourceList = [...customPool];
-    } else if (scopeMode === 'mistakes') {
-      // 優先放入所有個人易錯題
-      const mistakeList = [...mistakeQuestions];
-      for (let i = mistakeList.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [mistakeList[i], mistakeList[j]] = [mistakeList[j], mistakeList[i]];
-      }
-      sourceList = mistakeList.slice(0, targetCount);
-
-      // 若易錯題不足目標題數，從學生本年級題庫隨機抽題補滿（不重複）
-      if (sourceList.length < targetCount) {
-        const pickedIds = new Set(sourceList.map((q) => q.id));
-        const ownBooks = getDefaultBooksForGrade(currentStudent?.grade);
-        const fillerCandidates = HERE_WE_GO_MCQ_BANK.filter(
-          (q) => ownBooks.includes(q.book) && !pickedIds.has(q.id)
-        );
-        for (let i = fillerCandidates.length - 1; i > 0; i--) {
+      if (customPool && Array.isArray(customPool) && customPool.length > 0) {
+        sourceList = [...customPool];
+      } else if (scopeMode === 'mistakes') {
+        // 優先放入所有個人易錯題
+        const mistakeList = [...mistakeQuestions];
+        for (let i = mistakeList.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [fillerCandidates[i], fillerCandidates[j]] = [
-            fillerCandidates[j],
-            fillerCandidates[i]
-          ];
+          [mistakeList[i], mistakeList[j]] = [mistakeList[j], mistakeList[i]];
         }
-        const needed = targetCount - sourceList.length;
-        sourceList = [...sourceList, ...fillerCandidates.slice(0, needed)];
-      }
-    } else {
-      const shuffled = [...curriculumPool];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      sourceList = shuffled.slice(0, Math.min(targetCount, shuffled.length));
-    }
+        sourceList = mistakeList.slice(0, targetCount);
 
-    if (sourceList.length === 0) return;
-
-    // 隨機洗牌每題的 (A)(B)(C)(D) 選項順序
-    const prepared = sourceList.map((q) => {
-      const correctOptText = q.options[q.answer];
-      const opts = [...q.options];
-      for (let i = opts.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [opts[i], opts[j]] = [opts[j], opts[i]];
+        // 若易錯題不足目標題數，從學生本年級題庫隨機抽題補滿（不重複）
+        if (sourceList.length < targetCount) {
+          const pickedIds = new Set(sourceList.map((q) => q.id));
+          const ownBooks = getDefaultBooksForGrade(currentStudent?.grade);
+          const fillerCandidates = HERE_WE_GO_MCQ_BANK.filter(
+            (q) => ownBooks.includes(q.book) && !pickedIds.has(q.id)
+          );
+          for (let i = fillerCandidates.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [fillerCandidates[i], fillerCandidates[j]] = [
+              fillerCandidates[j],
+              fillerCandidates[i]
+            ];
+          }
+          const needed = targetCount - sourceList.length;
+          sourceList = [...sourceList, ...fillerCandidates.slice(0, needed)];
+        }
+      } else {
+        // 使用專業語言測驗組卷藍圖：按大題順序排布、難度遞增、題組不拆散
+        sourceList = assembleExamForm(curriculumPool, targetCount);
       }
-      return {
-        ...q,
-        options: opts,
-        answer: opts.indexOf(correctOptText)
-      };
-    });
 
-    hasAwardedCoinsRef.current = false;
-    setQuestions(prepared);
-    setCurrentIndex(0);
-    setAnswers({});
-    setFlagged({});
-    setStartTime(Date.now());
-    setElapsedSec(0);
-    setShowUnansweredConfirm(false);
-    setShowExitConfirm(false);
-    setPhase('exam');
-  }, [questionCountOpt, scopeMode, mistakeQuestions, currentStudent?.grade, curriculumPool]);
+      if (sourceList.length === 0) return;
+
+      // 隨機洗牌每題的 (A)(B)(C)(D) 選項順序
+      const prepared = sourceList.map((q) => {
+        const correctOptText = q.options[q.answer];
+        const opts = [...q.options];
+        for (let i = opts.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        return {
+          ...q,
+          options: opts,
+          answer: opts.indexOf(correctOptText)
+        };
+      });
+
+      hasAwardedCoinsRef.current = false;
+      setQuestions(prepared);
+      setCurrentIndex(0);
+      setAnswers({});
+      setFlagged({});
+      setShowUnansweredConfirm(false);
+      setShowExitConfirm(false);
+
+      if (skipInstructions || customPool) {
+        setStartTime(Date.now());
+        setElapsedSec(0);
+        setPhase('exam');
+      } else {
+        setPhase('instructions');
+      }
+    },
+    [questionCountOpt, scopeMode, mistakeQuestions, currentStudent?.grade, curriculumPool]
+  );
 
   // 語音朗讀題幹（一、二年級中文題幹自動使用 zh-TW 語音讀題；三～六年級英文題幹使用 en-US 朗讀）
   const speakQuestion = (text) => {
@@ -387,6 +445,14 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       addCoins(coinsEarned);
     }
 
+    // 計算各大題分項診斷成績
+    const breakdown = buildTaskBreakdown(questions, answers);
+    setTaskBreakdown(breakdown);
+
+    // 清理進行中快照
+    clearInProgress(inProgressKey);
+    setSavedSession(null);
+
     setSessionRewardInfo({
       coinsEarned,
       reason,
@@ -421,7 +487,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     isLoggedIn,
     addCoins,
     onComplete,
-    elapsedSec
+    elapsedSec,
+    inProgressKey
   ]);
 
   const handleRequestSubmit = () => {
@@ -555,6 +622,57 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         {/* 中央設定主體（彈性自適應高度、免捲動） */}
         {/* 空間足夠時（電腦／平板）一頁呈現；空間不足時（手機、未放大視窗）允許上下滑動，絕不重疊 */}
         <div className="flex-1 min-h-0 p-3 sm:p-5 md:p-6 flex flex-col gap-3 overflow-y-auto overscroll-contain">
+          {/* 未完成檢定接續提醒 (6 小時內有效快照) */}
+          {savedSession && (
+            <div className="shrink-0 p-3 sm:p-4 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-300 dark:border-indigo-700 flex flex-wrap items-center justify-between gap-3 animate-fadeIn">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Sparkles className="text-indigo-600 dark:text-indigo-400 shrink-0" size={20} />
+                <div className="min-w-0">
+                  <div className="text-xs sm:text-sm font-black text-indigo-950 dark:text-indigo-100 flex items-center gap-2">
+                    <span>發現未完成的檢定</span>
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-200/70 dark:bg-indigo-800 text-indigo-900 dark:text-indigo-200">
+                      已作答 {Object.keys(savedSession.answers || {}).length} / {savedSession.questions?.length} 題
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-indigo-700 dark:text-indigo-300 truncate mt-0.5">
+                    {savedSession.scopeMode === 'mistakes' ? '易錯題複習' : `${formatBookLabel(savedSession.selectedBook)}檢定`} • 6 小時內有效，可隨時接續
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 ml-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearInProgress(inProgressKey);
+                    setSavedSession(null);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-bold transition"
+                >
+                  放棄重測
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuestions(savedSession.questions);
+                    setAnswers(savedSession.answers || {});
+                    setFlagged(savedSession.flagged || {});
+                    setCurrentIndex(savedSession.currentIndex || 0);
+                    setElapsedSec(savedSession.elapsedSec || 0);
+                    setStartTime(Date.now() - (savedSession.elapsedSec || 0) * 1000);
+                    if (savedSession.selectedBook) setSelectedBook(savedSession.selectedBook);
+                    if (savedSession.questionCountOpt) setQuestionCountOpt(savedSession.questionCountOpt);
+                    setSavedSession(null);
+                    setPhase('exam');
+                  }}
+                  className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-sm flex items-center gap-1 transition"
+                >
+                  <span>接續作答</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* 步驟 1：選擇測驗模式与範圍 */}
           <div className="shrink-0 flex flex-col gap-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2 shrink-0">
@@ -815,6 +933,129 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   }
 
   // ============================================================================
+  // STEP 2.5: 本次測驗內容配置與說明 (Page 0 Overview Screen - Zero Scroll)
+  // ============================================================================
+  if (phase === 'instructions') {
+    const outline = buildFormOutline(questions);
+    const bookMeta = HERE_WE_GO_BOOK_META[selectedBook] || HERE_WE_GO_BOOK_META[1];
+    const centerTitle = scopeMode === 'mistakes' ? '個人易錯題複習' : `${formatBookLabel(selectedBook)}檢定`;
+
+    return renderShell(
+      <>
+        {/* 頂端精簡導覽列 */}
+        <div className="shrink-0 px-4 sm:px-6 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50/80 dark:bg-slate-900/80">
+          <button
+            type="button"
+            onClick={() => setPhase('setup')}
+            className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition"
+          >
+            <ArrowLeft size={16} />
+            重選範圍
+          </button>
+
+          <div className="flex items-center gap-2">
+            <BookOpen className="text-indigo-600 dark:text-indigo-400" size={20} />
+            <h2 className="text-sm sm:text-base md:text-lg font-black tracking-tight text-slate-900 dark:text-white">
+              本次測驗說明與配置
+            </h2>
+          </div>
+
+          <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+            共 {questions.length} 題
+          </span>
+        </div>
+
+        {/* 主體內容（空間不足可捲動） */}
+        <div className="flex-1 min-h-0 p-4 sm:p-6 md:p-8 flex flex-col justify-between gap-4 overflow-y-auto overscroll-contain">
+          <div className="max-w-2xl mx-auto w-full space-y-4">
+            {/* 試卷基本資訊卡 */}
+            <div className="bg-slate-50/90 dark:bg-slate-800/60 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700 space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                    {centerTitle}
+                  </span>
+                  <h3 className="text-base sm:text-xl font-black text-slate-900 dark:text-white mt-0.5">
+                    {bookMeta.title}
+                  </h3>
+                </div>
+                <span className="px-3 py-1 rounded-xl bg-indigo-600 text-white font-black text-xs sm:text-sm shadow-xs">
+                  全卷 {questions.length} 題
+                </span>
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <span className="font-bold">測驗範圍：</span>
+                <span className="truncate">{scopeMode === 'mistakes' ? '個人錯題精選' : selectedUnits.join('、')}</span>
+              </div>
+            </div>
+
+            {/* 大題配置列表 */}
+            <div className="space-y-2">
+              <div className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <span>📋 本次測驗大題配置</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {outline.map((part, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-white dark:bg-slate-800/90 rounded-xl p-3 border border-slate-200 dark:border-slate-700 flex items-center justify-between shadow-xs"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center justify-center border border-indigo-200 dark:border-indigo-800">
+                        {idx + 1}
+                      </span>
+                      <div>
+                        <div className="text-xs sm:text-sm font-black text-slate-800 dark:text-white">
+                          {part.label}
+                        </div>
+                        <div className="text-[11px] text-slate-400 font-semibold">
+                          {part.sectionLabel}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+                      第 {part.start}–{part.end} 題 ({part.end - part.start + 1} 題)
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 溫馨提醒 */}
+            <div className="bg-amber-50/70 dark:bg-amber-950/40 rounded-xl p-3.5 border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 space-y-1.5">
+              <div className="font-black flex items-center gap-1.5 text-amber-800 dark:text-amber-300">
+                <AlertCircle size={15} />
+                <span>作答須知與專業規範</span>
+              </div>
+              <ul className="list-disc list-inside space-y-1 opacity-90 pl-1">
+                <li>依序一頁一題作答，作答時可隨時點擊右上角 🚩 標記待查題目。</li>
+                <li>點擊下方「正式開始作答」後才會進入第 1 題並正式開始計時。</li>
+                <li>作答中斷線或誤離，6 小時內返回皆可無縫接續作答。</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* 底部開始按鈕 */}
+          <div className="shrink-0 flex items-center justify-center pt-2 pb-1">
+            <button
+              type="button"
+              onClick={() => {
+                setStartTime(Date.now());
+                setElapsedSec(0);
+                setCurrentIndex(0);
+                setPhase('exam');
+              }}
+              className="w-full sm:w-auto sm:min-w-[280px] py-3.5 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm sm:text-base shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+            >
+              <span>正式開始作答 ➔</span>
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // ============================================================================
   // STEP 3: 開始測驗 (一頁一題、專業語言檢定風格、頂端三欄極簡列)
   // ============================================================================
   if (phase === 'exam') {
@@ -825,10 +1066,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
     if (!currentQ) return null;
 
+    const currentTaskLabel = getTaskLabel(currentQ);
     const centerScopeTitle =
       scopeMode === 'mistakes'
-        ? '個人易錯題複習'
-        : `${formatBookLabel(selectedBook)}檢定`;
+        ? `個人易錯題 · ${currentTaskLabel}`
+        : `${formatBookLabel(selectedBook)} · ${currentTaskLabel}`;
 
     return renderShell(
       <>
@@ -1046,6 +1288,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 <button
                   type="button"
                   onClick={() => {
+                    clearInProgress(inProgressKey);
+                    setSavedSession(null);
                     setShowExitConfirm(false);
                     setPhase('setup');
                   }}
@@ -1154,6 +1398,44 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               >
                 登入以入帳金幣
               </button>
+            )}
+
+            {/* 分項診斷成績 */}
+            {taskBreakdown.length > 0 && (
+              <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-2">
+                <div className="text-xs font-black text-slate-700 dark:text-slate-200 flex items-center justify-between">
+                  <span>📊 題型分項表現</span>
+                  <span className="text-[10px] text-slate-400 font-bold">答對 / 該題型題數</span>
+                </div>
+                <div className="space-y-1.5">
+                  {taskBreakdown.map((row) => {
+                    const pct = row.total > 0 ? Math.round((row.correct / row.total) * 100) : 0;
+                    return (
+                      <div key={row.taskType} className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-slate-600 dark:text-slate-300">
+                          {row.label}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-slate-800 dark:text-slate-100">
+                            {row.correct} / {row.total}
+                          </span>
+                          <span
+                            className={`text-[10px] font-black px-1.5 py-0.5 rounded ${
+                              pct >= 80
+                                ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+                                : pct >= 60
+                                ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300'
+                                : 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300'
+                            }`}
+                          >
+                            {pct}%
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             )}
 
             {/* 易錯題池變動紀錄（一行精簡） */}
