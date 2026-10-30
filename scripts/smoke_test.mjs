@@ -484,6 +484,34 @@ async function run() {
   }
   console.log('  ✓ Interactive gameplay clicks verified for quiz-choice, spelling, memory, meteor, swipe, mole');
 
+  // 5D-2. 課本題庫檢定館手機尺寸 (375x667) 防重疊驗證：上半冊／下半冊／題數／開始鈕皆須可被點到（未被其他區塊覆蓋）
+  client.exceptions = [];
+  await client.send('Emulation.setDeviceMetricsOverride', { width: 375, height: 667, deviceScaleFactor: 2, mobile: true });
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
+  await new Promise(r => setTimeout(r, 900));
+  const mcqMobileCheck = await client.evaluate(`
+    (async () => {
+      const labels = ['上半冊', '下半冊', '全選', '10 題', '50 題', '開始檢定'];
+      const blocked = [];
+      for (const label of labels) {
+        const btn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes(label));
+        if (!btn) { blocked.push(label + ':missing'); continue; }
+        btn.scrollIntoView({ block: 'center' });
+        await new Promise(r => setTimeout(r, 80));
+        const rect = btn.getBoundingClientRect();
+        const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        if (!hit || !(hit === btn || btn.contains(hit))) blocked.push(label + ':covered');
+      }
+      return { ok: blocked.length === 0, blocked };
+    })()
+  `);
+  await client.send('Emulation.clearDeviceMetricsOverride', {});
+  if (!mcqMobileCheck?.ok || client.exceptions.length > 0) {
+    failures.push({ target: 'PureMcqExamView Mobile Setup Overlap (375x667)', details: mcqMobileCheck, exceptions: client.exceptions });
+  } else {
+    console.log('  ✓ PureMcqExamView mobile 375x667: unit range, count & start buttons all reachable (no overlap)');
+  }
+
   // 5E. 課本題庫檢定館 (mcq-exam) 一頁式免捲動選範圍 -> 開始檢定 -> 選答案 -> 下一題 深度驗證
   client.exceptions = [];
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });

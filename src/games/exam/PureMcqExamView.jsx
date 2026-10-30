@@ -553,16 +553,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         </div>
 
         {/* 中央設定主體（彈性自適應高度、免捲動） */}
-        <div className="flex-1 p-3 sm:p-5 md:p-6 flex flex-col justify-between gap-3 overflow-hidden">
+        {/* 空間足夠時（電腦／平板）一頁呈現；空間不足時（手機、未放大視窗）允許上下滑動，絕不重疊 */}
+        <div className="flex-1 min-h-0 p-3 sm:p-5 md:p-6 flex flex-col gap-3 overflow-y-auto overscroll-contain">
           {/* 步驟 1：選擇測驗模式与範圍 */}
-          <div className="flex-1 flex flex-col gap-2.5 min-h-0">
+          <div className="shrink-0 flex flex-col gap-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">
                   1
                 </span>
                 <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                  選擇檢定範圍
+                  選擇範圍
                 </span>
               </div>
 
@@ -577,7 +578,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                   }`}
                 >
-                  📚 課本範圍檢定
+                  📚 課本範圍
                 </button>
                 <button
                   type="button"
@@ -588,7 +589,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                   }`}
                 >
-                  <span>📓 個人易錯題複習</span>
+                  <span>📓 易錯題複習</span>
                   <span className="px-1.5 py-0.2 rounded-full text-[11px] bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">
                     {mistakeCount}
                   </span>
@@ -597,12 +598,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             </div>
 
             {scopeMode === 'curriculum' ? (
-              <div className="flex-1 flex flex-col justify-between gap-2.5 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 min-h-0">
+              <div className="flex flex-col gap-3 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70">
                 {/* 冊別列 (第 1~8 冊 + 國一先修) */}
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between gap-2 text-xs">
                     <span className="font-bold text-slate-500 dark:text-slate-400">
-                      選擇冊別（{bookMeta.subtitle}）
+                      冊別<span className="hidden sm:inline">（{bookMeta.subtitle}）</span>
                     </span>
                     <span
                       className={`font-black px-2 py-0.5 rounded-md ${
@@ -611,7 +612,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
                       }`}
                     >
-                      {isSelectedBookOwnGrade ? '✓ 本年級計分冊別' : '跨年級自主練習（不發金幣）'}
+                      {isSelectedBookOwnGrade ? '✓ 本年級計分' : '練習不計分'}
                     </span>
                   </div>
 
@@ -656,7 +657,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 <div className="space-y-1.5">
                   <div className="flex flex-wrap items-center justify-between gap-1">
                     <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                      勾選單元範圍（可用題庫：{curriculumPool.length} 題）
+                      單元<span className="hidden sm:inline">（題庫 {curriculumPool.length} 題）</span>
                     </span>
                     <div className="flex items-center gap-1.5">
                       <button
@@ -727,15 +728,15 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               </div>
             ) : (
               /* 個人易錯題複習說明面板 */
-              <div className="flex-1 flex flex-col justify-center bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-4 sm:p-6 border border-slate-200/80 dark:border-slate-700/70">
-                <div className="max-w-xl mx-auto text-center space-y-3">
+              <div className="flex flex-col justify-center bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-4 sm:p-6 border border-slate-200/80 dark:border-slate-700/70">
+                <div className="max-w-xl mx-auto text-center space-y-2 sm:space-y-3">
                   <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs sm:text-sm font-black">
-                    📓 目前個人易錯池累計：{mistakeCount} 題
+                    📓 易錯題：{mistakeCount} 題
                   </div>
-                  <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                    針對曾答錯的題目精準複習，熟練後自動移出！
+                  <h3 className="text-sm sm:text-lg font-black text-slate-900 dark:text-white">
+                    連續答對 2 次自動移出
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <p className="hidden sm:block text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                     系統會自動收集你曾答錯的題目編號。若目前易錯題數少於所選測驗題數，將自動從你的本年級題庫隨機抽題補滿。在本模式中只要對同一題
                     <span className="font-black text-emerald-600 dark:text-emerald-400">
                       「連續答對 2 次」
@@ -755,19 +756,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   2
                 </span>
                 <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                  選擇測驗題數
+                  選擇題數
                 </span>
               </div>
-              <span className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">
-                本年級或易錯題答對率達 60% 以上，依「題數 × 答對率」核發金幣
+              <span className="hidden md:inline text-xs font-bold text-slate-500 dark:text-slate-400">
+                本年級答對率 ≥ 60% 才發金幣
               </span>
             </div>
 
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {[
-                { count: 10, label: '10 題', reward: '全對 +4 金幣' },
-                { count: 20, label: '20 題', reward: '全對 +8 金幣' },
-                { count: 50, label: '50 題', reward: '全對 +20 金幣' }
+                { count: 10, label: '10 題', reward: '最高 +4' },
+                { count: 20, label: '20 題', reward: '最高 +8' },
+                { count: 50, label: '50 題', reward: '最高 +20' }
               ].map((opt) => {
                 const active = questionCountOpt === opt.count;
                 return (
@@ -795,11 +796,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             </div>
           </div>
 
-          {/* 步驟 3：開始測驗 CTA */}
-          <div className="shrink-0 flex items-center justify-between gap-3 pt-1">
-            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 hidden sm:block">
-              專業語言檢定模式：純英文題面 • 一頁一題免捲動 • 交卷後統一批改與顯示解析
-            </div>
+        </div>
+
+        {/* 步驟 3：開始測驗 CTA（固定於底部，不隨內容捲走） */}
+        <div className="shrink-0 px-3 sm:px-6 py-2.5 sm:py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-end">
             <button
               type="button"
               disabled={!canStart}
@@ -809,7 +809,6 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               <span>開始檢定 ({questionCountOpt} 題)</span>
               <ArrowRight size={18} />
             </button>
-          </div>
         </div>
       </>
     );
@@ -873,7 +872,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         {/* 中央單題試題區（固定於容器內，不捲動） */}
         <div
           key={currentQ.id}
-          className="flex-1 px-4 sm:px-8 py-4 sm:py-6 flex flex-col justify-between gap-4 overflow-hidden transition-opacity duration-150"
+          className="flex-1 min-h-0 px-4 sm:px-8 py-4 sm:py-6 flex flex-col justify-between gap-4 overflow-y-auto overscroll-contain transition-opacity duration-150"
         >
           {/* 題幹區 */}
           <div className="space-y-2">
@@ -1090,12 +1089,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition"
         >
           <ArrowLeft size={15} />
-          返回檢定設定
+          返回
         </button>
 
         <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-1.5">
           <Award size={18} className="text-indigo-600 dark:text-indigo-400" />
-          <span>檢定結果報告</span>
+          <span>檢定結果</span>
         </div>
 
         <button
@@ -1107,75 +1106,68 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         </button>
       </div>
 
-      {/* 主體雙欄（電腦左成績摘要、右單題翻頁詳解；手機上下緊湊排列免捲動） */}
-      <div className="flex-1 p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 overflow-hidden">
-        {/* 左欄：成績與金幣核發摘要 */}
-        <div className="lg:col-span-4 bg-slate-50/90 dark:bg-slate-800/50 rounded-2xl p-3.5 sm:p-5 border border-slate-200 dark:border-slate-700 flex flex-col justify-between gap-3">
-          <div className="space-y-3">
-            {/* 分數與答對題數 */}
-            <div className="flex items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <div>
-                <div className="text-xs font-bold text-slate-400">
-                  {scopeMode === 'mistakes' ? '個人易錯題複習' : `${formatBookLabel(selectedBook)}檢定`}
+      {/* 主體：電腦雙欄（左成績、右單題翻頁詳解）；手機上下排列，內容超出時可上下滑動 */}
+      <div className="flex-1 min-h-0 p-3 sm:p-5 flex flex-col gap-3 overflow-y-auto overscroll-contain lg:grid lg:grid-cols-12 lg:gap-4 lg:overflow-hidden">
+        {/* 左欄：成績（得分旁直接顯示本次金幣） */}
+        <div className="shrink-0 lg:col-span-4 bg-slate-50/90 dark:bg-slate-800/50 rounded-2xl p-3 sm:p-5 border border-slate-200 dark:border-slate-700 flex flex-col justify-between gap-3">
+          <div className="space-y-2.5 sm:space-y-3">
+            {/* 分數、答對題數與金幣 */}
+            <div className="flex items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3 sm:p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700">
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-slate-400 truncate">
+                  {scopeMode === 'mistakes' ? '易錯題複習' : `${formatBookLabel(selectedBook)}檢定`}
                 </div>
                 <div className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-0.5">
                   答對 {correctList.length} / {totalQ} 題
                 </div>
                 <div className="text-xs font-semibold text-slate-500">
-                  作答時間：{formatTime(elapsedSec)}
+                  {formatTime(elapsedSec)}
                 </div>
               </div>
-              <div
-                className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex flex-col items-center justify-center text-white shrink-0 shadow-md ${
-                  score >= 60 ? 'bg-indigo-600' : 'bg-rose-600'
-                }`}
-              >
-                <span className="text-[10px] font-bold opacity-80">得分</span>
-                <span className="text-2xl sm:text-3xl font-black leading-none">{score}</span>
-              </div>
-            </div>
-
-            {/* 金幣獎勵狀態卡 */}
-            <div
-              className={`p-3 rounded-xl border text-xs sm:text-sm space-y-1.5 ${
-                sessionRewardInfo.coinsEarned > 0
-                  ? 'bg-amber-50/90 dark:bg-amber-950/50 border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-100'
-                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
-              }`}
-            >
-              <div className="font-black flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Coins size={16} className="text-amber-500 shrink-0" />
-                  學習金幣獎勵
-                </span>
-                <span className="text-sm sm:text-base font-black text-amber-600 dark:text-amber-400">
-                  +{sessionRewardInfo.coinsEarned} 金幣
-                </span>
-              </div>
-              <p className="text-xs leading-relaxed opacity-90">{sessionRewardInfo.reason}</p>
-              {!isLoggedIn && sessionRewardInfo.coinsEarned > 0 && (
-                <button
-                  type="button"
-                  onClick={openModal}
-                  className="mt-1 w-full py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-black text-xs transition"
+              <div className="flex items-center gap-2 shrink-0">
+                <div
+                  title={sessionRewardInfo.reason}
+                  className={`px-2.5 py-1.5 rounded-xl flex items-center gap-1 font-black text-sm sm:text-base border ${
+                    sessionRewardInfo.coinsEarned > 0
+                      ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-800 text-amber-600 dark:text-amber-300'
+                      : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400'
+                  }`}
                 >
-                  立即登入學生帳號以入帳金幣
-                </button>
-              )}
+                  <Coins size={16} className="shrink-0" />+{sessionRewardInfo.coinsEarned}
+                </div>
+                <div
+                  className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex flex-col items-center justify-center text-white shadow-md ${
+                    score >= 60 ? 'bg-indigo-600' : 'bg-rose-600'
+                  }`}
+                >
+                  <span className="text-[10px] font-bold opacity-80">得分</span>
+                  <span className="text-2xl sm:text-3xl font-black leading-none">{score}</span>
+                </div>
+              </div>
             </div>
 
-            {/* 易錯題池變動紀錄 */}
+            {!isLoggedIn && sessionRewardInfo.coinsEarned > 0 && (
+              <button
+                type="button"
+                onClick={openModal}
+                className="w-full py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-black text-xs transition"
+              >
+                登入以入帳金幣
+              </button>
+            )}
+
+            {/* 易錯題池變動紀錄（一行精簡） */}
             {(sessionRewardInfo.graduatedCount > 0 || sessionRewardInfo.addedMistakeCount > 0) && (
-              <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+              <div className="px-2.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold flex flex-wrap gap-x-3 gap-y-0.5">
                 {sessionRewardInfo.graduatedCount > 0 && (
-                  <div className="text-emerald-600 dark:text-emerald-400 font-bold">
-                    ✓ 連續答對 2 次，已從易錯池移除 {sessionRewardInfo.graduatedCount} 題！
-                  </div>
+                  <span className="text-emerald-600 dark:text-emerald-400">
+                    ✓ 易錯題移出 {sessionRewardInfo.graduatedCount} 題
+                  </span>
                 )}
                 {sessionRewardInfo.addedMistakeCount > 0 && (
-                  <div className="text-rose-600 dark:text-rose-400 font-bold">
-                    • 本次新增 {sessionRewardInfo.addedMistakeCount} 題至個人易錯題池
-                  </div>
+                  <span className="text-rose-600 dark:text-rose-400">
+                    • 新增易錯題 {sessionRewardInfo.addedMistakeCount} 題
+                  </span>
                 )}
               </div>
             )}
@@ -1190,7 +1182,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 className="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 transition"
               >
                 <RotateCcw size={15} />
-                錯題立即重練 ({wrongList.length} 題)
+                錯題重練 ({wrongList.length})
               </button>
             )}
             <button
@@ -1199,13 +1191,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 transition"
             >
               <RotateCcw size={15} />
-              同範圍再測一次
+              再測一次
             </button>
           </div>
         </div>
 
         {/* 右欄：一頁一題翻頁式詳解檢視卡（免上下捲動） */}
-        <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 border border-slate-200 dark:border-slate-700 flex flex-col justify-between gap-3 overflow-hidden">
+        <div className="shrink-0 lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl p-3 sm:p-5 border border-slate-200 dark:border-slate-700 flex flex-col justify-between gap-3 lg:overflow-hidden lg:min-h-0">
           {/* 篩選與題目翻頁控制列 */}
           <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-1.5">
@@ -1270,7 +1262,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
           {/* 單題詳解內容 */}
           {currentReviewItem ? (
-            <div className="flex-1 flex flex-col justify-between gap-2.5 overflow-hidden">
+            <div className="flex-1 flex flex-col justify-between gap-2.5 lg:min-h-0 lg:overflow-y-auto">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -1318,7 +1310,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                             : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
                       }`}
                     >
-                      <span className="truncate">
+                      <span className="break-words min-w-0">
                         ({CHOICE_LABELS[oIdx]}) {optText}
                       </span>
                       {isAns && (
