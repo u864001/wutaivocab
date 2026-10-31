@@ -667,10 +667,11 @@ export const MemoryGameSingle = ({
               soundEngine.click();
               setShowCodex(true);
             }}
-            title="查看奧林帕斯眾神圖鑑"
-            className="p-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+            title="查看 8 大希臘眾神圖鑑 (3D 輪轉)"
+            className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-black text-xs flex items-center gap-1 shadow-md border border-amber-200 cursor-pointer active:scale-95"
           >
-            <BookOpen className="w-4 h-4 text-amber-400" />
+            <BookOpen className="w-3.5 h-3.5 text-stone-950" />
+            <span className="hidden xs:inline">🏛️ 眾神圖鑑</span>
           </button>
         </div>
       </div>

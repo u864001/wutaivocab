@@ -78,7 +78,7 @@ const GAME_SPOTLIGHT_ART = {
   escape: '/assets/escape/bg_temple.webp',
   maze: '/assets/screenshots/screenshot_maze.webp',
   swipe: '/assets/screenshots/screenshot_swipe.webp',
-  memory: '/assets/lobby/theme_explore.jpg',
+  memory: '/assets/memory/god_lightning.jpg',
   spelling: '/assets/screenshots/screenshot_spelling.webp',
   'quiz-choice': '/assets/lobby/theme_quiz.jpg',
   handwriting: '/assets/lobby/theme_quiz.jpg',
@@ -760,6 +760,9 @@ export const Lobby = ({
         </>
       )}
 
+      {/* 🏛️ 全域 8 大希臘眾神 3D 輪轉圖鑑彈窗 (可在選單、整備室隨時開啟) */}
+      <PowerUpCodexModal isOpen={showMemoryCodex} onClose={() => setShowMemoryCodex(false)} />
+
       {/* ════════════════════════════════════════════════════════════════
           【固定頂部 HUD】左上回首頁 / 上一步 • 上中英雄榜 • 右上模式/音效/通行證
          ════════════════════════════════════════════════════════════════ */}
@@ -1229,155 +1232,6 @@ export const Lobby = ({
                 </div>
 
               </div>
-            ) : selectedGame === 'memory' ? (
-              /* ═══ 分流 D：星際記憶翻牌 • 奧林帕斯神殿三大卡背手風琴 ═══ */
-              <div className="relative z-10 w-full h-full p-3 sm:p-5 flex flex-col justify-between">
-                
-                {/* 眾神圖鑑彈窗 */}
-                <PowerUpCodexModal isOpen={showMemoryCodex} onClose={() => setShowMemoryCodex(false)} />
-
-                {/* 頂部標題列 + 眾神圖鑑入口金光按鈕 */}
-                <div className={`flex items-center justify-between pb-2 border-b shrink-0 ${isDark ? 'border-white/15' : 'border-slate-300/80'}`}>
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                    <h3 className={`text-base sm:text-lg font-black font-heading ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                      奧林帕斯記憶對決 • 選擇卡背與出征：
-                    </h3>
-                  </div>
-
-                  {/* 🌟 眾神圖鑑入口大按鈕 (一鍵展開 3D 轉盤選角輪播) */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      soundEngine.click();
-                      setShowMemoryCodex(true);
-                    }}
-                    className="px-3 sm:px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(251,191,36,0.6)] border border-amber-200 cursor-pointer transition-all active:scale-95"
-                  >
-                    <BookOpen className="w-4 h-4 text-stone-950" />
-                    <span>🏛️ 查看 8 大希臘眾神圖鑑 (3D 輪轉)</span>
-                  </button>
-                </div>
-
-                {/* 三大卡背手風琴本體 */}
-                <div className="flex-1 my-2 sm:my-3 flex flex-col md:flex-row items-stretch gap-2 sm:gap-3 overflow-hidden">
-                  {MEMORY_THEMES_PREVIEW.map((th) => {
-                    const isSelected = memoryThemeId === th.id;
-                    return (
-                      <div
-                        key={th.id}
-                        onClick={() => {
-                          soundEngine.click();
-                          setMemoryThemeId(th.id);
-                          localStorage.setItem('wutai_memory_card_theme', th.themeKey);
-                        }}
-                        style={{
-                          flex: isSelected ? (window.innerWidth >= 768 ? 4.5 : 3.5) : 1
-                        }}
-                        className={`relative rounded-2xl overflow-hidden border-2 transition-all duration-500 ease-out cursor-pointer flex flex-col justify-between p-3 sm:p-4 shadow-xl ${
-                          isSelected
-                            ? 'border-amber-300 ring-4 ring-amber-400/50 shadow-[0_0_30px_rgba(245,158,11,0.5)]'
-                            : 'border-white/15 hover:border-white/40 opacity-70 hover:opacity-100'
-                        }`}
-                      >
-                        <img
-                          src={th.bg}
-                          alt={th.name}
-                          className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 pointer-events-none select-none ${
-                            isSelected ? 'scale-105 brightness-[0.7]' : 'brightness-[0.4]'
-                          }`}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-slate-950/20 pointer-events-none" />
-
-                        {/* 卡片頂部 */}
-                        <div className="relative z-10 flex items-center justify-between">
-                          <span className="text-xl sm:text-2xl">{th.icon}</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/60 text-amber-300 border border-amber-400/40 font-bold">
-                            {th.tag}
-                          </span>
-                        </div>
-
-                        {/* 卡片底部資訊 */}
-                        <div className="relative z-10">
-                          <h4 className="text-sm sm:text-lg font-black text-white font-heading">
-                            {th.name}
-                          </h4>
-                          <p className="text-[10px] text-amber-200 font-mono tracking-wider uppercase mb-1">
-                            {th.enName}
-                          </p>
-                          {isSelected && (
-                            <p className="text-xs text-slate-200 font-bold line-clamp-2 mt-1 animate-fadeIn">
-                              {th.desc}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* 年級冊次橫排膠囊列 (供學生選擇挑戰單字冊次) */}
-                <div className="flex items-center gap-1.5 overflow-x-auto py-1 shrink-0">
-                  <span className={`text-xs font-bold shrink-0 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>挑戰冊次：</span>
-                  {ALL_GRADE_OPTIONS.map((opt) => {
-                    const isCurrentBook = selectedOptionId === opt.id;
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => handleSelectBookOption(opt.id)}
-                        className={`px-2.5 py-1 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer ${
-                          isCurrentBook
-                            ? 'bg-amber-400 text-stone-950 shadow-md ring-2 ring-amber-300 font-extrabold'
-                            : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* 底部模式切換與開始出征按鈕 */}
-                <div className={`pt-2 border-t flex flex-col sm:flex-row items-center justify-between gap-2 shrink-0 ${isDark ? 'border-white/15' : 'border-slate-300/80'}`}>
-                  {/* 3 種翻牌模式切換 (英翻中 / 中翻英 / 聽力) */}
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>配對模式：</span>
-                    {[
-                      { id: 'en-zh', label: '⭐ 英翻中配對' },
-                      { id: 'zh-en', label: '中翻英配對' },
-                      { id: 'audio-zh', label: '🎧 聽力配對' }
-                    ].map(m => (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => {
-                          soundEngine.click();
-                          setMemoryMode(m.id);
-                        }}
-                        className={`px-2.5 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                          memoryMode === m.id
-                            ? 'bg-amber-400 text-stone-950 shadow-md font-extrabold ring-1 ring-amber-300'
-                            : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        {m.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* 出征按鈕 */}
-                  <button
-                    type="button"
-                    onClick={handleStartGame}
-                    className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-amber-300 hover:to-yellow-200 text-stone-950 font-heading font-black text-sm sm:text-base flex items-center gap-2 shadow-2xl active:scale-95 transition-all cursor-pointer border-2 border-amber-200"
-                  >
-                    <span>⚔️ 進入神殿出征 START</span>
-                    <Play className="w-4 h-4 fill-stone-950" />
-                  </button>
-                </div>
-
-              </div>
             ) : selectedGame === 'maze' ? (
               /* ═══ 分流 C：字母巡航迷宮專屬整備室（相同視覺、一頁畫面處理完畢） ═══ */
               <div className="relative z-10 w-full h-full p-2.5 sm:p-4 md:p-5 flex flex-col justify-between overflow-y-auto">
@@ -1767,13 +1621,28 @@ export const Lobby = ({
                     </h3>
                   </div>
 
-                  {/* 當前上榜資質標牌 */}
-                  <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold flex items-center gap-1.5 shadow ${
-                    isDark ? 'bg-amber-500/20 text-amber-300 border-amber-400/40' : 'bg-amber-50 text-amber-800 border-amber-300'
-                  }`}>
-                    <Trophy className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
-                    <span>選冊即可直接獲得英雄榜資格</span>
-                  </span>
+                  {/* 記憶翻牌專屬：醒目 3D 眾神圖鑑大按鈕 / 其他遊戲：英雄榜上榜資質標牌 */}
+                  {selectedGame === 'memory' ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundEngine.click();
+                        setShowMemoryCodex(true);
+                      }}
+                      className="px-3 sm:px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(251,191,36,0.6)] border border-amber-200 cursor-pointer transition-all active:scale-95 animate-pulse"
+                    >
+                      <BookOpen className="w-4 h-4 text-stone-950" />
+                      <span>🏛️ 查看 8 大希臘眾神圖鑑 (3D 輪轉)</span>
+                    </button>
+                  ) : (
+                    /* 當前上榜資質標牌 */
+                    <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold flex items-center gap-1.5 shadow ${
+                      isDark ? 'bg-amber-500/20 text-amber-300 border-amber-400/40' : 'bg-amber-50 text-amber-800 border-amber-300'
+                    }`}>
+                      <Trophy className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
+                      <span>選冊即可直接獲得英雄榜資格</span>
+                    </span>
+                  )}
                 </div>
 
                 {/* ── 核心舞台：左側 1/4 靈魂大圖 (右側漸層完全透明融合) + 右側專屬三層選單 ── */}
@@ -2107,38 +1976,103 @@ export const Lobby = ({
 
                           {selectedGame === 'memory' && (
                             <>
+                              <div className="flex items-center gap-1">
+                                <span className="text-[10px] font-bold text-amber-500 dark:text-amber-300">配對：</span>
+                                <button
+                                  type="button"
+                                  onClick={() => { soundEngine.click(); setMemoryMode('en-zh'); }}
+                                  className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                    memoryMode === 'en-zh'
+                                      ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
+                                      : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  ⭐ 英翻中
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => { soundEngine.click(); setMemoryMode('zh-en'); }}
+                                  className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                    memoryMode === 'zh-en'
+                                      ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
+                                      : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  中翻英
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => { soundEngine.click(); setMemoryMode('audio-zh'); }}
+                                  className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                    memoryMode === 'audio-zh'
+                                      ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
+                                      : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  🎧 聽力
+                                </button>
+                              </div>
+
+                              {/* 卡背主題快速切換 */}
+                              <div className="flex items-center gap-1 border-l border-amber-400/30 pl-2">
+                                <span className="text-[10px] font-bold text-amber-500 dark:text-amber-300">卡背：</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    soundEngine.click();
+                                    setMemoryThemeId('cyber_blue');
+                                    localStorage.setItem('wutai_memory_card_theme', 'cyber_blue');
+                                  }}
+                                  className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                    memoryThemeId === 'cyber_blue'
+                                      ? 'bg-amber-400 text-stone-950 ring-1 ring-amber-200 font-extrabold shadow-sm'
+                                      : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  ☀️ 百合日
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    soundEngine.click();
+                                    setMemoryThemeId('noble_gold');
+                                    localStorage.setItem('wutai_memory_card_theme', 'noble_gold');
+                                  }}
+                                  className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                    memoryThemeId === 'noble_gold'
+                                      ? 'bg-indigo-500 text-white ring-1 ring-indigo-300 font-extrabold shadow-sm'
+                                      : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  🌙 石板夜
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    soundEngine.click();
+                                    setMemoryThemeId('morandi_rose');
+                                    localStorage.setItem('wutai_memory_card_theme', 'morandi_rose');
+                                  }}
+                                  className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
+                                    memoryThemeId === 'morandi_rose'
+                                      ? 'bg-amber-500 text-stone-950 ring-1 ring-amber-300 font-extrabold shadow-sm'
+                                      : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  🏛️ 奧林帕斯
+                                </button>
+                              </div>
+
                               <button
                                 type="button"
-                                onClick={() => { soundEngine.click(); setMemoryMode('en-zh'); }}
-                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
-                                  memoryMode === 'en-zh'
-                                    ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
-                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
-                                }`}
+                                onClick={() => {
+                                  soundEngine.click();
+                                  setShowMemoryCodex(true);
+                                }}
+                                className="px-2.5 py-0.5 rounded-lg bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-stone-950 font-black text-[11px] flex items-center gap-1 shadow-sm border border-amber-200 cursor-pointer active:scale-95"
                               >
-                                ⭐ 英翻中配對
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => { soundEngine.click(); setMemoryMode('zh-en'); }}
-                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
-                                  memoryMode === 'zh-en'
-                                    ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
-                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
-                                }`}
-                              >
-                                中翻英配對
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => { soundEngine.click(); setMemoryMode('audio-zh'); }}
-                                className={`px-2 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer ${
-                                  memoryMode === 'audio-zh'
-                                    ? 'bg-cyan-500 text-stone-950 shadow-sm font-extrabold ring-1 ring-cyan-300'
-                                    : isDark ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-slate-700 hover:bg-slate-50'
-                                }`}
-                              >
-                                🎧 聽力配對
+                                <BookOpen className="w-3 h-3 text-stone-950" />
+                                <span>🏛️ 眾神神殿</span>
                               </button>
                             </>
                           )}

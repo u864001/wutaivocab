@@ -20,6 +20,7 @@ import { MeteorEasterEggs2D } from '../meteor/MeteorEasterEggs2D';
 import { RightComboDisplay } from '../meteor/RightComboDisplay';
 import { EmergencyRaidMeteor } from './EmergencyRaidMeteor';
 import { calculateMeteorDuration, calculateMeteorMotionProgress } from '../meteor/meteorPhysics';
+import { PowerUpCodexModal } from '../memory/PowerUpCodexModal';
 
 const POSTER_BATTLE = '/assets/lobby/theme_battle.jpg';
 
@@ -108,6 +109,7 @@ export const BattleGame = ({
   const [gameMode, setGameMode] = useState('meteor'); // 'meteor' | 'memory'
   const hasSelectedUnits = true;
   const { currentStudent, isLoggedIn, addCoins } = useStudent();
+  const [showCodex, setShowCodex] = useState(false);
   const [isScopeModalOpen, setIsScopeModalOpen] = useState(false);
   const [modalBookId, setModalBookId] = useState('1');
 
@@ -1555,12 +1557,27 @@ export const BattleGame = ({
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-purple-950/35 to-slate-950/95 backdrop-blur-[1px]" />
         </div>
 
+        {/* 🏛️ 8 大希臘眾神 3D 輪轉圖鑑彈窗 */}
+        <PowerUpCodexModal isOpen={showCodex} onClose={() => setShowCodex(false)} />
+
         <div className="relative z-10 w-full max-w-5xl mx-auto px-4 py-4 animate-fadeIn pb-14">
           <div className="flex items-center justify-between mb-4">
             <Button3D variant="slate" size="sm" onClick={onBack} icon={ArrowLeft}>
               {t.backLobby}
             </Button3D>
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.click();
+                  setShowCodex(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/40 hover:to-yellow-500/40 border border-amber-400/60 text-amber-200 text-xs font-black transition-all cursor-pointer shadow-sm active:scale-95"
+                title="查看 8 大希臘眾神特異功能卡圖鑑 (3D 輪轉)"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                <span>🏛️ 8 大希臘眾神圖鑑</span>
+              </button>
               <button
                 onClick={() => setProbeCounter(c => c + 1)}
                 disabled={isProbing}
@@ -1964,6 +1981,9 @@ export const BattleGame = ({
 
     return (
       <div onClick={recordLobbyActivity} className="relative min-h-[calc(100vh-64px)] w-full flex flex-col justify-between p-2.5 sm:p-4 text-white font-sans overflow-x-hidden select-none z-10 animate-fadeIn">
+        {/* 🏛️ 8 大希臘眾神 3D 輪轉圖鑑彈窗 */}
+        <PowerUpCodexModal isOpen={showCodex} onClose={() => setShowCodex(false)} />
+
         {/* 電影級多人連線競技場海報背景 */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none">
           <img
@@ -2100,9 +2120,23 @@ export const BattleGame = ({
                     ⏳ {Math.floor(lobbyIdleCountdown / 60)}:{String(lobbyIdleCountdown % 60).padStart(2, '0')}
                   </span>
                 </div>
-                <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} className="!py-1 !px-2.5 !text-xs">
-                  退出擂台
-                </Button3D>
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundEngine.click();
+                      setShowCodex(true);
+                    }}
+                    className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500/25 via-yellow-500/30 to-amber-500/25 hover:from-amber-500/40 hover:to-yellow-500/40 border border-amber-400/50 text-amber-200 text-xs font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-sm"
+                    title="查看 8 大希臘眾神特異功能卡圖鑑 (3D 輪轉)"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                    <span>🏛️ 眾神圖鑑</span>
+                  </button>
+                  <Button3D variant="slate" size="sm" onClick={handleLeaveRoom} className="!py-1 !px-2.5 !text-xs">
+                    退出擂台
+                  </Button3D>
+                </div>
               </div>
 
               {/* 成員列表 (緊湊且不被切掉) */}
