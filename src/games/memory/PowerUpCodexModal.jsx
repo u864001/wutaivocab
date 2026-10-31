@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
-import { speakEnglish, soundEngine } from '../../services/audio';
+import { soundEngine } from '../../services/audio';
 import { POWER_UP_DEFS, MiniSandboxCanvas } from './PowerUpEffects';
 import { OlympianDeityCardFace } from './OlympianCardArt';
 import {
   X, Volume2, Sparkles, HelpCircle, ArrowLeft,
-  ChevronLeft, ChevronRight, Shield, Zap, LayoutGrid, Disc
+  ChevronLeft, ChevronRight, Shield, Zap, LayoutGrid, Disc, Square
 } from 'lucide-react';
 
 const GOD_KEYS = ['lightning', 'peek', 'freeze', 'coin', 'lock', 'bonus', 'radar', 'winwin'];
@@ -14,7 +14,31 @@ const GOD_KEYS = ['lightning', 'peek', 'freeze', 'coin', 'lock', 'bonus', 'radar
 export const PowerUpCodexModal = ({ isOpen, onClose }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [viewMode, setViewMode] = useState('wheel'); // 'wheel' | 'grid'
+  const [isPlayingVoice, setIsPlayingVoice] = useState(false);
   const touchStartXRef = useRef(0);
+
+  // 停止當前正在播放的語音報讀
+  const stopSpeech = useCallback(() => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsPlayingVoice(false);
+  }, []);
+
+  // 當彈窗關閉、切換卡牌或組件卸載時，即刻強制中斷語音報讀
+  useEffect(() => {
+    stopSpeech();
+    return () => {
+      stopSpeech();
+    };
+  }, [isOpen, activeIndex, stopSpeech]);
+
+  // 安全關閉彈窗
+  const handleClose = () => {
+    soundEngine.click();
+    stopSpeech();
+    if (onClose) onClose();
+  };
 
   // 鍵盤左右箭頭導航支援
   useEffect(() => {
@@ -25,7 +49,7 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
       } else if (e.key === 'ArrowRight') {
         handleNext();
       } else if (e.key === 'Escape') {
-        onClose();
+        handleClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -39,16 +63,19 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
 
   const handlePrev = () => {
     soundEngine.click();
+    stopSpeech();
     setActiveIndex(prev => (prev - 1 + cardList.length) % cardList.length);
   };
 
   const handleNext = () => {
     soundEngine.click();
+    stopSpeech();
     setActiveIndex(prev => (prev + 1) % cardList.length);
   };
 
   const handleSelectIndex = (idx) => {
     soundEngine.click();
+    stopSpeech();
     setActiveIndex(idx);
     setViewMode('wheel');
   };
@@ -67,21 +94,49 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
     }
   };
 
-  // 語音朗讀卡牌雙語神話與規則
+  // 雙語語音報讀（先英文名稱與神職稱號，再中文神話典故與實戰規則，且支援隨時點擊停止）
   const handleSpeakCard = (card) => {
     soundEngine.click();
-    // 朗讀英文神祇名與稱號
-    speakEnglish(card.enName);
-
-    // 朗讀中文神話背景與規則 (Web Speech API)
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const text = `${card.name}。${card.mythTitle}。神話典故：${card.mythLoreZh || card.shortDesc}。卡牌規則：${card.shortDesc}`;
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'zh-TW';
-      utter.rate = 1.0;
-      window.speechSynthesis.speak(utter);
+    if (isPlayingVoice) {
+      stopSpeech();
+      return;
     }
+
+    if (!('speechSynthesis' in window)) return;
+
+    window.speechSynthesis.cancel();
+    setIsPlayingVoice(true);
+
+    // 第一階段：朗讀英文名與神祇稱號
+    const utterEn = new SpeechSynthesisUtterance(`${card.enName}. ${card.mythTitle}`);
+    utterEn.lang = 'en-US';
+    utterEn.rate = 0.95;
+
+    // 第二階段：朗讀中文神話典故與規則
+    const textZh = `${card.name}。${card.mythTitle}。神話典故：${card.mythLoreZh || card.shortDesc}。卡牌規則：${card.shortDesc}`;
+    const utterZh = new SpeechSynthesisUtterance(textZh);
+    utterZh.lang = 'zh-TW';
+    utterZh.rate = 1.0;
+
+    utterZh.onend = () => setIsPlayingVoice(false);
+    utterZh.onerror = () => setIsPlayingVoice(false);
+
+    utterEn.onend = () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.speak(utterZh);
+      } else {
+        setIsPlayingVoice(false);
+      }
+    };
+    utterEn.onerror = () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.speak(utterZh);
+      } else {
+        setIsPlayingVoice(false);
+      }
+    };
+
+    window.speechSynthesis.speak(utterEn);
   };
 
   const prevIndex = (activeIndex - 1 + cardList.length) % cardList.length;
@@ -157,7 +212,7 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
             </div>
 
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="p-1.5 sm:p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
             >
               <X className="w-5 h-5" />
@@ -277,82 +332,83 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* ── 右半部：雙語希臘神話起源典故 + 運作機制與戰略 ── */}
+              {/* ── 右半部：雙語希臘神話起源典故 + 運作機制與戰略 (高對比高清晰度字體) ── */}
               <div className="flex-1 w-full space-y-3 sm:space-y-4">
                 {/* 頂部神祇名號與語音報讀按鈕 */}
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-slate-800/90 to-indigo-950/40 border border-amber-400/40 flex items-start justify-between gap-3 shadow-lg">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/25 via-slate-900/95 to-indigo-950/70 border-2 border-amber-400/50 flex items-start justify-between gap-3 shadow-xl">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] sm:text-xs font-extrabold px-2 py-0.5 rounded-md bg-amber-400 text-stone-950 uppercase tracking-widest">
+                      <span className="text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-md bg-amber-400 text-stone-950 uppercase tracking-widest shadow-sm">
                         NO. 0{activeIndex + 1}
                       </span>
-                      <span className="text-xs font-bold text-amber-300/80">
+                      <span className="text-xs sm:text-sm font-black text-amber-300">
                         {currentCard.mythTitle}
                       </span>
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-black text-white font-heading mt-1">
+                    <h3 className="text-2xl sm:text-3xl font-black text-white font-heading mt-1 drop-shadow-md">
                       {currentCard.name}
                     </h3>
-                    <p className="text-xs sm:text-sm font-extrabold text-amber-300">
+                    <p className="text-xs sm:text-sm font-black text-amber-200 tracking-wide mt-0.5">
                       {currentCard.enName}
                     </p>
                   </div>
 
                   <Button3D
-                    variant="amber"
+                    variant={isPlayingVoice ? 'rose' : 'amber'}
                     size="sm"
                     onClick={() => handleSpeakCard(currentCard)}
-                    icon={Volume2}
-                    className="shrink-0"
+                    icon={isPlayingVoice ? Square : Volume2}
+                    className={`shrink-0 shadow-md ${isPlayingVoice ? 'animate-pulse' : ''}`}
+                    title={isPlayingVoice ? '停止語音播放' : '中英雙語語音報讀'}
                   >
-                    語音報讀
+                    {isPlayingVoice ? '停止報讀' : '雙語朗讀'}
                   </Button3D>
                 </div>
 
                 {/* 🏛️ 1. 古希臘神話典故與起源 (Bilingual Mythology Lore) */}
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 shadow-md">
-                  <h4 className="text-xs font-black text-amber-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <span className="text-sm">🏛️</span> 古希臘神話典故與起源 (Mythology Lore)
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/95 border-2 border-slate-700/80 shadow-lg">
+                  <h4 className="text-xs sm:text-sm font-black text-amber-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <span className="text-base">🏛️</span> 古希臘神話典故與起源 (Mythology Lore)
                   </h4>
-                  <p className="text-xs sm:text-sm font-bold text-slate-100 leading-relaxed mb-2">
+                  <p className="text-xs sm:text-sm font-bold text-white leading-relaxed mb-2">
                     {currentCard.mythLoreZh}
                   </p>
-                  <p className="text-[11px] sm:text-xs font-semibold text-slate-300/90 leading-relaxed italic border-l-2 border-amber-400/60 pl-2.5">
+                  <p className="text-xs font-semibold text-amber-100/90 leading-relaxed italic bg-black/60 p-2.5 rounded-xl border-l-4 border-amber-400">
                     {currentCard.mythLoreEn}
                   </p>
                 </div>
 
                 {/* 🛡️ 2. 遊戲神力運作機制 (Game Rules) */}
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 shadow-md">
-                  <h4 className="text-xs font-black text-emerald-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/95 border-2 border-emerald-500/40 shadow-lg">
+                  <h4 className="text-xs sm:text-sm font-black text-emerald-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <Shield className="w-4 h-4 text-emerald-400" /> 神力運作機制 (Card Effect)
                   </h4>
-                  <p className="text-xs sm:text-sm font-bold text-slate-100 leading-relaxed mb-1.5">
+                  <p className="text-xs sm:text-sm font-bold text-white leading-relaxed mb-1.5">
                     {currentCard.shortDesc}
                   </p>
-                  <p className="text-[11px] sm:text-xs font-semibold text-slate-300/80 italic">
+                  <p className="text-xs font-semibold text-emerald-100/90 italic bg-black/60 p-2.5 rounded-xl border-l-4 border-emerald-400">
                     {currentCard.enDesc}
                   </p>
                 </div>
 
                 {/* 💡 3. 高手對戰戰略指南 (Tactical Mastery) */}
-                <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 shadow-md">
-                  <h4 className="text-xs font-black text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-950/60 border-2 border-amber-500/40 shadow-lg">
+                  <h4 className="text-xs sm:text-sm font-black text-amber-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4 text-amber-400" /> 高手對戰戰略指南 (Tactical Guide)
                   </h4>
-                  <p className="text-xs sm:text-sm font-bold text-amber-100 leading-relaxed mb-1">
+                  <p className="text-xs sm:text-sm font-bold text-amber-50 leading-relaxed mb-1">
                     {currentCard.tactic}
                   </p>
-                  <p className="text-[11px] sm:text-xs font-semibold text-amber-300/75 italic">
+                  <p className="text-xs font-semibold text-amber-100/90 italic bg-black/60 p-2.5 rounded-xl border-l-4 border-amber-400 mt-1">
                     {currentCard.enTactic}
                   </p>
                 </div>
 
                 {/* 私密視野與特殊規則提示 */}
                 {['peek', 'radar', 'lightning'].includes(currentCard.id) && (
-                  <div className="p-3 rounded-2xl bg-indigo-500/15 border border-indigo-500/35 flex items-start gap-2 shadow-sm">
-                    <HelpCircle className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                    <div className="text-[11px] sm:text-xs font-bold text-indigo-200 leading-relaxed">
+                  <div className="p-3 rounded-2xl bg-indigo-950/90 border-2 border-indigo-400/60 flex items-start gap-2 shadow-md">
+                    <HelpCircle className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" />
+                    <div className="text-xs font-black text-cyan-100 leading-relaxed">
                       {currentCard.id === 'peek' && '【私密視野保護】：所選卡片僅本隊螢幕能透視看到，其他隊伍螢幕只會顯示神秘護盾阻絕，絕不洩漏情報！'}
                       {currentCard.id === 'radar' && '【獨占透視】：全場微光透視僅出現在本隊螢幕，敵隊螢幕完全正常不顯示，保有絕對情報優勢！'}
                       {currentCard.id === 'lightning' && '【Bonus 回合規則】：前兩張翻到閃電卡自動配對並開啟 Bonus 回合；若在第 3、4 張（Bonus 回合）翻到，完成配對後結束本隊回合並換隊。'}
@@ -368,10 +424,10 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
                 <div
                   key={card.id}
                   onClick={() => handleSelectIndex(idx)}
-                  className={`group cursor-pointer rounded-2xl p-3.5 border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl flex flex-col justify-between ${card.bg} ${card.border} hover:border-amber-400`}
+                  className={`group cursor-pointer rounded-2xl p-3.5 border-2 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl flex flex-col justify-between ${card.bg} ${card.border} hover:border-amber-400`}
                 >
                   <div>
-                    <div className="w-full aspect-[3/4] rounded-xl overflow-hidden mb-2.5 border border-amber-400/50 shadow-md group-hover:scale-[1.03] transition-transform">
+                    <div className="w-full aspect-[3/4] rounded-xl overflow-hidden mb-2.5 border-2 border-amber-400/60 shadow-md group-hover:scale-[1.03] transition-transform">
                       <OlympianDeityCardFace powerId={card.id} />
                     </div>
 
@@ -379,20 +435,20 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
                       <h3 className="text-base font-black text-white font-heading group-hover:text-amber-400 transition-colors">
                         {card.name}
                       </h3>
-                      <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                      <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded bg-amber-400 text-stone-950 shadow-sm">
                         #{idx + 1}
                       </span>
                     </div>
 
-                    <p className="text-[11px] font-bold text-slate-400 mb-1.5 truncate">
+                    <p className="text-xs font-black text-amber-200 mb-1.5 truncate">
                       {card.enName}
                     </p>
-                    <p className="text-[11px] font-medium text-slate-300 line-clamp-2 leading-relaxed">
+                    <p className="text-xs font-bold text-white line-clamp-2 leading-relaxed">
                       {card.shortDesc}
                     </p>
                   </div>
 
-                  <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-xs font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
+                  <div className="mt-3 pt-2.5 border-t border-white/20 flex items-center justify-between text-xs font-black text-amber-300 group-hover:translate-x-1 transition-transform">
                     <span>點擊進入 3D 轉盤</span>
                     <ChevronRight className="w-4 h-4" />
                   </div>
@@ -404,17 +460,17 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
 
         {/* ─── 底部 Footer ─── */}
         <div className="px-4 sm:px-6 py-2.5 sm:py-3 border-t border-slate-800 flex items-center justify-between bg-slate-900/90 relative z-20">
-          <span className="text-[11px] sm:text-xs font-bold text-slate-400 flex items-center gap-1.5">
+          <span className="text-[11px] sm:text-xs font-bold text-slate-300 flex items-center gap-1.5">
             <span>🏛️ 星際記憶翻牌 • 奧林帕斯眾神圖鑑</span>
-            <span className="hidden sm:inline text-slate-600">|</span>
-            <span className="hidden sm:inline text-slate-500">霧臺國小教學團隊研發</span>
+            <span className="hidden sm:inline text-slate-500">|</span>
+            <span className="hidden sm:inline text-amber-300/80">霧臺國小教學團隊研發</span>
           </span>
 
           <div className="flex items-center gap-2">
-            <span className="hidden md:inline text-[11px] text-slate-500 font-bold">
+            <span className="hidden md:inline text-xs text-amber-200 font-bold">
               可使用鍵盤 ← → 方向鍵旋轉選角
             </span>
-            <Button3D variant="slate" size="sm" onClick={onClose}>
+            <Button3D variant="slate" size="sm" onClick={handleClose}>
               關閉圖鑑
             </Button3D>
           </div>

@@ -274,18 +274,17 @@ export const HonorSubmissionCard = ({
           </div>
         </div>
 
-        {/* 🖨️ 本作風格印表機成績單按鈕 (非普通 emoji，採用本作高品質金光質感圖示) */}
+        {/* 🖨️ 本作風格印表機成績單按鈕 (精巧次要標示，99.9% 情況不搶奪主視覺) */}
         <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
-          <Button3D
-            variant="amber"
-            size="sm"
+          <button
+            type="button"
             onClick={() => setIsCertOpen(true)}
-            icon={Printer}
-            className="shadow-sm w-full sm:w-auto text-xs py-1.5 px-3"
+            className="px-2.5 py-1 rounded-xl border border-amber-400/50 hover:border-amber-400 text-amber-700 dark:text-amber-300 hover:bg-amber-500/10 text-[11px] font-black flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-xs ml-auto sm:ml-0"
             title="預覽並輸出本作風格 A4 學習成就獎狀"
           >
-            列印榮譽成績單
-          </Button3D>
+            <Printer className="w-3.5 h-3.5 text-amber-500" />
+            <span>成績單</span>
+          </button>
         </div>
       </div>
 

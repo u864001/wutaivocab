@@ -44,8 +44,8 @@ export const VocabEscapeGame = ({
     return localStorage.getItem('wutai_escape_theme') || 'temple';
   });
 
-  // 遊戲狀態機: 'briefing' | 'intro' | 'playing' | 'transition' | 'victory'
-  const [gameState, setGameState] = useState('briefing');
+  // 遊戲狀態機: 'intro' | 'playing' | 'transition' | 'victory' (已直接無縫整合由 5x2 整備室進入，不再經由舊 briefing 頁)
+  const [gameState, setGameState] = useState('intro');
   const [showChineseTranslation, setShowChineseTranslation] = useState(false);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [preloadProgress, setPreloadProgress] = useState({ loaded: 0, total: 3 });
@@ -96,7 +96,7 @@ export const VocabEscapeGame = ({
   // 初始化連續 3 室逃脫會話
   const initCampaign = useCallback((overrideThemeId = null, overrideGrade = null, force = false) => {
     // 嚴格守護防線：若遊戲進行中或已進入勝利結算畫面，且已有戰役資料，嚴禁重置遊戲進度與計時器！
-    if (!force && gameStateRef.current !== 'briefing' && campaignDataRef.current) {
+    if (!force && gameStateRef.current === 'playing' && campaignDataRef.current) {
       console.warn('initCampaign blocked: game is currently active or in victory screen');
       return;
     }
@@ -134,10 +134,50 @@ export const VocabEscapeGame = ({
   };
 
   useEffect(() => {
-    if (!campaignData && gameState === 'briefing') {
-      initCampaign();
+    if (!campaignData) {
+      initCampaign(selectedThemeId, null, true);
     }
-  }, [campaignData, gameState, initCampaign]);
+  }, [campaignData, selectedThemeId, initCampaign]);
+
+  // 當戰役資料就緒且處於序章時，預載三室圖片並沉浸播放神秘外師誦讀
+  useEffect(() => {
+    if (campaignData && gameState === 'intro') {
+      const firstRoom = campaignData?.chapters?.[0];
+      if (firstRoom?.themeId) {
+        escapeAudio.playRoomBgm(firstRoom.themeId);
+      }
+      const curThemeChapters = campaignData?.chapters || [];
+      let loadedCount = 0;
+      const totalToLoad = curThemeChapters.length || 3;
+      setPreloadProgress({ loaded: 0, total: totalToLoad });
+
+      if (curThemeChapters.length === 0) {
+        setImagesLoaded(true);
+      } else {
+        setImagesLoaded(false);
+        curThemeChapters.forEach(chap => {
+          const img = new Image();
+          img.onload = img.onerror = () => {
+            loadedCount++;
+            setPreloadProgress({ loaded: loadedCount, total: totalToLoad });
+            if (loadedCount >= curThemeChapters.length) {
+              setImagesLoaded(true);
+            }
+          };
+          img.src = chap.bg;
+        });
+        const timer = setTimeout(() => {
+          setImagesLoaded(true);
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
+
+      const curTheme = ESCAPE_THEMES.find(th => th.id === selectedThemeId) || ESCAPE_THEMES[0];
+      if (curTheme?.prologueEn) {
+        speakMysteriousEnglish(curTheme.prologueEn);
+      }
+    }
+  }, [campaignData, gameState, selectedThemeId]);
 
   // 卸載時還原全螢幕、停止計時器與停止合成音樂
   useEffect(() => {
@@ -247,7 +287,7 @@ export const VocabEscapeGame = ({
     setIsBgmMuted(muted);
   };
 
-  // 1. 在密室遊戲中 (intro / playing / transition / victory) 點擊退回：返回「密室逃脫大廳」
+  // 1. 在密室遊戲中 (intro / playing / transition / victory) 點擊退回：返回大廳選冊整備室
   const handleExitToEscapeLobby = () => {
     soundEngine.click();
     stopMysteriousSpeech();
@@ -260,10 +300,10 @@ export const VocabEscapeGame = ({
     setFinalTime(null);
     finalTimeRef.current = null;
     setTimeElapsed(0);
-    setGameState('briefing');
+    if (onBack) onBack();
   };
 
-  // 2. 在「密室逃脫大廳」(briefing) 點擊返回：回到「單字冒險大廳 (單字館)」
+  // 2. 退出密室逃脫遊戲：回到單字館大廳
   const handleQuitGameToVocabLobby = () => {
     soundEngine.click();
     stopMysteriousSpeech();
@@ -273,29 +313,27 @@ export const VocabEscapeGame = ({
     }
     escapeAudio.stopCurrentMusic();
     exitFullscreen();
-    onBack();
+    if (onBack) onBack();
   };
 
-  // 監聽瀏覽器上一頁：若在密室遊戲進行中按上一頁，退回密室逃脫大廳，而非直接跳回單字館
+  // 監聽瀏覽器上一頁：若在密室遊戲進行中按上一頁，退回大廳選冊整備室
   useEffect(() => {
     const handlePopState = () => {
-      if (gameState !== 'briefing') {
-        stopMysteriousSpeech();
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-          timerRef.current = null;
-        }
-        escapeAudio.stopCurrentMusic();
-        exitFullscreen();
-        setFinalTime(null);
-        finalTimeRef.current = null;
-        setTimeElapsed(0);
-        setGameState('briefing');
+      stopMysteriousSpeech();
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
       }
+      escapeAudio.stopCurrentMusic();
+      exitFullscreen();
+      setFinalTime(null);
+      finalTimeRef.current = null;
+      setTimeElapsed(0);
+      if (onBack) onBack();
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [gameState]);
+  }, [onBack]);
 
   const currentChapter = campaignData?.chapters?.[currentChapterIndex];
 

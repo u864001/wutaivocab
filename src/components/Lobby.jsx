@@ -134,6 +134,14 @@ const ESCAPE_THEMES_PREVIEW = [
   }
 ];
 
+// ── 密室逃脫四大秘境靈魂大圖動態對應 ──
+const ESCAPE_THEME_SPOTLIGHT = {
+  temple: '/assets/escape/bg_temple.webp',
+  mine: '/assets/escape/lava_room1.webp',
+  tomb: '/assets/escape/tomb_room1.webp',
+  asylum: '/assets/escape/asylum_room1.webp'
+};
+
 // ── 記憶翻牌三大卡背主題手風琴定義 (調用日之章、夜之章、神殿原畫) ──
 const MEMORY_THEMES_PREVIEW = [
   {
@@ -1142,97 +1150,8 @@ export const Lobby = ({
               isDark ? 'bg-slate-950/80 backdrop-blur-md' : 'bg-white/70 backdrop-blur-md'
             }`} />
 
-            {/* ═══ 分流 A：神祕密室逃脫 • 四大秘境手風琴 ═══ */}
-            {selectedGame === 'escape' ? (
-              <div className="relative z-10 w-full h-full p-3 sm:p-5 flex flex-col justify-between">
-                
-                {/* 秘境手風琴標題列 */}
-                <div className={`flex items-center justify-between pb-2 border-b shrink-0 ${isDark ? 'border-white/15' : 'border-slate-300/80'}`}>
-                  <div className="flex items-center gap-2">
-                    <KeyRound className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
-                    <h3 className={`text-base sm:text-lg font-black font-heading ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                      請選擇探索秘境：
-                    </h3>
-                  </div>
-                  <span className={`text-xs font-bold hidden sm:inline ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
-                    大武山四大古代封印，破解三室機關重現天日
-                  </span>
-                </div>
-
-                {/* 四大秘境手風琴本體 */}
-                <div className="flex-1 my-2 sm:my-3 flex flex-col md:flex-row items-stretch gap-2 sm:gap-3 overflow-hidden">
-                  {ESCAPE_THEMES_PREVIEW.map((th) => {
-                    const isSelected = escapeThemeId === th.id;
-                    return (
-                      <div
-                        key={th.id}
-                        onClick={() => {
-                          soundEngine.click();
-                          setEscapeThemeId(th.id);
-                        }}
-                        style={{
-                          flex: isSelected ? (window.innerWidth >= 768 ? 4.5 : 3.5) : 1
-                        }}
-                        className={`relative rounded-2xl overflow-hidden border-2 transition-all duration-500 ease-out cursor-pointer flex flex-col justify-between p-3 sm:p-4 shadow-xl ${
-                          isSelected
-                            ? 'border-amber-300 ring-4 ring-amber-400/50 shadow-[0_0_30px_rgba(245,158,11,0.5)]'
-                            : 'border-white/15 hover:border-white/40 opacity-70 hover:opacity-100'
-                        }`}
-                      >
-                        <img
-                          src={th.bg}
-                          alt={th.name}
-                          className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 pointer-events-none select-none ${
-                            isSelected ? 'scale-105 brightness-[0.7]' : 'brightness-[0.4]'
-                          }`}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/30 to-slate-950/20 pointer-events-none" />
-
-                        {/* 卡片頂部 */}
-                        <div className="relative z-10 flex items-center justify-between">
-                          <span className="text-xl sm:text-2xl">{th.icon}</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/60 text-amber-300 border border-amber-400/40 font-bold">
-                            {th.tag}
-                          </span>
-                        </div>
-
-                        {/* 卡片底部資訊 */}
-                        <div className="relative z-10">
-                          <h4 className="text-sm sm:text-lg font-black text-white font-heading">
-                            {th.name}
-                          </h4>
-                          <p className="text-[10px] text-amber-200 font-mono tracking-wider uppercase mb-1">
-                            {th.enName}
-                          </p>
-                          {isSelected && (
-                            <p className="text-xs text-slate-200 font-bold line-clamp-2 mt-1 animate-fadeIn">
-                              {th.desc}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* 秘境底部開始按鈕 */}
-                <div className={`pt-2 border-t flex items-center justify-between shrink-0 ${isDark ? 'border-white/15' : 'border-slate-300/80'}`}>
-                  <div className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
-                    已選定：<span className="text-amber-500 dark:text-amber-300 font-black">{ESCAPE_THEMES_PREVIEW.find(t => t.id === escapeThemeId)?.name}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleStartGame}
-                    className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 hover:from-emerald-300 hover:to-teal-200 text-stone-950 font-heading font-black text-sm sm:text-base flex items-center gap-2 shadow-2xl active:scale-95 transition-all cursor-pointer border-2 border-emerald-200"
-                  >
-                    <span>🚪 進入秘境 START</span>
-                    <Play className="w-4 h-4 fill-stone-950" />
-                  </button>
-                </div>
-
-              </div>
-            ) : selectedGame === 'maze' ? (
+            {/* ═══ 分流 C：字母巡航迷宮專屬整備室（相同視覺、一頁畫面處理完畢） ═══ */}
+            {selectedGame === 'maze' ? (
               /* ═══ 分流 C：字母巡航迷宮專屬整備室（相同視覺、一頁畫面處理完畢） ═══ */
               <div className="relative z-10 w-full h-full p-2.5 sm:p-4 md:p-5 flex flex-col justify-between overflow-y-auto">
                 
@@ -1651,7 +1570,7 @@ export const Lobby = ({
                   {/* 左側 1/4 遊戲真實動作瞬間原畫 (約佔 24%，右側邊緣逐漸透明融入，絕不遮擋任何膠囊) */}
                   <div className="hidden md:block absolute left-0 top-0 bottom-0 w-[24%] min-w-[190px] max-w-[270px] h-full pointer-events-none select-none z-0">
                     <img
-                      src={GAME_SPOTLIGHT_ART[selectedGame] || GAME_SPOTLIGHT_ART.mole}
+                      src={selectedGame === 'escape' ? (ESCAPE_THEME_SPOTLIGHT[escapeThemeId] || ESCAPE_THEME_SPOTLIGHT.temple) : (GAME_SPOTLIGHT_ART[selectedGame] || GAME_SPOTLIGHT_ART.mole)}
                       alt="Game Action Spotlight"
                       className="w-full h-full object-cover rounded-2xl filter brightness-95 contrast-105"
                       style={{
@@ -1926,16 +1845,48 @@ export const Lobby = ({
                     </div>
 
                     {/* ═══ 【第四層：玩法風格微調 (已預選推薦，告別遊戲內二次彈窗)】 ═══ */}
-                    {(selectedGame === 'snake' || selectedGame === 'memory' || selectedGame === 'swipe' || selectedGame === 'quiz-choice' || selectedGame === 'quiz-listening') && (
+                    {(selectedGame === 'snake' || selectedGame === 'memory' || selectedGame === 'swipe' || selectedGame === 'quiz-choice' || selectedGame === 'quiz-listening' || selectedGame === 'escape') && (
                       <div className={`w-full shrink-0 flex flex-wrap items-center justify-between gap-1.5 px-2.5 py-1 rounded-xl border backdrop-blur-md animate-fadeIn ${
                         isDark ? 'bg-amber-950/40 border-amber-500/30 text-amber-200' : 'bg-amber-50/90 border-amber-300/80 text-amber-900'
                       }`}>
                         <div className="flex items-center gap-1 text-[11px] font-black">
                           <Sparkles className="w-3 h-3 text-amber-500 dark:text-amber-400" />
-                          <span>4. 玩法風格 (已預選推薦)：</span>
+                          <span>4. {selectedGame === 'escape' ? '探索秘境 (已預選)：' : '玩法風格 (已預選推薦)：'}</span>
                         </div>
                         
                         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                          {selectedGame === 'escape' && (
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-[10px] font-bold text-emerald-500 dark:text-emerald-300">四大秘境：</span>
+                              {ESCAPE_THEMES_PREVIEW.map((th) => {
+                                const isSelected = escapeThemeId === th.id;
+                                return (
+                                  <button
+                                    key={th.id}
+                                    type="button"
+                                    onClick={() => {
+                                      soundEngine.click();
+                                      setEscapeThemeId(th.id);
+                                      try {
+                                        localStorage.setItem('wutai_escape_theme', th.id);
+                                      } catch (e) {}
+                                    }}
+                                    className={`px-2.5 py-0.5 rounded-lg text-[11px] font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95 ${
+                                      isSelected
+                                        ? 'bg-emerald-500 text-stone-950 ring-1 ring-emerald-300 font-extrabold shadow-sm'
+                                        : isDark
+                                        ? 'bg-slate-800 text-slate-300 hover:text-white'
+                                        : 'bg-white text-slate-700 hover:bg-slate-50'
+                                    }`}
+                                  >
+                                    <span>{th.icon}</span>
+                                    <span>{th.name}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+
                           {selectedGame === 'snake' && (
                             <>
                               <button
@@ -2227,7 +2178,7 @@ export const Lobby = ({
                             : 'bg-slate-200 text-slate-400 border-slate-300 opacity-50 cursor-not-allowed shadow-none'
                         }`}
                       >
-                        <span>⚔️ 開始遊戲 START</span>
+                        <span>{selectedGame === 'escape' ? '🚪 進入秘境 START' : '⚔️ 開始遊戲 START'}</span>
                         <Play className={`w-4 h-4 ${canStart ? 'fill-stone-950' : isDark ? 'fill-slate-500' : 'fill-slate-400'}`} />
                       </button>
                     );
