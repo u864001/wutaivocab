@@ -445,8 +445,13 @@ async function run() {
   await new Promise(r => setTimeout(r, 1000));
   const battleCheck = await client.evaluate(`
     (async () => {
-      const btns = Array.from(document.querySelectorAll('button'));
-      const openBtn = btns.find(b => (b.innerText || '').includes('開立此擂台') || (b.innerText || '').includes('進入此擂台'));
+      let openBtn = null;
+      for (let i = 0; i < 15; i++) {
+        const btns = Array.from(document.querySelectorAll('button'));
+        openBtn = btns.find(b => (b.innerText || '').includes('開立此擂台') || (b.innerText || '').includes('進入此擂台'));
+        if (openBtn) break;
+        await new Promise(r => setTimeout(r, 250));
+      }
       if (openBtn) openBtn.click();
       let hasWaitingRoom = false;
       for (let i = 0; i < 12; i++) {

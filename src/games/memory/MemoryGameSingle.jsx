@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
 import { useI18n } from '../../context/I18nContext';
+import { useTheme } from '../../context/ThemeContext';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { UPPERCASE_ALPHABET, SHUFFLE } from '../../services/alphabetEngine';
@@ -214,11 +215,18 @@ export const MemoryGameSingle = ({
     settings?.alphaMode
   );
 
-  // 卡牌色系樣式
+  const { isDark } = useTheme();
+
+  // 卡牌色系樣式：自動依據玩家當前日夜狀態切換（白晝為魯凱百合日之章，夜間為古老石板夜之章）
   const [cardThemeId, setCardThemeId] = useState(() => {
-    return localStorage.getItem('wutai_memory_card_theme') || 'noble_gold';
+    return isDark ? 'noble_gold' : 'cyber_blue';
   });
-  const currentCardTheme = CARD_THEMES[cardThemeId] || CARD_THEMES.noble_gold;
+  const currentCardTheme = CARD_THEMES[cardThemeId] || (isDark ? CARD_THEMES.noble_gold : CARD_THEMES.cyber_blue);
+
+  // 當全局日夜模式切換時，自動同步卡牌主題
+  useEffect(() => {
+    setCardThemeId(isDark ? 'noble_gold' : 'cyber_blue');
+  }, [isDark]);
 
   // 圖鑑彈窗
   const [showCodex, setShowCodex] = useState(false);
