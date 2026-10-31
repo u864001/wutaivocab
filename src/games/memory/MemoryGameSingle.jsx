@@ -594,8 +594,16 @@ export const MemoryGameSingle = ({
 
   // ─── 遊戲進行中 (iPad 零捲動滿版全螢幕適配) ───
   return (
-    <div className="fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-between p-2 sm:p-4 max-h-[100dvh] h-[100dvh] overflow-hidden select-none animate-fadeIn">
-      <div className="w-full max-w-4xl mx-auto flex flex-col items-center h-full justify-between">
+    <div className="fixed inset-0 z-40 bg-slate-950 flex flex-col items-center justify-between p-2 sm:p-4 max-h-[100dvh] h-[100dvh] overflow-hidden select-none animate-fadeIn">
+      {/* 奧林帕斯星辰神殿牌桌原畫背景 */}
+      <img
+        src="/assets/memory/board_bg_olympus.jpg"
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none mix-blend-luminosity filter blur-[0.5px]"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/70 to-slate-950/90 pointer-events-none" />
+
+      <div className="w-full max-w-4xl mx-auto flex flex-col items-center h-full justify-between relative z-10">
         {/* 八大卡牌精靈圖鑑彈窗 */}
         <PowerUpCodexModal isOpen={showCodex} onClose={() => setShowCodex(false)} />
 
@@ -698,7 +706,7 @@ export const MemoryGameSingle = ({
                     : 'ring-2 ring-emerald-400/80 opacity-85 scale-[0.97] pointer-events-none'
                   : showFront
                   ? 'scale-105 ring-2 ring-amber-300 shadow-2xl z-10'
-                  : `btn-3d ${currentCardTheme.cardBackClass} border-b-4 hover:scale-105 active:border-b-0`}
+                  : `btn-3d ${currentCardTheme.cardBackClass} border-b-4 hover:-translate-y-1 hover:scale-[1.025] hover:shadow-[0_0_18px_rgba(251,191,36,0.45)] active:border-b-0 active:translate-y-0 duration-200`}
               `}
             >
               {showFront ? (

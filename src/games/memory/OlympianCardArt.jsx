@@ -23,6 +23,10 @@ export const RukaiCardBackFace = ({ motif = 'rukai_day' }) => {
           className="absolute inset-0 w-full h-full object-cover z-10"
         />
       )}
+      {/* 🌟 全場同步 8 秒週期柔和金屬流光 (8s synchronized ambient wave) */}
+      <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
+        <div className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none animate-olympus-ambient-sheen" />
+      </div>
       <svg
         viewBox="0 0 240 180"
         className="w-full h-full block"

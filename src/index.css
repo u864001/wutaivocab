@@ -314,3 +314,25 @@ vercel-live-feedback,
 .animate-shimmer-sweep {
   animation: shimmerSweep 5s ease-in-out infinite;
 }
+
+/* ── 🃏 星際記憶翻牌 全場同步 8 秒週期柔和金屬流光 (Ambient Sheen Wave) ── */
+@keyframes olympusAmbientSheen {
+  0%, 75% {
+    transform: translateX(-160%) skewX(-20deg);
+    opacity: 0;
+  }
+  80% {
+    opacity: 0.38;
+  }
+  92% {
+    opacity: 0.38;
+  }
+  100% {
+    transform: translateX(250%) skewX(-20deg);
+    opacity: 0;
+  }
+}
+
+.animate-olympus-ambient-sheen {
+  animation: olympusAmbientSheen 8s ease-in-out infinite;
+}
