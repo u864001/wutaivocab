@@ -6,7 +6,10 @@
 
 ## 一、 單字密室逃脫 (`VocabEscapeGame.jsx`) 核心規範
 
-1. **過關秒數鎖定與防止 `addQuestPoints` 觸發重置鐵律**：
+1. **5x2 iPad 一頁式選冊整備室全面整併**：
+   - 徹底移除舊版獨立分流手風琴與進入遊戲後重複選冊、舊版 5 年級按鈕的 `briefing` 頁。
+   - 納入統一的 5x2 整備室（分流 B）：左側 1/4 靈魂大圖依四大秘境動態切換（🏛️ 大武山石板神廟、⛓️ 地心黑曜熔岩、🏺 法老古墓黃金殿、🕰️ 雨夜殘破鐘樓）；第 4 層以 4 顆精緻按鈕切換秘境；開始按鈕自適應為 `🚪 進入秘境 START`，點擊後跳過舊 briefing 直接進入第一章三室解謎遊戲。
+2. **過關秒數鎖定與防止 `addQuestPoints` 觸發重置鐵律**：
    - 當學生解完最後一道謎題通關時，會呼叫 `addQuestPoints` 更新 `StudentContext` 的 `currentStudent`。
    - **絕對禁止**將 `currentStudent` 放入 `initCampaign` 的 `useCallback` 依賴陣列，且 `initCampaign` 開頭必須檢查 `if (gameStateRef.current === 'playing' || gameStateRef.current === 'victory') return;`，否則發放積分當下會觸發 `initCampaign` 將 `timeElapsed` 歸零，造成排行榜出現「1 秒通關」異常！
    - 通關瞬間將秒數鎖定於 `finalTime` 與 `finalTimeRef.current`（最小合法秒數 `>= 2` 秒）。
@@ -48,10 +51,14 @@
    - **【3D 轉盤選角眾神圖鑑 (`PowerUpCodexModal.jsx`)】**：
      - 左側 3D 景深旋轉舞台：支援左右箭頭、觸控左右滑動 (Touch Swipe)、鍵盤方向鍵 (←/→) 輪轉 8 大神卡。
      - 實時神力沙盒微縮循環 (`MiniSandboxCanvas`)：在 3D 卡牌下方實時演示神力技能。
-     - 右側雙語神話與戰略：內建希臘神話起源典故中英雙語 (`mythLoreZh` / `mythLoreEn`)、技能運作機制、高手戰略指南與雙語語音報讀 (`handleSpeakCard`)。
+     - 右側雙語神話與戰略：內建希臘神話起源典故中英雙語 (`mythLoreZh` / `mythLoreEn`)、高對比白字與亮金字排版、技能運作機制、高手戰略指南與先英後中雙語語音報讀 (`handleSpeakCard`，支援切換卡片/關閉圖鑑即刻中斷 `window.speechSynthesis.cancel()`)。
      - 提供「3D 輪播」與「宮格總覽」兩種檢視模式無縫切換。
    - **翻牌動效 (`OlympianAwakeningStage`)**：翻開神卡瞬間於原畫卡面上方觸發 1.35 秒無遮擋（`pointer-events-none`）全場神力特效，執行一次後定格為高畫質原畫卡面。
-3. **連擊防呆與空值保護**：
+3. **全域日夜主題自動連動與 5x2 整備室極致精簡**：
+   - **卡背自動連動全域日夜狀態 (`isDark`)**：晨曦日間模式（`!isDark`）自動套用「☀️ 魯凱百合（日之章）」；星月夜景模式（`isDark`）自動套用「🌙 古老石板（夜之章）」，學生在頂部切換日夜即刻同步，整備室不需手動點選。
+   - **配對同義整合與第 4 層玩法風格全數移除**：翻牌記憶每一組配對由 1 張英文 + 1 張中文構成，對稱配對無「中翻英」或「英翻中」實質差異，故徹底移除重複選項，並將記憶遊戲自第 4 層（玩法風格）整列拔除，省下珍貴高度，達成 iPad 橫向一頁 100% 零捲動。
+   - **眾神神殿雙通道入口**：於 5x2 整備室頂部標題列配置「🏛️ 查看 8 大希臘眾神圖鑑」，底部出征列配置「🏛️ 眾神神殿」，方便隨時查閱。
+4. **連擊防呆與空值保護**：
    - 在已翻開 2 張比對中、已配對或偷看狀態時鎖定重複點擊。
    - 讀取 `settings?.selectedUnits` 必須加 `(settings?.selectedUnits || [])` 防護。
 
