@@ -266,16 +266,16 @@ export const MemoryGameSingle = ({
     soundEngine.click();
   };
 
-  // 初始化牌組 (8組中英單字 16張 + 4張功能卡牌 = 20張)
+  // 初始化牌組 (方案A：9組中英單字 18張 + 2張單人專屬功能神卡 = 20張 4x5 網格)
   const handleStart = () => {
     let pool = words.filter(w => (settings?.selectedUnits || []).includes(`${w.book}-${w.lesson}`));
-    if (pool.length < 8) pool = words;
-    const selected = [...pool].sort(() => 0.5 - Math.random()).slice(0, 8);
+    if (pool.length < 9) pool = words;
+    const selected = [...pool].sort(() => 0.5 - Math.random()).slice(0, 9);
     selectedWordsRef.current = selected;
     const cardList = [];
     if (isAlphabetMode) {
-      // 字母模式：抽 8 組英文字母大小寫配對 (A ↔ a)
-      const selectedRoots = SHUFFLE(UPPERCASE_ALPHABET).slice(0, 8);
+      // 字母模式：抽 9 組英文字母大小寫配對 (A ↔ a)
+      const selectedRoots = SHUFFLE(UPPERCASE_ALPHABET).slice(0, 9);
       selectedRoots.forEach((upper) => {
         const matchKey = `pair_${upper}`;
         cardList.push({
@@ -298,7 +298,7 @@ export const MemoryGameSingle = ({
         });
       });
     } else {
-      // 16 張單字卡
+      // 18 張單字卡 (9 組中英配對)
       selected.forEach((w, idx) => {
         const matchKey = `pair_${idx}`;
         cardList.push({
@@ -320,9 +320,9 @@ export const MemoryGameSingle = ({
       });
     }
 
-    // 4 張隨機奧林帕斯希臘神話神卡 (從完整 8 大眾神池中抽取 4 張入局)
-    const availablePowerUps = ['lightning', 'peek', 'freeze', 'coin', 'lock', 'bonus', 'radar', 'winwin'];
-    const chosenPowerUps = [...availablePowerUps].sort(() => 0.5 - Math.random()).slice(0, 4);
+    // 2 張隨機單人模式希臘神話神卡 (從單人最契合的 5 大神卡池中隨機抽取 2 張)
+    const singlePlayerPowerUps = ['lightning', 'peek', 'coin', 'bonus', 'radar'];
+    const chosenPowerUps = [...singlePlayerPowerUps].sort(() => 0.5 - Math.random()).slice(0, 2);
 
     chosenPowerUps.forEach((pId, pIdx) => {
       const pDef = POWER_UP_DEFS[pId];
@@ -574,7 +574,7 @@ export const MemoryGameSingle = ({
             book={qualifyingBook}
             score={score}
             time={elapsedTime}
-            totalCount={selectedWordsRef.current.length || 8}
+            totalCount={selectedWordsRef.current.length || 9}
             rangeText={qualifyingBook ? `第 ${qualifyingBook} 冊` : (settings?.selectedUnits || []).slice(0, 3).join(', ')}
             reviewWords={selectedWordsRef.current.map(w => ({
               id: w.id,
