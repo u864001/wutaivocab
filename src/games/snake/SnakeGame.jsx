@@ -7,6 +7,7 @@ import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { getSnakeNextLetter, UPPERCASE_ALPHABET } from '../../services/alphabetEngine';
 import { SnakeCanvas2D } from './SnakeCanvas2D';
+import { GamePreloader } from '../../components/ui/GamePreloader';
 import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import confetti from 'canvas-confetti';
 import {
@@ -34,6 +35,7 @@ export const SnakeGame = ({
   const [hasStarted, setHasStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPreloading, setIsPreloading] = useState(true);
 
   // 低年級 Aa 字母巡航模式判斷
   const isAlphabetMode = Boolean(
@@ -510,6 +512,22 @@ export const SnakeGame = ({
     );
   };
 
+  // ─── 全域神山動物奔馳資源載入過場 (GamePreloader) ───
+  if (isPreloading) {
+    return (
+      <GamePreloader
+        title="進入神山百步蛇獵場..."
+        assetUrls={[
+          '/assets/snake/indigenous_ground.webp',
+          '/assets/snake/bead_letter_pod.webp',
+          '/assets/snake/snake_head_indigenous.webp',
+          '/assets/snake/snake_tail_indigenous.webp'
+        ]}
+        onComplete={() => setIsPreloading(false)}
+      />
+    );
+  }
+
   // ─── 遊戲結算畫面 ───
   if (isFinished) {
     const isIndigenous = theme === 'indigenous';
@@ -678,35 +696,55 @@ export const SnakeGame = ({
         </button>
       </div>
 
-      {/* 目標單字拼字進度條 */}
+      {/* 目標單字拼字進度條 (融合神山石板與百合飾紋) */}
       {currentWord && (
-        <div className={`w-full mb-3 p-3 rounded-2xl border flex items-center justify-between shadow-sm ${
+        <div className={`w-full mb-3 p-3 sm:p-4 rounded-2xl border flex items-center justify-between shadow-xl relative overflow-hidden backdrop-blur-md transition-all ${
           theme === 'indigenous'
-            ? 'bg-stone-900/90 border-amber-500/30 text-stone-100'
-            : 'bg-white/90 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700'
+            ? 'bg-gradient-to-r from-stone-900/95 via-stone-850/95 to-stone-900/95 border-amber-500/40 text-stone-100 shadow-[0_4px_20px_rgba(0,0,0,0.5)]'
+            : 'bg-white/95 dark:bg-slate-900/95 border-emerald-500/30'
         }`}>
-          <div className="flex items-center gap-2">
-            <span className="text-lg sm:text-2xl font-heading font-black">
+          {/* 神山百合暗紋 */}
+          {theme === 'indigenous' && (
+            <div className="absolute right-2 -bottom-2 text-3xl opacity-10 pointer-events-none select-none">
+              🌸
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className={`text-lg sm:text-2xl font-heading font-black tracking-wide ${
+              theme === 'indigenous' ? 'text-amber-300 drop-shadow' : 'text-slate-800 dark:text-slate-100'
+            }`}>
               {currentWord.zh}
             </span>
+
+            {/* 神山勇士青銅鈴鐺發音按鈕 */}
             <button
               onClick={() => speakEnglish(currentWord.en)}
-              className="text-xs px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-400 hover:bg-amber-400/30 transition-colors"
+              title="再聽一次單字發音"
+              className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-md hover:scale-105 active:scale-95 ${
+                theme === 'indigenous'
+                  ? 'bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-300 text-stone-950 border border-amber-200/80 shadow-[0_2px_8px_rgba(245,158,11,0.4)]'
+                  : 'bg-emerald-500 text-white hover:bg-emerald-600'
+              }`}
             >
-              🔊 唸法
+              <span className="text-sm">🔔</span>
+              <span className="hidden sm:inline">再聽一次</span>
             </button>
           </div>
 
-          <div className="flex gap-1.5 sm:gap-2">
+          {/* 字母凹槽插槽 (琉璃金紋卡槽) */}
+          <div className="flex gap-1 sm:gap-2">
             {currentWord.en.split('').map((char, idx) => (
               <span
                 key={idx}
-                className={`w-7 h-8 sm:w-8 sm:h-9 rounded-xl flex items-center justify-center font-black text-base sm:text-lg transition-transform ${
+                className={`w-7 h-8 sm:w-9 sm:h-10 rounded-xl flex items-center justify-center font-black text-base sm:text-lg transition-transform ${
                   idx < spelledChars.length
                     ? theme === 'indigenous'
-                      ? 'bg-amber-500 text-stone-950 shadow-sm scale-105'
+                      ? 'bg-gradient-to-tr from-amber-500 to-yellow-300 text-stone-950 shadow-[0_0_12px_rgba(245,158,11,0.6)] border border-amber-200 scale-105'
                       : 'bg-emerald-500 text-white shadow-sm scale-105'
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-400'
+                    : theme === 'indigenous'
+                      ? 'bg-stone-950/80 border border-stone-700/80 text-stone-500 shadow-inner'
+                      : 'bg-slate-200 dark:bg-slate-700 text-slate-400'
                 }`}
               >
                 {idx < spelledChars.length ? char.toUpperCase() : '_'}

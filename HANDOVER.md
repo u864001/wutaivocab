@@ -54,7 +54,29 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
-#### 1. 貪食蛇 (Snake Game)
+#### 0. 全域遊戲資源載入進度條 (`GamePreloader`) 與年度節慶神獸輪替機制
+* **徹底杜絕黑屏與閃退感** (`src/components/ui/GamePreloader.jsx`):
+  * 在所有大型遊戲（如貪食蛇、隕石等）啟動與高解析度圖資解碼（`Image.decode()`）前，呈現沉浸式過場進度條。
+  * 支援真非同步資源預載與時間進度平滑插值（Lerp），CI 與 Headless 自動化測試環境自適應加速（100ms 快速通過），實機環境保留最少 1.2 秒優雅展示。
+* **神山四大守護神獸 ＋ 12 個月份節慶限定輪替矩陣** (`docs/features/GAME_PRELOADER_SPEC.md`):
+  * 常態池：🐆 **台灣雲豹**、🐻 **台灣黑熊**、🐗 **神山野豬**、🦌 **台灣水鹿**（手繪 WebP 奔馳 Sprite 動態隨進度前進，腳下伴隨光塵粒子）。
+  * 節慶限定：10月萬聖南瓜怪、12月聖誕老人雪橇、6月端午龍舟、9月中秋玉兔等，系統依據 `new Date().getMonth() + 1` 自動加入候選池（50% 機率登場）。
+* **神山雙語每日格言庫** (`src/data/forestQuotes.js`):
+  * 收錄 30+ 則富含探險勇氣、堅持努力、自然智慧、接納錯誤之小學生正向格言，中英雙語對照排版，在等待載入之餘同步兼具雙語微學習。
+
+#### 1. 叢林神山貪食蛇 (Snake Game) 大地質素與 Sprite 全面昇華
+* **神山青苔石板無縫地坪** (`public/assets/snake/indigenous_ground.webp`, `src/games/snake/SnakeCanvas2D.jsx`):
+  * 告別過去單調向量純綠方格，全面導入魯凱特色頁岩片石板、青苔林地無縫貼圖（512×512），白晝與月夜（黑曜岩濾鏡＋45°月光掠影）雙重適配。
+* **七彩琉璃珠字母寶座** (`public/assets/snake/bead_letter_pod.webp`, `src/games/snake/snakeJungleTheme.js`):
+  * 字母底座升級為高透光 3D 魯凱傳奇琉璃珠（太陽之眼/勇士之珠），維持 900 特粗純黑描邊＋純白/亮金浮雕字母，確保 4K 字母極致清晰。
+* **百步蛇精雕頭尾 Sprite 與高密覆瓦狀鱗片** (`public/assets/snake/snake_head_indigenous.webp`, `snake_tail_indigenous.webp`):
+  * 蛇頭隨運動方向即時旋轉（`atan2` + `PI/2`），神聖金色蛇瞳與動態吐信。
+  * 蛇尾專屬收尖甩尾 Sprite。
+  * 蛇身採用骨骼連續覆瓦狀菱形鱗片交疊技術，90 度轉彎或穿牆時絕不翻車、零縫隙撕裂。
+* **石雕目標單字看板與青銅鈴鐺發音鈕** (`src/games/snake/SnakeGame.jsx`):
+  * 目標單字看板改為神山頁岩飾板與百合浮雕紋，拼字槽呈現立體石刻凹槽。
+  * 發音按鈕升級為立體微縮 3D 質感之「神山勇士青銅鈴鐺按鈕」，滑鼠 hover/touch 微光回饋。
+
 * **發光字母極致辨識度** (`src/games/snake/snakeJungleTheme.js`):
   * 解決過去因全域開啟 `ctx.shadowBlur` 導致字母文字被黃色光團吞沒模糊的問題。
   * 光暈限制在外圍呼吸環，文字本體清空 `shadowBlur = 0`，以 900 特粗純黑描邊（4.5px）+ 亮純白/高純金雙層填充，達成 4K 極致字體銳利度。

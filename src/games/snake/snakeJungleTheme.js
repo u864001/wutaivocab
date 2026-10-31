@@ -217,7 +217,8 @@ export const drawHundredPaceSnake = (
   bulges = [],
   isDead = false,
   isInvulnerable = false,
-  isDark = false
+  isDark = false,
+  assets = null
 ) => {
   if (!spine || spine.length < 2) return;
   ctx.save();
@@ -368,93 +369,131 @@ export const drawHundredPaceSnake = (
     }
   });
 
-  // 3) 繪製百步蛇頭部 (等比縮放為 80%，秀氣立體)
+  // 3) 繪製百步蛇頭部 (優先使用精緻 Sprite，具備即時平滑旋轉與吐信)
   const head = spine[0];
   const neck = spine[1] || head;
   const headAngle = Math.atan2(head.y - neck.y, head.x - neck.x);
 
   ctx.save();
   ctx.translate(head.x, head.y);
-  ctx.rotate(headAngle);
 
-  // 吐信：分叉蛇舌
-  const tongueTimer = (time * 3) % 2.5;
-  if (tongueTimer < 0.65 && !isDead) {
-    const tLen = 12 + Math.sin(time * 26) * 3;
-    ctx.strokeStyle = '#dc2626';
+  if (assets?.snakeHead && assets.snakeHead.complete && assets.snakeHead.naturalWidth > 0) {
+    // 精緻 Sprite 向上對齊 (加上 PI/2 轉向運動前進方向)
+    ctx.rotate(headAngle + Math.PI / 2);
+
+    // 吐信：分叉蛇舌 (朝向前進方向)
+    const tongueTimer = (time * 3) % 2.5;
+    if (tongueTimer < 0.65 && !isDead) {
+      const tLen = 10 + Math.sin(time * 26) * 3;
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 2.0;
+      ctx.beginPath();
+      ctx.moveTo(0, -18);
+      ctx.lineTo(0, -18 - tLen);
+      ctx.lineTo(-3, -18 - tLen - 4);
+      ctx.moveTo(0, -18 - tLen);
+      ctx.lineTo(3, -18 - tLen - 4);
+      ctx.stroke();
+    }
+
+    const headSize = 34;
+    ctx.drawImage(assets.snakeHead, -headSize / 2, -headSize * 0.55, headSize, headSize);
+  } else {
+    ctx.rotate(headAngle);
+
+    // 吐信：分叉蛇舌
+    const tongueTimer = (time * 3) % 2.5;
+    if (tongueTimer < 0.65 && !isDead) {
+      const tLen = 12 + Math.sin(time * 26) * 3;
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(14, 0);
+      ctx.lineTo(14 + tLen, 0);
+      ctx.lineTo(14 + tLen + 4, -3);
+      ctx.moveTo(14 + tLen, 0);
+      ctx.lineTo(14 + tLen + 4, 3);
+      ctx.stroke();
+    }
+
+    // 經典尖吻翹鼻頭型 (原比例 80%)
+    ctx.fillStyle = isDark ? '#1e293b' : '#9a3412';
+    ctx.strokeStyle = isDark ? '#0b1116' : '#431407';
     ctx.lineWidth = 2.2;
     ctx.beginPath();
-    ctx.moveTo(14, 0);
-    ctx.lineTo(14 + tLen, 0);
-    ctx.lineTo(14 + tLen + 4, -3);
-    ctx.moveTo(14 + tLen, 0);
-    ctx.lineTo(14 + tLen + 4, 3);
+    ctx.moveTo(20, 0);
+    ctx.lineTo(9, -13);
+    ctx.lineTo(-10, -12);
+    ctx.lineTo(-12, 0);
+    ctx.lineTo(-10, 12);
+    ctx.lineTo(9, 13);
+    ctx.closePath();
+    ctx.fill();
     ctx.stroke();
-  }
 
-  // 經典尖吻翹鼻頭型 (原比例 80%)
-  ctx.fillStyle = isDark ? '#1e293b' : '#9a3412';
-  ctx.strokeStyle = isDark ? '#0b1116' : '#431407';
-  ctx.lineWidth = 2.2;
-  ctx.beginPath();
-  ctx.moveTo(20, 0);
-  ctx.lineTo(9, -13);
-  ctx.lineTo(-10, -12);
-  ctx.lineTo(-12, 0);
-  ctx.lineTo(-10, 12);
-  ctx.lineTo(9, 13);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-
-  // 鼻尖肉質微翹小特徵 (白晝暖橙 vs 月夜琥珀金)
-  ctx.fillStyle = isDark ? '#f59e0b' : '#ea580c';
-  ctx.beginPath();
-  ctx.arc(18.5, 0, 3.0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // 頭頂祖靈王冠金黃紋
-  ctx.fillStyle = isDark ? '#fbbf24' : '#fde047';
-  ctx.beginPath();
-  ctx.moveTo(6.5, 0);
-  ctx.lineTo(-1, -5.5);
-  ctx.lineTo(-6.5, 0);
-  ctx.lineTo(-1, 5.5);
-  ctx.closePath();
-  ctx.fill();
-
-  // 眼睛
-  if (isDead) {
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2.0;
+    // 鼻尖肉質微翹小特徵 (白晝暖橙 vs 月夜琥珀金)
+    ctx.fillStyle = isDark ? '#f59e0b' : '#ea580c';
     ctx.beginPath();
-    ctx.moveTo(3, -6.5); ctx.lineTo(7, -4); ctx.lineTo(3, -1.5);
-    ctx.moveTo(3, 1.5); ctx.lineTo(7, 4); ctx.lineTo(3, 6.5);
-    ctx.stroke();
-  } else {
-    // 亮琥珀金色眼球
-    ctx.fillStyle = '#fef08a';
-    ctx.beginPath();
-    ctx.arc(5.5, -6.5, 4.0, 0, Math.PI * 2);
-    ctx.arc(5.5, 6.5, 4.0, 0, Math.PI * 2);
+    ctx.arc(18.5, 0, 3.0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 黑垂直瞳孔
-    ctx.fillStyle = '#0f172a';
+    // 頭頂祖靈王冠金黃紋
+    ctx.fillStyle = isDark ? '#fbbf24' : '#fde047';
     ctx.beginPath();
-    ctx.ellipse(6, -6.5, 1.1, 3.2, 0, 0, Math.PI * 2);
-    ctx.ellipse(6, 6.5, 1.1, 3.2, 0, 0, Math.PI * 2);
+    ctx.moveTo(6.5, 0);
+    ctx.lineTo(-1, -5.5);
+    ctx.lineTo(-6.5, 0);
+    ctx.lineTo(-1, 5.5);
+    ctx.closePath();
     ctx.fill();
 
-    // 眼神高光
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(5, -7.5, 1.2, 0, Math.PI * 2);
-    ctx.arc(5, 5.5, 1.2, 0, Math.PI * 2);
-    ctx.fill();
+    // 眼睛
+    if (isDead) {
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.0;
+      ctx.beginPath();
+      ctx.moveTo(3, -6.5); ctx.lineTo(7, -4); ctx.lineTo(3, -1.5);
+      ctx.moveTo(3, 1.5); ctx.lineTo(7, 4); ctx.lineTo(3, 6.5);
+      ctx.stroke();
+    } else {
+      // 亮琥珀金色眼球
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.arc(5.5, -6.5, 4.0, 0, Math.PI * 2);
+      ctx.arc(5.5, 6.5, 4.0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 黑垂直瞳孔
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.ellipse(6, -6.5, 1.1, 3.2, 0, 0, Math.PI * 2);
+      ctx.ellipse(6, 6.5, 1.1, 3.2, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 眼神高光
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(5, -7.5, 1.2, 0, Math.PI * 2);
+      ctx.arc(5, 5.5, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   ctx.restore();
+
+  // 4) 繪製蛇尾末梢 Sprite
+  if (spine.length >= 3 && assets?.snakeTail && assets.snakeTail.complete && assets.snakeTail.naturalWidth > 0) {
+    const tailPt = spine[spine.length - 1];
+    const prevTailPt = spine[spine.length - 2];
+    const tailAngle = Math.atan2(tailPt.y - prevTailPt.y, tailPt.x - prevTailPt.x);
+    ctx.save();
+    ctx.translate(tailPt.x, tailPt.y);
+    ctx.rotate(tailAngle + Math.PI / 2);
+    const tailSize = 22;
+    ctx.drawImage(assets.snakeTail, -tailSize / 2, -tailSize * 0.2, tailSize, tailSize);
+    ctx.restore();
+  }
+
   ctx.restore();
 };
 
@@ -628,7 +667,7 @@ export const drawGreenSnake = (
 };
 
 // ── 4. 繪製字母標的 (Letter Pods - 晶亮發光且字體超清晰高對比，學生一眼即能辨識) ──
-export const drawLetterPod = (ctx, letter, theme, isNextTarget, time, isDark = false) => {
+export const drawLetterPod = (ctx, letter, theme, isNextTarget, time, isDark = false, assets = null) => {
   ctx.save();
   ctx.translate(letter.renderX, letter.renderY);
 
@@ -638,7 +677,7 @@ export const drawLetterPod = (ctx, letter, theme, isNextTarget, time, isDark = f
   const charUpper = (letter.char || '').toUpperCase();
 
   if (theme === 'indigenous') {
-    // ⛰️ 霧台神山百步蛇主題：板岩金紋符石 (Runic Slate Block)
+    // ⛰️ 霧台神山百步蛇主題：七彩琉璃珠 (Sacred Glazed Bead) / 板岩金紋符石
     if (isNextTarget) {
       // 1. 外圍神聖光暈層 (只對外圈光暈生效，文字繪製前務必清空 shadowBlur，確保文字極致清晰！)
       ctx.save();
@@ -665,23 +704,28 @@ export const drawLetterPod = (ctx, letter, theme, isNextTarget, time, isDark = f
       ctx.restore();
     }
 
-    // 2. 板岩符石本體 (徹底重設 shadowBlur = 0，消除一切字體模糊暈染)
+    // 2. 底座渲染 (優先使用高質感 3D 琉璃珠，否則使用板岩符石備援)
     ctx.shadowBlur = 0;
     ctx.shadowColor = 'transparent';
 
-    // 符石底色：發光目標使用更深邃高對比黑曜板岩，非目標使用深青岩
-    ctx.fillStyle = isNextTarget ? '#0f172a' : (isDark ? '#1e293b' : '#1e293b');
-    ctx.strokeStyle = isNextTarget ? '#facc15' : '#64748b';
-    ctx.lineWidth = isNextTarget ? 3.5 : 2;
-    ctx.beginPath();
-    ctx.roundRect(-19, -19, 38, 38, 11);
-    ctx.fill();
-    ctx.stroke();
+    if (assets?.bead && assets.bead.complete && assets.bead.naturalWidth > 0) {
+      const beadSize = 40;
+      ctx.drawImage(assets.bead, -beadSize / 2, -beadSize / 2, beadSize, beadSize);
+    } else {
+      // 符石底色備援：發光目標使用更深邃高對比黑曜板岩，非目標使用深青岩
+      ctx.fillStyle = isNextTarget ? '#0f172a' : (isDark ? '#1e293b' : '#1e293b');
+      ctx.strokeStyle = isNextTarget ? '#facc15' : '#64748b';
+      ctx.lineWidth = isNextTarget ? 3.5 : 2;
+      ctx.beginPath();
+      ctx.roundRect(-19, -19, 38, 38, 11);
+      ctx.fill();
+      ctx.stroke();
 
-    // 內嵌金屬刻紋 (菱形圖騰角飾)
-    ctx.strokeStyle = isNextTarget ? '#fde047' : '#475569';
-    ctx.lineWidth = 1.2;
-    ctx.strokeRect(-14, -14, 28, 28);
+      // 內嵌金屬刻紋 (菱形圖騰角飾)
+      ctx.strokeStyle = isNextTarget ? '#fde047' : '#475569';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(-14, -14, 28, 28);
+    }
 
     // 3. 字母本體渲染：極致銳利，純黑外描邊 + 亮白/亮金高飽和填充，學生一眼即可看穿！
     ctx.shadowBlur = 0;
@@ -690,19 +734,13 @@ export const drawLetterPod = (ctx, letter, theme, isNextTarget, time, isDark = f
     ctx.textBaseline = 'middle';
 
     // 先以厚實深黑描邊建立強烈邊界對比 (避免光芒淹沒字型)
-    ctx.strokeStyle = isNextTarget ? '#000000' : '#0f172a';
-    ctx.lineWidth = 4.5;
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 4.8;
     ctx.strokeText(charUpper, 0, 1);
 
     // 再填入高亮純白/高純金，字體立體剔透！
-    ctx.fillStyle = isNextTarget ? '#ffffff' : '#e2e8f0';
+    ctx.fillStyle = isNextTarget ? '#fef08a' : '#ffffff';
     ctx.fillText(charUpper, 0, 1);
-
-    // 發光目標文字中央加一抹金色點綴
-    if (isNextTarget) {
-      ctx.fillStyle = '#fef08a';
-      ctx.fillText(charUpper, 0, 1);
-    }
   } else {
     // 🌿 熱帶雨林主題：翠綠仙果 / 叢林寶石 (Jungle Gem Fruit)
     if (isNextTarget) {

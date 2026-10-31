@@ -78,6 +78,56 @@ export const SnakeCanvas2D = ({
     prevSnakeLenRef.current = snake.length;
   }, [snake.length]);
 
+  // 高解析美術資產預載 (Ground texture, Glass bead, Snake sprites)
+  const assetsRef = useRef({
+    ground: null,
+    groundPattern: null,
+    bead: null,
+    snakeHead: null,
+    snakeTail: null
+  });
+
+  useEffect(() => {
+    // 預載神山石板地坪無縫貼圖
+    const groundImg = new Image();
+    groundImg.src = '/assets/snake/indigenous_ground.webp';
+    groundImg.onload = () => {
+      assetsRef.current.ground = groundImg;
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          try {
+            assetsRef.current.groundPattern = ctx.createPattern(groundImg, 'repeat');
+          } catch {
+            // 優雅降級
+          }
+        }
+      }
+    };
+
+    // 預載七彩琉璃珠字母基座
+    const beadImg = new Image();
+    beadImg.src = '/assets/snake/bead_letter_pod.webp';
+    beadImg.onload = () => {
+      assetsRef.current.bead = beadImg;
+    };
+
+    // 預載百步蛇頭部 Sprite
+    const headImg = new Image();
+    headImg.src = '/assets/snake/snake_head_indigenous.webp';
+    headImg.onload = () => {
+      assetsRef.current.snakeHead = headImg;
+    };
+
+    // 預載百步蛇尾部 Sprite
+    const tailImg = new Image();
+    tailImg.src = '/assets/snake/snake_tail_indigenous.webp';
+    tailImg.onload = () => {
+      assetsRef.current.snakeTail = tailImg;
+    };
+  }, []);
+
   // 主動畫渲染循環 (60 FPS requestAnimationFrame)
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -192,16 +242,21 @@ export const SnakeCanvas2D = ({
 
       if (theme === 'indigenous') {
         if (!isDark) {
-          // ☀️ 白晝晨曦：翠綠高山草地 2D 俯視
-          ctx.fillStyle = '#166534'; // 晨曦翠綠高山草皮底色
-          ctx.fillRect(0, 0, width, height);
+          // ☀️ 白晝晨曦：神山頁岩青苔地坪 (或翠綠高山草地 2D 俯視)
+          if (assetsRef.current.groundPattern) {
+            ctx.fillStyle = assetsRef.current.groundPattern;
+            ctx.fillRect(0, 0, width, height);
+          } else {
+            ctx.fillStyle = '#166534'; // 晨曦翠綠高山草皮底色
+            ctx.fillRect(0, 0, width, height);
 
-          // 雙色翠綠草坪棋盤格微凹槽對比
-          for (let x = 0; x < gridW; x++) {
-            for (let y = 0; y < gridH; y++) {
-              if ((x + y) % 2 === 0) {
-                ctx.fillStyle = '#15803d'; // 明亮翠綠
-                ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
+            // 雙色翠綠草坪棋盤格微凹槽對比
+            for (let x = 0; x < gridW; x++) {
+              for (let y = 0; y < gridH; y++) {
+                if ((x + y) % 2 === 0) {
+                  ctx.fillStyle = '#15803d'; // 明亮翠綠
+                  ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
+                }
               }
             }
           }
@@ -225,16 +280,24 @@ export const SnakeCanvas2D = ({
             drawMountainButterfly(ctx, bf.x, bf.y, bf.angle, time);
           });
         } else {
-          // 🌙 月夜幽谷：深邃月夜草坪 2D 俯視
+          // 🌙 月夜幽谷：神山黑曜青苔地坪 (或深邃月夜草坪 2D 俯視)
           ctx.fillStyle = '#061a15'; // 月夜墨藍綠草坪底色
           ctx.fillRect(0, 0, width, height);
 
-          // 深色草坪棋盤格
-          for (let x = 0; x < gridW; x++) {
-            for (let y = 0; y < gridH; y++) {
-              if ((x + y) % 2 === 0) {
-                ctx.fillStyle = '#0a241e';
-                ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
+          if (assetsRef.current.groundPattern) {
+            ctx.save();
+            ctx.globalAlpha = 0.45;
+            ctx.fillStyle = assetsRef.current.groundPattern;
+            ctx.fillRect(0, 0, width, height);
+            ctx.restore();
+          } else {
+            // 深色草坪棋盤格
+            for (let x = 0; x < gridW; x++) {
+              for (let y = 0; y < gridH; y++) {
+                if ((x + y) % 2 === 0) {
+                  ctx.fillStyle = '#0a241e';
+                  ctx.fillRect(x * tileW, y * tileH, tileW, tileH);
+                }
               }
             }
           }
@@ -323,14 +386,15 @@ export const SnakeCanvas2D = ({
           theme,
           isNext,
           time,
-          isDark
+          isDark,
+          assetsRef.current
         );
       });
 
       // ─── 7. 繪製平滑蛇身 (Snake Body & Head) ───
       if (spine.length >= 2) {
         if (theme === 'indigenous') {
-          drawHundredPaceSnake(ctx, spine, time, bulgesRef.current, isDead, isInvulnerable, isDark);
+          drawHundredPaceSnake(ctx, spine, time, bulgesRef.current, isDead, isInvulnerable, isDark, assetsRef.current);
         } else {
           drawGreenSnake(ctx, spine, time, bulgesRef.current, isDead, isInvulnerable);
         }
