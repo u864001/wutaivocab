@@ -4,6 +4,7 @@ import { Button3D } from '../../components/ui/Button3D';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import { soundEngine, speakEnglish } from '../../services/audio';
 import { moleBgm } from '../../services/moleBgm';
+import { GamePreloader } from '../../components/ui/GamePreloader';
 import { FALLBACK_WORDS } from '../../services/supabase';
 import confetti from 'canvas-confetti';
 import {
@@ -91,6 +92,7 @@ export const WhackAMoleGame = ({
   }, [rawWordPool]);
 
   // ── 3. 遊戲核心狀態 ──
+  const [isPreloading, setIsPreloading] = useState(true);
   const [gameState, setGameState] = useState('playing'); // 'playing' | 'gameover'
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -142,13 +144,13 @@ export const WhackAMoleGame = ({
 
   // 啟動純前端 Web Audio 地鼠背景音樂，並連動狂暴期加速
   useEffect(() => {
-    if (gameState === 'playing') {
+    if (!isPreloading && gameState === 'playing') {
       moleBgm.start();
       moleBgm.setBerserk(isBerserk);
     } else {
       moleBgm.stop();
     }
-  }, [gameState, isBerserk]);
+  }, [isPreloading, gameState, isBerserk]);
 
   // 元件卸載時停止背景音樂並清除所有計時器
   useEffect(() => {
@@ -160,7 +162,7 @@ export const WhackAMoleGame = ({
 
   // ── 5. 倒數 60 秒計時器（僅更新倒數數值，不影響題目生命週期） ──
   useEffect(() => {
-    if (gameState !== 'playing') return;
+    if (isPreloading || gameState !== 'playing') return;
     timeLeftRef.current = 60;
     const timer = setInterval(() => {
       setTimeLeft(prev => {
@@ -432,13 +434,14 @@ export const WhackAMoleGame = ({
 
   startNextQuestionRef.current = startNextQuestion;
 
-  // 初始化啟動 (嚴格只在初次載入或重玩時執行一次，絕不受每秒計時器干擾)
+  // 初始化啟動 (資源預載完畢後執行一次，絕不受每秒計時器干擾)
   useEffect(() => {
+    if (isPreloading) return;
     if (hasStartedRef.current) return;
     hasStartedRef.current = true;
     initQueues();
     startNextQuestion();
-  }, [initQueues, startNextQuestion]);
+  }, [isPreloading, initQueues, startNextQuestion]);
 
   // ── 10. 點擊判定處理 (Once-per-spawn 全局鎖定與全場平滑縮回) ──
   const handleWhack = (holeId) => {
@@ -597,6 +600,16 @@ export const WhackAMoleGame = ({
       startNextQuestion();
     }, 120);
   };
+
+  if (isPreloading) {
+    return (
+      <GamePreloader
+        title="地鼠探頭準備中！載入神山農園..."
+        assetUrls={[STAGE_BG, MOLE_NORMAL, MOLE_DIZZY, MOLE_GOLD, MOLE_PRANK]}
+        onComplete={() => setIsPreloading(false)}
+      />
+    );
+  }
 
   return (
     <div className={`fixed inset-0 w-full h-[100dvh] bg-slate-950 text-white flex flex-col justify-between overflow-hidden select-none z-20 animate-fadeIn font-sans ${isShaking ? 'animate-shake' : ''}`}>

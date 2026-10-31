@@ -38,7 +38,7 @@ const GAME_MODES = [
   { id: 'battle-wins', name: '連線對戰總勝場' }
 ];
 
-export const TeacherHub = ({ onBack, words = [], onRefreshWords }) => {
+export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return sessionStorage.getItem('wutai_teacher_authed') === 'true';
   });
@@ -490,6 +490,17 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords }) => {
         </div>
 
         <div className="flex items-center gap-2">
+          {onOpenShowcase && (
+            <button
+              onClick={onOpenShowcase}
+              className="px-3 py-2 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 hover:scale-105 active:scale-95 text-stone-950 text-xs font-black flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
+              title="查看 16 隻神獸進度條奔馳與 30 則英語格言"
+            >
+              <span>🐆</span>
+              <span>神獸進度條展示台</span>
+            </button>
+          )}
+
           <button
             onClick={handleExportWordsBackup}
             className="px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 text-xs font-black flex items-center gap-1.5 shadow-sm transition-all"

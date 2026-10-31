@@ -2,6 +2,7 @@ import { useStudent } from '../../context/StudentContext';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { Button3D } from '../../components/ui/Button3D';
+import { GamePreloader } from '../../components/ui/GamePreloader';
 import { SpotterScene } from './SpotterScene';
 import { SpotterWordBank } from './SpotterWordBank';
 import { SPOTTER_SCENES, SPOTTER_SCENES_BY_BOOK, ALL_SCENES_BY_BOOK, generateSpotterRound } from './spotterData';
@@ -85,6 +86,7 @@ export const VocabSpotterGame = ({
 
   const scenesForBook = ALL_SCENES_BY_BOOK[selectedBook] || [SPOTTER_SCENES_BY_BOOK[selectedBook] || SPOTTER_SCENES_BY_BOOK['1']];
   const [sceneIndex, setSceneIndex] = useState(0);
+  const [isPreloading, setIsPreloading] = useState(!isAlphabetMode);
   const currentScene = scenesForBook[sceneIndex] || scenesForBook[0];
 
   // 每一局動態隨機抽取 5 個目標單字並指定樣態
@@ -355,6 +357,19 @@ export const VocabSpotterGame = ({
   const activeSpotlightDiff = activeDifferences.find(d => d.id === spotlightDiffId);
   const BOOK_ZH_MAP = { '1': '一', '2': '二', '3': '三', '4': '四', '5': '五', '6': '六', '7': '七', '8': '八' };
   const bookZhNum = BOOK_ZH_MAP[String(currentScene.book)] || currentScene.book;
+
+  if (isPreloading && !isAlphabetMode) {
+    const preloadUrls = currentScene
+      ? [currentScene.originalImage, currentScene.modifiedImage].filter(Boolean)
+      : [];
+    return (
+      <GamePreloader
+        title="鷹眼神探就位！載入高山祕境插圖..."
+        assetUrls={preloadUrls}
+        onComplete={() => setIsPreloading(false)}
+      />
+    );
+  }
 
   return (
     <div className="w-full max-w-6xl mx-auto px-1 sm:px-3 py-1.5 sm:py-3 space-y-1.5 sm:space-y-2.5 animate-fadeIn pb-10 select-none">

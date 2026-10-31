@@ -256,8 +256,8 @@ async function run() {
         (() => {
           if (!document.body) return 'loading';
           const text = document.body.innerText || '';
-          if (text.includes('正在同步雲端單字庫') || text.includes('Adventure World Loading')) return 'syncing';
-          if (text.includes('鷹眼神探') || text.includes('找不同') || document.querySelectorAll('svg').length >= 2) return 'ready';
+          if (text.includes('正在同步雲端單字庫') || text.includes('Adventure World Loading') || text.includes('高山祕境') || text.includes('載入中') || text.includes('微學習')) return 'syncing';
+          if (text.includes('左側托盤') || text.includes('找不同（點擊不扣心）') || text.includes('世界節慶與環球港灣') || document.querySelectorAll('svg').length >= 2) return 'ready';
           return 'waiting';
         })()
       `);
@@ -446,7 +446,7 @@ async function run() {
   const battleCheck = await client.evaluate(`
     (async () => {
       let openBtn = null;
-      for (let i = 0; i < 15; i++) {
+      for (let i = 0; i < 20; i++) {
         const btns = Array.from(document.querySelectorAll('button'));
         openBtn = btns.find(b => (b.innerText || '').includes('開立此擂台') || (b.innerText || '').includes('進入此擂台'));
         if (openBtn) break;
@@ -454,7 +454,7 @@ async function run() {
       }
       if (openBtn) openBtn.click();
       let hasWaitingRoom = false;
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 20; i++) {
         await new Promise(r => setTimeout(r, 350));
         const body = document.body.innerText || '';
         if (body.includes('等待各路英雄入座') || body.includes('開始對戰') || body.includes('房主') || body.includes('備戰大廳')) {

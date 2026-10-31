@@ -36,102 +36,152 @@ const sliceSpineChains = (spine, maxDist = 200) => {
   return chains;
 };
 
-// ── 1. 繪製四周立體多層重疊的茂密綠色灌木叢 (Lush Overlapping Bush Border) ──
+// ── 1. 繪製四周立體多層重疊的邊界 (神山石板砌牆與藤蔓百合 vs 雨林闊葉灌木) ──
 export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerTimer = 0) => {
   ctx.save();
 
   const isIndigenous = theme === 'indigenous';
 
-  // 1) 最外層天然邊界底色（深森林暗綠）
-  ctx.fillStyle = '#062d20';
-  ctx.fillRect(0, 0, w, 32);
-  ctx.fillRect(0, h - 32, w, 32);
-  ctx.fillRect(0, 0, 30, h);
-  ctx.fillRect(w - 30, 0, 30, h);
-
-  // 2) 頂部與底部：厚實重疊灌木葉球
-  const stepX = 26;
-  const countX = Math.ceil(w / stepX) + 1;
-
-  for (let i = 0; i < countX; i++) {
-    const x = i * stepX;
-    const wave = Math.sin(time * 2.2 - x * 0.02) * 2;
-
-    // 頂部灌木球重疊堆疊
-    ctx.fillStyle = i % 2 === 0 ? '#065f46' : '#047857';
-    ctx.beginPath();
-    ctx.arc(x, 14 + wave, 22, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = i % 3 === 0 ? '#10b981' : '#059669';
-    ctx.beginPath();
-    ctx.arc(x + 10, 20 - wave, 18, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = i % 2 === 0 ? '#34d399' : '#6ee7b7';
-    ctx.beginPath();
-    ctx.ellipse(x + 5, 26 + wave * 0.5, 10, 6, 0.3, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 底部灌木球重疊堆疊
-    ctx.fillStyle = i % 2 === 0 ? '#065f46' : '#047857';
-    ctx.beginPath();
-    ctx.arc(x, h - 14 - wave, 22, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = i % 3 === 0 ? '#10b981' : '#059669';
-    ctx.beginPath();
-    ctx.arc(x - 8, h - 20 + wave, 18, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = i % 2 === 0 ? '#34d399' : '#6ee7b7';
-    ctx.beginPath();
-    ctx.ellipse(x - 5, h - 26 - wave * 0.5, 10, 6, -0.3, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // 3) 左側與右側：厚實垂直灌木重疊
-  const stepY = 28;
-  const countY = Math.ceil(h / stepY) + 1;
-  for (let j = 0; j < countY; j++) {
-    const y = j * stepY;
-    const waveY = Math.cos(time * 2.0 + y * 0.03) * 2;
-
-    ctx.fillStyle = j % 2 === 0 ? '#065f46' : '#059669';
-    ctx.beginPath();
-    ctx.arc(14 + waveY, y, 20, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#10b981';
-    ctx.beginPath();
-    ctx.arc(22 - waveY * 0.5, y + 6, 14, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = j % 2 === 0 ? '#065f46' : '#059669';
-    ctx.beginPath();
-    ctx.arc(w - 14 - waveY, y, 20, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#10b981';
-    ctx.beginPath();
-    ctx.arc(w - 22 + waveY * 0.5, y + 6, 14, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // 4) 百步蛇神山主題：純白百合花自然穿插生長在茂密灌木葉隙之中
   if (isIndigenous) {
-    const lilySpacing = 72;
+    // ⛰️ 霧台神山：魯凱特色頁岩片疊石砌牆 (Stacked Slate Wall) + 蔓生青苔 + 純白百合
+    // 1) 石板矮牆基底深色
+    ctx.fillStyle = '#1c1917';
+    ctx.fillRect(0, 0, w, 28);
+    ctx.fillRect(0, h - 28, w, 28);
+    ctx.fillRect(0, 0, 26, h);
+    ctx.fillRect(w - 26, 0, 26, h);
+
+    // 2) 頁岩片水平層疊磚塊與石材紋理 (Stacked Slate Slabs with Bevels)
+    const slabW = 44;
+    const countTop = Math.ceil(w / slabW) + 1;
+    for (let i = 0; i < countTop; i++) {
+      const sx = i * slabW;
+      // 頂部石板
+      ctx.fillStyle = i % 2 === 0 ? '#292524' : '#44403c';
+      ctx.fillRect(sx, 0, slabW - 2, 24);
+      ctx.fillStyle = '#78716c';
+      ctx.fillRect(sx, 23, slabW - 2, 2); // 邊緣石材高光
+
+      // 底部石板
+      ctx.fillStyle = i % 2 === 0 ? '#292524' : '#44403c';
+      ctx.fillRect(sx, h - 24, slabW - 2, 24);
+      ctx.fillStyle = '#78716c';
+      ctx.fillRect(sx, h - 25, slabW - 2, 2);
+    }
+
+    const slabH = 38;
+    const countSide = Math.ceil(h / slabH) + 1;
+    for (let j = 0; j < countSide; j++) {
+      const sy = j * slabH;
+      // 左側石板
+      ctx.fillStyle = j % 2 === 0 ? '#292524' : '#44403c';
+      ctx.fillRect(0, sy, 22, slabH - 2);
+      ctx.fillStyle = '#78716c';
+      ctx.fillRect(21, sy, 2, slabH - 2);
+
+      // 右側石板
+      ctx.fillStyle = j % 2 === 0 ? '#292524' : '#44403c';
+      ctx.fillRect(w - 22, sy, 22, slabH - 2);
+      ctx.fillStyle = '#78716c';
+      ctx.fillRect(w - 23, sy, 2, slabH - 2);
+    }
+
+    // 3) 石牆縫隙長出的深綠高山苔蘚與小灌木 (Lush Creeping Moss & Ferns)
+    const stepX = 26;
+    for (let i = 0; i < Math.ceil(w / stepX); i++) {
+      const x = i * stepX + 13;
+      const wave = Math.sin(time * 2.2 + x * 0.03) * 1.5;
+      ctx.fillStyle = i % 2 === 0 ? '#15803d' : '#166534';
+      ctx.beginPath();
+      ctx.ellipse(x, 24 + wave, 13, 6, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.ellipse(x, h - 24 - wave, 13, 6, -0.1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 4) 綻放純白百合花飾 (盛開純白瓣 + 鮮黃花蕊)
+    const lilySpacing = 68;
     const lilyCount = Math.floor(w / lilySpacing);
-
     for (let i = 0; i < lilyCount; i++) {
-      const lx = 48 + i * lilySpacing;
-      const wavePhase = time * 2.4 - lx * 0.016;
-      const sway = Math.sin(wavePhase) * 0.16 + (cheerTimer > 0 ? Math.sin(time * 9) * 0.28 : 0);
-
-      drawSingleLilyInBush(ctx, lx, 32, sway, -1);
-
+      const lx = 36 + i * lilySpacing;
+      const wavePhase = time * 2.2 - lx * 0.016;
+      const sway = Math.sin(wavePhase) * 0.14 + (cheerTimer > 0 ? Math.sin(time * 8) * 0.25 : 0);
+      drawSingleLilyInBush(ctx, lx, 26, sway, -1);
       if (i % 2 === 0) {
-        const bSway = Math.sin(wavePhase + 1.4) * 0.16;
-        drawSingleLilyInBush(ctx, lx + 36, h - 32, bSway, 1);
+        drawSingleLilyInBush(ctx, lx + 34, h - 26, sway, 1);
       }
+    }
+  } else {
+    // 🌿 陽光熱帶雨林：厚實重疊闊葉灌木圍欄
+    ctx.fillStyle = '#062d20';
+    ctx.fillRect(0, 0, w, 32);
+    ctx.fillRect(0, h - 32, w, 32);
+    ctx.fillRect(0, 0, 30, h);
+    ctx.fillRect(w - 30, 0, 30, h);
+
+    const stepX = 26;
+    const countX = Math.ceil(w / stepX) + 1;
+
+    for (let i = 0; i < countX; i++) {
+      const x = i * stepX;
+      const wave = Math.sin(time * 2.2 - x * 0.02) * 2;
+
+      ctx.fillStyle = i % 2 === 0 ? '#065f46' : '#047857';
+      ctx.beginPath();
+      ctx.arc(x, 14 + wave, 22, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = i % 3 === 0 ? '#10b981' : '#059669';
+      ctx.beginPath();
+      ctx.arc(x + 10, 20 - wave, 18, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = i % 2 === 0 ? '#34d399' : '#6ee7b7';
+      ctx.beginPath();
+      ctx.ellipse(x + 5, 26 + wave * 0.5, 10, 6, 0.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = i % 2 === 0 ? '#065f46' : '#047857';
+      ctx.beginPath();
+      ctx.arc(x, h - 14 - wave, 22, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = i % 3 === 0 ? '#10b981' : '#059669';
+      ctx.beginPath();
+      ctx.arc(x - 8, h - 20 + wave, 18, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = i % 2 === 0 ? '#34d399' : '#6ee7b7';
+      ctx.beginPath();
+      ctx.ellipse(x - 5, h - 26 - wave * 0.5, 10, 6, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const stepY = 28;
+    const countY = Math.ceil(h / stepY) + 1;
+    for (let j = 0; j < countY; j++) {
+      const y = j * stepY;
+      const waveY = Math.cos(time * 2.0 + y * 0.03) * 2;
+
+      ctx.fillStyle = j % 2 === 0 ? '#065f46' : '#059669';
+      ctx.beginPath();
+      ctx.arc(14 + waveY, y, 20, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(22 - waveY * 0.5, y + 6, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = j % 2 === 0 ? '#065f46' : '#059669';
+      ctx.beginPath();
+      ctx.arc(w - 14 - waveY, y, 20, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(w - 22 + waveY * 0.5, y + 6, 14, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
@@ -790,123 +840,143 @@ export const drawLetterPod = (ctx, letter, theme, isNextTarget, time, isDark = f
   ctx.restore();
 };
 
-// ── 5. 繪製彩蛋：台灣黑熊 ──
-export const drawBlackBear = (ctx, x, y, time, isCheering) => {
+// ── 5. 繪製彩蛋：台灣黑熊 (支援高解析 Sprite 探頭與程式化備援) ──
+export const drawBlackBear = (ctx, x, y, time, isCheering, assets = null) => {
   ctx.save();
   ctx.translate(x, y);
 
   const bob = isCheering ? Math.sin(time * 10) * 6 : Math.sin(time * 1.5) * 1.5;
   ctx.translate(0, bob);
 
-  ctx.fillStyle = '#1c1917';
-  ctx.beginPath();
-  ctx.ellipse(0, 0, 20, 18, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(-16, -14, 7, 0, Math.PI * 2);
-  ctx.arc(16, -14, 7, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#78716c';
-  ctx.beginPath();
-  ctx.arc(-16, -14, 3.5, 0, Math.PI * 2);
-  ctx.arc(16, -14, 3.5, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 4;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(-11, 8);
-  ctx.lineTo(0, 16);
-  ctx.lineTo(11, 8);
-  ctx.stroke();
-
-  ctx.fillStyle = '#a8a29e';
-  ctx.beginPath();
-  ctx.ellipse(0, 2, 8, 6, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#0c0a09';
-  ctx.beginPath();
-  ctx.ellipse(0, 0, 3.5, 2.5, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath();
-  ctx.arc(-6, -4, 2.5, 0, Math.PI * 2);
-  ctx.arc(6, -4, 2.5, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#0c0a09';
-  ctx.beginPath();
-  ctx.arc(-5.5, -4, 1.5, 0, Math.PI * 2);
-  ctx.arc(6.5, -4, 1.5, 0, Math.PI * 2);
-  ctx.fill();
-
-  if (isCheering) {
+  if (assets?.blackBear && assets.blackBear.complete && assets.blackBear.naturalWidth > 0) {
+    const size = 52;
+    // 朝左下方石板矮牆探頭
+    ctx.drawImage(assets.blackBear, -size / 2, -size / 2, size, size);
+    if (isCheering) {
+      ctx.fillStyle = '#fde047';
+      ctx.font = 'bold 16px sans-serif';
+      ctx.fillText('🐾', 12, -size * 0.4);
+    }
+  } else {
     ctx.fillStyle = '#1c1917';
     ctx.beginPath();
-    ctx.arc(-22, -6, 6, 0, Math.PI * 2);
-    ctx.arc(22, -6, 6, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, 20, 18, 0, 0, Math.PI * 2);
     ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(-16, -14, 7, 0, Math.PI * 2);
+    ctx.arc(16, -14, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#78716c';
+    ctx.beginPath();
+    ctx.arc(-16, -14, 3.5, 0, Math.PI * 2);
+    ctx.arc(16, -14, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-11, 8);
+    ctx.lineTo(0, 16);
+    ctx.lineTo(11, 8);
+    ctx.stroke();
+
+    ctx.fillStyle = '#a8a29e';
+    ctx.beginPath();
+    ctx.ellipse(0, 2, 8, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#0c0a09';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 3.5, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(-6, -4, 2.5, 0, Math.PI * 2);
+    ctx.arc(6, -4, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#0c0a09';
+    ctx.beginPath();
+    ctx.arc(-5.5, -4, 1.5, 0, Math.PI * 2);
+    ctx.arc(6.5, -4, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (isCheering) {
+      ctx.fillStyle = '#1c1917';
+      ctx.beginPath();
+      ctx.arc(-22, -6, 6, 0, Math.PI * 2);
+      ctx.arc(22, -6, 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   ctx.restore();
 };
 
-// ── 6. 繪製彩蛋：台灣雲豹 ──
-export const drawCloudedLeopard = (ctx, x, y, time) => {
+// ── 6. 繪製彩蛋：台灣雲豹 (支援高解析 Sprite 探頭與程式化備援) ──
+export const drawCloudedLeopard = (ctx, x, y, time, assets = null) => {
   ctx.save();
   ctx.translate(x, y);
 
   const breathe = Math.sin(time * 2) * 1.5;
   ctx.translate(0, breathe);
 
-  ctx.fillStyle = '#d97706';
-  ctx.beginPath();
-  ctx.ellipse(0, 0, 17, 14, 0, 0, Math.PI * 2);
-  ctx.fill();
+  if (assets?.cloudedLeopard && assets.cloudedLeopard.complete && assets.cloudedLeopard.naturalWidth > 0) {
+    const size = 50;
+    // 鏡像水平翻轉朝石牆內部探頭
+    ctx.save();
+    ctx.scale(-1, 1);
+    ctx.drawImage(assets.cloudedLeopard, -size / 2, -size / 2, size, size);
+    ctx.restore();
+  } else {
+    ctx.fillStyle = '#d97706';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 17, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
 
-  ctx.fillStyle = '#b45309';
-  ctx.beginPath();
-  ctx.moveTo(-14, -6); ctx.lineTo(-12, -18); ctx.lineTo(-4, -12); ctx.closePath();
-  ctx.moveTo(14, -6); ctx.lineTo(12, -18); ctx.lineTo(4, -12); ctx.closePath();
-  ctx.fill();
+    ctx.fillStyle = '#b45309';
+    ctx.beginPath();
+    ctx.moveTo(-14, -6); ctx.lineTo(-12, -18); ctx.lineTo(-4, -12); ctx.closePath();
+    ctx.moveTo(14, -6); ctx.lineTo(12, -18); ctx.lineTo(4, -12); ctx.closePath();
+    ctx.fill();
 
-  ctx.strokeStyle = '#1c1917';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(-7, 4, 3, 0.5, Math.PI * 1.8);
-  ctx.arc(7, 4, 3, 0.2, Math.PI * 1.5);
-  ctx.stroke();
+    ctx.strokeStyle = '#1c1917';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(-7, 4, 3, 0.5, Math.PI * 1.8);
+    ctx.arc(7, 4, 3, 0.2, Math.PI * 1.5);
+    ctx.stroke();
 
-  ctx.fillStyle = '#fef3c7';
-  ctx.beginPath();
-  ctx.ellipse(0, 4, 6, 4, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#f43f5e';
-  ctx.beginPath();
-  ctx.arc(0, 3, 2, 0, Math.PI * 2);
-  ctx.fill();
+    ctx.fillStyle = '#fef3c7';
+    ctx.beginPath();
+    ctx.ellipse(0, 4, 6, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#f43f5e';
+    ctx.beginPath();
+    ctx.arc(0, 3, 2, 0, Math.PI * 2);
+    ctx.fill();
 
-  ctx.fillStyle = '#fef08a';
-  ctx.beginPath();
-  ctx.ellipse(-6, -3, 3, 4, 0, 0, Math.PI * 2);
-  ctx.ellipse(6, -3, 3, 4, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#0f172a';
-  ctx.beginPath();
-  ctx.ellipse(-6, -3, 1, 3.5, 0, 0, Math.PI * 2);
-  ctx.ellipse(6, -3, 1, 3.5, 0, 0, Math.PI * 2);
-  ctx.fill();
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.ellipse(-6, -3, 3, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(6, -3, 3, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.ellipse(-6, -3, 1, 3.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(6, -3, 1, 3.5, 0, 0, Math.PI * 2);
+    ctx.fill();
 
-  const tailWave = Math.sin(time * 3) * 6;
-  ctx.strokeStyle = '#d97706';
-  ctx.lineWidth = 4;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(14, 6);
-  ctx.quadraticCurveTo(24, 8 + tailWave, 28, 0 + tailWave);
-  ctx.stroke();
+    const tailWave = Math.sin(time * 3) * 6;
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(14, 6);
+    ctx.quadraticCurveTo(24, 8 + tailWave, 28, 0 + tailWave);
+    ctx.stroke();
+  }
 
   ctx.restore();
 };

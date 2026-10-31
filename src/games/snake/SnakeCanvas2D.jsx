@@ -78,13 +78,15 @@ export const SnakeCanvas2D = ({
     prevSnakeLenRef.current = snake.length;
   }, [snake.length]);
 
-  // 高解析美術資產預載 (Ground texture, Glass bead, Snake sprites)
+  // 高解析美術資產預載 (Ground texture, Glass bead, Snake sprites, Animal sprites)
   const assetsRef = useRef({
     ground: null,
     groundPattern: null,
     bead: null,
     snakeHead: null,
-    snakeTail: null
+    snakeTail: null,
+    cloudedLeopard: null,
+    blackBear: null
   });
 
   useEffect(() => {
@@ -125,6 +127,19 @@ export const SnakeCanvas2D = ({
     tailImg.src = '/assets/snake/snake_tail_indigenous.webp';
     tailImg.onload = () => {
       assetsRef.current.snakeTail = tailImg;
+    };
+
+    // 預載彩蛋神獸 Sprite
+    const leopardImg = new Image();
+    leopardImg.src = '/assets/common/loader/clouded_leopard.webp';
+    leopardImg.onload = () => {
+      assetsRef.current.cloudedLeopard = leopardImg;
+    };
+
+    const bearImg = new Image();
+    bearImg.src = '/assets/common/loader/black_bear.webp';
+    bearImg.onload = () => {
+      assetsRef.current.blackBear = bearImg;
     };
   }, []);
 
@@ -271,9 +286,9 @@ export const SnakeCanvas2D = ({
           // 四周灌木與純白百合花圍欄
           drawLushBushBorder(ctx, width, height, time, 'indigenous', cheerTimerRef.current);
 
-          // 彩蛋：雲豹與黑熊
-          drawCloudedLeopard(ctx, leopardPosRef.current.x, leopardPosRef.current.y, time);
-          drawBlackBear(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering);
+          // 彩蛋：雲豹與黑熊 (以高解析手繪 Sprite 於石板矮牆探頭)
+          drawCloudedLeopard(ctx, leopardPosRef.current.x, leopardPosRef.current.y, time, assetsRef.current);
+          drawBlackBear(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering, assetsRef.current);
 
           // 靈動飛舞的國寶鳳蝶
           butterfliesRef.current.forEach(bf => {
@@ -335,12 +350,12 @@ export const SnakeCanvas2D = ({
             ctx.restore();
           }
 
-          // 四周夜幕灌木圍欄
+          // 四周夜幕石板圍欄
           drawLushBushBorder(ctx, width, height, time, 'indigenous', cheerTimerRef.current);
 
           // 彩蛋：雲豹與黑熊
-          drawCloudedLeopard(ctx, leopardPosRef.current.x, leopardPosRef.current.y, time);
-          drawBlackBear(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering);
+          drawCloudedLeopard(ctx, leopardPosRef.current.x, leopardPosRef.current.y, time, assetsRef.current);
+          drawBlackBear(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering, assetsRef.current);
 
           // 🌟 緩慢漂浮微光呼吸的夜光螢火蟲 (取代白天的蝴蝶)
           firefliesRef.current.forEach(ff => {

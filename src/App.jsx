@@ -20,6 +20,7 @@ import { PhonicsBoard } from './features/phonics/PhonicsBoard';
 import { Portal } from './components/Portal';
 import { WutaiTownGame } from './games/town/WutaiTownGame';
 import { TextbookViewer } from './components/TextbookViewer';
+import { PreloaderShowcase } from './components/PreloaderShowcase';
 import { LanguageLabHub } from './features/langlab/LanguageLabHub';
 import { PureMcqExamView } from './games/exam/PureMcqExamView';
 import { TeacherAuthModal } from './components/TeacherAuthModal';
@@ -321,6 +322,13 @@ export function App() {
               words={words}
               onBack={() => handleNavigate('lobby')}
               onRefreshWords={loadWords}
+              onOpenShowcase={() => handleNavigate('preloader-showcase')}
+            />
+          )}
+
+          {(currentView === 'preloader-showcase' || currentView === 'loader-showcase' || currentView === 'preloader-preview') && (
+            <PreloaderShowcase
+              onBack={() => handleNavigate('portal')}
             />
           )}
 

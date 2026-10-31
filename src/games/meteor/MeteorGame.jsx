@@ -8,6 +8,7 @@ import { generateSmartOptions } from '../../services/distractorHelper';
 import { calculateMeteorDuration, calculateMeteorMotionProgress } from './meteorPhysics';
 import { MeteorCanvas3D } from './MeteorCanvas3D';
 import { MeteorEasterEggs2D } from './MeteorEasterEggs2D';
+import { GamePreloader } from '../../components/ui/GamePreloader';
 import { RightComboDisplay } from './RightComboDisplay';
 import { enterFullscreen, exitFullscreen } from '../../services/fullscreen';
 import confetti from 'canvas-confetti';
@@ -39,6 +40,7 @@ export const MeteorGame = ({
     }
   }, [isAlphabetMode]);
   const [renderMode, setRenderMode] = useState('3d'); // '3d' | '2d'
+  const [isPreloading, setIsPreloading] = useState(true);
   const [queue, setQueue] = useState([]);
   const [currentMeteor, setCurrentMeteor] = useState(null);
   const [options, setOptions] = useState([]);
@@ -485,6 +487,20 @@ export const MeteorGame = ({
           </Button3D>
         </GlassCard>
       </div>
+    );
+  }
+
+  // 資源與星雲預載畫面 (GamePreloader)
+  if (isPreloading) {
+    return (
+      <GamePreloader
+        title="星際雷達校準中！載入深空星雲..."
+        assetUrls={[
+          '/assets/meteor/space_nebula_bg.jpg',
+          '/assets/meteor/asteroid_surface_map.jpg'
+        ]}
+        onComplete={() => setIsPreloading(false)}
+      />
     );
   }
 
