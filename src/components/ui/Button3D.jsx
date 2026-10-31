@@ -22,6 +22,8 @@ export const Button3D = ({
     emerald: 'bg-emerald-500 hover:bg-emerald-400 text-white border-b-4 border-emerald-700 active:border-b-0',
     amber: 'bg-amber-400 hover:bg-amber-300 text-amber-950 font-black border-b-4 border-amber-600 active:border-b-0',
     blue: 'bg-blue-600 hover:bg-blue-500 text-white border-b-4 border-blue-800 active:border-b-0',
+    indigo: 'bg-indigo-600 hover:bg-indigo-500 text-white border-b-4 border-indigo-800 active:border-b-0',
+    sky: 'bg-sky-500 hover:bg-sky-400 text-white border-b-4 border-sky-700 active:border-b-0',
     purple: 'bg-purple-600 hover:bg-purple-500 text-white border-b-4 border-purple-800 active:border-b-0',
     rose: 'bg-rose-500 hover:bg-rose-400 text-white border-b-4 border-rose-700 active:border-b-0',
     teal: 'bg-teal-500 hover:bg-teal-400 text-white border-b-4 border-teal-700 active:border-b-0',

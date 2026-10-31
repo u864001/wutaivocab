@@ -566,7 +566,7 @@ export const LanguageLabHub = ({ onBack, onNavigate }) => {
               }}
               className="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-white text-xs sm:text-sm font-black flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer border border-white/15 transition-all"
             >
-              <ArrowLeft className="w-4 h-4 text-emerald-400" />
+              <ArrowLeft className="w-4 h-4 text-rose-400" />
               <span>{viewState === 'main_menu' ? '回小鎮' : '回選單'}</span>
             </button>
 
@@ -747,17 +747,17 @@ export const LanguageLabHub = ({ onBack, onNavigate }) => {
                     soundEngine.click();
                     if (onNavigate) onNavigate('mcq-exam');
                   }}
-                  className="group w-full p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-emerald-900/90 to-teal-900/90 hover:from-emerald-800 hover:to-teal-800 border-2 border-emerald-400/50 hover:border-emerald-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 active:scale-98"
+                  className="group w-full p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-indigo-900/90 to-blue-900/90 hover:from-indigo-800 hover:to-blue-800 border-2 border-indigo-400/50 hover:border-indigo-300 shadow-xl transition-all duration-200 cursor-pointer text-left flex items-center gap-3.5 active:scale-98"
                 >
-                  <div className="w-11 h-11 rounded-2xl bg-emerald-600/30 border border-emerald-400/50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
+                  <div className="w-11 h-11 rounded-2xl bg-indigo-600/30 border border-indigo-400/50 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
                     📝
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-sm sm:text-base font-black text-emerald-200 font-heading">
+                      <h3 className="text-sm sm:text-base font-black text-indigo-200 font-heading">
                         課本題庫檢定 (Grammar & Dialogue Exam)
                       </h3>
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold">
+                      <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold">
                         1～8 冊＋國一先修
                       </span>
                     </div>
@@ -765,7 +765,7 @@ export const LanguageLabHub = ({ onBack, onNavigate }) => {
                       一頁一題專業檢定、個人易錯題複習與金幣獎勵
                     </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-emerald-300 group-hover:translate-x-1 transition-transform shrink-0" />
+                  <ChevronRight className="w-5 h-5 text-indigo-300 group-hover:translate-x-1 transition-transform shrink-0" />
                 </button>
 
                 {/* 4. 影音播放專區 */}

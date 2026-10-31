@@ -68,10 +68,10 @@ export const Portal = ({
           {/* 1. 霧臺小鎮生活冒險 RPG */}
           <div
             onClick={() => onNavigate('town')}
-            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent dark:from-amber-950/60 dark:to-slate-900/60 border-2 border-amber-400/60 dark:border-amber-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent dark:from-amber-950/60 dark:to-slate-900/60 border-2 border-amber-400/70 dark:border-amber-600/70 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 text-white flex items-center justify-center shadow-md shadow-amber-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 text-white flex items-center justify-center shadow-md shadow-amber-500/25 shrink-0">
                 <Store className="w-5 h-5" />
               </div>
               <div className="flex items-center gap-2 min-w-0">
@@ -91,10 +91,10 @@ export const Portal = ({
           {/* 2. 英語單字冒險館 */}
           <div
             onClick={() => onNavigate('lobby')}
-            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent dark:from-emerald-950/60 dark:to-slate-900/60 border-2 border-emerald-400/60 dark:border-emerald-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent dark:from-emerald-950/60 dark:to-slate-900/60 border-2 border-emerald-400/70 dark:border-emerald-600/70 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center shadow-md shadow-emerald-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-emerald-600 to-teal-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/25 shrink-0">
                 <Rocket className="w-5 h-5" />
               </div>
               <div className="flex items-center gap-2 min-w-0">
@@ -114,10 +114,10 @@ export const Portal = ({
           {/* 3. 雙語聽說探險館 */}
           <div
             onClick={() => onNavigate('langlab')}
-            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-rose-500/15 via-pink-500/10 to-transparent dark:from-rose-950/60 dark:to-slate-900/60 border-2 border-rose-400/60 dark:border-rose-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-rose-500/15 via-pink-500/10 to-transparent dark:from-rose-950/60 dark:to-slate-900/60 border-2 border-rose-400/70 dark:border-rose-600/70 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 via-pink-500 to-indigo-500 text-white flex items-center justify-center shadow-md shadow-rose-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 via-rose-600 to-pink-600 text-white flex items-center justify-center shadow-md shadow-rose-500/25 shrink-0">
                 <Headphones className="w-5 h-5" />
               </div>
               <div className="flex items-center gap-2 min-w-0">
@@ -137,22 +137,22 @@ export const Portal = ({
           {/* 4. 課本題庫檢定館 */}
           <div
             onClick={() => onNavigate('mcq-exam')}
-            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-blue-500/15 via-indigo-500/10 to-transparent dark:from-blue-950/60 dark:to-slate-900/60 border-2 border-blue-400/60 dark:border-blue-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-indigo-500/15 via-blue-500/10 to-transparent dark:from-indigo-950/60 dark:to-slate-900/60 border-2 border-indigo-400/70 dark:border-indigo-600/70 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-blue-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-blue-700 text-white flex items-center justify-center shadow-md shadow-indigo-500/25 shrink-0">
                 <ClipboardCheck className="w-5 h-5" />
               </div>
               <div className="flex items-center gap-2 min-w-0">
                 <h3 className="text-[15px] font-black text-slate-800 dark:text-slate-100 font-heading truncate">
                   課本題庫檢定館
                 </h3>
-                <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-blue-600 text-white shrink-0">
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-indigo-600 text-white shrink-0">
                   百題檢定
                 </span>
               </div>
             </div>
-            <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+            <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -160,22 +160,22 @@ export const Portal = ({
           {/* 5. 自然發音探索館 */}
           <div
             onClick={() => onNavigate('phonics')}
-            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-indigo-500/15 via-purple-500/10 to-transparent dark:from-indigo-950/60 dark:to-slate-900/60 border-2 border-indigo-400/60 dark:border-indigo-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-purple-500/15 via-violet-500/10 to-transparent dark:from-purple-950/60 dark:to-slate-900/60 border-2 border-purple-400/70 dark:border-purple-600/70 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center shadow-md shadow-indigo-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-500 via-purple-600 to-fuchsia-600 text-white flex items-center justify-center shadow-md shadow-purple-500/25 shrink-0">
                 <Volume2 className="w-5 h-5" />
               </div>
               <div className="flex items-center gap-2 min-w-0">
                 <h3 className="text-[15px] font-black text-slate-800 dark:text-slate-100 font-heading truncate">
                   {t.phonicsModuleTitle}
                 </h3>
-                <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-indigo-600 text-white shrink-0">
+                <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-purple-600 text-white shrink-0">
                   自然發音
                 </span>
               </div>
             </div>
-            <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+            <div className="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-sm">
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -185,10 +185,10 @@ export const Portal = ({
             onClick={() =>
               window.open('https://classqna.pages.dev/', '_blank', 'noopener,noreferrer')
             }
-            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-sky-500/15 via-blue-500/10 to-transparent dark:from-sky-950/60 dark:to-slate-900/60 border-2 border-sky-400/60 dark:border-sky-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-sky-500/15 via-blue-500/10 to-transparent dark:from-sky-950/60 dark:to-slate-900/60 border-2 border-sky-400/70 dark:border-sky-600/70 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-blue-500 to-indigo-500 text-white flex items-center justify-center shadow-md shadow-sky-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-sky-600 to-blue-500 text-white flex items-center justify-center shadow-md shadow-sky-500/25 shrink-0">
                 <GraduationCap className="w-5 h-5" />
               </div>
               <div className="flex items-center gap-2 min-w-0">
@@ -208,10 +208,10 @@ export const Portal = ({
           {/* 7. 自編英語電子教科書 */}
           <div
             onClick={() => onNavigate('textbook')}
-            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-teal-500/15 via-emerald-500/10 to-transparent dark:from-teal-950/60 dark:to-slate-900/60 border-2 border-teal-400/60 dark:border-teal-600/60 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
+            className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-teal-500/15 via-cyan-500/10 to-transparent dark:from-teal-950/60 dark:to-slate-900/60 border-2 border-teal-400/70 dark:border-teal-600/70 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 text-white flex items-center justify-center shadow-md shadow-teal-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 via-teal-600 to-cyan-600 text-white flex items-center justify-center shadow-md shadow-teal-500/25 shrink-0">
                 <BookOpen className="w-5 h-5" />
               </div>
               <div className="flex items-center gap-2 min-w-0">
@@ -239,11 +239,11 @@ export const Portal = ({
           <GlassCard
             hoverable={true}
             onClick={() => onNavigate('town')}
-            className="relative overflow-hidden group cursor-pointer border-2 border-amber-300/80 dark:border-amber-700/60 bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-rose-500/10 dark:from-amber-950/40 dark:via-slate-900/50 dark:to-orange-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
+            className="relative overflow-hidden group cursor-pointer border-2 border-amber-300/80 dark:border-amber-700/60 bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-amber-500/10 dark:from-amber-950/40 dark:via-slate-900/50 dark:to-orange-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
           >
             <div className="flex items-center justify-between gap-4 relative z-10">
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-rose-500 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-amber-500/25 shrink-0">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-amber-500/25 shrink-0">
                   <Store className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <div className="space-y-1 flex-1 min-w-0">
@@ -277,7 +277,7 @@ export const Portal = ({
           >
             <div className="flex items-center justify-between gap-4 relative z-10">
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-emerald-500/25 shrink-0">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 via-emerald-600 to-teal-600 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-emerald-500/25 shrink-0">
                   <Rocket className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <div className="space-y-1 flex-1 min-w-0">
@@ -307,11 +307,11 @@ export const Portal = ({
           <GlassCard
             hoverable={true}
             onClick={() => onNavigate('langlab')}
-            className="relative overflow-hidden group cursor-pointer border-2 border-rose-300/80 dark:border-rose-700/60 bg-gradient-to-r from-rose-500/10 via-amber-500/5 to-indigo-500/10 dark:from-rose-950/40 dark:via-slate-900/50 dark:to-indigo-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
+            className="relative overflow-hidden group cursor-pointer border-2 border-rose-300/80 dark:border-rose-700/60 bg-gradient-to-r from-rose-500/10 via-pink-500/5 to-rose-500/10 dark:from-rose-950/40 dark:via-slate-900/50 dark:to-pink-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
           >
             <div className="flex items-center justify-between gap-4 relative z-10">
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-rose-500 via-amber-500 to-indigo-500 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-rose-500/25 shrink-0">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-rose-500 via-rose-600 to-pink-600 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-rose-500/25 shrink-0">
                   <Headphones className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <div className="space-y-1 flex-1 min-w-0">
@@ -341,11 +341,11 @@ export const Portal = ({
           <GlassCard
             hoverable={true}
             onClick={() => onNavigate('mcq-exam')}
-            className="relative overflow-hidden group cursor-pointer border-2 border-blue-300/80 dark:border-blue-700/60 bg-gradient-to-r from-blue-500/10 via-indigo-500/5 to-violet-500/10 dark:from-blue-950/40 dark:via-slate-900/50 dark:to-indigo-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
+            className="relative overflow-hidden group cursor-pointer border-2 border-indigo-300/80 dark:border-indigo-700/60 bg-gradient-to-r from-indigo-500/10 via-blue-500/5 to-indigo-500/10 dark:from-indigo-950/40 dark:via-slate-900/50 dark:to-indigo-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
           >
             <div className="flex items-center justify-between gap-4 relative z-10">
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-blue-500/25 shrink-0">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-blue-700 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-indigo-500/25 shrink-0">
                   <ClipboardCheck className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <div className="space-y-1 flex-1 min-w-0">
@@ -362,7 +362,7 @@ export const Portal = ({
                   </p>
                 </div>
               </div>
-              <Button3D variant="blue" size="md" className="shrink-0">
+              <Button3D variant="indigo" size="md" className="shrink-0">
                 <div className="flex items-center gap-1.5">
                   <span>進入題庫檢定</span>
                   <ArrowRight className="w-4 h-4" />
@@ -375,11 +375,11 @@ export const Portal = ({
           <GlassCard
             hoverable={true}
             onClick={() => onNavigate('phonics')}
-            className="relative overflow-hidden group cursor-pointer border-2 border-indigo-300/80 dark:border-indigo-700/60 bg-gradient-to-r from-indigo-500/10 via-purple-500/5 to-pink-500/10 dark:from-indigo-950/40 dark:via-slate-900/50 dark:to-purple-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
+            className="relative overflow-hidden group cursor-pointer border-2 border-purple-300/80 dark:border-purple-700/60 bg-gradient-to-r from-purple-500/10 via-violet-500/5 to-fuchsia-500/10 dark:from-purple-950/40 dark:via-slate-900/50 dark:to-purple-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
           >
             <div className="flex items-center justify-between gap-4 relative z-10">
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-indigo-500/25 shrink-0">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-purple-500 via-purple-600 to-fuchsia-600 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-purple-500/25 shrink-0">
                   <Volume2 className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <div className="space-y-1 flex-1 min-w-0">
@@ -411,11 +411,11 @@ export const Portal = ({
             onClick={() =>
               window.open('https://classqna.pages.dev/', '_blank', 'noopener,noreferrer')
             }
-            className="relative overflow-hidden group cursor-pointer border-2 border-sky-300/80 dark:border-sky-700/60 bg-gradient-to-r from-sky-500/10 via-blue-500/5 to-cyan-500/10 dark:from-sky-950/40 dark:via-slate-900/50 dark:to-cyan-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
+            className="relative overflow-hidden group cursor-pointer border-2 border-sky-300/80 dark:border-sky-700/60 bg-gradient-to-r from-sky-500/10 via-sky-500/5 to-cyan-500/10 dark:from-sky-950/40 dark:via-slate-900/50 dark:to-cyan-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
           >
             <div className="flex items-center justify-between gap-4 relative z-10">
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-sky-500 via-blue-500 to-indigo-500 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-sky-500/25 shrink-0">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-sky-500 via-sky-600 to-blue-500 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-sky-500/25 shrink-0">
                   <GraduationCap className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <div className="space-y-1 flex-1 min-w-0">
@@ -432,7 +432,7 @@ export const Portal = ({
                   </p>
                 </div>
               </div>
-              <Button3D variant="blue" size="md" className="shrink-0">
+              <Button3D variant="sky" size="md" className="shrink-0">
                 <div className="flex items-center gap-1.5">
                   <span>{t.classqnaModuleEnter}</span>
                   <ExternalLink className="w-4 h-4" />
@@ -445,11 +445,11 @@ export const Portal = ({
           <GlassCard
             hoverable={true}
             onClick={() => onNavigate('textbook')}
-            className="relative overflow-hidden group cursor-pointer border-2 border-teal-300/80 dark:border-teal-700/60 bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-cyan-500/10 dark:from-teal-950/40 dark:via-slate-900/50 dark:to-cyan-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
+            className="relative overflow-hidden group cursor-pointer border-2 border-teal-300/80 dark:border-teal-700/60 bg-gradient-to-r from-teal-500/10 via-cyan-500/5 to-teal-500/10 dark:from-teal-950/40 dark:via-slate-900/50 dark:to-teal-950/30 p-4 sm:p-5 shadow-md hover:shadow-xl transition-all"
           >
             <div className="flex items-center justify-between gap-4 relative z-10">
               <div className="flex items-center gap-4 flex-1 min-w-0">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-teal-500 via-emerald-500 to-cyan-500 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-teal-500/25 shrink-0">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-teal-500 via-teal-600 to-cyan-600 text-white flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-teal-500/25 shrink-0">
                   <BookOpen className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <div className="space-y-1 flex-1 min-w-0">

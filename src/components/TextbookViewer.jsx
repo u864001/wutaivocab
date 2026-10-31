@@ -126,7 +126,7 @@ export const TextbookViewer = ({ onBack }) => {
     }`}>
       {/* ── 頂部導覽控制列 (Header Bar - 手機版全圖示防擠壓) ── */}
       <div className={`shrink-0 px-2 sm:px-5 py-1.5 sm:py-2.5 backdrop-blur-md border-b flex items-center justify-between gap-1.5 sm:gap-2.5 z-20 transition-colors ${
-        isDark ? 'bg-slate-900/90 border-emerald-500/30 text-white' : 'bg-white/90 border-slate-200 text-slate-800 shadow-sm'
+        isDark ? 'bg-slate-900/90 border-teal-500/30 text-white' : 'bg-white/90 border-slate-200 text-slate-800 shadow-sm'
       }`}>
         {/* 左側：返回按鈕與標題 */}
         <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
@@ -137,16 +137,16 @@ export const TextbookViewer = ({ onBack }) => {
             }`}
             title="返回英語學習宇宙首頁"
           >
-            <ArrowLeft className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+            <ArrowLeft className="w-4 h-4 text-teal-500 dark:text-teal-400" />
             <span className="hidden sm:inline">回首頁</span>
           </button>
 
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shrink-0 shadow-md">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-tr from-teal-500 via-teal-600 to-cyan-600 flex items-center justify-center text-white shrink-0 shadow-md">
               <BookOpen className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <h2 className={`text-xs sm:text-sm font-black font-heading truncate hidden sm:block ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
+              <h2 className={`text-xs sm:text-sm font-black font-heading truncate hidden sm:block ${isDark ? 'text-teal-300' : 'text-teal-700'}`}>
                 霧臺國小雙語教材 • 互動電子書
               </h2>
               <p className={`text-[10px] hidden sm:block truncate ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -251,7 +251,7 @@ export const TextbookViewer = ({ onBack }) => {
         isDark ? 'bg-slate-900/60 border-slate-800/80' : 'bg-slate-100/90 border-slate-200'
       }`}>
         <span className={`text-[10px] font-black shrink-0 flex items-center gap-1 pl-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-          <Layers className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />
+          <Layers className="w-3 h-3 text-teal-500 dark:text-teal-400" />
           <span>章節：</span>
         </span>
         {CHAPTERS.map((chap) => {
@@ -262,7 +262,7 @@ export const TextbookViewer = ({ onBack }) => {
               onClick={() => handleJumpToPage(chap.page)}
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
                 isActive
-                  ? 'bg-emerald-500 text-white shadow-sm'
+                  ? 'bg-teal-600 text-white shadow-sm'
                   : isDark
                   ? 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60'
                   : 'bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-300 shadow-xs'
@@ -297,7 +297,7 @@ export const TextbookViewer = ({ onBack }) => {
           allow="autoplay; fullscreen; clipboard-write"
           allowFullScreen
           scrolling="no"
-          className="relative z-10 w-full flex-1 rounded-xl sm:rounded-2xl border border-emerald-500/30 shadow-2xl bg-slate-900/90"
+          className="relative z-10 w-full flex-1 rounded-xl sm:rounded-2xl border border-teal-500/30 shadow-2xl bg-slate-900/90"
         />
 
         {/* ── 🎧 聽力測驗隨身聽滑出抽屜 (Listening Audio Assistant Drawer) ── */}
@@ -416,7 +416,7 @@ export const TextbookViewer = ({ onBack }) => {
                       </button>
                     </div>
 
-                    <div className="p-2 rounded-lg bg-slate-950/70 border border-slate-800 text-[11px] font-mono text-emerald-300">
+                    <div className="p-2 rounded-lg bg-slate-950/70 border border-slate-800 text-[11px] font-mono text-teal-300">
                       🔊 "{q.script}"
                     </div>
                     <div className="text-[10px] text-slate-400 flex items-center justify-between">

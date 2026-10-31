@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
     <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 py-1.5 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-2.5 border-b border-slate-200/80 dark:border-slate-800/80 mb-1 sm:mb-2 transition-colors overflow-x-auto scrollbar-none">
       {/* Left: Phonics Module Title */}
       <div className="flex items-center space-x-1.5 sm:space-x-2.5 shrink-0">
-        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-sm shrink-0">
+        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-gradient-to-tr from-purple-500 via-purple-600 to-fuchsia-600 flex items-center justify-center text-white shadow-sm shrink-0">
           <span className="font-phonics font-bold text-xs sm:text-sm tracking-tighter">Ph</span>
         </div>
         <div>
@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
             <h2 className="font-heading font-black text-xs sm:text-base leading-tight text-slate-800 dark:text-slate-100 whitespace-nowrap">
               {t.appShortTitle}
             </h2>
-            <span className="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+            <span className="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">
               TESOL / OG
             </span>
           </div>

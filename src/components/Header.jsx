@@ -85,15 +85,22 @@ export const Header = ({
           <button
             onClick={onGoParent || onGoHome}
             title={
-              currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab'
+              currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab' || currentView === 'mcq-exam'
                 ? (lang === 'zh-TW' ? '返回學習宇宙首頁' : 'Back to Universe Home')
                 : (lang === 'zh-TW' ? '返回單字冒險館' : 'Back to Vocab Hub')
             }
             className="p-2 sm:px-3 sm:py-2 rounded-xl sm:rounded-2xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 flex items-center gap-1 text-xs font-black shadow-sm transition-all active:scale-95 cursor-pointer shrink-0"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <ArrowLeft className={`w-3.5 h-3.5 ${
+              currentView === 'town' ? 'text-amber-500 dark:text-amber-400' :
+              currentView === 'langlab' ? 'text-rose-500 dark:text-rose-400' :
+              currentView === 'mcq-exam' ? 'text-indigo-600 dark:text-indigo-400' :
+              currentView === 'phonics' ? 'text-purple-600 dark:text-purple-400' :
+              currentView === 'textbook' ? 'text-teal-600 dark:text-teal-400' :
+              'text-emerald-600 dark:text-emerald-400'
+            }`} />
             <span className="hidden lg:inline">
-              {currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab'
+              {currentView === 'lobby' || currentView === 'phonics' || currentView === 'town' || currentView === 'textbook' || currentView === 'langlab' || currentView === 'mcq-exam'
                 ? (lang === 'zh-TW' ? '學習首頁' : 'Home')
                 : (lang === 'zh-TW' ? '回單字館' : 'Vocab Hub')}
             </span>
