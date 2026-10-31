@@ -336,3 +336,30 @@ vercel-live-feedback,
 .animate-olympus-ambient-sheen {
   animation: olympusAmbientSheen 8s ease-in-out infinite;
 }
+
+/* ── 🌟 3D 眾神神卡活體呼吸動效 (Living Card Breath & Pulse) ── */
+@keyframes cardLivingFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0.4deg);
+  }
+}
+
+@keyframes cardLivingAura {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(251, 191, 36, 0.35), 0 10px 25px rgba(0, 0, 0, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 42px rgba(251, 191, 36, 0.65), 0 18px 35px rgba(0, 0, 0, 0.85);
+  }
+}
+
+.animate-card-living-float {
+  animation: cardLivingFloat 3.8s ease-in-out infinite;
+}
+
+.animate-card-living-aura {
+  animation: cardLivingAura 3.8s ease-in-out infinite;
+}

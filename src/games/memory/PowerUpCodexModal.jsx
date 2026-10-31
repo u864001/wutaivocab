@@ -91,7 +91,15 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-950/85 backdrop-blur-md animate-fadeIn select-none">
-      <div className="max-w-5xl w-full max-h-[94vh] flex flex-col rounded-3xl bg-slate-900/95 border-2 border-amber-500/40 shadow-[0_0_50px_rgba(0,0,0,0.85)] overflow-hidden">
+      <div className="max-w-5xl w-full max-h-[94vh] flex flex-col rounded-3xl bg-slate-900/95 border-2 border-amber-500/40 shadow-[0_0_50px_rgba(0,0,0,0.85)] overflow-hidden relative">
+        {/* 奧林帕斯純淨雲端神殿原畫背景 (無雜亂寶箱) */}
+        <img
+          src="/assets/memory/board_bg_olympus.jpg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none mix-blend-luminosity filter blur-[0.5px]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/70 to-slate-950/90 pointer-events-none" />
+
         {/* ─── 頂部 Header ─── */}
         <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90 relative z-20">
           <div className="flex items-center gap-2.5 sm:gap-3">
@@ -169,7 +177,7 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
                 onTouchEnd={handleTouchEnd}
               >
                 {/* 3D 景深旋轉舞台 */}
-                <div className="w-full relative py-2 flex items-center justify-center min-h-[220px] sm:min-h-[260px] overflow-hidden">
+                <div className="w-full relative py-2 flex items-center justify-center min-h-[250px] sm:min-h-[290px] overflow-hidden">
                   {/* 左切換箭頭 */}
                   <button
                     type="button"
@@ -182,13 +190,13 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
 
                   {/* 3D 卡牌舞台 (左側前一張、中央主卡、右側後一張) */}
                   <div
-                    className="relative w-full max-w-[420px] h-[190px] sm:h-[230px] flex items-center justify-center"
+                    className="relative w-full max-w-[420px] h-[220px] sm:h-[260px] flex items-center justify-center"
                     style={{ perspective: '1100px' }}
                   >
-                    {/* 左側卡牌 (傾斜景深) */}
+                    {/* 左側卡牌 (傾斜景深瘦長型 3:4) */}
                     <div
                       onClick={handlePrev}
-                      className="absolute left-2 sm:left-4 w-32 sm:w-40 aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-out z-10 opacity-45 hover:opacity-75"
+                      className="absolute left-2 sm:left-4 w-28 sm:w-36 aspect-[3/4] rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-out z-10 opacity-45 hover:opacity-75"
                       style={{
                         transform: 'rotateY(30deg) scale(0.82) translateZ(-60px)',
                         boxShadow: '0 10px 30px rgba(0,0,0,0.7)'
@@ -198,21 +206,20 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
                       <div className="absolute inset-0 bg-slate-950/40 pointer-events-none" />
                     </div>
 
-                    {/* 中央主卡 (醒目放大、金框光環) */}
+                    {/* 中央主卡 (醒目放大瘦長型 3:4、活體呼吸浮動與金光脈衝) */}
                     <div
-                      className="relative w-52 sm:w-64 aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 ease-out z-20"
+                      className="relative w-44 sm:w-56 aspect-[3/4] rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 ease-out z-20 animate-card-living-float animate-card-living-aura"
                       style={{
                         transform: 'rotateY(0deg) scale(1) translateZ(40px)',
-                        boxShadow: '0 0 35px rgba(251,191,36,0.45), 0 20px 40px rgba(0,0,0,0.85)'
                       }}
                     >
                       <OlympianDeityCardFace powerId={currentCard.id} size="large" />
                     </div>
 
-                    {/* 右側卡牌 (傾斜景深) */}
+                    {/* 右側卡牌 (傾斜景深瘦長型 3:4) */}
                     <div
                       onClick={handleNext}
-                      className="absolute right-2 sm:right-4 w-32 sm:w-40 aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-out z-10 opacity-45 hover:opacity-75"
+                      className="absolute right-2 sm:right-4 w-28 sm:w-36 aspect-[3/4] rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-out z-10 opacity-45 hover:opacity-75"
                       style={{
                         transform: 'rotateY(-30deg) scale(0.82) translateZ(-60px)',
                         boxShadow: '0 10px 30px rgba(0,0,0,0.7)'
@@ -364,7 +371,7 @@ export const PowerUpCodexModal = ({ isOpen, onClose }) => {
                   className={`group cursor-pointer rounded-2xl p-3.5 border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl flex flex-col justify-between ${card.bg} ${card.border} hover:border-amber-400`}
                 >
                   <div>
-                    <div className="w-full aspect-[4/3] rounded-xl overflow-hidden mb-2.5 border border-amber-400/50 shadow-md group-hover:scale-[1.03] transition-transform">
+                    <div className="w-full aspect-[3/4] rounded-xl overflow-hidden mb-2.5 border border-amber-400/50 shadow-md group-hover:scale-[1.03] transition-transform">
                       <OlympianDeityCardFace powerId={card.id} />
                     </div>
 

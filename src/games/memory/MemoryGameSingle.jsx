@@ -682,8 +682,8 @@ export const MemoryGameSingle = ({
         </div>
       )}
 
-      {/* 4x5 翻牌網格 (20 張卡片) */}
-      <div className="w-full grid grid-cols-4 sm:grid-cols-5 gap-2.5 sm:gap-3 max-h-[64vh]">
+      {/* 4x5 翻牌網格 (20 張瘦長型 3:4 TCG 卡片) */}
+      <div className="w-full grid grid-cols-4 sm:grid-cols-5 gap-2 sm:gap-2.5 max-h-[72vh] max-w-2xl mx-auto">
         {cards.map((card, idx) => {
           const isCardFlipped = flipped.includes(idx) || matched.includes(card.id);
           const isCardMatched = matched.includes(card.id);
@@ -699,7 +699,7 @@ export const MemoryGameSingle = ({
               disabled={isCardMatched}
               onClick={() => handleCardClick(idx)}
               className={`
-                aspect-[4/3] rounded-2xl sm:rounded-3xl p-0.5 font-heading font-black text-xs sm:text-sm flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-lg max-h-[104px] relative overflow-hidden
+                aspect-[3/4] rounded-xl sm:rounded-2xl p-0.5 font-heading font-black text-xs sm:text-sm flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-lg max-h-[120px] sm:max-h-[135px] relative overflow-hidden
                 ${isCardMatched
                   ? isPowerUpCard
                     ? 'ring-2 ring-amber-400/90 shadow-amber-500/30 scale-[0.98] pointer-events-none'

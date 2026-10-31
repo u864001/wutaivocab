@@ -230,7 +230,7 @@ export const OrnateWordCardFace = ({ text = '', type = 'en' }) => {
   }
 
   return (
-    <div className="w-full h-full relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-b from-[#fffdf7] via-[#fef9e7] to-[#f9eebc] flex flex-col items-center justify-center p-2 select-none">
+    <div className="w-full h-full relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-b from-[#fffdf7] via-[#fef9e7] to-[#f9eebc] flex flex-col items-center justify-between py-2 px-1.5 select-none">
       {imgOk && (
         <img
           src="/assets/memory/word_card_frame.jpg"
@@ -239,54 +239,23 @@ export const OrnateWordCardFace = ({ text = '', type = 'en' }) => {
           className="absolute inset-0 w-full h-full object-cover pointer-events-none z-[1]"
         />
       )}
-      {/* 古典希臘月桂與回紋金框 SVG */}
-      <svg
-        viewBox="0 0 240 180"
-        className="absolute inset-0 w-full h-full pointer-events-none"
-        preserveAspectRatio="none"
-      >
-        <rect
-          x="5"
-          y="5"
-          width="230"
-          height="170"
-          rx="12"
-          fill="none"
-          stroke="#d97706"
-          strokeWidth="2.5"
-        />
-        <rect
-          x="10"
-          y="10"
-          width="220"
-          height="160"
-          rx="8"
-          fill="none"
-          stroke="#f59e0b"
-          strokeWidth="1"
-          opacity="0.65"
-        />
-        {/* 四角古典金花角飾 */}
-        <path d="M12,26 L12,12 L26,12" fill="none" stroke="#b45309" strokeWidth="2.5" />
-        <path d="M228,26 L228,12 L214,12" fill="none" stroke="#b45309" strokeWidth="2.5" />
-        <path d="M12,154 L12,168 L26,168" fill="none" stroke="#b45309" strokeWidth="2.5" />
-        <path d="M228,154 L228,168 L214,168" fill="none" stroke="#b45309" strokeWidth="2.5" />
-        <circle cx="16" cy="16" r="2.2" fill="#d97706" />
-        <circle cx="224" cy="16" r="2.2" fill="#d97706" />
-        <circle cx="16" cy="164" r="2.2" fill="#d97706" />
-        <circle cx="224" cy="164" r="2.2" fill="#d97706" />
-      </svg>
+      {/* 頂部希臘古典星芒徽記 */}
+      <div className="relative z-10 text-[8px] sm:text-[9px] text-amber-800/60 font-black tracking-widest">
+        ✦ OLYMPUS ✦
+      </div>
 
-      {/* 單字主體（超高對比深石板黑，零花紋干擾） */}
-      <span
-        className={`relative z-10 font-black tracking-tight text-stone-900 break-words max-w-[92%] text-center drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] ${fontSizeClass}`}
-      >
-        {text}
-      </span>
+      {/* 單字主體（超高對比深石板黑，垂直居中舒展，保證教學 100% 清晰） */}
+      <div className="relative z-10 flex-1 flex items-center justify-center w-full px-1">
+        <span
+          className={`font-black tracking-tight text-stone-900 break-words max-w-[96%] text-center drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] ${fontSizeClass}`}
+        >
+          {text}
+        </span>
+      </div>
 
       {/* 底部精緻語種綬帶角標 */}
       <span
-        className={`relative z-10 mt-1 px-2 py-0.2 rounded-full text-[9px] sm:text-[10px] font-black tracking-widest uppercase border ${
+        className={`relative z-10 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black tracking-widest uppercase border shadow-sm ${
           type === 'en'
             ? 'bg-amber-500/20 text-amber-900 border-amber-500/40'
             : 'bg-indigo-500/15 text-indigo-900 border-indigo-500/35'
