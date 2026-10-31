@@ -26,8 +26,10 @@ const ASTEROID_VERTEX_SHADER = `
   varying vec3 vViewPosition;
   varying vec3 vObjectPos;
   varying vec3 vWorldNormal;
+  varying vec2 vUv;
 
   void main() {
+    vUv = uv;
     vObjectPos = position;
     vNormal = normalize(normalMatrix * normal);
     vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
@@ -40,10 +42,13 @@ const ASTEROID_VERTEX_SHADER = `
 const ASTEROID_FRAGMENT_SHADER = `
   uniform float uTime;
   uniform float uHeat;
+  uniform sampler2D uTexture;
+  uniform float uHasTexture;
   varying vec3 vNormal;
   varying vec3 vViewPosition;
   varying vec3 vObjectPos;
   varying vec3 vWorldNormal;
+  varying vec2 vUv;
 
   // 3D 偽隨機雜湊與平滑梯度噪波 (GPU Per-Pixel FBM)
   float hash(vec3 p) {
@@ -126,7 +131,16 @@ const ASTEROID_FRAGMENT_SHADER = `
     float fresnel = pow(1.0 - max(dot(viewDir, perturbedNormal), 0.0), 2.4);
     vec3 rimPlasma = mix(vec3(1.0, 0.32, 0.02), vec3(1.0, 0.78, 0.25), fresnel) * fresnel * (1.1 + uHeat * 0.45);
 
-    vec3 finalColor = mix(rockColor, magmaColor, crackMask * 0.92) + rimPlasma;
+    // 寫實隕石表面原畫紋理混合
+    vec3 baseSurface = rockColor;
+    if (uHasTexture > 0.5) {
+      vec4 texColor = texture2D(uTexture, vUv * 2.0);
+      baseSurface = mix(rockColor, texColor.rgb * (diff * 0.95 + 0.35), 0.75);
+      float texMagma = smoothstep(0.42, 0.88, texColor.r - texColor.b);
+      magmaColor += vec3(1.0, 0.52, 0.08) * texMagma * uHeat * 0.9;
+    }
+
+    vec3 finalColor = mix(baseSurface, magmaColor, crackMask * 0.92) + rimPlasma;
     gl_FragColor = vec4(finalColor, 1.0);
   }
 `;
@@ -187,15 +201,34 @@ export function createProceduralAsteroid(radius = 3.2) {
 
   geometry.computeVertexNormals();
 
-  // 3. GLSL 熔岩裂谷著色器材質
+  // 3. GLSL 熔岩裂谷著色器材質 (支援寫實隕石表面原畫映射)
   const rockMaterial = new THREE.ShaderMaterial({
     vertexShader: ASTEROID_VERTEX_SHADER,
     fragmentShader: ASTEROID_FRAGMENT_SHADER,
     uniforms: {
       uTime: { value: Math.random() * 100.0 },
-      uHeat: { value: 1.35 }
+      uHeat: { value: 1.35 },
+      uTexture: { value: null },
+      uHasTexture: { value: 0.0 }
     }
   });
+
+  // 載入 Nano Banana 高解析隕石有機岩石表面原畫
+  const textureLoader = new THREE.TextureLoader();
+  textureLoader.load(
+    '/assets/meteor/asteroid_surface_map.jpg',
+    (tex) => {
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.colorSpace = THREE.SRGBColorSpace;
+      rockMaterial.uniforms.uTexture.value = tex;
+      rockMaterial.uniforms.uHasTexture.value = 1.0;
+    },
+    undefined,
+    (err) => {
+      console.warn('Asteroid texture fallback to procedural:', err);
+    }
+  );
 
   const rockMesh = new THREE.Mesh(geometry, rockMaterial);
   group.add(rockMesh);
@@ -241,6 +274,9 @@ export function createProceduralAsteroid(radius = 3.2) {
     dispose: () => {
       geometry.dispose();
       glowGeo.dispose();
+      if (rockMaterial.uniforms.uTexture?.value) {
+        rockMaterial.uniforms.uTexture.value.dispose();
+      }
       rockMaterial.dispose();
       glowMat.dispose();
     }

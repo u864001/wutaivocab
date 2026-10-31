@@ -126,10 +126,14 @@ export const MeteorCanvas3D = ({
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // 4. 深空星雲天球 (GPU GLSL Nebula Backdrop) + 1,400 顆多色溫閃爍星海
+    // 4. 深空星雲天球 (高解析星雲原畫 + GPU GLSL 微動效 Shimmer) + 1,400 顆多色溫閃爍星海
     const nebulaGeo = new THREE.PlaneGeometry(520, 320);
     const nebulaMat = new THREE.ShaderMaterial({
-      uniforms: { uTime: { value: 0 } },
+      uniforms: {
+        uTime: { value: 0 },
+        uBgTexture: { value: null },
+        uHasTexture: { value: 0.0 }
+      },
       vertexShader: `
         varying vec2 vUv;
         void main() {
@@ -139,6 +143,8 @@ export const MeteorCanvas3D = ({
       `,
       fragmentShader: `
         uniform float uTime;
+        uniform sampler2D uBgTexture;
+        uniform float uHasTexture;
         varying vec2 vUv;
         float hash(vec2 p) {
           return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
@@ -171,8 +177,15 @@ export const MeteorCanvas3D = ({
           vec3 violetNebula = vec3(0.22, 0.07, 0.42) * smoothstep(0.35, 0.85, n1);
           vec3 cyanNebula = vec3(0.04, 0.32, 0.55) * smoothstep(0.42, 0.88, n2);
           vec3 goldCore = vec3(0.55, 0.25, 0.12) * smoothstep(0.62, 0.95, n1 * n2 * 1.6);
-          vec3 col = deepSpace + violetNebula * 0.65 + cyanNebula * 0.55 + goldCore * 0.45;
-          gl_FragColor = vec4(col, 1.0);
+          vec3 proceduralCol = deepSpace + violetNebula * 0.65 + cyanNebula * 0.55 + goldCore * 0.45;
+
+          if (uHasTexture > 0.5) {
+            vec4 texColor = texture2D(uBgTexture, vUv);
+            vec3 liveGlow = (violetNebula * 0.35 + cyanNebula * 0.25 + goldCore * 0.2) * 0.55;
+            gl_FragColor = vec4(texColor.rgb * 1.1 + liveGlow, 1.0);
+          } else {
+            gl_FragColor = vec4(proceduralCol, 1.0);
+          }
         }
       `,
       depthWrite: false
@@ -180,6 +193,21 @@ export const MeteorCanvas3D = ({
     const nebulaMesh = new THREE.Mesh(nebulaGeo, nebulaMat);
     nebulaMesh.position.set(0, 10, -240);
     scene.add(nebulaMesh);
+
+    // 載入深空宇宙星雲全景原畫 (具備平滑色彩空間轉換)
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(
+      '/assets/meteor/space_nebula_bg.jpg',
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        nebulaMat.uniforms.uBgTexture.value = tex;
+        nebulaMat.uniforms.uHasTexture.value = 1.0;
+      },
+      undefined,
+      (err) => {
+        console.warn('Nebula texture fallback to procedural:', err);
+      }
+    );
 
     const starGeo = new THREE.BufferGeometry();
     const starCount = 1400;

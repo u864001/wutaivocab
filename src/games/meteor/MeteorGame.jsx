@@ -625,12 +625,14 @@ export const MeteorGame = ({
             />
           </div>
         ) : (
-          /* 2D 簡約備援畫布 */
+          /* 2D 簡約備援畫布 (同步享受 Nano Banana 高解析深空星雲原畫) */
           <div
             ref={containerRef}
             className="w-full h-full rounded-2xl sm:rounded-3xl bg-slate-900 border-2 border-indigo-500/40 relative overflow-hidden shadow-2xl"
             style={{
-              backgroundImage: 'radial-gradient(circle at 50% 30%, #1e1b4b 0%, #090d16 80%)'
+              backgroundImage: "radial-gradient(circle at 50% 50%, rgba(10, 15, 30, 0.4) 0%, rgba(5, 8, 20, 0.85) 100%), url('/assets/meteor/space_nebula_bg.jpg')",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
             }}
           >
             {/* 2D 彩蛋系統 (飛機雲拖曳流星、人造衛星、原地旋轉 UFO) */}
