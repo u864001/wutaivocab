@@ -9,8 +9,13 @@
 1. **轉向指令緩衝隊列 (`inputQueueRef`) — 嚴禁漏接！**：
    - 玩家透過鍵盤（`ArrowUp/Down/Left/Right`、`WASD`）、虛擬十字鍵（`onPointerDown` + `onClick` 雙綁定 0ms 延遲）或畫面連續滑動（`touchmove` 閾值 16px）輸入方向時，統一呼叫 `queueDirection(newDir)` 推入 `inputQueueRef.current`（最多保留最新 2 個有效轉彎指令，並過濾同向與 180 度直接掉頭）。
    - **關鍵鐵律**：在 `advanceOneStep()` 每推進一格時，**必須執行 `if (inputQueueRef.current.length > 0) { dirRef.current = inputQueueRef.current.shift(); }`** 將隊列中的轉向指令取出並套用至 `dirRef.current`！若漏掉此行，所有上下左右按鍵與十字鍵都會失效。
-2. **2D 正俯視日夜雙模式與 4K 字母清晰度 (`SnakeCanvas2D.jsx`, `snakeJungleTheme.js`)**：
-   - 支援白晝晨曦 ☀️（翠綠棋盤草地、3 隻翠鳳蝶）與星月夜景 🌙（深色草坪、45° 月光掃光、6 隻呼吸光螢火蟲、黑曜岩蛇身琥珀菱紋）。
+2. **2D 正俯視日夜雙景生態與 4K 字母清晰度 (`SnakeCanvas2D.jsx`, `snakeJungleTheme.js`)**：
+   - **四周邊框**：
+     - 白天：魯凱特色頁岩片疊石砌牆 (Stacked Slate Wall) ＋ 蔓生翠綠青苔 ＋ 盛開純白高山百合花飾。
+     - 夜間：月光黑曜石板矮牆（冷灰藍高光） ＋ 深色夜蘚 ＋ 月夜幽光百合（冰藍柔光）。
+   - **日夜專屬生態彩蛋**：
+     - 白天：右上角台灣黑熊探頭舉爪歡呼、左上角台灣雲豹、高山鳳蝶雙翼快速撲閃。
+     - 夜間：右上角領角鴞/貓頭鷹 (Owl) 眨眼轉頭與拍翅、左上角神山大赤鼯鼠 (Flying Squirrel) 探頭、夜光螢火蟲 (Fireflies) 呼吸式脈衝發光並具備平緩有機浮游物理（非蝴蝶拍翅）。
    - **字母渲染鐵律**：場上字母繪製文字本體時**必須關閉 `ctx.shadowBlur = 0`**，改用 900 特粗純黑描邊（4.5px）＋純白/高純金填充，避免黃色光暈將字母模糊成光團。
 3. **大廳直通開局**：
    - 難度（普通/進階/大師）於大廳整備室選擇並存於 `localStorage.getItem('wutai_snake_difficulty')`，進入遊戲後於 `useEffect` 直接呼叫 `handleStart(savedDiff)`，不設二次開始彈窗。

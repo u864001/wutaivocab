@@ -51,18 +51,18 @@ const ALL_CHARACTERS = [
     color: 'from-emerald-500 to-teal-300',
     src: '/assets/common/loader/sambar_deer.webp'
   },
-  // 12 個月份節慶限定角色
+  // 12 個月份節慶限定角色 (全新排定，絕不重複，各具文化/節慶與向前動態)
   { id: 'season_01_eagle', name: '神山金鷹', title: '元旦迎曦之翼', month: 1, category: '節慶限定', badge: '1月元旦', speed: '展翅翱翔', icon: '🦅', color: 'from-yellow-500 to-amber-300', src: '/assets/common/loader/season_01_eagle.webp' },
-  { id: 'season_02_snake', name: '靈蛇祥瑞', title: '新春如意金蛇', month: 2, category: '節慶限定', badge: '2月新春', speed: '騰雲駕霧', icon: '🐍', color: 'from-red-500 to-amber-400', src: '/assets/common/loader/season_02_snake.webp' },
-  { id: 'season_03_deer', name: '花冠小鹿', title: '春暖花開精靈', month: 3, category: '節慶限定', badge: '3月春櫻', speed: '落櫻踏步', icon: '🌸', color: 'from-pink-400 to-rose-300', src: '/assets/common/loader/season_03_deer.webp' },
-  { id: 'season_04_bunny', name: '彩蛋兔兔', title: '復活節彩蛋使者', month: 4, category: '節慶限定', badge: '4月復活', speed: '滾蛋飛奔', icon: '🐰', color: 'from-teal-400 to-sky-300', src: '/assets/common/loader/season_04_bunny.webp' },
-  { id: 'season_05_lily', name: '百合精靈', title: '霧台純白聖花', month: 5, category: '節慶限定', badge: '5月母親', speed: '微風輕拂', icon: '🌺', color: 'from-amber-200 to-emerald-200', src: '/assets/common/loader/season_05_lily.webp' },
-  { id: 'season_06_dragonboat', name: '端午龍舟', title: '端午奪標飛龍', month: 6, category: '節慶限定', badge: '6月端午', speed: '乘風破浪', icon: '🚣‍♂️', color: 'from-red-600 to-emerald-500', src: '/assets/common/loader/season_06_dragonboat.webp' },
-  { id: 'season_07_squirrel', name: '仲夏飛鼠', title: '夏夜林梢滑翔', month: 7, category: '節慶限定', badge: '7月盛夏', speed: '林間飛渡', icon: '🐿️', color: 'from-indigo-400 to-teal-300', src: '/assets/common/loader/season_07_squirrel.webp' },
-  { id: 'season_08_warrior', name: '神山戰士', title: '豐年祭百合勇士', month: 8, category: '節慶限定', badge: '8月豐年', speed: '昂首闊步', icon: '🏹', color: 'from-amber-600 to-stone-800', src: '/assets/common/loader/season_08_warrior.webp' },
+  { id: 'season_02_sweetheart', name: '甜心萌兔', title: '情人節甜心使者', month: 2, category: '節慶限定', badge: '2月甜心', speed: '抱心躍步', icon: '🐰', color: 'from-pink-500 to-rose-400', src: '/assets/common/loader/season_02_sweetheart.webp' },
+  { id: 'season_03_snake', name: '守護百步蛇', title: '魯凱長老圖騰', month: 3, category: '節慶限定', badge: '3月守護', speed: '靈動前行', icon: '🐍', color: 'from-amber-600 to-orange-500', src: '/assets/common/loader/season_03_snake.webp' },
+  { id: 'season_04_bunny', name: '彩蛋兔兔', title: '復活節彩蛋使者', month: 4, category: '節慶限定', badge: '4月復活', speed: '滾蛋飛奔', icon: '🥚', color: 'from-teal-400 to-sky-300', src: '/assets/common/loader/season_04_bunny.webp' },
+  { id: 'season_05_mother', name: '母子袋鼠', title: '溫馨母親節守護', month: 5, category: '節慶限定', badge: '5月母親', speed: '溫馨躍進', icon: '🦘', color: 'from-amber-500 to-rose-300', src: '/assets/common/loader/season_05_mother.webp' },
+  { id: 'season_06_dragonboat', name: '端午龍舟', title: '端午奪標飛龍', month: 6, category: '節慶限定', badge: '6月端午', speed: '乘風破浪', icon: '🚣‍♂️', color: 'from-red-600 to-amber-500', src: '/assets/common/loader/season_06_dragonboat.webp' },
+  { id: 'season_07_squirrel', name: '大赤鼯鼠', title: '夏夜林梢滑翔', month: 7, category: '節慶限定', badge: '7月盛夏', speed: '俯衝飛渡', icon: '🐿️', color: 'from-amber-600 to-teal-400', src: '/assets/common/loader/season_07_squirrel.webp' },
+  { id: 'season_08_warrior', name: '神山小勇士', title: '豐年祭百合勇士', month: 8, category: '節慶限定', badge: '8月豐年', speed: '昂首闊步', icon: '🏹', color: 'from-red-600 to-stone-800', src: '/assets/common/loader/season_08_warrior.webp' },
   { id: 'season_09_moonrabbit', name: '中秋奔月玉兔', title: '廣寒滿月傳奇', month: 9, category: '節慶限定', badge: '9月中秋', speed: '踏雲奔月', icon: '🌕', color: 'from-amber-300 to-yellow-100', src: '/assets/common/loader/season_09_moonrabbit.webp' },
-  { id: 'season_10_pumpkin', name: '萬聖南瓜怪', title: '萬聖奇幻南瓜', month: 10, category: '節慶限定', badge: '10月萬聖', speed: '歡樂彈跳', icon: '🎃', color: 'from-orange-500 to-purple-600', src: '/assets/common/loader/season_10_pumpkin.webp' },
-  { id: 'season_11_turkey', name: '感恩火雞', title: '秋收感恩小使者', month: 11, category: '節慶限定', badge: '11月感恩', speed: '快步擺尾', icon: '🦃', color: 'from-amber-700 to-orange-400', src: '/assets/common/loader/season_11_turkey.webp' },
+  { id: 'season_10_pumpkin', name: '魔法南瓜怪', title: '萬聖奇幻南瓜', month: 10, category: '節慶限定', badge: '10月萬聖', speed: '掃帚飛衝', icon: '🎃', color: 'from-orange-500 to-purple-600', src: '/assets/common/loader/season_10_pumpkin.webp' },
+  { id: 'season_11_turkey', name: '俏皮火雞', title: '秋收感恩小使者', month: 11, category: '節慶限定', badge: '11月感恩', speed: '風火輪衝刺', icon: '🦃', color: 'from-amber-700 to-orange-400', src: '/assets/common/loader/season_11_turkey.webp' },
   { id: 'season_12_sleigh', name: '聖誕馴鹿雪橇', title: '聖誕奇蹟之約', month: 12, category: '節慶限定', badge: '12月聖誕', speed: '踏雪飛馳', icon: '🎅', color: 'from-red-500 to-emerald-400', src: '/assets/common/loader/season_12_sleigh.webp' }
 ];
 
@@ -77,6 +77,15 @@ export const PreloaderShowcase = ({ onBack }) => {
 
   const character = ALL_CHARACTERS[selectedIdx] || ALL_CHARACTERS[0];
   const quote = FOREST_QUOTES[quoteIdx] || FOREST_QUOTES[0];
+
+  // 離開展示台時立即截斷所有進行中的語音
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   // 自動循環進度條 (Loop 0 -> 100 -> 0)
   const dirRef = useRef(1); // 1 = forward, -1 = reverse (or reset)
@@ -169,28 +178,26 @@ export const PreloaderShowcase = ({ onBack }) => {
             <div className="w-full relative py-8 my-auto z-10">
               {/* 奔跑神獸 Sprite */}
               <div
-                className="absolute -top-7 transition-all duration-75 ease-out flex flex-col items-center pointer-events-none"
+                className="absolute -top-8 transition-all duration-75 ease-out flex flex-col items-center pointer-events-none"
                 style={{
-                  left: `calc(${progress}% - 32px)`,
-                  filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.7))'
+                  left: `calc(${progress}% - 32px)`
                 }}
               >
                 <div className="relative w-16 h-16 flex items-center justify-center animate-bounce">
+                  {/* 背後柔和微光光暈 (Behind Sprite) */}
+                  <div className="absolute inset-0 m-auto w-12 h-12 rounded-full bg-amber-400/20 blur-md pointer-events-none" />
+
                   <img
                     src={character.src}
                     alt={character.name}
-                    className="w-14 h-14 object-contain filter drop-shadow-[0_2px_8px_rgba(251,191,36,0.6)]"
+                    className="w-14 h-14 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)] relative z-10"
                   />
-                  {/* 腳底金光塵土微粒特效 */}
-                  <div className="absolute -bottom-1 -left-1 flex gap-0.5 opacity-90">
+                  {/* 腳底金光微粒特效 */}
+                  <div className="absolute -bottom-1 left-2 flex gap-0.5 opacity-90 z-0">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
                     <span className="w-1 h-1 rounded-full bg-amber-200 animate-pulse delay-75" />
                   </div>
                 </div>
-
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-stone-900/90 text-amber-300 border border-amber-500/30 whitespace-nowrap -mt-1 shadow-sm">
-                  {character.name}
-                </span>
               </div>
 
               {/* 神山石槽進度條跑道 */}

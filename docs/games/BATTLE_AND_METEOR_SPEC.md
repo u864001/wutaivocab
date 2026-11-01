@@ -23,7 +23,8 @@
 ## 二、 地球能量防護罩與 3D 隕石防衛規範 (`MeteorGame` & `BattleGame`)
 
 1. **每滿 50 分自動獲得一層地球能量防護罩**：
-   - 玩家分數每跨越 50 分整數倍（`Math.floor(newScore / 50) > Math.floor(prevScore / 50)`），自動增加 1 層地球護盾（邏輯層數無上限，3D 視覺光圈最多顯示 5 層）。
+   - 玩家分數每跨越 50 分整數倍（`Math.floor(newScore / 50) > Math.floor(prevScore / 50)`），自動增加 1 層地球護盾（邏輯層數無上限，3D 視覺光暈最多顯示 5 層）。
+   - **3D 視覺能量罩架構**：採用圍繞地球面向外太空之同心半球能量罩（`SphereGeometry(radius, 64, 32, 0, Math.PI * 2, 0, Math.PI * 0.42)`，半徑 77.0 至 82.6），Shader 渲染強烈邊緣力場光暈（Fresnel）與波長漣漪（Ripple），層數上限封頂 5 層，避免分數高時光暈過曝遮蔽太空。
    - 觸發護盾時呼叫 `soundEngine.powerUp()`（定義於 `src/services/audio.js`，同時保留 `powerup()` 別名相容）。
    - **嚴禁**在 `setMyScore(prev => ...)` 等 React state updater 內部直接呼叫 `soundEngine.powerUp()`、`broadcastMyStats()` 或 `handlePlayerDead()`，所有副作用必須放在 state updater 外部！
 2. **傷害抵擋與 Combo 歸零規則**：

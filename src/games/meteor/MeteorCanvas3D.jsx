@@ -245,7 +245,7 @@ export const MeteorCanvas3D = ({
     const starField = new THREE.Points(starGeo, starMat);
     scene.add(starField);
 
-    // 5. 地球大氣防衛圈 (GLSL 大氣瑞利散射 + 大陸海洋雲層 + 夜間黃金城市燈火)
+    // 5. 逼真地球本體與高擬真大氣散射 (Photorealistic Earth with Oceans, Continents, Clouds & City Lights)
     const earthGeo = new THREE.SphereGeometry(75, 64, 48);
     const earthMat = new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0 } },
@@ -266,11 +266,13 @@ export const MeteorCanvas3D = ({
         varying vec3 vNormal;
         varying vec3 vViewPos;
         varying vec3 vObjPos;
+
         float hash(vec3 p) {
           p = fract(p * 0.3183099 + 0.1);
           p *= 17.0;
           return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
         }
+
         float noise(vec3 x) {
           vec3 i = floor(x);
           vec3 f = fract(x);
@@ -281,32 +283,64 @@ export const MeteorCanvas3D = ({
             f.z
           );
         }
+
         float fbm(vec3 p) {
           float v = 0.0; float a = 0.5;
-          for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.05; a *= 0.5; }
+          for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.08; a *= 0.5; }
           return v;
         }
+
         void main() {
           vec3 n = normalize(vNormal);
           vec3 v = normalize(vViewPos);
-          vec3 p = vObjPos * 0.055 + vec3(uTime * 0.015, 0.0, 0.0);
-          float continent = smoothstep(0.47, 0.56, fbm(p));
-          float clouds = smoothstep(0.52, 0.78, fbm(p * 1.8 + vec3(uTime * 0.025, 0.0, 0.0)));
-          float cityCluster = smoothstep(0.62, 0.76, noise(p * 9.5)) * continent;
+          vec3 sunDir = normalize(vec3(0.55, 0.72, 0.42));
 
-          vec3 oceanCol = vec3(0.02, 0.14, 0.38);
-          vec3 landCol = vec3(0.04, 0.28, 0.24);
-          vec3 baseCol = mix(oceanCol, landCol, continent);
-          // 夜間黃金城市燈火網絡
-          baseCol += vec3(1.0, 0.78, 0.32) * cityCluster * 0.65;
-          // 柔和白雲帶
-          baseCol = mix(baseCol, vec3(0.82, 0.92, 1.0), clouds * 0.42);
+          // 1. 大陸地塊與高山地形 (Continental landmasses & mountain ridges)
+          vec3 p = vObjPos * 0.052 + vec3(uTime * 0.012, 0.0, 0.0);
+          float contRaw = fbm(p);
+          float continent = smoothstep(0.46, 0.56, contRaw);
+          float mountains = smoothstep(0.58, 0.78, fbm(p * 2.8)) * continent;
 
-          // 瑞利大氣層邊緣散射藍青輝光 (Atmospheric Limb Glow)
+          // 2. 海洋深淺與大陸植被色彩
+          vec3 deepOcean = vec3(0.012, 0.065, 0.22);
+          vec3 coastShallow = vec3(0.035, 0.24, 0.42);
+          vec3 oceanCol = mix(deepOcean, coastShallow, smoothstep(0.40, 0.46, contRaw));
+
+          vec3 lushLand = vec3(0.05, 0.32, 0.16);
+          vec3 highland = vec3(0.38, 0.29, 0.17);
+          vec3 landCol = mix(lushLand, highland, mountains);
+
+          // 極地冰冠 (Polar Ice Caps)
+          float polarLatitude = abs(vObjPos.y) / 75.0;
+          float iceCap = smoothstep(0.72, 0.88, polarLatitude + noise(p * 2.0) * 0.12);
+          vec3 surfaceCol = mix(mix(oceanCol, landCol, continent), vec3(0.92, 0.96, 1.0), iceCap);
+
+          // 3. 太陽光照與海洋鏡面高光 (Sunlight & Ocean Specular Glint)
+          float diff = max(dot(n, sunDir), 0.0);
+          vec3 halfVec = normalize(sunDir + v);
+          float spec = pow(max(dot(n, halfVec), 0.0), 28.0) * (1.0 - continent) * (1.0 - iceCap) * diff;
+
+          // 4. 動態雙層雲系與地表投影 (Dynamic Swirling Cloud Decks with Shadows)
+          vec3 cloudP1 = p * 1.6 + vec3(uTime * 0.022, 0.0, 0.0);
+          vec3 cloudP2 = p * 2.4 - vec3(uTime * 0.015, uTime * 0.008, 0.0);
+          float clouds = smoothstep(0.50, 0.76, fbm(cloudP1) * 0.7 + fbm(cloudP2) * 0.3);
+
+          // 雲層地表陰影
+          surfaceCol *= (1.0 - clouds * 0.35);
+          // 雲層疊加
+          surfaceCol = mix(surfaceCol, vec3(0.95, 0.98, 1.0), clouds * 0.85);
+
+          // 5. 夜半球黃金城市群星燈火 (Night-side Golden City Constellations)
+          float night = smoothstep(0.12, -0.22, dot(n, sunDir));
+          float cityCluster = smoothstep(0.60, 0.78, noise(p * 8.5)) * continent * (1.0 - iceCap);
+          vec3 cityGlow = vec3(1.0, 0.82, 0.38) * cityCluster * night * 1.8;
+
+          // 6. 大氣瑞利邊緣散射輝光 (Rayleigh Atmospheric Limb Scattering)
           float fresnel = pow(1.0 - max(dot(v, n), 0.0), 2.2);
-          vec3 atmoGlow = mix(vec3(0.12, 0.55, 1.0), vec3(0.45, 0.92, 1.0), fresnel) * fresnel * 1.45;
+          vec3 atmoGlow = mix(vec3(0.14, 0.52, 1.0), vec3(0.48, 0.90, 1.0), fresnel) * fresnel * 1.5;
 
-          gl_FragColor = vec4(baseCol + atmoGlow, 1.0);
+          vec3 finalColor = surfaceCol * (diff * 0.88 + 0.12) + spec * vec3(0.9, 0.95, 1.0) * 0.8 + cityGlow + atmoGlow;
+          gl_FragColor = vec4(finalColor, 1.0);
         }
       `
     });
@@ -315,62 +349,104 @@ export const MeteorCanvas3D = ({
     scene.add(earthMesh);
     earthMeshRef.current = earthMesh;
 
-    // 地球高空電離層柔和光環
-    const atmoGeo = new THREE.RingGeometry(74.2, 77.2, 96);
+    // 地球外層 3D 瑞利大氣層透明保護穹頂 (Rayleigh Atmospheric Outer Shell)
+    const atmoGeo = new THREE.SphereGeometry(76.2, 64, 32, 0, Math.PI * 2, 0, Math.PI * 0.45);
     const atmoMat = new THREE.ShaderMaterial({
       vertexShader: `
-        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vViewPos;
         void main() {
-          vUv = uv;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          vNormal = normalize(normalMatrix * normal);
+          vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+          vViewPos = -mvPos.xyz;
+          gl_Position = projectionMatrix * mvPos;
         }
       `,
       fragmentShader: `
-        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vViewPos;
         void main() {
-          float dist = length(vUv - vec2(0.5)) * 2.0;
-          float alpha = smoothstep(0.92, 0.965, dist) * (1.0 - smoothstep(0.965, 1.0, dist));
-          gl_FragColor = vec4(0.25, 0.78, 1.0, alpha * 0.65);
+          vec3 n = normalize(vNormal);
+          vec3 v = normalize(vViewPos);
+          float limb = pow(1.0 - max(dot(v, n), 0.0), 2.8);
+          gl_FragColor = vec4(vec3(0.25, 0.68, 1.0), limb * 0.75);
         }
       `,
-      side: THREE.DoubleSide,
+      side: THREE.FrontSide,
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending
     });
     const atmoMesh = new THREE.Mesh(atmoGeo, atmoMat);
-    atmoMesh.rotation.x = Math.PI / 2.2;
-    atmoMesh.position.set(0, -74, 5);
+    atmoMesh.position.set(0, -78, 5);
     scene.add(atmoMesh);
     atmoMeshRef.current = atmoMesh;
 
-    // 5.5 地球白色呼吸防護罩 (每50分加一層，最多顯示5層向太空外擴的呼吸光暈)
+    // 5.5 地球 3D 半球面能量呼吸防護罩 (每50分加一層，最多顯示5層向太空外擴的呼吸微光力場罩)
     const shieldGroup = new THREE.Group();
-    shieldGroup.position.set(0, -74, 5);
-    shieldGroup.rotation.x = Math.PI / 2.2;
+    shieldGroup.position.set(0, -78, 5);
     scene.add(shieldGroup);
     shieldGroupRef.current = shieldGroup;
 
-    const layerConfigs = [
-      { inner: 76.6, outer: 79.0, color: 0xffffff, opacity: 0.40 },
-      { inner: 79.0, outer: 81.6, color: 0xf8fafc, opacity: 0.50 },
-      { inner: 81.6, outer: 84.4, color: 0xf1f5f9, opacity: 0.60 },
-      { inner: 84.4, outer: 87.5, color: 0xe2e8f0, opacity: 0.70 },
-      { inner: 87.5, outer: 91.0, color: 0xffffff, opacity: 0.85 }
+    const shieldLayerConfigs = [
+      { radius: 77.0, color: new THREE.Color(0x38bdf8), baseOpacity: 0.36 },
+      { radius: 78.4, color: new THREE.Color(0x67e8f9), baseOpacity: 0.44 },
+      { radius: 79.8, color: new THREE.Color(0xa5f3fc), baseOpacity: 0.52 },
+      { radius: 81.2, color: new THREE.Color(0xe0f2fe), baseOpacity: 0.60 },
+      { radius: 82.6, color: new THREE.Color(0xffffff), baseOpacity: 0.72 }
     ];
 
-    const shieldMeshes = layerConfigs.map((cfg) => {
-      const geo = new THREE.RingGeometry(cfg.inner, cfg.outer, 64);
-      const mat = new THREE.MeshBasicMaterial({
-        color: cfg.color,
-        side: THREE.DoubleSide,
+    const shieldMeshes = shieldLayerConfigs.map((cfg, idx) => {
+      // 覆蓋面向外太空的 3D 同心能量半球頂 (Spherical Energy Forcefield Shell)
+      const geo = new THREE.SphereGeometry(cfg.radius, 64, 32, 0, Math.PI * 2, 0, Math.PI * 0.42);
+      const mat = new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 },
+          uLayerIndex: { value: idx },
+          uColor: { value: cfg.color },
+          uOpacity: { value: cfg.baseOpacity }
+        },
+        vertexShader: `
+          varying vec3 vNormal;
+          varying vec3 vViewPos;
+          varying vec3 vWorldPos;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+            vViewPos = -mvPos.xyz;
+            vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+            gl_Position = projectionMatrix * mvPos;
+          }
+        `,
+        fragmentShader: `
+          uniform float uTime;
+          uniform float uLayerIndex;
+          uniform vec3 uColor;
+          uniform float uOpacity;
+          varying vec3 vNormal;
+          varying vec3 vViewPos;
+          varying vec3 vWorldPos;
+          void main() {
+            vec3 n = normalize(vNormal);
+            vec3 v = normalize(vViewPos);
+            // 邊緣強烈力場光暈
+            float fresnel = pow(1.0 - max(dot(v, n), 0.0), 2.0);
+            // 能量波向太空擴散漣漪
+            float wave = sin(vWorldPos.y * 1.5 - uTime * 3.2 + uLayerIndex * 0.8) * 0.5 + 0.5;
+            float grid = sin(vWorldPos.x * 2.0) * cos(vWorldPos.z * 2.0);
+            float hexAura = smoothstep(0.35, 0.85, grid) * 0.22;
+            float alpha = (fresnel * 0.85 + wave * 0.25 + hexAura) * uOpacity;
+            gl_FragColor = vec4(uColor, alpha);
+          }
+        `,
+        side: THREE.FrontSide,
         transparent: true,
-        opacity: cfg.opacity,
+        depthWrite: false,
         blending: THREE.AdditiveBlending
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.visible = false;
-      mesh.userData = { baseOpacity: cfg.opacity };
+      mesh.userData = { baseOpacity: cfg.baseOpacity };
       shieldGroup.add(mesh);
       return mesh;
     });
@@ -583,20 +659,22 @@ export const MeteorCanvas3D = ({
         }
       }
 
-      // 5.6 更新地球白色呼吸防護罩 (每50分加一層，向外太空傳導的漣漪呼吸光波)
+      // 5.6 更新地球 3D 半球能量呼吸防護罩 (每50分加一層，最多顯示5層向太空外擴的呼吸力場波)
       const currentShields = shieldsRef.current || 0;
       const displayLayers = Math.min(5, Math.max(0, currentShields));
       const t = (now || performance.now()) * 0.001;
       shieldMeshesRef.current.forEach((mesh, idx) => {
         if (idx < displayLayers) {
           mesh.visible = true;
-          // 向太空傳播的外擴光波：相位依 idx 由內向外延遲 (- idx * 0.72)
-          const wave = Math.sin(t * 2.4 - idx * 0.72);
-          const breath = Math.max(0.18, (wave * 0.35 + 0.65) * mesh.userData.baseOpacity);
-          mesh.material.opacity = breath;
-          // 顯著且優雅的向外呼吸微幅擴展：由內向外產生 2.2%~4.5% 的層次漣漪擴散
-          const outwardExpansion = 1.0 + (wave * 0.5 + 0.5) * (0.022 + idx * 0.006);
-          mesh.scale.set(outwardExpansion, outwardExpansion, 1.0);
+          // 向太空傳播的外擴光波：相位依 idx 由內向外延遲 (- idx * 0.75)
+          const wave = Math.sin(t * 2.5 - idx * 0.75);
+          const breath = Math.max(0.18, (wave * 0.3 + 0.7) * mesh.userData.baseOpacity);
+          if (mesh.material.uniforms) {
+            mesh.material.uniforms.uTime.value = t;
+            mesh.material.uniforms.uOpacity.value = breath;
+          }
+          const outwardExpansion = 1.0 + (wave * 0.5 + 0.5) * (0.015 + idx * 0.005);
+          mesh.scale.set(outwardExpansion, outwardExpansion, outwardExpansion);
         } else {
           mesh.visible = false;
         }
@@ -715,9 +793,9 @@ export const MeteorCanvas3D = ({
     if (earthMeshRef.current && atmoMeshRef.current) {
       const shift = (horizonOffset || 0) * 0.28;
       earthMeshRef.current.position.y = -78 + shift;
-      atmoMeshRef.current.position.y = -74 + shift;
+      atmoMeshRef.current.position.y = -78 + shift;
       if (shieldGroupRef.current) {
-        shieldGroupRef.current.position.y = -74 + shift;
+        shieldGroupRef.current.position.y = -78 + shift;
       }
     }
   }, [horizonOffset]);

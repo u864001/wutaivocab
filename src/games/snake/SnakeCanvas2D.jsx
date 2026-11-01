@@ -9,7 +9,9 @@ import {
   drawJungleMonkey,
   drawButterfly,
   drawMountainButterfly,
-  drawFirefly
+  drawFirefly,
+  drawOwl,
+  drawNightSquirrel
 } from './snakeJungleTheme';
 
 export const SnakeCanvas2D = ({
@@ -141,6 +143,12 @@ export const SnakeCanvas2D = ({
     bearImg.onload = () => {
       assetsRef.current.blackBear = bearImg;
     };
+
+    const squirrelImg = new Image();
+    squirrelImg.src = '/assets/common/loader/season_07_squirrel.webp';
+    squirrelImg.onload = () => {
+      assetsRef.current.flyingSquirrel = squirrelImg;
+    };
   }, []);
 
   // 主動畫渲染循環 (60 FPS requestAnimationFrame)
@@ -240,9 +248,11 @@ export const SnakeCanvas2D = ({
         });
       }
 
-      // 夜間螢火蟲緩慢漂移物理
+      // 夜間螢火蟲緩慢漂移物理 (不同於蝴蝶快速拍翅，螢火蟲為柔和浮游呼吸漂動)
       if (isDark) {
         firefliesRef.current.forEach(ff => {
+          ff.vx += (Math.sin(time * 0.8 + ff.phase) * 12 - ff.vx) * 0.04;
+          ff.vy += (Math.cos(time * 0.6 + ff.phase * 1.4) * 8 - ff.vy) * 0.04;
           ff.x += ff.vx * dt;
           ff.y += ff.vy * dt;
           if (ff.x < 45) { ff.x = 45; ff.vx = Math.abs(ff.vx); }
@@ -350,12 +360,12 @@ export const SnakeCanvas2D = ({
             ctx.restore();
           }
 
-          // 四周夜幕石板圍欄
-          drawLushBushBorder(ctx, width, height, time, 'indigenous', cheerTimerRef.current);
+          // 四周夜幕石板圍欄 (月光石板與月夜幽光百合)
+          drawLushBushBorder(ctx, width, height, time, 'indigenous', cheerTimerRef.current, true);
 
-          // 彩蛋：雲豹與黑熊
-          drawCloudedLeopard(ctx, leopardPosRef.current.x, leopardPosRef.current.y, time, assetsRef.current);
-          drawBlackBear(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering, assetsRef.current);
+          // 夜間專屬彩蛋：左上角神山大赤鼯鼠探頭、右上角領角鴞貓頭鷹眨眼轉頭
+          drawNightSquirrel(ctx, leopardPosRef.current.x, leopardPosRef.current.y, time, isCheering, assetsRef.current);
+          drawOwl(ctx, bearPosRef.current.x, bearPosRef.current.y, time, isCheering, assetsRef.current);
 
           // 🌟 緩慢漂浮微光呼吸的夜光螢火蟲 (取代白天的蝴蝶)
           firefliesRef.current.forEach(ff => {

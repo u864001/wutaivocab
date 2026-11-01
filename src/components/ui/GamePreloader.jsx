@@ -42,31 +42,31 @@ const CORE_ANIMALS = [
   }
 ];
 
-// 12 個月份節慶限定輪替動物彩蛋
+// 12 個月份節慶限定輪替動物彩蛋 (全新排定，絕不重複，各具文化/節慶與向前動態)
 const SEASONAL_ANIMALS = {
   1: { id: 'eagle', name: '神山金鷹', title: '元旦迎曦之翼', speed: '展翅翱翔', icon: '🦅', color: 'from-yellow-500 to-amber-300', src: '/assets/common/loader/season_01_eagle.webp' },
-  2: { id: 'lucky_dragon', name: '靈蛇祥瑞', title: '新春如意金蛇', speed: '騰雲駕霧', icon: '🐍', color: 'from-red-500 to-amber-400', src: '/assets/common/loader/season_02_snake.webp' },
-  3: { id: 'blossom_deer', name: '花冠小鹿', title: '春暖花開精靈', speed: '落櫻踏步', icon: '🌸', color: 'from-pink-400 to-rose-300', src: '/assets/common/loader/season_03_deer.webp' },
-  4: { id: 'easter_bunny', name: '彩蛋兔兔', title: '復活節彩蛋使者', speed: '滾蛋飛奔', icon: '🐰', color: 'from-teal-400 to-sky-300', src: '/assets/common/loader/season_04_bunny.webp' },
-  5: { id: 'lily_fairy', name: '百合精靈', title: '霧台純白聖花', speed: '微風輕拂', icon: '🌺', color: 'from-amber-200 to-emerald-200', src: '/assets/common/loader/season_05_lily.webp' },
-  6: { id: 'dragon_boat', name: '端午龍舟', title: '端午奪標飛龍', speed: '乘風破浪', icon: '🚣‍♂️', color: 'from-red-600 to-emerald-500', src: '/assets/common/loader/season_06_dragonboat.webp' },
-  7: { id: 'flying_squirrel', name: '仲夏飛鼠', title: '夏夜林梢滑翔', speed: '林間飛渡', icon: '🐿️', color: 'from-indigo-400 to-teal-300', src: '/assets/common/loader/season_07_squirrel.webp' },
-  8: { id: 'festival_warrior', name: '神山戰士', title: '豐年祭百合勇士', speed: '昂首闊步', icon: '🏹', color: 'from-amber-600 to-stone-800', src: '/assets/common/loader/season_08_warrior.webp' },
+  2: { id: 'sweetheart', name: '甜心萌兔', title: '情人節甜心使者', speed: '抱心躍步', icon: '🐰', color: 'from-pink-500 to-rose-400', src: '/assets/common/loader/season_02_sweetheart.webp' },
+  3: { id: 'hundred_pace_snake', name: '守護百步蛇', title: '魯凱長老圖騰', speed: '靈動前行', icon: '🐍', color: 'from-amber-600 to-orange-500', src: '/assets/common/loader/season_03_snake.webp' },
+  4: { id: 'easter_bunny', name: '彩蛋兔兔', title: '復活節彩蛋使者', speed: '滾蛋飛奔', icon: '🥚', color: 'from-teal-400 to-sky-300', src: '/assets/common/loader/season_04_bunny.webp' },
+  5: { id: 'mother_kangaroo', name: '母子袋鼠', title: '溫馨母親節守護', speed: '溫馨躍進', icon: '🦘', color: 'from-amber-500 to-rose-300', src: '/assets/common/loader/season_05_mother.webp' },
+  6: { id: 'dragon_boat', name: '端午龍舟', title: '端午奪標飛龍', speed: '乘風破浪', icon: '🚣‍♂️', color: 'from-red-600 to-amber-500', src: '/assets/common/loader/season_06_dragonboat.webp' },
+  7: { id: 'flying_squirrel', name: '大赤鼯鼠', title: '夏夜林梢滑翔', speed: '俯衝飛渡', icon: '🐿️', color: 'from-amber-600 to-teal-400', src: '/assets/common/loader/season_07_squirrel.webp' },
+  8: { id: 'festival_warrior', name: '神山小勇士', title: '豐年祭百合勇士', speed: '昂首闊步', icon: '🏹', color: 'from-red-600 to-stone-800', src: '/assets/common/loader/season_08_warrior.webp' },
   9: { id: 'moon_rabbit', name: '中秋奔月玉兔', title: '廣寒滿月傳奇', speed: '踏雲奔月', icon: '🌕', color: 'from-amber-300 to-yellow-100', src: '/assets/common/loader/season_09_moonrabbit.webp' },
-  10: { id: 'halloween_pumpkin', name: '萬聖南瓜怪', title: '萬聖奇幻南瓜', speed: '歡樂彈跳', icon: '🎃', color: 'from-orange-500 to-purple-600', src: '/assets/common/loader/season_10_pumpkin.webp' },
-  11: { id: 'harvest_turkey', name: '感恩火雞', title: '秋收感恩小使者', speed: '快步擺尾', icon: '🦃', color: 'from-amber-700 to-orange-400', src: '/assets/common/loader/season_11_turkey.webp' },
+  10: { id: 'halloween_pumpkin', name: '魔法南瓜怪', title: '萬聖奇幻南瓜', speed: '掃帚飛衝', icon: '🎃', color: 'from-orange-500 to-purple-600', src: '/assets/common/loader/season_10_pumpkin.webp' },
+  11: { id: 'harvest_turkey', name: '俏皮火雞', title: '秋收感恩小使者', speed: '風火輪衝刺', icon: '🦃', color: 'from-amber-700 to-orange-400', src: '/assets/common/loader/season_11_turkey.webp' },
   12: { id: 'santa_sleigh', name: '聖誕馴鹿雪橇', title: '聖誕奇蹟之約', speed: '踏雪飛馳', icon: '🎅', color: 'from-red-500 to-emerald-400', src: '/assets/common/loader/season_12_sleigh.webp' }
 };
 
 /**
  * 依據月份選出本次展示的角色
+ * 依指示：當月節慶 32%，四大常態 68% (每隻約 17%)
  */
 const selectAnimalForCurrentMonth = () => {
   const currentMonth = new Date().getMonth() + 1;
   const seasonal = SEASONAL_ANIMALS[currentMonth];
 
-  // 50% 機率展示當月節慶限定，50% 機率展示四大常態神獸
-  if (seasonal && Math.random() < 0.5) {
+  if (seasonal && Math.random() < 0.32) {
     return { ...seasonal, isSeasonal: true, month: currentMonth };
   }
 
@@ -90,6 +90,18 @@ export const GamePreloader = ({
   const assetProgressRef = useRef(0);
   const animFrameRef = useRef(null);
   const hasFinishedRef = useRef(false);
+
+  // 0. 載入頁保持靜音；離開載入頁時立即截斷語音 (Speech Synthesis Cutoff)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    return () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   // 1. 真實非同步資源預載 (Real Asset Preloading with decode)
   useEffect(() => {
@@ -190,41 +202,38 @@ export const GamePreloader = ({
 
         {/* 跑道與奔跑動物容器 */}
         <div className="w-full relative py-6 mb-3">
-          {/* 奔跑動物角色 (隨 progress 水平移動) */}
+          {/* 奔跑動物角色 (隨 progress 水平移動，面向右方衝刺) */}
           <div
-            className="absolute -top-7 transition-all duration-75 ease-out flex flex-col items-center pointer-events-none"
+            className="absolute -top-8 transition-all duration-75 ease-out flex flex-col items-center pointer-events-none"
             style={{
-              left: `calc(${progress}% - 32px)`,
-              filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.6))'
+              left: `calc(${progress}% - 32px)`
             }}
           >
-            {/* 動態角色顯示 */}
+            {/* 動態角色顯示 (微光置於角色後方，角色本體保持鮮明繪本質感，無文字標籤) */}
             <div className="relative w-16 h-16 flex items-center justify-center animate-bounce">
+              {/* 背後專屬柔和微光光暈 (Behind Sprite) */}
+              <div className="absolute inset-0 m-auto w-12 h-12 rounded-full bg-amber-400/20 blur-md pointer-events-none" />
+
               {!imgError ? (
                 <img
                   src={animal.src}
                   alt={animal.name}
                   onError={() => setImgError(true)}
-                  className="w-14 h-14 object-contain filter drop-shadow-[0_2px_8px_rgba(251,191,36,0.5)] transform -scale-x-100"
+                  className="w-14 h-14 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)] relative z-10"
                 />
               ) : (
                 /* 優雅降級圖標 */
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 border border-amber-200 flex items-center justify-center text-2xl shadow-lg">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 border border-amber-200 flex items-center justify-center text-2xl shadow-lg relative z-10">
                   {animal.icon}
                 </div>
               )}
 
-              {/* 腳底金光塵土微粒特效 */}
-              <div className="absolute -bottom-1 -left-1 flex gap-0.5 opacity-80">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                <span className="w-1 h-1 rounded-full bg-amber-200 animate-pulse delay-75" />
+              {/* 腳底微塵特效 */}
+              <div className="absolute -bottom-1 left-2 flex gap-0.5 opacity-75 z-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 animate-ping" />
+                <span className="w-1 h-1 rounded-full bg-amber-200/80 animate-pulse delay-75" />
               </div>
             </div>
-
-            {/* 動物名稱徽章 */}
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-stone-900/90 text-amber-300 border border-amber-500/30 whitespace-nowrap -mt-1 shadow-sm">
-              {animal.name}
-            </span>
           </div>
 
           {/* 神山石槽進度條底座 */}

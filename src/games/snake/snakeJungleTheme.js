@@ -37,15 +37,15 @@ const sliceSpineChains = (spine, maxDist = 200) => {
 };
 
 // ── 1. 繪製四周立體多層重疊的邊界 (神山石板砌牆與藤蔓百合 vs 雨林闊葉灌木) ──
-export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerTimer = 0) => {
+export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerTimer = 0, isDark = false) => {
   ctx.save();
 
   const isIndigenous = theme === 'indigenous';
 
   if (isIndigenous) {
     // ⛰️ 霧台神山：魯凱特色頁岩片疊石砌牆 (Stacked Slate Wall) + 蔓生青苔 + 純白百合
-    // 1) 石板矮牆基底深色
-    ctx.fillStyle = '#1c1917';
+    // 1) 石板矮牆基底深色 (夜間為月夜黑曜冷色調)
+    ctx.fillStyle = isDark ? '#090d16' : '#1c1917';
     ctx.fillRect(0, 0, w, 28);
     ctx.fillRect(0, h - 28, w, 28);
     ctx.fillRect(0, 0, 26, h);
@@ -57,15 +57,20 @@ export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerT
     for (let i = 0; i < countTop; i++) {
       const sx = i * slabW;
       // 頂部石板
-      ctx.fillStyle = i % 2 === 0 ? '#292524' : '#44403c';
+      ctx.fillStyle = isDark
+        ? (i % 2 === 0 ? '#0f172a' : '#1e293b')
+        : (i % 2 === 0 ? '#292524' : '#44403c');
       ctx.fillRect(sx, 0, slabW - 2, 24);
-      ctx.fillStyle = '#78716c';
-      ctx.fillRect(sx, 23, slabW - 2, 2); // 邊緣石材高光
+      // 邊緣石材高光 (夜間為月光冷灰藍)
+      ctx.fillStyle = isDark ? '#38bdf840' : '#78716c';
+      ctx.fillRect(sx, 23, slabW - 2, 2);
 
       // 底部石板
-      ctx.fillStyle = i % 2 === 0 ? '#292524' : '#44403c';
+      ctx.fillStyle = isDark
+        ? (i % 2 === 0 ? '#0f172a' : '#1e293b')
+        : (i % 2 === 0 ? '#292524' : '#44403c');
       ctx.fillRect(sx, h - 24, slabW - 2, 24);
-      ctx.fillStyle = '#78716c';
+      ctx.fillStyle = isDark ? '#38bdf840' : '#78716c';
       ctx.fillRect(sx, h - 25, slabW - 2, 2);
     }
 
@@ -74,15 +79,19 @@ export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerT
     for (let j = 0; j < countSide; j++) {
       const sy = j * slabH;
       // 左側石板
-      ctx.fillStyle = j % 2 === 0 ? '#292524' : '#44403c';
+      ctx.fillStyle = isDark
+        ? (j % 2 === 0 ? '#0f172a' : '#1e293b')
+        : (j % 2 === 0 ? '#292524' : '#44403c');
       ctx.fillRect(0, sy, 22, slabH - 2);
-      ctx.fillStyle = '#78716c';
+      ctx.fillStyle = isDark ? '#38bdf840' : '#78716c';
       ctx.fillRect(21, sy, 2, slabH - 2);
 
       // 右側石板
-      ctx.fillStyle = j % 2 === 0 ? '#292524' : '#44403c';
+      ctx.fillStyle = isDark
+        ? (j % 2 === 0 ? '#0f172a' : '#1e293b')
+        : (j % 2 === 0 ? '#292524' : '#44403c');
       ctx.fillRect(w - 22, sy, 22, slabH - 2);
-      ctx.fillStyle = '#78716c';
+      ctx.fillStyle = isDark ? '#38bdf840' : '#78716c';
       ctx.fillRect(w - 23, sy, 2, slabH - 2);
     }
 
@@ -91,7 +100,9 @@ export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerT
     for (let i = 0; i < Math.ceil(w / stepX); i++) {
       const x = i * stepX + 13;
       const wave = Math.sin(time * 2.2 + x * 0.03) * 1.5;
-      ctx.fillStyle = i % 2 === 0 ? '#15803d' : '#166534';
+      ctx.fillStyle = isDark
+        ? (i % 2 === 0 ? '#064e3b' : '#022c22')
+        : (i % 2 === 0 ? '#15803d' : '#166534');
       ctx.beginPath();
       ctx.ellipse(x, 24 + wave, 13, 6, 0.1, 0, Math.PI * 2);
       ctx.fill();
@@ -101,16 +112,16 @@ export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerT
       ctx.fill();
     }
 
-    // 4) 綻放純白百合花飾 (盛開純白瓣 + 鮮黃花蕊)
+    // 4) 綻放高山百合花飾 (日間純白、夜間月光冷白微光)
     const lilySpacing = 68;
     const lilyCount = Math.floor(w / lilySpacing);
     for (let i = 0; i < lilyCount; i++) {
       const lx = 36 + i * lilySpacing;
       const wavePhase = time * 2.2 - lx * 0.016;
       const sway = Math.sin(wavePhase) * 0.14 + (cheerTimer > 0 ? Math.sin(time * 8) * 0.25 : 0);
-      drawSingleLilyInBush(ctx, lx, 26, sway, -1);
+      drawSingleLilyInBush(ctx, lx, 26, sway, -1, isDark);
       if (i % 2 === 0) {
-        drawSingleLilyInBush(ctx, lx + 34, h - 26, sway, 1);
+        drawSingleLilyInBush(ctx, lx + 34, h - 26, sway, 1, isDark);
       }
     }
   } else {
@@ -188,13 +199,13 @@ export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerT
   ctx.restore();
 };
 
-const drawSingleLilyInBush = (ctx, x, y, sway, dirY = -1) => {
+const drawSingleLilyInBush = (ctx, x, y, sway, dirY = -1, isDark = false) => {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(sway);
 
-  // 鮮綠長花莖
-  ctx.strokeStyle = '#15803d';
+  // 鮮綠長花莖 (夜間微暗)
+  ctx.strokeStyle = isDark ? '#065f46' : '#15803d';
   ctx.lineWidth = 3.2;
   ctx.beginPath();
   ctx.moveTo(0, 0);
@@ -202,7 +213,7 @@ const drawSingleLilyInBush = (ctx, x, y, sway, dirY = -1) => {
   ctx.stroke();
 
   // 披針綠葉
-  ctx.fillStyle = '#16a34a';
+  ctx.fillStyle = isDark ? '#047857' : '#16a34a';
   ctx.beginPath();
   ctx.ellipse(-9, dirY * 11, 11, 3.5, dirY * -0.5, 0, Math.PI * 2);
   ctx.ellipse(9, dirY * 13, 11, 3.5, dirY * 0.5, 0, Math.PI * 2);
@@ -210,11 +221,11 @@ const drawSingleLilyInBush = (ctx, x, y, sway, dirY = -1) => {
 
   ctx.translate(dirY * 2, dirY * 24);
 
-  // 純白喇叭花瓣
-  ctx.fillStyle = '#ffffff';
-  ctx.shadowColor = 'rgba(255, 255, 255, 0.85)';
-  ctx.shadowBlur = 8;
-  ctx.strokeStyle = '#bbf7d0';
+  // 花瓣 (夜間為月光冷白帶冰藍微光)
+  ctx.fillStyle = isDark ? '#f0f9ff' : '#ffffff';
+  ctx.shadowColor = isDark ? 'rgba(56, 189, 248, 0.75)' : 'rgba(255, 255, 255, 0.85)';
+  ctx.shadowBlur = isDark ? 10 : 8;
+  ctx.strokeStyle = isDark ? '#7dd3fc' : '#bbf7d0';
   ctx.lineWidth = 1;
 
   for (let p = 0; p < 6; p++) {
@@ -1162,6 +1173,199 @@ export const drawFirefly = (ctx, x, y, time, phase = 0) => {
   ctx.beginPath();
   ctx.arc(hoverX, hoverY, 2.2, 0, Math.PI * 2);
   ctx.fill();
+
+  ctx.restore();
+};
+
+/**
+ * ── 7. 繪製夜間彩蛋：高山領角鴞 / 貓頭鷹 (Owl) ──
+ * 棲息於石板矮牆上，兩隻圓滾金色大眼偶爾眨眼、轉頭，答對時開心地拍打翅膀
+ */
+export const drawOwl = (ctx, x, y, time, isCheering, assets = null) => {
+  ctx.save();
+  ctx.translate(x, y);
+
+  // 呼吸與轉頭
+  const breath = Math.sin(time * 2.2) * 1.2;
+  const headTurn = Math.sin(time * 0.6) * 0.12;
+  ctx.translate(0, breath);
+
+  // 貓頭鷹身體 (羽毛斑紋)
+  ctx.fillStyle = '#1e293b';
+  ctx.beginPath();
+  ctx.ellipse(0, 4, 18, 22, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 胸前灰米色胸羽 (Cream Chest Feathers)
+  ctx.fillStyle = '#f1f5f9';
+  ctx.beginPath();
+  ctx.ellipse(0, 8, 12, 14, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 胸前 V 字細羽斑紋
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(-5, 4); ctx.lineTo(0, 8); ctx.lineTo(5, 4);
+  ctx.moveTo(-4, 10); ctx.lineTo(0, 14); ctx.lineTo(4, 10);
+  ctx.stroke();
+
+  // 左右收攏羽翼 (答對吃字時開心地展翅)
+  const wingFlap = isCheering ? Math.sin(time * 16) * 8 : 0;
+  ctx.fillStyle = '#334155';
+  ctx.beginPath();
+  ctx.ellipse(-16, 2 - wingFlap, 6, 15, -0.2, 0, Math.PI * 2);
+  ctx.ellipse(16, 2 - wingFlap, 6, 15, 0.2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 貓頭鷹頭部 (旋轉角度)
+  ctx.save();
+  ctx.translate(0, -12);
+  ctx.rotate(headTurn);
+
+  ctx.fillStyle = '#1e293b';
+  ctx.beginPath();
+  ctx.arc(0, 0, 16, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 領角鴞專屬羽角 (Tufted Ear Horns)
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath();
+  ctx.moveTo(-12, -8); ctx.lineTo(-16, -24); ctx.lineTo(-4, -14); ctx.closePath();
+  ctx.moveTo(12, -8); ctx.lineTo(16, -24); ctx.lineTo(4, -14); ctx.closePath();
+  ctx.fill();
+
+  // 面盤白色飾圈
+  ctx.fillStyle = '#cbd5e1';
+  ctx.beginPath();
+  ctx.arc(-6, -2, 7.5, 0, Math.PI * 2);
+  ctx.arc(6, -2, 7.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 金色璀璨大眼 (每 4 秒眨一次眼)
+  const isBlinking = (time % 4 < 0.25);
+  if (!isBlinking) {
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath();
+    ctx.arc(-6, -2, 6, 0, Math.PI * 2);
+    ctx.arc(6, -2, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 瞳孔與高光
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(-6, -2, 3.5, 0, Math.PI * 2);
+    ctx.arc(6, -2, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(-7, -4, 1.5, 0, Math.PI * 2);
+    ctx.arc(5, -4, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    // 眨眼可愛閉合線
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(-6, -2, 5, 0.2, Math.PI - 0.2);
+    ctx.arc(6, -2, 5, 0.2, Math.PI - 0.2);
+    ctx.stroke();
+  }
+
+  // 小彎喙
+  ctx.fillStyle = '#ea580c';
+  ctx.beginPath();
+  ctx.moveTo(-2, 0); ctx.lineTo(2, 0); ctx.lineTo(0, 6); ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+
+  // 金黃鳥爪抓握石板矮牆
+  ctx.fillStyle = '#f59e0b';
+  ctx.beginPath();
+  ctx.arc(-8, 25, 3, 0, Math.PI * 2);
+  ctx.arc(-4, 25, 3, 0, Math.PI * 2);
+  ctx.arc(4, 25, 3, 0, Math.PI * 2);
+  ctx.arc(8, 25, 3, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+};
+
+/**
+ * ── 8. 繪製夜間彩蛋：神山大赤鼯鼠 (Flying Squirrel) ──
+ * 於左上方石板矮牆探頭探腦，大眼水汪汪，帶有可愛小爪與披風飛膜
+ */
+export const drawNightSquirrel = (ctx, x, y, time, isCheering, assets = null) => {
+  ctx.save();
+  ctx.translate(x, y);
+
+  const breathe = Math.sin(time * 2.4) * 1.5;
+  ctx.translate(0, breathe);
+
+  if (assets?.flyingSquirrel && assets.flyingSquirrel.complete && assets.flyingSquirrel.naturalWidth > 0) {
+    const size = 52;
+    ctx.drawImage(assets.flyingSquirrel, -size / 2, -size / 2, size, size);
+  } else {
+    // 蓬鬆毛茸茸身軀
+    ctx.fillStyle = '#b45309';
+    ctx.beginPath();
+    ctx.ellipse(0, 4, 16, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 白色小肚腩
+    ctx.fillStyle = '#fef3c7';
+    ctx.beginPath();
+    ctx.ellipse(0, 8, 10, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 圓大耳朵
+    ctx.fillStyle = '#78350f';
+    ctx.beginPath();
+    ctx.arc(-11, -8, 6, 0, Math.PI * 2);
+    ctx.arc(11, -8, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fbcfe8';
+    ctx.beginPath();
+    ctx.arc(-11, -8, 3.5, 0, Math.PI * 2);
+    ctx.arc(11, -8, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 水汪汪黑亮夜行大眼
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(-6, -2, 4.5, 0, Math.PI * 2);
+    ctx.arc(6, -2, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(-7, -4, 1.8, 0, Math.PI * 2);
+    ctx.arc(5, -4, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 粉嫩小鼻與鬍鬚
+    ctx.fillStyle = '#ec4899';
+    ctx.beginPath();
+    ctx.arc(0, 3, 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#fef3c7';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(-3, 3); ctx.lineTo(-12, 1);
+    ctx.moveTo(-3, 4); ctx.lineTo(-11, 6);
+    ctx.moveTo(3, 3); ctx.lineTo(12, 1);
+    ctx.moveTo(3, 4); ctx.lineTo(11, 6);
+    ctx.stroke();
+
+    // 抓在石板邊緣的前小爪
+    ctx.fillStyle = '#fef3c7';
+    ctx.beginPath();
+    ctx.arc(-8, 16, 3, 0, Math.PI * 2);
+    ctx.arc(8, 16, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
   ctx.restore();
 };
