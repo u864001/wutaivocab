@@ -151,8 +151,8 @@ export const PreloaderShowcase = ({ onBack }) => {
               backgroundImage: 'radial-gradient(ellipse at center, rgba(30, 41, 59, 0.8) 0%, rgba(2, 6, 23, 0.98) 100%)'
             }}
           >
-            {/* 背景神山星芒粒子 */}
-            <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:24px_24px]" />
+            {/* 背景神山深色微粒子 (中性深灰，絕無泛黃光點) */}
+            <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#475569_1px,transparent_1px)] [background-size:24px_24px]" />
 
             {/* 標題與當前神獸徽章 */}
             <div className="w-full flex items-center justify-between z-10">
@@ -184,19 +184,13 @@ export const PreloaderShowcase = ({ onBack }) => {
                 }}
               >
                 <div className="relative w-16 h-16 flex items-center justify-center animate-bounce">
-                  {/* 背後柔和微光光暈 (Behind Sprite) */}
-                  <div className="absolute inset-0 m-auto w-12 h-12 rounded-full bg-amber-400/20 blur-md pointer-events-none" />
-
                   <img
                     src={character.src}
                     alt={character.name}
-                    className="w-14 h-14 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)] relative z-10"
+                    className="w-14 h-14 object-contain select-none pointer-events-none relative z-10"
                   />
-                  {/* 腳底金光微粒特效 */}
-                  <div className="absolute -bottom-1 left-2 flex gap-0.5 opacity-90 z-0">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                    <span className="w-1 h-1 rounded-full bg-amber-200 animate-pulse delay-75" />
-                  </div>
+                  {/* 腳底純黑地面接地陰影 (純黑自然接地，絕無任何金色光霧) */}
+                  <div className="absolute -bottom-1 w-8 h-1.5 rounded-full bg-black/45 blur-[1px] pointer-events-none z-0" />
                 </div>
               </div>
 
@@ -404,7 +398,7 @@ export const PreloaderShowcase = ({ onBack }) => {
                       <img
                         src={c.src}
                         alt={c.name}
-                        className="w-10 h-10 object-contain filter drop-shadow"
+                        className="w-10 h-10 object-contain select-none pointer-events-none"
                       />
                     </div>
 

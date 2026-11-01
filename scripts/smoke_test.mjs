@@ -256,8 +256,8 @@ async function run() {
         (() => {
           if (!document.body) return 'loading';
           const text = document.body.innerText || '';
-          if (text.includes('正在同步雲端單字庫') || text.includes('Adventure World Loading') || text.includes('高山祕境') || text.includes('載入中') || text.includes('微學習')) return 'syncing';
-          if (text.includes('左側托盤') || text.includes('找不同（點擊不扣心）') || text.includes('世界節慶與環球港灣') || document.querySelectorAll('svg').length >= 2) return 'ready';
+          if (text.includes('正在同步雲端單字庫') || text.includes('Adventure World Loading') || text.includes('高山祕境') || text.includes('Forest Wisdom') || text.includes('冒險境界')) return 'syncing';
+          if (text.includes('左側托盤') || text.includes('找不同（點擊不扣心）') || text.includes('世界節慶與環球港灣')) return 'ready';
           return 'waiting';
         })()
       `);

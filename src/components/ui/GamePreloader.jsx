@@ -183,8 +183,8 @@ export const GamePreloader = ({
         backgroundImage: 'radial-gradient(ellipse at center, rgba(30, 41, 59, 0.75) 0%, rgba(2, 6, 23, 0.98) 100%)'
       }}
     >
-      {/* 柔和背景神山微光紋理 */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:24px_24px]" />
+      {/* 柔和暗色背景微紋理 (中性深灰點，絕不泛黃) */}
+      <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#475569_1px,transparent_1px)] [background-size:24px_24px]" />
 
       <div className="relative w-full max-w-lg mx-auto flex flex-col items-center text-center px-4">
         {/* 標題與節慶標籤 */}
@@ -209,30 +209,24 @@ export const GamePreloader = ({
               left: `calc(${progress}% - 32px)`
             }}
           >
-            {/* 動態角色顯示 (微光置於角色後方，角色本體保持鮮明繪本質感，無文字標籤) */}
+            {/* 動態角色顯示 (完全去除金色光暈與金霧，呈現純淨鮮明的兒童繪本風) */}
             <div className="relative w-16 h-16 flex items-center justify-center animate-bounce">
-              {/* 背後專屬柔和微光光暈 (Behind Sprite) */}
-              <div className="absolute inset-0 m-auto w-12 h-12 rounded-full bg-amber-400/20 blur-md pointer-events-none" />
-
               {!imgError ? (
                 <img
                   src={animal.src}
                   alt={animal.name}
                   onError={() => setImgError(true)}
-                  className="w-14 h-14 object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)] relative z-10"
+                  className="w-14 h-14 object-contain select-none pointer-events-none relative z-10"
                 />
               ) : (
                 /* 優雅降級圖標 */
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 border border-amber-200 flex items-center justify-center text-2xl shadow-lg relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-stone-800 to-stone-700 border border-stone-600 flex items-center justify-center text-2xl shadow-lg relative z-10">
                   {animal.icon}
                 </div>
               )}
 
-              {/* 腳底微塵特效 */}
-              <div className="absolute -bottom-1 left-2 flex gap-0.5 opacity-75 z-0">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80 animate-ping" />
-                <span className="w-1 h-1 rounded-full bg-amber-200/80 animate-pulse delay-75" />
-              </div>
+              {/* 腳底純黑地面接地陰影 (純黑自然接地，絕無任何金色光暈) */}
+              <div className="absolute -bottom-1 w-8 h-1.5 rounded-full bg-black/45 blur-[1px] pointer-events-none z-0" />
             </div>
           </div>
 
