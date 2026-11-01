@@ -180,10 +180,10 @@ export const PreloaderShowcase = ({ onBack }) => {
               <div
                 className="absolute -top-8 transition-all duration-75 ease-out flex flex-col items-center pointer-events-none"
                 style={{
-                  left: `calc(${progress}% - 32px)`
+                  left: `clamp(0px, calc(${progress}% - 28px), calc(100% - 56px))`
                 }}
               >
-                <div className="relative w-16 h-16 flex items-center justify-center animate-bounce">
+                <div className="relative w-14 h-14 flex items-center justify-center animate-bounce">
                   <img
                     src={character.src}
                     alt={character.name}
@@ -201,6 +201,8 @@ export const PreloaderShowcase = ({ onBack }) => {
                   style={{ width: `${progress}%` }}
                 >
                   <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                  {/* 進度前沿引路光圈 (Leading Head Indicator) */}
+                  <div className="absolute right-0 top-0 bottom-0 w-2 bg-white/80 rounded-full shadow-[0_0_8px_#ffffff]" />
                 </div>
               </div>
             </div>
@@ -414,6 +416,15 @@ export const PreloaderShowcase = ({ onBack }) => {
                       <p className="text-[11px] text-stone-400 font-bold truncate max-w-[170px]">
                         {c.title}
                       </p>
+                      {/* 當前選中神獸即時同步跑動進度條 */}
+                      {isSelected && (
+                        <div className="w-full mt-1.5 h-1.5 rounded-full bg-stone-950 border border-amber-500/30 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full bg-gradient-to-r ${c.color} transition-all duration-75`}
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -422,7 +433,7 @@ export const PreloaderShowcase = ({ onBack }) => {
                       ? 'bg-amber-500 text-stone-950 shadow-sm'
                       : 'bg-stone-800 text-stone-400'
                   }`}>
-                    {isSelected ? '跑步中' : '選擇'}
+                    {isSelected ? `奔馳中 ${Math.floor(progress)}%` : '選擇'}
                   </span>
                 </div>
               );

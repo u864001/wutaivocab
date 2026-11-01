@@ -206,11 +206,11 @@ export const GamePreloader = ({
           <div
             className="absolute -top-8 transition-all duration-75 ease-out flex flex-col items-center pointer-events-none"
             style={{
-              left: `calc(${progress}% - 32px)`
+              left: `clamp(0px, calc(${progress}% - 28px), calc(100% - 56px))`
             }}
           >
             {/* 動態角色顯示 (完全去除金色光暈與金霧，呈現純淨鮮明的兒童繪本風) */}
-            <div className="relative w-16 h-16 flex items-center justify-center animate-bounce">
+            <div className="relative w-14 h-14 flex items-center justify-center animate-bounce">
               {!imgError ? (
                 <img
                   src={animal.src}
@@ -234,11 +234,13 @@ export const GamePreloader = ({
           <div className="w-full h-4 rounded-full bg-stone-900/90 border-2 border-stone-700/80 p-0.5 shadow-inner overflow-hidden relative">
             {/* 進度填充槽 */}
             <div
-              className={`h-full rounded-full bg-gradient-to-r ${animal.color} transition-all duration-100 ease-out relative shadow-[0_0_12px_rgba(245,158,11,0.5)]`}
+              className={`h-full rounded-full bg-gradient-to-r ${animal.color} transition-all duration-75 ease-out relative shadow-[0_0_12px_rgba(245,158,11,0.5)]`}
               style={{ width: `${progress}%` }}
             >
               {/* 高光流動條 */}
               <div className="absolute inset-0 bg-white/20 animate-pulse" />
+              {/* 進度前沿引路光圈 (Leading Head Indicator) */}
+              <div className="absolute right-0 top-0 bottom-0 w-2 bg-white/80 rounded-full shadow-[0_0_8px_#ffffff]" />
             </div>
           </div>
 
