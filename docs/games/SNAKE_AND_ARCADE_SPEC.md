@@ -39,3 +39,7 @@
    - 讀取 `settings?.selectedUnits` 時一律使用 `(settings?.selectedUnits || [])`，當未選單元或題庫為空時自動回退至預設單字池或字母模式（`isAlphabetMode`）。
 2. **低年級字母模式 (`abc`) 支援**：
    - 當 `qualifyingBook === 'abc'` 或 `settings?.alphaMode` 為真時，自動切換為大小寫字母配對題庫。
+3. **倒數計時與愛心扣除鐵律 (`WhackAMoleGame.jsx`)**：
+   - **倒數計時器**：`useEffect` 依賴項必須包含 `[gameState, isPreloading, triggerGameOver]`，確保預載完成後立即啟動 60 秒倒數，倒數至 0 秒時觸發結算；倒數最後 10 秒啟動狂暴模式與警示音。
+   - **生命值扣除與結算**：玩家誤擊干擾字（答錯）或蜂巢搗蛋鼠時，每次扣除 1 顆愛心（初始 3 顆，顯示 `-10 💔`），扣完至 0 顆立即觸發遊戲結束進入結算畫面；嚴禁在 `setState(prev => ...)` 內執行副作用。
+   - **重開防呆**：點擊「再玩一次」時必須徹底重設 `isTransitioningRef.current = false`、`livesRef.current = 3`、`timeLeftRef.current = 60` 與計時器，杜絕操作被鎖死。

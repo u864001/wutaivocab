@@ -95,9 +95,11 @@ export const WhackAMoleGame = ({
   const [isPreloading, setIsPreloading] = useState(true);
   const [gameState, setGameState] = useState('playing'); // 'playing' | 'gameover'
   const [score, setScore] = useState(0);
+  const scoreRef = useRef(0);
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
   const [lives, setLives] = useState(3);
+  const livesRef = useRef(3);
   const [timeLeft, setTimeLeft] = useState(60); // 60 秒挑戰
   const [roundIndex, setRoundIndex] = useState(0);
 
@@ -137,6 +139,24 @@ export const WhackAMoleGame = ({
     moleTimersRef.current = [];
   }, []);
 
+  // ── 遊戲結束判定 (提前定義供倒數計時與點擊判定使用) ──
+  const triggerGameOver = useCallback((reason) => {
+    isTransitioningRef.current = true;
+    clearAllMoleTimers();
+    moleBgm.stop();
+    setGameState('gameover');
+    if (reason === 'timeup' && scoreRef.current >= 60) {
+      soundEngine.win();
+      confetti({ particleCount: 50, spread: 70, origin: { y: 0.5 } });
+    } else {
+      soundEngine.wrong();
+    }
+
+    // 全體地鼠強制沉沒
+    setHoles(curr => curr.map(h => h ? { ...h, status: 'retreating' } : null));
+    setTimeout(() => setHoles(Array(9).fill(null)), 400);
+  }, [clearAllMoleTimers]);
+
   // ── 4. 是否處於最後 10 秒狂暴期 ──
   const isBerserk = useMemo(() => {
     return timeLeft <= 10 && timeLeft > 0 && gameState === 'playing';
@@ -163,23 +183,23 @@ export const WhackAMoleGame = ({
   // ── 5. 倒數 60 秒計時器（僅更新倒數數值，不影響題目生命週期） ──
   useEffect(() => {
     if (isPreloading || gameState !== 'playing') return;
-    timeLeftRef.current = 60;
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        const nextVal = prev <= 1 ? 0 : prev - 1;
-        timeLeftRef.current = nextVal;
-        if (nextVal <= 10 && nextVal > 0) {
-          soundEngine.countdownTensionTick(nextVal);
-        }
-        if (nextVal === 0) {
-          clearInterval(timer);
-          triggerGameOver('timeup');
-        }
-        return nextVal;
-      });
+      if (timeLeftRef.current <= 1) {
+        clearInterval(timer);
+        setTimeLeft(0);
+        timeLeftRef.current = 0;
+        triggerGameOver('timeup');
+        return;
+      }
+      const nextVal = timeLeftRef.current - 1;
+      timeLeftRef.current = nextVal;
+      setTimeLeft(nextVal);
+      if (nextVal <= 10 && nextVal > 0) {
+        soundEngine.countdownTensionTick(nextVal);
+      }
     }, 1000);
     return () => clearInterval(timer);
-  }, [gameState]);
+  }, [gameState, isPreloading, triggerGameOver]);
 
   // ── 6. 挑選下一題（35% 機率抽錯題池，65% 抽新題；待測庫抽空則自動循環） ──
   const getNextWord = useCallback(() => {
@@ -462,7 +482,11 @@ export const WhackAMoleGame = ({
       // 得分計算：正解 10 分 + 連擊獎勵（黃金鼠 +60 分）
       const bonus = mole.isGold ? 50 : combo * 2;
       const earned = 10 + bonus;
-      setScore(s => s + earned);
+      setScore(s => {
+        const next = s + earned;
+        scoreRef.current = next;
+        return next;
+      });
 
       const nextCombo = combo + 1;
       setCombo(nextCombo);
@@ -501,8 +525,13 @@ export const WhackAMoleGame = ({
     // ── B. 誤擊蜂巢搗蛋鼠 ──
     } else if (mole.isPrank) {
       soundEngine.wrong();
+      soundEngine.hapticPulse('strong');
       setCombo(0);
-      setScore(s => Math.max(0, s - 20));
+      setScore(s => {
+        const next = Math.max(0, s - 20);
+        scoreRef.current = next;
+        return next;
+      });
 
       // 觸發畫面震動
       setIsShaking(true);
@@ -519,65 +548,68 @@ export const WhackAMoleGame = ({
         });
       });
 
-      // 扣除愛心
-      setLives(l => {
-        const nextLives = l - 1;
-        if (nextLives <= 0) {
-          setTimeout(() => triggerGameOver('dead'), 400);
-          return 0;
-        }
+      // 扣除愛心 (嚴禁在 setState 內執行副作用)
+      const nextLives = Math.max(0, livesRef.current - 1);
+      livesRef.current = nextLives;
+      setLives(nextLives);
+
+      if (nextLives <= 0) {
+        setTimeout(() => triggerGameOver('dead'), 400);
+      } else {
         // 生命尚存，沉降換下一題
         setTimeout(() => {
           setHoles(Array(9).fill(null));
           setRoundIndex(r => r + 1);
           startNextQuestion();
         }, 450);
-        return nextLives;
-      });
+      }
 
-    // ── C. 誤擊其他誘答單字地鼠 ──
+    // ── C. 誤擊其他誘答單字地鼠 (答錯扣心) ──
     } else {
       soundEngine.wrong();
+      soundEngine.hapticPulse('normal');
       setCombo(0);
-      setScore(s => Math.max(0, s - 10));
+      setScore(s => {
+        const next = Math.max(0, s - 10);
+        scoreRef.current = next;
+        return next;
+      });
+
+      // 觸發微震動
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 350);
 
       // 將當前目標單字沉入錯題池
       if (currentTarget && !retryPoolRef.current.some(w => w.word === currentTarget.word)) {
         retryPoolRef.current.push(currentTarget);
       }
 
-      // 當前地鼠標記錯叉，其餘地鼠平滑下沉
+      // 當前地鼠標記錯叉與扣心，其餘地鼠平滑下沉
       setHoles(curr => {
         return curr.map((h, idx) => {
           if (!h) return null;
           if (idx === holeId) {
-            return { ...h, status: 'hit', hitResult: '-10 ❌' };
+            return { ...h, status: 'hit', hitResult: '-10 💔' };
           }
           return { ...h, status: 'retreating' };
         });
       });
 
-      setTimeout(() => {
-        setHoles(Array(9).fill(null));
-        setRoundIndex(r => r + 1);
-        startNextQuestion();
-      }, 420);
-    }
-  };
+      // 扣除愛心 (答錯扣心，嚴禁在 setState 內執行副作用)
+      const nextLives = Math.max(0, livesRef.current - 1);
+      livesRef.current = nextLives;
+      setLives(nextLives);
 
-  // ── 11. 遊戲結束判定 ──
-  const triggerGameOver = (reason) => {
-    clearAllMoleTimers();
-    moleBgm.stop();
-    setGameState('gameover');
-    soundEngine.wrong();
-
-    // 全體地鼠強制沉沒
-    setHoles(curr => curr.map(h => h ? { ...h, status: 'retreating' } : null));
-    setTimeout(() => setHoles(Array(9).fill(null)), 400);
-
-    if (score >= 60) {
-      confetti({ particleCount: 50, spread: 70, origin: { y: 0.5 } });
+      if (nextLives <= 0) {
+        setTimeout(() => triggerGameOver('dead'), 400);
+      } else {
+        // 生命尚存，沉降換下一題
+        setTimeout(() => {
+          setHoles(Array(9).fill(null));
+          setRoundIndex(r => r + 1);
+          startNextQuestion();
+        }, 450);
+      }
     }
   };
 
@@ -586,10 +618,13 @@ export const WhackAMoleGame = ({
     clearAllMoleTimers();
     questionCountRef.current = 0;
     goldPityRateRef.current = 0.10;
+    isTransitioningRef.current = false;
     setScore(0);
+    scoreRef.current = 0;
     setCombo(0);
     setMaxCombo(0);
     setLives(3);
+    livesRef.current = 3;
     setTimeLeft(60);
     timeLeftRef.current = 60;
     setRoundIndex(0);
@@ -723,10 +758,10 @@ export const WhackAMoleGame = ({
             {[...Array(3)].map((_, i) => (
               <Heart
                 key={i}
-                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform ${
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all duration-300 ${
                   i < lives
-                    ? 'text-rose-500 fill-rose-500 scale-100'
-                    : 'text-slate-600 scale-90'
+                    ? 'text-rose-500 fill-rose-500 scale-100 drop-shadow-[0_0_6px_rgba(244,63,94,0.6)]'
+                    : 'text-slate-600 scale-75 opacity-30'
                 }`}
               />
             ))}
@@ -905,7 +940,7 @@ export const WhackAMoleGame = ({
             </h3>
             
             <p className="text-xs font-bold text-slate-300 mb-4">
-              {lives > 0 ? '手速驚人，成功守護了森林字卡！' : '別灰心，小心不要敲到蜂巢搗蛋鼠喔！'}
+              {lives > 0 ? '手速驚人，成功守護了森林字卡！' : '別灰心，看清楚單字再敲擊，小心不要敲到錯誤單字或蜂巢喔！'}
             </p>
 
             <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-black/50 border border-white/15 mb-5 text-center">
@@ -924,7 +959,7 @@ export const WhackAMoleGame = ({
               mode={isAlphabetMode ? 'mole-abc' : 'mole-vocab'}
               book={isAlphabetMode ? 'abc' : (qualifyingBook || '1')}
               score={score}
-              time={60}
+              time={Math.max(1, 60 - timeLeft)}
               totalCount={Math.max(score, 10)}
               rangeText={isAlphabetMode ? '60秒極速打地鼠 (字母 ABC)' : (qualifyingBook ? `第 ${qualifyingBook} 冊單字打地鼠` : '全冊單字打地鼠')}
               reviewWords={[]}
