@@ -320,19 +320,19 @@ export const drawHundredPaceSnake = (
       const nx = -ty / len;
       const ny = tx / len;
 
-      // 半徑：從頭部腰身到尾端平滑漸變收尖 (精緻修長流線身軀，原寬度 80%)
+      // 半徑：修長優雅的身軀 (略細於蛇頭，從腰身後半段 50% 開始平緩自然收細至蛇尾)
       const t = gIdx / Math.max(1, totalSegs - 1);
-      let r = 14.0;
-      if (t > 0.65) {
-        const tailFrac = (t - 0.65) / 0.35;
-        r = 14.0 * (1.0 - tailFrac * 0.82); // 尾尖平滑收細至約 2.5px
+      let r = 10.0;
+      if (t > 0.50) {
+        const tailFrac = (t - 0.50) / 0.50;
+        r = 10.0 * (1.0 - tailFrac * 0.72); // 從 10px 平滑漸進收細至 2.8px，絕無倉促突兀感
       }
 
       // 吞嚥字母波浪隆起 (Belly Bulge)
       bulges.forEach(b => {
         const dist = Math.abs(t - b.progress);
         if (dist < 0.16) {
-          const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.52;
+          const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.42;
           r *= 1.0 + bulgeFactor;
         }
       });
@@ -382,7 +382,7 @@ export const drawHundredPaceSnake = (
       ctx.lineTo(chain[i].pt.x, chain[i].pt.y);
     }
     ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.16)' : 'rgba(251, 146, 60, 0.32)';
-    ctx.lineWidth = 10;
+    ctx.lineWidth = 7.0;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke();
@@ -393,7 +393,7 @@ export const drawHundredPaceSnake = (
     ctx.lineWidth = 1.8;
     ctx.stroke();
 
-    // 2) 沿著連貫中心線，在各骨骼節點處繪製經典祖靈幾何三角菱形紋 (等比 80%)
+    // 2) 沿著連貫中心線，在各骨骼節點處繪製經典祖靈幾何三角菱形紋 (等比縮放適配纖修身軀)
     for (let k = chain.length - 1; k >= 1; k--) {
       const item = chain[k];
       const pt = item.pt;
@@ -404,10 +404,10 @@ export const drawHundredPaceSnake = (
       const angle = Math.atan2(pt.y - prevPt.y, pt.x - prevPt.x);
 
       const t = gIdx / Math.max(1, totalSegs - 1);
-      let r = 13.2;
-      if (t > 0.65) {
-        const tailFrac = (t - 0.65) / 0.35;
-        r = 13.2 * (1.0 - tailFrac * 0.82);
+      let r = 9.2;
+      if (t > 0.50) {
+        const tailFrac = (t - 0.50) / 0.50;
+        r = 9.2 * (1.0 - tailFrac * 0.72);
       }
 
       ctx.save();
@@ -683,16 +683,16 @@ export const drawGreenSnake = (
       const ny = tx / len;
 
       const t = gIdx / Math.max(1, totalSegs - 1);
-      let r = 14.0;
-      if (t > 0.65) {
-        const tailFrac = (t - 0.65) / 0.35;
-        r = 14.0 * (1.0 - tailFrac * 0.82); // 尾尖收細至約 2.5px
+      let r = 10.0;
+      if (t > 0.50) {
+        const tailFrac = (t - 0.50) / 0.50;
+        r = 10.0 * (1.0 - tailFrac * 0.72); // 尾端平緩收細至約 2.8px
       }
 
       bulges.forEach(b => {
         const dist = Math.abs(t - b.progress);
         if (dist < 0.16) {
-          const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.52;
+          const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.42;
           r *= 1.0 + bulgeFactor;
         }
       });
@@ -734,7 +734,7 @@ export const drawGreenSnake = (
     ctx.moveTo(chain[0].pt.x, chain[0].pt.y);
     for (let i = 1; i < chain.length; i++) ctx.lineTo(chain[i].pt.x, chain[i].pt.y);
     ctx.strokeStyle = 'rgba(167, 243, 208, 0.45)';
-    ctx.lineWidth = 9;
+    ctx.lineWidth = 7.0;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke();
@@ -1097,9 +1097,23 @@ export const drawCloudedLeopard = (ctx, x, y, time, assets = null) => {
 };
 
 // ── 7. 繪製彩蛋：熱帶小猴子 ──
-export const drawJungleMonkey = (ctx, x, y, time, isCheering) => {
+export const drawJungleMonkey = (ctx, x, y, time, isCheering, assets = null) => {
   ctx.save();
   ctx.translate(x, y);
+
+  if (assets?.monkey && assets.monkey.complete && assets.monkey.naturalWidth > 0) {
+    const bob = isCheering ? Math.sin(time * 12) * 5 : Math.sin(time * 1.8) * 1.5;
+    ctx.translate(0, bob);
+    const monkeySize = 44;
+    ctx.save();
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 4;
+    ctx.drawImage(assets.monkey, -monkeySize / 2, -monkeySize * 0.7, monkeySize, monkeySize);
+    ctx.restore();
+    ctx.restore();
+    return;
+  }
 
   const bob = isCheering ? Math.sin(time * 12) * 5 : Math.sin(time * 1.8) * 1.5;
   ctx.translate(0, bob);
@@ -1288,6 +1302,21 @@ export const drawFirefly = (ctx, x, y, time, phase = 0) => {
 export const drawOwl = (ctx, x, y, time, isCheering, assets = null) => {
   ctx.save();
   ctx.translate(x, y);
+
+  if (assets?.owl && assets.owl.complete && assets.owl.naturalWidth > 0) {
+    const breath = Math.sin(time * 2.2) * 1.5;
+    const cheer = isCheering ? Math.sin(time * 14) * 4 : 0;
+    ctx.translate(0, breath - cheer);
+    const owlSize = 46;
+    ctx.save();
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 4;
+    ctx.drawImage(assets.owl, -owlSize / 2, -owlSize * 0.7, owlSize, owlSize);
+    ctx.restore();
+    ctx.restore();
+    return;
+  }
 
   // 呼吸與轉頭
   const breath = Math.sin(time * 2.2) * 1.2;

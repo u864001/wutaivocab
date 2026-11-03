@@ -88,7 +88,10 @@ export const SnakeCanvas2D = ({
     snakeHead: null,
     snakeTail: null,
     cloudedLeopard: null,
-    blackBear: null
+    blackBear: null,
+    flyingSquirrel: null,
+    owl: null,
+    monkey: null
   });
 
   useEffect(() => {
@@ -148,6 +151,19 @@ export const SnakeCanvas2D = ({
     squirrelImg.src = '/assets/common/loader/season_07_squirrel.webp';
     squirrelImg.onload = () => {
       assetsRef.current.flyingSquirrel = squirrelImg;
+    };
+
+    // 預載夜間領角鴞/貓頭鷹與熱帶獼猴高階繪本 Sprite
+    const owlImg = new Image();
+    owlImg.src = '/assets/snake/snake_owl.webp';
+    owlImg.onload = () => {
+      assetsRef.current.owl = owlImg;
+    };
+
+    const monkeyImg = new Image();
+    monkeyImg.src = '/assets/snake/snake_monkey.webp';
+    monkeyImg.onload = () => {
+      assetsRef.current.monkey = monkeyImg;
     };
   }, []);
 
@@ -392,7 +408,7 @@ export const SnakeCanvas2D = ({
         drawLushBushBorder(ctx, width, height, time, 'jungle', cheerTimerRef.current);
 
         // 探頭彩蛋：熱帶小猴子 (右上角，答對時舉香蕉歡呼)
-        drawJungleMonkey(ctx, monkeyPosRef.current.x, monkeyPosRef.current.y, time, isCheering);
+        drawJungleMonkey(ctx, monkeyPosRef.current.x, monkeyPosRef.current.y, time, isCheering, assetsRef.current);
 
         // 自由飛舞的藍閃蝶
         butterfliesRef.current.forEach(bf => {
