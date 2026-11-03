@@ -24,7 +24,9 @@
 
 1. **每滿 50 分自動獲得一層地球能量防護罩**：
    - 玩家分數每跨越 50 分整數倍（`Math.floor(newScore / 50) > Math.floor(prevScore / 50)`），自動增加 1 層地球護盾（邏輯層數無上限，3D 視覺光暈最多顯示 5 層）。
-   - **3D 視覺能量罩架構**：採用圍繞地球面向外太空之同心半球能量罩（`SphereGeometry(radius, 64, 32, 0, Math.PI * 2, 0, Math.PI * 0.42)`，半徑 77.0 至 82.6），Shader 渲染強烈邊緣力場光暈（Fresnel）與波長漣漪（Ripple），層數上限封頂 5 層，避免分數高時光暈過曝遮蔽太空。
+   - **3D 視覺能量罩架構（單一呼吸防護光暈力場）**：
+     - 嚴禁拆分為多重生硬的同心圓洋蔥圈網格！改採**單一連續大氣能量呼吸光罩與外圍柔和光冕（Corona Halo）**，緊貼大氣防衛圈（基準半徑 76.5，避免大幅外擴遮蔽深空）。
+     - **5 階平滑擴展與受損縮回**：隨護盾累積（1~5 層），光罩半徑微幅向外擴展（每階 +0.5%，5 階上限 +2.0%），透明度與光采由天藍升級至蔚藍金輝；當受到撞擊護盾降回 4 層以下時，光暈即時依比例縮回相應階層，兼具宏偉視覺反饋與太空空域純淨度。
    - 觸發護盾時呼叫 `soundEngine.powerUp()`（定義於 `src/services/audio.js`，同時保留 `powerup()` 別名相容）。
    - **嚴禁**在 `setMyScore(prev => ...)` 等 React state updater 內部直接呼叫 `soundEngine.powerUp()`、`broadcastMyStats()` 或 `handlePlayerDead()`，所有副作用必須放在 state updater 外部！
 2. **傷害抵擋與 Combo 歸零規則**：

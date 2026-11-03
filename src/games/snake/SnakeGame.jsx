@@ -52,9 +52,11 @@ export const SnakeGame = ({
   const [survivalTime, setSurvivalTime] = useState(0);
   const [cheerTrigger, setCheerTrigger] = useState(0);
 
-  // 60 FPS 平滑軌跡狀態
-  const [renderSnake, setRenderSnake] = useState([{ x: 6, y: 6 }, { x: 5, y: 6 }]);
-  const [nextHead, setNextHead] = useState({ x: 7, y: 6 });
+  // 60 FPS 平滑軌跡狀態：初始 5 節完整身軀（頭、頸、中段、後腹、短尾）
+  const [renderSnake, setRenderSnake] = useState([
+    { x: 8, y: 6 }, { x: 7, y: 6 }, { x: 6, y: 6 }, { x: 5, y: 6 }, { x: 4, y: 6 }
+  ]);
+  const [nextHead, setNextHead] = useState({ x: 9, y: 6 });
   const [stepProgress, setStepProgress] = useState(0);
   const [renderLetters, setRenderLetters] = useState([]);
   const [isSnakeDead, setIsSnakeDead] = useState(false);
@@ -62,8 +64,10 @@ export const SnakeGame = ({
 
   // Refs 避免閉包舊值
   const invulnerableTimerRef = useRef(0);
-  const snakeRef = useRef([{ x: 6, y: 6 }, { x: 5, y: 6 }]);
-  const nextHeadRef = useRef({ x: 7, y: 6 });
+  const snakeRef = useRef([
+    { x: 8, y: 6 }, { x: 7, y: 6 }, { x: 6, y: 6 }, { x: 5, y: 6 }, { x: 4, y: 6 }
+  ]);
+  const nextHeadRef = useRef({ x: 9, y: 6 });
   const dirRef = useRef('RIGHT');
   const lettersRef = useRef([]); // [{ char, x, y, id }]
   const wordQueueRef = useRef([]);
@@ -144,6 +148,31 @@ export const SnakeGame = ({
       const distractors = [...otherLetters].sort(() => 0.5 - Math.random()).slice(0, 3);
       const allChars = [targetChar, ...distractors].sort(() => 0.5 - Math.random());
 
+      // 避開蛇頭前進方向高危險區域 (前鋒 1~3 格與左右斜前 1 格)
+      const currentDir = dirRef.current || 'RIGHT';
+      const head = nextHeadRef.current || snakeRef.current[0] || { x: 8, y: 6 };
+      let dx = 0, dy = 0;
+      if (currentDir === 'UP') dy = -1;
+      else if (currentDir === 'DOWN') dy = 1;
+      else if (currentDir === 'LEFT') dx = -1;
+      else if (currentDir === 'RIGHT') dx = 1;
+
+      const dangerTiles = [];
+      for (let step = 1; step <= 3; step++) {
+        const nx = ((head.x + dx * step) % GRID_W + GRID_W) % GRID_W;
+        const ny = ((head.y + dy * step) % GRID_H + GRID_H) % GRID_H;
+        dangerTiles.push({ x: nx, y: ny });
+        if (step === 1) {
+          if (dx !== 0) {
+            dangerTiles.push({ x: nx, y: ((ny - 1) % GRID_H + GRID_H) % GRID_H });
+            dangerTiles.push({ x: nx, y: ((ny + 1) % GRID_H + GRID_H) % GRID_H });
+          } else {
+            dangerTiles.push({ x: ((nx - 1) % GRID_W + GRID_W) % GRID_W, y: ny });
+            dangerTiles.push({ x: ((nx + 1) % GRID_W + GRID_W) % GRID_W, y: ny });
+          }
+        }
+      }
+
       const placed = [];
       allChars.forEach((ch, idx) => {
         let x, y;
@@ -153,10 +182,11 @@ export const SnakeGame = ({
           y = Math.floor(Math.random() * (GRID_H - 2)) + 1;
           tries++;
         } while (
-          tries < 50 &&
+          tries < 60 &&
           (placed.some(p => p.x === x && p.y === y) ||
             snakeRef.current.some(s => s.x === x && s.y === y) ||
-            (nextHeadRef.current.x === x && nextHeadRef.current.y === y))
+            (nextHeadRef.current.x === x && nextHeadRef.current.y === y) ||
+            (tries < 45 && dangerTiles.some(d => d.x === x && d.y === y)))
         );
         placed.push({ char: ch, x, y, id: `${ch}-${idx}-${Date.now()}`, isTarget: ch === targetChar });
       });
@@ -192,6 +222,31 @@ export const SnakeGame = ({
       .slice(0, 3);
     const allChars = [...targetLetters, ...extraLetters].sort(() => 0.5 - Math.random());
 
+    // 避開蛇頭前進方向高危險區域 (前鋒 1~3 格與左右斜前 1 格)
+    const currentDir = dirRef.current || 'RIGHT';
+    const head = nextHeadRef.current || snakeRef.current[0] || { x: 8, y: 6 };
+    let dx = 0, dy = 0;
+    if (currentDir === 'UP') dy = -1;
+    else if (currentDir === 'DOWN') dy = 1;
+    else if (currentDir === 'LEFT') dx = -1;
+    else if (currentDir === 'RIGHT') dx = 1;
+
+    const dangerTiles = [];
+    for (let step = 1; step <= 3; step++) {
+      const nx = ((head.x + dx * step) % GRID_W + GRID_W) % GRID_W;
+      const ny = ((head.y + dy * step) % GRID_H + GRID_H) % GRID_H;
+      dangerTiles.push({ x: nx, y: ny });
+      if (step === 1) {
+        if (dx !== 0) {
+          dangerTiles.push({ x: nx, y: ((ny - 1) % GRID_H + GRID_H) % GRID_H });
+          dangerTiles.push({ x: nx, y: ((ny + 1) % GRID_H + GRID_H) % GRID_H });
+        } else {
+          dangerTiles.push({ x: ((nx - 1) % GRID_W + GRID_W) % GRID_W, y: ny });
+          dangerTiles.push({ x: ((nx + 1) % GRID_W + GRID_W) % GRID_W, y: ny });
+        }
+      }
+    }
+
     const placed = [];
     allChars.forEach((ch, idx) => {
       let x, y;
@@ -201,10 +256,11 @@ export const SnakeGame = ({
         y = Math.floor(Math.random() * (GRID_H - 2)) + 1;
         tries++;
       } while (
-        tries < 50 &&
+        tries < 60 &&
         (placed.some(p => p.x === x && p.y === y) ||
           snakeRef.current.some(s => s.x === x && s.y === y) ||
-          (nextHeadRef.current.x === x && nextHeadRef.current.y === y))
+          (nextHeadRef.current.x === x && nextHeadRef.current.y === y) ||
+          (tries < 45 && dangerTiles.some(d => d.x === x && d.y === y)))
       );
 
       placed.push({ char: ch, x, y, id: `${ch}-${idx}-${Date.now()}` });
@@ -239,9 +295,12 @@ export const SnakeGame = ({
     invulnerableTimerRef.current = 0;
     startTimeRef.current = Date.now();
 
-    snakeRef.current = [{ x: 6, y: 6 }, { x: 5, y: 6 }];
+    // 初始 5 節完整身軀（頭、頸、中段、後腹、短尾）
+    snakeRef.current = [
+      { x: 8, y: 6 }, { x: 7, y: 6 }, { x: 6, y: 6 }, { x: 5, y: 6 }, { x: 4, y: 6 }
+    ];
     dirRef.current = 'RIGHT';
-    nextHeadRef.current = { x: 7, y: 6 };
+    nextHeadRef.current = { x: 9, y: 6 };
     inputQueueRef.current = [];
 
     setRenderSnake([...snakeRef.current]);

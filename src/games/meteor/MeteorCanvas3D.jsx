@@ -27,7 +27,8 @@ export const MeteorCanvas3D = ({
   const earthMeshRef = useRef(null);
   const atmoMeshRef = useRef(null);
   const shieldGroupRef = useRef(null);
-  const shieldMeshesRef = useRef([]);
+  const shieldDomeRef = useRef(null);
+  const shieldCoronaRef = useRef(null);
   const shieldsRef = useRef(shields);
   const animIdRef = useRef(null);
   const laserBeamRef = useRef(null);
@@ -382,75 +383,104 @@ export const MeteorCanvas3D = ({
     scene.add(atmoMesh);
     atmoMeshRef.current = atmoMesh;
 
-    // 5.5 地球 3D 半球面能量呼吸防護罩 (每50分加一層，最多顯示5層向太空外擴的呼吸微光力場罩)
+    // 5.5 地球 3D 單一呼吸防護光暈罩 (每50分外擴一層，視覺柔和外擴至多5階，無多重生硬洋蔥圈)
     const shieldGroup = new THREE.Group();
     shieldGroup.position.set(0, -78, 5);
     scene.add(shieldGroup);
     shieldGroupRef.current = shieldGroup;
 
-    const shieldLayerConfigs = [
-      { radius: 77.0, color: new THREE.Color(0x38bdf8), baseOpacity: 0.36 },
-      { radius: 78.4, color: new THREE.Color(0x67e8f9), baseOpacity: 0.44 },
-      { radius: 79.8, color: new THREE.Color(0xa5f3fc), baseOpacity: 0.52 },
-      { radius: 81.2, color: new THREE.Color(0xe0f2fe), baseOpacity: 0.60 },
-      { radius: 82.6, color: new THREE.Color(0xffffff), baseOpacity: 0.72 }
-    ];
-
-    const shieldMeshes = shieldLayerConfigs.map((cfg, idx) => {
-      // 覆蓋面向外太空的 3D 同心能量半球頂 (Spherical Energy Forcefield Shell)
-      const geo = new THREE.SphereGeometry(cfg.radius, 64, 32, 0, Math.PI * 2, 0, Math.PI * 0.42);
-      const mat = new THREE.ShaderMaterial({
-        uniforms: {
-          uTime: { value: 0 },
-          uLayerIndex: { value: idx },
-          uColor: { value: cfg.color },
-          uOpacity: { value: cfg.baseOpacity }
-        },
-        vertexShader: `
-          varying vec3 vNormal;
-          varying vec3 vViewPos;
-          varying vec3 vWorldPos;
-          void main() {
-            vNormal = normalize(normalMatrix * normal);
-            vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
-            vViewPos = -mvPos.xyz;
-            vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
-            gl_Position = projectionMatrix * mvPos;
-          }
-        `,
-        fragmentShader: `
-          uniform float uTime;
-          uniform float uLayerIndex;
-          uniform vec3 uColor;
-          uniform float uOpacity;
-          varying vec3 vNormal;
-          varying vec3 vViewPos;
-          varying vec3 vWorldPos;
-          void main() {
-            vec3 n = normalize(vNormal);
-            vec3 v = normalize(vViewPos);
-            // 邊緣強烈力場光暈
-            float fresnel = pow(1.0 - max(dot(v, n), 0.0), 2.0);
-            // 能量波向太空擴散漣漪
-            float wave = sin(vWorldPos.y * 1.5 - uTime * 3.2 + uLayerIndex * 0.8) * 0.5 + 0.5;
-            float grid = sin(vWorldPos.x * 2.0) * cos(vWorldPos.z * 2.0);
-            float hexAura = smoothstep(0.35, 0.85, grid) * 0.22;
-            float alpha = (fresnel * 0.85 + wave * 0.25 + hexAura) * uOpacity;
-            gl_FragColor = vec4(uColor, alpha);
-          }
-        `,
-        side: THREE.FrontSide,
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending
-      });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.visible = false;
-      mesh.userData = { baseOpacity: cfg.baseOpacity };
-      shieldGroup.add(mesh);
-      return mesh;
+    // 單一主體能量半球罩 (緊貼大氣層 76.5，避免過度向深空膨脹)
+    const domeGeo = new THREE.SphereGeometry(76.5, 64, 32, 0, Math.PI * 2, 0, Math.PI * 0.42);
+    const domeMat = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uLevel: { value: 1.0 },
+        uColor: { value: new THREE.Color(0x38bdf8) },
+        uOpacity: { value: 0.45 }
+      },
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewPos;
+        varying vec3 vWorldPos;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+          vViewPos = -mvPos.xyz;
+          vWorldPos = (modelMatrix * vec4(position, 1.0)).xyz;
+          gl_Position = projectionMatrix * mvPos;
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        uniform float uLevel;
+        uniform vec3 uColor;
+        uniform float uOpacity;
+        varying vec3 vNormal;
+        varying vec3 vViewPos;
+        varying vec3 vWorldPos;
+        void main() {
+          vec3 n = normalize(vNormal);
+          vec3 v = normalize(vViewPos);
+          // 柔和菲涅爾邊緣大氣力場光暈
+          float NdotV = max(dot(v, n), 0.0);
+          float rim = pow(1.0 - NdotV, 2.3);
+          // 柔和行星呼吸波動 (避免生硬的格線與洋蔥分層)
+          float wave = sin(vWorldPos.y * 1.2 - uTime * 2.2) * 0.5 + 0.5;
+          // 微等離子流動
+          float plasma = sin(vWorldPos.x * 2.5 + uTime * 1.2) * cos(vWorldPos.z * 2.5 + uTime * 0.9) * 0.06;
+          float alpha = (rim * 0.82 + wave * 0.14 + plasma) * uOpacity;
+          gl_FragColor = vec4(uColor, clamp(alpha, 0.0, 0.92));
+        }
+      `,
+      side: THREE.FrontSide,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
     });
-    shieldMeshesRef.current = shieldMeshes;
+    const shieldDome = new THREE.Mesh(domeGeo, domeMat);
+    shieldDome.visible = false;
+    shieldGroup.add(shieldDome);
+    shieldDomeRef.current = shieldDome;
+
+    // 外圍柔和光冕 (Corona halo: 營造立體外擴力場界線)
+    const coronaGeo = new THREE.SphereGeometry(76.9, 64, 32, 0, Math.PI * 2, 0, Math.PI * 0.42);
+    const coronaMat = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uColor: { value: new THREE.Color(0x38bdf8) },
+        uOpacity: { value: 0.25 }
+      },
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewPos;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+          vViewPos = -mvPos.xyz;
+          gl_Position = projectionMatrix * mvPos;
+        }
+      `,
+      fragmentShader: `
+        uniform float uOpacity;
+        uniform vec3 uColor;
+        varying vec3 vNormal;
+        varying vec3 vViewPos;
+        void main() {
+          vec3 n = normalize(vNormal);
+          vec3 v = normalize(vViewPos);
+          float rim = pow(1.0 - max(dot(v, n), 0.0), 3.2);
+          gl_FragColor = vec4(uColor, rim * uOpacity);
+        }
+      `,
+      side: THREE.FrontSide,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    const shieldCorona = new THREE.Mesh(coronaGeo, coronaMat);
+    shieldCorona.visible = false;
+    shieldGroup.add(shieldCorona);
+    shieldCoronaRef.current = shieldCorona;
 
     // 6. 光源系統
     const sunLight = new THREE.DirectionalLight(0xfff7ed, 2.5);
@@ -659,26 +689,50 @@ export const MeteorCanvas3D = ({
         }
       }
 
-      // 5.6 更新地球 3D 半球能量呼吸防護罩 (每50分加一層，最多顯示5層向太空外擴的呼吸力場波)
+      // 5.6 更新地球 3D 單一呼吸防護光暈罩 (每50分微幅外擴一層，視覺柔和上限5階；受損掉回則按比例縮回)
       const currentShields = shieldsRef.current || 0;
-      const displayLayers = Math.min(5, Math.max(0, currentShields));
+      const displayLevel = Math.min(5, Math.max(0, currentShields));
       const t = (now || performance.now()) * 0.001;
-      shieldMeshesRef.current.forEach((mesh, idx) => {
-        if (idx < displayLayers) {
-          mesh.visible = true;
-          // 向太空傳播的外擴光波：相位依 idx 由內向外延遲 (- idx * 0.75)
-          const wave = Math.sin(t * 2.5 - idx * 0.75);
-          const breath = Math.max(0.18, (wave * 0.3 + 0.7) * mesh.userData.baseOpacity);
-          if (mesh.material.uniforms) {
-            mesh.material.uniforms.uTime.value = t;
-            mesh.material.uniforms.uOpacity.value = breath;
+
+      if (displayLevel <= 0) {
+        if (shieldDomeRef.current) shieldDomeRef.current.visible = false;
+        if (shieldCoronaRef.current) shieldCoronaRef.current.visible = false;
+      } else {
+        // 微呼吸波幅
+        const breath = Math.sin(t * 2.2) * 0.003;
+        // 依層數 1~5 逐漸微幅向外擴展 (每階 +0.5%，5階最多 +2.0%，緊貼大氣防衛圈而不飄入深空)
+        const scaleFactor = 1.0 + (displayLevel - 1) * 0.005 + breath;
+        const coronaScale = 1.0 + (displayLevel - 1) * 0.006 + breath * 1.2;
+
+        // 隨層數提升色彩純度與光芒：由清透天藍 -> 輝煌蔚藍金彩
+        const norm = (displayLevel - 1) / 4.0; // 0.0 ~ 1.0
+        const r = 0.22 + norm * 0.22;
+        const g = 0.74 + norm * 0.16;
+        const b = 0.97 + norm * 0.03;
+        const domeOpacity = 0.35 + displayLevel * 0.08; // 0.43 ~ 0.75
+        const coronaOpacity = 0.18 + displayLevel * 0.05;
+
+        if (shieldDomeRef.current) {
+          shieldDomeRef.current.visible = true;
+          shieldDomeRef.current.scale.set(scaleFactor, scaleFactor, scaleFactor);
+          if (shieldDomeRef.current.material.uniforms) {
+            shieldDomeRef.current.material.uniforms.uTime.value = t;
+            shieldDomeRef.current.material.uniforms.uLevel.value = displayLevel;
+            shieldDomeRef.current.material.uniforms.uColor.value.setRGB(r, g, b);
+            shieldDomeRef.current.material.uniforms.uOpacity.value = domeOpacity;
           }
-          const outwardExpansion = 1.0 + (wave * 0.5 + 0.5) * (0.015 + idx * 0.005);
-          mesh.scale.set(outwardExpansion, outwardExpansion, outwardExpansion);
-        } else {
-          mesh.visible = false;
         }
-      });
+
+        if (shieldCoronaRef.current) {
+          shieldCoronaRef.current.visible = true;
+          shieldCoronaRef.current.scale.set(coronaScale, coronaScale, coronaScale);
+          if (shieldCoronaRef.current.material.uniforms) {
+            shieldCoronaRef.current.material.uniforms.uTime.value = t;
+            shieldCoronaRef.current.material.uniforms.uColor.value.setRGB(r, g, b);
+            shieldCoronaRef.current.material.uniforms.uOpacity.value = coronaOpacity;
+          }
+        }
+      }
 
       renderer.render(scene, camera);
       animIdRef.current = requestAnimationFrame(animate);

@@ -44,8 +44,33 @@ export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerT
 
   if (isIndigenous) {
     // ⛰️ 霧台神山：魯凱特色頁岩片疊石砌牆 (Stacked Slate Wall) + 蔓生青苔 + 純白百合
+    // 0) 地坪內嵌柔和環境遮擋陰影 (Inward Ambient Occlusion Shadow，讓石牆與高階地坪無縫嵌合)
+    const topAo = ctx.createLinearGradient(0, 24, 0, 56);
+    topAo.addColorStop(0, 'rgba(0, 0, 0, 0.45)');
+    topAo.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = topAo;
+    ctx.fillRect(0, 24, w, 32);
+
+    const btmAo = ctx.createLinearGradient(0, h - 56, 0, h - 24);
+    btmAo.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    btmAo.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+    ctx.fillStyle = btmAo;
+    ctx.fillRect(0, h - 56, w, 32);
+
+    const leftAo = ctx.createLinearGradient(22, 0, 54, 0);
+    leftAo.addColorStop(0, 'rgba(0, 0, 0, 0.45)');
+    leftAo.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = leftAo;
+    ctx.fillRect(22, 0, 32, h);
+
+    const rightAo = ctx.createLinearGradient(w - 54, 0, w - 22, 0);
+    rightAo.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    rightAo.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+    ctx.fillStyle = rightAo;
+    ctx.fillRect(w - 54, 0, 32, h);
+
     // 1) 石板矮牆基底深色 (夜間為月夜黑曜冷色調)
-    ctx.fillStyle = isDark ? '#090d16' : '#1c1917';
+    ctx.fillStyle = isDark ? '#080d14' : '#141210';
     ctx.fillRect(0, 0, w, 28);
     ctx.fillRect(0, h - 28, w, 28);
     ctx.fillRect(0, 0, 26, h);
@@ -59,18 +84,18 @@ export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerT
       // 頂部石板
       ctx.fillStyle = isDark
         ? (i % 2 === 0 ? '#0f172a' : '#1e293b')
-        : (i % 2 === 0 ? '#292524' : '#44403c');
+        : (i % 2 === 0 ? '#262220' : '#3f3a36');
       ctx.fillRect(sx, 0, slabW - 2, 24);
       // 邊緣石材高光 (夜間為月光冷灰藍)
-      ctx.fillStyle = isDark ? '#38bdf840' : '#78716c';
-      ctx.fillRect(sx, 23, slabW - 2, 2);
+      ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.35)' : 'rgba(214, 211, 209, 0.4)';
+      ctx.fillRect(sx, 22, slabW - 2, 2);
 
       // 底部石板
       ctx.fillStyle = isDark
         ? (i % 2 === 0 ? '#0f172a' : '#1e293b')
-        : (i % 2 === 0 ? '#292524' : '#44403c');
+        : (i % 2 === 0 ? '#262220' : '#3f3a36');
       ctx.fillRect(sx, h - 24, slabW - 2, 24);
-      ctx.fillStyle = isDark ? '#38bdf840' : '#78716c';
+      ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.35)' : 'rgba(214, 211, 209, 0.4)';
       ctx.fillRect(sx, h - 25, slabW - 2, 2);
     }
 
@@ -81,17 +106,17 @@ export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerT
       // 左側石板
       ctx.fillStyle = isDark
         ? (j % 2 === 0 ? '#0f172a' : '#1e293b')
-        : (j % 2 === 0 ? '#292524' : '#44403c');
+        : (j % 2 === 0 ? '#262220' : '#3f3a36');
       ctx.fillRect(0, sy, 22, slabH - 2);
-      ctx.fillStyle = isDark ? '#38bdf840' : '#78716c';
-      ctx.fillRect(21, sy, 2, slabH - 2);
+      ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.35)' : 'rgba(214, 211, 209, 0.4)';
+      ctx.fillRect(20, sy, 2, slabH - 2);
 
       // 右側石板
       ctx.fillStyle = isDark
         ? (j % 2 === 0 ? '#0f172a' : '#1e293b')
-        : (j % 2 === 0 ? '#292524' : '#44403c');
+        : (j % 2 === 0 ? '#262220' : '#3f3a36');
       ctx.fillRect(w - 22, sy, 22, slabH - 2);
-      ctx.fillStyle = isDark ? '#38bdf840' : '#78716c';
+      ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.35)' : 'rgba(214, 211, 209, 0.4)';
       ctx.fillRect(w - 23, sy, 2, slabH - 2);
     }
 
@@ -320,19 +345,31 @@ export const drawHundredPaceSnake = (
       const nx = -ty / len;
       const ny = tx / len;
 
-      // 半徑：修長優雅的身軀 (略細於蛇頭，從腰身後半段 50% 開始平緩自然收細至蛇尾)
+      // 半徑：勻稱強健的百步蛇解剖比例 (頭頰微闊，頸部自然收束，中段軀幹粗壯飽滿，短尾錐形收尖)
       const t = gIdx / Math.max(1, totalSegs - 1);
-      let r = 10.0;
-      if (t > 0.50) {
-        const tailFrac = (t - 0.50) / 0.50;
-        r = 10.0 * (1.0 - tailFrac * 0.72); // 從 10px 平滑漸進收細至 2.8px，絕無倉促突兀感
+      let r;
+      if (t < 0.15) {
+        // 頸部自然收斂 (銜接頭頰底寬 13.5px -> 中段粗壯 15.5px)
+        const neckFrac = t / 0.15;
+        r = 13.5 + (15.5 - 13.5) * neckFrac;
+      } else if (t <= 0.78) {
+        // 粗壯勻稱的百步蛇中段軀幹 (圓柱狀肌肉飽滿，寬達 31px，視覺與頭部極度協調)
+        r = 15.5;
+      } else if (t <= 0.88) {
+        // 後腹部微收 (15.5px -> 12.0px)
+        const postFrac = (t - 0.78) / 0.10;
+        r = 15.5 - (15.5 - 12.0) * postFrac;
+      } else {
+        // 百步蛇典型錐狀短尾 (~10% 尾長，快速平滑收細至 3.8px 完美銜接尾針 Sprite)
+        const tailFrac = (t - 0.88) / 0.12;
+        r = 12.0 - (12.0 - 3.8) * tailFrac;
       }
 
       // 吞嚥字母波浪隆起 (Belly Bulge)
       bulges.forEach(b => {
         const dist = Math.abs(t - b.progress);
         if (dist < 0.16) {
-          const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.42;
+          const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.35;
           r *= 1.0 + bulgeFactor;
         }
       });
@@ -382,7 +419,7 @@ export const drawHundredPaceSnake = (
       ctx.lineTo(chain[i].pt.x, chain[i].pt.y);
     }
     ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.16)' : 'rgba(251, 146, 60, 0.32)';
-    ctx.lineWidth = 7.0;
+    ctx.lineWidth = 9.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke();
@@ -393,7 +430,7 @@ export const drawHundredPaceSnake = (
     ctx.lineWidth = 1.8;
     ctx.stroke();
 
-    // 2) 沿著連貫中心線，在各骨骼節點處繪製經典祖靈幾何三角菱形紋 (等比縮放適配纖修身軀)
+    // 2) 沿著連貫中心線，在各骨骼節點處繪製經典祖靈幾何三角菱形紋 (等比縮放適配勻稱強健身軀)
     for (let k = chain.length - 1; k >= 1; k--) {
       const item = chain[k];
       const pt = item.pt;
@@ -404,10 +441,15 @@ export const drawHundredPaceSnake = (
       const angle = Math.atan2(pt.y - prevPt.y, pt.x - prevPt.x);
 
       const t = gIdx / Math.max(1, totalSegs - 1);
-      let r = 9.2;
-      if (t > 0.50) {
-        const tailFrac = (t - 0.50) / 0.50;
-        r = 9.2 * (1.0 - tailFrac * 0.72);
+      let r;
+      if (t < 0.15) {
+        r = 13.5 + (15.5 - 13.5) * (t / 0.15);
+      } else if (t <= 0.78) {
+        r = 15.5;
+      } else if (t <= 0.88) {
+        r = 15.5 - (15.5 - 12.0) * ((t - 0.78) / 0.10);
+      } else {
+        r = 12.0 - (12.0 - 3.8) * ((t - 0.88) / 0.12);
       }
 
       ctx.save();
@@ -490,8 +532,8 @@ export const drawHundredPaceSnake = (
     // 精緻 Sprite 向上對齊 (加上 PI/2 轉向運動前進方向)
     ctx.rotate(headAngle + Math.PI / 2);
 
-    const headW = 38;
-    const headH = 52; // 256 x 351 aspect ratio
+    const headW = 34;
+    const headH = 46; // 256 x 351 aspect ratio
     const pivotY = headH * 0.58; // 樞紐點置於眼脊與顴骨間
     const snoutY = -pivotY;
 
@@ -621,8 +663,8 @@ export const drawHundredPaceSnake = (
     ctx.save();
     ctx.translate(tailPt.x, tailPt.y);
     ctx.rotate(tailAngle - Math.PI / 2);
-    const tailW = 16;
-    const tailH = 48;
+    const tailW = 18;
+    const tailH = 46;
     // 尾部柔和立體投影
     ctx.save();
     ctx.shadowColor = isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(15, 23, 42, 0.35)';
@@ -683,17 +725,22 @@ export const drawGreenSnake = (
       const ny = tx / len;
 
       const t = gIdx / Math.max(1, totalSegs - 1);
-      let r = 10.0;
-      if (t > 0.50) {
-        const tailFrac = (t - 0.50) / 0.50;
-        r = 10.0 * (1.0 - tailFrac * 0.72); // 尾端平緩收細至約 2.8px
+      let r;
+      if (t < 0.15) {
+        r = 13.0 + (15.0 - 13.0) * (t / 0.15);
+      } else if (t <= 0.78) {
+        r = 15.0;
+      } else if (t <= 0.88) {
+        r = 15.0 - (15.0 - 11.5) * ((t - 0.78) / 0.10);
+      } else {
+        r = 11.5 - (11.5 - 3.5) * ((t - 0.88) / 0.12);
       }
 
       bulges.forEach(b => {
         const dist = Math.abs(t - b.progress);
         if (dist < 0.16) {
-          const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.42;
-          r *= 1.0 + bulgeFactor;
+          const bulgeFactor = Math.cos((dist / 0.16) * (Math.PI / 2)) * 0.35;
+          r *= (1.0 + bulgeFactor);
         }
       });
 
@@ -734,7 +781,7 @@ export const drawGreenSnake = (
     ctx.moveTo(chain[0].pt.x, chain[0].pt.y);
     for (let i = 1; i < chain.length; i++) ctx.lineTo(chain[i].pt.x, chain[i].pt.y);
     ctx.strokeStyle = 'rgba(167, 243, 208, 0.45)';
-    ctx.lineWidth = 7.0;
+    ctx.lineWidth = 9.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke();

@@ -149,6 +149,7 @@ export const SwipeCardGame = ({
   const [exitDirection, setExitDirection] = useState(null); // 'left' | 'right'
   const dragStartRef = useRef({ x: 0, y: 0 });
   const isPointerDownRef = useRef(false);
+  const isSwipingRef = useRef(false);
   const dismissTimerRef = useRef(null);
 
   // 保持即時模式參照，防止非同步 closure 滯後
@@ -250,7 +251,11 @@ export const SwipeCardGame = ({
 
     let displayMeaning = targetWord.meaning;
     if (!isMatch && pool.length > 1) {
-      const otherWords = pool.filter(w => w.word.toLowerCase() !== targetWord.word.toLowerCase());
+      // 確保干擾項的中文釋義與目標單字完全不同 (杜絕同義字造成配對判斷歧義)
+      const otherWords = pool.filter(w =>
+        w.word.toLowerCase() !== targetWord.word.toLowerCase() &&
+        w.meaning.trim() !== targetWord.meaning.trim()
+      );
       if (otherWords.length > 0) {
         const distractor = otherWords[Math.floor(Math.random() * otherWords.length)];
         displayMeaning = distractor.meaning;
@@ -265,7 +270,7 @@ export const SwipeCardGame = ({
       word: targetWord.word,
       displayMeaning,
       correctMeaning: targetWord.meaning,
-      isMatch: targetWord.meaning === displayMeaning
+      isMatch: targetWord.meaning.trim() === displayMeaning.trim()
     };
   }, [activeWordList, activeEffect, cardDeck]);
 
@@ -306,6 +311,7 @@ export const SwipeCardGame = ({
     setCorrectingCard(null);
     setDragOffset({ x: 0, y: 0 });
     setExitDirection(null);
+    isSwipingRef.current = false;
 
     // 生成前 4 張手牌 (傳入 selectedMode，確保初次建立即正確套用目標模式)
     const initialDeck = [];
@@ -367,13 +373,14 @@ export const SwipeCardGame = ({
     return () => clearInterval(effectTimer);
   }, [activeEffect, isTimerFrozen]);
 
-  // ── 核心滑動判斷與結算 ──
+  // ── 核心滑動判斷與結算 (具備快速連續點擊與飛出防抖鎖定) ──
   const executeSwipe = useCallback((direction) => {
-    if (isCorrecting || cardDeck.length === 0 || gameState !== 'playing') return;
+    if (isCorrecting || isSwipingRef.current || cardDeck.length === 0 || gameState !== 'playing') return;
 
     const topCard = cardDeck[0];
     if (!topCard) return;
 
+    isSwipingRef.current = true;
     setTotalSwiped(s => s + 1);
 
     // ── 情況 1：滑掉的是功能卡 (左右皆可啟動) ──
@@ -404,6 +411,7 @@ export const SwipeCardGame = ({
         setExitDirection(null);
         setDragOffset({ x: 0, y: 0 });
         setCardDeck(prev => replenishDeck(prev.slice(1)));
+        isSwipingRef.current = false;
       }, 180);
       return;
     }
@@ -466,10 +474,12 @@ export const SwipeCardGame = ({
         setExitDirection(null);
         setDragOffset({ x: 0, y: 0 });
         setCardDeck(prev => replenishDeck(prev.slice(1), 4, gameModeRef.current));
+        isSwipingRef.current = false;
       }, 180);
 
     } else {
       // ── 答錯！觸發方案A：時間凍結與名師訂正 ──
+      isSwipingRef.current = false;
       setStreak(0);
       soundEngine.wrong();
       setIsTimerFrozen(true); // 暫停 30 秒倒數計時器
@@ -497,6 +507,7 @@ export const SwipeCardGame = ({
       clearTimeout(dismissTimerRef.current);
       dismissTimerRef.current = null;
     }
+    isSwipingRef.current = false;
     setIsCorrecting(false);
     setIsTimerFrozen(false); // 恢復 30 秒倒數計時器
 
