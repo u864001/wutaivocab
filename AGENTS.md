@@ -23,6 +23,12 @@
 4. **Git 推送規範**：
    - 正式生產環境為 Cloudflare Pages (`https://wutaivocab.pages.dev`，綁定 `origin/main`)。
    - 日常更新推送至 `origin`（`dev` 與 `main`）；除非 Mark 特別指示，避免日常頻繁推送 `vercel` 以免耗盡免費建置配額。
+5. **高階繪圖 API 額度透明化與詢問機制（嚴禁擅自降級隱瞞）**：
+   - 當呼叫高階繪圖生成工具（`image-generator` / `gemini-3.1-flash-image`）遇到配額上限（HTTP 429 `RESOURCE_EXHAUSTED`）時，**必須第一時間主動回報 Mark**。
+   - 回報內容必須明確包含：
+     1. 額度耗盡的**發生時間**。
+     2. API 配額**精確預計重置時間（Reset Timestamp 及倒數分鐘數）**。
+     3. **嚴禁在未獲 Mark 授權同意前擅自退回使用低階/程序化 SVG 向量圖取代**。必須主動詢問：「是否等待額度重置後繼續產出高階圖檔？或同意改用其他替代繪圖方式繼續？」由 Mark 明確指示後方可執行。
 
 ---
 
