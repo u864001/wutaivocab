@@ -580,6 +580,7 @@ export const SnakeGame = ({
           '/assets/snake/indigenous_ground.webp',
           '/assets/snake/bead_letter_pod.webp',
           '/assets/snake/snake_head_indigenous.webp',
+          '/assets/snake/snake_body_indigenous.webp',
           '/assets/snake/snake_tail_indigenous.webp',
           '/assets/snake/snake_owl.webp',
           '/assets/snake/snake_monkey.webp'

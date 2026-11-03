@@ -86,6 +86,7 @@ export const SnakeCanvas2D = ({
     groundPattern: null,
     bead: null,
     snakeHead: null,
+    snakeBody: null,
     snakeTail: null,
     cloudedLeopard: null,
     blackBear: null,
@@ -125,6 +126,13 @@ export const SnakeCanvas2D = ({
     headImg.src = '/assets/snake/snake_head_indigenous.webp';
     headImg.onload = () => {
       assetsRef.current.snakeHead = headImg;
+    };
+
+    // 預載百步蛇身軀 Sprite
+    const bodyImg = new Image();
+    bodyImg.src = '/assets/snake/snake_body_indigenous.webp';
+    bodyImg.onload = () => {
+      assetsRef.current.snakeBody = bodyImg;
     };
 
     // 預載百步蛇尾部 Sprite

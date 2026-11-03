@@ -36,6 +36,148 @@ const sliceSpineChains = (spine, maxDist = 200) => {
   return chains;
 };
 
+// ── 輔助：樣條曲線平滑化與高密度骨骼重採樣 (消除轉彎生硬直角與一節節香腸感) ──
+const buildDenseFilletSpine = (chain, maxTurnRadius = 14, stepDist = 5) => {
+  if (!chain || chain.length < 2) return [];
+  const pts = chain.map(c => c.pt);
+  const n = pts.length;
+  if (n === 2) {
+    const dx = pts[1].x - pts[0].x;
+    const dy = pts[1].y - pts[0].y;
+    const dist = Math.hypot(dx, dy) || 1;
+    const tx = dx / dist, ty = dy / dist;
+    const count = Math.max(2, Math.ceil(dist / stepDist));
+    const samples = [];
+    for (let i = 0; i <= count; i++) {
+      const frac = i / count;
+      samples.push({
+        x: pts[0].x + dx * frac,
+        y: pts[0].y + dy * frac,
+        tx, ty,
+        t: frac,
+        arcDist: dist * frac
+      });
+    }
+    return samples;
+  }
+
+  const segments = [];
+  let totalLength = 0;
+
+  for (let i = 0; i < n - 1; i++) {
+    const pCurr = pts[i];
+    const pNext = pts[i + 1];
+    const dx = pNext.x - pCurr.x;
+    const dy = pNext.y - pCurr.y;
+    const len = Math.hypot(dx, dy);
+    if (len < 0.1) continue;
+    const ux = dx / len;
+    const uy = dy / len;
+
+    let startOffset = 0;
+    if (i > 0) {
+      const pPrev = pts[i - 1];
+      const prevUx = (pCurr.x - pPrev.x) / (Math.hypot(pCurr.x - pPrev.x, pCurr.y - pPrev.y) || 1);
+      const prevUy = (pCurr.y - pPrev.y) / (Math.hypot(pCurr.x - pPrev.x, pCurr.y - pPrev.y) || 1);
+      const dot = prevUx * ux + prevUy * uy;
+      if (dot < 0.99) {
+        startOffset = Math.min(maxTurnRadius, len * 0.45);
+      }
+    }
+
+    let endOffset = 0;
+    if (i < n - 2) {
+      const pAfter = pts[i + 2];
+      const nextUx = (pAfter.x - pNext.x) / (Math.hypot(pAfter.x - pNext.x, pAfter.y - pNext.y) || 1);
+      const nextUy = (pAfter.y - pNext.y) / (Math.hypot(pAfter.x - pNext.x, pAfter.y - pNext.y) || 1);
+      const dot = ux * nextUx + uy * nextUy;
+      if (dot < 0.99) {
+        endOffset = Math.min(maxTurnRadius, len * 0.45);
+      }
+    }
+
+    const segStart = { x: pCurr.x + ux * startOffset, y: pCurr.y + uy * startOffset };
+    const segEnd = { x: pNext.x - ux * endOffset, y: pNext.y - uy * endOffset };
+    const straightLen = Math.hypot(segEnd.x - segStart.x, segEnd.y - segStart.y);
+
+    if (straightLen > 0.1) {
+      segments.push({
+        type: 'line',
+        start: segStart,
+        end: segEnd,
+        ux, uy,
+        len: straightLen
+      });
+      totalLength += straightLen;
+    }
+
+    if (endOffset > 0 && i < n - 2) {
+      const pAfter = pts[i + 2];
+      const nextLen = Math.hypot(pAfter.x - pNext.x, pAfter.y - pNext.y) || 1;
+      const nextUx = (pAfter.x - pNext.x) / nextLen;
+      const nextUy = (pAfter.y - pNext.y) / nextLen;
+      const arcStart = segEnd;
+      const arcEnd = { x: pNext.x + nextUx * endOffset, y: pNext.y + nextUy * endOffset };
+      const arcCtrl = pNext;
+      const arcLen = (Math.hypot(arcCtrl.x - arcStart.x, arcCtrl.y - arcStart.y) +
+                      Math.hypot(arcEnd.x - arcCtrl.x, arcEnd.y - arcCtrl.y)) * 0.85;
+      segments.push({
+        type: 'arc',
+        p0: arcStart,
+        p1: arcCtrl,
+        p2: arcEnd,
+        len: arcLen
+      });
+      totalLength += arcLen;
+    }
+  }
+
+  if (totalLength < 1) return [];
+
+  const samples = [];
+  const numSteps = Math.max(8, Math.ceil(totalLength / stepDist));
+  for (let s = 0; s <= numSteps; s++) {
+    const targetDist = (s / numSteps) * totalLength;
+    let accumulated = 0;
+
+    for (let k = 0; k < segments.length; k++) {
+      const seg = segments[k];
+      if (accumulated + seg.len >= targetDist || k === segments.length - 1) {
+        const segDist = Math.max(0, targetDist - accumulated);
+        const segFrac = seg.len > 0 ? Math.min(1, segDist / seg.len) : 0;
+        let x, y, tx, ty;
+
+        if (seg.type === 'line') {
+          x = seg.start.x + (seg.end.x - seg.start.x) * segFrac;
+          y = seg.start.y + (seg.end.y - seg.start.y) * segFrac;
+          tx = seg.ux;
+          ty = seg.uy;
+        } else {
+          const t = segFrac;
+          const oneMinusT = 1 - t;
+          x = oneMinusT * oneMinusT * seg.p0.x + 2 * oneMinusT * t * seg.p1.x + t * t * seg.p2.x;
+          y = oneMinusT * oneMinusT * seg.p0.y + 2 * oneMinusT * t * seg.p1.y + t * t * seg.p2.y;
+          const dxdt = 2 * oneMinusT * (seg.p1.x - seg.p0.x) + 2 * t * (seg.p2.x - seg.p1.x);
+          const dydt = 2 * oneMinusT * (seg.p1.y - seg.p0.y) + 2 * t * (seg.p2.y - seg.p1.y);
+          const dlen = Math.hypot(dxdt, dydt) || 1;
+          tx = dxdt / dlen;
+          ty = dydt / dlen;
+        }
+
+        samples.push({
+          x, y, tx, ty,
+          t: s / numSteps,
+          arcDist: targetDist
+        });
+        break;
+      }
+      accumulated += seg.len;
+    }
+  }
+
+  return samples;
+};
+
 // ── 1. 繪製四周立體多層重疊的邊界 (神山石板砌牆與藤蔓百合 vs 雨林闊葉灌木) ──
 export const drawLushBushBorder = (ctx, w, h, time, theme = 'indigenous', cheerTimer = 0, isDark = false) => {
   ctx.save();
@@ -314,55 +456,41 @@ export const drawHundredPaceSnake = (
     ctx.globalAlpha = Math.sin(time * 26) > 0 ? 0.3 : 0.88;
   }
 
-  const totalSegs = spine.length;
   const chains = sliceSpineChains(spine);
 
-  // 1) 繪製一體成型的流線型蛇身輪廓帶 (非球狀，尾部優雅收細！)
   chains.forEach(chain => {
     if (chain.length < 2) return;
 
+    // 透過二次貝茲樣條與高密度採樣，將折線轉換為圓潤流線型骨骼 (徹底消除 90° 直角生硬折角與香腸感)
+    const denseSpine = buildDenseFilletSpine(chain, 14, 5);
+    if (denseSpine.length < 2) return;
+
     const leftPts = [];
     const rightPts = [];
+    const totalPoints = denseSpine.length;
 
-    for (let k = 0; k < chain.length; k++) {
-      const item = chain[k];
-      const pt = item.pt;
-      const gIdx = item.globalIndex;
+    for (let k = 0; k < totalPoints; k++) {
+      const s = denseSpine[k];
+      const t = s.t; // 0.0 (頭部) -> 1.0 (尾部)
 
-      // 切線向量
-      let tx, ty;
-      if (k === 0) {
-        tx = chain[1].pt.x - pt.x;
-        ty = chain[1].pt.y - pt.y;
-      } else if (k === chain.length - 1) {
-        tx = pt.x - chain[k - 1].pt.x;
-        ty = pt.y - chain[k - 1].pt.y;
-      } else {
-        tx = chain[k + 1].pt.x - chain[k - 1].pt.x;
-        ty = chain[k + 1].pt.y - chain[k - 1].pt.y;
-      }
-      const len = Math.hypot(tx, ty) || 1;
-      const nx = -ty / len;
-      const ny = tx / len;
+      // 法線向量 (垂直於流動切線)
+      const nx = -s.ty;
+      const ny = s.tx;
 
-      // 半徑：勻稱強健的百步蛇解剖比例 (頭頰微闊，頸部自然收束，中段軀幹粗壯飽滿，短尾錐形收尖)
-      const t = gIdx / Math.max(1, totalSegs - 1);
+      // 百步蛇勻稱肌肉解剖輪廓 (Deinagkistrodon acutus)
       let r;
       if (t < 0.15) {
-        // 頸部自然收斂 (銜接頭頰底寬 13.5px -> 中段粗壯 15.5px)
-        const neckFrac = t / 0.15;
-        r = 13.5 + (15.5 - 13.5) * neckFrac;
+        // 頸項微收 (銜接頭頰底寬 13.5px -> 中段粗壯 15.5px)
+        r = 13.5 + (15.5 - 13.5) * (t / 0.15);
       } else if (t <= 0.78) {
         // 粗壯勻稱的百步蛇中段軀幹 (圓柱狀肌肉飽滿，寬達 31px，視覺與頭部極度協調)
         r = 15.5;
       } else if (t <= 0.88) {
         // 後腹部微收 (15.5px -> 12.0px)
-        const postFrac = (t - 0.78) / 0.10;
-        r = 15.5 - (15.5 - 12.0) * postFrac;
+        r = 15.5 - (15.5 - 12.0) * ((t - 0.78) / 0.10);
       } else {
         // 百步蛇典型錐狀短尾 (~10% 尾長，快速平滑收細至 3.8px 完美銜接尾針 Sprite)
-        const tailFrac = (t - 0.88) / 0.12;
-        r = 12.0 - (12.0 - 3.8) * tailFrac;
+        r = 12.0 - (12.0 - 3.8) * ((t - 0.88) / 0.12);
       }
 
       // 吞嚥字母波浪隆起 (Belly Bulge)
@@ -374,8 +502,8 @@ export const drawHundredPaceSnake = (
         }
       });
 
-      leftPts.push({ x: pt.x + nx * r, y: pt.y + ny * r });
-      rightPts.push({ x: pt.x - nx * r, y: pt.y - ny * r });
+      leftPts.push({ x: s.x + nx * r, y: s.y + ny * r });
+      rightPts.push({ x: s.x - nx * r, y: s.y - ny * r });
     }
 
     // 0) 地面立體柔和投影 (Soft Ground Drop Shadow)
@@ -385,86 +513,103 @@ export const drawHundredPaceSnake = (
     ctx.shadowOffsetY = 4;
     ctx.beginPath();
     ctx.moveTo(leftPts[0].x, leftPts[0].y);
-    for (let i = 1; i < leftPts.length; i++) {
-      ctx.lineTo(leftPts[i].x, leftPts[i].y);
-    }
-    for (let i = rightPts.length - 1; i >= 0; i--) {
-      ctx.lineTo(rightPts[i].x, rightPts[i].y);
-    }
+    for (let i = 1; i < leftPts.length; i++) ctx.lineTo(leftPts[i].x, leftPts[i].y);
+    for (let i = rightPts.length - 1; i >= 0; i--) ctx.lineTo(rightPts[i].x, rightPts[i].y);
     ctx.closePath();
     ctx.fillStyle = isDark ? '#0b1116' : '#2b1007';
     ctx.fill();
     ctx.restore();
 
-    // 1) 繪製連續蛇身外輪廓
+    // 1) 繪製連續無縫流暢外輪廓 (母圖色調：深沉赭石/黑曜板岩)
     ctx.beginPath();
     ctx.moveTo(leftPts[0].x, leftPts[0].y);
-    for (let i = 1; i < leftPts.length; i++) {
-      ctx.lineTo(leftPts[i].x, leftPts[i].y);
-    }
-    for (let i = rightPts.length - 1; i >= 0; i--) {
-      ctx.lineTo(rightPts[i].x, rightPts[i].y);
-    }
+    for (let i = 1; i < leftPts.length; i++) ctx.lineTo(leftPts[i].x, leftPts[i].y);
+    for (let i = rightPts.length - 1; i >= 0; i--) ctx.lineTo(rightPts[i].x, rightPts[i].y);
     ctx.closePath();
-
-    // 蛇身底色：白晝暖赤栗褐 vs 月夜黑曜板岩
-    ctx.fillStyle = isDark ? '#18232c' : '#7c2d12';
+    // 嚴格對齊 hundred_pace_snake_master 母圖調色盤
+    ctx.fillStyle = isDark ? '#141d24' : '#6e3920';
     ctx.fill();
 
-    // 圓柱體背脊光澤條 (Cylindrical Dorsal Highlight)
+    // 圓柱體背脊光澤條 (Cylindrical Dorsal Highlight) - 沿高密度樣條描繪，平滑無死角
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(chain[0].pt.x, chain[0].pt.y);
-    for (let i = 1; i < chain.length; i++) {
-      ctx.lineTo(chain[i].pt.x, chain[i].pt.y);
-    }
-    ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.16)' : 'rgba(251, 146, 60, 0.32)';
+    ctx.moveTo(denseSpine[0].x, denseSpine[0].y);
+    for (let i = 1; i < denseSpine.length; i++) ctx.lineTo(denseSpine[i].x, denseSpine[i].y);
+    ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.18)' : 'rgba(235, 150, 85, 0.32)';
     ctx.lineWidth = 9.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke();
     ctx.restore();
 
-    // 外輪廓深色細描邊
-    ctx.strokeStyle = isDark ? '#0b1116' : '#431407';
+    // 外輪廓深色細描邊 (如工筆刻刀線條)
+    ctx.strokeStyle = isDark ? '#080d12' : '#26140d';
     ctx.lineWidth = 1.8;
     ctx.stroke();
 
-    // 2) 沿著連貫中心線，在各骨骼節點處繪製經典祖靈幾何三角菱形紋 (等比縮放適配勻稱強健身軀)
-    for (let k = chain.length - 1; k >= 1; k--) {
-      const item = chain[k];
-      const pt = item.pt;
-      const gIdx = item.globalIndex;
-      if (gIdx === 0) continue; // 蛇頭留給頭部
+    // 2) 沿著連續弧長 (Arc-Length)，均勻排布母圖標誌性「向心深褐側三角斑」與「雙層祖靈之眼」
+    // 依弧長間距 (~25px 一個單元) 分佈，避免在轉彎時擠成一團，確保平滑隨彎度旋轉
+    const totalArcLen = denseSpine[denseSpine.length - 1].arcDist;
+    const diamondSpacing = 25; // 像素間距
+    const numDiamonds = Math.max(1, Math.floor((totalArcLen - 28) / diamondSpacing));
 
-      const prevPt = chain[Math.max(0, k - 1)].pt;
-      const angle = Math.atan2(pt.y - prevPt.y, pt.x - prevPt.x);
+    for (let d = 1; d <= numDiamonds; d++) {
+      const targetDist = d * diamondSpacing + 12;
+      if (targetDist > totalArcLen - 14) break;
 
-      const t = gIdx / Math.max(1, totalSegs - 1);
-      let r;
-      if (t < 0.15) {
-        r = 13.5 + (15.5 - 13.5) * (t / 0.15);
-      } else if (t <= 0.78) {
-        r = 15.5;
-      } else if (t <= 0.88) {
-        r = 15.5 - (15.5 - 12.0) * ((t - 0.78) / 0.10);
-      } else {
-        r = 12.0 - (12.0 - 3.8) * ((t - 0.88) / 0.12);
+      // 尋找對應弧長的骨骼取樣點
+      let sample = denseSpine[0];
+      for (let k = 0; k < denseSpine.length - 1; k++) {
+        if (denseSpine[k].arcDist <= targetDist && denseSpine[k + 1].arcDist >= targetDist) {
+          const segD = denseSpine[k + 1].arcDist - denseSpine[k].arcDist;
+          const frac = segD > 0 ? (targetDist - denseSpine[k].arcDist) / segD : 0;
+          sample = {
+            x: denseSpine[k].x + (denseSpine[k + 1].x - denseSpine[k].x) * frac,
+            y: denseSpine[k].y + (denseSpine[k + 1].y - denseSpine[k].y) * frac,
+            tx: denseSpine[k].tx + (denseSpine[k + 1].tx - denseSpine[k].tx) * frac,
+            ty: denseSpine[k].ty + (denseSpine[k + 1].ty - denseSpine[k].ty) * frac,
+            t: denseSpine[k].t + (denseSpine[k + 1].t - denseSpine[k].t) * frac
+          };
+          break;
+        }
       }
 
+      const tNorm = sample.t;
+      let r = 15.5;
+      if (tNorm < 0.15) r = 13.5 + (15.5 - 13.5) * (tNorm / 0.15);
+      else if (tNorm > 0.78 && tNorm <= 0.88) r = 15.5 - 3.5 * ((tNorm - 0.78) / 0.10);
+      else if (tNorm > 0.88) r = 12.0 - 8.2 * ((tNorm - 0.88) / 0.12);
+
+      const angle = Math.atan2(sample.ty, sample.tx);
+
       ctx.save();
-      ctx.translate(pt.x, pt.y);
+      ctx.translate(sample.x, sample.y);
       ctx.rotate(angle);
 
+      // A) 兩側向心深褐大三角斑 (百步蛇天然標誌特徵，向背脊匯聚)
+      ctx.fillStyle = isDark ? '#0b1016' : '#26140d';
+      // 左側向心三角
+      ctx.beginPath();
+      ctx.moveTo(-r, -9);
+      ctx.lineTo(-r * 0.22, 0);
+      ctx.lineTo(-r, 9);
+      ctx.closePath();
+      ctx.fill();
+      // 右側向心三角
+      ctx.beginPath();
+      ctx.moveTo(r, -9);
+      ctx.lineTo(r * 0.22, 0);
+      ctx.lineTo(r, 9);
+      ctx.closePath();
+      ctx.fill();
+
+      // B) 脊背中央神聖雙層祖靈之眼 (象牙白外菱 + 暖金赤心 + 黑曜靈眸)
       if (isDark) {
-        // 🌙 夜間：深黑幾何外三角 + 幽微琉璃琥珀呼吸微光（絕非全身刺眼光棒）
-        const pulse = 0.55 + 0.45 * Math.sin(time * 3.5 + gIdx * 0.4);
+        // 夜間幽微琥珀微光
+        const pulse = 0.55 + 0.45 * Math.sin(time * 3.5 + d * 0.5);
         ctx.fillStyle = '#0f172a';
         ctx.beginPath();
-        ctx.moveTo(-r * 0.72, 0);
-        ctx.lineTo(0, -r * 0.85);
-        ctx.lineTo(r * 0.72, 0);
-        ctx.lineTo(0, r * 0.85);
+        ctx.moveTo(-r * 0.70, 0); ctx.lineTo(0, -r * 0.82); ctx.lineTo(r * 0.70, 0); ctx.lineTo(0, r * 0.82);
         ctx.closePath();
         ctx.fill();
 
@@ -472,47 +617,37 @@ export const drawHundredPaceSnake = (
         ctx.shadowColor = '#f59e0b';
         ctx.shadowBlur = 6 * pulse;
         ctx.beginPath();
-        ctx.moveTo(-r * 0.44, 0);
-        ctx.lineTo(0, -r * 0.54);
-        ctx.lineTo(r * 0.44, 0);
-        ctx.lineTo(0, r * 0.54);
+        ctx.moveTo(-r * 0.42, 0); ctx.lineTo(0, -r * 0.52); ctx.lineTo(r * 0.42, 0); ctx.lineTo(0, r * 0.52);
         ctx.closePath();
         ctx.fill();
         ctx.shadowBlur = 0;
       } else {
-        // ☀️ 白天：高純度雪白幾何外三角 + 燦爛金黃幾何內菱形 + 祖靈神眼
-        // 經典魯凱雙層祖靈菱紋：深黑底框 + 純白外三角 + 暖金赤心內菱形
-        ctx.fillStyle = '#29150f'; // 深刻深色底框
+        // 白天神聖厚塗雙層菱紋
+        // 1. 深色基底
+        ctx.fillStyle = '#1c130e';
         ctx.beginPath();
-        ctx.moveTo(-r * 0.78, 0);
-        ctx.lineTo(0, -r * 0.92);
-        ctx.lineTo(r * 0.78, 0);
-        ctx.lineTo(0, r * 0.92);
+        ctx.moveTo(-r * 0.74, 0); ctx.lineTo(0, -r * 0.88); ctx.lineTo(r * 0.74, 0); ctx.lineTo(0, r * 0.88);
         ctx.closePath();
         ctx.fill();
 
-        ctx.fillStyle = '#fefce8'; // 純淨白骨外菱
+        // 2. 象牙白鋸齒外菱
+        ctx.fillStyle = '#fcfaf6';
         ctx.beginPath();
-        ctx.moveTo(-r * 0.65, 0);
-        ctx.lineTo(0, -r * 0.78);
-        ctx.lineTo(r * 0.65, 0);
-        ctx.lineTo(0, r * 0.78);
+        ctx.moveTo(-r * 0.62, 0); ctx.lineTo(0, -r * 0.74); ctx.lineTo(r * 0.62, 0); ctx.lineTo(0, r * 0.74);
         ctx.closePath();
         ctx.fill();
 
-        ctx.fillStyle = gIdx % 2 === 0 ? '#f59e0b' : '#d97706'; // 暖金赤心
+        // 3. 暖金赤心內菱
+        ctx.fillStyle = d % 2 === 0 ? '#df8f38' : '#c97825';
         ctx.beginPath();
-        ctx.moveTo(-r * 0.38, 0);
-        ctx.lineTo(0, -r * 0.48);
-        ctx.lineTo(r * 0.38, 0);
-        ctx.lineTo(0, r * 0.48);
+        ctx.moveTo(-r * 0.36, 0); ctx.lineTo(0, -r * 0.46); ctx.lineTo(r * 0.36, 0); ctx.lineTo(0, r * 0.46);
         ctx.closePath();
         ctx.fill();
 
-        // 中心黑曜祖靈眼點 (Authentic ancestral eye glyph)
-        ctx.fillStyle = '#1c1917';
+        // 4. 黑曜祖靈眼點
+        ctx.fillStyle = '#181412';
         ctx.beginPath();
-        ctx.arc(0, 0, Math.max(1.2, r * 0.16), 0, Math.PI * 2);
+        ctx.arc(0, 0, Math.max(1.2, r * 0.15), 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -520,21 +655,20 @@ export const drawHundredPaceSnake = (
     }
   });
 
-  // 3) 繪製百步蛇頭部 (優先使用精緻高解析繪本 Sprite，具備即時平滑旋轉與自然吐信)
-  const head = spine[0];
-  const neck = spine[1] || head;
-  const headAngle = Math.atan2(head.y - neck.y, head.x - neck.x);
+  // 3) 繪製百步蛇頭部 (來自母圖提取之 snake_head_indigenous.webp)
+  const headPt = spine[0];
+  const neckPt = spine[1] || headPt;
+  const headAngle = Math.atan2(headPt.y - neckPt.y, headPt.x - neckPt.x);
 
   ctx.save();
-  ctx.translate(head.x, head.y);
+  ctx.translate(headPt.x, headPt.y);
 
   if (assets?.snakeHead && assets.snakeHead.complete && assets.snakeHead.naturalWidth > 0) {
-    // 精緻 Sprite 向上對齊 (加上 PI/2 轉向運動前進方向)
     ctx.rotate(headAngle + Math.PI / 2);
 
     const headW = 34;
-    const headH = 46; // 256 x 351 aspect ratio
-    const pivotY = headH * 0.58; // 樞紐點置於眼脊與顴骨間
+    const headH = 46;
+    const pivotY = headH * 0.58;
     const snoutY = -pivotY;
 
     // 吐信：分叉蛇舌 (朝向前進方向，從翹鼻尖探出)
@@ -552,7 +686,7 @@ export const drawHundredPaceSnake = (
       ctx.stroke();
     }
 
-    // 蛇頭柔和立體投影 (Head Drop Shadow)
+    // 蛇頭柔和立體投影 (頸圈羽化處平滑覆蓋身軀首節，零接縫！)
     ctx.save();
     ctx.shadowColor = isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(15, 23, 42, 0.42)';
     ctx.shadowBlur = 8;
@@ -573,89 +707,11 @@ export const drawHundredPaceSnake = (
       ctx.moveTo(eyeX + 3.5, eyeY - 3.5); ctx.lineTo(eyeX - 3.5, eyeY + 3.5);
       ctx.stroke();
     }
-  } else {
-    ctx.rotate(headAngle);
-
-    // 吐信：分叉蛇舌
-    const tongueTimer = (time * 3) % 2.5;
-    if (tongueTimer < 0.65 && !isDead) {
-      const tLen = 12 + Math.sin(time * 26) * 3;
-      ctx.strokeStyle = '#dc2626';
-      ctx.lineWidth = 2.2;
-      ctx.beginPath();
-      ctx.moveTo(14, 0);
-      ctx.lineTo(14 + tLen, 0);
-      ctx.lineTo(14 + tLen + 4, -3);
-      ctx.moveTo(14 + tLen, 0);
-      ctx.lineTo(14 + tLen + 4, 3);
-      ctx.stroke();
-    }
-
-    // 圓潤流線水滴三角頭型 (絕無生硬方塊折角)
-    ctx.fillStyle = isDark ? '#1e293b' : '#9a3412';
-    ctx.strokeStyle = isDark ? '#0b1116' : '#431407';
-    ctx.lineWidth = 2.2;
-    ctx.beginPath();
-    ctx.moveTo(22, 0);
-    ctx.quadraticCurveTo(12, -15, -4, -14);
-    ctx.quadraticCurveTo(-14, -10, -14, 0);
-    ctx.quadraticCurveTo(-14, 10, -4, 14);
-    ctx.quadraticCurveTo(12, 15, 22, 0);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // 鼻尖肉質微翹小特徵 (白晝暖橙 vs 月夜琥珀金)
-    ctx.fillStyle = isDark ? '#f59e0b' : '#ea580c';
-    ctx.beginPath();
-    ctx.arc(20.5, 0, 3.2, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 頭頂祖靈王冠金黃紋
-    ctx.fillStyle = isDark ? '#fbbf24' : '#fde047';
-    ctx.beginPath();
-    ctx.moveTo(6.5, 0);
-    ctx.lineTo(-1, -5.5);
-    ctx.lineTo(-6.5, 0);
-    ctx.lineTo(-1, 5.5);
-    ctx.closePath();
-    ctx.fill();
-
-    // 眼睛
-    if (isDead) {
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2.0;
-      ctx.beginPath();
-      ctx.moveTo(3, -6.5); ctx.lineTo(7, -4); ctx.lineTo(3, -1.5);
-      ctx.moveTo(3, 1.5); ctx.lineTo(7, 4); ctx.lineTo(3, 6.5);
-      ctx.stroke();
-    } else {
-      // 亮琥珀金色眼球
-      ctx.fillStyle = '#fef08a';
-      ctx.beginPath();
-      ctx.arc(5.5, -6.5, 4.0, 0, Math.PI * 2);
-      ctx.arc(5.5, 6.5, 4.0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 黑垂直瞳孔
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.ellipse(6, -6.5, 1.1, 3.2, 0, 0, Math.PI * 2);
-      ctx.ellipse(6, 6.5, 1.1, 3.2, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 眼神高光
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(5, -7.5, 1.2, 0, Math.PI * 2);
-      ctx.arc(5, 5.5, 1.2, 0, Math.PI * 2);
-      ctx.fill();
-    }
   }
 
   ctx.restore();
 
-  // 4) 繪製蛇尾末梢 Sprite
+  // 4) 繪製蛇尾末梢 Sprite (來自母圖提取之 snake_tail_indigenous.webp)
   if (spine.length >= 3 && assets?.snakeTail && assets.snakeTail.complete && assets.snakeTail.naturalWidth > 0) {
     const tailPt = spine[spine.length - 1];
     const prevTailPt = spine[spine.length - 2];
@@ -665,7 +721,6 @@ export const drawHundredPaceSnake = (
     ctx.rotate(tailAngle - Math.PI / 2);
     const tailW = 18;
     const tailH = 46;
-    // 尾部柔和立體投影
     ctx.save();
     ctx.shadowColor = isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(15, 23, 42, 0.35)';
     ctx.shadowBlur = 6;
@@ -697,34 +752,23 @@ export const drawGreenSnake = (
   const totalSegs = spine.length;
   const chains = sliceSpineChains(spine);
 
-  // 1) 繪製一體成型的翡翠綠蛇身輪廓帶 (尾端自然收細)
+  // 1) 繪製一體成型的翡翠綠蛇身輪廓帶 (高密度樣條平滑轉彎，尾端自然收細)
   chains.forEach(chain => {
     if (chain.length < 2) return;
 
+    const denseSpine = buildDenseFilletSpine(chain, 14, 5);
+    if (denseSpine.length < 2) return;
+
     const leftPts = [];
     const rightPts = [];
+    const totalPoints = denseSpine.length;
 
-    for (let k = 0; k < chain.length; k++) {
-      const item = chain[k];
-      const pt = item.pt;
-      const gIdx = item.globalIndex;
+    for (let k = 0; k < totalPoints; k++) {
+      const s = denseSpine[k];
+      const t = s.t;
+      const nx = -s.ty;
+      const ny = s.tx;
 
-      let tx, ty;
-      if (k === 0) {
-        tx = chain[1].pt.x - pt.x;
-        ty = chain[1].pt.y - pt.y;
-      } else if (k === chain.length - 1) {
-        tx = pt.x - chain[k - 1].pt.x;
-        ty = pt.y - chain[k - 1].pt.y;
-      } else {
-        tx = chain[k + 1].pt.x - chain[k - 1].pt.x;
-        ty = chain[k + 1].pt.y - chain[k - 1].pt.y;
-      }
-      const len = Math.hypot(tx, ty) || 1;
-      const nx = -ty / len;
-      const ny = tx / len;
-
-      const t = gIdx / Math.max(1, totalSegs - 1);
       let r;
       if (t < 0.15) {
         r = 13.0 + (15.0 - 13.0) * (t / 0.15);
@@ -744,8 +788,8 @@ export const drawGreenSnake = (
         }
       });
 
-      leftPts.push({ x: pt.x + nx * r, y: pt.y + ny * r });
-      rightPts.push({ x: pt.x - nx * r, y: pt.y - ny * r });
+      leftPts.push({ x: s.x + nx * r, y: s.y + ny * r });
+      rightPts.push({ x: s.x - nx * r, y: s.y - ny * r });
     }
 
     // 地面立體柔和投影
@@ -764,22 +808,17 @@ export const drawGreenSnake = (
 
     ctx.beginPath();
     ctx.moveTo(leftPts[0].x, leftPts[0].y);
-    for (let i = 1; i < leftPts.length; i++) {
-      ctx.lineTo(leftPts[i].x, leftPts[i].y);
-    }
-    for (let i = rightPts.length - 1; i >= 0; i--) {
-      ctx.lineTo(rightPts[i].x, rightPts[i].y);
-    }
+    for (let i = 1; i < leftPts.length; i++) ctx.lineTo(leftPts[i].x, leftPts[i].y);
+    for (let i = rightPts.length - 1; i >= 0; i--) ctx.lineTo(rightPts[i].x, rightPts[i].y);
     ctx.closePath();
-
     ctx.fillStyle = '#10b981';
     ctx.fill();
 
-    // 圓柱體翠綠高光
+    // 圓柱體翠綠高光 (沿平滑骨骼)
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(chain[0].pt.x, chain[0].pt.y);
-    for (let i = 1; i < chain.length; i++) ctx.lineTo(chain[i].pt.x, chain[i].pt.y);
+    ctx.moveTo(denseSpine[0].x, denseSpine[0].y);
+    for (let i = 1; i < denseSpine.length; i++) ctx.lineTo(denseSpine[i].x, denseSpine[i].y);
     ctx.strokeStyle = 'rgba(167, 243, 208, 0.45)';
     ctx.lineWidth = 9.5;
     ctx.lineCap = 'round';
@@ -791,18 +830,28 @@ export const drawGreenSnake = (
     ctx.lineWidth = 1.8;
     ctx.stroke();
 
-    // 背部點綴金黃圓斑 (等比 80%)
-    for (let k = 1; k < chain.length; k++) {
-      const item = chain[k];
-      const pt = item.pt;
-      const gIdx = item.globalIndex;
-      const t = gIdx / Math.max(1, totalSegs - 1);
-      const spotR = Math.max(1.6, 4.8 * (1 - t * 0.6));
-
-      ctx.fillStyle = '#fef08a';
-      ctx.beginPath();
-      ctx.arc(pt.x, pt.y, spotR, 0, Math.PI * 2);
-      ctx.fill();
+    // 背部點綴金黃圓斑 (沿弧長均勻分佈)
+    const totalArcLen = denseSpine[denseSpine.length - 1].arcDist;
+    const spotSpacing = 22;
+    const numSpots = Math.max(1, Math.floor((totalArcLen - 20) / spotSpacing));
+    for (let s = 1; s <= numSpots; s++) {
+      const targetDist = s * spotSpacing + 10;
+      if (targetDist > totalArcLen - 12) break;
+      for (let k = 0; k < denseSpine.length - 1; k++) {
+        if (denseSpine[k].arcDist <= targetDist && denseSpine[k + 1].arcDist >= targetDist) {
+          const segD = denseSpine[k + 1].arcDist - denseSpine[k].arcDist;
+          const frac = segD > 0 ? (targetDist - denseSpine[k].arcDist) / segD : 0;
+          const px = denseSpine[k].x + (denseSpine[k + 1].x - denseSpine[k].x) * frac;
+          const py = denseSpine[k].y + (denseSpine[k + 1].y - denseSpine[k].y) * frac;
+          const tNorm = denseSpine[k].t + (denseSpine[k + 1].t - denseSpine[k].t) * frac;
+          const spotR = Math.max(1.6, 4.8 * (1 - tNorm * 0.6));
+          ctx.fillStyle = '#fef08a';
+          ctx.beginPath();
+          ctx.arc(px, py, spotR, 0, Math.PI * 2);
+          ctx.fill();
+          break;
+        }
+      }
     }
   });
 
