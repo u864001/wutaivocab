@@ -341,7 +341,25 @@ export const drawHundredPaceSnake = (
       rightPts.push({ x: pt.x - nx * r, y: pt.y - ny * r });
     }
 
-    // 繪製連續蛇身外輪廓
+    // 0) 地面立體柔和投影 (Soft Ground Drop Shadow)
+    ctx.save();
+    ctx.shadowColor = isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(15, 23, 42, 0.38)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 4;
+    ctx.beginPath();
+    ctx.moveTo(leftPts[0].x, leftPts[0].y);
+    for (let i = 1; i < leftPts.length; i++) {
+      ctx.lineTo(leftPts[i].x, leftPts[i].y);
+    }
+    for (let i = rightPts.length - 1; i >= 0; i--) {
+      ctx.lineTo(rightPts[i].x, rightPts[i].y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = isDark ? '#0b1116' : '#2b1007';
+    ctx.fill();
+    ctx.restore();
+
+    // 1) 繪製連續蛇身外輪廓
     ctx.beginPath();
     ctx.moveTo(leftPts[0].x, leftPts[0].y);
     for (let i = 1; i < leftPts.length; i++) {
@@ -355,6 +373,20 @@ export const drawHundredPaceSnake = (
     // 蛇身底色：白晝暖赤栗褐 vs 月夜黑曜板岩
     ctx.fillStyle = isDark ? '#18232c' : '#7c2d12';
     ctx.fill();
+
+    // 圓柱體背脊光澤條 (Cylindrical Dorsal Highlight)
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(chain[0].pt.x, chain[0].pt.y);
+    for (let i = 1; i < chain.length; i++) {
+      ctx.lineTo(chain[i].pt.x, chain[i].pt.y);
+    }
+    ctx.strokeStyle = isDark ? 'rgba(56, 189, 248, 0.16)' : 'rgba(251, 146, 60, 0.32)';
+    ctx.lineWidth = 10;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    ctx.restore();
 
     // 外輪廓深色細描邊
     ctx.strokeStyle = isDark ? '#0b1116' : '#431407';
@@ -406,23 +438,39 @@ export const drawHundredPaceSnake = (
         ctx.fill();
         ctx.shadowBlur = 0;
       } else {
-        // ☀️ 白天：高純度雪白幾何外三角 + 燦爛金黃幾何內菱形
-        ctx.fillStyle = '#ffffff';
+        // ☀️ 白天：高純度雪白幾何外三角 + 燦爛金黃幾何內菱形 + 祖靈神眼
+        // 經典魯凱雙層祖靈菱紋：深黑底框 + 純白外三角 + 暖金赤心內菱形
+        ctx.fillStyle = '#29150f'; // 深刻深色底框
         ctx.beginPath();
-        ctx.moveTo(-r * 0.72, 0);
-        ctx.lineTo(0, -r * 0.85);
-        ctx.lineTo(r * 0.72, 0);
-        ctx.lineTo(0, r * 0.85);
+        ctx.moveTo(-r * 0.78, 0);
+        ctx.lineTo(0, -r * 0.92);
+        ctx.lineTo(r * 0.78, 0);
+        ctx.lineTo(0, r * 0.92);
         ctx.closePath();
         ctx.fill();
 
-        ctx.fillStyle = gIdx % 2 === 0 ? '#facc15' : '#fbbf24';
+        ctx.fillStyle = '#fefce8'; // 純淨白骨外菱
         ctx.beginPath();
-        ctx.moveTo(-r * 0.44, 0);
-        ctx.lineTo(0, -r * 0.54);
-        ctx.lineTo(r * 0.44, 0);
-        ctx.lineTo(0, r * 0.54);
+        ctx.moveTo(-r * 0.65, 0);
+        ctx.lineTo(0, -r * 0.78);
+        ctx.lineTo(r * 0.65, 0);
+        ctx.lineTo(0, r * 0.78);
         ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = gIdx % 2 === 0 ? '#f59e0b' : '#d97706'; // 暖金赤心
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.38, 0);
+        ctx.lineTo(0, -r * 0.48);
+        ctx.lineTo(r * 0.38, 0);
+        ctx.lineTo(0, r * 0.48);
+        ctx.closePath();
+        ctx.fill();
+
+        // 中心黑曜祖靈眼點 (Authentic ancestral eye glyph)
+        ctx.fillStyle = '#1c1917';
+        ctx.beginPath();
+        ctx.arc(0, 0, Math.max(1.2, r * 0.16), 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -430,7 +478,7 @@ export const drawHundredPaceSnake = (
     }
   });
 
-  // 3) 繪製百步蛇頭部 (優先使用精緻 Sprite，具備即時平滑旋轉與吐信)
+  // 3) 繪製百步蛇頭部 (優先使用精緻高解析繪本 Sprite，具備即時平滑旋轉與自然吐信)
   const head = spine[0];
   const neck = spine[1] || head;
   const headAngle = Math.atan2(head.y - neck.y, head.x - neck.x);
@@ -442,23 +490,47 @@ export const drawHundredPaceSnake = (
     // 精緻 Sprite 向上對齊 (加上 PI/2 轉向運動前進方向)
     ctx.rotate(headAngle + Math.PI / 2);
 
-    // 吐信：分叉蛇舌 (朝向前進方向)
+    const headW = 38;
+    const headH = 52; // 256 x 351 aspect ratio
+    const pivotY = headH * 0.58; // 樞紐點置於眼脊與顴骨間
+    const snoutY = -pivotY;
+
+    // 吐信：分叉蛇舌 (朝向前進方向，從翹鼻尖探出)
     const tongueTimer = (time * 3) % 2.5;
     if (tongueTimer < 0.65 && !isDead) {
-      const tLen = 10 + Math.sin(time * 26) * 3;
+      const tLen = 14 + Math.sin(time * 26) * 4;
       ctx.strokeStyle = '#dc2626';
-      ctx.lineWidth = 2.0;
+      ctx.lineWidth = 2.4;
       ctx.beginPath();
-      ctx.moveTo(0, -18);
-      ctx.lineTo(0, -18 - tLen);
-      ctx.lineTo(-3, -18 - tLen - 4);
-      ctx.moveTo(0, -18 - tLen);
-      ctx.lineTo(3, -18 - tLen - 4);
+      ctx.moveTo(0, snoutY);
+      ctx.lineTo(0, snoutY - tLen);
+      ctx.lineTo(-4, snoutY - tLen - 5);
+      ctx.moveTo(0, snoutY - tLen);
+      ctx.lineTo(4, snoutY - tLen - 5);
       ctx.stroke();
     }
 
-    const headSize = 34;
-    ctx.drawImage(assets.snakeHead, -headSize / 2, -headSize * 0.55, headSize, headSize);
+    // 蛇頭柔和立體投影 (Head Drop Shadow)
+    ctx.save();
+    ctx.shadowColor = isDark ? 'rgba(0, 0, 0, 0.75)' : 'rgba(15, 23, 42, 0.42)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 4;
+    ctx.drawImage(assets.snakeHead, -headW / 2, -pivotY, headW, headH);
+    ctx.restore();
+
+    // 死亡時畫上逗趣卡通 X 眼睛
+    if (isDead) {
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
+      const eyeX = 9.5;
+      const eyeY = snoutY + headH * 0.38;
+      ctx.beginPath();
+      ctx.moveTo(-eyeX - 3.5, eyeY - 3.5); ctx.lineTo(-eyeX + 3.5, eyeY + 3.5);
+      ctx.moveTo(-eyeX + 3.5, eyeY - 3.5); ctx.lineTo(-eyeX - 3.5, eyeY + 3.5);
+      ctx.moveTo(eyeX - 3.5, eyeY - 3.5); ctx.lineTo(eyeX + 3.5, eyeY + 3.5);
+      ctx.moveTo(eyeX + 3.5, eyeY - 3.5); ctx.lineTo(eyeX - 3.5, eyeY + 3.5);
+      ctx.stroke();
+    }
   } else {
     ctx.rotate(headAngle);
 
@@ -477,17 +549,16 @@ export const drawHundredPaceSnake = (
       ctx.stroke();
     }
 
-    // 經典尖吻翹鼻頭型 (原比例 80%)
+    // 圓潤流線水滴三角頭型 (絕無生硬方塊折角)
     ctx.fillStyle = isDark ? '#1e293b' : '#9a3412';
     ctx.strokeStyle = isDark ? '#0b1116' : '#431407';
     ctx.lineWidth = 2.2;
     ctx.beginPath();
-    ctx.moveTo(20, 0);
-    ctx.lineTo(9, -13);
-    ctx.lineTo(-10, -12);
-    ctx.lineTo(-12, 0);
-    ctx.lineTo(-10, 12);
-    ctx.lineTo(9, 13);
+    ctx.moveTo(22, 0);
+    ctx.quadraticCurveTo(12, -15, -4, -14);
+    ctx.quadraticCurveTo(-14, -10, -14, 0);
+    ctx.quadraticCurveTo(-14, 10, -4, 14);
+    ctx.quadraticCurveTo(12, 15, 22, 0);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
@@ -495,7 +566,7 @@ export const drawHundredPaceSnake = (
     // 鼻尖肉質微翹小特徵 (白晝暖橙 vs 月夜琥珀金)
     ctx.fillStyle = isDark ? '#f59e0b' : '#ea580c';
     ctx.beginPath();
-    ctx.arc(18.5, 0, 3.0, 0, Math.PI * 2);
+    ctx.arc(20.5, 0, 3.2, 0, Math.PI * 2);
     ctx.fill();
 
     // 頭頂祖靈王冠金黃紋
@@ -549,9 +620,16 @@ export const drawHundredPaceSnake = (
     const tailAngle = Math.atan2(tailPt.y - prevTailPt.y, tailPt.x - prevTailPt.x);
     ctx.save();
     ctx.translate(tailPt.x, tailPt.y);
-    ctx.rotate(tailAngle + Math.PI / 2);
-    const tailSize = 22;
-    ctx.drawImage(assets.snakeTail, -tailSize / 2, -tailSize * 0.2, tailSize, tailSize);
+    ctx.rotate(tailAngle - Math.PI / 2);
+    const tailW = 16;
+    const tailH = 48;
+    // 尾部柔和立體投影
+    ctx.save();
+    ctx.shadowColor = isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(15, 23, 42, 0.35)';
+    ctx.shadowBlur = 6;
+    ctx.shadowOffsetY = 3;
+    ctx.drawImage(assets.snakeTail, -tailW / 2, -10, tailW, tailH);
+    ctx.restore();
     ctx.restore();
   }
 
@@ -623,6 +701,20 @@ export const drawGreenSnake = (
       rightPts.push({ x: pt.x - nx * r, y: pt.y - ny * r });
     }
 
+    // 地面立體柔和投影
+    ctx.save();
+    ctx.shadowColor = 'rgba(6, 78, 59, 0.4)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 4;
+    ctx.beginPath();
+    ctx.moveTo(leftPts[0].x, leftPts[0].y);
+    for (let i = 1; i < leftPts.length; i++) ctx.lineTo(leftPts[i].x, leftPts[i].y);
+    for (let i = rightPts.length - 1; i >= 0; i--) ctx.lineTo(rightPts[i].x, rightPts[i].y);
+    ctx.closePath();
+    ctx.fillStyle = '#064e3b';
+    ctx.fill();
+    ctx.restore();
+
     ctx.beginPath();
     ctx.moveTo(leftPts[0].x, leftPts[0].y);
     for (let i = 1; i < leftPts.length; i++) {
@@ -635,6 +727,18 @@ export const drawGreenSnake = (
 
     ctx.fillStyle = '#10b981';
     ctx.fill();
+
+    // 圓柱體翠綠高光
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(chain[0].pt.x, chain[0].pt.y);
+    for (let i = 1; i < chain.length; i++) ctx.lineTo(chain[i].pt.x, chain[i].pt.y);
+    ctx.strokeStyle = 'rgba(167, 243, 208, 0.45)';
+    ctx.lineWidth = 9;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    ctx.restore();
 
     ctx.strokeStyle = '#059669';
     ctx.lineWidth = 1.8;
