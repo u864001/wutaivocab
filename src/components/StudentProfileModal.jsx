@@ -39,8 +39,9 @@ import confetti from 'canvas-confetti';
 import { GrimoireSanctuaryModal } from './GrimoireSanctuaryModal';
 import { CurioBackpackModal } from '../games/town/CurioBackpackModal';
 import { getGrimoireSummary } from '../utils/grimoireHelper';
-import { groupInventoryItems } from '../utils/inventoryHelper';
+import { groupInventoryItems, getInventorySummary } from '../utils/inventoryHelper';
 import { soundEngine } from '../services/audio';
+import { CONSOLIDATED_GAME_MODES } from './LeaderboardView';
 
 export const StudentProfileModal = () => {
   const {
@@ -107,6 +108,11 @@ export const StudentProfileModal = () => {
     return groupInventoryItems(currentStudent?.inventory || []);
   }, [currentStudent?.inventory]);
 
+  // 背包物品概括統計（供通行證單頁精確展示幾類幾樣，杜絕捲動條）
+  const inventorySummary = useMemo(() => {
+    return getInventorySummary(currentStudent?.inventory || []);
+  }, [currentStudent?.inventory]);
+
   // 當彈窗開啟或學生變更時同步表單
   useEffect(() => {
     if (currentStudent) {
@@ -124,7 +130,7 @@ export const StudentProfileModal = () => {
     setNicknameError('');
   }, [currentStudent, isModalOpen]);
 
-  // 讀取學生本週與榮譽榜 Top 3 榮耀成就
+  // 讀取學生本週與榮譽榜 Top 3 榮耀成就 (由 CONSOLIDATED_GAME_MODES 動態驅動，隨新遊戲即時自動同步)
   useEffect(() => {
     let isMounted = true;
     const loadTopHonors = async () => {
@@ -136,37 +142,75 @@ export const StudentProfileModal = () => {
         const studentNick = currentStudent.nickname;
         const studentId = currentStudent.student_id;
 
-        // 查驗核心各大主要模式排行榜
+        // 1. 全校冒險總積分榜永遠置頂
         const modesToCheck = [
-          { mode: 'all', title: '全校冒險總積分榜', icon: '🏆' },
-          { mode: 'mole', title: '單字打地鼠手速榜', icon: '⚡' },
-          { mode: 'meteor', title: '3D 隕石防衛戰射手榜', icon: '🚀' },
-          { mode: 'snake', title: '神山百步蛇獵人榜', icon: '🐍' },
-          { mode: 'spotter', title: '鷹眼神探尋寶榜', icon: '👁️' },
-          { mode: 'escape', title: '密室逃脫解謎先鋒榜', icon: '🗝️' }
+          { mode: 'all', title: '全校冒險總積分榜', icon: '🏆' }
         ];
 
-        const honors = [];
-        for (const item of modesToCheck) {
-          const res = await fetchLeaderboard(curWeek, item.mode, 'all', 10);
-          if (res && res.length > 0) {
-            const rankIdx = res.findIndex(r => 
-              r.name?.includes(studentId) || 
-              r.name?.includes(studentNick) ||
-              (studentBadge && r.name?.includes(studentBadge))
-            );
-            if (rankIdx !== -1 && rankIdx < 3) {
-              honors.push({
-                rank: rankIdx + 1,
-                title: item.title,
-                icon: item.icon,
-                score: res[rankIdx].score,
-                time: res[rankIdx].time
-              });
-            }
-          }
+        // 2. 動態同步所有已註冊的遊戲模式 (由 CONSOLIDATED_GAME_MODES 集中註冊中心動態驅動，隨新遊戲即時更新)
+        const iconMap = {
+          escape: '🗝️',
+          spotter: '👁️',
+          maze: '🧭',
+          memory: '🎴',
+          mole: '⚡',
+          swipe: '🔥',
+          meteor: '🚀',
+          snake: '🐍',
+          quiz: '🎯',
+          listening: '🎧',
+          spelling: '🧩',
+          handwriting: '✍️',
+          battle: '⚔️',
+          listening_lab: '🎙️',
+          phonics: '🗣️'
+        };
+
+        if (Array.isArray(CONSOLIDATED_GAME_MODES)) {
+          CONSOLIDATED_GAME_MODES.forEach((gm) => {
+            if (!gm.id || gm.id === 'all' || gm.id === 'monopoly') return;
+            const queryKey = gm.modeKeys?.[0] || gm.id;
+            const iconChar = iconMap[gm.id] || '🏅';
+            modesToCheck.push({
+              mode: queryKey,
+              title: `${gm.label}榮譽榜`,
+              icon: iconChar
+            });
+          });
         }
+
+        // 3. 平行非阻塞並發查核各遊戲模式榜單
+        const results = await Promise.allSettled(
+          modesToCheck.map(async (item) => {
+            try {
+              const res = await fetchLeaderboard(curWeek, item.mode, 'all', 10);
+              if (res && res.length > 0) {
+                const rankIdx = res.findIndex(r => 
+                  r.name?.includes(studentId) || 
+                  r.name?.includes(studentNick) ||
+                  (studentBadge && r.name?.includes(studentBadge))
+                );
+                if (rankIdx !== -1 && rankIdx < 3) {
+                  return {
+                    rank: rankIdx + 1,
+                    title: item.title,
+                    icon: item.icon,
+                    score: res[rankIdx].score,
+                    time: res[rankIdx].time
+                  };
+                }
+              }
+            } catch (queryErr) {
+              // 個別模式查驗異常不中斷其他榜單
+            }
+            return null;
+          })
+        );
+
         if (isMounted) {
+          const honors = results
+            .filter(r => r.status === 'fulfilled' && r.value)
+            .map(r => r.value);
           setStudentTopHonors(honors);
         }
       } catch (err) {
@@ -424,33 +468,35 @@ export const StudentProfileModal = () => {
                   setIsCurioBackpackOpen(true);
                 }}
                 className="absolute left-[9.77%] top-[50.88%] w-[80.08%] h-[9.38%] flex items-center justify-between px-3.5 z-20 cursor-pointer group hover:bg-black/20 rounded-2xl transition-all"
-                title="點擊開啟【神山多寶格背包】整理陳列道具"
+                title="點擊開啟【神山多寶格背包】展示與把玩道具"
               >
                 <div className="flex items-center gap-1.5">
                   <Package className="w-3.5 h-3.5 text-teal-500 shrink-0 group-hover:scale-110 transition-transform" />
                   <span className={`text-[11px] sm:text-xs font-black ${
                     cardTheme === 'dark' ? 'text-teal-300' : 'text-teal-900'
                   }`}>
-                    {t.backpackItems} ({(currentStudent.inventory || []).length} 件{groupedInventory.length > 0 ? ` • ${groupedInventory.length} 類` : ''})
+                    {t.backpackItems}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 overflow-x-auto max-w-[55%] py-1">
-                  {groupedInventory.length > 0 ? (
-                    groupedInventory.slice(0, 4).map((it, idx) => (
-                      <span key={idx} className="px-2 py-0.5 rounded-md bg-teal-950/80 border border-teal-400/40 text-[9px] text-teal-200 font-bold whitespace-nowrap flex items-center gap-1 shadow-sm">
-                        <span>{it.icon || '📦'}</span>
-                        <span>{it.nameZh || it.name || it}</span>
-                        {it.count > 1 && (
-                          <span className="text-amber-400 font-mono font-black text-[9px]">x{it.count}</span>
-                        )}
+                {/* 概括統計幾類幾樣，單頁展示免捲動條 (No Bar) */}
+                <div className="flex items-center gap-1.5">
+                  {inventorySummary.totalCount > 0 ? (
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-teal-950/70 border border-teal-400/40 shadow-sm text-teal-200 group-hover:border-teal-300 transition-colors">
+                      <span className="text-[10px] font-black">
+                        共 <span className="text-amber-400 font-mono font-bold">{inventorySummary.totalCount}</span> 件 • <span className="text-cyan-300 font-mono font-bold">{inventorySummary.categoryCount}</span> 類寶物
                       </span>
-                    ))
+                      <span className="text-[9px] text-amber-300 font-bold ml-1 flex items-center">
+                        開啟大背包 ➔
+                      </span>
+                    </div>
                   ) : (
-                    <span className={`text-[9px] font-bold flex items-center gap-1 ${
-                      cardTheme === 'dark' ? 'text-slate-400' : 'text-stone-600'
+                    <div className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-[9px] font-bold ${
+                      cardTheme === 'dark'
+                        ? 'border-white/10 bg-black/30 text-slate-400'
+                        : 'border-stone-300 bg-stone-100 text-stone-600'
                     }`}>
-                      <span>點擊開啟多寶格整理道具</span>
-                    </span>
+                      <span>行囊輕便 • 開啟大背包 ➔</span>
+                    </div>
                   )}
                 </div>
               </div>

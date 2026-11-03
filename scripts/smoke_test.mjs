@@ -419,14 +419,19 @@ async function run() {
     console.log('  ✓ Lobby -> Classic Quiz launch transition & question render verified');
   }
 
-  // 5B. 貪食蛇方向鍵與虛擬十字鍵實際轉向驗證
+  // 5B. 貪食蛇方向鍵與虛擬十字鍵實際轉向驗證 (支援 GamePreloader 資源加載等待)
   client.exceptions = [];
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=snake&grade=3&book=1` });
-  await new Promise(r => setTimeout(r, 900));
+  await new Promise(r => setTimeout(r, 1200));
   const snakeMoveCheck = await client.evaluate(`
     (async () => {
+      let upBtn = null;
+      for (let i = 0; i < 20; i++) {
+        upBtn = document.querySelector('button[title*="向上"]');
+        if (upBtn) break;
+        await new Promise(r => setTimeout(r, 200));
+      }
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', code: 'ArrowUp', bubbles: true }));
-      const upBtn = document.querySelector('button[title*="向上"]');
       if (upBtn) upBtn.click();
       await new Promise(r => setTimeout(r, 500));
       return { alive: !document.body.innerText.includes('畫面載入遇到小插曲'), hasControls: !!upBtn };

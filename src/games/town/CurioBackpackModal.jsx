@@ -6,8 +6,9 @@ import {
 import { Button3D } from '../../components/ui/Button3D';
 import { useStudent } from '../../context/StudentContext';
 import { speakEnglish, soundEngine } from '../../services/audio';
-import { groupInventoryItems, getItemQuantity } from '../../utils/inventoryHelper';
+import { groupInventoryItems, getItemQuantity, resolveItemMetadata } from '../../utils/inventoryHelper';
 import { TOWN_ITEMS } from './townData';
+import confetti from 'canvas-confetti';
 
 const TOTAL_SLOTS = 24; // 24 格精緻多寶格置物槽
 
@@ -21,17 +22,26 @@ export const CurioBackpackModal = ({
   const [selectedSlotIndex, setSelectedSlotIndex] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [inspectModalItem, setInspectModalItem] = useState(null);
+  const [isInspectingPlay, setIsInspectingPlay] = useState(false);
+  const [playAnimFeedback, setPlayAnimFeedback] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
 
   // 自動聚合摺疊同類道具（同 id 聚合為一格並附帶 count 數量）
   const groupedInventory = useMemo(() => groupInventoryItems(inventory), [inventory]);
 
-  // 學生自訂的多寶格位置對應表 (持久化至 localStorage)
+  // 學生自訂的多寶格位置對應表 (持久化至 localStorage，自動通過 resolveItemMetadata 防禦舊紙箱)
   const [slotLayout, setSlotLayout] = useState(() => {
     try {
       const studentId = currentStudent?.student_id || 'guest';
       const saved = localStorage.getItem(`wutai_curio_layout_${studentId}`);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const sanitized = {};
+        Object.entries(parsed).forEach(([k, v]) => {
+          sanitized[k] = resolveItemMetadata(v);
+        });
+        return sanitized;
+      }
     } catch (e) {}
 
     // 預設將現有物品（自動摺疊同品後的獨特道具）依序放入前幾個槽位
@@ -56,22 +66,95 @@ export const CurioBackpackModal = ({
     } catch (e) {}
   };
 
+  // 原民文化與生活道具把玩互動專屬文案
+  const getPlayFeedback = (item) => {
+    if (!item) return null;
+    if (item.category === 'food') {
+      return {
+        title: '😋 清甜享用 • 元氣充沛！',
+        desc: `你品嚐了香甜的「${item.nameZh}」，神山勇者的體力與活力瞬間滿載！`,
+        badge: '活力 +100%'
+      };
+    }
+    if (item.category === 'clothing') {
+      return {
+        title: '✨ 穿戴完成 • 勇士英姿！',
+        desc: `你帥氣穿戴上「${item.nameZh}」，整個人神采奕奕，散發部落勇者榮耀氣場！`,
+        badge: '魅力 +100%'
+      };
+    }
+    if (item.category === 'stationery') {
+      return {
+        title: '📝 靈光乍現 • 勤學精進！',
+        desc: `你握起「${item.nameZh}」在探險手札上流暢書寫，英文符號化為智慧金光！`,
+        badge: '智慧 +100%'
+      };
+    }
+    if (item.id === 'sacred_urn' || item.nameZh?.includes('陶甕')) {
+      return {
+        title: '🏺 輕撫陶甕 • 祖靈低語！',
+        desc: `你輕撫「${item.nameZh}」上的百步蛇浮雕紋路，彷彿聽見大武山千年悠揚的守護回音！`,
+        badge: '守護加持'
+      };
+    }
+    if (item.id === 'ceremonial_knife' || item.nameZh?.includes('禮刀')) {
+      return {
+        title: '🗡️ 佩掛禮刀 • 凜然勇氣！',
+        desc: `你將「${item.nameZh}」佩於腰間，刀鞘金光流轉，百步蛇守護之魂在血液中燃燒！`,
+        badge: '勇氣滿點'
+      };
+    }
+    if (item.id === 'glass_bead' || item.nameZh?.includes('琉璃珠')) {
+      return {
+        title: '📿 轉動琉璃珠 • 璀璨光華！',
+        desc: `你在指尖摩挲「${item.nameZh}」，溫潤光華流動，平安與祝福環繞周身！`,
+        badge: '平安守護'
+      };
+    }
+    if (item.id === 'eagle_feather' || item.nameZh?.includes('羽毛')) {
+      return {
+        title: '🪶 佩戴熊鷹羽 • 展翅凌霄！',
+        desc: `你將「${item.nameZh}」插上頭冠，象徵至高無上的尊貴榮耀，傲視群山！`,
+        badge: '尊榮勳章'
+      };
+    }
+    return {
+      title: '✨ 撫摸把玩 • 靈氣縈繞！',
+      desc: `你細細撫摸「${item.nameZh}」，古物散發溫暖光暈，神山祝福長伴左右！`,
+      badge: '神山祝福'
+    };
+  };
+
+  // 動態把玩按鈕標題
+  const getPlayButtonLabel = (item, isPlaying) => {
+    if (isPlaying) return '✨ 再次把玩互動';
+    if (item?.category === 'food') return '😋 品嚐享用';
+    if (item?.category === 'clothing') return '✨ 佩戴加持';
+    if (item?.category === 'stationery') return '✍️ 揮毫練習';
+    if (item?.category === 'ticket') return '🎫 查驗票券';
+    return '🏺 撫摸把玩';
+  };
+
   // 點擊格子
   const handleSlotClick = (slotIdx) => {
     soundEngine.click();
-    const itemInSlot = slotLayout[slotIdx];
+    const rawInSlot = slotLayout[slotIdx];
+    const itemInSlot = resolveItemMetadata(rawInSlot);
 
     if (selectedItem) {
       // 若手中拿著道具，放入該格
-      const nextLayout = { ...slotLayout, [slotIdx]: selectedItem };
+      const resolvedTarget = resolveItemMetadata(selectedItem);
+      const nextLayout = { ...slotLayout, [slotIdx]: resolvedTarget };
       updateSlotLayout(nextLayout);
       setSelectedItem(null);
       setSelectedSlotIndex(null);
       soundEngine.pinCard();
-      showToast(`📦 已將【${selectedItem.nameZh}】陳列於多寶格第 ${slotIdx + 1} 槽位！`);
+      showToast(`${resolvedTarget.icon || '✨'} 已將【${resolvedTarget.nameZh}】陳列於多寶格第 ${slotIdx + 1} 槽位！`);
     } else if (itemInSlot) {
       // 點選已有道具的格子，展開檢視
       setInspectModalItem({ item: itemInSlot, slotIdx });
+      setIsInspectingPlay(false);
+      setPlayAnimFeedback(null);
       speakEnglish(itemInSlot.nameEn || itemInSlot.nameZh);
     } else {
       setSelectedSlotIndex(slotIdx);
@@ -83,18 +166,22 @@ export const CurioBackpackModal = ({
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // 互動使用/展示道具
-  const handleInteractItem = (item) => {
-    soundEngine.correct();
-    if (item.category === 'food') {
-      showToast(`😋 你品嘗了香甜的「${item.nameZh}」！充滿了神山勇士元氣！`);
-    } else if (item.category === 'clothing' || item.category === 'special') {
-      showToast(`✨ 你佩戴上了「${item.nameZh}」！整個人神采奕奕，散發部落勇者威儀！`);
-    } else if (item.category === 'stationery') {
-      showToast(`📝 你使用「${item.nameZh}」寫下了一句優美的英文！`);
-    } else {
-      showToast(`🏺 你擦拭了珍貴的「${item.nameZh}」，散發出璀璨的傳統工藝光芒！`);
-    }
+  // 把玩動畫與音效互動
+  const handlePlayItem = (item) => {
+    const resolved = resolveItemMetadata(item);
+    if (!resolved) return;
+    soundEngine.powerUp();
+    setIsInspectingPlay(true);
+    try {
+      confetti({
+        particleCount: 40,
+        spread: 60,
+        origin: { y: 0.55 }
+      });
+    } catch (e) {}
+    speakEnglish(resolved.nameEn || resolved.nameZh);
+    const feedback = getPlayFeedback(resolved);
+    setPlayAnimFeedback(feedback);
   };
 
   return (
@@ -213,7 +300,8 @@ export const CurioBackpackModal = ({
 
             <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-3">
               {Array.from({ length: TOTAL_SLOTS }).map((_, slotIdx) => {
-                const item = slotLayout[slotIdx];
+                const rawItem = slotLayout[slotIdx];
+                const item = resolveItemMetadata(rawItem);
                 const isTarget = selectedSlotIndex === slotIdx;
                 const count = item ? getItemQuantity(inventory, item) : 0;
 
@@ -285,16 +373,17 @@ export const CurioBackpackModal = ({
             ) : (
               <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
                 {groupedInventory.map((it, idx) => {
-                  const isPicked = selectedItem?.id === it.id;
+                  const resolved = resolveItemMetadata(it) || it;
+                  const isPicked = selectedItem?.id === resolved.id;
                   return (
                     <button
-                      key={it.id || idx}
+                      key={resolved.id || idx}
                       type="button"
                       onClick={() => {
                         soundEngine.click();
-                        setSelectedItem(isPicked ? null : it);
+                        setSelectedItem(isPicked ? null : resolved);
                         if (!isPicked) {
-                          showToast(`已選取【${it.nameZh}】${it.count > 1 ? `(x${it.count})` : ''}，請點擊上方任一多寶格置物槽放置！`);
+                          showToast(`已選取【${resolved.nameZh}】${resolved.count > 1 ? `(x${resolved.count})` : ''}，請點擊上方任一多寶格置物槽放置！`);
                         }
                       }}
                       className={`px-3 py-1.5 rounded-xl border flex items-center gap-1.5 text-xs font-black shrink-0 transition-all cursor-pointer ${
@@ -305,11 +394,11 @@ export const CurioBackpackModal = ({
                           : 'border-stone-300 bg-stone-100 text-stone-800 hover:border-stone-400'
                       }`}
                     >
-                      <span>{it.icon || '📦'}</span>
-                      <span>{it.nameZh}</span>
-                      {it.count > 1 && (
+                      <span className="text-base">{resolved.icon || '🏺'}</span>
+                      <span>{resolved.nameZh}</span>
+                      {resolved.count > 1 && (
                         <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-stone-950 text-[10px] font-mono font-black">
-                          x{it.count}
+                          x{resolved.count}
                         </span>
                       )}
                     </button>
@@ -321,75 +410,119 @@ export const CurioBackpackModal = ({
 
         </div>
 
-        {/* ── 道具詳情檢視彈窗 ── */}
-        {inspectModalItem && (
-          <div className="absolute inset-0 z-40 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-            <div className={`w-full max-w-sm rounded-3xl p-5 border-2 shadow-2xl flex flex-col items-center text-center relative animate-scaleUp ${
-              isDark ? 'bg-slate-900 border-amber-400/50 text-white' : 'bg-white border-amber-600/50 text-stone-900'
-            }`}>
-              <button
-                onClick={() => setInspectModalItem(null)}
-                className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+        {/* ── 道具詳情檢視彈窗（具備高互動把玩佩戴動畫、慶祝彩帶與文化回音） ── */}
+        {inspectModalItem && (() => {
+          const resolvedModalItem = resolveItemMetadata(inspectModalItem.item);
+          const playLabel = getPlayButtonLabel(resolvedModalItem, isInspectingPlay);
 
-              <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-4xl mb-3 shadow-inner">
-                {inspectModalItem.item.icon || '🏺'}
-              </div>
-
-              <h4 className="text-base font-black font-heading mb-0.5">
-                {inspectModalItem.item.nameZh}
-              </h4>
-              <div className="flex items-center gap-1.5 mb-3">
-                <span className="text-xs font-mono font-bold text-amber-400">
-                  {inspectModalItem.item.nameEn}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => speakEnglish(inspectModalItem.item.nameEn)}
-                  className="p-1 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 transition-colors cursor-pointer"
-                  title="聆聽發音"
-                >
-                  <Volume2 className="w-3 h-3" />
-                </button>
-                {getItemQuantity(inventory, inspectModalItem.item) > 1 && (
-                  <span className="px-2 py-0.5 rounded-full bg-amber-400 text-stone-950 font-mono font-black text-[10px] shadow-sm ml-1">
-                    持有 x{getItemQuantity(inventory, inspectModalItem.item)}
-                  </span>
-                )}
-              </div>
-
-              <p className={`text-xs font-bold leading-relaxed mb-4 px-2 ${
-                isDark ? 'text-slate-300' : 'text-stone-600'
+          return (
+            <div className="absolute inset-0 z-40 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+              <div className={`w-full max-w-sm rounded-3xl p-5 border-2 shadow-2xl flex flex-col items-center text-center relative animate-scaleUp ${
+                isDark ? 'bg-slate-900 border-amber-400/50 text-white' : 'bg-white border-amber-600/50 text-stone-900'
               }`}>
-                {inspectModalItem.item.description || '這是一件深受神山守護者珍視的寶物。'}
-              </p>
-
-              <div className="w-full flex items-center gap-2">
-                <Button3D
-                  variant="emerald"
-                  size="sm"
+                <button
                   onClick={() => {
-                    handleInteractItem(inspectModalItem.item);
                     setInspectModalItem(null);
+                    setIsInspectingPlay(false);
+                    setPlayAnimFeedback(null);
                   }}
-                  className="flex-1"
+                  className="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center cursor-pointer transition-colors"
                 >
-                  ✨ 把玩佩戴
-                </Button3D>
-                <Button3D
-                  variant="slate"
-                  size="sm"
-                  onClick={() => setInspectModalItem(null)}
-                  className="shrink-0"
-                >
-                  收妥回櫃
-                </Button3D>
+                  <X className="w-3.5 h-3.5" />
+                </button>
+
+                {/* 互動把玩中心展示區：動態發光、光暈旋轉與彈跳放大動畫 */}
+                <div className="relative my-2 flex items-center justify-center">
+                  {/* 金光旋轉光暈環 */}
+                  {isInspectingPlay && (
+                    <div className="absolute -inset-3 rounded-3xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 opacity-75 blur-md animate-pulse" />
+                  )}
+
+                  <div className={`relative w-20 h-20 rounded-3xl flex items-center justify-center text-5xl transition-all duration-500 shadow-inner ${
+                    isInspectingPlay
+                      ? 'scale-125 bg-amber-400/30 border-2 border-amber-300 ring-4 ring-amber-400/80 drop-shadow-[0_0_30px_rgba(251,191,36,0.95)] animate-bounce'
+                      : 'bg-amber-500/20 border border-amber-400/40 hover:scale-105'
+                  }`}>
+                    <span className="select-none filter drop-shadow">
+                      {resolvedModalItem.icon || '🏺'}
+                    </span>
+                  </div>
+
+                  {/* 懸浮加成狀態角標 */}
+                  {playAnimFeedback && (
+                    <span className="absolute -top-3 px-2 py-0.5 rounded-full bg-amber-400 text-stone-950 font-black text-[10px] shadow-lg border border-yellow-200 animate-scaleUp whitespace-nowrap">
+                      ✨ {playAnimFeedback.badge}
+                    </span>
+                  )}
+                </div>
+
+                <h4 className="text-base font-black font-heading mt-1 mb-0.5">
+                  {resolvedModalItem.nameZh}
+                </h4>
+                <div className="flex items-center gap-1.5 mb-2">
+                  <span className="text-xs font-mono font-bold text-amber-400">
+                    {resolvedModalItem.nameEn}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => speakEnglish(resolvedModalItem.nameEn)}
+                    className="p-1 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 transition-colors cursor-pointer"
+                    title="聆聽發音"
+                  >
+                    <Volume2 className="w-3 h-3" />
+                  </button>
+                  {getItemQuantity(inventory, resolvedModalItem) > 1 && (
+                    <span className="px-2 py-0.5 rounded-full bg-amber-400 text-stone-950 font-mono font-black text-[10px] shadow-sm ml-1">
+                      持有 x{getItemQuantity(inventory, resolvedModalItem)}
+                    </span>
+                  )}
+                </div>
+
+                {/* 互動把玩反饋面板 */}
+                {playAnimFeedback ? (
+                  <div className="w-full mb-3 p-3 rounded-2xl bg-gradient-to-r from-amber-500/25 via-emerald-500/20 to-amber-500/25 border border-amber-400/60 shadow-lg text-left animate-fadeIn">
+                    <div className="flex items-center gap-1.5 text-xs font-black text-amber-300 mb-1">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+                      <span>{playAnimFeedback.title}</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-amber-100 font-bold">
+                      {playAnimFeedback.desc}
+                    </p>
+                  </div>
+                ) : (
+                  <p className={`text-xs font-bold leading-relaxed mb-4 px-2 ${
+                    isDark ? 'text-slate-300' : 'text-stone-600'
+                  }`}>
+                    {resolvedModalItem.description || '這是一件深受神山守護者珍視的原民寶物。'}
+                  </p>
+                )}
+
+                <div className="w-full flex items-center gap-2">
+                  <Button3D
+                    variant="emerald"
+                    size="sm"
+                    onClick={() => handlePlayItem(resolvedModalItem)}
+                    className="flex-1"
+                  >
+                    {playLabel}
+                  </Button3D>
+                  <Button3D
+                    variant="slate"
+                    size="sm"
+                    onClick={() => {
+                      setInspectModalItem(null);
+                      setIsInspectingPlay(false);
+                      setPlayAnimFeedback(null);
+                    }}
+                    className="shrink-0"
+                  >
+                    收妥回櫃
+                  </Button3D>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* ── 底部快捷條 ── */}
         <footer className="relative z-10 px-4 py-2.5 border-t border-white/10 flex items-center justify-between shrink-0 text-xs font-bold text-slate-400 bg-black/30">
