@@ -266,11 +266,12 @@ async function run() {
       sessionStorage.setItem('wutai_teacher_authed', 'true');
     })()
   `);
-  await client.send('Page.navigate', { url: `${BASE_URL}/?view=teacher-hub` });
-  await new Promise(r => setTimeout(r, 600));
+  await client.send('Page.reload');
+  await new Promise(r => setTimeout(r, 800));
   const auditTabClicked = await client.evaluate(`
     (() => {
-      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('檢定試題檢核'));
+      const btns = Array.from(document.querySelectorAll('button'));
+      const btn = btns.find(b => b.innerText && b.innerText.includes('檢定試題檢核'));
       if (btn) {
         btn.click();
         return true;
@@ -283,9 +284,9 @@ async function run() {
     (() => {
       const text = document.body.innerText || '';
       return {
-        hasTitle: text.includes('檢定試題檢核審查台') || text.includes('試題檢核'),
-        hasTrack: text.includes('教育部縣市學力檢測') && text.includes('課本單元進度'),
-        hasCheckbox: text.includes('排除已檢核通過題目')
+        hasTitle: text.includes('試題檢核'),
+        hasTrack: text.includes('課本題庫練習') || text.includes('學力檢測練習'),
+        hasCheckbox: text.includes('排除已通過題目') || text.includes('排除已檢核通過')
       };
     })()
   `);

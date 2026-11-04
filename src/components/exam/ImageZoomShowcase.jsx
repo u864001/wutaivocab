@@ -83,6 +83,22 @@ const SAMPLE_QUESTIONS = [
     ],
     answer: 2,
     explanation: '音檔點選 Combo 3，包含牛肉漢堡與檸檬紅茶。'
+  },
+  {
+    id: 'sample-long-options',
+    title: '樣題 5: 六年級 Q28 博物館規則（🔥 超長完整英文句子答項實測，每項 50~60 字元）',
+    grade: 6,
+    number: 28,
+    question: 'Look at the museum notice. Which statement is TRUE about the rules?',
+    image: '/assets/exam/saa/115/g6_q28.webp',
+    options: [
+      'Visitors can ride a bicycle freely inside the exhibition hall.',
+      'You are allowed to take photos without using a camera flash.',
+      'Students can bring their pet dogs and cats into the museum.',
+      'People are welcome to enjoy hot meals and drinks in the gallery.'
+    ],
+    answer: 1,
+    explanation: '告示牌上標明可以拍照但禁止使用閃光燈 (No Flash Photography)。'
   }
 ];
 
@@ -93,6 +109,9 @@ export function ImageZoomShowcase({ onBack }) {
   // 'plan-3a': 方案 3A 大圖模式 + 底部即時懸浮作答條 (推薦)
   // 'plan-3b': 方案 3B 左右雙欄對照 (左大圖 + 右題項)
   const [activePlan, setActivePlan] = useState('plan-3a');
+
+  // ── 方案 3A 底部作答條呈現模式 ('auto' 自適應 | 'compact-keypad' 極簡代號 | 'full-text' 完整文字) ──
+  const [bottomBarMode, setBottomBarMode] = useState('auto');
 
   // ── 模擬裝置視角 ──
   // 'desktop' (100%), 'tablet' (768px), 'mobile' (375px)
@@ -689,43 +708,146 @@ export function ImageZoomShowcase({ onBack }) {
             className="w-full max-w-5xl mx-auto bg-slate-900/95 border border-slate-700 p-3 sm:p-4 rounded-3xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between text-xs mb-2">
-              <span className="font-black text-amber-300 flex items-center gap-1">
-                <Sparkles size={14} />
-                邊看大圖直接作答（免關閉彈窗）：
-              </span>
-              {chosenAnswer !== null && (
-                <span className="text-emerald-400 font-bold">
-                  ✓ 目前已選定: 選項 {chosenAnswer + 1}
-                </span>
-              )}
-            </div>
+            {(() => {
+              const isLongOptions = currentQ.options.some((o) => o.length > 25);
+              const actualMode =
+                bottomBarMode === 'compact-keypad'
+                  ? 'keypad'
+                  : isLongOptions
+                  ? 'two-column'
+                  : 'four-column';
 
-            {/* 四個大按鈕作答條 */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {currentQ.options.map((opt, idx) => {
-                const isChosen = chosenAnswer === idx;
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setChosenAnswer(idx)}
-                    className={`p-2.5 sm:p-3 rounded-2xl border-2 text-left font-bold transition-all flex items-center gap-2.5 ${
-                      isChosen
-                        ? 'border-emerald-400 bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 scale-[1.02]'
-                        : 'border-slate-700 bg-slate-800 text-slate-200 hover:border-slate-500'
-                    }`}
-                  >
-                    <span className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
-                      isChosen ? 'bg-white text-emerald-800' : 'bg-slate-700 text-slate-300'
-                    }`}>
-                      {idx + 1}
-                    </span>
-                    <span className="text-xs sm:text-[13px] truncate">{opt}</span>
-                  </button>
-                );
-              })}
-            </div>
+              return (
+                <>
+                  <div className="flex flex-wrap items-center justify-between text-xs mb-2.5 gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-black text-amber-300 flex items-center gap-1">
+                        <Sparkles size={14} />
+                        邊看大圖直接選答：
+                      </span>
+                      {chosenAnswer !== null && (
+                        <span className="text-emerald-400 font-bold">
+                          ✓ 已選定: 選項 {chosenAnswer + 1}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* 答項過長展示模式切換鈕（針對 Mark 的答項過長顧慮） */}
+                    <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-700 text-[11px] font-bold">
+                      <span className="text-slate-400 px-1">答項呈現：</span>
+                      <button
+                        type="button"
+                        onClick={() => setBottomBarMode('auto')}
+                        className={`px-2 py-0.5 rounded-lg transition ${
+                          bottomBarMode === 'auto' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+                        }`}
+                        title="依文字長度自動排版：長句子轉為雙欄完整換行、短詞四欄"
+                      >
+                        ⚡ 智能自適應 {isLongOptions ? '(長句雙欄)' : '(短詞四欄)'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBottomBarMode('compact-keypad')}
+                        className={`px-2 py-0.5 rounded-lg transition ${
+                          bottomBarMode === 'compact-keypad' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+                        }`}
+                        title="極簡代號大按鈕，大圖視野最大化"
+                      >
+                        🔢 純代號大鍵盤
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 1. 純代號大鍵盤模式 (極致省空間，大圖佔滿螢幕) */}
+                  {actualMode === 'keypad' && (
+                    <div className="grid grid-cols-4 gap-2.5 py-1">
+                      {currentQ.options.map((opt, idx) => {
+                        const isChosen = chosenAnswer === idx;
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setChosenAnswer(idx)}
+                            className={`py-2.5 px-2 rounded-2xl border-2 font-black text-center transition-all flex flex-col items-center justify-center gap-1 ${
+                              isChosen
+                                ? 'border-emerald-400 bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+                                : 'border-slate-700 bg-slate-800 text-slate-200 hover:border-slate-500'
+                            }`}
+                          >
+                            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${
+                              isChosen ? 'bg-white text-emerald-800' : 'bg-slate-700 text-slate-300'
+                            }`}>
+                              {idx + 1}
+                            </span>
+                            <span className="text-[11px] text-slate-300 truncate max-w-full">
+                              選項 {idx + 1}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* 2. 長句子雙欄自適應完整文字模式 (絕不截斷，自然換行) */}
+                  {actualMode === 'two-column' && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto p-0.5">
+                      {currentQ.options.map((opt, idx) => {
+                        const isChosen = chosenAnswer === idx;
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setChosenAnswer(idx)}
+                            className={`p-2.5 sm:p-3 rounded-2xl border-2 text-left font-bold transition-all flex items-start gap-2.5 ${
+                              isChosen
+                                ? 'border-emerald-400 bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 scale-[1.01]'
+                                : 'border-slate-700 bg-slate-800 text-slate-200 hover:border-slate-500'
+                            }`}
+                          >
+                            <span className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs shrink-0 mt-0.5 ${
+                              isChosen ? 'bg-white text-emerald-800' : 'bg-slate-700 text-slate-300'
+                            }`}>
+                              {idx + 1}
+                            </span>
+                            <span className="text-xs sm:text-[13px] leading-snug whitespace-normal break-words">
+                              {opt}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* 3. 短詞四欄模式 */}
+                  {actualMode === 'four-column' && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {currentQ.options.map((opt, idx) => {
+                        const isChosen = chosenAnswer === idx;
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setChosenAnswer(idx)}
+                            className={`p-2.5 sm:p-3 rounded-2xl border-2 text-left font-bold transition-all flex items-center gap-2.5 ${
+                              isChosen
+                                ? 'border-emerald-400 bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 scale-[1.02]'
+                                : 'border-slate-700 bg-slate-800 text-slate-200 hover:border-slate-500'
+                            }`}
+                          >
+                            <span className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
+                              isChosen ? 'bg-white text-emerald-800' : 'bg-slate-700 text-slate-300'
+                            }`}>
+                              {idx + 1}
+                            </span>
+                            <span className="text-xs sm:text-[13px] truncate">{opt}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
 
             <div className="flex justify-end pt-2">
               <button
