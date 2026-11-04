@@ -134,12 +134,24 @@ export function ImageZoomShowcase({ onBack }) {
   const dragStartRef = useRef({ x: 0, y: 0 });
   const panBoxRef = useRef(null);
 
+  // ── 方案 3B 左右雙欄（左半邊原地縮放拖曳，右欄答項完全不遮蔽） ──
+  const [plan3bZoom, setPlan3bZoom] = useState(1);
+  const [plan3bPan, setPlan3bPan] = useState({ x: 0, y: 0 });
+  const [isDragging3b, setIsDragging3b] = useState(false);
+  const dragStart3bRef = useRef({ x: 0, y: 0 });
+  const panBox3bRef = useRef(null);
+
+  // ── 題組子題模擬切換 (26, 27, 28) ──
+  const [mockSubQuestion, setMockSubQuestion] = useState(28);
+
   // 切換題目或方案時重置狀態
   useEffect(() => {
     setChosenAnswer(null);
     setIsModalOpen(false);
     setPlan2Zoom(1);
     setPlan2Pan({ x: 0, y: 0 });
+    setPlan3bZoom(1);
+    setPlan3bPan({ x: 0, y: 0 });
   }, [selectedQIdx, activePlan]);
 
   // 方案二 拖曳處理
@@ -175,6 +187,41 @@ export function ImageZoomShowcase({ onBack }) {
     setPlan2Pan({
       x: t.clientX - dragStartRef.current.x,
       y: t.clientY - dragStartRef.current.y
+    });
+  };
+
+  // 方案 3B 左欄拖曳處理
+  const handleMouseDown3b = (e) => {
+    if (plan3bZoom <= 1) return;
+    setIsDragging3b(true);
+    dragStart3bRef.current = { x: e.clientX - plan3bPan.x, y: e.clientY - plan3bPan.y };
+  };
+
+  const handleMouseMove3b = (e) => {
+    if (!isDragging3b) return;
+    setPlan3bPan({
+      x: e.clientX - dragStart3bRef.current.x,
+      y: e.clientY - dragStart3bRef.current.y
+    });
+  };
+
+  const handleMouseUp3b = () => {
+    setIsDragging3b(false);
+  };
+
+  const handleTouchStart3b = (e) => {
+    if (plan3bZoom <= 1 || e.touches.length !== 1) return;
+    setIsDragging3b(true);
+    const t = e.touches[0];
+    dragStart3bRef.current = { x: t.clientX - plan3bPan.x, y: t.clientY - plan3bPan.y };
+  };
+
+  const handleTouchMove3b = (e) => {
+    if (!isDragging3b || e.touches.length !== 1) return;
+    const t = e.touches[0];
+    setPlan3bPan({
+      x: t.clientX - dragStart3bRef.current.x,
+      y: t.clientY - dragStart3bRef.current.y
     });
   };
 
@@ -273,9 +320,9 @@ export function ImageZoomShowcase({ onBack }) {
             {
               id: 'plan-3b',
               num: '方案 3B',
-              title: '左右雙欄對照',
-              badge: '免彈窗',
-              desc: '左半部大圖，右半部題項'
+              title: '左右雙欄 (題組首選)',
+              badge: '右欄答項零遮蔽',
+              desc: '左半邊獨立放大平移，右半邊常駐直接選答'
             }
           ].map((plan) => {
             const active = activePlan === plan.id;
@@ -569,52 +616,182 @@ export function ImageZoomShowcase({ onBack }) {
           )}
 
           {/* ========================================================= */}
-          {/* 方案 3B: 左右雙欄對照 (左大圖 + 右題項) */}
+          {/* 方案 3B: 左右雙欄對照 (題組專用：左圖放大平移 ＋ 右欄答項零遮蔽) */}
           {/* ========================================================= */}
           {activePlan === 'plan-3b' && (
             <div className="space-y-3">
-              <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300">
-                <span>【方案 3B 特點】左側整欄大圖，右側題幹與選項。<b>優點是不需彈窗；Mark 的顧慮：無圖題目與有圖題目切換時，排版會從上下跳成左右。</b></span>
+              {/* Mark 核心提問之即時解說橫幅 */}
+              <div className="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950/70 border-2 border-indigo-300 dark:border-indigo-700 text-xs text-indigo-900 dark:text-indigo-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div>
+                  <div className="font-black text-sm flex items-center gap-1.5 text-indigo-950 dark:text-indigo-100">
+                    <span>💡 Mark 核心疑問解答驗證：</span>
+                    <span className="text-amber-500 font-bold">「題組題的圖放大只在左半邊？學生仍可點右半邊答項作答？」</span>
+                  </div>
+                  <div className="mt-0.5 text-slate-600 dark:text-slate-300">
+                    <b>完全正確！</b> 左欄放大鏡只在左半邊運作（縮放與拖曳），右欄的題幹與選項 <b>100% 完整常駐、零彈窗遮蔽</b>，學生右手隨時直接點擊選答！
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-black text-[11px] shadow">
+                    ✓ 右欄答項零遮蔽
+                  </span>
+                </div>
               </div>
 
               {/* 雙欄切換容器 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                {/* 左欄：超大圖面 */}
-                <div className="rounded-2xl border-2 border-indigo-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-3 flex items-center justify-center min-h-[300px]">
-                  <img
-                    src={currentQ.image}
-                    alt="題目插圖"
-                    className="max-h-[380px] w-auto max-w-full object-contain rounded-xl shadow-sm"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                {/* 左欄：獨立放大鏡與平移檢視器 */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs px-1">
+                    <span className="font-black text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                      <span>📖</span> 題組圖表 / 閱讀材料
+                    </span>
+                    <span className="text-[11px] text-slate-400 font-bold">
+                      {plan3bZoom > 1 ? '🖐️ 左右上下拖曳看細節' : '點擊 ＋ 可放大'}
+                    </span>
+                  </div>
+
+                  <div className="relative rounded-2xl overflow-hidden border-2 border-indigo-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 shadow-inner">
+                    {/* 左欄獨立縮放控制器按鈕群 */}
+                    <div className="absolute top-2 right-2 z-10 flex items-center gap-1 bg-black/75 backdrop-blur-md px-2 py-1 rounded-xl text-white text-xs shadow-md">
+                      <button
+                        type="button"
+                        onClick={() => setPlan3bZoom(z => Math.max(1, +(z - 0.3).toFixed(1)))}
+                        className="p-1 hover:bg-white/20 rounded-lg transition"
+                        title="縮小"
+                      >
+                        <ZoomOut size={15} />
+                      </button>
+                      <span className="font-mono font-bold px-1 text-amber-400">{Math.round(plan3bZoom * 100)}%</span>
+                      <button
+                        type="button"
+                        onClick={() => setPlan3bZoom(z => Math.min(3, +(z + 0.3).toFixed(1)))}
+                        className="p-1 hover:bg-white/20 rounded-lg transition"
+                        title="放大"
+                      >
+                        <ZoomIn size={15} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setPlan3bZoom(1); setPlan3bPan({ x: 0, y: 0 }); }}
+                        className="p-1 hover:bg-white/20 rounded-lg ml-1 text-slate-300 transition"
+                        title="重設比例"
+                      >
+                        <RotateCcw size={13} />
+                      </button>
+                    </div>
+
+                    {/* 左欄框內拖曳視窗 */}
+                    <div
+                      ref={panBox3bRef}
+                      onMouseDown={handleMouseDown3b}
+                      onMouseMove={handleMouseMove3b}
+                      onMouseUp={handleMouseUp3b}
+                      onTouchStart={handleTouchStart3b}
+                      onTouchMove={handleTouchMove3b}
+                      onTouchEnd={handleMouseUp3b}
+                      className={`h-72 sm:h-96 w-full flex items-center justify-center overflow-hidden ${
+                        plan3bZoom > 1 ? (isDragging3b ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-default'
+                      }`}
+                    >
+                      <div
+                        style={{
+                          transform: `translate(${plan3bPan.x}px, ${plan3bPan.y}px) scale(${plan3bZoom})`,
+                          transition: isDragging3b ? 'none' : 'transform 0.15s ease-out',
+                          transformOrigin: 'center center'
+                        }}
+                        className="select-none pointer-events-none"
+                      >
+                        <img
+                          src={currentQ.image}
+                          alt="題目插圖"
+                          className="max-h-64 sm:max-h-88 max-w-full object-contain pointer-events-none rounded-lg"
+                          draggable={false}
+                        />
+                      </div>
+                    </div>
+
+                    {plan3bZoom > 1 && (
+                      <div className="absolute bottom-2 left-2 text-[10px] text-amber-300 font-bold bg-black/70 px-2.5 py-1 rounded-full shadow">
+                        🖐️ 僅左半邊放大！右側題目答項不受任何影響
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                {/* 右欄：選項列表 */}
-                <div className="space-y-2.5">
-                  <div className="text-xs font-black text-slate-400 uppercase tracking-wider mb-1">
-                    請選出正確答案：
+                {/* 右欄：題幹與答項（永遠可見、零遮蔽） */}
+                <div className="space-y-3 bg-white dark:bg-slate-900/60 p-3 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                  {/* 題組子題切換導航模擬 */}
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                    <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                      <span>📑</span> 題組子題連鎖作答：
+                    </span>
+                    <div className="flex items-center gap-1">
+                      {[26, 27, 28].map((qNum) => (
+                        <button
+                          key={qNum}
+                          type="button"
+                          onClick={() => setMockSubQuestion(qNum)}
+                          className={`px-2 py-0.5 rounded-lg text-xs font-black transition ${
+                            mockSubQuestion === qNum
+                              ? 'bg-indigo-600 text-white shadow-sm'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900'
+                          }`}
+                        >
+                          第 {qNum} 題
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  {currentQ.options.map((opt, idx) => {
-                    const isChosen = chosenAnswer === idx;
-                    return (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setChosenAnswer(idx)}
-                        className={`w-full p-3 sm:p-3.5 rounded-2xl border-2 text-left font-bold text-sm flex items-center gap-3 transition ${
-                          isChosen
-                            ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950 text-indigo-950 dark:text-white font-black'
-                            : 'border-slate-200 dark:border-slate-700 hover:border-slate-400 text-slate-700 dark:text-slate-200'
-                        }`}
-                      >
-                        <span className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
-                          isChosen ? 'bg-indigo-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-                        }`}>
-                          {idx + 1}
-                        </span>
-                        <span>{opt}</span>
-                      </button>
-                    );
-                  })}
+
+                  <div className="text-xs text-slate-400">
+                    子題切換時，左欄圖表完全不跳動；學生右側直接答題：
+                  </div>
+
+                  {/* 當前題目題幹 */}
+                  <div className="font-bold text-sm text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                    <span className="font-black text-indigo-600 dark:text-indigo-400 mr-2">Q{mockSubQuestion}.</span>
+                    {mockSubQuestion === 28
+                      ? currentQ.question
+                      : mockSubQuestion === 26
+                      ? "According to the schedule, what time is the first event?"
+                      : "Which room is NOT open on Sunday?"}
+                  </div>
+
+                  {/* 選項列表（無任何遮蔽，即時選答） */}
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider">
+                      請直接點擊選項作答：
+                    </div>
+                    {currentQ.options.map((opt, idx) => {
+                      const isChosen = chosenAnswer === idx;
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setChosenAnswer(idx)}
+                          className={`w-full p-3 rounded-2xl border-2 text-left font-bold text-sm flex items-center gap-3 transition ${
+                            isChosen
+                              ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950 text-indigo-950 dark:text-white font-black shadow-sm'
+                              : 'border-slate-200 dark:border-slate-700 hover:border-slate-400 text-slate-700 dark:text-slate-200'
+                          }`}
+                        >
+                          <span className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
+                            isChosen ? 'bg-indigo-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                          }`}>
+                            {idx + 1}
+                          </span>
+                          <span>{opt}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {chosenAnswer !== null && (
+                    <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-xs text-emerald-800 dark:text-emerald-200 font-bold flex items-center gap-1.5 animate-fadeIn">
+                      <span>✓</span> 已選答選項 ({chosenAnswer + 1})。左側縮放未受任何干擾！
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
