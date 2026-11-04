@@ -1,7 +1,7 @@
 # 霧臺國小英語自主學習宇宙 (Wutai Vocab Adventure 2.0)
 ## 專案對話交接文檔 (Project Handover Document)
 
-> **產生時間**：2026-11-04 (更新至百步蛇一體化母圖連續樣條、通行證遊戲動態同步、消滅紙箱與多寶格把玩動效)
+> **產生時間**：2026-11-04 (更新至檢定館四大測驗分流、Pre-A1與學力檢測模組化架構奠基)
 > **當前分支**：`dev` (與 `main` 完全同步並已部署至正式線上環境)
 > **線上正式環境網址**：https://wutaivocab.pages.dev
 > **Supabase 管理帳號**：`liguyt@wutps.ptc.edu.tw`（Project ID: `fqkdkmcqjswufzbvkram`，後台：https://supabase.com/dashboard/project/fqkdkmcqjswufzbvkram）
@@ -602,6 +602,24 @@
   * 觸發雙軌音效：`soundEngine.powerUp()` ＋ `speakEnglish(item.nameEn)` 標準英音朗讀。
   * 慶祝彩帶飛揚：`confetti({ particleCount: 40, spread: 60 })`。
   * 展開原民文化回音面板（如輕撫陶甕聽見祖靈低語、佩戴禮刀燃起勇者之魂等），兼具趣味與原民文化底蘊。
+
+#### 41. 課本題庫檢定館四大測驗分流 (Textbook / Pre-A1 / SAA / Mistakes) 與多軌題庫架構奠基 (`src/data/exam/*`, `examBlueprint.js`, `PureMcqExamView.jsx`, `docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md`)
+* **核心動機與四大測驗分流分立**：
+  * 課本同步檢定主要聚焦單一冊別單元小考，而教育部 Test My English (Pre-A1) 與臺中教育大學縣市學力成就評量 (SAA) 則著重日常生活素養、多輪聽力、圖表告示與長篇題組。
+  * 全面確立並實裝四大分流：
+    1. **`📚 課本單元進度檢定` (`textbook`)**：Here We Go 1~8 冊、字母專冊、國一先修，1,289 題即測即答。
+    2. **`🏆 Test My English Pre-A1 官方模擬` (`tme-preA1`)**：30 題標準卷（聽力 15 + 閱讀 15），70% 通過門檻，官方聽力播音 2 次規範。
+    3. **`🎯 教育部縣市學力檢測 (SAA) 實戰模考` (`ministry-assessment`)**：4～6 年級學測卷，聽力三大題（辨識句意、基本問答、言談理解）＋ 閱讀二大題（單題、生活篇章/圖表題組），精熟/基礎/待加強三級等第評定。
+    4. **`📓 個人易錯題弱點擊破室` (`mistakes`)**：跨軌道自動收錄錯題，連續答對 2 次判定精熟並移出易錯池。
+* **題庫模組化架構中心 (`src/data/exam/`)**：
+  * 建立 `examTracks.js`（四大軌道中樞）、`tmePreA1Meta.js`（Pre-A1 官方規範）、`saaExamMeta.js`（學力檢測規格與篇章題組 Schema）、`tmePreA1Bank.js`、`saaExamBank.js` 與 `index.js`（統一查詢入口）。
+  * 完美相容既有 `hereWeGoMcqBank.js`，100% 維持 Phase 0 靜態契約閘門檢查零中斷。
+* **組卷演算法與題型代碼擴充 (`examBlueprint.js`)**：
+  * 擴充題型代碼：`L-SENT`（辨識句意）、`L-QA`（基本問答）、`L-CONV`（言談理解）、`R-PASSAGE`（篇章閱讀）。
+  * 組卷演算法支援多軌與跨題型權重分配。
+* **檢定館前端體驗升級 (`PureMcqExamView.jsx`)**：
+  * 頂部加入四大模式分流導航膠囊，點擊即時切換。
+  * 在 Pre-A1 與 SAA 題庫編製期間，展示高規格試卷結構與能力診斷預覽卡，並提供一鍵切換至課本範圍暖身，開始檢定按鈕自適應防呆（未載入題庫時明確標註籌備中），課本檢定零回歸維持秒開。
 
 ---
 

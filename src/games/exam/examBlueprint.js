@@ -26,9 +26,12 @@ export const TASK_TYPES = {
   'A-SOUND': { section: 'alphabet', label: '聽音選字母', audio: true },
   'L-WORD': { section: 'listening', label: '聽音選字', audio: true },
   'L-PIC': { section: 'listening', label: '聽音選圖', audio: true },
+  'L-SENT': { section: 'listening', label: '辨識句意', audio: true },
+  'L-QA': { section: 'listening', label: '基本問答', audio: true },
   'L-TF': { section: 'listening', label: '聽句判斷', audio: true },
   'L-RESP': { section: 'listening', label: '聽問句選回應', audio: true },
   'L-DLG': { section: 'listening', label: '聽對話回答', audio: true },
+  'L-CONV': { section: 'listening', label: '言談理解', audio: true },
   'V-PIC': { section: 'vocabulary', label: '看圖選字' },
   'V-WORD': { section: 'vocabulary', label: '看字選圖' },
   'V-MEAN': { section: 'vocabulary', label: '字彙選擇' },
@@ -36,9 +39,10 @@ export const TASK_TYPES = {
   'G-DLG': { section: 'grammar', label: '完成對話' },
   'G-CTX': { section: 'grammar', label: '情境選句' },
   'R-TF': { section: 'reading', label: '看圖判斷' },
+  'R-MATCH': { section: 'reading', label: '配合題' },
   'R-CLOZE': { section: 'reading', label: '短文填空' },
   'R-COMP': { section: 'reading', label: '閱讀理解' },
-  'R-MATCH': { section: 'reading', label: '配合題' }
+  'R-PASSAGE': { section: 'reading', label: '篇章閱讀' }
 };
 
 const TASK_TYPE_ORDER = Object.keys(TASK_TYPES);

@@ -17,7 +17,15 @@ import {
   Sparkles,
   UserCheck
 } from 'lucide-react';
-import { HERE_WE_GO_BOOK_META, HERE_WE_GO_MCQ_BANK } from '../../data/hereWeGoMcqBank';
+import {
+  EXAM_TRACKS,
+  TME_PRE_A1_SPEC,
+  SAA_EXAM_SPEC,
+  HERE_WE_GO_BOOK_META,
+  HERE_WE_GO_MCQ_BANK,
+  TME_PRE_A1_BANK,
+  SAA_EXAM_BANK
+} from '../../data/exam';
 import { useStudent } from '../../context/StudentContext';
 import {
   isBookInOwnGrade,
@@ -212,6 +220,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     return HERE_WE_GO_MCQ_BANK.filter((q) => ids.has(q.id));
   }, [mistakeMap]);
 
+  // Pre-A1 官方模擬題庫 (Scaffold & Registry)
+  const tmePool = useMemo(() => TME_PRE_A1_BANK, []);
+
+  // 縣市學力檢測 (SAA) 題庫 (Scaffold & Registry)
+  const saaPool = useMemo(() => {
+    const g = Number(currentStudent?.grade) || 0;
+    if (g >= 4 && g <= 6) {
+      return SAA_EXAM_BANK.filter((q) => q.targetGrade === g);
+    }
+    return SAA_EXAM_BANK;
+  }, [currentStudent?.grade]);
+
   // 計時器（純紀錄用時）
   useEffect(() => {
     if (phase !== 'exam' || !startTime) return;
@@ -271,6 +291,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
       if (customPool && Array.isArray(customPool) && customPool.length > 0) {
         sourceList = [...customPool];
+      } else if (scopeMode === 'tme-preA1') {
+        sourceList = assembleExamForm(tmePool, targetCount);
+      } else if (scopeMode === 'ministry-assessment') {
+        sourceList = assembleExamForm(saaPool, targetCount);
       } else if (scopeMode === 'mistakes') {
         // 優先放入所有個人易錯題
         const mistakeList = [...mistakeQuestions];
@@ -335,7 +359,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         setPhase('instructions');
       }
     },
-    [questionCountOpt, scopeMode, mistakeQuestions, currentStudent?.grade, curriculumPool]
+    [questionCountOpt, scopeMode, mistakeQuestions, currentStudent?.grade, curriculumPool, tmePool, saaPool]
   );
 
   // 語音朗讀題幹（一、二年級中文題幹自動使用 zh-TW 語音讀題；三～六年級英文題幹使用 en-US 朗讀）
@@ -571,7 +595,16 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       currentStudent?.grade,
       'mcq-exam'
     );
-    const canStart = scopeMode === 'mistakes' ? true : curriculumPool.length > 0;
+    const canStart =
+      scopeMode === 'mistakes'
+        ? true
+        : scopeMode === 'curriculum'
+        ? curriculumPool.length > 0
+        : scopeMode === 'tme-preA1'
+        ? tmePool.length > 0
+        : scopeMode === 'ministry-assessment'
+        ? saaPool.length > 0
+        : false;
 
     return renderShell(
       <>
@@ -681,16 +714,16 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   1
                 </span>
                 <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                  選擇範圍
+                  選擇測驗模式與範圍
                 </span>
               </div>
 
-              {/* 課本範圍 vs 個人易錯題複習 切換 */}
-              <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              {/* 四大測驗模式分流切換 */}
+              <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-wrap gap-1">
                 <button
                   type="button"
                   onClick={() => setScopeMode('curriculum')}
-                  className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition ${
                     scopeMode === 'curriculum'
                       ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
@@ -700,10 +733,38 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </button>
                 <button
                   type="button"
+                  onClick={() => setScopeMode('tme-preA1')}
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition flex items-center gap-1 ${
+                    scopeMode === 'tme-preA1'
+                      ? 'bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  }`}
+                >
+                  <span>🏆 Pre-A1 模擬</span>
+                  <span className="hidden sm:inline px-1 py-0.2 rounded text-[10px] bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 font-bold">
+                    官方
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setScopeMode('ministry-assessment')}
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition flex items-center gap-1 ${
+                    scopeMode === 'ministry-assessment'
+                      ? 'bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-sm'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  }`}
+                >
+                  <span>🎯 SAA 學力模考</span>
+                  <span className="hidden sm:inline px-1 py-0.2 rounded text-[10px] bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold">
+                    學測
+                  </span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setScopeMode('mistakes')}
-                  className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition flex items-center gap-1.5 ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition flex items-center gap-1.5 ${
                     scopeMode === 'mistakes'
-                      ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                      ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 shadow-sm'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                   }`}
                 >
@@ -844,6 +905,141 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   </div>
                 </div>
               </div>
+            ) : scopeMode === 'tme-preA1' ? (
+              /* Test My English Pre-A1 官方模擬規格預覽面板 */
+              <div className="flex flex-col gap-3 bg-gradient-to-br from-sky-50/80 to-blue-50/60 dark:from-sky-950/30 dark:to-blue-950/20 rounded-2xl p-4 sm:p-5 border border-sky-200/80 dark:border-sky-800/60">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400">
+                      <Award size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>Test My English Pre-A1 官方英語能力檢定模擬</span>
+                        <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/60 dark:text-sky-300">
+                          教育部認證規格
+                        </span>
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        參考教育部英語能力檢測平台 Pre-A1 標準，適用國小 3～5 年級學生
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-xs font-black px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800">
+                    🚧 題庫籌備建置中
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                  {/* 聽力測驗 */}
+                  <div className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
+                    <div className="font-black text-sky-600 dark:text-sky-400 flex items-center justify-between">
+                      <span>🎧 第一部分：聽力測驗</span>
+                      <span className="font-bold text-slate-400">共 15 題（每題播 2 次）</span>
+                    </div>
+                    <ul className="text-slate-600 dark:text-slate-300 space-y-1 text-[11px] sm:text-xs list-disc list-inside">
+                      <li><strong>聽音選圖</strong> (5 題)：聽日常短句或單字選出相符插圖</li>
+                      <li><strong>聽音選字</strong> (5 題)：聽讀音選出正確拼寫之核心單字</li>
+                      <li><strong>聽問句選回應</strong> (5 題)：聽生活問句選出合宜社交應答</li>
+                    </ul>
+                  </div>
+
+                  {/* 閱讀測驗 */}
+                  <div className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
+                    <div className="font-black text-indigo-600 dark:text-indigo-400 flex items-center justify-between">
+                      <span>📖 第二部分：閱讀測驗</span>
+                      <span className="font-bold text-slate-400">共 15 題</span>
+                    </div>
+                    <ul className="text-slate-600 dark:text-slate-300 space-y-1 text-[11px] sm:text-xs list-disc list-inside">
+                      <li><strong>看圖選字</strong> (5 題)：日常生活文具、動物與食物</li>
+                      <li><strong>圖文告示配合</strong> (5 題)：生活標誌 (Stop, Open)、簡易時間表</li>
+                      <li><strong>短句是非判斷</strong> (5 題)：閱讀句子比對插圖判斷真偽</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-sky-500/5 dark:bg-sky-400/5 border border-sky-200/50 dark:border-sky-800/40 flex items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                    <span className="font-bold">🎯 合格標準：</span>
+                    <span>答對 21 題以上（70%）即達 Pre-A1 基礎英語能力指標</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setScopeMode('curriculum')}
+                    className="shrink-0 px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs transition"
+                  >
+                    先以課本第 3～5 冊暖身
+                  </button>
+                </div>
+              </div>
+            ) : scopeMode === 'ministry-assessment' ? (
+              /* 教育部縣市學力檢測 (SAA) 實戰模考規格預覽面板 */
+              <div className="flex flex-col gap-3 bg-gradient-to-br from-purple-50/80 to-indigo-50/60 dark:from-purple-950/30 dark:to-indigo-950/20 rounded-2xl p-4 sm:p-5 border border-purple-200/80 dark:border-purple-800/60">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                      <ClipboardCheck size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>教育部縣市學力檢測 (SAA) 英語學習成就模擬</span>
+                        <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-300">
+                          國小 4～6 年級學測
+                        </span>
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        參考臺中教育大學 SAA 臺灣學生學習成就評量歷年試卷結構
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-xs font-black px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800">
+                    🚧 題庫籌備建置中
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                  {/* 聽力三大題 */}
+                  <div className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
+                    <div className="font-black text-purple-600 dark:text-purple-400 flex items-center justify-between">
+                      <span>🎧 聽力測驗三大題</span>
+                      <span className="font-bold text-slate-400">全真聽力語意理解</span>
+                    </div>
+                    <ul className="text-slate-600 dark:text-slate-300 space-y-1 text-[11px] sm:text-xs list-disc list-inside">
+                      <li><strong>一、辨識句意</strong>：聽句子選出相符情境動作圖片</li>
+                      <li><strong>二、基本問答</strong>：聽日常功能性問句選出最適答覆</li>
+                      <li><strong>三、言談理解</strong>：聽日常對話或廣播擷取關鍵訊息</li>
+                    </ul>
+                  </div>
+
+                  {/* 閱讀二大題 */}
+                  <div className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
+                    <div className="font-black text-indigo-600 dark:text-indigo-400 flex items-center justify-between">
+                      <span>📑 閱讀測驗二大題</span>
+                      <span className="font-bold text-slate-400">素養導向長篇閱讀</span>
+                    </div>
+                    <ul className="text-slate-600 dark:text-slate-300 space-y-1 text-[11px] sm:text-xs list-disc list-inside">
+                      <li><strong>一、單題</strong>：單元字彙、句構、動詞與情境語法</li>
+                      <li><strong>二、題組</strong>：生活菜單、營隊海報、書信短篇題組 (2～3 題)</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* 三大等第說明 */}
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60">
+                    <div className="font-black text-emerald-700 dark:text-emerald-300">精熟 (Proficient)</div>
+                    <div className="text-[10px] text-slate-500">答對率 ≥ 85%</div>
+                  </div>
+                  <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/60">
+                    <div className="font-black text-amber-700 dark:text-amber-300">基礎 (Basic)</div>
+                    <div className="text-[10px] text-slate-500">答對率 60%～84%</div>
+                  </div>
+                  <div className="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200/60 dark:border-rose-800/60">
+                    <div className="font-black text-rose-700 dark:text-rose-300">待加強 (Developing)</div>
+                    <div className="text-[10px] text-slate-500">答對率 &lt; 60%</div>
+                  </div>
+                </div>
+              </div>
             ) : (
               /* 個人易錯題複習說明面板 */
               <div className="flex flex-col justify-center bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-4 sm:p-6 border border-slate-200/80 dark:border-slate-700/70">
@@ -924,7 +1120,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               onClick={() => startExamSession()}
               className="w-full sm:w-auto sm:min-w-[260px] py-3.5 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white font-black text-sm sm:text-base shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 ml-auto"
             >
-              <span>開始檢定 ({questionCountOpt} 題)</span>
+              <span>
+                {scopeMode === 'tme-preA1'
+                  ? (tmePool.length > 0 ? `開始 Pre-A1 檢定 (${tmePool.length} 題)` : '🚧 Pre-A1 官方題庫編製中')
+                  : scopeMode === 'ministry-assessment'
+                  ? (saaPool.length > 0 ? `開始 SAA 學力模考 (${saaPool.length} 題)` : '🚧 SAA 學力題庫編製中')
+                  : `開始檢定 (${questionCountOpt} 題)`}
+              </span>
               <ArrowRight size={18} />
             </button>
         </div>
@@ -938,7 +1140,14 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   if (phase === 'instructions') {
     const outline = buildFormOutline(questions);
     const bookMeta = HERE_WE_GO_BOOK_META[selectedBook] || HERE_WE_GO_BOOK_META[1];
-    const centerTitle = scopeMode === 'mistakes' ? '個人易錯題複習' : `${formatBookLabel(selectedBook)}檢定`;
+    const centerTitle =
+      scopeMode === 'mistakes'
+        ? '個人易錯題複習'
+        : scopeMode === 'tme-preA1'
+        ? 'Pre-A1 官方模擬檢定'
+        : scopeMode === 'ministry-assessment'
+        ? 'SAA 學力成就模擬檢定'
+        : `${formatBookLabel(selectedBook)}檢定`;
 
     return renderShell(
       <>
@@ -1070,6 +1279,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     const centerScopeTitle =
       scopeMode === 'mistakes'
         ? `個人易錯題 · ${currentTaskLabel}`
+        : scopeMode === 'tme-preA1'
+        ? `Pre-A1 模擬 · ${currentTaskLabel}`
+        : scopeMode === 'ministry-assessment'
+        ? `SAA 學力模考 · ${currentTaskLabel}`
         : `${formatBookLabel(selectedBook)} · ${currentTaskLabel}`;
 
     return renderShell(
@@ -1359,7 +1572,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             <div className="flex items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3 sm:p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700">
               <div className="min-w-0">
                 <div className="text-xs font-bold text-slate-400 truncate">
-                  {scopeMode === 'mistakes' ? '易錯題複習' : `${formatBookLabel(selectedBook)}檢定`}
+                  {scopeMode === 'mistakes'
+                    ? '易錯題複習'
+                    : scopeMode === 'tme-preA1'
+                    ? 'Pre-A1 官方模擬'
+                    : scopeMode === 'ministry-assessment'
+                    ? 'SAA 學力模考'
+                    : `${formatBookLabel(selectedBook)}檢定`}
                 </div>
                 <div className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-0.5">
                   答對 {correctList.length} / {totalQ} 題
