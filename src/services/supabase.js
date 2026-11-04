@@ -1135,4 +1135,162 @@ export const fetchQuestPointsLeaderboard = async (grade = null, limit = 50) => {
   }
 };
 
+// ── 霧臺英語檢定館：試題審查與教師修正意見雲端雙軌同步 ──
+export const EXAM_AUDIT_RECORDS_TABLE_SQL = `
+-- 霧臺英語檢定館：試題檢核與修正意見資料表 (選用：若未建立會自動以 leaderboard 雙軌容錯)
+create table if not exists exam_audit_records (
+  question_id text primary key,
+  verified boolean default false,
+  notes text default '',
+  crop_adjust jsonb default '{}'::jsonb,
+  verified_by text default 'Mark',
+  updated_at timestamp with time zone default timezone('utc'::text, now())
+);
+alter table exam_audit_records enable row level security;
+create policy "Allow all read write on exam_audit_records" on exam_audit_records
+  for all using (true) with check (true);
+`;
+
+/**
+ * 儲存單題教師檢核意見至 Supabase（雙軌容錯：優先寫入專屬表，回退至 leaderboard mode='exam-audit-note'）
+ */
+export const saveTeacherAuditRecordToCloud = async ({
+  questionId,
+  verified = false,
+  notes = '',
+  cropAdjust = null,
+  verifiedBy = 'Mark'
+}) => {
+  if (!questionId) return false;
+  const now = Date.now();
+  const payload = {
+    verified: Boolean(verified),
+    notes: String(notes || '').trim(),
+    cropAdjust: cropAdjust || null,
+    verifiedBy: String(verifiedBy || 'Mark'),
+    updatedAt: now
+  };
+
+  try {
+    // 軌道 A: 嘗試寫入專屬表 exam_audit_records
+    const { error: directErr } = await supabase
+      .from('exam_audit_records')
+      .upsert({
+        question_id: questionId,
+        verified: payload.verified,
+        notes: payload.notes,
+        crop_adjust: payload.cropAdjust,
+        verified_by: payload.verifiedBy,
+        updated_at: new Date(now).toISOString()
+      }, { onConflict: 'question_id' });
+
+    if (!directErr) {
+      return true;
+    }
+  } catch (e) {
+    // 專屬表未建立，繼續走軌道 B
+  }
+
+  // 軌道 B: 寫入保證可用的 leaderboard (mode='exam-audit-note')
+  try {
+    const { data: existingRows } = await supabase
+      .from('leaderboard')
+      .select('id')
+      .eq('mode', 'exam-audit-note')
+      .eq('name', questionId)
+      .limit(1);
+
+    const jsonStr = JSON.stringify(payload);
+    if (existingRows && existingRows.length > 0) {
+      await supabase
+        .from('leaderboard')
+        .update({
+          book: jsonStr,
+          score: payload.verified ? 1 : 0,
+          time: Math.floor(now / 1000),
+          created_at: new Date(now).toISOString()
+        })
+        .eq('id', existingRows[0].id);
+    } else {
+      await supabase
+        .from('leaderboard')
+        .insert([{
+          device_id: 'teacher-audit',
+          name: questionId,
+          mode: 'exam-audit-note',
+          book: jsonStr,
+          score: payload.verified ? 1 : 0,
+          time: Math.floor(now / 1000),
+          week: 0
+        }]);
+    }
+    return true;
+  } catch (err) {
+    console.warn('雲端儲存試題檢核意見失敗:', err);
+    return false;
+  }
+};
+
+/**
+ * 從 Supabase 讀取全校教師試題檢核意見（雙軌聯集融合）
+ * @returns {Promise<Record<string, { verified: boolean, notes: string, cropAdjust: any, updatedAt: number, verifiedBy: string }>>}
+ */
+export const fetchTeacherAuditRecordsFromCloud = async () => {
+  const merged = {};
+
+  // 軌道 A: 專屬表 exam_audit_records
+  try {
+    const { data: directRows, error: directErr } = await supabase
+      .from('exam_audit_records')
+      .select('*');
+
+    if (!directErr && Array.isArray(directRows)) {
+      directRows.forEach(r => {
+        if (!r?.question_id) return;
+        merged[r.question_id] = {
+          verified: Boolean(r.verified),
+          notes: r.notes || '',
+          cropAdjust: r.crop_adjust || null,
+          verifiedBy: r.verified_by || 'Mark',
+          updatedAt: r.updated_at ? new Date(r.updated_at).getTime() : Date.now()
+        };
+      });
+    }
+  } catch (e) {}
+
+  // 軌道 B: leaderboard (mode = 'exam-audit-note')
+  try {
+    const { data: lbRows, error: lbErr } = await supabase
+      .from('leaderboard')
+      .select('*')
+      .eq('mode', 'exam-audit-note');
+
+    if (!lbErr && Array.isArray(lbRows)) {
+      lbRows.forEach(r => {
+        const qId = r.name;
+        if (!qId) return;
+        let parsed = null;
+        try {
+          parsed = JSON.parse(r.book);
+        } catch {
+          parsed = { verified: r.score === 1, notes: r.book || '', updatedAt: (r.time || 0) * 1000 };
+        }
+        const existing = merged[qId];
+        const rowTime = parsed?.updatedAt || (r.time ? r.time * 1000 : 0);
+        if (!existing || rowTime > (existing.updatedAt || 0)) {
+          merged[qId] = {
+            verified: Boolean(parsed?.verified !== undefined ? parsed.verified : r.score === 1),
+            notes: parsed?.notes || '',
+            cropAdjust: parsed?.cropAdjust || null,
+            verifiedBy: parsed?.verifiedBy || 'Mark',
+            updatedAt: rowTime || Date.now()
+          };
+        }
+      });
+    }
+  } catch (e) {}
+
+  return merged;
+};
+
 

@@ -25,7 +25,9 @@ import {
   FileCheck2,
   GraduationCap,
   Calendar,
-  Compass
+  Compass,
+  Cloud,
+  RefreshCw
 } from 'lucide-react';
 import {
   HERE_WE_GO_MCQ_BANK,
@@ -36,6 +38,10 @@ import {
   TME_PRE_A1_CATEGORIES
 } from '../../data/exam';
 import { TASK_TYPES, getTaskType, getTaskLabel } from '../../games/exam/examBlueprint';
+import {
+  saveTeacherAuditRecordToCloud,
+  fetchTeacherAuditRecordsFromCloud
+} from '../../services/supabase';
 
 const AUDIT_STORAGE_KEY = 'wutai_exam_audit_records_v1';
 const CHOICE_LABELS = ['A', 'B', 'C', 'D'];
@@ -51,6 +57,43 @@ export function ExamAuditZone({ onBack }) {
       return {};
     }
   });
+
+  const [cloudSyncStatus, setCloudSyncStatus] = useState('synced'); // 'synced' | 'saving' | 'error'
+  const [isCloudLoading, setIsCloudLoading] = useState(false);
+
+  // ── 開啟組件時自動自 Supabase 雲端載入並聯集融合 ──
+  useEffect(() => {
+    let isMounted = true;
+    setIsCloudLoading(true);
+    fetchTeacherAuditRecordsFromCloud()
+      .then((cloudRecords) => {
+        if (!isMounted || !cloudRecords || Object.keys(cloudRecords).length === 0) return;
+        setAuditRecords((prev) => {
+          const merged = { ...prev };
+          for (const [k, v] of Object.entries(cloudRecords)) {
+            if (!merged[k] || (v.updatedAt || 0) >= (merged[k].updatedAt || 0)) {
+              merged[k] = v;
+            }
+          }
+          try {
+            localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify(merged));
+          } catch {}
+          return merged;
+        });
+        setCloudSyncStatus('synced');
+      })
+      .catch((err) => {
+        console.warn('Supabase fetch audit failed', err);
+        setCloudSyncStatus('error');
+      })
+      .finally(() => {
+        if (isMounted) setIsCloudLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const saveAuditRecords = useCallback((nextRecords) => {
     setAuditRecords(nextRecords);
@@ -208,36 +251,62 @@ export function ExamAuditZone({ onBack }) {
     (qId) => {
       if (!qId) return;
       const isCurrentlyVerified = !!auditRecords[qId]?.verified;
+      const willBeVerified = !isCurrentlyVerified;
       const nextRecords = {
         ...auditRecords,
         [qId]: {
           ...auditRecords[qId],
-          verified: !isCurrentlyVerified,
+          verified: willBeVerified,
           notes: currentNoteDraft,
           updatedAt: Date.now()
         }
       };
       saveAuditRecords(nextRecords);
-      showToast(isCurrentlyVerified ? '已取消檢核通過標記' : '✓ 本題已標記檢核通過！');
+
+      // 即時同步至 Supabase 雲端
+      setCloudSyncStatus('saving');
+      saveTeacherAuditRecordToCloud({
+        questionId: qId,
+        verified: willBeVerified,
+        notes: currentNoteDraft,
+        verifiedBy: 'Mark'
+      }).then((ok) => {
+        setCloudSyncStatus(ok ? 'synced' : 'error');
+      });
+
+      showToast(willBeVerified ? '✓ 本題已標記通過（已同步 Supabase）！' : '已取消通過標記（已同步 Supabase）');
     },
     [auditRecords, currentNoteDraft, saveAuditRecords]
   );
 
   // ── 儲存當前題目筆記 ──
   const handleSaveNotes = useCallback(
-    (qId) => {
+    (qId, noteText) => {
       if (!qId) return;
+      const finalNote = noteText !== undefined ? noteText : currentNoteDraft;
       const nextRecords = {
         ...auditRecords,
         [qId]: {
           ...auditRecords[qId],
           verified: !!auditRecords[qId]?.verified,
-          notes: currentNoteDraft,
+          notes: finalNote,
           updatedAt: Date.now()
         }
       };
       saveAuditRecords(nextRecords);
-      showToast('已儲存試題修正意見！');
+
+      // 即時同步至 Supabase 雲端
+      setCloudSyncStatus('saving');
+      saveTeacherAuditRecordToCloud({
+        questionId: qId,
+        verified: !!auditRecords[qId]?.verified,
+        notes: finalNote,
+        verifiedBy: 'Mark'
+      }).then((ok) => {
+        setCloudSyncStatus(ok ? 'synced' : 'error');
+      });
+
+      showToast('已儲存試題修正意見至 Supabase 雲端！');
     },
     [auditRecords, currentNoteDraft, saveAuditRecords]
   );
@@ -341,8 +410,31 @@ export function ExamAuditZone({ onBack }) {
           </div>
         </div>
 
-        {/* 預設勾選「排除已檢核通過」＋ 匯出報告 */}
+        {/* 預設勾選「排除已檢核通過」＋ 匯出報告 ＋ 雲端同步狀態 */}
         <div className="flex items-center gap-2 text-xs">
+          {/* Supabase 雲端同步狀態徽章 */}
+          <div
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-[11px] font-black transition-all ${
+              cloudSyncStatus === 'saving'
+                ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300'
+                : cloudSyncStatus === 'error'
+                ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300'
+                : 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300'
+            }`}
+            title="本檢核區與 Supabase 雲端資料庫保持雙向即時同步，下次修正可直接由 AI 調取"
+          >
+            <Cloud size={13} className={cloudSyncStatus === 'saving' ? 'animate-bounce' : ''} />
+            <span className="hidden sm:inline">
+              {cloudSyncStatus === 'saving'
+                ? '雲端儲存中...'
+                : cloudSyncStatus === 'error'
+                ? '雲端離線中'
+                : isCloudLoading
+                ? '雲端讀取中...'
+                : 'Supabase 雲端已同步'}
+            </span>
+          </div>
+
           <label className="flex items-center gap-1.5 font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 cursor-pointer hover:bg-indigo-50/60 dark:hover:bg-slate-700 transition">
             <input
               type="checkbox"
@@ -862,17 +954,46 @@ export function ExamAuditZone({ onBack }) {
                   <textarea
                     value={currentNoteDraft}
                     onChange={(e) => setCurrentNoteDraft(e.target.value)}
-                    placeholder="請在此記錄需修正之處，例如：&#10;• 圖檔左側邊界偏窄需往左留白&#10;• 正解標示有疑義，應為選項 B&#10;• 音檔播音文字需補錄等..."
+                    placeholder="請在此記錄需修正之處，例如：&#10;• 右側切到選項④，請往右包含選項&#10;• 圖檔上方不要題目中文字，只要下方漫畫圖&#10;• 正解標示有疑義，應為選項 B等..."
                     rows={4}
                     className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 leading-relaxed shadow-inner"
                   />
-                  <div className="flex justify-end">
+
+                  {/* 快捷自然語言裁切修正建議詞 (老師不用算 px，點擊自動帶入並存雲端) */}
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    <span className="text-[10px] font-bold text-slate-400 self-center">快捷填入：</span>
+                    {[
+                      '右側切到選項④，請往右包含選項',
+                      '上方題幹中文字不要，只要下方插圖',
+                      '四周留白偏窄，請向外擴大留白',
+                      '請包含整道題目（含題目與選項）',
+                      '答案有疑義，需再次校對'
+                    ].map((snippet) => (
+                      <button
+                        key={snippet}
+                        type="button"
+                        onClick={() => {
+                          const updated = currentNoteDraft.trim()
+                            ? `${currentNoteDraft.trim()}\n• ${snippet}`
+                            : `• ${snippet}`;
+                          setCurrentNoteDraft(updated);
+                          handleSaveNotes(currentQ.id, updated);
+                        }}
+                        className="px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800 text-[10px] font-bold hover:bg-amber-100 transition cursor-pointer"
+                      >
+                        + {snippet.slice(0, 10)}...
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-end pt-1">
                     <button
                       type="button"
                       onClick={() => handleSaveNotes(currentQ.id)}
-                      className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-xs"
                     >
-                      儲存筆記
+                      <Cloud size={12} />
+                      儲存筆記至雲端
                     </button>
                   </div>
                 </div>
@@ -984,12 +1105,13 @@ export function ExamAuditZone({ onBack }) {
           onClick={() => setPreviewImageModal(null)}
         >
           <div
-            className="max-w-4xl max-h-[90vh] bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between gap-3 border border-slate-200 dark:border-slate-700"
+            className="max-w-4xl max-h-[92vh] bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between gap-3 border border-slate-200 dark:border-slate-700"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-              <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-white font-mono">
-                🔍 原圖裁切檢查: {previewImageModal}
+              <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-white font-mono flex items-center gap-1.5">
+                <ImageIcon size={16} className="text-indigo-600" />
+                <span>試題插圖檢視: {previewImageModal.split('/').pop()}</span>
               </span>
               <button
                 type="button"
@@ -999,15 +1121,27 @@ export function ExamAuditZone({ onBack }) {
                 關閉
               </button>
             </div>
+
+            {/* 裁切指引提示條：免算 px，人話備註 */}
+            <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 space-y-1">
+              <div className="font-black flex items-center gap-1">
+                <span>💡 裁切修正指南（老師無需計算像素 px）：</span>
+              </div>
+              <div className="text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
+                若圖檔有切到文字或選項，請直接在右側或下方點選常用字詞。所有意見會即刻同步至 Supabase 雲端，AI 將直接對照整頁 PDF 原卷自動重裁！
+              </div>
+            </div>
+
             <div className="flex-1 overflow-auto flex items-center justify-center p-2 bg-slate-50 dark:bg-slate-950 rounded-xl">
               <img
                 src={previewImageModal}
                 alt="高解析考卷裁切預覽"
-                className="max-h-[75vh] w-auto object-contain border border-dashed border-indigo-400"
+                className="max-h-[60vh] w-auto object-contain border-2 border-dashed border-indigo-400 rounded-lg shadow-sm"
               />
             </div>
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
-              <span>藍色虛線框為裁切邊界，可用於檢查四周留白或文字完整度。</span>
+
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800 pt-2">
+              <span>藍色虛線框為目前裁切邊界。</span>
               <a
                 href={previewImageModal}
                 target="_blank"
