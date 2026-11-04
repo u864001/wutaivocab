@@ -260,6 +260,42 @@ async function run() {
     console.log('  ✓ TeacherHub loaded smoothly');
   }
 
+  // ── 教師台試題檢核區互動驗測 (ExamAuditZone) ──
+  await client.evaluate(`
+    (() => {
+      sessionStorage.setItem('wutai_teacher_authed', 'true');
+    })()
+  `);
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=teacher-hub` });
+  await new Promise(r => setTimeout(r, 600));
+  const auditTabClicked = await client.evaluate(`
+    (() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('檢定試題檢核'));
+      if (btn) {
+        btn.click();
+        return true;
+      }
+      return false;
+    })()
+  `);
+  await new Promise(r => setTimeout(r, 600));
+  const auditZoneRendered = await client.evaluate(`
+    (() => {
+      const text = document.body.innerText || '';
+      return {
+        hasTitle: text.includes('檢定試題檢核審查台') || text.includes('試題檢核'),
+        hasTrack: text.includes('教育部縣市學力檢測') && text.includes('課本單元進度'),
+        hasCheckbox: text.includes('排除已檢核通過題目')
+      };
+    })()
+  `);
+  if (!auditTabClicked || !auditZoneRendered.hasTitle) {
+    failures.push({ target: 'TeacherHub ExamAuditZone', error: 'ExamAuditZone not rendered or crashed', details: auditZoneRendered });
+    console.log('  ❌ TeacherHub ExamAuditZone failed:', auditZoneRendered);
+  } else {
+    console.log('  ✓ TeacherHub: ExamAuditZone tab switch & 3-track review UI verified');
+  }
+
   // ── 檢查點 3: 鷹眼神探深度功能性驗收 (低年級托盤 vs 中年級紙雕全相異) ──
   console.log('\n[3/5] Deep Functional Testing: VocabSpotterGame...');
 

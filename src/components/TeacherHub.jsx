@@ -17,8 +17,9 @@ import {
   Lock, ArrowLeft, PlusCircle, Trash2, CheckCircle2, AlertCircle,
   FileSpreadsheet, Sparkles, Trophy, Swords, Shield, Activity,
   Megaphone, Download, RotateCw, Search, Calendar, Filter, Users,
-  Database, Clock, AlertTriangle
+  Database, Clock, AlertTriangle, FileCheck2
 } from 'lucide-react';
+import { ExamAuditZone } from './exam/ExamAuditZone';
 
 const TEACHERS = ['Mario', 'Ibu', 'Vanessa', 'Mark', 'Official'];
 
@@ -44,7 +45,7 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase 
   });
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
-  const [activeTab, setActiveTab] = useState('words'); // words | scores | arenas | system | announcement
+  const [activeTab, setActiveTab] = useState('words'); // words | scores | exam-audit | arenas | system | announcement
   const [toast, setToast] = useState(null);
 
   // ── Tab 1: 題庫管理狀態 ──
@@ -524,7 +525,7 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase 
       )}
 
       {/* ── 主功能分頁切換卡 ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-6">
         <button
           onClick={() => setActiveTab('words')}
           className={`p-3 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all ${
@@ -547,6 +548,18 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase 
         >
           <Trophy className="w-4 h-4" />
           <span>全校成績管理</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('exam-audit')}
+          className={`p-3 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all ${
+            activeTab === 'exam-audit'
+              ? 'bg-teal-600 text-white shadow-md shadow-teal-600/30 scale-[1.02]'
+              : 'bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-white border border-slate-200 dark:border-slate-700'
+          }`}
+        >
+          <FileCheck2 className="w-4 h-4" />
+          <span>檢定試題檢核</span>
         </button>
 
         <button
@@ -575,7 +588,7 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase 
 
         <button
           onClick={() => setActiveTab('announcement')}
-          className={`p-3 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all col-span-2 sm:col-span-1 ${
+          className={`p-3 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all ${
             activeTab === 'announcement'
               ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 scale-[1.02]'
               : 'bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-white border border-slate-200 dark:border-slate-700'
@@ -1148,6 +1161,13 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase 
             </div>
           </GlassCard>
         </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* ── TAB 6: 霧臺英語檢定館試題檢核 ── */}
+      {/* ============================================================ */}
+      {activeTab === 'exam-audit' && (
+        <ExamAuditZone onBack={() => setActiveTab('words')} />
       )}
     </div>
   );

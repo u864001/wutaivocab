@@ -8,7 +8,7 @@
  */
 
 import { EXAM_TRACKS } from './examTracks';
-import { TME_PRE_A1_SPEC, TME_PRE_A1_SAMPLE_SCHEMA } from './tmePreA1Meta';
+import { TME_PRE_A1_SPEC, TME_PRE_A1_CATEGORIES } from './tmePreA1Meta';
 import { SAA_EXAM_SPEC, SAA_PASSAGE_SAMPLE_SCHEMA } from './saaExamMeta';
 import { HERE_WE_GO_BOOK_META, HERE_WE_GO_MCQ_BANK } from '../hereWeGoMcqBank';
 import { TME_PRE_A1_BANK } from './tmePreA1Bank';
@@ -24,7 +24,7 @@ import {
 export {
   EXAM_TRACKS,
   TME_PRE_A1_SPEC,
-  TME_PRE_A1_SAMPLE_SCHEMA,
+  TME_PRE_A1_CATEGORIES,
   SAA_EXAM_SPEC,
   SAA_PASSAGE_SAMPLE_SCHEMA,
   HERE_WE_GO_BOOK_META,
