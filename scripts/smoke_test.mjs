@@ -195,8 +195,23 @@ async function run() {
       failures.push({ target: `Static Contract: MCQ Book ${b} count < 100`, count: mcqBookCounts[b] });
     }
   }
+  // 驗證 SAA 115 全真學力檢測題庫 (4/5/6 年級各 35 題共 105 題，且題圖全數在線)
+  const { SAA_115_G4_QUESTIONS, SAA_115_G5_QUESTIONS, SAA_115_G6_QUESTIONS } = await import('../src/data/exam/saa/index.js');
+  if (SAA_115_G4_QUESTIONS.length !== 35 || SAA_115_G5_QUESTIONS.length !== 35 || SAA_115_G6_QUESTIONS.length !== 35) {
+    failures.push({ target: 'Static Contract: SAA 115 paper length mismatch' });
+  }
+  let missingImages = 0;
+  for (const q of [...SAA_115_G4_QUESTIONS, ...SAA_115_G5_QUESTIONS, ...SAA_115_G6_QUESTIONS]) {
+    if (q.image) {
+      const relPath = path.join('public', q.image.replace(/^\//, ''));
+      if (!fs.existsSync(relPath)) {
+        failures.push({ target: 'Static Contract: Missing SAA image', image: q.image });
+        missingImages++;
+      }
+    }
+  }
   if (failures.length === 0) {
-    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks & ${HERE_WE_GO_MCQ_BANK.length} MCQs across 11 books [g1, g2, 1-9] verified)`);
+    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks, ${HERE_WE_GO_MCQ_BANK.length} MCQs & SAA 115 [105 questions, 70 diagrams] verified)`);
   }
 
   // ── 檢查點 1: 排行榜視圖與互動 ──

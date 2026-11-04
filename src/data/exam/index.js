@@ -13,6 +13,13 @@ import { SAA_EXAM_SPEC, SAA_PASSAGE_SAMPLE_SCHEMA } from './saaExamMeta';
 import { HERE_WE_GO_BOOK_META, HERE_WE_GO_MCQ_BANK } from '../hereWeGoMcqBank';
 import { TME_PRE_A1_BANK } from './tmePreA1Bank';
 import { SAA_EXAM_BANK } from './saaExamBank';
+import {
+  SAA_115_G4_QUESTIONS,
+  SAA_115_G5_QUESTIONS,
+  SAA_115_G6_QUESTIONS,
+  SAA_115_ALL_QUESTIONS,
+  SAA_115_EXAM_PAPERS
+} from './saa';
 
 export {
   EXAM_TRACKS,
@@ -23,7 +30,12 @@ export {
   HERE_WE_GO_BOOK_META,
   HERE_WE_GO_MCQ_BANK,
   TME_PRE_A1_BANK,
-  SAA_EXAM_BANK
+  SAA_EXAM_BANK,
+  SAA_115_G4_QUESTIONS,
+  SAA_115_G5_QUESTIONS,
+  SAA_115_G6_QUESTIONS,
+  SAA_115_ALL_QUESTIONS,
+  SAA_115_EXAM_PAPERS
 };
 
 /**

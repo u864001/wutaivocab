@@ -28,7 +28,8 @@ import {
   HERE_WE_GO_BOOK_META,
   HERE_WE_GO_MCQ_BANK,
   TME_PRE_A1_BANK,
-  SAA_EXAM_BANK
+  SAA_EXAM_BANK,
+  SAA_115_EXAM_PAPERS
 } from '../../data/exam';
 import { useStudent } from '../../context/StudentContext';
 import {
@@ -263,11 +264,15 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // 縣市學力檢測 (SAA) 題庫 (Scaffold & Registry)
   const saaPool = useMemo(() => {
     const g = Number(selectedSaaGrade) || 4;
+    const paper = SAA_115_EXAM_PAPERS[g];
+    if (paper && selectedSaaFormat === 'standard') {
+      return paper.questions;
+    }
     let list = SAA_EXAM_BANK.filter((q) => !q.targetGrade || q.targetGrade === g);
     if (selectedSaaFormat === 'listening') {
-      list = list.filter((q) => q.section === 'listening' || q.type?.startsWith('L-'));
+      list = list.filter((q) => q.section === 'listening' || q.type?.startsWith('L-') || q.taskType?.startsWith('L-') || q.taskType?.startsWith('A-'));
     } else if (selectedSaaFormat === 'reading') {
-      list = list.filter((q) => q.section === 'reading' || q.type?.startsWith('R-'));
+      list = list.filter((q) => q.section === 'reading' || q.type?.startsWith('R-') || q.taskType?.startsWith('R-') || q.taskType?.startsWith('V-') || q.taskType?.startsWith('G-'));
     }
     return list;
   }, [selectedSaaGrade, selectedSaaFormat]);
@@ -335,9 +340,14 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         targetCount = selectedPreA1Format === 'standard' ? 30 : 20;
         sourceList = assembleExamForm(tmePool, targetCount);
       } else if (scopeMode === 'ministry-assessment') {
-        const reqCount = selectedSaaFormat === 'standard' ? 35 : 20;
-        targetCount = Math.min(reqCount, saaPool.length);
-        sourceList = assembleExamForm(saaPool, targetCount);
+        if (selectedSaaFormat === 'standard') {
+          targetCount = 35;
+          sourceList = [...saaPool].slice(0, 35);
+        } else {
+          const reqCount = 20;
+          targetCount = Math.min(reqCount, saaPool.length);
+          sourceList = assembleExamForm(saaPool, targetCount);
+        }
       } else if (scopeMode === 'mistakes') {
         targetCount = Number(questionCountOpt) || 20;
         // 優先放入所有個人易錯題
@@ -373,8 +383,15 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
       if (sourceList.length === 0) return;
 
-      // 隨機洗牌每題的 (A)(B)(C)(D) 選項順序
+      // 隨機洗牌每題的 (A)(B)(C)(D) 選項順序（若題目具 preserveOptionOrder 則保留原順序）
       const prepared = sourceList.map((q) => {
+        if (q.preserveOptionOrder) {
+          return {
+            ...q,
+            options: [...q.options],
+            answer: q.answer
+          };
+        }
         const correctOptText = q.options[q.answer];
         const opts = [...q.options];
         for (let i = opts.length - 1; i > 0; i--) {
@@ -1224,7 +1241,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           </span>
                         </div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          全真模擬教育部學力檢測標準配置，共 35 題完整測驗
+                          115 年度全真學力檢測標準試卷，1~35 題原卷原圖高解析完整呈現
                         </div>
                       </div>
                     </div>
@@ -1911,6 +1928,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-wide py-1">
               {formatQuestionStem(currentQ.question)}
             </div>
+
+            {currentQ.image && (
+              <div className="flex justify-center my-2 sm:my-3">
+                <img
+                  src={currentQ.image}
+                  alt="題目插圖"
+                  className="max-h-52 sm:max-h-64 max-w-full w-auto object-contain rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm p-1.5"
+                  loading="eager"
+                />
+              </div>
+            )}
           </div>
 
           {/* (A)(B)(C)(D) 選項區 */}
@@ -2354,9 +2382,32 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   </button>
                 </div>
 
+                {currentReviewItem.q.passage && (
+                  <div className="p-3 rounded-xl bg-indigo-50/70 dark:bg-slate-800/90 border border-indigo-200/80 dark:border-slate-700 text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200 mb-2">
+                    <div className="font-black text-indigo-700 dark:text-indigo-400 mb-1 flex items-center gap-1.5 text-xs">
+                      <BookOpen size={14} />
+                      <span>{currentReviewItem.q.passage.title || '【生活閱讀篇章】'}</span>
+                    </div>
+                    <div className="font-mono text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
+                      {currentReviewItem.q.passage.text}
+                    </div>
+                  </div>
+                )}
+
                 <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                   {formatQuestionStem(currentReviewItem.q.question)}
                 </div>
+
+                {currentReviewItem.q.image && (
+                  <div className="flex justify-center my-2">
+                    <img
+                      src={currentReviewItem.q.image}
+                      alt="題目插圖"
+                      className="max-h-48 sm:max-h-56 max-w-full w-auto object-contain rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm p-1.5"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

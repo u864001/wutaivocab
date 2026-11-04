@@ -5,7 +5,9 @@
  * 合法依據：著作權法第 9 條第 1 項第 5 款公立考試試題非著作權標的
  */
 
-export const SAA_EXAM_BANK = [
+import { SAA_115_ALL_QUESTIONS } from './saa';
+
+const SAA_SIMULATED_BANK = [
   {
     "id": "saa_g4_01",
     "track": "ministry-assessment",
@@ -1846,4 +1848,9 @@ export const SAA_EXAM_BANK = [
     "answer": 0,
     "explanation": "特展備註指明「Audio guides in English, Chinese, and Rukai are available（提供英語、中文與魯凱語語音導覽）」。"
   }
+];
+
+export const SAA_EXAM_BANK = [
+  ...SAA_115_ALL_QUESTIONS,
+  ...SAA_SIMULATED_BANK
 ];
