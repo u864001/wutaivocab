@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   CheckCircle2,
   AlertCircle,
@@ -27,7 +27,13 @@ import {
   Calendar,
   Compass,
   Cloud,
-  RefreshCw
+  RefreshCw,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  Minimize2,
+  Split,
+  CheckCheck
 } from 'lucide-react';
 import {
   HERE_WE_GO_MCQ_BANK,
@@ -127,6 +133,59 @@ export function ExamAuditZone({ onBack }) {
   const [currentNoteDraft, setCurrentNoteDraft] = useState('');
   const [previewImageModal, setPreviewImageModal] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
+
+  // ── 體驗作答紀錄與作答排版模式 (3A / 3B) ──
+  // { [questionId]: optionIndex }
+  const [teacherAnswers, setTeacherAnswers] = useState({});
+  // 排版體驗方案：'auto' (單題 3A / 題組 3B) | 'force-3a' | 'force-3b'
+  const [zoomExperienceMode, setZoomExperienceMode] = useState('auto');
+
+  // ── 方案 3A 彈窗與縮放狀態 ──
+  const [modal3AOpen, setModal3AOpen] = useState(false);
+  const [modal3AZoom, setModal3AZoom] = useState(1);
+  const [modal3APan, setModal3APan] = useState({ x: 0, y: 0 });
+
+  // ── 方案 3B 左欄原地縮放與拖曳平移狀態 ──
+  const [plan3bZoom, setPlan3bZoom] = useState(1);
+  const [plan3bPan, setPlan3bPan] = useState({ x: 0, y: 0 });
+  const [isDragging3b, setIsDragging3b] = useState(false);
+  const dragStart3bRef = useRef({ x: 0, y: 0 });
+  const panBox3bRef = useRef(null);
+
+  // 方案 3B 拖曳處理
+  const handleMouseDown3b = (e) => {
+    if (plan3bZoom <= 1) return;
+    setIsDragging3b(true);
+    dragStart3bRef.current = { x: e.clientX - plan3bPan.x, y: e.clientY - plan3bPan.y };
+  };
+
+  const handleMouseMove3b = (e) => {
+    if (!isDragging3b) return;
+    setPlan3bPan({
+      x: e.clientX - dragStart3bRef.current.x,
+      y: e.clientY - dragStart3bRef.current.y
+    });
+  };
+
+  const handleMouseUp3b = () => {
+    setIsDragging3b(false);
+  };
+
+  const handleTouchStart3b = (e) => {
+    if (plan3bZoom <= 1 || e.touches.length !== 1) return;
+    setIsDragging3b(true);
+    const t = e.touches[0];
+    dragStart3bRef.current = { x: t.clientX - plan3bPan.x, y: t.clientY - plan3bPan.y };
+  };
+
+  const handleTouchMove3b = (e) => {
+    if (!isDragging3b || e.touches.length !== 1) return;
+    const t = e.touches[0];
+    setPlan3bPan({
+      x: t.clientX - dragStart3bRef.current.x,
+      y: t.clientY - dragStart3bRef.current.y
+    });
+  };
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -236,6 +295,45 @@ export function ExamAuditZone({ onBack }) {
 
   // 當前正在檢核的題目
   const currentQ = displayPool[currentIdx] || null;
+
+  // ── 題型版面判定 (單題 3A / 題組 3B) ──
+  const isSetQuestion = useMemo(() => {
+    if (!currentQ) return false;
+    if (zoomExperienceMode === 'force-3b') return true;
+    if (zoomExperienceMode === 'force-3a') return false;
+    // auto 判定：題組題具備 groupId，或長篇閱讀 (R-COMP, passage)
+    return Boolean(
+      currentQ.groupId ||
+      (currentQ.passage && (currentQ.passage.text || currentQ.passage.title)) ||
+      (currentQ.taskType && (currentQ.taskType.startsWith('R-') || currentQ.taskType === 'G-CTX'))
+    );
+  }, [currentQ, zoomExperienceMode]);
+
+  // 尋找與當前題目屬於同一 groupId 的題組子題
+  const siblingSetQuestions = useMemo(() => {
+    if (!currentQ?.groupId) return [];
+    return displayPool
+      .map((q, idx) => ({ q, idx }))
+      .filter((item) => item.q.groupId === currentQ.groupId);
+  }, [currentQ?.groupId, displayPool]);
+
+  // 老師體驗選答動作
+  const handleSelectTeacherAnswer = useCallback((oIdx) => {
+    if (!currentQ) return;
+    setTeacherAnswers((prev) => ({
+      ...prev,
+      [currentQ.id]: oIdx
+    }));
+  }, [currentQ]);
+
+  // 換題或換分類時重置縮放與平移狀態
+  useEffect(() => {
+    setModal3AOpen(false);
+    setModal3AZoom(1);
+    setModal3APan({ x: 0, y: 0 });
+    setPlan3bZoom(1);
+    setPlan3bPan({ x: 0, y: 0 });
+  }, [currentIdx, activeTrack]);
 
   // 當前題目的檢核紀錄與草稿同步
   useEffect(() => {
@@ -706,12 +804,12 @@ export function ExamAuditZone({ onBack }) {
           </div>
         ) : (
           <>
-            {/* ── 左側：學生測驗視窗同款卡片 (呈現題目、題圖、選項與正解醒目標示) ── */}
-            <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-3 overflow-y-auto">
+            {/* ── 左側：學生測驗視窗同款卡片 (採用 3A 單題 / 3B 題組雙欄自適應排版) ── */}
+            <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-3 overflow-y-auto">
               <div className="space-y-3">
-                {/* 題號與分類標籤列 */}
+                {/* 題號與分類標籤列 ＋ 3A/3B 排版模式切換器 */}
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-black text-xs">
                       #{currentIdx + 1} / {displayPool.length}
                     </span>
@@ -730,144 +828,462 @@ export function ExamAuditZone({ onBack }) {
                     )}
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => speakText(currentQ.media?.audioText || currentQ.question)}
-                    className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center gap-1 transition cursor-pointer"
-                  >
-                    <Volume2 size={14} />
-                    <span>試聽發音</span>
-                  </button>
-                </div>
-
-                {/* 閱讀篇章卡片 (Passage) */}
-                {currentQ.passage && (
-                  <div className="p-3 sm:p-4 rounded-xl bg-indigo-50/70 dark:bg-slate-800/90 border border-indigo-200/80 dark:border-slate-700 text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200">
-                    <div className="font-black text-indigo-700 dark:text-indigo-400 mb-1 flex items-center gap-1.5 text-xs sm:text-sm">
-                      <BookOpen size={16} />
-                      <span>{currentQ.passage.title || '【生活閱讀篇章】'}</span>
-                    </div>
-                    <div className="font-mono text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
-                      {currentQ.passage.text}
-                    </div>
-                  </div>
-                )}
-
-                {/* 題幹文字 */}
-                <div className="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-relaxed py-1">
-                  {currentQ.question}
-                </div>
-
-                {/* 考卷圖檔 (支援點擊放大檢驗裁切邊界) */}
-                {currentQ.image && (
-                  <div className="space-y-1.5 my-2">
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
-                      <span className="flex items-center gap-1">
-                        <ImageIcon size={13} />
-                        圖檔路徑: {currentQ.image}
-                      </span>
+                  <div className="flex items-center gap-2">
+                    {/* 排版方案切換器 (讓老師可自由實測 3A vs 3B) */}
+                    <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg text-[10px] font-black border border-slate-200 dark:border-slate-700">
                       <button
                         type="button"
-                        onClick={() => setPreviewImageModal(currentQ.image)}
-                        className="text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-bold cursor-pointer"
+                        onClick={() => setZoomExperienceMode('auto')}
+                        className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                          zoomExperienceMode === 'auto'
+                            ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
+                            : 'text-slate-400 hover:text-slate-600'
+                        }`}
+                        title="依試題自動判定：單題走 3A、題組走 3B"
                       >
-                        <Eye size={12} />
-                        放大檢查裁切
+                        自動 ({isSetQuestion ? '3B 雙欄' : '3A 單題'})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setZoomExperienceMode('force-3a')}
+                        className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                          zoomExperienceMode === 'force-3a'
+                            ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
+                            : 'text-slate-400 hover:text-slate-600'
+                        }`}
+                        title="強制切換為 3A 單題直式大圖彈窗模式"
+                      >
+                        3A 彈窗
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setZoomExperienceMode('force-3b')}
+                        className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                          zoomExperienceMode === 'force-3b'
+                            ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
+                            : 'text-slate-400 hover:text-slate-600'
+                        }`}
+                        title="強制切換為 3B 左右雙欄模式"
+                      >
+                        3B 雙欄
                       </button>
                     </div>
-                    <div
-                      onClick={() => setPreviewImageModal(currentQ.image)}
-                      className="flex justify-center p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-indigo-400 transition cursor-zoom-in group"
-                    >
-                      <img
-                        src={currentQ.image}
-                        alt="題目圖案"
-                        className="max-h-56 sm:max-h-64 max-w-full w-auto object-contain rounded-lg group-hover:scale-[1.01] transition-transform"
-                      />
-                    </div>
-                  </div>
-                )}
 
-                {/* 寫作重組單字預覽 (若為寫作重組題) */}
-                {currentQ.scrambledWords && (
-                  <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 space-y-1.5">
-                    <span className="text-xs font-black text-amber-800 dark:text-amber-300">
-                      打散單字塊（學生端提供拖曳／點擊排列）：
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {currentQ.scrambledWords.map((w, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-xs font-bold text-slate-800 dark:text-slate-100 shadow-xs"
-                        >
-                          {w}
-                        </span>
-                      ))}
-                    </div>
-                    {currentQ.targetSentence && (
-                      <div className="text-xs font-bold text-slate-600 dark:text-slate-300 pt-1">
-                        標準目標句子：<span className="text-emerald-600 dark:text-emerald-400">{currentQ.targetSentence}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* 口說朗讀文本預覽 (若為口說題) */}
-                {currentQ.targetText && (
-                  <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 flex items-center justify-between gap-2">
-                    <div>
-                      <span className="text-xs font-black text-purple-800 dark:text-purple-300 block">
-                        口說評測標的文字：
-                      </span>
-                      <span className="text-base font-black text-slate-900 dark:text-white mt-0.5 block">
-                        "{currentQ.targetText}"
-                      </span>
-                    </div>
                     <button
                       type="button"
-                      onClick={() => speakText(currentQ.targetText)}
-                      className="px-3 py-1.5 rounded-lg bg-purple-600 text-white text-xs font-bold flex items-center gap-1 shadow-xs cursor-pointer hover:bg-purple-700"
+                      onClick={() => speakText(currentQ.media?.audioText || currentQ.question)}
+                      className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center gap-1 transition cursor-pointer"
                     >
                       <Volume2 size={14} />
-                      示範發音
+                      <span>試聽發音</span>
                     </button>
                   </div>
-                )}
+                </div>
 
-                {/* (A)(B)(C)(D) 選項區（醒目標記正確答案） */}
-                {currentQ.options && currentQ.options.length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                    {currentQ.options.map((optText, oIdx) => {
-                      const isCorrect = oIdx === currentQ.answer;
-                      return (
-                        <div
-                          key={oIdx}
-                          className={`p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2.5 ${
-                            isCorrect
-                              ? 'border-emerald-500 bg-emerald-50/90 dark:bg-emerald-950/60 text-emerald-950 dark:text-emerald-100 font-black shadow-xs'
-                              : 'border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 font-bold opacity-80'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <span
-                              className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
-                                isCorrect
-                                  ? 'bg-emerald-600 text-white'
-                                  : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600'
-                              }`}
-                            >
-                              {CHOICE_LABELS[oIdx] || oIdx + 1}
-                            </span>
-                            <span className="text-xs sm:text-sm break-words">{optText}</span>
-                          </div>
-                          {isCorrect && (
-                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 shrink-0">
-                              ✓ 正解
-                            </span>
+                {/* ═════════════════════════════════════════════════════ */}
+                {/* 模式 A：題組題 (方案 3B 左右雙欄對照)               */}
+                {/* ═════════════════════════════════════════════════════ */}
+                {isSetQuestion ? (
+                  <div className="space-y-3">
+                    <div className="p-2 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-800 text-xs text-purple-900 dark:text-purple-200 flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-bold flex items-center gap-1.5">
+                        <Split size={14} className="text-purple-600" />
+                        <span><b>【方案 3B 題組雙欄】</b> 左欄圖表/閱讀可獨立縮放拖曳，右欄答項 100% 零遮蔽直接作答！</span>
+                      </span>
+                      <span className="text-[10px] bg-purple-200 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-0.5 rounded-full font-black">
+                        題組專屬雙欄
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                      {/* 左欄：篇章文章 ＆ 獨立放大鏡圖表 */}
+                      <div className="space-y-2.5">
+                        <div className="flex items-center justify-between text-xs px-1">
+                          <span className="font-black text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                            <BookOpen size={14} className="text-indigo-600" />
+                            <span>題組閱讀材料 / 圖表</span>
+                          </span>
+                          {(currentQ.image || currentQ.passage?.image) && (
+                            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
+                              <button
+                                type="button"
+                                onClick={() => setPlan3bZoom(z => Math.max(1, +(z - 0.3).toFixed(1)))}
+                                className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded cursor-pointer"
+                                title="縮小"
+                              >
+                                <ZoomOut size={13} />
+                              </button>
+                              <span className="font-mono font-bold px-1 text-[11px] text-indigo-600 dark:text-indigo-400">
+                                {Math.round(plan3bZoom * 100)}%
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setPlan3bZoom(z => Math.min(3, +(z + 0.3).toFixed(1)))}
+                                className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded cursor-pointer"
+                                title="放大"
+                              >
+                                <ZoomIn size={13} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => { setPlan3bZoom(1); setPlan3bPan({ x: 0, y: 0 }); }}
+                                className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-400 cursor-pointer"
+                                title="重置"
+                              >
+                                <RotateCcw size={11} />
+                              </button>
+                            </div>
                           )}
                         </div>
-                      );
-                    })}
+
+                        {/* 閱讀篇章文字 */}
+                        {currentQ.passage && (
+                          <div className="p-3 rounded-xl bg-indigo-50/70 dark:bg-slate-800/90 border border-indigo-200/80 dark:border-slate-700 text-xs font-medium leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200">
+                            <div className="font-black text-indigo-700 dark:text-indigo-400 mb-1 flex items-center gap-1.5 text-xs">
+                              <BookOpen size={14} />
+                              <span>{currentQ.passage.title || '【生活閱讀篇章】'}</span>
+                            </div>
+                            <div className="font-mono text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed max-h-52 overflow-y-auto pr-1">
+                              {currentQ.passage.text}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 題組圖檔（左欄框內獨立放大與平移） */}
+                        {(currentQ.image || currentQ.passage?.image) && (
+                          <div className="relative rounded-2xl overflow-hidden border-2 border-indigo-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 shadow-inner">
+                            <div
+                              ref={panBox3bRef}
+                              onMouseDown={handleMouseDown3b}
+                              onMouseMove={handleMouseMove3b}
+                              onMouseUp={handleMouseUp3b}
+                              onTouchStart={handleTouchStart3b}
+                              onTouchMove={handleTouchMove3b}
+                              onTouchEnd={handleMouseUp3b}
+                              className={`h-64 sm:h-80 w-full flex items-center justify-center overflow-hidden ${
+                                plan3bZoom > 1 ? (isDragging3b ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-default'
+                              }`}
+                            >
+                              <div
+                                style={{
+                                  transform: `translate(${plan3bPan.x}px, ${plan3bPan.y}px) scale(${plan3bZoom})`,
+                                  transition: isDragging3b ? 'none' : 'transform 0.15s ease-out',
+                                  transformOrigin: 'center center'
+                                }}
+                                className="select-none pointer-events-none"
+                              >
+                                <img
+                                  src={currentQ.image || currentQ.passage?.image}
+                                  alt="題組圖表"
+                                  className="max-h-60 sm:max-h-76 max-w-full object-contain pointer-events-none rounded-lg"
+                                  draggable={false}
+                                />
+                              </div>
+                            </div>
+
+                            {plan3bZoom > 1 && (
+                              <div className="absolute bottom-2 left-2 text-[10px] text-amber-300 font-bold bg-black/70 px-2 py-0.5 rounded-full shadow">
+                                🖐️ 僅左半邊放大！右側題目答項不受影響
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 右欄：題組子題導航、題幹 ＆ 可作答選項 */}
+                      <div className="space-y-3 bg-slate-50/60 dark:bg-slate-800/40 p-3 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                        {/* 題組子題切換 */}
+                        {siblingSetQuestions.length > 1 && (
+                          <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-700">
+                            <span className="text-xs font-black text-indigo-600 dark:text-indigo-400">
+                              📑 題組連鎖子題：
+                            </span>
+                            <div className="flex items-center gap-1 flex-wrap">
+                              {siblingSetQuestions.map((item) => (
+                                <button
+                                  key={item.q.id}
+                                  type="button"
+                                  onClick={() => setCurrentIdx(item.idx)}
+                                  className={`px-2 py-0.5 rounded-lg text-xs font-black transition cursor-pointer ${
+                                    item.idx === currentIdx
+                                      ? 'bg-indigo-600 text-white shadow-xs'
+                                      : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100'
+                                  }`}
+                                >
+                                  第 {item.q.number || item.idx + 1} 題
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 題幹文字 */}
+                        <div className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed">
+                          <span className="font-black text-indigo-600 dark:text-indigo-400 mr-1.5">
+                            Q{currentQ.number || currentIdx + 1}.
+                          </span>
+                          {currentQ.question}
+                        </div>
+
+                        {/* (A)(B)(C)(D) 選項區（支援直接點選作答體驗） */}
+                        {currentQ.options && currentQ.options.length > 0 && (
+                          <div className="space-y-2 pt-1">
+                            <div className="text-[11px] font-black text-slate-400 uppercase tracking-wide">
+                              請點選選項進行作答體驗：
+                            </div>
+                            {currentQ.options.map((optText, oIdx) => {
+                              const isSelected = teacherAnswers[currentQ.id] === oIdx;
+                              const isCorrect = oIdx === currentQ.answer;
+                              return (
+                                <button
+                                  key={oIdx}
+                                  type="button"
+                                  onClick={() => handleSelectTeacherAnswer(oIdx)}
+                                  className={`w-full p-2.5 sm:p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
+                                    isSelected
+                                      ? isCorrect
+                                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/70 text-emerald-950 dark:text-emerald-100 font-black shadow-sm'
+                                        : 'border-amber-500 bg-amber-50 dark:bg-amber-950/70 text-amber-950 dark:text-amber-100 font-black shadow-sm'
+                                      : isCorrect
+                                      ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 font-bold'
+                                      : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <span
+                                      className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
+                                        isSelected
+                                          ? isCorrect
+                                            ? 'bg-emerald-600 text-white'
+                                            : 'bg-amber-600 text-white'
+                                          : isCorrect
+                                          ? 'bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100'
+                                          : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                                      }`}
+                                    >
+                                      {CHOICE_LABELS[oIdx] || oIdx + 1}
+                                    </span>
+                                    <span className="text-xs sm:text-sm break-words">{optText}</span>
+                                  </div>
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    {isSelected && (
+                                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                                        您的選擇
+                                      </span>
+                                    )}
+                                    {isCorrect && (
+                                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
+                                        ✓ 正解
+                                      </span>
+                                    )}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {/* 作答即時反饋說明 */}
+                        {teacherAnswers[currentQ.id] !== undefined && (
+                          <div className={`p-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 animate-fadeIn ${
+                            teacherAnswers[currentQ.id] === currentQ.answer
+                              ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 text-emerald-800 dark:text-emerald-200'
+                              : 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 text-amber-800 dark:text-amber-200'
+                          }`}>
+                            {teacherAnswers[currentQ.id] === currentQ.answer ? (
+                              <span>🎉 作答相符！選項 ({CHOICE_LABELS[currentQ.answer]}) 為官方正解。</span>
+                            ) : (
+                              <span>⚠️ 您選擇了 ({CHOICE_LABELS[teacherAnswers[currentQ.id]]})，官方正解為 ({CHOICE_LABELS[currentQ.answer]})。若有疑義請在右側記錄！</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* ═════════════════════════════════════════════════════ */
+                  /* 模式 B：單題 (方案 3A 直式標準 ＋ 大圖懸浮選答)       */
+                  /* ═════════════════════════════════════════════════════ */
+                  <div className="space-y-3">
+                    <div className="p-2 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 text-xs text-indigo-900 dark:text-indigo-200 flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-bold flex items-center gap-1.5">
+                        <Maximize2 size={14} className="text-indigo-600" />
+                        <span><b>【方案 3A 單題直式】</b> 標準上下版面；點擊題目附圖即可開啟全螢幕大圖 ＋ 懸浮快速作答條！</span>
+                      </span>
+                      <span className="text-[10px] bg-indigo-200 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-0.5 rounded-full font-black">
+                        單題直式標準
+                      </span>
+                    </div>
+
+                    {/* 閱讀篇章卡片 (Passage) */}
+                    {currentQ.passage && (
+                      <div className="p-3 sm:p-4 rounded-xl bg-indigo-50/70 dark:bg-slate-800/90 border border-indigo-200/80 dark:border-slate-700 text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200">
+                        <div className="font-black text-indigo-700 dark:text-indigo-400 mb-1 flex items-center gap-1.5 text-xs sm:text-sm">
+                          <BookOpen size={16} />
+                          <span>{currentQ.passage.title || '【生活閱讀篇章】'}</span>
+                        </div>
+                        <div className="font-mono text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
+                          {currentQ.passage.text}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 題幹文字 */}
+                    <div className="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-relaxed py-1">
+                      {currentQ.question}
+                    </div>
+
+                    {/* 考卷圖檔 (方案 3A：點擊開啟全螢幕檢驗 ＋ 懸浮作答條) */}
+                    {currentQ.image && (
+                      <div className="space-y-1.5 my-2">
+                        <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-mono">
+                          <span className="flex items-center gap-1">
+                            <ImageIcon size={13} />
+                            圖檔路徑: {currentQ.image}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setModal3AOpen(true)}
+                            className="text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-bold cursor-pointer"
+                          >
+                            <Maximize2 size={12} />
+                            開啟【方案 3A】大圖檢驗 ＋ 懸浮作答條
+                          </button>
+                        </div>
+                        <div
+                          onClick={() => setModal3AOpen(true)}
+                          className="relative flex justify-center p-2 rounded-xl border-2 border-indigo-200/80 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 hover:border-indigo-500 transition cursor-zoom-in group"
+                        >
+                          <img
+                            src={currentQ.image}
+                            alt="題目圖案"
+                            className="max-h-56 sm:max-h-64 max-w-full w-auto object-contain rounded-lg group-hover:scale-[1.01] transition-transform"
+                          />
+                          <div className="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-sm text-white text-[11px] font-bold flex items-center gap-1 opacity-90 group-hover:opacity-100 transition shadow">
+                            <Maximize2 size={12} />
+                            點擊啟用 3A 大圖檢驗
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 寫作重組單字預覽 */}
+                    {currentQ.scrambledWords && (
+                      <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 space-y-1.5">
+                        <span className="text-xs font-black text-amber-800 dark:text-amber-300">
+                          打散單字塊（學生端提供拖曳／點擊排列）：
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {currentQ.scrambledWords.map((w, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-xs font-bold text-slate-800 dark:text-slate-100 shadow-xs"
+                            >
+                              {w}
+                            </span>
+                          ))}
+                        </div>
+                        {currentQ.targetSentence && (
+                          <div className="text-xs font-bold text-slate-600 dark:text-slate-300 pt-1">
+                            標準目標句子：<span className="text-emerald-600 dark:text-emerald-400">{currentQ.targetSentence}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* 口說朗讀文本預覽 */}
+                    {currentQ.targetText && (
+                      <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 flex items-center justify-between gap-2">
+                        <div>
+                          <span className="text-xs font-black text-purple-800 dark:text-purple-300 block">
+                            口說評測標的文字：
+                          </span>
+                          <span className="text-base font-black text-slate-900 dark:text-white mt-0.5 block">
+                            "{currentQ.targetText}"
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => speakText(currentQ.targetText)}
+                          className="px-3 py-1.5 rounded-lg bg-purple-600 text-white text-xs font-bold flex items-center gap-1 shadow-xs cursor-pointer hover:bg-purple-700"
+                        >
+                          <Volume2 size={14} />
+                          示範發音
+                        </button>
+                      </div>
+                    )}
+
+                    {/* (A)(B)(C)(D) 選項區（支援直接點選作答體驗） */}
+                    {currentQ.options && currentQ.options.length > 0 && (
+                      <div className="space-y-2 pt-1">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {currentQ.options.map((optText, oIdx) => {
+                            const isSelected = teacherAnswers[currentQ.id] === oIdx;
+                            const isCorrect = oIdx === currentQ.answer;
+                            return (
+                              <button
+                                key={oIdx}
+                                type="button"
+                                onClick={() => handleSelectTeacherAnswer(oIdx)}
+                                className={`p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
+                                  isSelected
+                                    ? isCorrect
+                                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/70 text-emerald-950 dark:text-emerald-100 font-black shadow-sm'
+                                      : 'border-amber-500 bg-amber-50 dark:bg-amber-950/70 text-amber-950 dark:text-amber-100 font-black shadow-sm'
+                                    : isCorrect
+                                    ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 font-bold'
+                                    : 'border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 hover:border-slate-400'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <span
+                                    className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
+                                      isSelected
+                                        ? isCorrect
+                                          ? 'bg-emerald-600 text-white'
+                                          : 'bg-amber-600 text-white'
+                                        : isCorrect
+                                        ? 'bg-emerald-600 text-white'
+                                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600'
+                                    }`}
+                                  >
+                                    {CHOICE_LABELS[oIdx] || oIdx + 1}
+                                  </span>
+                                  <span className="text-xs sm:text-sm break-words">{optText}</span>
+                                </div>
+                                <div className="flex items-center gap-1 shrink-0">
+                                  {isSelected && (
+                                    <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                                      您的選擇
+                                    </span>
+                                  )}
+                                  {isCorrect && (
+                                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
+                                      ✓ 正解
+                                    </span>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* 作答即時反饋說明 */}
+                        {teacherAnswers[currentQ.id] !== undefined && (
+                          <div className={`p-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 animate-fadeIn ${
+                            teacherAnswers[currentQ.id] === currentQ.answer
+                              ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 text-emerald-800 dark:text-emerald-200'
+                              : 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 text-amber-800 dark:text-amber-200'
+                          }`}>
+                            {teacherAnswers[currentQ.id] === currentQ.answer ? (
+                              <span>🎉 作答相符！選項 ({CHOICE_LABELS[currentQ.answer]}) 為官方正解。</span>
+                            ) : (
+                              <span>⚠️ 您選擇了 ({CHOICE_LABELS[teacherAnswers[currentQ.id]]})，官方正解為 ({CHOICE_LABELS[currentQ.answer]})。若有疑義請在右側記錄！</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -882,7 +1298,7 @@ export function ExamAuditZone({ onBack }) {
             </div>
 
             {/* ── 右側：教師檢核操作區與筆記面板 ── */}
-            <div className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-3">
+            <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-3">
               <div className="space-y-4">
                 {/* 檢核狀態標題 */}
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
@@ -1097,6 +1513,166 @@ export function ExamAuditZone({ onBack }) {
           </>
         )}
       </div>
+
+      {/* ═════════════════════════════════════════════════════════ */}
+      {/* ── 方案 3A 全螢幕大圖檢驗 ＋ 底部即時懸浮作答條 Modal ── */}
+      {/* ═════════════════════════════════════════════════════════ */}
+      {modal3AOpen && currentQ?.image && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col justify-between p-3 sm:p-5 animate-fadeIn"
+          onClick={() => setModal3AOpen(false)}
+        >
+          {/* 頂部主控列 */}
+          <div
+            className="w-full max-w-5xl mx-auto flex items-center justify-between p-3 bg-slate-900/95 rounded-2xl border border-slate-700 text-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-black text-xs shrink-0">
+                方案 3A 大圖檢驗
+              </span>
+              <span className="text-xs sm:text-sm font-bold text-slate-200 truncate">
+                #{currentIdx + 1}. {currentQ.question}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              {/* 縮放控制器 */}
+              <div className="flex items-center gap-1 bg-black/60 px-2 py-1 rounded-xl text-xs border border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => setModal3AZoom((z) => Math.max(1, +(z - 0.3).toFixed(1)))}
+                  className="p-1 hover:bg-white/20 rounded cursor-pointer transition"
+                  title="縮小"
+                >
+                  <ZoomOut size={14} />
+                </button>
+                <span className="font-mono font-bold px-1 text-amber-400">
+                  {Math.round(modal3AZoom * 100)}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setModal3AZoom((z) => Math.min(3, +(z + 0.3).toFixed(1)))}
+                  className="p-1 hover:bg-white/20 rounded cursor-pointer transition"
+                  title="放大"
+                >
+                  <ZoomIn size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModal3AZoom(1);
+                    setModal3APan({ x: 0, y: 0 });
+                  }}
+                  className="p-1 hover:bg-white/20 rounded text-slate-400 cursor-pointer transition"
+                  title="重置"
+                >
+                  <RotateCcw size={12} />
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setModal3AOpen(false)}
+                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition cursor-pointer"
+              >
+                關閉 ✕
+              </button>
+            </div>
+          </div>
+
+          {/* 中央大圖預覽區 */}
+          <div
+            className="flex-1 overflow-auto flex items-center justify-center p-2 my-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={currentQ.image}
+              alt="方案 3A 大圖"
+              style={{
+                transform: `scale(${modal3AZoom})`,
+                transition: 'transform 0.15s ease-out'
+              }}
+              className="max-h-[62vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl border-2 border-indigo-500/40"
+            />
+          </div>
+
+          {/* 底部即時懸浮作答條 (QuickAnswerBar) */}
+          <div
+            className="w-full max-w-4xl mx-auto bg-slate-900/95 backdrop-blur-md rounded-2xl p-3 sm:p-4 border border-slate-700 shadow-2xl space-y-2 text-white"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-black text-indigo-300 flex items-center gap-1.5">
+                <span>✍️</span> 方案 3A 懸浮即時作答條（看大圖時可直接點擊選答）：
+              </span>
+              {teacherAnswers[currentQ.id] !== undefined && (
+                <span
+                  className={`px-2.5 py-0.5 rounded text-[11px] font-bold ${
+                    teacherAnswers[currentQ.id] === currentQ.answer
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                  }`}
+                >
+                  {teacherAnswers[currentQ.id] === currentQ.answer
+                    ? '✓ 作答相符 (官方正解)'
+                    : `⚠️ 您選 (${CHOICE_LABELS[teacherAnswers[currentQ.id]]})，正解為 (${CHOICE_LABELS[currentQ.answer]})`}
+                </span>
+              )}
+            </div>
+
+            {/* 選項快速按鈕 */}
+            {currentQ.options && currentQ.options.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {currentQ.options.map((opt, idx) => {
+                  const isChosen = teacherAnswers[currentQ.id] === idx;
+                  const isCorrect = idx === currentQ.answer;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleSelectTeacherAnswer(idx)}
+                      className={`p-2 sm:p-2.5 rounded-xl border-2 text-left font-bold text-xs flex items-center gap-2 transition cursor-pointer ${
+                        isChosen
+                          ? 'border-indigo-400 bg-indigo-600 text-white shadow-md'
+                          : isCorrect
+                          ? 'border-emerald-600/70 bg-emerald-950/40 text-emerald-200'
+                          : 'border-slate-700 bg-slate-800/80 text-slate-300 hover:border-slate-500'
+                      }`}
+                    >
+                      <span
+                        className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
+                          isChosen ? 'bg-white text-indigo-700' : 'bg-slate-700 text-slate-300'
+                        }`}
+                      >
+                        {CHOICE_LABELS[idx] || idx + 1}
+                      </span>
+                      <span className="truncate">{opt}</span>
+                      {isCorrect && (
+                        <span className="text-[9px] px-1 rounded bg-emerald-700/80 text-emerald-100 ml-auto shrink-0">
+                          正解
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+              <span>點選答案後可繼續檢視大圖，或點右側直接進入下一題。</span>
+              <button
+                type="button"
+                disabled={currentIdx >= displayPool.length - 1}
+                onClick={() => setCurrentIdx((i) => Math.min(displayPool.length - 1, i + 1))}
+                className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition flex items-center gap-1 cursor-pointer disabled:opacity-40"
+              >
+                下一題 (→)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── 高解析考卷圖檔放大檢驗彈窗 (Image Inspector Modal) ── */}
       {previewImageModal && (
