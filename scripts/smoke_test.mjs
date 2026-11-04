@@ -296,6 +296,25 @@ async function run() {
     console.log('  ✓ TeacherHub: ExamAuditZone tab switch & 3-track review UI verified');
   }
 
+  // ── 試題附圖 4 方案體驗台驗測 (ImageZoomShowcase) ──
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=zoom-showcase` });
+  await new Promise(r => setTimeout(r, 600));
+  const zoomShowcaseCheck = await client.evaluate(`
+    (() => {
+      const text = document.body.innerText || '';
+      return {
+        hasTitle: text.includes('試題附圖放大機制') && text.includes('四大方案實測體驗台'),
+        hasPlans: text.includes('方案 1') && text.includes('方案 2') && text.includes('方案 3A') && text.includes('方案 3B')
+      };
+    })()
+  `);
+  if (!zoomShowcaseCheck.hasTitle || !zoomShowcaseCheck.hasPlans) {
+    failures.push({ target: 'ImageZoomShowcase', error: 'ImageZoomShowcase view failed', details: zoomShowcaseCheck });
+    console.log('  ❌ ImageZoomShowcase failed:', zoomShowcaseCheck);
+  } else {
+    console.log('  ✓ ImageZoomShowcase: 4 zoom interaction plans verified');
+  }
+
   // ── 檢查點 3: 鷹眼神探深度功能性驗收 (低年級托盤 vs 中年級紙雕全相異) ──
   console.log('\n[3/5] Deep Functional Testing: VocabSpotterGame...');
 

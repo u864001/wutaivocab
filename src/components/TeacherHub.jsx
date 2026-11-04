@@ -17,7 +17,7 @@ import {
   Lock, ArrowLeft, PlusCircle, Trash2, CheckCircle2, AlertCircle,
   FileSpreadsheet, Sparkles, Trophy, Swords, Shield, Activity,
   Megaphone, Download, RotateCw, Search, Calendar, Filter, Users,
-  Database, Clock, AlertTriangle, FileCheck2
+  Database, Clock, AlertTriangle, FileCheck2, ZoomIn
 } from 'lucide-react';
 import { ExamAuditZone } from './exam/ExamAuditZone';
 
@@ -39,7 +39,7 @@ const GAME_MODES = [
   { id: 'battle-wins', name: '連線對戰總勝場' }
 ];
 
-export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase }) => {
+export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase, onOpenZoomShowcase }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return sessionStorage.getItem('wutai_teacher_authed') === 'true';
   });
@@ -501,6 +501,15 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase 
               <span>神獸進度條展示台</span>
             </button>
           )}
+
+          <button
+            onClick={() => onOpenZoomShowcase ? onOpenZoomShowcase() : window.location.assign('?view=zoom-showcase')}
+            className="px-3 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-500/20 text-xs font-black flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+            title="體驗試題附圖四大放大方案（方案 1、方案 2、方案 3A、方案 3B）"
+          >
+            <ZoomIn className="w-4 h-4 text-indigo-500" />
+            <span>🔍 附圖 4 方案體驗台</span>
+          </button>
 
           <button
             onClick={handleExportWordsBackup}

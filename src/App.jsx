@@ -21,6 +21,7 @@ import { Portal } from './components/Portal';
 import { WutaiTownGame } from './games/town/WutaiTownGame';
 import { TextbookViewer } from './components/TextbookViewer';
 import { PreloaderShowcase } from './components/PreloaderShowcase';
+import { ImageZoomShowcase } from './components/exam/ImageZoomShowcase';
 import { LanguageLabHub } from './features/langlab/LanguageLabHub';
 import { PureMcqExamView } from './games/exam/PureMcqExamView';
 import { TeacherAuthModal } from './components/TeacherAuthModal';
@@ -109,7 +110,7 @@ export function App() {
         'phonics', 'lobby', 'town', 'textbook', 'langlab', 'mcq-exam',
         'escape', 'spotter', 'spotter-test', 'maze', 'memory',
         'mole', 'swipe', 'meteor', 'snake', 'spelling', 'handwriting',
-        'battle', 'leaderboard', 'teacher-hub', 'preloader-showcase', 'loader-showcase'
+        'battle', 'leaderboard', 'teacher-hub', 'preloader-showcase', 'loader-showcase', 'zoom-showcase'
       ];
       if (VALID_VIEWS.includes(target)) return target;
       if (target.startsWith('quiz-')) return target;
@@ -323,6 +324,19 @@ export function App() {
               onBack={() => handleNavigate('lobby')}
               onRefreshWords={loadWords}
               onOpenShowcase={() => handleNavigate('preloader-showcase')}
+              onOpenZoomShowcase={() => handleNavigate('zoom-showcase')}
+            />
+          )}
+
+          {currentView === 'zoom-showcase' && (
+            <ImageZoomShowcase
+              onBack={() => {
+                if (sessionStorage.getItem('wutai_teacher_authed') === 'true') {
+                  handleNavigate('teacher-hub');
+                } else {
+                  handleNavigate('lobby');
+                }
+              }}
             />
           )}
 
