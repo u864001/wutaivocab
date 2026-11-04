@@ -15,7 +15,10 @@ import {
   Coins,
   AlertCircle,
   Sparkles,
-  UserCheck
+  UserCheck,
+  Headphones,
+  GraduationCap,
+  ChevronRight
 } from 'lucide-react';
 import {
   EXAM_TRACKS,
@@ -144,7 +147,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
   // Phase: 'setup' | 'instructions' | 'exam' | 'result'
   const [phase, setPhase] = useState('setup');
-  // Scope Mode: 'curriculum' (課本範圍檢定) | 'mistakes' (個人易錯題複習)
+  // Setup Sub-View: 'hub' (四大膠囊總覽) | 'textbook' | 'saa' | 'preA1' | 'mistakes'
+  const [setupSubView, setSetupSubView] = useState(() => {
+    if (settings?.mode === 'mistakes') return 'mistakes';
+    return 'hub';
+  });
+  // Scope Mode: 'curriculum' (課本範圍檢定) | 'ministry-assessment' (學力檢測) | 'tme-preA1' (Pre-A1) | 'mistakes' (個人易錯題複習)
   const [scopeMode, setScopeMode] = useState('curriculum');
   const [selectedBook, setSelectedBook] = useState(initialBook);
   const [selectedUnits, setSelectedUnits] = useState(
@@ -152,6 +160,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   );
   // 測驗題數選項: 10 | 20 | 50
   const [questionCountOpt, setQuestionCountOpt] = useState(20);
+
+  // 學力檢測 (SAA) 設定
+  const defaultSaaGrade = useMemo(() => {
+    const g = Number(currentStudent?.grade) || 0;
+    return g >= 4 && g <= 6 ? g : 4;
+  }, [currentStudent?.grade]);
+  const [selectedSaaGrade, setSelectedSaaGrade] = useState(defaultSaaGrade);
+  // SAA 題型組合: 'standard' (聽15+閱20) | 'listening' (聽20) | 'reading' (閱20)
+  const [selectedSaaFormat, setSelectedSaaFormat] = useState('standard');
+
+  // Pre-A1 設定: 'standard' (聽15+閱15) | 'listening' (聽20) | 'reading' (閱20)
+  const [selectedPreA1Format, setSelectedPreA1Format] = useState('standard');
 
   // In-Progress Snapshot Key & State (6 小時內有效)
   const inProgressKey = useMemo(() => getInProgressKey(currentStudent), [currentStudent]);
@@ -221,16 +241,27 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   }, [mistakeMap]);
 
   // Pre-A1 官方模擬題庫 (Scaffold & Registry)
-  const tmePool = useMemo(() => TME_PRE_A1_BANK, []);
+  const tmePool = useMemo(() => {
+    if (selectedPreA1Format === 'listening') {
+      return TME_PRE_A1_BANK.filter((q) => q.section === 'listening' || q.type?.startsWith('L-'));
+    }
+    if (selectedPreA1Format === 'reading') {
+      return TME_PRE_A1_BANK.filter((q) => q.section === 'reading' || q.type?.startsWith('R-'));
+    }
+    return TME_PRE_A1_BANK;
+  }, [selectedPreA1Format]);
 
   // 縣市學力檢測 (SAA) 題庫 (Scaffold & Registry)
   const saaPool = useMemo(() => {
-    const g = Number(currentStudent?.grade) || 0;
-    if (g >= 4 && g <= 6) {
-      return SAA_EXAM_BANK.filter((q) => q.targetGrade === g);
+    const g = Number(selectedSaaGrade) || 4;
+    let list = SAA_EXAM_BANK.filter((q) => !q.targetGrade || q.targetGrade === g);
+    if (selectedSaaFormat === 'listening') {
+      list = list.filter((q) => q.section === 'listening' || q.type?.startsWith('L-'));
+    } else if (selectedSaaFormat === 'reading') {
+      list = list.filter((q) => q.section === 'reading' || q.type?.startsWith('R-'));
     }
-    return SAA_EXAM_BANK;
-  }, [currentStudent?.grade]);
+    return list;
+  }, [selectedSaaGrade, selectedSaaFormat]);
 
   // 計時器（純紀錄用時）
   useEffect(() => {
@@ -286,16 +317,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // 組建測驗題目並啟動測驗
   const startExamSession = useCallback(
     (customPool = null, customTargetCount = null, skipInstructions = false) => {
-      const targetCount = Number(customTargetCount || questionCountOpt) || 20;
+      let targetCount = Number(customTargetCount) || 20;
       let sourceList = [];
 
       if (customPool && Array.isArray(customPool) && customPool.length > 0) {
         sourceList = [...customPool];
       } else if (scopeMode === 'tme-preA1') {
+        targetCount = selectedPreA1Format === 'standard' ? 30 : 20;
         sourceList = assembleExamForm(tmePool, targetCount);
       } else if (scopeMode === 'ministry-assessment') {
+        targetCount = selectedSaaFormat === 'standard' ? 35 : 20;
         sourceList = assembleExamForm(saaPool, targetCount);
       } else if (scopeMode === 'mistakes') {
+        targetCount = Number(questionCountOpt) || 20;
         // 優先放入所有個人易錯題
         const mistakeList = [...mistakeQuestions];
         for (let i = mistakeList.length - 1; i > 0; i--) {
@@ -322,6 +356,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           sourceList = [...sourceList, ...fillerCandidates.slice(0, needed)];
         }
       } else {
+        targetCount = Number(questionCountOpt) || 20;
         // 使用專業語言測驗組卷藍圖：按大題順序排布、難度遞增、題組不拆散
         sourceList = assembleExamForm(curriculumPool, targetCount);
       }
@@ -359,7 +394,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         setPhase('instructions');
       }
     },
-    [questionCountOpt, scopeMode, mistakeQuestions, currentStudent?.grade, curriculumPool, tmePool, saaPool]
+    [
+      questionCountOpt,
+      scopeMode,
+      selectedSaaFormat,
+      selectedPreA1Format,
+      mistakeQuestions,
+      currentStudent?.grade,
+      curriculumPool,
+      tmePool,
+      saaPool
+    ]
   );
 
   // 語音朗讀題幹（一、二年級中文題幹自動使用 zh-TW 語音讀題；三～六年級英文題幹使用 en-US 朗讀）
@@ -610,20 +655,48 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       <>
         {/* 頂端精簡導覽列 */}
         <div className="shrink-0 px-4 sm:px-6 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50/80 dark:bg-slate-900/80">
-          <button
-            type="button"
-            onClick={onBack}
-            className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition"
-          >
-            <ArrowLeft size={16} />
-            離開
-          </button>
+          {setupSubView === 'hub' ? (
+            <button
+              type="button"
+              onClick={onBack}
+              className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <ArrowLeft size={16} />
+              離開大廳
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setSetupSubView('hub')}
+              className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <ArrowLeft size={16} />
+              返回選單
+            </button>
+          )}
 
           <div className="flex items-center gap-2">
-            <ClipboardCheck className="text-indigo-600 dark:text-indigo-400" size={20} />
-            <h1 className="text-base sm:text-lg md:text-xl font-black tracking-tight text-slate-900 dark:text-white">
-              課本題庫檢定館
-            </h1>
+            {setupSubView === 'hub' && <Award className="text-indigo-600 dark:text-indigo-400" size={22} />}
+            {setupSubView === 'textbook' && <BookOpen className="text-indigo-600 dark:text-indigo-400" size={22} />}
+            {setupSubView === 'saa' && <ClipboardCheck className="text-purple-600 dark:text-purple-400" size={22} />}
+            {setupSubView === 'preA1' && <Award className="text-sky-600 dark:text-sky-400" size={22} />}
+            {setupSubView === 'mistakes' && <RotateCcw className="text-rose-600 dark:text-rose-400" size={22} />}
+            <div>
+              <h1 className="text-base sm:text-lg md:text-xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                {setupSubView === 'hub' && '全真英語檢定館'}
+                {setupSubView === 'textbook' && '課本題庫練習'}
+                {setupSubView === 'saa' && '學力檢測練習'}
+                {setupSubView === 'preA1' && 'Pre A1 檢測練習'}
+                {setupSubView === 'mistakes' && '個人易錯題複習'}
+              </h1>
+              <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 -mt-0.5 hidden sm:block">
+                {setupSubView === 'hub' && 'English Assessment Arena'}
+                {setupSubView === 'textbook' && 'Here We Go! 分冊分單元檢定'}
+                {setupSubView === 'saa' && '教育部 SAA 臺灣學生學習成就評量'}
+                {setupSubView === 'preA1' && 'Test My English 官方指標模擬'}
+                {setupSubView === 'mistakes' && '精準鎖定錯題 • 連續答對 2 次出庫'}
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -652,8 +725,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           </div>
         </div>
 
-        {/* 中央設定主體（彈性自適應高度、免捲動） */}
-        {/* 空間足夠時（電腦／平板）一頁呈現；空間不足時（手機、未放大視窗）允許上下滑動，絕不重疊 */}
+        {/* 中央設定主體（彈性自適應高度、空間不足滑動免重疊） */}
         <div className="flex-1 min-h-0 p-3 sm:p-5 md:p-6 flex flex-col gap-3 overflow-y-auto overscroll-contain">
           {/* 未完成檢定接續提醒 (6 小時內有效快照) */}
           {savedSession && (
@@ -668,7 +740,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     </span>
                   </div>
                   <div className="text-[11px] text-indigo-700 dark:text-indigo-300 truncate mt-0.5">
-                    {savedSession.scopeMode === 'mistakes' ? '易錯題複習' : `${formatBookLabel(savedSession.selectedBook)}檢定`} • 6 小時內有效，可隨時接續
+                    {savedSession.scopeMode === 'mistakes'
+                      ? '易錯題複習'
+                      : savedSession.scopeMode === 'tme-preA1'
+                      ? 'Pre-A1 官方模擬檢定'
+                      : savedSession.scopeMode === 'ministry-assessment'
+                      ? 'SAA 學力成就模擬'
+                      : `${formatBookLabel(savedSession.selectedBook)}檢定`} • 6 小時內有效，可隨時接續
                   </div>
                 </div>
               </div>
@@ -679,7 +757,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     clearInProgress(inProgressKey);
                     setSavedSession(null);
                   }}
-                  className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-bold transition"
+                  className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-bold transition cursor-pointer"
                 >
                   放棄重測
                 </button>
@@ -694,10 +772,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     setStartTime(Date.now() - (savedSession.elapsedSec || 0) * 1000);
                     if (savedSession.selectedBook) setSelectedBook(savedSession.selectedBook);
                     if (savedSession.questionCountOpt) setQuestionCountOpt(savedSession.questionCountOpt);
+                    if (savedSession.scopeMode) setScopeMode(savedSession.scopeMode);
                     setSavedSession(null);
                     setPhase('exam');
                   }}
-                  className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-sm flex items-center gap-1 transition"
+                  className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-sm flex items-center gap-1 transition cursor-pointer"
                 >
                   <span>接續作答</span>
                   <ArrowRight size={14} />
@@ -706,435 +785,806 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             </div>
           )}
 
-          {/* 步驟 1：選擇測驗模式与範圍 */}
-          <div className="shrink-0 flex flex-col gap-2.5">
-            <div className="flex flex-wrap items-center justify-between gap-2 shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">
-                  1
-                </span>
-                <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                  選擇測驗模式與範圍
-                </span>
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* 模式 A：四大膠囊首頁 (setupSubView === 'hub')                          */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {setupSubView === 'hub' && (
+            <div className="flex-1 flex flex-col justify-center max-w-3xl mx-auto w-full gap-3 sm:gap-4 my-auto py-2">
+              <div className="text-center sm:text-left">
+                <h2 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white">
+                  請選擇檢定練習模式
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  涵蓋校內課本段考題庫、教育部縣市學力檢測與 Test My English 官方指標
+                </p>
               </div>
 
-              {/* 四大測驗模式分流切換 */}
-              <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-wrap gap-1">
-                <button
-                  type="button"
-                  onClick={() => setScopeMode('curriculum')}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition ${
-                    scopeMode === 'curriculum'
-                      ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                  }`}
-                >
-                  📚 課本範圍
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setScopeMode('tme-preA1')}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition flex items-center gap-1 ${
-                    scopeMode === 'tme-preA1'
-                      ? 'bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-sm'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                  }`}
-                >
-                  <span>🏆 Pre-A1 模擬</span>
-                  <span className="hidden sm:inline px-1 py-0.2 rounded text-[10px] bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 font-bold">
-                    官方
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setScopeMode('ministry-assessment')}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition flex items-center gap-1 ${
-                    scopeMode === 'ministry-assessment'
-                      ? 'bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-sm'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                  }`}
-                >
-                  <span>🎯 SAA 學力模考</span>
-                  <span className="hidden sm:inline px-1 py-0.2 rounded text-[10px] bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold">
-                    學測
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setScopeMode('mistakes')}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-black transition flex items-center gap-1.5 ${
-                    scopeMode === 'mistakes'
-                      ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 shadow-sm'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                  }`}
-                >
-                  <span>📓 易錯題複習</span>
-                  <span className="px-1.5 py-0.2 rounded-full text-[11px] bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">
-                    {mistakeCount}
-                  </span>
-                </button>
-              </div>
+              {/* 膠囊 1: 課本題庫練習 */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSetupSubView('textbook');
+                  setScopeMode('curriculum');
+                }}
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-indigo-50/50 dark:hover:bg-slate-800 border-2 border-indigo-200/80 dark:border-indigo-900/60 hover:border-indigo-500 dark:hover:border-indigo-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+              >
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                    <BookOpen size={24} className="sm:w-7 sm:h-7" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                        課本題庫練習
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                        分冊分單元精熟
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">
+                      何嘉仁 Here We Go! 第 1～8 冊與銜接單元，自選冊別、單元與題數
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-black text-xs sm:text-sm">
+                  <span className="hidden sm:inline">進入練習</span>
+                  <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+              </button>
+
+              {/* 膠囊 2: 學力檢測練習 */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSetupSubView('saa');
+                  setScopeMode('ministry-assessment');
+                }}
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-purple-50/50 dark:hover:bg-slate-800 border-2 border-purple-200/80 dark:border-purple-900/60 hover:border-purple-500 dark:hover:border-purple-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+              >
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                    <ClipboardCheck size={24} className="sm:w-7 sm:h-7" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                        學力檢測練習
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+                        國小 4～6 年級學測
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">
+                      參考教育部 SAA 學習成就評量：聽 15 閱 20 正式卷或聽力/閱讀專項練習
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-1 text-purple-600 dark:text-purple-400 font-black text-xs sm:text-sm">
+                  <span className="hidden sm:inline">進入練習</span>
+                  <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+              </button>
+
+              {/* 膠囊 3: Pre A1 檢測練習 */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSetupSubView('preA1');
+                  setScopeMode('tme-preA1');
+                }}
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-sky-50/50 dark:hover:bg-slate-800 border-2 border-sky-200/80 dark:border-sky-900/60 hover:border-sky-500 dark:hover:border-sky-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+              >
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                    <Award size={24} className="sm:w-7 sm:h-7" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                        Pre A1 檢測練習
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                        教育部官方標準
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">
+                      Test My English 官方指標：聽力 15 題 ＋ 閱讀 15 題（達 21 題合格）
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-1 text-sky-600 dark:text-sky-400 font-black text-xs sm:text-sm">
+                  <span className="hidden sm:inline">進入練習</span>
+                  <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+              </button>
+
+              {/* 膠囊 4: 易錯題複習 */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSetupSubView('mistakes');
+                  setScopeMode('mistakes');
+                }}
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-rose-50/50 dark:hover:bg-slate-800 border-2 border-rose-200/80 dark:border-rose-900/60 hover:border-rose-500 dark:hover:border-rose-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+              >
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-red-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                    <RotateCcw size={24} className="sm:w-7 sm:h-7" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                        易錯題複習
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                        {mistakeCount} 題待複習
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">
+                      精準重測曾答錯題目，題數不足自動由本年級補足；連續答對 2 次自動移出
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-1 text-rose-600 dark:text-rose-400 font-black text-xs sm:text-sm">
+                  <span className="hidden sm:inline">進入練習</span>
+                  <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+              </button>
             </div>
+          )}
 
-            {scopeMode === 'curriculum' ? (
-              <div className="flex flex-col gap-3 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70">
-                {/* 冊別列 (第 1~8 冊 + 國一先修) */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between gap-2 text-xs">
-                    <span className="font-bold text-slate-500 dark:text-slate-400">
-                      冊別<span className="hidden sm:inline">（{bookMeta.subtitle}）</span>
-                    </span>
-                    <span
-                      className={`font-black px-2 py-0.5 rounded-md ${
-                        isSelectedBookOwnGrade
-                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-                          : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-                      }`}
-                    >
-                      {isSelectedBookOwnGrade ? '✓ 本年級計分' : '練習不計分'}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-11 gap-1.5">
-                    {ALL_BOOK_OPTIONS.map((bNum) => {
-                      const isSelected = selectedBook === bNum;
-                      const isOwn = isBookInOwnGrade(
-                        String(bNum),
-                        currentStudent?.grade,
-                        'mcq-exam'
-                      );
-                      return (
-                        <button
-                          key={String(bNum)}
-                          type="button"
-                          onClick={() => handleSelectBook(bNum)}
-                          className={`py-1.5 px-1 rounded-xl border text-center transition flex flex-col items-center justify-center relative ${
-                            isSelected
-                              ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
-                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 text-slate-700 dark:text-slate-200'
-                          }`}
-                        >
-                          <span className="text-[11px] sm:text-xs font-black leading-tight">
-                            {formatBookLabel(bNum)}
-                          </span>
-                          {isOwn && (
-                            <span
-                              className={`text-[10px] font-bold leading-tight mt-0.5 ${
-                                isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'
-                              }`}
-                            >
-                              本年級
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 單元勾選列 */}
-                <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center justify-between gap-1">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                      單元<span className="hidden sm:inline">（題庫 {curriculumPool.length} 題）</span>
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedUnits([...bookMeta.units])}
-                        className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800"
-                      >
-                        全選
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSelectedUnits(
-                            selectedBook === 'g1' || selectedBook === 'g2'
-                              ? bookMeta.units.slice(0, 2)
-                              : bookMeta.units.filter((u) =>
-                                  ['Starter', 'Unit 1', 'Unit 2', 'Review 1'].includes(u)
-                                )
-                          )
-                        }
-                        className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white hover:bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
-                      >
-                        上半冊
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSelectedUnits(
-                            selectedBook === 'g1' || selectedBook === 'g2'
-                              ? bookMeta.units.slice(2)
-                              : bookMeta.units.filter((u) =>
-                                  ['Unit 3', 'Unit 4', 'Review 2', 'Festival'].includes(u)
-                                )
-                          )
-                        }
-                        className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white hover:bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
-                      >
-                        下半冊
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                    {bookMeta.units.map((unitName) => {
-                      const checked = selectedUnits.includes(unitName);
-                      return (
-                        <button
-                          key={unitName}
-                          type="button"
-                          onClick={() => toggleUnit(unitName)}
-                          className={`px-3 py-2 rounded-xl border text-left transition flex items-center justify-between ${
-                            checked
-                              ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-900 dark:text-indigo-100 font-black'
-                              : 'border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/40 text-slate-400 font-bold'
-                          }`}
-                        >
-                          <span className="text-xs sm:text-sm truncate">{unitName}</span>
-                          {checked ? (
-                            <CheckSquare size={15} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
-                          ) : (
-                            <Square size={15} className="text-slate-300 dark:text-slate-600 shrink-0" />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            ) : scopeMode === 'tme-preA1' ? (
-              /* Test My English Pre-A1 官方模擬規格預覽面板 */
-              <div className="flex flex-col gap-3 bg-gradient-to-br from-sky-50/80 to-blue-50/60 dark:from-sky-950/30 dark:to-blue-950/20 rounded-2xl p-4 sm:p-5 border border-sky-200/80 dark:border-sky-800/60">
-                <div className="flex flex-wrap items-center justify-between gap-2">
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* 模式 B：課本題庫練習 (setupSubView === 'textbook')                     */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {setupSubView === 'textbook' && (
+            <div className="flex flex-col gap-3">
+              {/* 步驟 1：選擇冊別 */}
+              <div className="shrink-0 flex flex-col gap-2.5 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70">
+                <div className="flex items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400">
-                      <Award size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                        <span>Test My English Pre-A1 官方英語能力檢定模擬</span>
-                        <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/60 dark:text-sky-300">
-                          教育部認證規格
-                        </span>
-                      </h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        參考教育部英語能力檢測平台 Pre-A1 標準，適用國小 3～5 年級學生
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-xs font-black px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800">
-                    🚧 題庫籌備建置中
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                  {/* 聽力測驗 */}
-                  <div className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
-                    <div className="font-black text-sky-600 dark:text-sky-400 flex items-center justify-between">
-                      <span>🎧 第一部分：聽力測驗</span>
-                      <span className="font-bold text-slate-400">共 15 題（每題播 2 次）</span>
-                    </div>
-                    <ul className="text-slate-600 dark:text-slate-300 space-y-1 text-[11px] sm:text-xs list-disc list-inside">
-                      <li><strong>聽音選圖</strong> (5 題)：聽日常短句或單字選出相符插圖</li>
-                      <li><strong>聽音選字</strong> (5 題)：聽讀音選出正確拼寫之核心單字</li>
-                      <li><strong>聽問句選回應</strong> (5 題)：聽生活問句選出合宜社交應答</li>
-                    </ul>
-                  </div>
-
-                  {/* 閱讀測驗 */}
-                  <div className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
-                    <div className="font-black text-indigo-600 dark:text-indigo-400 flex items-center justify-between">
-                      <span>📖 第二部分：閱讀測驗</span>
-                      <span className="font-bold text-slate-400">共 15 題</span>
-                    </div>
-                    <ul className="text-slate-600 dark:text-slate-300 space-y-1 text-[11px] sm:text-xs list-disc list-inside">
-                      <li><strong>看圖選字</strong> (5 題)：日常生活文具、動物與食物</li>
-                      <li><strong>圖文告示配合</strong> (5 題)：生活標誌 (Stop, Open)、簡易時間表</li>
-                      <li><strong>短句是非判斷</strong> (5 題)：閱讀句子比對插圖判斷真偽</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-sky-500/5 dark:bg-sky-400/5 border border-sky-200/50 dark:border-sky-800/40 flex items-center justify-between gap-2 text-xs">
-                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                    <span className="font-bold">🎯 合格標準：</span>
-                    <span>答對 21 題以上（70%）即達 Pre-A1 基礎英語能力指標</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setScopeMode('curriculum')}
-                    className="shrink-0 px-2.5 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs transition"
-                  >
-                    先以課本第 3～5 冊暖身
-                  </button>
-                </div>
-              </div>
-            ) : scopeMode === 'ministry-assessment' ? (
-              /* 教育部縣市學力檢測 (SAA) 實戰模考規格預覽面板 */
-              <div className="flex flex-col gap-3 bg-gradient-to-br from-purple-50/80 to-indigo-50/60 dark:from-purple-950/30 dark:to-indigo-950/20 rounded-2xl p-4 sm:p-5 border border-purple-200/80 dark:border-purple-800/60">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                      <ClipboardCheck size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
-                        <span>教育部縣市學力檢測 (SAA) 英語學習成就模擬</span>
-                        <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-300">
-                          國小 4～6 年級學測
-                        </span>
-                      </h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        參考臺中教育大學 SAA 臺灣學生學習成就評量歷年試卷結構
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-xs font-black px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800">
-                    🚧 題庫籌備建置中
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                  {/* 聽力三大題 */}
-                  <div className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
-                    <div className="font-black text-purple-600 dark:text-purple-400 flex items-center justify-between">
-                      <span>🎧 聽力測驗三大題</span>
-                      <span className="font-bold text-slate-400">全真聽力語意理解</span>
-                    </div>
-                    <ul className="text-slate-600 dark:text-slate-300 space-y-1 text-[11px] sm:text-xs list-disc list-inside">
-                      <li><strong>一、辨識句意</strong>：聽句子選出相符情境動作圖片</li>
-                      <li><strong>二、基本問答</strong>：聽日常功能性問句選出最適答覆</li>
-                      <li><strong>三、言談理解</strong>：聽日常對話或廣播擷取關鍵訊息</li>
-                    </ul>
-                  </div>
-
-                  {/* 閱讀二大題 */}
-                  <div className="p-3 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
-                    <div className="font-black text-indigo-600 dark:text-indigo-400 flex items-center justify-between">
-                      <span>📑 閱讀測驗二大題</span>
-                      <span className="font-bold text-slate-400">素養導向長篇閱讀</span>
-                    </div>
-                    <ul className="text-slate-600 dark:text-slate-300 space-y-1 text-[11px] sm:text-xs list-disc list-inside">
-                      <li><strong>一、單題</strong>：單元字彙、句構、動詞與情境語法</li>
-                      <li><strong>二、題組</strong>：生活菜單、營隊海報、書信短篇題組 (2～3 題)</li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* 三大等第說明 */}
-                <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60">
-                    <div className="font-black text-emerald-700 dark:text-emerald-300">精熟 (Proficient)</div>
-                    <div className="text-[10px] text-slate-500">答對率 ≥ 85%</div>
-                  </div>
-                  <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/60">
-                    <div className="font-black text-amber-700 dark:text-amber-300">基礎 (Basic)</div>
-                    <div className="text-[10px] text-slate-500">答對率 60%～84%</div>
-                  </div>
-                  <div className="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200/60 dark:border-rose-800/60">
-                    <div className="font-black text-rose-700 dark:text-rose-300">待加強 (Developing)</div>
-                    <div className="text-[10px] text-slate-500">答對率 &lt; 60%</div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* 個人易錯題複習說明面板 */
-              <div className="flex flex-col justify-center bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-4 sm:p-6 border border-slate-200/80 dark:border-slate-700/70">
-                <div className="max-w-xl mx-auto text-center space-y-2 sm:space-y-3">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs sm:text-sm font-black">
-                    📓 易錯題：{mistakeCount} 題
-                  </div>
-                  <h3 className="text-sm sm:text-lg font-black text-slate-900 dark:text-white">
-                    連續答對 2 次自動移出
-                  </h3>
-                  <p className="hidden sm:block text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                    系統會自動收集你曾答錯的題目編號。若目前易錯題數少於所選測驗題數，將自動從你的本年級題庫隨機抽題補滿。在本模式中只要對同一題
-                    <span className="font-black text-emerald-600 dark:text-emerald-400">
-                      「連續答對 2 次」
+                    <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">
+                      1
                     </span>
-                    ，系統即判定已熟練並自動從易錯池移除！
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 步驟 2：選擇欲測驗題數 (10 / 20 / 50) */}
-          <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2">
-            <div className="flex flex-wrap items-center justify-between gap-1">
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">
-                  2
-                </span>
-                <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                  選擇題數
-                </span>
-              </div>
-              <span className="hidden md:inline text-xs font-bold text-slate-500 dark:text-slate-400">
-                本年級答對率 ≥ 60% 才發金幣
-              </span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
-              {[
-                { count: 10, label: '10 題', reward: '最高 +4' },
-                { count: 20, label: '20 題', reward: '最高 +8' },
-                { count: 50, label: '50 題', reward: '最高 +20' }
-              ].map((opt) => {
-                const active = questionCountOpt === opt.count;
-                return (
-                  <button
-                    key={opt.count}
-                    type="button"
-                    onClick={() => setQuestionCountOpt(opt.count)}
-                    className={`py-2.5 px-3 rounded-xl border-2 text-center transition flex flex-col items-center justify-center ${
-                      active
-                        ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-indigo-300'
+                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      選擇冊別
+                    </span>
+                    <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">
+                      （{bookMeta.subtitle}）
+                    </span>
+                  </div>
+                  <span
+                    className={`font-black px-2 py-0.5 rounded-md ${
+                      isSelectedBookOwnGrade
+                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                        : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
                     }`}
                   >
-                    <span className="text-sm sm:text-base font-black">{opt.label}</span>
-                    <span
-                      className={`text-[11px] font-bold ${
-                        active ? 'text-amber-200' : 'text-amber-600 dark:text-amber-400'
-                      }`}
-                    >
-                      {opt.reward}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+                    {isSelectedBookOwnGrade ? '✓ 本年級計分' : '練習不計分'}
+                  </span>
+                </div>
 
+                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-11 gap-1.5">
+                  {ALL_BOOK_OPTIONS.map((bNum) => {
+                    const isSelected = selectedBook === bNum;
+                    const isOwn = isBookInOwnGrade(
+                      String(bNum),
+                      currentStudent?.grade,
+                      'mcq-exam'
+                    );
+                    return (
+                      <button
+                        key={String(bNum)}
+                        type="button"
+                        onClick={() => handleSelectBook(bNum)}
+                        className={`py-1.5 px-1 rounded-xl border text-center transition flex flex-col items-center justify-center relative cursor-pointer ${
+                          isSelected
+                            ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
+                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 text-slate-700 dark:text-slate-200'
+                        }`}
+                      >
+                        <span className="text-[11px] sm:text-xs font-black leading-tight">
+                          {formatBookLabel(bNum)}
+                        </span>
+                        {isOwn && (
+                          <span
+                            className={`text-[10px] font-bold leading-tight mt-0.5 ${
+                              isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'
+                            }`}
+                          >
+                            本年級
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 步驟 2：選擇單元 */}
+              <div className="shrink-0 flex flex-col gap-2.5 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70">
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">
+                      2
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      選擇單元
+                    </span>
+                    <span className="text-slate-500 dark:text-slate-400 text-xs hidden sm:inline">
+                      （可用題庫 {curriculumPool.length} 題）
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedUnits([...bookMeta.units])}
+                      className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 cursor-pointer"
+                    >
+                      全選
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSelectedUnits(
+                          selectedBook === 'g1' || selectedBook === 'g2'
+                            ? bookMeta.units.slice(0, 2)
+                            : bookMeta.units.filter((u) =>
+                                ['Starter', 'Unit 1', 'Unit 2', 'Review 1'].includes(u)
+                              )
+                        )
+                      }
+                      className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white hover:bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer"
+                    >
+                      上半冊
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSelectedUnits(
+                          selectedBook === 'g1' || selectedBook === 'g2'
+                            ? bookMeta.units.slice(2)
+                            : bookMeta.units.filter((u) =>
+                                ['Unit 3', 'Unit 4', 'Review 2', 'Festival'].includes(u)
+                              )
+                        )
+                      }
+                      className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white hover:bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer"
+                    >
+                      下半冊
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                  {bookMeta.units.map((unitName) => {
+                    const checked = selectedUnits.includes(unitName);
+                    return (
+                      <button
+                        key={unitName}
+                        type="button"
+                        onClick={() => toggleUnit(unitName)}
+                        className={`px-3 py-2 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${
+                          checked
+                            ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-900 dark:text-indigo-100 font-black'
+                            : 'border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/40 text-slate-400 font-bold'
+                        }`}
+                      >
+                        <span className="text-xs sm:text-sm truncate">{unitName}</span>
+                        {checked ? (
+                          <CheckSquare size={15} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
+                        ) : (
+                          <Square size={15} className="text-slate-300 dark:text-slate-600 shrink-0" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 步驟 3：選擇題數 */}
+              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2">
+                <div className="flex flex-wrap items-center justify-between gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">
+                      3
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      選擇題數
+                    </span>
+                  </div>
+                  <span className="hidden md:inline text-xs font-bold text-slate-500 dark:text-slate-400">
+                    本年級答對率 ≥ 60% 才發金幣
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  {[
+                    { count: 10, label: '10 題', reward: '最高 +4' },
+                    { count: 20, label: '20 題', reward: '最高 +8' },
+                    { count: 50, label: '50 題', reward: '最高 +20' }
+                  ].map((opt) => {
+                    const active = questionCountOpt === opt.count;
+                    return (
+                      <button
+                        key={opt.count}
+                        type="button"
+                        onClick={() => setQuestionCountOpt(opt.count)}
+                        className={`py-2.5 px-3 rounded-xl border-2 text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                          active
+                            ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
+                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-indigo-300'
+                        }`}
+                      >
+                        <span className="text-sm sm:text-base font-black">{opt.label}</span>
+                        <span
+                          className={`text-[11px] font-bold ${
+                            active ? 'text-amber-200' : 'text-amber-600 dark:text-amber-400'
+                          }`}
+                        >
+                          {opt.reward}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* 模式 C：學力檢測練習 (setupSubView === 'saa')                          */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {setupSubView === 'saa' && (
+            <div className="flex flex-col gap-3">
+              {/* 步驟 1：選擇施測年級 */}
+              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-xs font-black flex items-center justify-center">
+                      1
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      選擇施測年級
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
+                    教育部 SAA 規範年級
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  {[
+                    { grade: 4, label: '四年級', desc: 'Book 3~4 範圍' },
+                    { grade: 5, label: '五年級', desc: 'Book 5~6 範圍' },
+                    { grade: 6, label: '六年級', desc: 'Book 7~8 範圍' }
+                  ].map((g) => {
+                    const active = selectedSaaGrade === g.grade;
+                    return (
+                      <button
+                        key={g.grade}
+                        type="button"
+                        onClick={() => setSelectedSaaGrade(g.grade)}
+                        className={`py-2.5 px-3 rounded-xl border-2 text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                          active
+                            ? 'border-purple-600 bg-purple-600 text-white shadow-md'
+                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-purple-300'
+                        }`}
+                      >
+                        <span className="text-sm sm:text-base font-black">{g.label}</span>
+                        <span className={`text-[11px] font-semibold mt-0.5 ${active ? 'text-purple-100' : 'text-slate-400'}`}>
+                          {g.desc}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 步驟 2：選擇題型與題數組合 (向下彈出三大膠囊) */}
+              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2.5 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-xs font-black flex items-center justify-center">
+                      2
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      選擇測驗組合
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold text-slate-500">點選切換</span>
+                </div>
+                <div className="space-y-2">
+                  {/* 膠囊 A: 聽 15 + 閱 20 (預設) */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSaaFormat('standard')}
+                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
+                      selectedSaaFormat === 'standard'
+                        ? 'border-purple-600 bg-purple-50 dark:bg-purple-950/60 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-purple-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        selectedSaaFormat === 'standard' ? 'bg-purple-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                      }`}>
+                        <ClipboardCheck size={20} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                            聽力 15 題 ＋ 閱讀 20 題
+                          </span>
+                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-purple-200 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                            正式學測規格 (預設)
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          全真模擬教育部學力檢測標準配置，共 35 題完整測驗
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-base sm:text-lg font-black text-purple-600 dark:text-purple-400">35 題</span>
+                    </div>
+                  </button>
+
+                  {/* 膠囊 B: 聽力 20 題 */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSaaFormat('listening')}
+                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
+                      selectedSaaFormat === 'listening'
+                        ? 'border-purple-600 bg-purple-50 dark:bg-purple-950/60 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-purple-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        selectedSaaFormat === 'listening' ? 'bg-purple-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                      }`}>
+                        <Headphones size={20} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                            聽力測驗 20 題
+                          </span>
+                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                            專題特訓
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          辨識句意、基本問答、言談理解三大聽力大題深入強化
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-base sm:text-lg font-black text-purple-600 dark:text-purple-400">20 題</span>
+                    </div>
+                  </button>
+
+                  {/* 膠囊 C: 閱讀 20 題 */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSaaFormat('reading')}
+                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
+                      selectedSaaFormat === 'reading'
+                        ? 'border-purple-600 bg-purple-50 dark:bg-purple-950/60 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-purple-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        selectedSaaFormat === 'reading' ? 'bg-purple-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                      }`}>
+                        <BookOpen size={20} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                            閱讀測驗 20 題
+                          </span>
+                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                            專題特訓
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          字彙語法單題、生活告示、情境題組深入練習
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-base sm:text-lg font-black text-purple-600 dark:text-purple-400">20 題</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* 三大等第說明 */}
+              <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60">
+                  <div className="font-black text-emerald-700 dark:text-emerald-300">精熟 (Proficient)</div>
+                  <div className="text-[10px] text-slate-500">答對率 ≥ 85%</div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/60">
+                  <div className="font-black text-amber-700 dark:text-amber-300">基礎 (Basic)</div>
+                  <div className="text-[10px] text-slate-500">答對率 60%～84%</div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200/60 dark:border-rose-800/60">
+                  <div className="font-black text-rose-700 dark:text-rose-300">待加強 (Developing)</div>
+                  <div className="text-[10px] text-slate-500">答對率 &lt; 60%</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* 模式 D：Pre A1 檢測練習 (setupSubView === 'preA1')                     */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {setupSubView === 'preA1' && (
+            <div className="flex flex-col gap-3">
+              {/* 步驟 1：選擇測驗題型組合 (三大膠囊) */}
+              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-sky-600 text-white text-xs font-black flex items-center justify-center">
+                      1
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      選擇測驗組合
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold text-sky-600 dark:text-sky-400">
+                    教育部 Test My English 指標
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {/* 膠囊 A: 聽 15 + 閱 15 (官方標準 30 題) */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPreA1Format('standard')}
+                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
+                      selectedPreA1Format === 'standard'
+                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        selectedPreA1Format === 'standard' ? 'bg-sky-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                      }`}>
+                        <Award size={20} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                            聽力 15 題 ＋ 閱讀 15 題
+                          </span>
+                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-sky-200 text-sky-800 dark:bg-sky-900 dark:text-sky-200">
+                            官方標準規格 (預設)
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          Test My English 官方 Pre-A1 正式題數（共 30 題，答對 21 題即合格）
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-base sm:text-lg font-black text-sky-600 dark:text-sky-400">30 題</span>
+                    </div>
+                  </button>
+
+                  {/* 膠囊 B: 聽力 20 題 */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPreA1Format('listening')}
+                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
+                      selectedPreA1Format === 'listening'
+                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        selectedPreA1Format === 'listening' ? 'bg-sky-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                      }`}>
+                        <Headphones size={20} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                            聽力測驗 20 題
+                          </span>
+                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                            專題特訓
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          聽音選圖、聽音選字、生活問句應答集中強化
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-base sm:text-lg font-black text-sky-600 dark:text-sky-400">20 題</span>
+                    </div>
+                  </button>
+
+                  {/* 膠囊 C: 閱讀 20 題 */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPreA1Format('reading')}
+                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
+                      selectedPreA1Format === 'reading'
+                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        selectedPreA1Format === 'reading' ? 'bg-sky-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                      }`}>
+                        <BookOpen size={20} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                            閱讀測驗 20 題
+                          </span>
+                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                            專題特訓
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          看圖選字、日常生活告示圖文配合、短句是非判斷集中強化
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-base sm:text-lg font-black text-sky-600 dark:text-sky-400">20 題</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* 口說與寫作四技整合說明小卡 */}
+              <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 border border-sky-200 dark:border-sky-800/60 space-y-2">
+                <div className="flex items-center gap-2 text-xs font-black text-sky-900 dark:text-sky-200">
+                  <Sparkles size={16} className="text-sky-600 dark:text-sky-400" />
+                  <span>全真四技整合指引（口說與寫作實戰）</span>
+                </div>
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  <strong>• 寫作 (Writing)：</strong>Pre-A1 著重字母大小寫、單字拼寫與基礎句子重組，學生可至<strong>「拼字大師」</strong>遊戲隨時進行即時互動訓練。<br />
+                  <strong>• 口說 (Speaking)：</strong>Pre-A1 著重朗讀句子與日常圖片口語問答，學生可前往<strong>「聽說實驗室」</strong>進行 AI 語音即時評測與發音糾錯！
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* 模式 E：易錯題複習 (setupSubView === 'mistakes')                       */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {setupSubView === 'mistakes' && (
+            <div className="flex flex-col gap-3">
+              {/* 易錯題庫概況卡 */}
+              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-700/70 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-rose-600 text-white text-xs font-black flex items-center justify-center">
+                      1
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      易錯題庫概況
+                    </span>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                    待複習：{mistakeCount} 題
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                  系統已自動為你收錄平時測驗曾答錯的題目。若目前易錯題數少於所選題數（{questionCountOpt} 題），系統將自動自你<strong>本年級（Grade {currentStudent?.grade || 4}）</strong>的題庫中隨機挑選合適題目補滿。
+                </p>
+                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-2">
+                  <Sparkles size={16} className="text-emerald-600 shrink-0" />
+                  <span>精熟機制：只要在複習中對同一題「連續答對 2 次」，系統即自動從易錯池移除！</span>
+                </div>
+              </div>
+
+              {/* 選擇題數 */}
+              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-rose-600 text-white text-xs font-black flex items-center justify-center">
+                    2
+                  </span>
+                  <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                    選擇複習題數
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  {[
+                    { count: 10, label: '10 題', reward: '最高 +4' },
+                    { count: 20, label: '20 題', reward: '最高 +8' },
+                    { count: 50, label: '50 題', reward: '最高 +20' }
+                  ].map((opt) => {
+                    const active = questionCountOpt === opt.count;
+                    return (
+                      <button
+                        key={opt.count}
+                        type="button"
+                        onClick={() => setQuestionCountOpt(opt.count)}
+                        className={`py-2.5 px-3 rounded-xl border-2 text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                          active
+                            ? 'border-rose-600 bg-rose-600 text-white shadow-sm'
+                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-rose-300'
+                        }`}
+                      >
+                        <span className="text-sm sm:text-base font-black">{opt.label}</span>
+                        <span
+                          className={`text-[11px] font-bold ${
+                            active ? 'text-rose-100' : 'text-amber-600 dark:text-amber-400'
+                          }`}
+                        >
+                          {opt.reward}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* 步驟 3：開始測驗 CTA（固定於底部，不隨內容捲走） */}
-        <div className="shrink-0 px-3 sm:px-6 py-2.5 sm:py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-end">
-            <button
-              type="button"
-              disabled={!canStart}
-              onClick={() => startExamSession()}
-              className="w-full sm:w-auto sm:min-w-[260px] py-3.5 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white font-black text-sm sm:text-base shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 ml-auto"
-            >
-              <span>
-                {scopeMode === 'tme-preA1'
-                  ? (tmePool.length > 0 ? `開始 Pre-A1 檢定 (${tmePool.length} 題)` : '🚧 Pre-A1 官方題庫編製中')
-                  : scopeMode === 'ministry-assessment'
-                  ? (saaPool.length > 0 ? `開始 SAA 學力模考 (${saaPool.length} 題)` : '🚧 SAA 學力題庫編製中')
-                  : `開始檢定 (${questionCountOpt} 題)`}
-              </span>
-              <ArrowRight size={18} />
-            </button>
+        {/* 底部功能與開始測驗 CTA（固定於底部） */}
+        <div className="shrink-0 px-3 sm:px-6 py-2.5 sm:py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-3">
+          {setupSubView === 'hub' ? (
+            <div className="w-full flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-semibold">💡 提示：本年級檢定答對率 ≥ 60% 可領取金幣獎勵</span>
+              <span className="font-bold hidden sm:inline">全真評量矩陣 v2.5</span>
+            </div>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setSetupSubView('hub')}
+                className="px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 transition cursor-pointer flex items-center gap-1"
+              >
+                <ArrowLeft size={15} />
+                <span>返回選單</span>
+              </button>
+
+              <button
+                type="button"
+                disabled={!canStart}
+                onClick={() => startExamSession()}
+                className={`w-full sm:w-auto sm:min-w-[260px] py-3.5 px-8 rounded-2xl text-white font-black text-sm sm:text-base shadow-lg transition flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed ${
+                  scopeMode === 'tme-preA1'
+                    ? 'bg-sky-600 hover:bg-sky-700 shadow-sky-600/25'
+                    : scopeMode === 'ministry-assessment'
+                    ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-600/25'
+                    : scopeMode === 'mistakes'
+                    ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/25'
+                    : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/25'
+                }`}
+              >
+                <span>
+                  {scopeMode === 'tme-preA1'
+                    ? (tmePool.length > 0 ? `開始 Pre-A1 測驗 (${selectedPreA1Format === 'standard' ? 30 : 20} 題)` : '🚧 Pre-A1 官方題庫編製中 (敬請期待)')
+                    : scopeMode === 'ministry-assessment'
+                    ? (saaPool.length > 0 ? `開始學力測驗 (${selectedSaaFormat === 'standard' ? 35 : 20} 題)` : '🚧 SAA 學力題庫編製中 (敬請期待)')
+                    : scopeMode === 'mistakes'
+                    ? `開始複習 (${questionCountOpt} 題)`
+                    : `開始檢定 (${questionCountOpt} 題)`}
+                </span>
+                <ArrowRight size={18} />
+              </button>
+            </>
+          )}
         </div>
       </>
     );
   }
 
-  // ============================================================================
   // STEP 2.5: 本次測驗內容配置與說明 (Page 0 Overview Screen - Zero Scroll)
   // ============================================================================
   if (phase === 'instructions') {
@@ -1256,7 +1706,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               }}
               className="w-full sm:w-auto sm:min-w-[280px] py-3.5 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm sm:text-base shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
             >
-              <span>正式開始作答 ➔</span>
+              <span>🚀 正式開始測驗 (開始作答) ➔</span>
             </button>
           </div>
         </div>

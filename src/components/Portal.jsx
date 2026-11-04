@@ -134,7 +134,7 @@ export const Portal = ({
             </div>
           </div>
 
-          {/* 4. 課本題庫檢定館 */}
+          {/* 4. 全真英語檢定館 */}
           <div
             onClick={() => onNavigate('mcq-exam')}
             className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-indigo-500/15 via-blue-500/10 to-transparent dark:from-indigo-950/60 dark:to-slate-900/60 border-2 border-indigo-400/70 dark:border-indigo-600/70 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
@@ -145,10 +145,10 @@ export const Portal = ({
               </div>
               <div className="flex items-center gap-2 min-w-0">
                 <h3 className="text-[15px] font-black text-slate-800 dark:text-slate-100 font-heading truncate">
-                  課本題庫檢定館
+                  全真英語檢定館
                 </h3>
                 <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-indigo-600 text-white shrink-0">
-                  百題檢定
+                  全真檢定
                 </span>
               </div>
             </div>
@@ -337,7 +337,7 @@ export const Portal = ({
             </div>
           </GlassCard>
 
-          {/* 4. 課本題庫檢定館 */}
+          {/* 4. 全真英語檢定館 */}
           <GlassCard
             hoverable={true}
             onClick={() => onNavigate('mcq-exam')}
@@ -351,14 +351,14 @@ export const Portal = ({
                 <div className="space-y-1 flex-1 min-w-0">
                   <div className="flex items-center gap-2.5 flex-wrap">
                     <h3 className="text-lg sm:text-xl font-black text-slate-800 dark:text-slate-100 font-heading">
-                      課本題庫檢定館
+                      全真英語檢定館
                     </h3>
                     <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-indigo-600 text-white">
-                      1～8 冊＋國一先修・千題檢定
+                      課本同步・學力檢測・Pre-A1 官方模擬
                     </span>
                   </div>
                   <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 truncate">
-                    專業一頁一題語言測驗，涵蓋各冊文法與依題意選答，支援個人易錯題複習與金幣獎勵。
+                    專業一頁一題語言測驗，涵蓋課本同步複習、國小學力成就評量與教育部 Pre-A1 官方實戰模擬。
                   </p>
                 </div>
               </div>

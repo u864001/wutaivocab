@@ -755,10 +755,10 @@ export const LanguageLabHub = ({ onBack, onNavigate }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm sm:text-base font-black text-indigo-200 font-heading">
-                        課本題庫檢定 (Grammar & Dialogue Exam)
+                        全真英語檢定 (English Assessment Arena)
                       </h3>
                       <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold">
-                        1～8 冊＋國一先修
+                        課本・學力・Pre-A1
                       </span>
                     </div>
                     <p className="text-xs text-slate-300 font-bold mt-0.5 truncate">

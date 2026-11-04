@@ -507,6 +507,11 @@ async function run() {
   await new Promise(r => setTimeout(r, 900));
   const mcqMobileCheck = await client.evaluate(`
     (async () => {
+      const textbookEntry = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('課本題庫練習'));
+      if (textbookEntry) {
+        textbookEntry.click();
+        await new Promise(r => setTimeout(r, 200));
+      }
       const labels = ['上半冊', '下半冊', '全選', '10 題', '50 題', '開始檢定'];
       const blocked = [];
       for (const label of labels) {
@@ -534,6 +539,11 @@ async function run() {
   await new Promise(r => setTimeout(r, 800));
   const mcqExamCheck = await client.evaluate(`
     (async () => {
+      const textbookEntry = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('課本題庫練習'));
+      if (textbookEntry) {
+        textbookEntry.click();
+        await new Promise(r => setTimeout(r, 200));
+      }
       const startBtn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('開始檢定'));
       if (!startBtn) return { ok: false, reason: 'No start button on setup view' };
       startBtn.click();

@@ -1069,7 +1069,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                 <div className="flex items-center gap-2">
                   <span className="text-lg">📝</span>
                   <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-indigo-300">
-                    課本題庫檢定 (Exam Hub)
+                    全真英語檢定 (Exam Hub)
                   </h4>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 font-bold">
                     本年級 ≥ 60% 累計三冠榜
