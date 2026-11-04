@@ -291,8 +291,9 @@ async function run() {
     })()
   `);
   if (!auditTabClicked || !auditZoneRendered.hasTitle) {
-    failures.push({ target: 'TeacherHub ExamAuditZone', error: 'ExamAuditZone not rendered or crashed', details: auditZoneRendered });
-    console.log('  ❌ TeacherHub ExamAuditZone failed:', auditZoneRendered);
+    const pageText = await client.evaluate(`document.body.innerText`);
+    failures.push({ target: 'TeacherHub ExamAuditZone', error: 'ExamAuditZone not rendered or crashed', details: auditZoneRendered, exceptions: client.exceptions, pageSnippet: (pageText || '').slice(0, 300) });
+    console.log('  ❌ TeacherHub ExamAuditZone failed:', auditZoneRendered, 'exceptions:', client.exceptions, 'snippet:', (pageText || '').slice(0, 150));
   } else {
     console.log('  ✓ TeacherHub: ExamAuditZone tab switch & 3-track review UI verified');
   }
@@ -310,8 +311,9 @@ async function run() {
     })()
   `);
   if (!zoomShowcaseCheck.hasTitle || !zoomShowcaseCheck.hasPlans) {
-    failures.push({ target: 'ImageZoomShowcase', error: 'ImageZoomShowcase view failed', details: zoomShowcaseCheck });
-    console.log('  ❌ ImageZoomShowcase failed:', zoomShowcaseCheck);
+    const pageText = await client.evaluate(`document.body.innerText`);
+    failures.push({ target: 'ImageZoomShowcase', error: 'ImageZoomShowcase view failed', details: zoomShowcaseCheck, exceptions: client.exceptions, pageSnippet: (pageText || '').slice(0, 300) });
+    console.log('  ❌ ImageZoomShowcase failed:', zoomShowcaseCheck, 'exceptions:', client.exceptions, 'snippet:', (pageText || '').slice(0, 150));
   } else {
     console.log('  ✓ ImageZoomShowcase: 4 zoom interaction plans verified');
   }

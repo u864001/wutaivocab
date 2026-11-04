@@ -140,6 +140,11 @@ export function ExamAuditZone({ onBack }) {
   // 排版體驗方案：'auto' (單題 3A / 題組 3B) | 'force-3a' | 'force-3b'
   const [zoomExperienceMode, setZoomExperienceMode] = useState('auto');
 
+  // ── 題組材料視角切換 ('image' 考卷原圖 | 'text' 純文字閱讀) ──
+  const [setMaterialView, setSetMaterialView] = useState('image');
+  // ── 教師審核面板收合狀態 (展開寬螢幕視角，解決 3B 左右雙欄擠壓問題) ──
+  const [isTeacherPanelCollapsed, setIsTeacherPanelCollapsed] = useState(false);
+
   // ── 方案 3A 彈窗與縮放狀態 ──
   const [modal3AOpen, setModal3AOpen] = useState(false);
   const [modal3AZoom, setModal3AZoom] = useState(1);
@@ -301,12 +306,8 @@ export function ExamAuditZone({ onBack }) {
     if (!currentQ) return false;
     if (zoomExperienceMode === 'force-3b') return true;
     if (zoomExperienceMode === 'force-3a') return false;
-    // auto 判定：題組題具備 groupId，或長篇閱讀 (R-COMP, passage)
-    return Boolean(
-      currentQ.groupId ||
-      (currentQ.passage && (currentQ.passage.text || currentQ.passage.title)) ||
-      (currentQ.taskType && (currentQ.taskType.startsWith('R-') || currentQ.taskType === 'G-CTX'))
-    );
+    // 嚴格判定：只有真正具備 groupId 的連鎖題才走 3B 題組雙欄（單題如文化題、短對話一律走標準單題）
+    return Boolean(currentQ.groupId);
   }, [currentQ, zoomExperienceMode]);
 
   // 尋找與當前題目屬於同一 groupId 的題組子題
@@ -805,9 +806,9 @@ export function ExamAuditZone({ onBack }) {
         ) : (
           <>
             {/* ── 左側：學生測驗視窗同款卡片 (採用 3A 單題 / 3B 題組雙欄自適應排版) ── */}
-            <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-3 overflow-y-auto">
+            <div className={`${isTeacherPanelCollapsed ? 'lg:col-span-12' : 'lg:col-span-8'} bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-3 overflow-y-auto transition-all duration-300`}>
               <div className="space-y-3">
-                {/* 題號與分類標籤列 ＋ 3A/3B 排版模式切換器 */}
+                {/* 題號與分類標籤列 ＋ 3A/3B 排版模式切換器 ＋ 寬螢幕切換按鈕 */}
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-black text-xs">
@@ -828,7 +829,7 @@ export function ExamAuditZone({ onBack }) {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     {/* 排版方案切換器 (讓老師可自由實測 3A vs 3B) */}
                     <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg text-[10px] font-black border border-slate-200 dark:border-slate-700">
                       <button
@@ -869,6 +870,30 @@ export function ExamAuditZone({ onBack }) {
                       </button>
                     </div>
 
+                    {/* 寬螢幕切換按鈕 (收合/展開右側審核欄，讓 3B 左右雙欄能享受 100% 寬螢幕) */}
+                    <button
+                      type="button"
+                      onClick={() => setIsTeacherPanelCollapsed((prev) => !prev)}
+                      className={`px-2 py-0.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1 border ${
+                        isTeacherPanelCollapsed
+                          ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200'
+                      }`}
+                      title={isTeacherPanelCollapsed ? '展開右側教師筆記欄' : '收合右側筆記欄，切換 100% 寬螢幕檢視'}
+                    >
+                      {isTeacherPanelCollapsed ? (
+                        <>
+                          <Minimize2 size={12} />
+                          <span>還原審核欄</span>
+                        </>
+                      ) : (
+                        <>
+                          <Maximize2 size={12} />
+                          <span>寬螢幕</span>
+                        </>
+                      )}
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => speakText(currentQ.media?.audioText || currentQ.question)}
@@ -896,62 +921,93 @@ export function ExamAuditZone({ onBack }) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                      {/* 左欄：篇章文章 ＆ 獨立放大鏡圖表 */}
+                      {/* 左欄：篇章文章 ＆ 自然捲動圖表 (解除小矮框限制，拒絕圖文重複擠壓) */}
                       <div className="space-y-2.5">
-                        <div className="flex items-center justify-between text-xs px-1">
-                          <span className="font-black text-slate-700 dark:text-slate-300 flex items-center gap-1">
-                            <BookOpen size={14} className="text-indigo-600" />
-                            <span>題組閱讀材料 / 圖表</span>
-                          </span>
+                        <div className="flex flex-wrap items-center justify-between text-xs px-1 gap-1.5 pb-1 border-b border-slate-100 dark:border-slate-800">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-black text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                              <BookOpen size={14} className="text-indigo-600" />
+                              <span>題組閱讀材料</span>
+                            </span>
+
+                            {/* 若同時有圖檔與純文字，提供 Tab 切換，嚴禁上下堆疊擠壓 */}
+                            {(currentQ.image || currentQ.passage?.image) && currentQ.passage && (
+                              <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg text-[10px] font-black border border-slate-200 dark:border-slate-700 ml-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setSetMaterialView('image')}
+                                  className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                                    setMaterialView === 'image'
+                                      ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
+                                      : 'text-slate-400 hover:text-slate-600'
+                                  }`}
+                                >
+                                  🖼️ 考卷原圖
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setSetMaterialView('text')}
+                                  className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                                    setMaterialView === 'text'
+                                      ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-xs'
+                                      : 'text-slate-400 hover:text-slate-600'
+                                  }`}
+                                >
+                                  📄 清爽文字
+                                </button>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* 圖檔工具列：支援 3A 全螢幕一鍵檢驗 ＋ 縮放 */}
                           {(currentQ.image || currentQ.passage?.image) && (
-                            <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
+                            <div className="flex items-center gap-1">
                               <button
                                 type="button"
-                                onClick={() => setPlan3bZoom(z => Math.max(1, +(z - 0.3).toFixed(1)))}
-                                className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded cursor-pointer"
-                                title="縮小"
+                                onClick={() => setModal3AOpen(true)}
+                                className="px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 text-[10px] font-black border border-indigo-200 dark:border-indigo-800 flex items-center gap-1 cursor-pointer transition shadow-xs"
+                                title="將本題組圖檔以 3A 全螢幕大圖模式展開檢視"
                               >
-                                <ZoomOut size={13} />
+                                <Maximize2 size={11} />
+                                <span>3A 全螢幕</span>
                               </button>
-                              <span className="font-mono font-bold px-1 text-[11px] text-indigo-600 dark:text-indigo-400">
-                                {Math.round(plan3bZoom * 100)}%
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => setPlan3bZoom(z => Math.min(3, +(z + 0.3).toFixed(1)))}
-                                className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded cursor-pointer"
-                                title="放大"
-                              >
-                                <ZoomIn size={13} />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => { setPlan3bZoom(1); setPlan3bPan({ x: 0, y: 0 }); }}
-                                className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-400 cursor-pointer"
-                                title="重置"
-                              >
-                                <RotateCcw size={11} />
-                              </button>
+
+                              <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-xs">
+                                <button
+                                  type="button"
+                                  onClick={() => setPlan3bZoom(z => Math.max(1, +(z - 0.3).toFixed(1)))}
+                                  className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded cursor-pointer"
+                                  title="縮小"
+                                >
+                                  <ZoomOut size={12} />
+                                </button>
+                                <span className="font-mono font-bold px-1 text-[10px] text-indigo-600 dark:text-indigo-400">
+                                  {Math.round(plan3bZoom * 100)}%
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => setPlan3bZoom(z => Math.min(3, +(z + 0.3).toFixed(1)))}
+                                  className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded cursor-pointer"
+                                  title="放大"
+                                >
+                                  <ZoomIn size={12} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => { setPlan3bZoom(1); setPlan3bPan({ x: 0, y: 0 }); }}
+                                  className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-400 cursor-pointer"
+                                  title="重置"
+                                >
+                                  <RotateCcw size={10} />
+                                </button>
+                              </div>
                             </div>
                           )}
                         </div>
 
-                        {/* 閱讀篇章文字 */}
-                        {currentQ.passage && (
-                          <div className="p-3 rounded-xl bg-indigo-50/70 dark:bg-slate-800/90 border border-indigo-200/80 dark:border-slate-700 text-xs font-medium leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200">
-                            <div className="font-black text-indigo-700 dark:text-indigo-400 mb-1 flex items-center gap-1.5 text-xs">
-                              <BookOpen size={14} />
-                              <span>{currentQ.passage.title || '【生活閱讀篇章】'}</span>
-                            </div>
-                            <div className="font-mono text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed max-h-52 overflow-y-auto pr-1">
-                              {currentQ.passage.text}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* 題組圖檔（左欄框內獨立放大與平移） */}
-                        {(currentQ.image || currentQ.passage?.image) && (
-                          <div className="relative rounded-2xl overflow-hidden border-2 border-indigo-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 shadow-inner">
+                        {/* 視角 1：考卷長圖／海報（解除 320px 矮框，允許自然全寬 ＋ 順暢垂直捲動） */}
+                        {(currentQ.image || currentQ.passage?.image) && (setMaterialView === 'image' || !currentQ.passage) && (
+                          <div className="relative rounded-2xl overflow-hidden border-2 border-indigo-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 shadow-inner">
                             <div
                               ref={panBox3bRef}
                               onMouseDown={handleMouseDown3b}
@@ -960,7 +1016,7 @@ export function ExamAuditZone({ onBack }) {
                               onTouchStart={handleTouchStart3b}
                               onTouchMove={handleTouchMove3b}
                               onTouchEnd={handleMouseUp3b}
-                              className={`h-64 sm:h-80 w-full flex items-center justify-center overflow-hidden ${
+                              className={`max-h-[68vh] min-h-[300px] w-full overflow-y-auto overflow-x-hidden flex flex-col items-center p-2 ${
                                 plan3bZoom > 1 ? (isDragging3b ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-default'
                               }`}
                             >
@@ -968,24 +1024,46 @@ export function ExamAuditZone({ onBack }) {
                                 style={{
                                   transform: `translate(${plan3bPan.x}px, ${plan3bPan.y}px) scale(${plan3bZoom})`,
                                   transition: isDragging3b ? 'none' : 'transform 0.15s ease-out',
-                                  transformOrigin: 'center center'
+                                  transformOrigin: 'top center',
+                                  width: '100%'
                                 }}
-                                className="select-none pointer-events-none"
+                                className="flex justify-center"
                               >
                                 <img
                                   src={currentQ.image || currentQ.passage?.image}
                                   alt="題組圖表"
-                                  className="max-h-60 sm:max-h-76 max-w-full object-contain pointer-events-none rounded-lg"
+                                  onClick={() => {
+                                    if (plan3bZoom === 1) setModal3AOpen(true);
+                                  }}
+                                  className="w-full max-w-full h-auto object-contain rounded-lg shadow-sm cursor-zoom-in"
                                   draggable={false}
+                                  title="點擊可開啟 3A 全螢幕大圖檢驗"
                                 />
                               </div>
                             </div>
 
-                            {plan3bZoom > 1 && (
+                            {plan3bZoom > 1 ? (
                               <div className="absolute bottom-2 left-2 text-[10px] text-amber-300 font-bold bg-black/70 px-2 py-0.5 rounded-full shadow">
-                                🖐️ 僅左半邊放大！右側題目答項不受影響
+                                🖐️ 已在左欄放大！可在框內拖曳視角
+                              </div>
+                            ) : (
+                              <div className="absolute bottom-2 right-2 text-[10px] text-slate-400 bg-black/60 px-2 py-0.5 rounded-full shadow pointer-events-none">
+                                ↕ 可垂直捲動 • 點圖開啟 3A 全螢幕
                               </div>
                             )}
+                          </div>
+                        )}
+
+                        {/* 視角 2：清爽純文字排版篇章 */}
+                        {currentQ.passage && (setMaterialView === 'text' || (!currentQ.image && !currentQ.passage?.image)) && (
+                          <div className="p-3.5 sm:p-4 rounded-2xl bg-indigo-50/70 dark:bg-slate-800/90 border border-indigo-200/80 dark:border-slate-700 text-xs font-medium leading-relaxed text-slate-800 dark:text-slate-200 max-h-[68vh] overflow-y-auto shadow-inner space-y-2">
+                            <div className="font-black text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5 text-xs pb-1.5 border-b border-indigo-100 dark:border-slate-700">
+                              <BookOpen size={14} />
+                              <span>{currentQ.passage.title || '【生活閱讀篇章】'}</span>
+                            </div>
+                            <div className="font-mono text-xs sm:text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed pr-1">
+                              {currentQ.passage.text}
+                            </div>
                           </div>
                         )}
                       </div>
@@ -1298,7 +1376,8 @@ export function ExamAuditZone({ onBack }) {
             </div>
 
             {/* ── 右側：教師檢核操作區與筆記面板 ── */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-3">
+            {!isTeacherPanelCollapsed ? (
+              <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between gap-3">
               <div className="space-y-4">
                 {/* 檢核狀態標題 */}
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
@@ -1510,6 +1589,18 @@ export function ExamAuditZone({ onBack }) {
                 </button>
               </div>
             </div>
+            ) : (
+              /* 收合時的右下角浮動快捷叫回按鈕 */
+              <button
+                type="button"
+                onClick={() => setIsTeacherPanelCollapsed(false)}
+                className="fixed bottom-6 right-6 z-40 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-2xl flex items-center gap-2 cursor-pointer transition animate-fadeIn"
+                title="點擊展開右側教師審核與筆記專區"
+              >
+                <FileCheck2 size={16} />
+                <span>展開審核欄 ({auditRecords[currentQ?.id]?.verified ? '✓ 已通過' : '待審核'})</span>
+              </button>
+            )}
           </>
         )}
       </div>
