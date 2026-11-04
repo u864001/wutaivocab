@@ -18,7 +18,8 @@ import {
   UserCheck,
   Headphones,
   GraduationCap,
-  ChevronRight
+  ChevronRight,
+  Clock
 } from 'lucide-react';
 import {
   EXAM_TRACKS,
@@ -173,6 +174,14 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // Pre-A1 設定: 'standard' (聽15+閱15) | 'listening' (聽20) | 'reading' (閱20)
   const [selectedPreA1Format, setSelectedPreA1Format] = useState('standard');
 
+  const isSelectedBookOwnGrade = useMemo(() => {
+    return isBookInOwnGrade(
+      String(selectedBook),
+      currentStudent?.grade,
+      'mcq-exam'
+    );
+  }, [selectedBook, currentStudent?.grade]);
+
   // In-Progress Snapshot Key & State (6 小時內有效)
   const inProgressKey = useMemo(() => getInProgressKey(currentStudent), [currentStudent]);
   const [savedSession, setSavedSession] = useState(null);
@@ -326,7 +335,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         targetCount = selectedPreA1Format === 'standard' ? 30 : 20;
         sourceList = assembleExamForm(tmePool, targetCount);
       } else if (scopeMode === 'ministry-assessment') {
-        targetCount = selectedSaaFormat === 'standard' ? 35 : 20;
+        const reqCount = selectedSaaFormat === 'standard' ? 35 : 20;
+        targetCount = Math.min(reqCount, saaPool.length);
         sourceList = assembleExamForm(saaPool, targetCount);
       } else if (scopeMode === 'mistakes') {
         targetCount = Number(questionCountOpt) || 20;
@@ -635,11 +645,6 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   if (phase === 'setup') {
     const bookMeta = HERE_WE_GO_BOOK_META[selectedBook] || HERE_WE_GO_BOOK_META[1];
     const mistakeCount = mistakeQuestions.length;
-    const isSelectedBookOwnGrade = isBookInOwnGrade(
-      String(selectedBook),
-      currentStudent?.grade,
-      'mcq-exam'
-    );
     const canStart =
       scopeMode === 'mistakes'
         ? true
@@ -683,14 +688,14 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             {setupSubView === 'mistakes' && <RotateCcw className="text-rose-600 dark:text-rose-400" size={22} />}
             <div>
               <h1 className="text-base sm:text-lg md:text-xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-                {setupSubView === 'hub' && '全真英語檢定館'}
+                {setupSubView === 'hub' && '霧臺英語檢定館'}
                 {setupSubView === 'textbook' && '課本題庫練習'}
                 {setupSubView === 'saa' && '學力檢測練習'}
                 {setupSubView === 'preA1' && 'Pre A1 檢測練習'}
                 {setupSubView === 'mistakes' && '個人易錯題複習'}
               </h1>
               <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 -mt-0.5 hidden sm:block">
-                {setupSubView === 'hub' && 'English Assessment Arena'}
+                {setupSubView === 'hub' && 'Wutai English Assessment Arena'}
                 {setupSubView === 'textbook' && 'Here We Go! 分冊分單元檢定'}
                 {setupSubView === 'saa' && '教育部 SAA 臺灣學生學習成就評量'}
                 {setupSubView === 'preA1' && 'Test My English 官方指標模擬'}
@@ -806,7 +811,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   setSetupSubView('textbook');
                   setScopeMode('curriculum');
                 }}
-                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-indigo-50/50 dark:hover:bg-slate-800 border-2 border-indigo-200/80 dark:border-indigo-900/60 hover:border-indigo-500 dark:hover:border-indigo-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-indigo-50/40 dark:hover:bg-slate-800 border-2 border-indigo-200/80 dark:border-indigo-900/60 border-l-6 border-l-indigo-600 hover:border-indigo-500 dark:hover:border-indigo-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
@@ -818,7 +823,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         課本題庫練習
                       </span>
                       <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                        分冊分單元精熟
+                        1,289 題分冊精熟
                       </span>
                     </div>
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">
@@ -839,7 +844,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   setSetupSubView('saa');
                   setScopeMode('ministry-assessment');
                 }}
-                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-purple-50/50 dark:hover:bg-slate-800 border-2 border-purple-200/80 dark:border-purple-900/60 hover:border-purple-500 dark:hover:border-purple-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-purple-50/40 dark:hover:bg-slate-800 border-2 border-purple-200/80 dark:border-purple-900/60 border-l-6 border-l-purple-600 hover:border-purple-500 dark:hover:border-purple-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
@@ -851,11 +856,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         學力檢測練習
                       </span>
                       <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
-                        國小 4～6 年級學測
+                        SAA 4～6年級學測
                       </span>
                     </div>
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">
-                      參考教育部 SAA 學習成就評量：聽 15 閱 20 正式卷或聽力/閱讀專項練習
+                      參考教育部 SAA 學習成就評量：聽 15 閱 20 正式卷或專項特訓（已建立 75 題全真題庫）
                     </p>
                   </div>
                 </div>
@@ -872,7 +877,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   setSetupSubView('preA1');
                   setScopeMode('tme-preA1');
                 }}
-                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-sky-50/50 dark:hover:bg-slate-800 border-2 border-sky-200/80 dark:border-sky-900/60 hover:border-sky-500 dark:hover:border-sky-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-sky-50/40 dark:hover:bg-slate-800 border-2 border-sky-200/80 dark:border-sky-900/60 border-l-6 border-l-sky-600 hover:border-sky-500 dark:hover:border-sky-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
@@ -905,7 +910,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   setSetupSubView('mistakes');
                   setScopeMode('mistakes');
                 }}
-                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-rose-50/50 dark:hover:bg-slate-800 border-2 border-rose-200/80 dark:border-rose-900/60 hover:border-rose-500 dark:hover:border-rose-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-rose-50/40 dark:hover:bg-slate-800 border-2 border-rose-200/80 dark:border-rose-900/60 border-l-6 border-l-rose-600 hover:border-rose-500 dark:hover:border-rose-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-red-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
@@ -1540,7 +1545,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           {setupSubView === 'hub' ? (
             <div className="w-full flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
               <span className="font-semibold">💡 提示：本年級檢定答對率 ≥ 60% 可領取金幣獎勵</span>
-              <span className="font-bold hidden sm:inline">全真評量矩陣 v2.5</span>
+              <span className="font-bold hidden sm:inline">霧臺評量矩陣 v2.5</span>
             </div>
           ) : (
             <>
@@ -1585,19 +1590,45 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     );
   }
 
-  // STEP 2.5: 本次測驗內容配置與說明 (Page 0 Overview Screen - Zero Scroll)
+  // STEP 2.5: 本次測驗內容配置與說明 (Page 0 Official Dossier & Blueprint)
   // ============================================================================
   if (phase === 'instructions') {
     const outline = buildFormOutline(questions);
     const bookMeta = HERE_WE_GO_BOOK_META[selectedBook] || HERE_WE_GO_BOOK_META[1];
     const centerTitle =
       scopeMode === 'mistakes'
-        ? '個人易錯題複習'
+        ? '個人易錯題精熟複習'
         : scopeMode === 'tme-preA1'
-        ? 'Pre-A1 官方模擬檢定'
+        ? 'Test My English Pre-A1 官方模擬檢定'
         : scopeMode === 'ministry-assessment'
-        ? 'SAA 學力成就模擬檢定'
-        : `${formatBookLabel(selectedBook)}檢定`;
+        ? `教育部 SAA 臺灣學生學習成就評量 (${selectedSaaGrade} 年級卷)`
+        : `${formatBookLabel(selectedBook)} 課程能力檢定`;
+
+    const subTitleDesc =
+      scopeMode === 'mistakes'
+        ? '針對平時曾答錯題目進行集中診斷，同一題連續答對 2 次判定精熟並自動移出錯題池'
+        : scopeMode === 'tme-preA1'
+        ? '教育部官方認證指標，涵蓋生活情境聽力與看圖圖文理解，合格門檻為 70% (21 題)'
+        : scopeMode === 'ministry-assessment'
+        ? '參考臺中教育大學 SAA 全國性學力評量標準試卷，分「精熟 (≥85%) / 基礎 (60%~84%) / 待加強 (<60%)」三等第'
+        : `${bookMeta.title} • 測驗單元：${selectedUnits.join('、')}`;
+
+    const candidateDisplayName = isLoggedIn
+      ? formatStudentDisplayName(currentStudent)
+      : '自主練習考生 (Guest)';
+
+    const passCriteria =
+      scopeMode === 'tme-preA1'
+        ? '答對 21 題 (70%) 達 Pre-A1 標準'
+        : scopeMode === 'ministry-assessment'
+        ? '精熟門檻：答對率 ≥ 85%'
+        : scopeMode === 'mistakes'
+        ? '連續答對 2 次即判定精熟出庫'
+        : isSelectedBookOwnGrade
+        ? '本年級答對率 ≥ 60% 可領取金幣'
+        : '自主練習 (不計金幣與英雄榜)';
+
+    const hasAudioSection = outline.some((p) => p.audio);
 
     return renderShell(
       <>
@@ -1606,95 +1637,166 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           <button
             type="button"
             onClick={() => setPhase('setup')}
-            className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition"
+            className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm flex items-center gap-1.5 transition cursor-pointer"
           >
             <ArrowLeft size={16} />
             重選範圍
           </button>
 
           <div className="flex items-center gap-2">
-            <BookOpen className="text-indigo-600 dark:text-indigo-400" size={20} />
+            <ClipboardCheck className="text-indigo-600 dark:text-indigo-400" size={20} />
             <h2 className="text-sm sm:text-base md:text-lg font-black tracking-tight text-slate-900 dark:text-white">
-              本次測驗說明與配置
+              試卷大綱與准考藍圖
             </h2>
           </div>
 
           <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-            共 {questions.length} 題
+            全卷 {questions.length} 題
           </span>
         </div>
 
-        {/* 主體內容（空間不足可捲動） */}
-        <div className="flex-1 min-h-0 p-4 sm:p-6 md:p-8 flex flex-col justify-between gap-4 overflow-y-auto overscroll-contain">
-          <div className="max-w-2xl mx-auto w-full space-y-4">
-            {/* 試卷基本資訊卡 */}
-            <div className="bg-slate-50/90 dark:bg-slate-800/60 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700 space-y-2.5">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                    {centerTitle}
-                  </span>
-                  <h3 className="text-base sm:text-xl font-black text-slate-900 dark:text-white mt-0.5">
-                    {bookMeta.title}
-                  </h3>
+        {/* 主體內容（結構化正式考試檔案卡，支援手機與平板響應自適應） */}
+        <div className="flex-1 min-h-0 p-3 sm:p-6 md:p-8 flex flex-col justify-between gap-4 overflow-y-auto overscroll-contain">
+          <div className="max-w-3xl mx-auto w-full space-y-4 my-auto py-1">
+            {/* 1. 考生准考證與試卷規格檔案卡 (Candidate & Paper Dossier) */}
+            <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-800/90 dark:via-slate-850 dark:to-slate-900 rounded-2xl p-4 sm:p-5 border-2 border-slate-200/90 dark:border-slate-700/80 shadow-md space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 dark:border-slate-700/70 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <Award size={22} />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-bold tracking-wider uppercase text-indigo-600 dark:text-indigo-400">
+                      Official Assessment Dossier
+                    </span>
+                    <h3 className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-tight">
+                      {centerTitle}
+                    </h3>
+                  </div>
                 </div>
-                <span className="px-3 py-1 rounded-xl bg-indigo-600 text-white font-black text-xs sm:text-sm shadow-xs">
-                  全卷 {questions.length} 題
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-xl bg-indigo-600 text-white font-black text-xs sm:text-sm shadow-xs">
+                    全卷 {questions.length} 題
+                  </span>
+                </div>
+              </div>
+
+              {/* 四格准考規格網格 */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1 text-xs">
+                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
+                  <span className="text-slate-400 dark:text-slate-500 font-semibold block text-[10px] uppercase">受測考生</span>
+                  <span className="font-black text-slate-800 dark:text-slate-200 text-xs sm:text-sm truncate block mt-0.5">
+                    {candidateDisplayName}
+                  </span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
+                  <span className="text-slate-400 dark:text-slate-500 font-semibold block text-[10px] uppercase">建議時間</span>
+                  <span className="font-black text-slate-800 dark:text-slate-200 text-xs sm:text-sm block mt-0.5">
+                    約 {Math.max(15, Math.ceil(questions.length * 1.2))} 分鐘
+                  </span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
+                  <span className="text-slate-400 dark:text-slate-500 font-semibold block text-[10px] uppercase">合格/指標</span>
+                  <span className="font-black text-indigo-600 dark:text-indigo-400 text-xs truncate block mt-0.5">
+                    {passCriteria}
+                  </span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
+                  <span className="text-slate-400 dark:text-slate-500 font-semibold block text-[10px] uppercase">測驗形式</span>
+                  <span className="font-black text-slate-800 dark:text-slate-200 text-xs block mt-0.5">
+                    一頁一題單選
+                  </span>
+                </div>
+              </div>
+
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 pt-1">
+                {subTitleDesc}
+              </div>
+            </div>
+
+            {/* 2. 大題題型配置藍圖 (Section Breakdown Timeline) */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs sm:text-sm font-black text-slate-800 dark:text-slate-200">
+                <span className="flex items-center gap-1.5">
+                  <ClipboardCheck size={16} className="text-indigo-600 dark:text-indigo-400" />
+                  試卷大題題型藍圖 (Exam Blueprint)
+                </span>
+                <span className="text-[11px] text-slate-500 font-normal">
+                  共 {outline.length} 個大題部分
                 </span>
               </div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                <span className="font-bold">測驗範圍：</span>
-                <span className="truncate">{scopeMode === 'mistakes' ? '個人錯題精選' : selectedUnits.join('、')}</span>
-              </div>
-            </div>
 
-            {/* 大題配置列表 */}
-            <div className="space-y-2">
-              <div className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <span>📋 本次測驗大題配置</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {outline.map((part, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-white dark:bg-slate-800/90 rounded-xl p-3 border border-slate-200 dark:border-slate-700 flex items-center justify-between shadow-xs"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center justify-center border border-indigo-200 dark:border-indigo-800">
-                        {idx + 1}
-                      </span>
-                      <div>
-                        <div className="text-xs sm:text-sm font-black text-slate-800 dark:text-white">
-                          {part.label}
-                        </div>
-                        <div className="text-[11px] text-slate-400 font-semibold">
-                          {part.sectionLabel}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                {outline.map((part, idx) => {
+                  const isAudio = part.audio;
+                  return (
+                    <div
+                      key={idx}
+                      className="bg-white dark:bg-slate-800/90 rounded-xl p-3 border border-slate-200 dark:border-slate-700 flex items-center justify-between shadow-xs hover:border-indigo-400 transition"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center justify-center border border-indigo-200 dark:border-indigo-800 shrink-0">
+                          {idx + 1}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-xs sm:text-sm font-black text-slate-800 dark:text-white truncate flex items-center gap-1.5">
+                            <span>{part.label}</span>
+                            {isAudio && (
+                              <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 flex items-center gap-0.5">
+                                <Headphones size={10} />
+                                聽力
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-slate-400 font-semibold truncate mt-0.5">
+                            {part.sectionLabel}
+                          </div>
                         </div>
                       </div>
+                      <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0 ml-2">
+                        第 {part.start}–{part.end} 題 ({part.end - part.start + 1} 題)
+                      </span>
                     </div>
-                    <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
-                      第 {part.start}–{part.end} 題 ({part.end - part.start + 1} 題)
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
-            {/* 溫馨提醒 */}
-            <div className="bg-amber-50/70 dark:bg-amber-950/40 rounded-xl p-3.5 border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-200 space-y-1.5">
-              <div className="font-black flex items-center gap-1.5 text-amber-800 dark:text-amber-300">
-                <AlertCircle size={15} />
-                <span>作答須知與專業規範</span>
+            {/* 3. 正式作答規範與守則 (Standard Exam Conduct) */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
+                <div className="font-black text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                  <Headphones size={14} />
+                  <span>音訊準備</span>
+                </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {hasAudioSection ? '本試卷包含聽力題型，請調妥耳機或喇叭音量；作答中可點擊朗讀按鈕。' : '題目支援中文或英文 TTS 朗讀題幹，建議佩戴耳機以獲取最佳效果。'}
+                </p>
               </div>
-              <ul className="list-disc list-inside space-y-1 opacity-90 pl-1">
-                <li>依序一頁一題作答，作答時可隨時點擊右上角 🚩 標記待查題目。</li>
-                <li>點擊下方「正式開始作答」後才會進入第 1 題並正式開始計時。</li>
-                <li>作答中斷線或誤離，6 小時內返回皆可無縫接續作答。</li>
-              </ul>
+
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
+                <div className="font-black text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                  <Flag size={14} />
+                  <span>標記與檢查</span>
+                </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                  作答時可隨時點擊右上角 🚩 標記待查題目；交卷前系統會提示未答題數以防漏答。
+                </p>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
+                <div className="font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <Clock size={14} />
+                  <span>正式計時起點</span>
+                </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                  點選下方按鈕後才會進入第 1 題並正式開始計時；斷線 6 小時內皆可無縫接續。
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* 底部開始按鈕 */}
+          {/* 底部開始測驗 CTA */}
           <div className="shrink-0 flex items-center justify-center pt-2 pb-1">
             <button
               type="button"
@@ -1704,7 +1806,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 setCurrentIndex(0);
                 setPhase('exam');
               }}
-              className="w-full sm:w-auto sm:min-w-[280px] py-3.5 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm sm:text-base shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              className="w-full sm:w-auto sm:min-w-[320px] py-4 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm sm:text-base shadow-xl shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
             >
               <span>🚀 正式開始測驗 (開始作答) ➔</span>
             </button>
@@ -1787,7 +1889,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               </span>
               <button
                 type="button"
-                onClick={() => speakQuestion(currentQ.question)}
+                onClick={() => speakQuestion(currentQ.media?.audioText || currentQ.question)}
                 className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold flex items-center gap-1 transition"
               >
                 <Volume2 size={14} />
@@ -1795,6 +1897,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               </button>
             </div>
 
+            {currentQ.passage && (
+              <div className="p-3.5 sm:p-4 rounded-xl bg-indigo-50/70 dark:bg-slate-800/90 border border-indigo-200/80 dark:border-slate-700 text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200 mb-2">
+                <div className="font-black text-indigo-700 dark:text-indigo-400 mb-1.5 flex items-center gap-1.5 text-xs sm:text-sm">
+                  <BookOpen size={16} />
+                  <span>{currentQ.passage.title || '【生活閱讀篇章】'}</span>
+                </div>
+                <div className="font-mono text-xs sm:text-[13px] text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
+                  {currentQ.passage.text}
+                </div>
+              </div>
+            )}
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-wide py-1">
               {formatQuestionStem(currentQ.question)}
             </div>

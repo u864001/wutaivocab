@@ -38,13 +38,13 @@
 
 ---
 
-## 四、 全真英語檢定館 (`PureMcqExamView.jsx` & `src/data/exam/*`)
+## 四、 霧臺英語檢定館 (`PureMcqExamView.jsx` & `src/data/exam/*`)
 
 1. **核心定位与 A/B 雙入口架構**：
    - **路由**：`/?view=mcq-exam`
-   - **全館正名**：**「全真英語檢定館 (English Assessment Arena)」**，涵蓋「課本題庫」、「縣市學力評量 (SAA)」、「教育部 Test My English Pre-A1 官方指標」與「個人易錯題精準複習」。
-   - **A 入口（首頁獨立第 4 大館）**：首頁 7 大館依序為：`霧臺小鎮生活冒險 RPG` (`town`) ➔ `英語單字冒險館` (`lobby`) ➔ `雙語聽說探險館` (`langlab`) ➔ `全真英語檢定館` (`mcq-exam`) ➔ `自然發音探索館` (`phonics`) ➔ `ClassQnA` ➔ `自編英語電子教科書` (`textbook`)。
-   - **B 入口（雙語聽說探險館內卡片）**：`LanguageLabHub.jsx` 主選單第 3 張卡片「📝 全真英語檢定」直通 `mcq-exam`。
+   - **全館正名**：**「霧臺英語檢定館 (Wutai English Assessment Arena)」**，涵蓋「課本題庫」、「教育部縣市學力評量 (SAA)」、「教育部 Test My English Pre-A1 官方指標」與「個人易錯題精熟複習」。
+   - **A 入口（首頁獨立第 4 大館）**：首頁 7 大館依序為：`霧臺小鎮生活冒險 RPG` (`town`) ➔ `英語單字冒險館` (`lobby`) ➔ `雙語聽說探險館` (`langlab`) ➔ `霧臺英語檢定館` (`mcq-exam`) ➔ `自然發音探索館` (`phonics`) ➔ `ClassQnA` ➔ `自編英語電子教科書` (`textbook`)。
+   - **B 入口（雙語聽說探險館內卡片）**：`LanguageLabHub.jsx` 主選單第 3 張卡片「📝 霧臺英語檢定」直通 `mcq-exam`。
    - **單字館純淨化**：`Lobby.jsx` 移除 `mcq-exam`，維持 100% 純單字遊戲館。
 
 2. **四大測驗模式垂直膠囊選單與子頁分流架構**：

@@ -134,7 +134,7 @@ export const Portal = ({
             </div>
           </div>
 
-          {/* 4. 全真英語檢定館 */}
+          {/* 4. 霧臺英語檢定館 */}
           <div
             onClick={() => onNavigate('mcq-exam')}
             className="p-2.5 px-3 rounded-2xl bg-gradient-to-r from-indigo-500/15 via-blue-500/10 to-transparent dark:from-indigo-950/60 dark:to-slate-900/60 border-2 border-indigo-400/70 dark:border-indigo-600/70 flex items-center justify-between gap-2.5 shadow-sm active:scale-98 transition-all cursor-pointer"
@@ -145,10 +145,10 @@ export const Portal = ({
               </div>
               <div className="flex items-center gap-2 min-w-0">
                 <h3 className="text-[15px] font-black text-slate-800 dark:text-slate-100 font-heading truncate">
-                  全真英語檢定館
+                  霧臺英語檢定館
                 </h3>
                 <span className="px-2 py-0.5 rounded-lg text-[10px] font-black bg-indigo-600 text-white shrink-0">
-                  全真檢定
+                  英語檢定
                 </span>
               </div>
             </div>
@@ -337,7 +337,7 @@ export const Portal = ({
             </div>
           </GlassCard>
 
-          {/* 4. 全真英語檢定館 */}
+          {/* 4. 霧臺英語檢定館 */}
           <GlassCard
             hoverable={true}
             onClick={() => onNavigate('mcq-exam')}
@@ -351,7 +351,7 @@ export const Portal = ({
                 <div className="space-y-1 flex-1 min-w-0">
                   <div className="flex items-center gap-2.5 flex-wrap">
                     <h3 className="text-lg sm:text-xl font-black text-slate-800 dark:text-slate-100 font-heading">
-                      全真英語檢定館
+                      霧臺英語檢定館
                     </h3>
                     <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-indigo-600 text-white">
                       課本同步・學力檢測・Pre-A1 官方模擬
@@ -364,7 +364,7 @@ export const Portal = ({
               </div>
               <Button3D variant="indigo" size="md" className="shrink-0">
                 <div className="flex items-center gap-1.5">
-                  <span>進入題庫檢定</span>
+                  <span>進入檢定館</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </Button3D>

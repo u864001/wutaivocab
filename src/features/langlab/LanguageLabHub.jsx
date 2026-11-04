@@ -755,7 +755,7 @@ export const LanguageLabHub = ({ onBack, onNavigate }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm sm:text-base font-black text-indigo-200 font-heading">
-                        全真英語檢定 (English Assessment Arena)
+                        霧臺英語檢定 (Wutai English Assessment Arena)
                       </h3>
                       <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-mono font-bold">
                         課本・學力・Pre-A1
