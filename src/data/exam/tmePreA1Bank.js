@@ -16,10 +16,16 @@ export const TME_PRE_A1_BANK = [
     serialNum: 1,
     taskType: 'V-PIC',
     difficulty: 1,
-    question: '看單字選出正確的圖片：apple',
-    options: ['圖片 ① (蘋果 🍎)', '圖片 ② (香蕉 🍌)', '圖片 ③ (柳橙 🍊)', '圖片 ④ (葡萄 🍇)'],
+    question: '看單字選出相符的物品線稿插圖：apple',
+    options: ['圖片 (A)', '圖片 (B)', '圖片 (C)', '圖片 (D)'],
+    optionImages: [
+      '/assets/exam/preA1/apple.svg',
+      '/assets/exam/preA1/banana.svg',
+      '/assets/exam/preA1/orange.svg',
+      '/assets/exam/preA1/grape.svg'
+    ],
     answer: 0,
-    explanation: '英文「apple」意為蘋果，對應圖片 ①。',
+    explanation: '英文「apple」意為蘋果，對應圖片 (A)。',
     reviewed: true
   },
   {
@@ -30,10 +36,16 @@ export const TME_PRE_A1_BANK = [
     serialNum: 2,
     taskType: 'V-PIC',
     difficulty: 1,
-    question: '看單字選出正確的圖片：pencil',
-    options: ['圖片 ① (尺 📏)', '圖片 ② (鉛筆 ✏️)', '圖片 ③ (書本 📖)', '圖片 ④ (剪刀 ✂️)'],
+    question: '看單字選出相符的物品線稿插圖：pencil',
+    options: ['圖片 (A)', '圖片 (B)', '圖片 (C)', '圖片 (D)'],
+    optionImages: [
+      '/assets/exam/preA1/ruler.svg',
+      '/assets/exam/preA1/pencil.svg',
+      '/assets/exam/preA1/book.svg',
+      '/assets/exam/preA1/scissors.svg'
+    ],
     answer: 1,
-    explanation: '英文「pencil」意為鉛筆，對應圖片 ②。',
+    explanation: '英文「pencil」意為鉛筆，對應圖片 (B)。',
     reviewed: true
   },
   {
@@ -44,10 +56,11 @@ export const TME_PRE_A1_BANK = [
     serialNum: 1,
     taskType: 'V-MEAN',
     difficulty: 1,
-    question: '看圖片選出正確的英文單字：🐱 (一隻小貓咪)',
+    question: '看題目線稿插圖，選出正確的英文單字：',
+    image: '/assets/exam/preA1/cat.svg',
     options: ['dog', 'cat', 'pig', 'bird'],
     answer: 1,
-    explanation: '圖片中為貓咪，英文為「cat」。',
+    explanation: '插圖中為貓咪線稿，英文為「cat」。',
     reviewed: true
   },
   {
@@ -59,10 +72,16 @@ export const TME_PRE_A1_BANK = [
     taskType: 'L-PIC',
     difficulty: 1,
     media: { audioText: 'umbrella' },
-    question: '請聽語音，選出相符的物品圖片：',
-    options: ['圖片 ① (雨傘 ☂️)', '圖片 ② (帽子 🧢)', '圖片 ③ (鞋子 👟)', '圖片 ④ (外套 🧥)'],
+    question: '請聽語音，選出相符的物品線稿插圖：',
+    options: ['圖片 (A)', '圖片 (B)', '圖片 (C)', '圖片 (D)'],
+    optionImages: [
+      '/assets/exam/preA1/umbrella.svg',
+      '/assets/exam/preA1/cap.svg',
+      '/assets/exam/preA1/shoe.svg',
+      '/assets/exam/preA1/jacket.svg'
+    ],
     answer: 0,
-    explanation: '聽力發音為「umbrella（雨傘）」，故選圖片 ①。',
+    explanation: '聽力發音為「umbrella（雨傘）」，故選圖片 (A)。',
     reviewed: true
   },
   {
@@ -93,8 +112,9 @@ export const TME_PRE_A1_BANK = [
     serialNum: 1,
     taskType: 'L-SENT',
     difficulty: 1,
+    image: '/assets/exam/preA1/bicycle.svg',
     media: { audioText: 'The boy is riding a bicycle in the park.' },
-    question: '看圖片並聽語音，選出描述正確的句子：',
+    question: '看情境線稿插圖並聽語音，選出描述正確的句子：',
     options: [
       'The boy is riding a bicycle.',
       'The boy is swimming.',
@@ -102,7 +122,7 @@ export const TME_PRE_A1_BANK = [
       'The boy is reading a book.'
     ],
     answer: 0,
-    explanation: '聽力內容「The boy is riding a bicycle.（男孩正在騎腳踏車）」，故選 ①。',
+    explanation: '插圖為腳踏車，且聽力內容「The boy is riding a bicycle.（男孩正在騎腳踏車）」，故選 (A)。',
     reviewed: true
   },
   // (2) 聽對話選圖 (示範題)
@@ -115,10 +135,16 @@ export const TME_PRE_A1_BANK = [
     taskType: 'L-CONV',
     difficulty: 2,
     media: { audioText: 'Girl: Where are you going, Peter? Boy: I am going to the library to read books.' },
-    question: '聽對話，選出 Peter 前往地點相符的圖片：',
-    options: ['圖片 ① (圖書館 📚)', '圖片 ② (動物園 🦁)', '圖片 ③ (操場 🏃)', '圖片 ④ (餐廳 🍔)'],
+    question: '聽對話，選出 Peter 前往地點相符的線稿插圖：',
+    options: ['圖片 (A)', '圖片 (B)', '圖片 (C)', '圖片 (D)'],
+    optionImages: [
+      '/assets/exam/preA1/library.svg',
+      '/assets/exam/preA1/zoo.svg',
+      '/assets/exam/preA1/playground.svg',
+      '/assets/exam/preA1/restaurant.svg'
+    ],
     answer: 0,
-    explanation: '對話中 Peter 說「I am going to the library」，故前往地點為圖書館。',
+    explanation: '對話中 Peter 說「I am going to the library」，故前往地點為圖書館 (A)。',
     reviewed: true
   },
   // (3) 選正確回應 (Listen & Respond) ── 第一階段 6 題
@@ -351,10 +377,11 @@ export const TME_PRE_A1_BANK = [
     serialNum: 1,
     taskType: 'V-PIC',
     difficulty: 1,
-    question: '看生活告示牌內容，選出代表的指示單字：🚪 [EXIT]',
+    image: '/assets/exam/preA1/exit_sign.svg',
+    question: '看生活告示牌線稿插圖，選出代表的指示單字：',
     options: ['Exit (出口)', 'Enter (入口)', 'Stop (停止)', 'Open (營業中)'],
     answer: 0,
-    explanation: '告示牌上寫著「EXIT」，代表緊急出口，故選 ①。',
+    explanation: '告示牌上寫著「EXIT」，代表緊急出口，故選 (A)。',
     reviewed: true
   },
   // (2) 看圖選句 (示範題)
@@ -366,7 +393,8 @@ export const TME_PRE_A1_BANK = [
     serialNum: 1,
     taskType: 'G-CTX',
     difficulty: 1,
-    question: '看情境圖片（小女孩正在下雨天撐著黃色雨傘），選出最相符的句子：',
+    image: '/assets/exam/preA1/rainy_girl.svg',
+    question: '看情境線稿插圖，選出描述最相符的句子：',
     options: [
       'It is rainy. The girl has an umbrella.',
       'It is sunny. The girl is swimming.',
@@ -374,7 +402,7 @@ export const TME_PRE_A1_BANK = [
       'It is snowy. The children are making a snowman.'
     ],
     answer: 0,
-    explanation: '情境為雨天且小女孩撐傘，句子 ① 完全吻合。',
+    explanation: '插圖為下雨天小女孩撐傘情境，句子 (A) 完全吻合。',
     reviewed: true
   },
   // (3) 是非判斷 (True / False) ── 第一階段 6 題

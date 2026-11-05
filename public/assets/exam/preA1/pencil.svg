@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <g transform="rotate(-40 100 100)">
+    <!-- Eraser -->
+    <rect x="90" y="25" width="20" height="24" rx="4" fill="#f1f5f9" stroke="#1e293b" stroke-width="4"/>
+    <!-- Metal band -->
+    <rect x="88" y="49" width="24" height="12" fill="#cbd5e1" stroke="#1e293b" stroke-width="3"/>
+    <!-- Pencil body -->
+    <rect x="90" y="61" width="20" height="90" fill="#ffffff" stroke="#1e293b" stroke-width="4"/>
+    <line x1="97" y1="61" x2="97" y2="151" stroke="#1e293b" stroke-width="2.5"/>
+    <line x1="103" y1="61" x2="103" y2="151" stroke="#1e293b" stroke-width="2.5"/>
+    <!-- Sharpened wood tip -->
+    <polygon points="90,151 110,151 100,180" fill="#ffffff" stroke="#1e293b" stroke-width="4" stroke-linejoin="round"/>
+    <!-- Graphite lead -->
+    <polygon points="96,168 104,168 100,180" fill="#1e293b"/>
+  </g>
+</svg>

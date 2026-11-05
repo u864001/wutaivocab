@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Dome of baseball cap -->
+  <path d="M 50 135 C 50 75, 140 75, 145 135 Z" fill="#ffffff" stroke="#1e293b" stroke-width="4.5" stroke-linejoin="round"/>
+  <!-- Curved visor / brim -->
+  <path d="M 135 135 C 155 134, 182 142, 178 152 C 152 156, 125 152, 50 135" fill="#f1f5f9" stroke="#1e293b" stroke-width="4.5" stroke-linejoin="round"/>
+  <!-- Top button -->
+  <ellipse cx="98" cy="74" rx="6" ry="3.5" fill="#1e293b"/>
+  <!-- Seam lines -->
+  <path d="M 98 76 C 98 95, 98 120, 98 135" stroke="#1e293b" stroke-width="3"/>
+  <path d="M 98 76 C 80 95, 68 115, 62 135" stroke="#1e293b" stroke-width="2.5"/>
+  <path d="M 98 76 C 118 95, 130 115, 136 135" stroke="#1e293b" stroke-width="2.5"/>
+</svg>

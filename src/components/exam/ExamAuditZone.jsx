@@ -33,8 +33,17 @@ import {
   Maximize2,
   Minimize2,
   Split,
-  CheckCheck
+  CheckCheck,
+  Square,
+  Headphones,
+  Loader2
 } from 'lucide-react';
+import {
+  playDialogueSpeech,
+  stopDialogueSpeech,
+  isDialogue,
+  parseDialogueTurns
+} from '../../services/dialogueSpeaker';
 import {
   HERE_WE_GO_MCQ_BANK,
   HERE_WE_GO_BOOK_META,
@@ -197,19 +206,41 @@ export function ExamAuditZone({ onBack }) {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  // ── 語音試聽功能 (Web Speech) ──
-  const speakText = useCallback((text) => {
-    if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
-    try {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = /[\u4e00-\u9fa5]/.test(text) ? 'zh-TW' : 'en-US';
-      u.rate = 0.88;
-      window.speechSynthesis.speak(u);
-    } catch (e) {
-      console.warn('TTS failed', e);
+  // ── 多角色語音與對話播放狀態 ──
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [activeDialogueTurn, setActiveDialogueTurn] = useState(-1);
+
+  // ── 語音試聽功能（支援多角色真實情境對話：男聲、女聲、考官旁白） ──
+  const handlePlayAudio = useCallback((text) => {
+    if (!text) return;
+    if (isPlayingAudio) {
+      stopDialogueSpeech();
+      setIsPlayingAudio(false);
+      setActiveDialogueTurn(-1);
+      return;
     }
-  }, []);
+
+    setIsPlayingAudio(true);
+    playDialogueSpeech({
+      text,
+      onTurnChange: (idx) => {
+        setActiveDialogueTurn(idx);
+      },
+      onFinish: () => {
+        setIsPlayingAudio(false);
+        setActiveDialogueTurn(-1);
+      },
+      onError: (err) => {
+        console.warn('Dialogue speech error', err);
+        setIsPlayingAudio(false);
+        setActiveDialogueTurn(-1);
+      }
+    });
+  }, [isPlayingAudio]);
+
+  const speakText = useCallback((text) => {
+    handlePlayAudio(text);
+  }, [handlePlayAudio]);
 
   // ── 1. 課本題庫可用母池 ──
   const textbookRawPool = useMemo(() => {
@@ -281,8 +312,16 @@ export function ExamAuditZone({ onBack }) {
   // ── 依「排除已檢核通過」篩選後的待檢核清單 ──
   const displayPool = useMemo(() => {
     if (!excludeVerified) return currentCategoryFullPool;
-    return currentCategoryFullPool.filter((q) => !auditRecords[q.id]?.verified);
+    return currentCategoryFullPool.filter((q) => !auditRecords[q?.id]?.verified);
   }, [currentCategoryFullPool, excludeVerified, auditRecords]);
+
+  // 確保索引絕對不會因切換分類或排除已檢核而越界溢出
+  const safeIdx = displayPool.length > 0
+    ? Math.min(Math.max(0, currentIdx), displayPool.length - 1)
+    : 0;
+
+  // 當前正在檢核的題目（以 safeIdx 為準，100% 杜絕 null 崩潰）
+  const currentQ = displayPool[safeIdx] || null;
 
   // 換分類時重置頁碼
   useEffect(() => {
@@ -298,8 +337,12 @@ export function ExamAuditZone({ onBack }) {
     excludeVerified
   ]);
 
-  // 當前正在檢核的題目
-  const currentQ = displayPool[currentIdx] || null;
+  // 同步校正 currentIdx
+  useEffect(() => {
+    if (currentIdx !== safeIdx) {
+      setCurrentIdx(safeIdx);
+    }
+  }, [safeIdx, currentIdx]);
 
   // ── 題型版面判定 (單題 3A / 題組 3B) ──
   const isSetQuestion = useMemo(() => {
@@ -307,7 +350,7 @@ export function ExamAuditZone({ onBack }) {
     if (zoomExperienceMode === 'force-3b') return true;
     if (zoomExperienceMode === 'force-3a') return false;
     // 嚴格判定：只有真正具備 groupId 的連鎖題才走 3B 題組雙欄（單題如文化題、短對話一律走標準單題）
-    return Boolean(currentQ.groupId);
+    return Boolean(currentQ?.groupId);
   }, [currentQ, zoomExperienceMode]);
 
   // 尋找與當前題目屬於同一 groupId 的題組子題
@@ -315,30 +358,33 @@ export function ExamAuditZone({ onBack }) {
     if (!currentQ?.groupId) return [];
     return displayPool
       .map((q, idx) => ({ q, idx }))
-      .filter((item) => item.q.groupId === currentQ.groupId);
+      .filter((item) => item.q?.groupId === currentQ?.groupId);
   }, [currentQ?.groupId, displayPool]);
 
   // 老師體驗選答動作
   const handleSelectTeacherAnswer = useCallback((oIdx) => {
-    if (!currentQ) return;
+    if (!currentQ?.id) return;
     setTeacherAnswers((prev) => ({
       ...prev,
       [currentQ.id]: oIdx
     }));
-  }, [currentQ]);
+  }, [currentQ?.id]);
 
-  // 換題或換分類時重置縮放與平移狀態
+  // 換題或換分類時重置縮放、平移與語音播放狀態
   useEffect(() => {
+    stopDialogueSpeech();
+    setIsPlayingAudio(false);
+    setActiveDialogueTurn(-1);
     setModal3AOpen(false);
     setModal3AZoom(1);
     setModal3APan({ x: 0, y: 0 });
     setPlan3bZoom(1);
     setPlan3bPan({ x: 0, y: 0 });
-  }, [currentIdx, activeTrack]);
+  }, [safeIdx, activeTrack, selectedPreA1Category, selectedPreA1SubType]);
 
   // 當前題目的檢核紀錄與草稿同步
   useEffect(() => {
-    if (currentQ) {
+    if (currentQ?.id) {
       setCurrentNoteDraft(auditRecords[currentQ.id]?.notes || '');
     } else {
       setCurrentNoteDraft('');
@@ -412,12 +458,12 @@ export function ExamAuditZone({ onBack }) {
 
   // ── 儲存並前進下一題 ──
   const handleSaveAndNext = useCallback(() => {
-    if (!currentQ) return;
+    if (!currentQ?.id) return;
     handleSaveNotes(currentQ.id);
-    if (currentIdx < displayPool.length - 1) {
-      setCurrentIdx((prev) => prev + 1);
+    if (safeIdx < displayPool.length - 1) {
+      setCurrentIdx(safeIdx + 1);
     }
-  }, [currentQ, currentIdx, displayPool.length, handleSaveNotes]);
+  }, [currentQ?.id, safeIdx, displayPool.length, handleSaveNotes]);
 
   // ── 鍵盤快捷鍵 (左右翻頁、V 鍵切換核可) ──
   useEffect(() => {
@@ -428,7 +474,7 @@ export function ExamAuditZone({ onBack }) {
         setCurrentIdx((i) => Math.max(0, i - 1));
       } else if (e.key === 'ArrowRight') {
         setCurrentIdx((i) => Math.min(displayPool.length - 1, i + 1));
-      } else if (e.key.toLowerCase() === 'v' && currentQ) {
+      } else if (e.key.toLowerCase() === 'v' && currentQ?.id) {
         handleToggleVerified(currentQ.id);
       }
     };
@@ -579,7 +625,10 @@ export function ExamAuditZone({ onBack }) {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTrack(tab.id)}
+                onClick={() => {
+                  setActiveTrack(tab.id);
+                  setCurrentIdx(0);
+                }}
                 className={`p-2 sm:p-2.5 rounded-xl border-2 text-left transition flex items-center gap-2 sm:gap-3 cursor-pointer ${
                   active
                     ? 'border-indigo-600 bg-indigo-50/80 dark:bg-indigo-950/70 shadow-sm'
@@ -629,7 +678,10 @@ export function ExamAuditZone({ onBack }) {
                 <button
                   key={g.key}
                   type="button"
-                  onClick={() => setSelectedTextbookGrade(g.key)}
+                  onClick={() => {
+                    setSelectedTextbookGrade(g.key);
+                    setCurrentIdx(0);
+                  }}
                   className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition cursor-pointer ${
                     selectedTextbookGrade === g.key
                       ? 'bg-indigo-600 text-white shadow-xs'
@@ -647,7 +699,10 @@ export function ExamAuditZone({ onBack }) {
               </span>
               <button
                 type="button"
-                onClick={() => setSelectedTextbookTaskType('all')}
+                onClick={() => {
+                  setSelectedTextbookTaskType('all');
+                  setCurrentIdx(0);
+                }}
                 className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition cursor-pointer ${
                   selectedTextbookTaskType === 'all'
                     ? 'bg-purple-600 text-white shadow-xs'
@@ -663,7 +718,10 @@ export function ExamAuditZone({ onBack }) {
                   <button
                     key={ttCode}
                     type="button"
-                    onClick={() => setSelectedTextbookTaskType(ttCode)}
+                    onClick={() => {
+                      setSelectedTextbookTaskType(ttCode);
+                      setCurrentIdx(0);
+                    }}
                     className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition cursor-pointer flex items-center gap-1 ${
                       isSelected
                         ? 'bg-purple-600 text-white shadow-xs'
@@ -704,7 +762,10 @@ export function ExamAuditZone({ onBack }) {
                   <button
                     key={g.grade}
                     type="button"
-                    onClick={() => setSelectedSaaGrade(g.grade)}
+                    onClick={() => {
+                      setSelectedSaaGrade(g.grade);
+                      setCurrentIdx(0);
+                    }}
                     className={`px-3 py-1 rounded-lg text-xs font-black transition cursor-pointer ${
                       selectedSaaGrade === g.grade
                         ? 'bg-purple-600 text-white shadow-xs'
@@ -737,6 +798,7 @@ export function ExamAuditZone({ onBack }) {
                   onClick={() => {
                     setSelectedPreA1Category(cat.id);
                     setSelectedPreA1SubType('all');
+                    setCurrentIdx(0);
                   }}
                   className={`px-3 py-1 rounded-lg text-xs font-black shrink-0 transition cursor-pointer flex items-center gap-1.5 ${
                     selectedPreA1Category === cat.id
@@ -756,7 +818,10 @@ export function ExamAuditZone({ onBack }) {
               </span>
               <button
                 type="button"
-                onClick={() => setSelectedPreA1SubType('all')}
+                onClick={() => {
+                  setSelectedPreA1SubType('all');
+                  setCurrentIdx(0);
+                }}
                 className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition cursor-pointer ${
                   selectedPreA1SubType === 'all'
                     ? 'bg-sky-700 text-white shadow-xs'
@@ -769,7 +834,10 @@ export function ExamAuditZone({ onBack }) {
                 <button
                   key={st.code}
                   type="button"
-                  onClick={() => setSelectedPreA1SubType(st.code)}
+                  onClick={() => {
+                    setSelectedPreA1SubType(st.code);
+                    setCurrentIdx(0);
+                  }}
                   className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition cursor-pointer flex items-center gap-1 ${
                     selectedPreA1SubType === st.code
                       ? 'bg-sky-700 text-white shadow-xs'
@@ -797,11 +865,21 @@ export function ExamAuditZone({ onBack }) {
             </p>
             <button
               type="button"
-              onClick={() => setExcludeVerified(false)}
+              onClick={() => {
+                setExcludeVerified(false);
+                setCurrentIdx(0);
+              }}
               className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-sm transition"
             >
               檢視本分類全部題目 ({currentCategoryFullPool.length} 題)
             </button>
+          </div>
+        ) : !currentQ ? (
+          <div className="lg:col-span-12 flex flex-col items-center justify-center text-center p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 my-auto">
+            <Loader2 size={36} className="text-indigo-500 animate-spin mb-3" />
+            <p className="text-sm font-black text-slate-700 dark:text-slate-300">
+              正在準備試題資料...
+            </p>
           </div>
         ) : (
           <>
@@ -812,17 +890,17 @@ export function ExamAuditZone({ onBack }) {
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-black text-xs">
-                      #{currentIdx + 1} / {displayPool.length}
+                      #{safeIdx + 1} / {displayPool.length}
                     </span>
                     <span className="text-xs font-mono font-bold text-slate-400">
-                      ID: {currentQ.id}
+                      ID: {currentQ?.id}
                     </span>
-                    {currentQ.dimension && (
+                    {currentQ?.dimension && (
                       <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 text-[11px] font-bold">
                         向度：{currentQ.dimension}
                       </span>
                     )}
-                    {currentQ.taskType && (
+                    {currentQ?.taskType && (
                       <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold">
                         {getTaskLabel(currentQ)}
                       </span>
@@ -896,11 +974,16 @@ export function ExamAuditZone({ onBack }) {
 
                     <button
                       type="button"
-                      onClick={() => speakText(currentQ.media?.audioText || currentQ.question)}
-                      className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center gap-1 transition cursor-pointer"
+                      onClick={() => handlePlayAudio(currentQ?.media?.audioText || currentQ?.question)}
+                      className={`px-2.5 py-1 rounded-lg border text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow-xs ${
+                        isPlayingAudio
+                          ? 'bg-rose-500 text-white border-rose-600 animate-pulse'
+                          : 'border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400'
+                      }`}
+                      title={isPlayingAudio ? '點擊停止播放語音' : '播放語音 (若為對話自動切換男聲/女聲)'}
                     >
-                      <Volume2 size={14} />
-                      <span>試聽發音</span>
+                      {isPlayingAudio ? <Square size={12} className="fill-current" /> : <Volume2 size={14} />}
+                      <span>{isPlayingAudio ? '停止播放' : isDialogue(currentQ?.media?.audioText || currentQ?.question) ? '🎭 播放情境對話' : '試聽發音'}</span>
                     </button>
                   </div>
                 </div>
@@ -1098,80 +1181,118 @@ export function ExamAuditZone({ onBack }) {
                         {/* 題幹文字 */}
                         <div className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed">
                           <span className="font-black text-indigo-600 dark:text-indigo-400 mr-1.5">
-                            Q{currentQ.number || currentIdx + 1}.
+                            Q{currentQ?.number || safeIdx + 1}.
                           </span>
-                          {currentQ.question}
+                          {currentQ?.question}
                         </div>
 
                         {/* (A)(B)(C)(D) 選項區（支援直接點選作答體驗） */}
-                        {currentQ.options && currentQ.options.length > 0 && (
+                        {currentQ?.options && currentQ.options.length > 0 && (
                           <div className="space-y-2 pt-1">
                             <div className="text-[11px] font-black text-slate-400 uppercase tracking-wide">
                               請點選選項進行作答體驗：
                             </div>
-                            {currentQ.options.map((optText, oIdx) => {
-                              const isSelected = teacherAnswers[currentQ.id] === oIdx;
-                              const isCorrect = oIdx === currentQ.answer;
-                              return (
-                                <button
-                                  key={oIdx}
-                                  type="button"
-                                  onClick={() => handleSelectTeacherAnswer(oIdx)}
-                                  className={`w-full p-2.5 sm:p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
-                                    isSelected
-                                      ? isCorrect
-                                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/70 text-emerald-950 dark:text-emerald-100 font-black shadow-sm'
-                                        : 'border-amber-500 bg-amber-50 dark:bg-amber-950/70 text-amber-950 dark:text-amber-100 font-black shadow-sm'
-                                      : isCorrect
-                                      ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 font-bold'
-                                      : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400'
-                                  }`}
-                                >
-                                  <div className="flex items-center gap-2.5 min-w-0">
-                                    <span
-                                      className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
+                            {currentQ?.optionImages && currentQ.optionImages.length > 0 ? (
+                              <div className="grid grid-cols-2 gap-2.5">
+                                {currentQ.optionImages.map((imgSrc, oIdx) => {
+                                  const isSelected = teacherAnswers[currentQ?.id] === oIdx;
+                                  const isCorrect = oIdx === currentQ?.answer;
+                                  return (
+                                    <button
+                                      key={oIdx}
+                                      type="button"
+                                      onClick={() => handleSelectTeacherAnswer(oIdx)}
+                                      className={`p-2.5 rounded-2xl border-2 text-center transition flex flex-col items-center justify-between gap-1.5 cursor-pointer ${
                                         isSelected
                                           ? isCorrect
-                                            ? 'bg-emerald-600 text-white'
-                                            : 'bg-amber-600 text-white'
+                                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/70 shadow-sm ring-2 ring-emerald-400'
+                                            : 'border-amber-500 bg-amber-50 dark:bg-amber-950/70 shadow-sm ring-2 ring-amber-400'
                                           : isCorrect
-                                          ? 'bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100'
-                                          : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                                          ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/30'
+                                          : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300'
                                       }`}
                                     >
-                                      {CHOICE_LABELS[oIdx] || oIdx + 1}
-                                    </span>
-                                    <span className="text-xs sm:text-sm break-words">{optText}</span>
-                                  </div>
-                                  <div className="flex items-center gap-1 shrink-0">
-                                    {isSelected && (
-                                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                                        您的選擇
+                                      <div className="flex items-center justify-between w-full text-xs font-black">
+                                        <span className="w-5 h-5 rounded bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                                          {CHOICE_LABELS[oIdx] || oIdx + 1}
+                                        </span>
+                                        {isCorrect && <span className="text-[10px] text-emerald-600 font-bold">✓ 正解</span>}
+                                      </div>
+                                      <div className="h-20 w-full flex items-center justify-center p-1 bg-white dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-800">
+                                        <img src={imgSrc} alt={`選項 ${CHOICE_LABELS[oIdx]}`} className="max-h-full max-w-full object-contain" />
+                                      </div>
+                                      <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
+                                        {currentQ.options?.[oIdx]}
                                       </span>
-                                    )}
-                                    {isCorrect && (
-                                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
-                                        ✓ 正解
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              currentQ.options.map((optText, oIdx) => {
+                                const isSelected = teacherAnswers[currentQ?.id] === oIdx;
+                                const isCorrect = oIdx === currentQ?.answer;
+                                return (
+                                  <button
+                                    key={oIdx}
+                                    type="button"
+                                    onClick={() => handleSelectTeacherAnswer(oIdx)}
+                                    className={`w-full p-2.5 sm:p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
+                                      isSelected
+                                        ? isCorrect
+                                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/70 text-emerald-950 dark:text-emerald-100 font-black shadow-sm'
+                                          : 'border-amber-500 bg-amber-50 dark:bg-amber-950/70 text-amber-950 dark:text-amber-100 font-black shadow-sm'
+                                        : isCorrect
+                                        ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 font-bold'
+                                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                      <span
+                                        className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
+                                          isSelected
+                                            ? isCorrect
+                                              ? 'bg-emerald-600 text-white'
+                                              : 'bg-amber-600 text-white'
+                                            : isCorrect
+                                            ? 'bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100'
+                                            : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                                        }`}
+                                      >
+                                        {CHOICE_LABELS[oIdx] || oIdx + 1}
                                       </span>
-                                    )}
-                                  </div>
-                                </button>
-                              );
-                            })}
+                                      <span className="text-xs sm:text-sm break-words">{optText}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                      {isSelected && (
+                                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                                          您的選擇
+                                        </span>
+                                      )}
+                                      {isCorrect && (
+                                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
+                                          ✓ 正解
+                                        </span>
+                                      )}
+                                    </div>
+                                  </button>
+                                );
+                              })
+                            )}
                           </div>
                         )}
 
                         {/* 作答即時反饋說明 */}
-                        {teacherAnswers[currentQ.id] !== undefined && (
+                        {teacherAnswers[currentQ?.id] !== undefined && (
                           <div className={`p-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 animate-fadeIn ${
-                            teacherAnswers[currentQ.id] === currentQ.answer
+                            teacherAnswers[currentQ?.id] === currentQ?.answer
                               ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 text-emerald-800 dark:text-emerald-200'
                               : 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 text-amber-800 dark:text-amber-200'
                           }`}>
-                            {teacherAnswers[currentQ.id] === currentQ.answer ? (
-                              <span>🎉 作答相符！選項 ({CHOICE_LABELS[currentQ.answer]}) 為官方正解。</span>
+                            {teacherAnswers[currentQ?.id] === currentQ?.answer ? (
+                              <span>🎉 作答相符！選項 ({CHOICE_LABELS[currentQ?.answer]}) 為官方正解。</span>
                             ) : (
-                              <span>⚠️ 您選擇了 ({CHOICE_LABELS[teacherAnswers[currentQ.id]]})，官方正解為 ({CHOICE_LABELS[currentQ.answer]})。若有疑義請在右側記錄！</span>
+                              <span>⚠️ 您選擇了 ({CHOICE_LABELS[teacherAnswers[currentQ?.id]]})，官方正解為 ({CHOICE_LABELS[currentQ?.answer]})。若有疑義請在右側記錄！</span>
                             )}
                           </div>
                         )}
@@ -1282,7 +1403,7 @@ export function ExamAuditZone({ onBack }) {
                         </div>
                         <button
                           type="button"
-                          onClick={() => speakText(currentQ.targetText)}
+                          onClick={() => handlePlayAudio(currentQ?.targetText)}
                           className="px-3 py-1.5 rounded-lg bg-purple-600 text-white text-xs font-bold flex items-center gap-1 shadow-xs cursor-pointer hover:bg-purple-700"
                         >
                           <Volume2 size={14} />
@@ -1291,72 +1412,205 @@ export function ExamAuditZone({ onBack }) {
                       </div>
                     )}
 
-                    {/* (A)(B)(C)(D) 選項區（支援直接點選作答體驗） */}
-                    {currentQ.options && currentQ.options.length > 0 && (
-                      <div className="space-y-2 pt-1">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {currentQ.options.map((optText, oIdx) => {
-                            const isSelected = teacherAnswers[currentQ.id] === oIdx;
-                            const isCorrect = oIdx === currentQ.answer;
-                            return (
-                              <button
-                                key={oIdx}
-                                type="button"
-                                onClick={() => handleSelectTeacherAnswer(oIdx)}
-                                className={`p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
-                                  isSelected
-                                    ? isCorrect
-                                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/70 text-emerald-950 dark:text-emerald-100 font-black shadow-sm'
-                                      : 'border-amber-500 bg-amber-50 dark:bg-amber-950/70 text-amber-950 dark:text-amber-100 font-black shadow-sm'
-                                    : isCorrect
-                                    ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 font-bold'
-                                    : 'border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 hover:border-slate-400'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                  <span
-                                    className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
-                                      isSelected
-                                        ? isCorrect
-                                          ? 'bg-emerald-600 text-white'
-                                          : 'bg-amber-600 text-white'
-                                        : isCorrect
-                                        ? 'bg-emerald-600 text-white'
-                                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600'
-                                    }`}
-                                  >
-                                    {CHOICE_LABELS[oIdx] || oIdx + 1}
-                                  </span>
-                                  <span className="text-xs sm:text-sm break-words">{optText}</span>
-                                </div>
-                                <div className="flex items-center gap-1 shrink-0">
-                                  {isSelected && (
-                                    <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                                      您的選擇
-                                    </span>
-                                  )}
-                                  {isCorrect && (
-                                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
-                                      ✓ 正解
-                                    </span>
-                                  )}
-                                </div>
-                              </button>
-                            );
-                          })}
+                    {/* 聽力情境材料（支援多角色對話男女聲視覺卡片） */}
+                    {currentQ?.media?.audioText && (
+                      <div className="p-3 sm:p-4 rounded-2xl bg-indigo-50/70 dark:bg-slate-800/80 border border-indigo-200/80 dark:border-slate-700 space-y-2.5">
+                        <div className="flex items-center justify-between text-xs font-black text-indigo-700 dark:text-indigo-300">
+                          <span className="flex items-center gap-1.5">
+                            <Headphones size={15} />
+                            <span>🎧 聽力播放材料（多角色真實情境對話）</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handlePlayAudio(currentQ.media.audioText)}
+                            className={`px-3 py-1 rounded-lg text-xs font-black flex items-center gap-1.5 transition cursor-pointer shadow-xs ${
+                              isPlayingAudio
+                                ? 'bg-rose-500 text-white'
+                                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                            }`}
+                          >
+                            {isPlayingAudio ? <Square size={12} className="fill-current" /> : <Volume2 size={13} />}
+                            <span>{isPlayingAudio ? '停止播放' : isDialogue(currentQ.media.audioText) ? '播放男女聲情境對話' : '播放語音'}</span>
+                          </button>
                         </div>
 
+                        {/* 若為多角色對話，分角色列出並標示男女聲 */}
+                        {isDialogue(currentQ.media.audioText) ? (
+                          <div className="space-y-1.5 pt-1">
+                            {parseDialogueTurns(currentQ.media.audioText).map((turn, tIdx) => {
+                              const isCurrentActive = isPlayingAudio && activeDialogueTurn === tIdx;
+                              const isFemale = turn.gender === 'female';
+                              const isNarrator = turn.gender === 'narrator';
+                              return (
+                                <div
+                                  key={tIdx}
+                                  className={`p-2.5 rounded-xl border text-xs sm:text-sm transition flex items-start gap-2.5 ${
+                                    isCurrentActive
+                                      ? 'border-indigo-500 bg-indigo-100/90 dark:bg-indigo-950/90 ring-2 ring-indigo-400 font-black shadow-xs'
+                                      : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800'
+                                  }`}
+                                >
+                                  <span
+                                    className={`px-2 py-0.5 rounded-md text-[11px] font-black shrink-0 ${
+                                      isNarrator
+                                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200'
+                                        : isFemale
+                                        ? 'bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-200'
+                                        : 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
+                                    }`}
+                                  >
+                                    {isNarrator ? '❓ 考官' : isFemale ? `👧 ${turn.speaker} (女聲)` : `👦 ${turn.speaker} (男聲)`}
+                                  </span>
+                                  <span className="flex-1 text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+                                    "{turn.text}"
+                                  </span>
+                                  {isCurrentActive && (
+                                    <span className="text-[10px] bg-indigo-600 text-white px-1.5 py-0.5 rounded font-black shrink-0 animate-pulse">
+                                      發音中...
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                            "{currentQ.media.audioText}"
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* (A)(B)(C)(D) 選項區（支援線稿圖檔選項與文字選項直接作答體驗） */}
+                    {currentQ?.options && currentQ.options.length > 0 && (
+                      <div className="space-y-2 pt-1">
+                        {currentQ?.optionImages && currentQ.optionImages.length > 0 ? (
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {currentQ.optionImages.map((imgSrc, oIdx) => {
+                              const isSelected = teacherAnswers[currentQ?.id] === oIdx;
+                              const isCorrect = oIdx === currentQ?.answer;
+                              return (
+                                <button
+                                  key={oIdx}
+                                  type="button"
+                                  onClick={() => handleSelectTeacherAnswer(oIdx)}
+                                  className={`p-3 rounded-2xl border-2 text-center transition flex flex-col items-center justify-between gap-2 cursor-pointer ${
+                                    isSelected
+                                      ? isCorrect
+                                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/70 shadow-sm ring-2 ring-emerald-400'
+                                        : 'border-amber-500 bg-amber-50 dark:bg-amber-950/70 shadow-sm ring-2 ring-amber-400'
+                                      : isCorrect
+                                      ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/30'
+                                      : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 hover:shadow-xs'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between w-full">
+                                    <span
+                                      className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-xs ${
+                                        isSelected
+                                          ? isCorrect
+                                            ? 'bg-emerald-600 text-white'
+                                            : 'bg-amber-600 text-white'
+                                          : isCorrect
+                                          ? 'bg-emerald-600 text-white'
+                                          : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                      }`}
+                                    >
+                                      {CHOICE_LABELS[oIdx] || oIdx + 1}
+                                    </span>
+                                    {isCorrect && (
+                                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
+                                        ✓ 正解
+                                      </span>
+                                    )}
+                                    {isSelected && !isCorrect && (
+                                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-200 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                                        您的選擇
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <div className="w-full h-24 sm:h-28 flex items-center justify-center p-2 bg-white dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-700">
+                                    <img
+                                      src={imgSrc}
+                                      alt={`選項 ${CHOICE_LABELS[oIdx]}`}
+                                      className="max-h-full max-w-full object-contain"
+                                      draggable={false}
+                                    />
+                                  </div>
+
+                                  <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                                    {currentQ.options?.[oIdx] || `選項 (${CHOICE_LABELS[oIdx]})`}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {currentQ.options.map((optText, oIdx) => {
+                              const isSelected = teacherAnswers[currentQ?.id] === oIdx;
+                              const isCorrect = oIdx === currentQ?.answer;
+                              return (
+                                <button
+                                  key={oIdx}
+                                  type="button"
+                                  onClick={() => handleSelectTeacherAnswer(oIdx)}
+                                  className={`p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2.5 cursor-pointer ${
+                                    isSelected
+                                      ? isCorrect
+                                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/70 text-emerald-950 dark:text-emerald-100 font-black shadow-sm'
+                                        : 'border-amber-500 bg-amber-50 dark:bg-amber-950/70 text-amber-950 dark:text-amber-100 font-black shadow-sm'
+                                      : isCorrect
+                                      ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 font-bold'
+                                      : 'border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 hover:border-slate-400'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <span
+                                      className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
+                                        isSelected
+                                          ? isCorrect
+                                            ? 'bg-emerald-600 text-white'
+                                            : 'bg-amber-600 text-white'
+                                          : isCorrect
+                                          ? 'bg-emerald-600 text-white'
+                                          : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600'
+                                      }`}
+                                    >
+                                      {CHOICE_LABELS[oIdx] || oIdx + 1}
+                                    </span>
+                                    <span className="text-xs sm:text-sm break-words">{optText}</span>
+                                  </div>
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    {isSelected && (
+                                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                                        您的選擇
+                                      </span>
+                                    )}
+                                    {isCorrect && (
+                                      <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
+                                        ✓ 正解
+                                      </span>
+                                    )}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+
                         {/* 作答即時反饋說明 */}
-                        {teacherAnswers[currentQ.id] !== undefined && (
+                        {teacherAnswers[currentQ?.id] !== undefined && (
                           <div className={`p-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 animate-fadeIn ${
-                            teacherAnswers[currentQ.id] === currentQ.answer
+                            teacherAnswers[currentQ?.id] === currentQ?.answer
                               ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 text-emerald-800 dark:text-emerald-200'
                               : 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 text-amber-800 dark:text-amber-200'
                           }`}>
-                            {teacherAnswers[currentQ.id] === currentQ.answer ? (
-                              <span>🎉 作答相符！選項 ({CHOICE_LABELS[currentQ.answer]}) 為官方正解。</span>
+                            {teacherAnswers[currentQ?.id] === currentQ?.answer ? (
+                              <span>🎉 作答相符！選項 ({CHOICE_LABELS[currentQ?.answer]}) 為官方正解。</span>
                             ) : (
-                              <span>⚠️ 您選擇了 ({CHOICE_LABELS[teacherAnswers[currentQ.id]]})，官方正解為 ({CHOICE_LABELS[currentQ.answer]})。若有疑義請在右側記錄！</span>
+                              <span>⚠️ 您選擇了 ({CHOICE_LABELS[teacherAnswers[currentQ?.id]]})，官方正解為 ({CHOICE_LABELS[currentQ?.answer]})。若有疑義請在右側記錄！</span>
                             )}
                           </div>
                         )}
@@ -1367,7 +1621,7 @@ export function ExamAuditZone({ onBack }) {
               </div>
 
               {/* 題目詳解卡片 */}
-              {currentQ.explanation && (
+              {currentQ?.explanation && (
                 <div className="mt-2 p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs text-blue-950 dark:text-blue-100 leading-relaxed">
                   <span className="font-black text-blue-700 dark:text-blue-300">💡 題目解析與解題線索：</span>
                   {currentQ.explanation}
@@ -1389,16 +1643,16 @@ export function ExamAuditZone({ onBack }) {
                   </div>
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
-                      auditRecords[currentQ.id]?.verified
+                      auditRecords[currentQ?.id]?.verified
                         ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'
-                        : auditRecords[currentQ.id]?.notes?.trim()
+                        : auditRecords[currentQ?.id]?.notes?.trim()
                         ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200'
                         : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
                     }`}
                   >
-                    {auditRecords[currentQ.id]?.verified
+                    {auditRecords[currentQ?.id]?.verified
                       ? '✓ 檢核已通過'
-                      : auditRecords[currentQ.id]?.notes?.trim()
+                      : auditRecords[currentQ?.id]?.notes?.trim()
                       ? '⚠️ 待修正筆記'
                       : '⏳ 待檢核'}
                   </span>
@@ -1406,9 +1660,9 @@ export function ExamAuditZone({ onBack }) {
 
                 {/* 1. 「本題檢核通過」大核選框 */}
                 <div
-                  onClick={() => handleToggleVerified(currentQ.id)}
+                  onClick={() => handleToggleVerified(currentQ?.id)}
                   className={`p-3.5 rounded-2xl border-2 transition flex items-center justify-between gap-3 cursor-pointer ${
-                    auditRecords[currentQ.id]?.verified
+                    auditRecords[currentQ?.id]?.verified
                       ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 shadow-xs'
                       : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 hover:border-emerald-300'
                   }`}
@@ -1416,7 +1670,7 @@ export function ExamAuditZone({ onBack }) {
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-7 h-7 rounded-lg flex items-center justify-center font-black transition ${
-                        auditRecords[currentQ.id]?.verified
+                        auditRecords[currentQ?.id]?.verified
                           ? 'bg-emerald-600 text-white'
                           : 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-transparent'
                       }`}
@@ -1472,7 +1726,7 @@ export function ExamAuditZone({ onBack }) {
                             ? `${currentNoteDraft.trim()}\n• ${snippet}`
                             : `• ${snippet}`;
                           setCurrentNoteDraft(updated);
-                          handleSaveNotes(currentQ.id, updated);
+                          handleSaveNotes(currentQ?.id, updated);
                         }}
                         className="px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800 text-[10px] font-bold hover:bg-amber-100 transition cursor-pointer"
                       >
@@ -1484,7 +1738,7 @@ export function ExamAuditZone({ onBack }) {
                   <div className="flex justify-end pt-1">
                     <button
                       type="button"
-                      onClick={() => handleSaveNotes(currentQ.id)}
+                      onClick={() => handleSaveNotes(currentQ?.id)}
                       className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-xs"
                     >
                       <Cloud size={12} />
@@ -1530,7 +1784,7 @@ export function ExamAuditZone({ onBack }) {
                   </span>
                   <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto p-1.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
                     {displayPool.map((q, idx) => {
-                      const isCurrent = idx === currentIdx;
+                      const isCurrent = idx === safeIdx;
                       const isVerified = auditRecords[q.id]?.verified;
                       const hasNotes = auditRecords[q.id]?.notes?.trim();
                       return (
@@ -1561,7 +1815,7 @@ export function ExamAuditZone({ onBack }) {
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
                 <button
                   type="button"
-                  disabled={currentIdx === 0}
+                  disabled={safeIdx === 0}
                   onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
                   className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 disabled:opacity-40 text-xs font-black flex items-center gap-1.5 transition cursor-pointer"
                 >
@@ -1580,7 +1834,7 @@ export function ExamAuditZone({ onBack }) {
 
                 <button
                   type="button"
-                  disabled={currentIdx >= displayPool.length - 1}
+                  disabled={safeIdx >= displayPool.length - 1}
                   onClick={() => setCurrentIdx((i) => Math.min(displayPool.length - 1, i + 1))}
                   className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 disabled:opacity-40 text-xs font-black flex items-center gap-1.5 transition cursor-pointer"
                 >
@@ -1623,7 +1877,7 @@ export function ExamAuditZone({ onBack }) {
                 方案 3A 大圖檢驗
               </span>
               <span className="text-xs sm:text-sm font-bold text-slate-200 truncate">
-                #{currentIdx + 1}. {currentQ.question}
+                #{safeIdx + 1}. {currentQ?.question}
               </span>
             </div>
 
@@ -1678,7 +1932,7 @@ export function ExamAuditZone({ onBack }) {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={currentQ.image}
+              src={currentQ?.image}
               alt="方案 3A 大圖"
               style={{
                 transform: `scale(${modal3AZoom})`,
@@ -1697,27 +1951,27 @@ export function ExamAuditZone({ onBack }) {
               <span className="font-black text-indigo-300 flex items-center gap-1.5">
                 <span>✍️</span> 方案 3A 懸浮即時作答條（看大圖時可直接點擊選答）：
               </span>
-              {teacherAnswers[currentQ.id] !== undefined && (
+              {teacherAnswers[currentQ?.id] !== undefined && (
                 <span
                   className={`px-2.5 py-0.5 rounded text-[11px] font-bold ${
-                    teacherAnswers[currentQ.id] === currentQ.answer
+                    teacherAnswers[currentQ?.id] === currentQ?.answer
                       ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                       : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                   }`}
                 >
-                  {teacherAnswers[currentQ.id] === currentQ.answer
+                  {teacherAnswers[currentQ?.id] === currentQ?.answer
                     ? '✓ 作答相符 (官方正解)'
-                    : `⚠️ 您選 (${CHOICE_LABELS[teacherAnswers[currentQ.id]]})，正解為 (${CHOICE_LABELS[currentQ.answer]})`}
+                    : `⚠️ 您選 (${CHOICE_LABELS[teacherAnswers[currentQ?.id]]})，正解為 (${CHOICE_LABELS[currentQ?.answer]})`}
                 </span>
               )}
             </div>
 
             {/* 選項快速按鈕 */}
-            {currentQ.options && currentQ.options.length > 0 && (
+            {currentQ?.options && currentQ.options.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {currentQ.options.map((opt, idx) => {
-                  const isChosen = teacherAnswers[currentQ.id] === idx;
-                  const isCorrect = idx === currentQ.answer;
+                  const isChosen = teacherAnswers[currentQ?.id] === idx;
+                  const isCorrect = idx === currentQ?.answer;
                   return (
                     <button
                       key={idx}
@@ -1754,8 +2008,8 @@ export function ExamAuditZone({ onBack }) {
               <span>點選答案後可繼續檢視大圖，或點右側直接進入下一題。</span>
               <button
                 type="button"
-                disabled={currentIdx >= displayPool.length - 1}
-                onClick={() => setCurrentIdx((i) => Math.min(displayPool.length - 1, i + 1))}
+                disabled={safeIdx >= displayPool.length - 1}
+                onClick={() => setCurrentIdx((i) => Math.min(displayPool.length - 1, safeIdx + 1))}
                 className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition flex items-center gap-1 cursor-pointer disabled:opacity-40"
               >
                 下一題 (→)

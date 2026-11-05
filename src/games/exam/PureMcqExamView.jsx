@@ -31,6 +31,7 @@ import {
   SAA_EXAM_BANK,
   SAA_115_EXAM_PAPERS
 } from '../../data/exam';
+import { playDialogueSpeech, stopDialogueSpeech, isDialogue } from '../../services/dialogueSpeaker';
 import { useStudent } from '../../context/StudentContext';
 import {
   isBookInOwnGrade,
@@ -434,13 +435,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     ]
   );
 
-  // 語音朗讀題幹（一、二年級中文題幹自動使用 zh-TW 語音讀題；三～六年級英文題幹使用 en-US 朗讀）
+  // 語音朗讀題幹（支援多角色對話男女聲；一、二年級中文題幹自動使用 zh-TW 語音讀題；三～六年級英文題幹使用 en-US 朗讀）
   const speakQuestion = (text) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     try {
-      window.speechSynthesis.cancel();
       const raw = String(text || '');
       const hasChinese = /[\u4e00-\u9fa5]/.test(raw);
+      if (!hasChinese && isDialogue(raw)) {
+        playDialogueSpeech({ text: raw });
+        return;
+      }
+      window.speechSynthesis.cancel();
       const clean = raw
         .replace(/_{2,}/g, hasChinese ? ' 空格 ' : ' blank ')
         .replace(/\bA:\s*/g, '')
@@ -1941,34 +1946,86 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             )}
           </div>
 
-          {/* (A)(B)(C)(D) 選項區 */}
-          <div className="grid grid-cols-1 gap-2.5 sm:gap-3 my-auto">
-            {currentQ.options.map((optText, optIdx) => {
-              const isChosen = selectedChoice === optIdx;
-              return (
-                <button
-                  key={optIdx}
-                  type="button"
-                  onClick={() => handleSelectOption(optIdx)}
-                  className={`w-full px-4 py-3 sm:py-4 rounded-2xl border-2 text-left transition flex items-center gap-3.5 ${
-                    isChosen
-                      ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-950/70 text-indigo-950 dark:text-white font-black shadow-sm'
-                      : 'border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/50 hover:border-indigo-300 text-slate-800 dark:text-slate-100 font-bold'
-                  }`}
-                >
-                  <span
-                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-black text-sm sm:text-base shrink-0 ${
-                      isChosen
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600'
-                    }`}
-                  >
-                    {CHOICE_LABELS[optIdx]}
-                  </span>
-                  <span className="text-base sm:text-lg md:text-xl leading-snug">{optText}</span>
-                </button>
-              );
-            })}
+          {/* (A)(B)(C)(D) 選項區 (支援線稿圖檔選項與文字選項) */}
+          <div className="my-auto w-full">
+            {currentQ.optionImages && currentQ.optionImages.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                {currentQ.optionImages.map((imgSrc, optIdx) => {
+                  const isChosen = selectedChoice === optIdx;
+                  return (
+                    <button
+                      key={optIdx}
+                      type="button"
+                      onClick={() => handleSelectOption(optIdx)}
+                      className={`p-3 sm:p-4 rounded-2xl border-2 text-center transition flex flex-col items-center justify-between gap-2 cursor-pointer ${
+                        isChosen
+                          ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-950/70 shadow-md ring-2 ring-indigo-400'
+                          : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 hover:shadow-xs'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span
+                          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-black text-xs sm:text-sm shrink-0 ${
+                            isChosen
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200'
+                          }`}
+                        >
+                          {CHOICE_LABELS[optIdx]}
+                        </span>
+                        {isChosen && (
+                          <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                            已選
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="w-full h-24 sm:h-32 flex items-center justify-center p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <img
+                          src={imgSrc}
+                          alt={`選項 ${CHOICE_LABELS[optIdx]}`}
+                          className="max-h-full max-w-full object-contain"
+                          draggable={false}
+                        />
+                      </div>
+
+                      <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">
+                        {currentQ.options?.[optIdx] || `選項 (${CHOICE_LABELS[optIdx]})`}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-2.5 sm:gap-3">
+                {currentQ.options.map((optText, optIdx) => {
+                  const isChosen = selectedChoice === optIdx;
+                  return (
+                    <button
+                      key={optIdx}
+                      type="button"
+                      onClick={() => handleSelectOption(optIdx)}
+                      className={`w-full px-4 py-3 sm:py-4 rounded-2xl border-2 text-left transition flex items-center gap-3.5 ${
+                        isChosen
+                          ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-950/70 text-indigo-950 dark:text-white font-black shadow-sm'
+                          : 'border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/50 hover:border-indigo-300 text-slate-800 dark:text-slate-100 font-bold'
+                      }`}
+                    >
+                      <span
+                        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-black text-sm sm:text-base shrink-0 ${
+                          isChosen
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600'
+                        }`}
+                      >
+                        {CHOICE_LABELS[optIdx]}
+                      </span>
+                      <span className="text-base sm:text-lg md:text-xl leading-snug">{optText}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 

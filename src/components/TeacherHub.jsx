@@ -21,6 +21,41 @@ import {
 } from 'lucide-react';
 import { ExamAuditZone } from './exam/ExamAuditZone';
 
+class ExamAuditErrorBoundary extends React.Component {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, info) {
+    console.error('ExamAuditZone error trapped:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-rose-200 dark:border-rose-900 shadow-xl m-4">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-rose-100 dark:bg-rose-950/60 flex items-center justify-center text-rose-600 text-2xl">
+            ⚠️
+          </div>
+          <h3 className="text-lg font-black text-slate-800 dark:text-white mb-2">
+            試題檢核區遇到載入小插曲
+          </h3>
+          <p className="text-xs text-slate-500 max-w-md mx-auto mb-4">
+            系統已阻斷全域崩潰，未影響其他功能。請點擊下方按鈕重整檢核區。
+          </p>
+          <button
+            type="button"
+            onClick={() => this.setState({ hasError: false })}
+            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition cursor-pointer"
+          >
+            🔄 重新載入試題檢核區
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const TEACHERS = ['Mario', 'Ibu', 'Vanessa', 'Mark', 'Official'];
 
 const GAME_MODES = [
@@ -1176,7 +1211,9 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase,
       {/* ── TAB 6: 霧臺英語檢定館試題檢核 ── */}
       {/* ============================================================ */}
       {activeTab === 'exam-audit' && (
-        <ExamAuditZone onBack={() => setActiveTab('words')} />
+        <ExamAuditErrorBoundary>
+          <ExamAuditZone onBack={() => setActiveTab('words')} />
+        </ExamAuditErrorBoundary>
       )}
     </div>
   );

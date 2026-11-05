@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Body & Head in one smooth outline -->
+  <path d="M 65 95 C 65 72, 85 58, 105 58 C 122 58, 138 72, 142 92 C 145 110, 138 138, 108 142 C 85 145, 65 128, 65 95 Z" fill="#ffffff" stroke="#1e293b" stroke-width="4.5" stroke-linejoin="round"/>
+  <!-- Beak -->
+  <polygon points="140,82 165,88 138,95" fill="#ffffff" stroke="#1e293b" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- Eye -->
+  <circle cx="120" cy="80" r="4.5" fill="#1e293b"/>
+  <circle cx="122" cy="78" r="1.5" fill="#ffffff"/>
+  <!-- Wing -->
+  <path d="M 98 95 C 80 95, 72 115, 88 128 C 105 130, 115 115, 115 102 C 115 95, 108 95, 98 95 Z" fill="#f8fafc" stroke="#1e293b" stroke-width="3.5"/>
+  <!-- Tail feathers -->
+  <polygon points="68,125 35,145 42,128 32,122 68,110" fill="#ffffff" stroke="#1e293b" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- Legs / Branch -->
+  <line x1="95" y1="142" x2="95" y2="165" stroke="#1e293b" stroke-width="3.5"/>
+  <line x1="110" y1="142" x2="110" y2="165" stroke="#1e293b" stroke-width="3.5"/>
+  <line x1="30" y1="168" x2="170" y2="168" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+</svg>
