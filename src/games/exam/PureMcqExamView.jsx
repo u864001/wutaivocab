@@ -384,25 +384,36 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
       if (sourceList.length === 0) return;
 
-      // 隨機洗牌每題的 (A)(B)(C)(D) 選項順序（若題目具 preserveOptionOrder 則保留原順序）
+      // 隨機洗牌每題的 (A)(B)(C)(D) 選項順序（若題目具 preserveOptionOrder 或是非題則保留原順序；若具備 optionImages 則選項文字與圖檔綁定同步洗牌）
       const prepared = sourceList.map((q) => {
-        if (q.preserveOptionOrder) {
+        const isTrueFalse = q.subType === 'read-truefalse' || (q.options?.length === 2 && (q.options[0]?.includes('True') || q.options[0]?.includes('相符')));
+        if (q.preserveOptionOrder || isTrueFalse) {
           return {
             ...q,
             options: [...q.options],
+            optionImages: q.optionImages ? [...q.optionImages] : undefined,
             answer: q.answer
           };
         }
-        const correctOptText = q.options[q.answer];
-        const opts = [...q.options];
-        for (let i = opts.length - 1; i > 0; i--) {
+
+        const hasOptionImages = Array.isArray(q.optionImages) && q.optionImages.length === q.options.length;
+        const combined = q.options.map((text, idx) => ({
+          text,
+          img: hasOptionImages ? q.optionImages[idx] : null,
+          isCorrect: idx === q.answer
+        }));
+
+        // Fisher-Yates 隨機洗牌
+        for (let i = combined.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [opts[i], opts[j]] = [opts[j], opts[i]];
+          [combined[i], combined[j]] = [combined[j], combined[i]];
         }
+
         return {
           ...q,
-          options: opts,
-          answer: opts.indexOf(correctOptText)
+          options: combined.map((c) => c.text),
+          optionImages: hasOptionImages ? combined.map((c) => c.img) : q.optionImages,
+          answer: combined.findIndex((c) => c.isCorrect)
         };
       });
 
