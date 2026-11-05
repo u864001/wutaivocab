@@ -1412,13 +1412,17 @@ export function ExamAuditZone({ onBack }) {
                       </div>
                     )}
 
-                    {/* 聽力情境材料（支援多角色對話男女聲視覺卡片） */}
+                    {/* 聽力情境材料（支援多角色對話男女聲視覺卡片與防洩題設計） */}
                     {currentQ?.media?.audioText && (
                       <div className="p-3 sm:p-4 rounded-2xl bg-indigo-50/70 dark:bg-slate-800/80 border border-indigo-200/80 dark:border-slate-700 space-y-2.5">
                         <div className="flex items-center justify-between text-xs font-black text-indigo-700 dark:text-indigo-300">
                           <span className="flex items-center gap-1.5">
                             <Headphones size={15} />
-                            <span>🎧 聽力播放材料（多角色真實情境對話）</span>
+                            <span>
+                              {isDialogue(currentQ.media.audioText)
+                                ? '🎧 聽力播放材料（多角色真實情境對話）'
+                                : '🎧 聽力單字發音（學生端不呈現字稿，僅有語音鈕）'}
+                            </span>
                           </span>
                           <button
                             type="button"
@@ -1430,7 +1434,7 @@ export function ExamAuditZone({ onBack }) {
                             }`}
                           >
                             {isPlayingAudio ? <Square size={12} className="fill-current" /> : <Volume2 size={13} />}
-                            <span>{isPlayingAudio ? '停止播放' : isDialogue(currentQ.media.audioText) ? '播放男女聲情境對話' : '播放語音'}</span>
+                            <span>{isPlayingAudio ? '停止播放' : isDialogue(currentQ.media.audioText) ? '播放男女聲情境對話' : '播放發音'}</span>
                           </button>
                         </div>
 
@@ -1474,8 +1478,23 @@ export function ExamAuditZone({ onBack }) {
                             })}
                           </div>
                         ) : (
-                          <div className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
-                            "{currentQ.media.audioText}"
+                          <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-indigo-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isPlayingAudio ? 'bg-indigo-600 text-white animate-pulse' : 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300'}`}>
+                                <Volume2 size={16} />
+                              </div>
+                              <div>
+                                <div className="text-xs font-black text-slate-800 dark:text-slate-100">
+                                  {isPlayingAudio ? '🔊 語音播放中...' : '點擊上方按鈕聆聽單字發音'}
+                                </div>
+                                <div className="text-[11px] text-slate-400 font-medium">
+                                  🔒 機考模式下學生端「僅提供播放按鈕」，不呈現此字稿以杜絕洩題
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-[11px] font-mono text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/80 px-2.5 py-1 rounded-md border border-indigo-200 dark:border-indigo-800 shrink-0 self-start sm:self-center">
+                              後台核對音稿：<span className="font-bold underline">{currentQ.media.audioText}</span>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -1645,6 +1664,8 @@ export function ExamAuditZone({ onBack }) {
                     className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
                       auditRecords[currentQ?.id]?.verified
                         ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'
+                        : auditRecords[currentQ?.id]?.notes?.includes('待複核')
+                        ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-200 ring-1 ring-purple-400'
                         : auditRecords[currentQ?.id]?.notes?.trim()
                         ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200'
                         : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
@@ -1652,6 +1673,8 @@ export function ExamAuditZone({ onBack }) {
                   >
                     {auditRecords[currentQ?.id]?.verified
                       ? '✓ 檢核已通過'
+                      : auditRecords[currentQ?.id]?.notes?.includes('待複核')
+                      ? '🔄 已依意見修正•待複核'
                       : auditRecords[currentQ?.id]?.notes?.trim()
                       ? '⚠️ 待修正筆記'
                       : '⏳ 待檢核'}
@@ -1786,6 +1809,7 @@ export function ExamAuditZone({ onBack }) {
                     {displayPool.map((q, idx) => {
                       const isCurrent = idx === safeIdx;
                       const isVerified = auditRecords[q.id]?.verified;
+                      const isPendingRecheck = !isVerified && auditRecords[q.id]?.notes?.includes('待複核');
                       const hasNotes = auditRecords[q.id]?.notes?.trim();
                       return (
                         <button
@@ -1797,6 +1821,8 @@ export function ExamAuditZone({ onBack }) {
                               ? 'bg-indigo-600 text-white ring-2 ring-indigo-300 scale-105'
                               : isVerified
                               ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700'
+                              : isPendingRecheck
+                              ? 'bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-200 border-2 border-purple-400 dark:border-purple-600 font-black ring-1 ring-purple-300'
                               : hasNotes
                               ? 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700'
                               : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100'

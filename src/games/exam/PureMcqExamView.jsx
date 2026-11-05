@@ -1944,6 +1944,23 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 />
               </div>
             )}
+
+            {/* 聽力題專屬播放卡片（學生端完全隱藏字稿，僅留播放鈕） */}
+            {currentQ.media?.audioText && (
+              <div className="flex flex-col items-center justify-center p-3 sm:p-4 my-2 rounded-2xl bg-indigo-50/80 dark:bg-slate-800/80 border border-indigo-200 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => speakQuestion(currentQ.media.audioText)}
+                  className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition cursor-pointer"
+                >
+                  <Volume2 size={16} />
+                  <span>{isDialogue(currentQ.media.audioText) ? '🎭 播放情境對話語音' : '🎧 播放聽力語音'}</span>
+                </button>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
+                  可反覆點擊按鈕聆聽發音
+                </span>
+              </div>
+            )}
           </div>
 
           {/* (A)(B)(C)(D) 選項區 (支援線稿圖檔選項與文字選項) */}

@@ -97,7 +97,7 @@ export const TME_PRE_A1_BANK = [
     options: ['yellow', 'yallow', 'yollow', 'yellw'],
     answer: 0,
     explanation: '聽力發音為顏色「yellow（黃色）」，正確拼字為 y-e-l-l-o-w。',
-    reviewed: true
+    reviewed: false
   },
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -332,7 +332,7 @@ export const TME_PRE_A1_BANK = [
     options: ['By bicycle', 'By bus', 'On foot', 'By car'],
     answer: 0,
     explanation: 'Andy 回答「I ride my bicycle with Peter」，交通方式為騎腳踏車（By bicycle）。',
-    reviewed: true
+    reviewed: false
   },
   {
     id: 'tme-listen-qa-05',
@@ -368,7 +368,7 @@ export const TME_PRE_A1_BANK = [
   // ══════════════════════════════════════════════════════════════════════════
   // ── 3. 閱讀 (reading) ──
   // ══════════════════════════════════════════════════════════════════════════
-  // (1) 看圖選字 (告示牌示範題)
+  // (1) 看圖選字 (生活場所示範題)
   {
     id: 'tme-read-p2w-01',
     track: 'tme-preA1',
@@ -377,12 +377,12 @@ export const TME_PRE_A1_BANK = [
     serialNum: 1,
     taskType: 'V-PIC',
     difficulty: 1,
-    image: '/assets/exam/preA1/exit_sign.svg',
-    question: '看生活告示牌線稿插圖，選出代表的指示單字：',
-    options: ['Exit (出口)', 'Enter (入口)', 'Stop (停止)', 'Open (營業中)'],
+    image: '/assets/exam/preA1/library.svg',
+    question: '看生活場所線稿插圖，選出正確的英文單字：',
+    options: ['library', 'restaurant', 'zoo', 'playground'],
     answer: 0,
-    explanation: '告示牌上寫著「EXIT」，代表緊急出口，故選 (A)。',
-    reviewed: true
+    explanation: '插圖為擺滿書架與安靜閱讀桌椅之場所，英文為「圖書館（library）」，故選 (A)。',
+    reviewed: false
   },
   // (2) 看圖選句 (示範題)
   {
@@ -504,10 +504,10 @@ export const TME_PRE_A1_BANK = [
       text: 'I have a cute pet dog. His name is Lucky. Lucky is brown and white. He loves to _______ with a small red ball.'
     },
     question: '依短文文意，空格處應填入哪一個單字？',
-    options: ['play', 'eat', 'sleep', 'read'],
+    options: ['play', 'eat', 'write', 'sing'],
     answer: 0,
-    explanation: '狗狗喜歡「玩」紅色的球，片語為 play with a ball，故選 ① play。',
-    reviewed: true
+    explanation: '狗狗喜歡「玩」紅色的球，片語為 play with a ball，故選 (A) play。',
+    reviewed: false
   },
   {
     id: 'tme-read-cloze-02',
@@ -537,13 +537,13 @@ export const TME_PRE_A1_BANK = [
     difficulty: 1,
     passage: {
       title: '【短文填空】After School Snack',
-      text: 'Tom is hungry after school. He opens the refrigerator and takes out some bread. Then he drinks a glass of _______.'
+      text: 'Tom is hungry after school. He opens the refrigerator (冰箱) and takes out some bread. Then he drinks a glass of _______.'
     },
     question: '依短文文意，空格處應填入哪一個單字？',
     options: ['milk', 'pens', 'shoes', 'books'],
     answer: 0,
     explanation: '動詞為 drinks（喝），且單位為 a glass of（一杯），空格只能填可飲用的液體 milk（牛奶）。',
-    reviewed: true
+    reviewed: false
   },
   {
     id: 'tme-read-cloze-04',
@@ -555,13 +555,13 @@ export const TME_PRE_A1_BANK = [
     difficulty: 2,
     passage: {
       title: '【短文填空】Reading Time',
-      text: 'Lisa wants to read an English story. She walks to the school _______ and finds a very interesting book on the shelf.'
+      text: 'Lisa wants to read an English story. She walks to the _______ and finds a very interesting (有趣的) book on the shelf (書架).'
     },
     question: '依短文文意，空格處應填入哪一個單字？',
     options: ['library', 'kitchen', 'bedroom', 'bathroom'],
     answer: 0,
-    explanation: '找書與閱讀應前往學校的圖書館（library），故選 ①。',
-    reviewed: true
+    explanation: '找書與閱讀應前往圖書館（library），故選 (A)。',
+    reviewed: false
   },
   {
     id: 'tme-read-cloze-05',
@@ -572,14 +572,14 @@ export const TME_PRE_A1_BANK = [
     taskType: 'R-CLOZE',
     difficulty: 1,
     passage: {
-      title: '【短文填空】Rainy Day Reminder',
-      text: 'Look outside the window. It is cold and rainy today. Don\'t forget to take an _______ with you when you leave.'
+      title: '【生活短句填空】Rainy Day Reminder',
+      text: "It's cold and rainy today. Don't forget to take an _______ with you."
     },
-    question: '依短文文意，空格處應填入哪一個單字？',
+    question: '依文意，空格處應填入哪一個單字？',
     options: ['umbrella', 'apple', 'orange', 'eraser'],
     answer: 0,
     explanation: '雨天出門提醒攜帶的應為雨傘（umbrella），冠詞為 an 也符合母音開頭。',
-    reviewed: true
+    reviewed: false
   },
   {
     id: 'tme-read-cloze-06',
