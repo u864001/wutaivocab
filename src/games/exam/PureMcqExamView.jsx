@@ -254,10 +254,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // Pre-A1 官方模擬題庫 (Scaffold & Registry)
   const tmePool = useMemo(() => {
     if (selectedPreA1Format === 'listening') {
-      return TME_PRE_A1_BANK.filter((q) => q.section === 'listening' || q.type?.startsWith('L-'));
+      return TME_PRE_A1_BANK.filter((q) => q.category === 'listening' || q.taskType?.startsWith('L-'));
     }
     if (selectedPreA1Format === 'reading') {
-      return TME_PRE_A1_BANK.filter((q) => q.section === 'reading' || q.type?.startsWith('R-'));
+      return TME_PRE_A1_BANK.filter((q) => q.category === 'reading' || q.taskType?.startsWith('R-') || q.taskType?.startsWith('V-'));
     }
     return TME_PRE_A1_BANK;
   }, [selectedPreA1Format]);

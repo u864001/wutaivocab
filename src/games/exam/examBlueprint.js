@@ -8,14 +8,16 @@
  * - 只有 reviewed !== false 的題目會進入正式組卷
  */
 
-export const SECTION_ORDER = ['alphabet', 'listening', 'vocabulary', 'grammar', 'reading'];
+export const SECTION_ORDER = ['alphabet', 'listening', 'vocabulary', 'grammar', 'reading', 'writing', 'speaking'];
 
 export const SECTION_LABELS = {
   alphabet: '字母',
   listening: '聽力',
   vocabulary: '字彙',
   grammar: '文法與用法',
-  reading: '閱讀'
+  reading: '閱讀',
+  writing: '寫作',
+  speaking: '口說'
 };
 
 // 題型代碼：依大題內出現順序排列
@@ -42,7 +44,9 @@ export const TASK_TYPES = {
   'R-MATCH': { section: 'reading', label: '配合題' },
   'R-CLOZE': { section: 'reading', label: '短文填空' },
   'R-COMP': { section: 'reading', label: '閱讀理解' },
-  'R-PASSAGE': { section: 'reading', label: '篇章閱讀' }
+  'R-PASSAGE': { section: 'reading', label: '篇章閱讀' },
+  'W-SCRAMBLE': { section: 'writing', label: '重組句子' },
+  'S-READ': { section: 'speaking', label: '口說朗讀', audio: true }
 };
 
 const TASK_TYPE_ORDER = Object.keys(TASK_TYPES);

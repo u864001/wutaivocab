@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Big Ears -->
+  <circle cx="58" cy="92" r="16" fill="#f8fafc" stroke="#1e293b" stroke-width="4"/>
+  <circle cx="142" cy="92" r="16" fill="#f8fafc" stroke="#1e293b" stroke-width="4"/>
+  <!-- Head -->
+  <circle cx="100" cy="95" r="38" fill="#ffffff" stroke="#1e293b" stroke-width="4.5"/>
+  <!-- Inner Face (Heart/M shape) -->
+  <path d="M 100 82 C 90 68, 70 70, 72 90 C 72 112, 100 124, 100 124 C 100 124, 128 112, 128 90 C 130 70, 110 68, 100 82 Z" fill="#f1f5f9" stroke="#1e293b" stroke-width="3"/>
+  <!-- Eyes -->
+  <circle cx="88" cy="92" r="4" fill="#1e293b"/>
+  <circle cx="112" cy="92" r="4" fill="#1e293b"/>
+  <!-- Snout & Mouth -->
+  <ellipse cx="100" cy="112" rx="14" ry="10" fill="#ffffff" stroke="#1e293b" stroke-width="2.5"/>
+  <circle cx="96" cy="110" r="1.5" fill="#1e293b"/>
+  <circle cx="104" cy="110" r="1.5" fill="#1e293b"/>
+  <path d="M 94 116 Q 100 120 106 116" fill="none" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Body & Long Curly Tail -->
+  <path d="M 85 133 L 75 175 L 125 175 L 115 133" fill="#ffffff" stroke="#1e293b" stroke-width="4"/>
+  <path d="M 125 160 C 155 165, 170 140, 155 125 C 145 115, 148 105, 155 105" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

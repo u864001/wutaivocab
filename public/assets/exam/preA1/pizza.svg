@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Pizza Slice Body (Triangle with curved top) -->
+  <path d="M 100 172 L 45 60 C 75 45, 125 45, 155 60 Z" fill="#ffffff" stroke="#1e293b" stroke-width="4.5" stroke-linejoin="round"/>
+  <!-- Pizza Crust Rim -->
+  <path d="M 45 60 C 75 45, 125 45, 155 60 C 150 72, 125 60, 100 62 C 75 60, 50 72, 45 60 Z" fill="#cbd5e1" stroke="#1e293b" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- Pepperoni Slices -->
+  <circle cx="88" cy="90" r="10" fill="#f1f5f9" stroke="#1e293b" stroke-width="3"/>
+  <circle cx="118" cy="105" r="10" fill="#f1f5f9" stroke="#1e293b" stroke-width="3"/>
+  <circle cx="98" cy="135" r="8" fill="#f1f5f9" stroke="#1e293b" stroke-width="3"/>
+  <!-- Cheese Dripping Line -->
+  <path d="M 96 172 Q 100 185 104 172" fill="none" stroke="#1e293b" stroke-width="3"/>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Chair Backrest -->
+  <rect x="68" y="35" width="64" height="40" rx="6" fill="#f8fafc" stroke="#1e293b" stroke-width="4"/>
+  <line x1="84" y1="35" x2="84" y2="75" stroke="#1e293b" stroke-width="2.5"/>
+  <line x1="100" y1="35" x2="100" y2="75" stroke="#1e293b" stroke-width="2.5"/>
+  <line x1="116" y1="35" x2="116" y2="75" stroke="#1e293b" stroke-width="2.5"/>
+  <!-- Back Uprights -->
+  <line x1="74" y1="75" x2="74" y2="110" stroke="#1e293b" stroke-width="4"/>
+  <line x1="126" y1="75" x2="126" y2="110" stroke="#1e293b" stroke-width="4"/>
+  <!-- Seat Cushion (Perspective) -->
+  <polygon points="62,110 138,110 148,130 52,130" fill="#ffffff" stroke="#1e293b" stroke-width="4" stroke-linejoin="round"/>
+  <polygon points="52,130 148,130 148,136 52,136" fill="#cbd5e1" stroke="#1e293b" stroke-width="3" stroke-linejoin="round"/>
+  <!-- 4 Legs -->
+  <line x1="58" y1="136" x2="52" y2="175" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+  <line x1="142" y1="136" x2="148" y2="175" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+  <line x1="72" y1="130" x2="68" y2="165" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+  <line x1="130" y1="130" x2="134" y2="165" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+</svg>

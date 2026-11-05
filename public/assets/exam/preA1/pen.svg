@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Pen Cap with Clip (Diagonal) -->
+  <g transform="rotate(-40 100 100)">
+    <!-- Pen Barrel -->
+    <rect x="92" y="70" width="16" height="85" rx="3" fill="#ffffff" stroke="#1e293b" stroke-width="4"/>
+    <!-- Grip section -->
+    <rect x="92" y="125" width="16" height="20" fill="#e2e8f0" stroke="#1e293b" stroke-width="3"/>
+    <!-- Pen Tip -->
+    <polygon points="92,155 108,155 100,175" fill="#cbd5e1" stroke="#1e293b" stroke-width="3.5" stroke-linejoin="round"/>
+    <circle cx="100" cy="176" r="2" fill="#1e293b"/>
+    <!-- Pen Cap on Top -->
+    <rect x="90" y="32" width="20" height="42" rx="4" fill="#f8fafc" stroke="#1e293b" stroke-width="4"/>
+    <!-- Clip -->
+    <path d="M 110 40 L 116 40 L 116 65 L 110 65" fill="#cbd5e1" stroke="#1e293b" stroke-width="3" stroke-linejoin="round"/>
+  </g>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Eraser Sleeve (Cardboard) -->
+  <polygon points="65,115 125,75 165,100 105,140" fill="#cbd5e1" stroke="#1e293b" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Sleeve decoration band -->
+  <polygon points="80,105 115,82 135,95 100,118" fill="#94a3b8" stroke="#1e293b" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Rubber Exposed Head -->
+  <polygon points="35,135 65,115 105,140 75,160" fill="#ffffff" stroke="#1e293b" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Beveled Tip -->
+  <polygon points="35,135 75,160 55,165 20,140" fill="#f8fafc" stroke="#1e293b" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- Eraser Back -->
+  <polygon points="125,75 165,100 175,92 135,68" fill="#f1f5f9" stroke="#1e293b" stroke-width="3.5" stroke-linejoin="round"/>
+</svg>

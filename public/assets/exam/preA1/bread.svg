@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Back Toast Slice -->
+  <path d="M 65 65 C 50 65, 48 45, 68 45 C 80 45, 88 52, 100 52 C 112 52, 120 45, 132 45 C 152 45, 150 65, 135 65 L 140 135 L 60 135 Z" fill="#f1f5f9" stroke="#1e293b" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Front Toast Slice -->
+  <path d="M 75 85 C 60 85, 58 65, 78 65 C 90 65, 98 72, 110 72 C 122 72, 130 65, 142 65 C 162 65, 160 85, 145 85 L 150 155 L 70 155 Z" fill="#ffffff" stroke="#1e293b" stroke-width="4.5" stroke-linejoin="round"/>
+  <!-- Crust inner border -->
+  <path d="M 80 92 C 70 92, 68 76, 82 76 C 92 76, 100 81, 110 81 C 120 81, 128 76, 138 76 C 152 76, 150 92, 140 92 L 143 148 L 77 148 Z" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="4 3"/>
+</svg>

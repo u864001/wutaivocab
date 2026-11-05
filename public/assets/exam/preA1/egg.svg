@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Whole Egg (Back) -->
+  <path d="M 68 155 C 45 155, 38 105, 58 75 C 72 52, 92 52, 102 75 C 118 105, 105 155, 68 155 Z" fill="#f8fafc" stroke="#1e293b" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Fried Egg / Sunny Side Up (Front) -->
+  <path d="M 125 105 C 145 95, 175 105, 172 130 C 170 155, 145 168, 120 165 C 95 162, 85 145, 95 125 C 102 110, 115 110, 125 105 Z" fill="#ffffff" stroke="#1e293b" stroke-width="4.5" stroke-linejoin="round"/>
+  <!-- Egg Yolk in Center -->
+  <circle cx="132" cy="135" r="18" fill="#cbd5e1" stroke="#1e293b" stroke-width="3.5"/>
+  <ellipse cx="127" cy="130" rx="4" ry="2" fill="#ffffff"/>
+</svg>

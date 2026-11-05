@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Top Handle -->
+  <path d="M 85 45 C 85 30, 115 30, 115 45" fill="none" stroke="#1e293b" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- Main Bag Body -->
+  <rect x="52" y="45" width="96" height="120" rx="20" fill="#ffffff" stroke="#1e293b" stroke-width="4.5"/>
+  <!-- Front Zipper Pocket -->
+  <rect x="62" y="105" width="76" height="52" rx="12" fill="#f8fafc" stroke="#1e293b" stroke-width="3.5"/>
+  <!-- Zipper Lines -->
+  <path d="M 66 118 L 134 118" stroke="#1e293b" stroke-width="2.5" stroke-dasharray="4 3"/>
+  <circle cx="100" cy="118" r="3.5" fill="#1e293b"/>
+  <!-- Side Drink Pockets -->
+  <rect x="42" y="100" width="10" height="42" rx="4" fill="#e2e8f0" stroke="#1e293b" stroke-width="3"/>
+  <rect x="148" y="100" width="10" height="42" rx="4" fill="#e2e8f0" stroke="#1e293b" stroke-width="3"/>
+  <!-- Shoulder Straps Outline at Top -->
+  <path d="M 68 46 C 58 35, 48 55, 52 75" fill="none" stroke="#1e293b" stroke-width="3.5"/>
+  <path d="M 132 46 C 142 35, 152 55, 148 75" fill="none" stroke="#1e293b" stroke-width="3.5"/>
+</svg>

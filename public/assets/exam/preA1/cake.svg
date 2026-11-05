@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <rect width="200" height="200" fill="#ffffff"/>
+  <!-- Plate -->
+  <ellipse cx="100" cy="172" rx="72" ry="12" fill="#f1f5f9" stroke="#1e293b" stroke-width="4"/>
+  <!-- Bottom Tier -->
+  <rect x="42" y="112" width="116" height="50" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="4.5"/>
+  <!-- Frosting Drippings on Bottom Tier -->
+  <path d="M 42 124 Q 56 136 71 124 Q 86 136 100 124 Q 115 136 129 124 Q 144 136 158 124" fill="none" stroke="#1e293b" stroke-width="3"/>
+  <!-- Top Tier -->
+  <rect x="62" y="78" width="76" height="34" rx="6" fill="#ffffff" stroke="#1e293b" stroke-width="4"/>
+  <path d="M 62 88 Q 74 96 87 88 Q 100 96 113 88 Q 126 96 138 88" fill="none" stroke="#1e293b" stroke-width="2.5"/>
+  <!-- 3 Candles -->
+  <rect x="78" y="52" width="6" height="26" fill="#cbd5e1" stroke="#1e293b" stroke-width="2"/>
+  <rect x="97" y="48" width="6" height="30" fill="#cbd5e1" stroke="#1e293b" stroke-width="2"/>
+  <rect x="116" y="52" width="6" height="26" fill="#cbd5e1" stroke="#1e293b" stroke-width="2"/>
+  <!-- Candle Flames -->
+  <path d="M 81 44 C 76 48, 86 48, 81 52 C 78 48, 84 48, 81 44 Z" fill="#1e293b"/>
+  <path d="M 100 40 C 95 44, 105 44, 100 48 C 97 44, 103 44, 100 40 Z" fill="#1e293b"/>
+  <path d="M 119 44 C 114 48, 124 48, 119 52 C 116 48, 122 48, 119 44 Z" fill="#1e293b"/>
+</svg>
