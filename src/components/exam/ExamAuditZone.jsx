@@ -50,7 +50,8 @@ import {
   SAA_115_EXAM_PAPERS,
   SAA_EXAM_BANK,
   TME_PRE_A1_BANK,
-  TME_PRE_A1_CATEGORIES
+  TME_PRE_A1_CATEGORIES,
+  TME_SCRAMBLE_PATTERNS
 } from '../../data/exam';
 import { TASK_TYPES, getTaskType, getTaskLabel } from '../../games/exam/examBlueprint';
 import {
@@ -133,9 +134,10 @@ export function ExamAuditZone({ onBack }) {
   const [selectedSaaYear, setSelectedSaaYear] = useState(115);
   const [selectedSaaGrade, setSelectedSaaGrade] = useState(4); // 4 | 5 | 6
 
-  // ── Pre A1 檢測篩選：第二層 5大能力面向 ＆ 第三層 子題型 ──
+  // ── Pre A1 檢測篩選：第二層 5大能力面向 ＆ 第三層 子題型 ＆ 第四層 寫作十大句型 ──
   const [selectedPreA1Category, setSelectedPreA1Category] = useState('vocab'); // vocab | listening | reading | speaking | writing
   const [selectedPreA1SubType, setSelectedPreA1SubType] = useState('all');
+  const [selectedPreA1Pattern, setSelectedPreA1Pattern] = useState('all');
 
   // ── 當前檢核索引與狀態 ──
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -288,8 +290,11 @@ export function ExamAuditZone({ onBack }) {
     if (selectedPreA1SubType !== 'all') {
       list = list.filter((q) => q.subType === selectedPreA1SubType);
     }
+    if (selectedPreA1Category === 'writing' && selectedPreA1Pattern !== 'all') {
+      list = list.filter((q) => q.patternIndex === Number(selectedPreA1Pattern));
+    }
     return list;
-  }, [selectedPreA1Category, selectedPreA1SubType]);
+  }, [selectedPreA1Category, selectedPreA1SubType, selectedPreA1Pattern]);
 
   // ── 當前分類總池 (尚未過濾已通過) ──
   const currentCategoryFullPool = useMemo(() => {
@@ -848,6 +853,48 @@ export function ExamAuditZone({ onBack }) {
                 </button>
               ))}
             </div>
+
+            {/* 寫作重組專屬：第四層 國小核心十大句型快速篩選 */}
+            {selectedPreA1Category === 'writing' && (
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs pt-1 border-t border-slate-100 dark:border-slate-750">
+                <span className="text-[11px] font-black text-purple-600 dark:text-purple-400 shrink-0 uppercase tracking-wide flex items-center gap-1">
+                  <span>🎯</span>
+                  <span>核心句型：</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedPreA1Pattern('all');
+                    setCurrentIdx(0);
+                  }}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition cursor-pointer ${
+                    selectedPreA1Pattern === 'all'
+                      ? 'bg-purple-700 text-white shadow-xs'
+                      : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  全部十大句型 (60題)
+                </button>
+                {TME_SCRAMBLE_PATTERNS.map((pat) => (
+                  <button
+                    key={pat.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedPreA1Pattern(String(pat.id));
+                      setCurrentIdx(0);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold shrink-0 transition cursor-pointer flex items-center gap-1 ${
+                      selectedPreA1Pattern === String(pat.id)
+                        ? 'bg-purple-700 text-white shadow-xs'
+                        : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    <span>{pat.icon}</span>
+                    <span>{pat.id}. {pat.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -1331,6 +1378,60 @@ export function ExamAuditZone({ onBack }) {
                     <div className="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-white leading-relaxed py-1">
                       {currentQ.question}
                     </div>
+
+                    {/* 寫作重組單字卡展示 (3D 磁吸單字積木) */}
+                    {(currentQ.tokens || currentQ.scrambledWords) && (
+                      <div className="my-2.5 p-3 sm:p-4 rounded-2xl bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 border border-slate-300 dark:border-slate-700 shadow-inner">
+                        <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-2 flex items-center justify-between flex-wrap gap-2">
+                          <span className="flex items-center gap-1 font-black text-slate-700 dark:text-slate-300">
+                            <span>🧲</span>
+                            <span>磁吸單字積木（點擊單字可朗讀發音）：</span>
+                          </span>
+                          <div className="flex items-center gap-2">
+                            {currentQ.pattern && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-600 text-white shadow-xs">
+                                {currentQ.pattern}
+                              </span>
+                            )}
+                            {currentQ.chinese && (
+                              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                                語意：{currentQ.chinese}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {currentQ.contextPrompt && (
+                          <div className="px-3 py-1.5 mb-2.5 rounded-xl bg-white/90 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-xs text-slate-800 dark:text-slate-200 whitespace-pre-line shadow-xs">
+                            {currentQ.contextPrompt}
+                          </div>
+                        )}
+                        <div className="flex flex-wrap gap-2 justify-center p-2.5 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                          {(currentQ.tokens || currentQ.scrambledWords || []).map((word, wIdx) => {
+                            const CHIP_PALETTES = [
+                              'bg-rose-500 hover:bg-rose-600 text-white border-b-2 border-rose-700',
+                              'bg-sky-500 hover:bg-sky-600 text-white border-b-2 border-sky-700',
+                              'bg-emerald-500 hover:bg-emerald-600 text-white border-b-2 border-emerald-700',
+                              'bg-amber-500 hover:bg-amber-600 text-white border-b-2 border-amber-700',
+                              'bg-indigo-500 hover:bg-indigo-600 text-white border-b-2 border-indigo-700',
+                              'bg-fuchsia-500 hover:bg-fuchsia-600 text-white border-b-2 border-fuchsia-700',
+                              'bg-teal-500 hover:bg-teal-600 text-white border-b-2 border-teal-700',
+                              'bg-purple-500 hover:bg-purple-600 text-white border-b-2 border-purple-700',
+                            ];
+                            return (
+                              <button
+                                key={wIdx}
+                                type="button"
+                                onClick={() => speakText(word)}
+                                title="點擊聆聽單字發音"
+                                className={`px-3 py-1.5 rounded-xl font-black text-sm tracking-wide transition-all transform hover:-translate-y-0.5 active:translate-y-0.5 cursor-pointer shadow-xs ${CHIP_PALETTES[wIdx % CHIP_PALETTES.length]}`}
+                              >
+                                {word}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
 
                     {/* 考卷圖檔 (方案 3A：點擊開啟全螢幕檢驗 ＋ 懸浮作答條) */}
                     {currentQ.image && (
