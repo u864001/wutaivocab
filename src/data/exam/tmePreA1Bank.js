@@ -1,3 +1,4 @@
+import { TME_PRE_A1_LISTENING_BANK } from './tmePreA1ListeningBank.js';
 import { TME_PRE_A1_READING_BANK } from './tmePreA1ReadingBank.js';
 /**
  * Test My English Pre-A1 官方模擬題庫 (Phase 3 擴充版 - 整合國小十大核心句型重組題庫)
@@ -18,7 +19,6 @@ import { TME_PRE_A1_READING_BANK } from './tmePreA1ReadingBank.js';
 
 import { TME_PRE_A1_SCRAMBLE_BANK, TME_SCRAMBLE_PATTERNS } from './tmePreA1ScrambleBank.js';
 
-export { TME_PRE_A1_SCRAMBLE_BANK, TME_SCRAMBLE_PATTERNS };
 
 const NON_WRITING_ITEMS = [
   {
@@ -2870,13 +2870,14 @@ const NON_WRITING_ITEMS = [
   }
 ];
 
-// Filter out old reading items from NON_WRITING_ITEMS to ensure no duplicate reading questions
-const NON_READING_ITEMS = NON_WRITING_ITEMS.filter(q => q.category !== 'reading');
+// Filter out old reading and listening items from NON_WRITING_ITEMS to ensure no duplicate questions
+const BASE_ITEMS = NON_WRITING_ITEMS.filter(q => q.category !== 'reading' && q.category !== 'listening');
 
-export { TME_PRE_A1_READING_BANK };
+export { TME_PRE_A1_READING_BANK, TME_PRE_A1_LISTENING_BANK, TME_PRE_A1_SCRAMBLE_BANK, TME_SCRAMBLE_PATTERNS };
 
 export const TME_PRE_A1_BANK = [
-  ...NON_READING_ITEMS,
+  ...BASE_ITEMS,
+  ...TME_PRE_A1_LISTENING_BANK,
   ...TME_PRE_A1_READING_BANK,
   ...TME_PRE_A1_SCRAMBLE_BANK
 ];

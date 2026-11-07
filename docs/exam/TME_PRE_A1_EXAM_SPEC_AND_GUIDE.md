@@ -12,7 +12,7 @@
 ```mermaid
 flowchart LR
     A["Pre-A1 檢定模擬總體系"] --> B["字彙 (Vocab)<br/>32 題"]
-    A --> C["聽力 (Listening)<br/>34 題"]
+    A --> C["聽力 (Listening)<br/>58 題"]
     A --> D["閱讀 (Reading)<br/>68 題"]
     A --> E["寫作重組 (Writing)<br/>60 題"]
     A --> F["口說 (Speaking)<br/>16 題"]
@@ -259,9 +259,104 @@ flowchart LR
 
 ---
 
-## 五、 本手冊維護與後續章節推進路徑 (Roadmap)
+## 五、 聽力專項：日常溝通問答（L-RESP）與言談理解（L-CONV）關鍵應答句典 (Listening Master Guide)
 
-本手冊將隨後續開發，按以下規劃持續推進：
-1. **第伍章：聽力日常溝通問答（L-RESP）與言談理解（L-CONV）關鍵應答句典**（即將推進）
-2. **第陸章：字彙三位一體圖文音對應表與高頻核心 200 詞字表**
-3. **第柒章：口說 AI 語音即時評測評分規準 (Rubrics) 與常見發音盲點指引**
+本系統聽力題庫擴充至 **58 題**，旨在評量學生在生活日常情境中的真實溝通語用（Pragmatics）與關鍵訊息捕捉能力。以下解構四大子題型、高頻日常對話句典與聽力破題心法：
+
+### 1. 聽力能力指標與四大子題型架構 (58 題全量)
+
+| 子題型代碼 | 官方題型名稱 | 題數 | 評量目標與聽力特徵 |
+| :--- | :--- | :--- | :--- |
+| `listen-pic2sent` (L-SENT) | 看圖選句 | 7 題 | 結合線稿插圖與單句語音，檢驗動作、顏色、交通與物品方位理解。 |
+| `listen-dlg2pic` (L-DLG) | 聽對話選圖 | 7 題 | 聽取 2 輪日常生活對話，辨識說話者想去的場所（圖書館/動物園）或購買物品。 |
+| `listen-resp` (L-QA) | 選正確回應 | 22 題 | 聽取日常生活問句或社交對話，在 6 組選項中選出最合適、合乎禮儀之應答句。 |
+| `listen-conv-qa` (L-CONV) | 聽對話答題 | 22 題 | 聽取 2～3 輪真實情境對話與末尾問題，捕捉時間、金額、地點、職業或事件主旨。 |
+
+---
+
+### 2. 日常情境對話應答 (L-RESP) 七大高頻語用語境句典
+
+在 Pre-A1 聽力應答中，學生常因文法死背而忽略**真實語用語境（Pragmatics）**。以下為本題庫 22 題所涵蓋之標準應答句典：
+
+#### ① 問候與初次見面 (Greetings)
+- **聽力輸入**：`Nice to meet you, Linda.` / `How are you doing today?`
+- **標準正解**：`Nice to meet you, too.` / `I'm fine, thank you.`
+- **常犯陷阱**：回答年齡（*I am ten years old.*）或方位（*It is in your bag.*）。
+
+#### ② 感謝與客氣應答 (Gratitude)
+- **聽力輸入**：`Thank you for your help, Peter.`
+- **標準正解**：`You are welcome.` / `My pleasure.`
+- **常犯陷阱**：機械式回答打招呼句（*I am fine, thanks.*）。
+
+#### ③ 道歉與包容安慰 (Apologies & Reassurance)
+- **聽力輸入**：`I am so sorry I broke your yellow crayon.`
+- **標準正解**：`That's all right. Don't worry.` / `No problem.`
+- **常犯陷阱**：回答顏色喜好（*I like red crayons.*）。
+
+#### ④ 請求與樂意協助 (Requests & Willingness)
+- **聽力輸入**：`Can you help me carry this heavy box, Andy?` / `Can I borrow your eraser?`
+- **標準正解**：`Sure, no problem!` / `Sure! Here you are.`
+- **常犯陷阱**：直接回答所有格或身分（*It is my brother's.*）。
+
+#### ⑤ 提議與邀約 (Suggestions with Let's)
+- **聽力輸入**：`It is a beautiful sunny day. Let's go swimming!`
+- **標準正解**：`Great idea! Let's go!`
+- **常犯陷阱**：以否定句回答身分（*No, I am not a teacher.*）。
+
+#### ⑥ 身體狀況關心 (Health & Well-being)
+- **聽力輸入**：`What's wrong, Andy? You look very tired.`
+- **標準正解**：`I have a headache and a fever.`
+- **常犯陷阱**：誤聽為喜好（*I like to eat apples.*）。
+
+#### ⑦ 選擇性問句 (Choices with Or)
+- **聽力輸入**：`Do you like bananas or papayas, Lisa?`
+- **標準正解**：`I like bananas. They are sweet.`
+- **重要考點**：選擇性問句（A or B）**絕對不能回答 Yes 或 No**，必須明確回答偏好選項。
+
+---
+
+### 3. 言談理解 (L-CONV) 聽力捕捉心法
+
+面對長度 25～40 字之英語對話，引導學生運用「三步捕捉法」：
+
+1. **第一步：聽第一句捕捉角色關係與場景**：
+   - 聽到 `Mom, I am hungry after practice...` $\to$ 建立「家庭廚房/點心」場景。
+   - 聽到 `Excuse me, where can I find books about animals?` $\to$ 建立「圖書館借書」場景。
+2. **第二步：注意轉折詞與關鍵協商 (Negotiation)**：
+   - 在約定時間或偏好題中，常出現初次提議被修正的情節：
+     - A: `How about eight o'clock?`
+     - B: `Eight is a bit early. Can we meet at eight thirty?`
+     - A: `Sure! Eight thirty is perfect.`
+     - **關鍵**：最後確認的 `eight thirty` 才是正解，切勿聽到第一個數字 `eight o'clock` 就搶答。
+3. **第三步：聽清最後 Question 的疑問焦點**：
+   - `What does the boy want to drink?` $\to$ 聚焦飲料名詞（`milk`）。
+   - `Where was the pencil?` $\to$ 聚焦介系詞片語（`inside her English textbook`）。
+   - `What does Amy's mother do?` $\to$ 聚焦職業單字（`nurse`）。
+
+---
+
+### 4. 代表性經典對話試題解構
+
+#### 【經典範例：時間約定協商題】
+> **對話音檔**：  
+> Girl: What time should we meet at the school gate on Saturday morning, Tom?  
+> Tom: How about eight o'clock?  
+> Girl: Eight is a bit early. Can we meet at eight thirty?  
+> Tom: Sure! Eight thirty is perfect.  
+> Question: What time will they meet on Saturday?  
+
+- **選項**：
+  - `(A) At eight thirty`（正解）
+  - `(B) At eight o'clock`（誘答：男孩一開始提議但被否決的時間）
+  - `(C) At nine o'clock`（誘答：常見整點時間干擾）
+  - `(D) At seven thirty`（誘答：提早一小時的時間干擾）
+- **教學解析**：
+  本題測驗真實對話中的協商歷程。Tom 先提議 8:00，女孩覺得太早提議改為 8:30，最後 Tom 以「Sure! Eight thirty is perfect.」達成共識。學生需聽完全程，選出最終約定時間 (A)。
+
+---
+
+## 六、 本手冊維護與後續章節推進路徑 (Roadmap)
+
+本手冊將隨後續模組開發，按以下規劃持續推進：
+1. **第陸章：字彙三位一體圖文音對應表與高頻核心 200 詞字表**
+2. **第柒章：口說 AI 語音即時評測評分規準 (Rubrics) 與常見發音盲點指引**
