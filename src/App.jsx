@@ -124,11 +124,25 @@ export function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
 
-  // 測驗出題設定 (預設純選定範圍誘答)
-  const [settings, setSettings] = useState({
-    selectedUnits: [],
-    count: '20',
-    distractorMode: 'strict'
+  // 測驗出題設定 (預設純選定範圍誘答，支援 URL 直接帶入冊次初始化)
+  const [settings, setSettings] = useState(() => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const b = urlParams.get('book');
+      if (b) {
+        return {
+          selectedUnits: b === 'abc' ? ['abc'] : [`${b}-1`, `${b}-2`],
+          count: '20',
+          distractorMode: 'strict',
+          selectedBook: b
+        };
+      }
+    } catch (e) {}
+    return {
+      selectedUnits: [],
+      count: '20',
+      distractorMode: 'strict'
+    };
   });
 
   const [autoJoinCode, setAutoJoinCode] = useState(null);
@@ -167,6 +181,20 @@ export function App() {
           setCurrentView(e.state.view);
         } else {
           setCurrentView(resolveViewFromUrl());
+        }
+        const urlParams = new URLSearchParams(window.location.search);
+        const b = urlParams.get('book');
+        if (b) {
+          setSettings(prev => {
+            if (!prev.selectedUnits || prev.selectedUnits.length === 0) {
+              return {
+                ...prev,
+                selectedUnits: b === 'abc' ? ['abc'] : [`${b}-1`, `${b}-2`],
+                selectedBook: b
+              };
+            }
+            return prev;
+          });
         }
       } catch (e) {}
     };

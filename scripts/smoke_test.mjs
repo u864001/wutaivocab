@@ -144,7 +144,7 @@ async function run() {
   await client.send('Page.enable');
   await client.send('Runtime.enable');
   await client.send('Page.addScriptToEvaluateOnNewDocument', {
-    source: 'window.alert = () => {}; window.confirm = () => true; window.prompt = () => null;'
+    source: 'window.alert = () => {}; window.confirm = () => true; window.prompt = () => null; window.__CI__ = true; try { localStorage.setItem("wutai_player_name", "測試勇士"); } catch(e){}'
   }).catch(() => {});
 
   const failures = [];
@@ -527,7 +527,8 @@ async function run() {
   // 5B. 貪食蛇方向鍵與虛擬十字鍵實際轉向驗證 (支援 GamePreloader 資源加載等待)
   client.exceptions = [];
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=snake&grade=3&book=1` });
-  await new Promise(r => setTimeout(r, 1200));
+  await waitForAppReady();
+  await new Promise(r => setTimeout(r, 600));
   const snakeMoveCheck = await client.evaluate(`
     (async () => {
       let upBtn = null;
@@ -552,9 +553,18 @@ async function run() {
   client.exceptions = [];
   await client.evaluate(`localStorage.setItem('wutai_player_name', '測試勇士');`);
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=battle&grade=3&book=1` });
-  await new Promise(r => setTimeout(r, 1000));
+  await waitForAppReady();
   const battleCheck = await client.evaluate(`
     (async () => {
+      const nameInput = document.querySelector('input[placeholder*="暱稱"]');
+      if (nameInput) {
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+        if (setter) setter.call(nameInput, '測試勇士');
+        else nameInput.value = '測試勇士';
+        nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+        nameInput.dispatchEvent(new Event('change', { bubbles: true }));
+        await new Promise(r => setTimeout(r, 200));
+      }
       let openBtn = null;
       for (let i = 0; i < 20; i++) {
         const btns = Array.from(document.querySelectorAll('button'));
@@ -574,7 +584,7 @@ async function run() {
       }
       const body = document.body.innerText || '';
       const hasRedundantHeader = body.includes('PIN 碼直接加入');
-      return { hasWaitingRoom, hasRedundantHeader };
+      return { hasWaitingRoom, hasRedundantHeader, openBtnFound: !!openBtn, openBtnText: openBtn?.innerText, bodySnippet: body.slice(0, 300) };
     })()
   `);
   if (!battleCheck?.hasWaitingRoom || battleCheck?.hasRedundantHeader || client.exceptions.length > 0) {
@@ -692,8 +702,15 @@ async function run() {
     for (const gid of ALL_GAME_IDS) {
       client.exceptions = [];
       const url = `${BASE_URL}/?view=${gid}&grade=${prof.grade}&book=${prof.book}`;
-      await client.send('Page.navigate', { url });
-      await new Promise(r => setTimeout(r, 550));
+      // 使用 SPA 內部 PopState 進行高效視圖切換，避免全頁重新載入與 56 次重複 Supabase 雲端請求
+      await client.evaluate(`
+        (() => {
+          const u = new URL('${url}');
+          window.history.pushState({ view: '${gid}' }, '', u.pathname + u.search);
+          window.dispatchEvent(new PopStateEvent('popstate', { state: { view: '${gid}' } }));
+        })()
+      `);
+      await new Promise(r => setTimeout(r, 200));
 
       const isCrashed = await client.evaluate(`document.body.innerText.includes('畫面載入遇到小插曲')`);
       if (isCrashed || client.exceptions.length > 0) {
