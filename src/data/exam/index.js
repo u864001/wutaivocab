@@ -19,7 +19,7 @@ import {
   SAA_115_G6_QUESTIONS,
   SAA_115_ALL_QUESTIONS,
   SAA_115_EXAM_PAPERS
-} from './saa';
+} from './saa/index.js';
 
 export {
   EXAM_TRACKS,

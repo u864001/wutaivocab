@@ -42,6 +42,7 @@
 | **多人連線對戰 & 3D 隕石防衛戰** (`battle`, `meteor`) | `src/games/battle/`, `src/games/meteor/` | [`docs/games/BATTLE_AND_METEOR_SPEC.md`](docs/games/BATTLE_AND_METEOR_SPEC.md) |
 | **叢林貪食蛇、打地鼠、極速滑卡** (`snake`, `mole`, `swipe`) | `src/games/snake/`, `mole/`, `swipe/` | [`docs/games/SNAKE_AND_ARCADE_SPEC.md`](docs/games/SNAKE_AND_ARCADE_SPEC.md) |
 | **課本題庫檢定館、經典選擇、拼字、手寫** (`mcq-exam`, `quiz`, `spelling`, `handwriting`) | `src/games/exam/`, `quiz/`, `spelling/`, `handwriting/` | [`docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md`](docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md) |
+| **Test My English Pre-A1 官方模擬與實戰備考指引** (`exam`, `tme-preA1`) | `src/games/exam/`, `src/data/exam/` | [`docs/exam/TME_PRE_A1_EXAM_SPEC_AND_GUIDE.md`](docs/exam/TME_PRE_A1_EXAM_SPEC_AND_GUIDE.md) |
 | **密室逃脫、字母迷宮、星際記憶翻牌** (`escape`, `maze`, `memory`) | `src/games/escape/`, `maze/`, `memory/` | [`docs/games/ESCAPE_MAZE_MEMORY_SPEC.md`](docs/games/ESCAPE_MAZE_MEMORY_SPEC.md) |
 | **霧臺家園、聽說實驗室、自然發音、電子書** (`town`, `langlab`, `phonics`) | `src/games/town/`, `src/features/` | [`docs/games/TOWN_AND_LANGLAB_SPEC.md`](docs/games/TOWN_AND_LANGLAB_SPEC.md) |
 | **全域遊戲載入進度條 & 節慶神獸** (`GamePreloader`) | `src/components/ui/`, `src/data/` | [`docs/features/GAME_PRELOADER_SPEC.md`](docs/features/GAME_PRELOADER_SPEC.md) |
