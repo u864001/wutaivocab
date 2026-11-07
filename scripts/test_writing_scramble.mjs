@@ -98,13 +98,13 @@ console.log('  ✓ 10/10 assembly simulation runs produced perfectly balanced 10
 
 // Test 5: Full Bank Integration
 console.log('\n[5/5] Validating Full TME_PRE_A1_BANK Integration...');
-if (TME_PRE_A1_BANK.length !== 234) {
-  throw new Error(`Expected total bank length 234, got ${TME_PRE_A1_BANK.length}`);
+if (TME_PRE_A1_BANK.length !== 250) {
+  throw new Error(`Expected total bank length 250, got ${TME_PRE_A1_BANK.length}`);
 }
 const writingInFull = TME_PRE_A1_BANK.filter(q => q.category === 'writing');
 if (writingInFull.length !== 60) {
   throw new Error(`Expected 60 writing questions in full bank, got ${writingInFull.length}`);
 }
-console.log('  ✓ Full TME_PRE_A1_BANK correctly contains all 234 questions (32 vocab, 58 listen, 68 read, 60 write, 16 speak).');
+console.log('  ✓ Full TME_PRE_A1_BANK correctly contains all 250 questions (32 vocab, 58 listen, 68 read, 60 write, 32 speak).');
 
 console.log('\n🎉 ALL PRE-A1 SENTENCE SCRAMBLE TESTS PASSED 100%!\n');

@@ -101,6 +101,24 @@ for (const q of passages) {
 }
 console.log(`✓ Phase 2F: read-passage (${passages.length} items) - passage text, groupId & question explanation verified`);
 
+// 2G: speaking
+const speakingItems = TME_PRE_A1_BANK.filter(q => q.category === 'speaking');
+for (const q of speakingItems) {
+  if (!q.targetText) {
+    errors.push(`[${q.id}] speaking question missing targetText`);
+  }
+  if (!q.prepSeconds || q.prepSeconds < 3) {
+    errors.push(`[${q.id}] speaking question missing or invalid prepSeconds`);
+  }
+  if (!q.recordSeconds || q.recordSeconds < 5) {
+    errors.push(`[${q.id}] speaking question missing or invalid recordSeconds`);
+  }
+  if (!['S-WORD', 'S-SENT', 'S-READ'].includes(q.taskType)) {
+    errors.push(`[${q.id}] invalid speaking taskType "${q.taskType}"`);
+  }
+}
+console.log(`✓ Phase 2G: speaking (${speakingItems.length} items) - targetText, timing bounds & taskType verified`);
+
 if (errors.length > 0) {
   console.error(`\n❌ Found ${errors.length} errors:`);
   errors.forEach(e => console.error(`  - ${e}`));

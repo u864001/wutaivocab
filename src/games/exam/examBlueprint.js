@@ -46,7 +46,9 @@ export const TASK_TYPES = {
   'R-COMP': { section: 'reading', label: '閱讀理解' },
   'R-PASSAGE': { section: 'reading', label: '篇章閱讀' },
   'W-SCRAMBLE': { section: 'writing', label: '重組句子' },
-  'S-READ': { section: 'speaking', label: '口說朗讀', audio: true }
+  'S-WORD': { section: 'speaking', label: '單字朗讀', audio: true },
+  'S-SENT': { section: 'speaking', label: '短句朗讀', audio: true },
+  'S-READ': { section: 'speaking', label: '長句朗讀', audio: true }
 };
 
 const TASK_TYPE_ORDER = Object.keys(TASK_TYPES);
@@ -55,6 +57,7 @@ const TASK_TYPE_ORDER = Object.keys(TASK_TYPES);
 export function getTaskType(q) {
   if (q?.taskType && TASK_TYPES[q.taskType]) return q.taskType;
   if (q?.category === 'dialogue') return 'G-DLG';
+  if (q?.category === 'speaking') return 'S-READ';
   return 'G-MC';
 }
 

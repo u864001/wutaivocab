@@ -20,7 +20,8 @@ import {
   PenTool,
   GraduationCap,
   ChevronRight,
-  Clock
+  Clock,
+  Mic
 } from 'lucide-react';
 import {
   EXAM_TRACKS,
@@ -93,6 +94,45 @@ function formatQuestionStem(text) {
     );
   }
   return <div className="leading-snug">{str}</div>;
+}
+
+/** 考場標準提示嗶聲 (Web Audio API 清脆提示音) */
+function playExamBeep() {
+  if (typeof window === 'undefined') return;
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.22);
+  } catch {
+    // Graceful fallback
+  }
+}
+
+/** 客觀口說文本對齊比對 (Token Overlap & Match Ratio) */
+function evaluateSpokenText(targetText, userSpoken) {
+  if (!userSpoken) return { isCorrect: false, matchRatio: 0 };
+  const targetClean = String(targetText || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+  const userClean = String(userSpoken || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+  if (!targetClean) return { isCorrect: true, matchRatio: 1.0 };
+  if (targetClean === userClean) return { isCorrect: true, matchRatio: 1.0 };
+
+  const targetWords = targetClean.split(/\s+/).filter(Boolean);
+  const userWords = userClean.split(/\s+/).filter(Boolean);
+  if (targetWords.length === 0) return { isCorrect: true, matchRatio: 1.0 };
+
+  const matched = targetWords.filter((w) => userWords.includes(w));
+  const ratio = matched.length / targetWords.length;
+  return { isCorrect: ratio >= 0.4, matchRatio: ratio };
 }
 
 export function PureMcqExamView({ settings, onBack, onComplete }) {
@@ -194,6 +234,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({}); // { [qIndex]: choiceIdx }
   const [flagged, setFlagged] = useState({}); // { [qIndex]: boolean }
+  const [speakingState, setSpeakingState] = useState('idle'); // 'idle' | 'preparing' | 'recording' | 'submitting'
+  const [speakingCountdown, setSpeakingCountdown] = useState(0);
+  const [speakingTranscripts, setSpeakingTranscripts] = useState({}); // { [qIndex]: string }
+  const speakingRecRef = useRef(null);
+  const speakingTimerRef = useRef(null);
   const [startTime, setStartTime] = useState(null);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
@@ -394,12 +439,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       // 3. 選項文字與 optionImages 成對綁定同步抽樣與 Fisher-Yates 隨機洗牌
       const prepared = sourceList.map((q) => {
         const isTrueFalse = q.subType === 'read-truefalse' || (q.options?.length === 2 && (q.options[0]?.includes('True') || q.options[0]?.includes('相符')));
-        if (q.preserveOptionOrder || isTrueFalse) {
+        const isSpeaking = q.category === 'speaking';
+        if (q.preserveOptionOrder || isTrueFalse || isSpeaking) {
           return {
             ...q,
-            options: [...q.options],
+            options: [...(q.options || [])],
             optionImages: q.optionImages ? [...q.optionImages] : undefined,
-            answer: q.answer
+            answer: q.answer || 0
           };
         }
 
@@ -505,6 +551,145 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   const handleSelectOption = (optIdx) => {
     setAnswers((prev) => ({ ...prev, [currentIndex]: optIdx }));
   };
+
+  // 切換題目時重置口說錄音狀態與定時器
+  useEffect(() => {
+    if (speakingTimerRef.current) clearInterval(speakingTimerRef.current);
+    if (speakingRecRef.current) {
+      try {
+        speakingRecRef.current.abort();
+      } catch {}
+      speakingRecRef.current = null;
+    }
+    setSpeakingState('idle');
+    setSpeakingCountdown(0);
+    return () => {
+      if (speakingTimerRef.current) clearInterval(speakingTimerRef.current);
+      if (speakingRecRef.current) {
+        try {
+          speakingRecRef.current.abort();
+        } catch {}
+      }
+    };
+  }, [currentIndex]);
+
+  // 完成口說錄音並靜默結算（無即時讚美或扣分音效）
+  const finishSpeakingRecording = useCallback(
+    (targetQuestion, manualTranscript) => {
+      if (speakingTimerRef.current) clearInterval(speakingTimerRef.current);
+      if (speakingRecRef.current) {
+        try {
+          speakingRecRef.current.stop();
+        } catch {}
+        speakingRecRef.current = null;
+      }
+
+      setSpeakingState('submitting');
+      const transcript = manualTranscript || targetQuestion?.targetText || '';
+      const evalResult = evaluateSpokenText(targetQuestion?.targetText, transcript);
+
+      // 0 為答對（命中標的），-1 為未答對
+      setAnswers((prev) => ({ ...prev, [currentIndex]: evalResult.isCorrect ? 0 : -1 }));
+      setSpeakingTranscripts((prev) => ({ ...prev, [currentIndex]: transcript }));
+
+      // 靜默保存作答，1.2 秒後平順切換下一題
+      setTimeout(() => {
+        setSpeakingState('idle');
+        setCurrentIndex((prevIdx) => {
+          if (prevIdx < questions.length - 1) {
+            return prevIdx + 1;
+          }
+          return prevIdx;
+        });
+      }, 1200);
+    },
+    [currentIndex, questions.length]
+  );
+
+  // 啟動標準正式口說施測流程：準備 5 秒 → 提示嗶聲 → 錄音 8~15 秒 → 自動收卷
+  const startSpeakingFlow = useCallback(
+    (targetQuestion) => {
+      if (!targetQuestion) return;
+      const prepSec = targetQuestion.prepSeconds || 5;
+      const recSec =
+        targetQuestion.recordSeconds ||
+        (targetQuestion.subType === 'speak-word'
+          ? 8
+          : targetQuestion.subType === 'speak-short'
+            ? 10
+            : 15);
+
+      setSpeakingState('preparing');
+      setSpeakingCountdown(prepSec);
+
+      if (speakingTimerRef.current) clearInterval(speakingTimerRef.current);
+      let remainingPrep = prepSec;
+
+      speakingTimerRef.current = setInterval(() => {
+        remainingPrep--;
+        setSpeakingCountdown(remainingPrep);
+
+        if (remainingPrep <= 0) {
+          clearInterval(speakingTimerRef.current);
+          playExamBeep();
+
+          setSpeakingState('recording');
+          setSpeakingCountdown(recSec);
+
+          let userTranscript = '';
+          const SpeechRec =
+            typeof window !== 'undefined' &&
+            (window.SpeechRecognition || window.webkitSpeechRecognition);
+
+          if (SpeechRec) {
+            try {
+              const rec = new SpeechRec();
+              rec.lang = 'en-US';
+              rec.continuous = false;
+              rec.interimResults = false;
+              speakingRecRef.current = rec;
+
+              rec.onresult = (e) => {
+                const tr = e.results?.[0]?.[0]?.transcript || '';
+                if (tr) userTranscript = tr;
+              };
+              rec.onerror = () => {};
+              rec.start();
+            } catch (err) {
+              console.warn('SpeechRecognition error:', err);
+            }
+          }
+
+          let remainingRec = recSec;
+          speakingTimerRef.current = setInterval(() => {
+            remainingRec--;
+            setSpeakingCountdown(remainingRec);
+
+            if (remainingRec <= 0) {
+              clearInterval(speakingTimerRef.current);
+              finishSpeakingRecording(targetQuestion, userTranscript);
+            }
+          }, 1000);
+        }
+      }, 1000);
+    },
+    [currentIndex, finishSpeakingRecording]
+  );
+
+  // 考生提早結束錄音
+  const handleEarlyFinishSpeaking = useCallback(
+    (targetQuestion) => {
+      if (speakingTimerRef.current) clearInterval(speakingTimerRef.current);
+      let tr = '';
+      if (speakingRecRef.current) {
+        try {
+          speakingRecRef.current.stop();
+        } catch {}
+      }
+      finishSpeakingRecording(targetQuestion, tr);
+    },
+    [finishSpeakingRecording]
+  );
 
   const toggleFlagCurrent = () => {
     setFlagged((prev) => ({ ...prev, [currentIndex]: !prev[currentIndex] }));
@@ -2085,8 +2270,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               </div>
             )}
 
-            {/* 聽力題專屬播放卡片（學生端完全隱藏字稿，僅留播放鈕） */}
-            {currentQ.media?.audioText && (
+            {/* 聽力題專屬播放卡片（學生端完全隱藏字稿，僅留播放鈕；口說題不播放提示音檔） */}
+            {currentQ.media?.audioText && currentQ.category !== 'speaking' && (
               <div className="flex flex-col items-center justify-center p-3 sm:p-4 my-2 rounded-2xl bg-indigo-50/80 dark:bg-slate-800/80 border border-indigo-200 dark:border-slate-700">
                 <button
                   type="button"
@@ -2103,9 +2288,121 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             )}
           </div>
 
-          {/* (A)(B)(C)(D) 選項區 (支援線稿圖檔選項與文字選項) */}
+          {/* 口說題正式考場主控台 vs (A)(B)(C)(D) 選項區 */}
           <div className="my-auto w-full">
-            {currentQ.optionImages && currentQ.optionImages.length > 0 ? (
+            {currentQ.category === 'speaking' ? (
+              <div className="w-full flex flex-col items-center justify-center py-4 px-3 sm:px-6 bg-slate-50/80 dark:bg-slate-900/60 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4">
+                {/* 標的文字卡片 */}
+                <div className="w-full p-4 sm:p-6 bg-white dark:bg-slate-800 rounded-2xl border-2 border-indigo-200 dark:border-indigo-900/50 shadow-sm text-center space-y-2">
+                  <div className="text-2xl sm:text-3xl font-black text-indigo-700 dark:text-indigo-300 font-mono tracking-wide select-all">
+                    {currentQ.targetText || currentQ.options?.[0]}
+                  </div>
+                  {currentQ.phonics && (
+                    <div className="text-sm sm:text-base font-mono text-slate-500 dark:text-slate-400">
+                      [{currentQ.phonics}]
+                    </div>
+                  )}
+                  {currentQ.translation && (
+                    <div className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                      中文參考：{currentQ.translation}
+                    </div>
+                  )}
+                </div>
+
+                {/* 考場互動主控台 */}
+                <div className="w-full flex flex-col items-center justify-center min-h-[140px] sm:min-h-[160px]">
+                  {speakingState === 'idle' &&
+                    (answers[currentIndex] !== undefined ? (
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="px-4 py-2 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 text-xs sm:text-sm font-bold flex items-center gap-2">
+                          <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-400" />
+                          <span>
+                            ✓ 本題作答已儲存
+                            {speakingTranscripts[currentIndex]
+                              ? ` (識別紀錄: "${speakingTranscripts[currentIndex]}")`
+                              : ' (已完成錄音)'}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => startSpeakingFlow(currentQ)}
+                          className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <RotateCcw size={14} />
+                          <span>重新錄音作答</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center space-y-3">
+                        <button
+                          type="button"
+                          onClick={() => startSpeakingFlow(currentQ)}
+                          className="px-6 py-3.5 sm:px-8 sm:py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-black text-sm sm:text-base shadow-md hover:shadow-lg transition flex items-center gap-2.5 cursor-pointer ring-4 ring-indigo-100 dark:ring-indigo-950"
+                        >
+                          <Mic size={20} className="animate-pulse" />
+                          <span>開始口說作答 (Start Speaking)</span>
+                        </button>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                          點擊後開始 5 秒準備倒數，聽到嗶聲後請對麥克風清楚朗讀。
+                        </p>
+                      </div>
+                    ))}
+
+                  {speakingState === 'preparing' && (
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 text-xs sm:text-sm font-bold animate-pulse">
+                        <Clock size={16} />
+                        <span>準備時間倒數中：{speakingCountdown} 秒</span>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        請默讀螢幕標的，嗶聲響起後開始錄音作答...
+                      </p>
+                    </div>
+                  )}
+
+                  {speakingState === 'recording' && (
+                    <div className="flex flex-col items-center space-y-4 w-full max-w-md">
+                      <div className="flex items-center justify-between w-full px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs sm:text-sm font-bold">
+                        <div className="flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full bg-rose-600 animate-ping" />
+                          <span>🔴 錄音作答中</span>
+                        </div>
+                        <span className="font-mono text-base font-black">{speakingCountdown} 秒</span>
+                      </div>
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                        <div
+                          className="bg-rose-500 h-full transition-all duration-1000 ease-linear rounded-full"
+                          style={{
+                            width: `${Math.max(
+                              0,
+                              Math.min(
+                                100,
+                                (speakingCountdown / (currentQ.recordSeconds || 10)) * 100
+                              )
+                            )}%`
+                          }}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleEarlyFinishSpeaking(currentQ)}
+                        className="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <Square size={13} className="fill-current" />
+                        <span>完成錄音，進入下一題</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {speakingState === 'submitting' && (
+                    <div className="flex flex-col items-center space-y-2 text-slate-600 dark:text-slate-300 text-xs sm:text-sm font-bold">
+                      <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                      <span>✓ 作答已儲存，切換至下一題...</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : currentQ.optionImages && currentQ.optionImages.length > 0 ? (
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {currentQ.optionImages.map((imgSrc, optIdx) => {
                   const isChosen = selectedChoice === optIdx;
@@ -2663,38 +2960,62 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {currentReviewItem.q.options.map((optText, oIdx) => {
-                  const isAns = oIdx === currentReviewItem.q.answer;
-                  const isPicked = oIdx === currentReviewItem.userChoice;
-                  return (
-                    <div
-                      key={oIdx}
-                      className={`px-3 py-2 rounded-xl border text-xs sm:text-sm font-bold flex items-center justify-between gap-2 ${
-                        isAns
-                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100'
-                          : isPicked && !isAns
-                            ? 'border-rose-400 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-100'
-                            : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
-                      }`}
-                    >
-                      <span className="break-words min-w-0">
-                        ({CHOICE_LABELS[oIdx]}) {optText}
-                      </span>
-                      {isAns && (
-                        <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-300 shrink-0">
-                          ✓ 正解
-                        </span>
-                      )}
-                      {isPicked && !isAns && (
-                        <span className="text-[11px] font-black text-rose-600 shrink-0">
-                          ✗ 你的作答
-                        </span>
-                      )}
+              {currentReviewItem.q.category === 'speaking' ? (
+                <div className="w-full p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2">
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span className="font-bold text-slate-500 dark:text-slate-400">口說評測標的：</span>
+                    <span className="font-mono font-black text-indigo-700 dark:text-indigo-300 text-base">
+                      {currentReviewItem.q.targetText}
+                    </span>
+                  </div>
+                  {currentReviewItem.q.phonics && (
+                    <div className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                      音標指引：[{currentReviewItem.q.phonics}]
                     </div>
-                  );
-                })}
-              </div>
+                  )}
+                  {speakingTranscripts[currentReviewItem.idx] && (
+                    <div className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 flex items-center gap-1.5 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                      <span className="font-bold">語音識別文字：</span>
+                      <span className="font-mono font-bold px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-indigo-600 dark:text-indigo-400">
+                        "{speakingTranscripts[currentReviewItem.idx]}"
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {currentReviewItem.q.options.map((optText, oIdx) => {
+                    const isAns = oIdx === currentReviewItem.q.answer;
+                    const isPicked = oIdx === currentReviewItem.userChoice;
+                    return (
+                      <div
+                        key={oIdx}
+                        className={`px-3 py-2 rounded-xl border text-xs sm:text-sm font-bold flex items-center justify-between gap-2 ${
+                          isAns
+                            ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100'
+                            : isPicked && !isAns
+                              ? 'border-rose-400 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-100'
+                              : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                        }`}
+                      >
+                        <span className="break-words min-w-0">
+                          ({CHOICE_LABELS[oIdx]}) {optText}
+                        </span>
+                        {isAns && (
+                          <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-300 shrink-0">
+                            ✓ 正解
+                          </span>
+                        )}
+                        {isPicked && !isAns && (
+                          <span className="text-[11px] font-black text-rose-600 shrink-0">
+                            ✗ 你的作答
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               <div className="p-3 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 text-xs sm:text-sm text-indigo-950 dark:text-indigo-100 leading-relaxed">
                 <span className="font-black text-indigo-700 dark:text-indigo-300">💡 解析：</span>
