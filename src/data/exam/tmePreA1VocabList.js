@@ -631,7 +631,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/maʊs/",
     "zh": "老鼠",
     "category": "animals",
-    "image": null,
+    "image": "/assets/exam/preA1/mouse.png",
     "example": "The small mouse hides under the bed.",
     "audioText": "mouse"
   },
@@ -642,7 +642,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/ˈspaɪ.dɚ/",
     "zh": "蜘蛛",
     "category": "animals",
-    "image": null,
+    "image": "/assets/exam/preA1/spider.png",
     "example": "A spider makes a round web.",
     "audioText": "spider"
   },
@@ -653,7 +653,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/ˈhɪp.oʊ/",
     "zh": "河馬",
     "category": "animals",
-    "image": null,
+    "image": "/assets/exam/preA1/hippo.png",
     "example": "The hippo stays in the river.",
     "audioText": "hippo"
   },
@@ -1071,7 +1071,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/ˈkæn.di/",
     "zh": "糖果",
     "category": "food_drinks",
-    "image": null,
+    "image": "/assets/exam/preA1/candy.png",
     "example": "Do not eat too much candy.",
     "audioText": "candy"
   },
@@ -1082,7 +1082,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/ˈtʃɑːk.lət/",
     "zh": "巧克力",
     "category": "food_drinks",
-    "image": null,
+    "image": "/assets/exam/preA1/chocolate.png",
     "example": "Dark chocolate is sweet and bitter.",
     "audioText": "chocolate"
   },
@@ -1093,7 +1093,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/ˈtʃɪk.ɪn/",
     "zh": "雞肉",
     "category": "food_drinks",
-    "image": null,
+    "image": "/assets/exam/preA1/chicken.png",
     "example": "We have roast chicken for Sunday lunch.",
     "audioText": "chicken"
   },
@@ -1511,7 +1511,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/ˈrɪv.ɚ/",
     "zh": "河流",
     "category": "nature_weather",
-    "image": null,
+    "image": "/assets/exam/preA1/river.png",
     "example": "Cool water flows in the stream.",
     "audioText": "river"
   },
@@ -1522,7 +1522,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/siː/",
     "zh": "海洋",
     "category": "nature_weather",
-    "image": null,
+    "image": "/assets/exam/preA1/sea.png",
     "example": "Ships sail on the deep blue sea.",
     "audioText": "sea"
   },
@@ -1533,7 +1533,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/ˈreɪn.boʊ/",
     "zh": "彩虹",
     "category": "nature_weather",
-    "image": null,
+    "image": "/assets/exam/preA1/rainbow.png",
     "example": "A colorful rainbow after the rain.",
     "audioText": "rainbow"
   },
@@ -1544,7 +1544,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/ˈsnoʊ.mæn/",
     "zh": "雪人",
     "category": "nature_weather",
-    "image": null,
+    "image": "/assets/exam/preA1/snowman.png",
     "example": "Build a cute snowman with carrots.",
     "audioText": "snowman"
   },
@@ -1687,7 +1687,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/feɪs/",
     "zh": "臉龐",
     "category": "body_health",
-    "image": null,
+    "image": "/assets/exam/preA1/face.png",
     "example": "Wash your face with cold water.",
     "audioText": "face"
   },
@@ -1698,7 +1698,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/tiːθ/",
     "zh": "牙齒 (複數)",
     "category": "body_health",
-    "image": null,
+    "image": "/assets/exam/preA1/teeth.png",
     "example": "Brush your teeth twice a day.",
     "audioText": "teeth"
   },
@@ -1709,7 +1709,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/hed/",
     "zh": "頭部",
     "category": "body_health",
-    "image": null,
+    "image": "/assets/exam/preA1/head.png",
     "example": "Nod your head to say yes.",
     "audioText": "head"
   },
@@ -1720,7 +1720,7 @@ export const TME_PRE_A1_CORE_VOCAB = [
     "phonics": "/smaɪl/",
     "zh": "微笑",
     "category": "body_health",
-    "image": null,
+    "image": "/assets/exam/preA1/smile.png",
     "example": "She greeted us with a warm smile.",
     "audioText": "smile"
   },
