@@ -20,7 +20,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 1,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/library.svg",
+    "image": "/assets/exam/preA1/library.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "library",
@@ -43,7 +43,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 1,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/rainy_girl.svg",
+    "image": "/assets/exam/preA1/rainy_girl.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "It is rainy. The girl has an umbrella.",
@@ -317,7 +317,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 2,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/park.svg",
+    "image": "/assets/exam/preA1/park.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "park",
@@ -340,7 +340,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 3,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/school.svg",
+    "image": "/assets/exam/preA1/school.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "school",
@@ -363,7 +363,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 4,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/zoo.svg",
+    "image": "/assets/exam/preA1/zoo.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "zoo",
@@ -386,7 +386,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 5,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/restaurant.svg",
+    "image": "/assets/exam/preA1/restaurant.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "restaurant",
@@ -409,7 +409,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 6,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/playground.svg",
+    "image": "/assets/exam/preA1/playground.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "playground",
@@ -432,7 +432,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 7,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/bag.svg",
+    "image": "/assets/exam/preA1/bag.png",
     "question": "看上學用品線稿插圖，選出代表的英文單字：",
     "options": [
       "bag",
@@ -455,7 +455,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 8,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/desk.svg",
+    "image": "/assets/exam/preA1/desk.png",
     "question": "看教室設備線稿插圖，選出代表的英文單字：",
     "options": [
       "desk",
@@ -478,7 +478,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 2,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/bicycle.svg",
+    "image": "/assets/exam/preA1/bicycle.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "The boy has a new bicycle.",
@@ -500,7 +500,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 3,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/dog.svg",
+    "image": "/assets/exam/preA1/dog.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "The cute dog is sitting on the floor.",
@@ -522,7 +522,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 4,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/duck.svg",
+    "image": "/assets/exam/preA1/duck.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "The little duck is swimming in the water.",
@@ -544,7 +544,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 5,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/bus.svg",
+    "image": "/assets/exam/preA1/bus.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "The students take the yellow school bus.",
@@ -566,7 +566,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 6,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/book.svg",
+    "image": "/assets/exam/preA1/book.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "There is an open English book on the desk.",
@@ -588,7 +588,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 7,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/cake.svg",
+    "image": "/assets/exam/preA1/cake.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "There is a birthday cake with candles.",
@@ -610,7 +610,7 @@ export const TME_PRE_A1_READING_BANK = [
     "serialNum": 8,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/boat.svg",
+    "image": "/assets/exam/preA1/boat.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "A small sailboat is floating on the water.",

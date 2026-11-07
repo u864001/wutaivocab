@@ -40,13 +40,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/apple.svg",
-      "/assets/exam/preA1/banana.svg",
-      "/assets/exam/preA1/orange.svg",
-      "/assets/exam/preA1/grape.svg",
-      "/assets/exam/preA1/cake.svg",
-      "/assets/exam/preA1/bread.svg",
-      "/assets/exam/preA1/cookie.svg"
+      "/assets/exam/preA1/apple.png",
+      "/assets/exam/preA1/banana.png",
+      "/assets/exam/preA1/orange.png",
+      "/assets/exam/preA1/grape.png",
+      "/assets/exam/preA1/cake.png",
+      "/assets/exam/preA1/bread.png",
+      "/assets/exam/preA1/cookie.png"
     ],
     "answer": 0,
     "explanation": "英文「apple」意為蘋果，對應蘋果線稿插圖。",
@@ -71,13 +71,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/pencil.svg",
-      "/assets/exam/preA1/ruler.svg",
-      "/assets/exam/preA1/book.svg",
-      "/assets/exam/preA1/scissors.svg",
-      "/assets/exam/preA1/eraser.svg",
-      "/assets/exam/preA1/pen.svg",
-      "/assets/exam/preA1/desk.svg"
+      "/assets/exam/preA1/pencil.png",
+      "/assets/exam/preA1/ruler.png",
+      "/assets/exam/preA1/book.png",
+      "/assets/exam/preA1/scissors.png",
+      "/assets/exam/preA1/eraser.png",
+      "/assets/exam/preA1/pen.png",
+      "/assets/exam/preA1/desk.png"
     ],
     "answer": 0,
     "explanation": "英文「pencil」意為鉛筆，對應鉛筆線稿插圖。",
@@ -92,7 +92,7 @@ const NON_WRITING_ITEMS = [
     "taskType": "V-MEAN",
     "difficulty": 1,
     "question": "看題目線稿插圖，選出正確的英文單字：",
-    "image": "/assets/exam/preA1/cat.svg",
+    "image": "/assets/exam/preA1/cat.png",
     "options": [
       "cat",
       "dog",
@@ -127,12 +127,12 @@ const NON_WRITING_ITEMS = [
       "圖片 (F)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/umbrella.svg",
-      "/assets/exam/preA1/cap.svg",
-      "/assets/exam/preA1/shoe.svg",
-      "/assets/exam/preA1/jacket.svg",
-      "/assets/exam/preA1/hat.svg",
-      "/assets/exam/preA1/tshirt.svg"
+      "/assets/exam/preA1/umbrella.png",
+      "/assets/exam/preA1/cap.png",
+      "/assets/exam/preA1/shoe.png",
+      "/assets/exam/preA1/jacket.png",
+      "/assets/exam/preA1/hat.png",
+      "/assets/exam/preA1/tshirt.png"
     ],
     "answer": 0,
     "explanation": "聽力發音為「umbrella（雨傘）」，故選雨傘線稿插圖。",
@@ -170,7 +170,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 1,
     "taskType": "L-SENT",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/bicycle.svg",
+    "image": "/assets/exam/preA1/bicycle.png",
     "media": {
       "audioText": "The boy is riding a bicycle in the park."
     },
@@ -208,12 +208,12 @@ const NON_WRITING_ITEMS = [
       "圖片 (F)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/library.svg",
-      "/assets/exam/preA1/zoo.svg",
-      "/assets/exam/preA1/playground.svg",
-      "/assets/exam/preA1/restaurant.svg",
-      "/assets/exam/preA1/park.svg",
-      "/assets/exam/preA1/school.svg"
+      "/assets/exam/preA1/library.png",
+      "/assets/exam/preA1/zoo.png",
+      "/assets/exam/preA1/playground.png",
+      "/assets/exam/preA1/restaurant.png",
+      "/assets/exam/preA1/park.png",
+      "/assets/exam/preA1/school.png"
     ],
     "answer": 0,
     "explanation": "對話中 Peter 說「I am going to the library」，故前往地點為圖書館 (A)。",
@@ -515,7 +515,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 1,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/library.svg",
+    "image": "/assets/exam/preA1/library.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "library",
@@ -538,7 +538,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 1,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/rainy_girl.svg",
+    "image": "/assets/exam/preA1/rainy_girl.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "It is rainy. The girl has an umbrella.",
@@ -883,13 +883,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/cake.svg",
-      "/assets/exam/preA1/bread.svg",
-      "/assets/exam/preA1/cookie.svg",
-      "/assets/exam/preA1/pizza.svg",
-      "/assets/exam/preA1/apple.svg",
-      "/assets/exam/preA1/banana.svg",
-      "/assets/exam/preA1/orange.svg"
+      "/assets/exam/preA1/cake.png",
+      "/assets/exam/preA1/bread.png",
+      "/assets/exam/preA1/cookie.png",
+      "/assets/exam/preA1/pizza.png",
+      "/assets/exam/preA1/apple.png",
+      "/assets/exam/preA1/banana.png",
+      "/assets/exam/preA1/orange.png"
     ],
     "answer": 0,
     "explanation": "英文「cake」中文為「蛋糕」，故選圖片 (A)。",
@@ -914,13 +914,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/rabbit.svg",
-      "/assets/exam/preA1/bear.svg",
-      "/assets/exam/preA1/elephant.svg",
-      "/assets/exam/preA1/monkey.svg",
-      "/assets/exam/preA1/cat.svg",
-      "/assets/exam/preA1/dog.svg",
-      "/assets/exam/preA1/duck.svg"
+      "/assets/exam/preA1/rabbit.png",
+      "/assets/exam/preA1/bear.png",
+      "/assets/exam/preA1/elephant.png",
+      "/assets/exam/preA1/monkey.png",
+      "/assets/exam/preA1/cat.png",
+      "/assets/exam/preA1/dog.png",
+      "/assets/exam/preA1/duck.png"
     ],
     "answer": 0,
     "explanation": "英文「rabbit」為長耳朵的「兔子」，故選圖片 (A)。",
@@ -945,13 +945,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/desk.svg",
-      "/assets/exam/preA1/chair.svg",
-      "/assets/exam/preA1/bag.svg",
-      "/assets/exam/preA1/book.svg",
-      "/assets/exam/preA1/pencil.svg",
-      "/assets/exam/preA1/ruler.svg",
-      "/assets/exam/preA1/pen.svg"
+      "/assets/exam/preA1/desk.png",
+      "/assets/exam/preA1/chair.png",
+      "/assets/exam/preA1/bag.png",
+      "/assets/exam/preA1/book.png",
+      "/assets/exam/preA1/pencil.png",
+      "/assets/exam/preA1/ruler.png",
+      "/assets/exam/preA1/pen.png"
     ],
     "answer": 0,
     "explanation": "英文「desk」為學校教室裡的「書桌/課桌」，故選圖片 (A)。",
@@ -976,13 +976,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/bus.svg",
-      "/assets/exam/preA1/car.svg",
-      "/assets/exam/preA1/train.svg",
-      "/assets/exam/preA1/boat.svg",
-      "/assets/exam/preA1/bicycle.svg",
-      "/assets/exam/preA1/park.svg",
-      "/assets/exam/preA1/playground.svg"
+      "/assets/exam/preA1/bus.png",
+      "/assets/exam/preA1/car.png",
+      "/assets/exam/preA1/train.png",
+      "/assets/exam/preA1/boat.png",
+      "/assets/exam/preA1/bicycle.png",
+      "/assets/exam/preA1/park.png",
+      "/assets/exam/preA1/playground.png"
     ],
     "answer": 0,
     "explanation": "英文「bus」為大眾運輸工具「公車/巴士」，故選圖片 (A)。",
@@ -1007,13 +1007,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/milk.svg",
-      "/assets/exam/preA1/water.svg",
-      "/assets/exam/preA1/orange.svg",
-      "/assets/exam/preA1/apple.svg",
-      "/assets/exam/preA1/cake.svg",
-      "/assets/exam/preA1/bread.svg",
-      "/assets/exam/preA1/egg.svg"
+      "/assets/exam/preA1/milk.png",
+      "/assets/exam/preA1/water.png",
+      "/assets/exam/preA1/orange.png",
+      "/assets/exam/preA1/apple.png",
+      "/assets/exam/preA1/cake.png",
+      "/assets/exam/preA1/bread.png",
+      "/assets/exam/preA1/egg.png"
     ],
     "answer": 0,
     "explanation": "英文「milk」為白色飲品「牛奶」，故選圖片 (A)。",
@@ -1038,13 +1038,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/fish.svg",
-      "/assets/exam/preA1/duck.svg",
-      "/assets/exam/preA1/bird.svg",
-      "/assets/exam/preA1/pig.svg",
-      "/assets/exam/preA1/cat.svg",
-      "/assets/exam/preA1/dog.svg",
-      "/assets/exam/preA1/rabbit.svg"
+      "/assets/exam/preA1/fish.png",
+      "/assets/exam/preA1/duck.png",
+      "/assets/exam/preA1/bird.png",
+      "/assets/exam/preA1/pig.png",
+      "/assets/exam/preA1/cat.png",
+      "/assets/exam/preA1/dog.png",
+      "/assets/exam/preA1/rabbit.png"
     ],
     "answer": 0,
     "explanation": "英文「fish」為水裡游的「魚」，故選圖片 (A)。",
@@ -1059,7 +1059,7 @@ const NON_WRITING_ITEMS = [
     "taskType": "V-MEAN",
     "difficulty": 1,
     "question": "看題目線稿插圖，選出正確的英文單字：",
-    "image": "/assets/exam/preA1/dog.svg",
+    "image": "/assets/exam/preA1/dog.png",
     "options": [
       "dog",
       "cat",
@@ -1082,7 +1082,7 @@ const NON_WRITING_ITEMS = [
     "taskType": "V-MEAN",
     "difficulty": 1,
     "question": "看題目線稿插圖，選出正確的英文單字：",
-    "image": "/assets/exam/preA1/elephant.svg",
+    "image": "/assets/exam/preA1/elephant.png",
     "options": [
       "elephant",
       "monkey",
@@ -1105,7 +1105,7 @@ const NON_WRITING_ITEMS = [
     "taskType": "V-MEAN",
     "difficulty": 1,
     "question": "看題目線稿插圖，選出正確的英文單字：",
-    "image": "/assets/exam/preA1/chair.svg",
+    "image": "/assets/exam/preA1/chair.png",
     "options": [
       "chair",
       "desk",
@@ -1128,7 +1128,7 @@ const NON_WRITING_ITEMS = [
     "taskType": "V-MEAN",
     "difficulty": 1,
     "question": "看題目線稿插圖，選出正確的英文單字：",
-    "image": "/assets/exam/preA1/car.svg",
+    "image": "/assets/exam/preA1/car.png",
     "options": [
       "car",
       "bus",
@@ -1151,7 +1151,7 @@ const NON_WRITING_ITEMS = [
     "taskType": "V-MEAN",
     "difficulty": 1,
     "question": "看題目線稿插圖，選出正確的英文單字：",
-    "image": "/assets/exam/preA1/duck.svg",
+    "image": "/assets/exam/preA1/duck.png",
     "options": [
       "duck",
       "bird",
@@ -1174,7 +1174,7 @@ const NON_WRITING_ITEMS = [
     "taskType": "V-MEAN",
     "difficulty": 1,
     "question": "看題目線稿插圖，選出正確的英文單字：",
-    "image": "/assets/exam/preA1/eraser.svg",
+    "image": "/assets/exam/preA1/eraser.png",
     "options": [
       "eraser",
       "pencil",
@@ -1197,7 +1197,7 @@ const NON_WRITING_ITEMS = [
     "taskType": "V-MEAN",
     "difficulty": 1,
     "question": "看題目線稿插圖，選出正確的英文單字：",
-    "image": "/assets/exam/preA1/pizza.svg",
+    "image": "/assets/exam/preA1/pizza.png",
     "options": [
       "pizza",
       "cake",
@@ -1233,13 +1233,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/bear.svg",
-      "/assets/exam/preA1/dog.svg",
-      "/assets/exam/preA1/cat.svg",
-      "/assets/exam/preA1/rabbit.svg",
-      "/assets/exam/preA1/elephant.svg",
-      "/assets/exam/preA1/monkey.svg",
-      "/assets/exam/preA1/duck.svg"
+      "/assets/exam/preA1/bear.png",
+      "/assets/exam/preA1/dog.png",
+      "/assets/exam/preA1/cat.png",
+      "/assets/exam/preA1/rabbit.png",
+      "/assets/exam/preA1/elephant.png",
+      "/assets/exam/preA1/monkey.png",
+      "/assets/exam/preA1/duck.png"
     ],
     "answer": 0,
     "explanation": "語音播放「bear（熊）」，故選圖片 (A)。",
@@ -1267,13 +1267,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/pen.svg",
-      "/assets/exam/preA1/pencil.svg",
-      "/assets/exam/preA1/ruler.svg",
-      "/assets/exam/preA1/eraser.svg",
-      "/assets/exam/preA1/scissors.svg",
-      "/assets/exam/preA1/book.svg",
-      "/assets/exam/preA1/bag.svg"
+      "/assets/exam/preA1/pen.png",
+      "/assets/exam/preA1/pencil.png",
+      "/assets/exam/preA1/ruler.png",
+      "/assets/exam/preA1/eraser.png",
+      "/assets/exam/preA1/scissors.png",
+      "/assets/exam/preA1/book.png",
+      "/assets/exam/preA1/bag.png"
     ],
     "answer": 0,
     "explanation": "語音播放「pen（原子筆）」，故選圖片 (A)。",
@@ -1301,13 +1301,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/train.svg",
-      "/assets/exam/preA1/bus.svg",
-      "/assets/exam/preA1/car.svg",
-      "/assets/exam/preA1/bicycle.svg",
-      "/assets/exam/preA1/boat.svg",
-      "/assets/exam/preA1/park.svg",
-      "/assets/exam/preA1/playground.svg"
+      "/assets/exam/preA1/train.png",
+      "/assets/exam/preA1/bus.png",
+      "/assets/exam/preA1/car.png",
+      "/assets/exam/preA1/bicycle.png",
+      "/assets/exam/preA1/boat.png",
+      "/assets/exam/preA1/park.png",
+      "/assets/exam/preA1/playground.png"
     ],
     "answer": 0,
     "explanation": "語音播放「train（火車）」，故選圖片 (A)。",
@@ -1335,13 +1335,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/hat.svg",
-      "/assets/exam/preA1/cap.svg",
-      "/assets/exam/preA1/shoe.svg",
-      "/assets/exam/preA1/jacket.svg",
-      "/assets/exam/preA1/tshirt.svg",
-      "/assets/exam/preA1/umbrella.svg",
-      "/assets/exam/preA1/bag.svg"
+      "/assets/exam/preA1/hat.png",
+      "/assets/exam/preA1/cap.png",
+      "/assets/exam/preA1/shoe.png",
+      "/assets/exam/preA1/jacket.png",
+      "/assets/exam/preA1/tshirt.png",
+      "/assets/exam/preA1/umbrella.png",
+      "/assets/exam/preA1/bag.png"
     ],
     "answer": 0,
     "explanation": "語音播放「hat（寬緣帽子）」，故選圖片 (A)。",
@@ -1369,13 +1369,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/cookie.svg",
-      "/assets/exam/preA1/cake.svg",
-      "/assets/exam/preA1/bread.svg",
-      "/assets/exam/preA1/pizza.svg",
-      "/assets/exam/preA1/milk.svg",
-      "/assets/exam/preA1/egg.svg",
-      "/assets/exam/preA1/apple.svg"
+      "/assets/exam/preA1/cookie.png",
+      "/assets/exam/preA1/cake.png",
+      "/assets/exam/preA1/bread.png",
+      "/assets/exam/preA1/pizza.png",
+      "/assets/exam/preA1/milk.png",
+      "/assets/exam/preA1/egg.png",
+      "/assets/exam/preA1/apple.png"
     ],
     "answer": 0,
     "explanation": "語音播放「cookie（餅乾）」，故選圖片 (A)。",
@@ -1403,13 +1403,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/boat.svg",
-      "/assets/exam/preA1/bicycle.svg",
-      "/assets/exam/preA1/car.svg",
-      "/assets/exam/preA1/bus.svg",
-      "/assets/exam/preA1/train.svg",
-      "/assets/exam/preA1/park.svg",
-      "/assets/exam/preA1/playground.svg"
+      "/assets/exam/preA1/boat.png",
+      "/assets/exam/preA1/bicycle.png",
+      "/assets/exam/preA1/car.png",
+      "/assets/exam/preA1/bus.png",
+      "/assets/exam/preA1/train.png",
+      "/assets/exam/preA1/park.png",
+      "/assets/exam/preA1/playground.png"
     ],
     "answer": 0,
     "explanation": "語音播放「boat（小船/帆船）」，故選圖片 (A)。",
@@ -1437,13 +1437,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/bag.svg",
-      "/assets/exam/preA1/book.svg",
-      "/assets/exam/preA1/desk.svg",
-      "/assets/exam/preA1/chair.svg",
-      "/assets/exam/preA1/pencil.svg",
-      "/assets/exam/preA1/ruler.svg",
-      "/assets/exam/preA1/pen.svg"
+      "/assets/exam/preA1/bag.png",
+      "/assets/exam/preA1/book.png",
+      "/assets/exam/preA1/desk.png",
+      "/assets/exam/preA1/chair.png",
+      "/assets/exam/preA1/pencil.png",
+      "/assets/exam/preA1/ruler.png",
+      "/assets/exam/preA1/pen.png"
     ],
     "answer": 0,
     "explanation": "語音播放「bag（書包/袋子）」，故選圖片 (A)。",
@@ -1625,7 +1625,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 2,
     "taskType": "L-SENT",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/dog.svg",
+    "image": "/assets/exam/preA1/dog.png",
     "media": {
       "audioText": "The cute dog is sitting on the floor."
     },
@@ -1650,7 +1650,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 3,
     "taskType": "L-SENT",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/bus.svg",
+    "image": "/assets/exam/preA1/bus.png",
     "media": {
       "audioText": "The yellow school bus is stopping here."
     },
@@ -1675,7 +1675,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 4,
     "taskType": "L-SENT",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/cake.svg",
+    "image": "/assets/exam/preA1/cake.png",
     "media": {
       "audioText": "There are three candles on the birthday cake."
     },
@@ -1700,7 +1700,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 5,
     "taskType": "L-SENT",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/park.svg",
+    "image": "/assets/exam/preA1/park.png",
     "media": {
       "audioText": "There is a bench under the green tree in the park."
     },
@@ -1725,7 +1725,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 6,
     "taskType": "L-SENT",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/fish.svg",
+    "image": "/assets/exam/preA1/fish.png",
     "media": {
       "audioText": "The small fish is swimming happily in the water."
     },
@@ -1750,7 +1750,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 7,
     "taskType": "L-SENT",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/boat.svg",
+    "image": "/assets/exam/preA1/boat.png",
     "media": {
       "audioText": "A white sailboat is floating on the blue sea."
     },
@@ -1789,13 +1789,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/bread.svg",
-      "/assets/exam/preA1/pizza.svg",
-      "/assets/exam/preA1/cookie.svg",
-      "/assets/exam/preA1/cake.svg",
-      "/assets/exam/preA1/egg.svg",
-      "/assets/exam/preA1/milk.svg",
-      "/assets/exam/preA1/apple.svg"
+      "/assets/exam/preA1/bread.png",
+      "/assets/exam/preA1/pizza.png",
+      "/assets/exam/preA1/cookie.png",
+      "/assets/exam/preA1/cake.png",
+      "/assets/exam/preA1/egg.png",
+      "/assets/exam/preA1/milk.png",
+      "/assets/exam/preA1/apple.png"
     ],
     "answer": 0,
     "explanation": "Tom 回答「I want some milk and bread」，對應麵包吐司線稿圖片 (A)。",
@@ -1822,12 +1822,12 @@ const NON_WRITING_ITEMS = [
       "圖片 (F)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/zoo.svg",
-      "/assets/exam/preA1/library.svg",
-      "/assets/exam/preA1/school.svg",
-      "/assets/exam/preA1/restaurant.svg",
-      "/assets/exam/preA1/park.svg",
-      "/assets/exam/preA1/playground.svg"
+      "/assets/exam/preA1/zoo.png",
+      "/assets/exam/preA1/library.png",
+      "/assets/exam/preA1/school.png",
+      "/assets/exam/preA1/restaurant.png",
+      "/assets/exam/preA1/park.png",
+      "/assets/exam/preA1/playground.png"
     ],
     "answer": 0,
     "explanation": "爸爸回答「Let us go to the zoo」，前往動物園，對應動物園拱門圖片 (A)。",
@@ -1855,13 +1855,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/elephant.svg",
-      "/assets/exam/preA1/rabbit.svg",
-      "/assets/exam/preA1/pig.svg",
-      "/assets/exam/preA1/duck.svg",
-      "/assets/exam/preA1/bear.svg",
-      "/assets/exam/preA1/monkey.svg",
-      "/assets/exam/preA1/cat.svg"
+      "/assets/exam/preA1/elephant.png",
+      "/assets/exam/preA1/rabbit.png",
+      "/assets/exam/preA1/pig.png",
+      "/assets/exam/preA1/duck.png",
+      "/assets/exam/preA1/bear.png",
+      "/assets/exam/preA1/monkey.png",
+      "/assets/exam/preA1/cat.png"
     ],
     "answer": 0,
     "explanation": "Andy 說「I like the big elephant」，故選大象插圖 (A)。",
@@ -1889,13 +1889,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/eraser.svg",
-      "/assets/exam/preA1/pencil.svg",
-      "/assets/exam/preA1/ruler.svg",
-      "/assets/exam/preA1/scissors.svg",
-      "/assets/exam/preA1/pen.svg",
-      "/assets/exam/preA1/book.svg",
-      "/assets/exam/preA1/bag.svg"
+      "/assets/exam/preA1/eraser.png",
+      "/assets/exam/preA1/pencil.png",
+      "/assets/exam/preA1/ruler.png",
+      "/assets/exam/preA1/scissors.png",
+      "/assets/exam/preA1/pen.png",
+      "/assets/exam/preA1/book.png",
+      "/assets/exam/preA1/bag.png"
     ],
     "answer": 0,
     "explanation": "男孩說「I bought a new blue eraser」，故選橡皮擦圖片 (A)。",
@@ -1922,12 +1922,12 @@ const NON_WRITING_ITEMS = [
       "圖片 (F)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/jacket.svg",
-      "/assets/exam/preA1/cap.svg",
-      "/assets/exam/preA1/shoe.svg",
-      "/assets/exam/preA1/umbrella.svg",
-      "/assets/exam/preA1/hat.svg",
-      "/assets/exam/preA1/tshirt.svg"
+      "/assets/exam/preA1/jacket.png",
+      "/assets/exam/preA1/cap.png",
+      "/assets/exam/preA1/shoe.png",
+      "/assets/exam/preA1/umbrella.png",
+      "/assets/exam/preA1/hat.png",
+      "/assets/exam/preA1/tshirt.png"
     ],
     "answer": 0,
     "explanation": "媽媽提醒「wear your jacket（穿上夾克外衣）」，故選夾克圖片 (A)。",
@@ -1955,13 +1955,13 @@ const NON_WRITING_ITEMS = [
       "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/duck.svg",
-      "/assets/exam/preA1/fish.svg",
-      "/assets/exam/preA1/dog.svg",
-      "/assets/exam/preA1/bird.svg",
-      "/assets/exam/preA1/cat.svg",
-      "/assets/exam/preA1/pig.svg",
-      "/assets/exam/preA1/rabbit.svg"
+      "/assets/exam/preA1/duck.png",
+      "/assets/exam/preA1/fish.png",
+      "/assets/exam/preA1/dog.png",
+      "/assets/exam/preA1/bird.png",
+      "/assets/exam/preA1/cat.png",
+      "/assets/exam/preA1/pig.png",
+      "/assets/exam/preA1/rabbit.png"
     ],
     "answer": 0,
     "explanation": "男孩驚呼「the cute duck is swimming」，故選小鴨插圖 (A)。",
@@ -2167,7 +2167,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 2,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/park.svg",
+    "image": "/assets/exam/preA1/park.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "park",
@@ -2190,7 +2190,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 3,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/school.svg",
+    "image": "/assets/exam/preA1/school.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "school",
@@ -2213,7 +2213,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 4,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/zoo.svg",
+    "image": "/assets/exam/preA1/zoo.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "zoo",
@@ -2236,7 +2236,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 5,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/restaurant.svg",
+    "image": "/assets/exam/preA1/restaurant.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "restaurant",
@@ -2259,7 +2259,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 6,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/playground.svg",
+    "image": "/assets/exam/preA1/playground.png",
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "playground",
@@ -2282,7 +2282,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 7,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/bag.svg",
+    "image": "/assets/exam/preA1/bag.png",
     "question": "看上學用品線稿插圖，選出代表的英文單字：",
     "options": [
       "bag",
@@ -2305,7 +2305,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 8,
     "taskType": "V-PIC",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/desk.svg",
+    "image": "/assets/exam/preA1/desk.png",
     "question": "看教室設備線稿插圖，選出代表的英文單字：",
     "options": [
       "desk",
@@ -2328,7 +2328,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 2,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/bicycle.svg",
+    "image": "/assets/exam/preA1/bicycle.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "The boy has a new bicycle.",
@@ -2350,7 +2350,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 3,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/dog.svg",
+    "image": "/assets/exam/preA1/dog.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "The cute dog is sitting on the floor.",
@@ -2372,7 +2372,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 4,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/duck.svg",
+    "image": "/assets/exam/preA1/duck.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "The little duck is swimming in the water.",
@@ -2394,7 +2394,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 5,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/bus.svg",
+    "image": "/assets/exam/preA1/bus.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "The students take the yellow school bus.",
@@ -2416,7 +2416,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 6,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/book.svg",
+    "image": "/assets/exam/preA1/book.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "There is an open English book on the desk.",
@@ -2438,7 +2438,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 7,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/cake.svg",
+    "image": "/assets/exam/preA1/cake.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "There is a birthday cake with candles.",
@@ -2460,7 +2460,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 8,
     "taskType": "G-CTX",
     "difficulty": 1,
-    "image": "/assets/exam/preA1/boat.svg",
+    "image": "/assets/exam/preA1/boat.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
       "A small sailboat is floating on the water.",

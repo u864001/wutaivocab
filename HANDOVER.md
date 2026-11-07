@@ -677,6 +677,20 @@
   * 詳實撰寫五大子題型評量目標、文末註解規準、短文填空「看搭配、看冠詞、通讀常理」三部曲，以及篇章閱讀 5W1H 關鍵字快速定位法（Scan & Locate）與經典範例拆解。
 * **全專案 6 階段無頭 Chrome 回歸測試 100% 通過 (Zero Crashes)**。
 
+#### 46. Pre-A1 全量題庫 204 幅高階黑白線稿試卷插圖全數完工入庫，全面由 SVG 昇華至真實手繪題圖 (`public/assets/exam/preA1/*.png`, `tmePreA1Bank.js`, `tmePreA1ReadingBank.js`, `slice_upgrade_batches.mjs`)
+* **高階黑白線稿插圖生成全量推進並完工**：
+  * 完成「Final Batch 3」（16 幅：`mouse`, `spider`, `hippo`, `bat`, `rainbow`, `snowman`, `river`, `sea`, `candy`, `chocolate`, `chicken`, `potato`, `face`, `teeth`, `smile`, `head`）。
+  * 全面推進早期 50 款程式化 SVG 向量圖升級為國小真實考卷黑白精緻線稿：
+    - 「Upgrade Batch 1」（16 幅：蘋果、香蕉、柳橙、葡萄、蛋糕、麵包、餅乾、披薩、牛奶、水杯、雞蛋、冰淇淋、鉛筆、鋼筆、直尺、橡皮擦）。
+    - 「Upgrade Batch 2」（16 幅：書本、剪刀、書包、課桌、椅子、棒球帽、草帽、夾克、T恤、運動鞋、雨傘、腳踏車、汽車、公車、火車、帆船）。
+    - 「Upgrade Batch 3」（16 幅：貓咪、小狗、小豬、小鳥、兔子、小鴨、金魚、泰迪熊、大象、猴子、圖書館、動物園、學校、公園、遊樂場、餐廳咖啡館）。
+    - 「Special Batch」（4 幅：雨天女孩、安全逃生出口 EXIT 標誌、麥克筆、筆記本）。
+  * 全數以 Sharp 進行邊界內縮 (`inset: 32~42`) 自動消除網格邊界線、白底修剪 (`trim`) 與 400×400 高清居中輸出，累計 `public/assets/exam/preA1/` 高清題圖庫達到 **170 幅**。
+* **題庫引用路徑全面無縫昇華為 PNG**：
+  * 更新 `src/data/exam/tmePreA1Bank.js`（188 處）與 `src/data/exam/tmePreA1ReadingBank.js`（16 處），將歷史 `.svg` 引用全面昇華為高擬真 `.png` 插圖。
+  * 實體磁碟交叉稽核：全量 204 處插圖引用，缺失數為 0 (`Missing: 0`)。
+* **嚴密單元測試與全專案 6 階段無頭 Chrome 回歸測試 100% 通過 (106/106 checks passed, Zero Crashes)**。
+
 ---
 
 ### 四、核心目錄與關鍵模組結構

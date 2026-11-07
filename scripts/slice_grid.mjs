@@ -5,6 +5,7 @@ import sharp from 'sharp';
 export async function sliceGrid(inputPath, outputDir, namesGrid, options = {}) {
   const targetSize = options.targetSize || 400;
   const padding = options.padding || 20;
+  const inset = options.inset || 8;
 
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -26,12 +27,15 @@ export async function sliceGrid(inputPath, outputDir, namesGrid, options = {}) {
       const name = namesGrid[r][c];
       if (!name) continue;
 
-      const left = Math.floor(c * (width / cols));
-      const top = Math.floor(r * (height / rows));
-      const right = Math.min(width, Math.floor((c + 1) * (width / cols)));
-      const bottom = Math.min(height, Math.floor((r + 1) * (height / rows)));
-      const cellW = right - left;
-      const cellH = bottom - top;
+      const rawLeft = Math.floor(c * (width / cols));
+      const rawTop = Math.floor(r * (height / rows));
+      const rawRight = Math.min(width, Math.floor((c + 1) * (width / cols)));
+      const rawBottom = Math.min(height, Math.floor((r + 1) * (height / rows)));
+
+      const left = Math.min(width - 10, rawLeft + inset);
+      const top = Math.min(height - 10, rawTop + inset);
+      const cellW = Math.max(10, (rawRight - rawLeft) - (inset * 2));
+      const cellH = Math.max(10, (rawBottom - rawTop) - (inset * 2));
 
       const outPath = path.join(outputDir, `${name}.png`);
 

@@ -31,14 +31,23 @@ async function waitForServer(retries = 30) {
 const tempProfile = path.join(os.tmpdir(), `chrome_smoke_gate_${Date.now()}`);
 fs.mkdirSync(tempProfile, { recursive: true });
 
-const chrome = spawn('C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', [
+const chromePath = os.platform() === 'win32'
+  ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+  : (fs.existsSync('/usr/bin/google-chrome') ? '/usr/bin/google-chrome' : '/usr/bin/chromium');
+
+const chromeArgs = [
   '--headless=new',
   '--remote-debugging-port=9263',
   '--no-first-run',
   '--no-default-browser-check',
   '--disable-gpu',
   `--user-data-dir=${tempProfile}`
-]);
+];
+if (os.platform() !== 'win32') {
+  chromeArgs.push('--no-sandbox', '--disable-setuid-sandbox');
+}
+
+const chrome = spawn(chromePath, chromeArgs);
 
 async function waitForChrome(retries = 30) {
   for (let i = 0; i < retries; i++) {
@@ -214,12 +223,28 @@ async function run() {
     console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks, ${HERE_WE_GO_MCQ_BANK.length} MCQs & SAA 115 [105 questions, 70 diagrams] verified)`);
   }
 
+  const waitForAppReady = async (maxAttempts = 30) => {
+    for (let i = 0; i < maxAttempts; i++) {
+      const isSyncing = await client.evaluate(`
+        (() => {
+          if (!document.body) return true;
+          const text = document.body.innerText || '';
+          return text.includes('正在同步雲端單字庫') || text.includes('Adventure World Loading');
+        })()
+      `);
+      if (!isSyncing) return true;
+      await new Promise(r => setTimeout(r, 200));
+    }
+    return false;
+  };
+
   // ── 檢查點 1: 排行榜視圖與互動 ──
   console.log('\n[1/6] Testing Leaderboard View & Interactions...');
   client.exceptions = [];
   client.consoleErrors = [];
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=leaderboard` });
-  await new Promise(r => setTimeout(r, 1200));
+  await waitForAppReady();
+  await new Promise(r => setTimeout(r, 400));
 
   let hasError = await client.evaluate(`document.body.innerText.includes('畫面載入遇到小插曲')`);
   if (hasError || client.exceptions.length > 0) {
@@ -244,7 +269,8 @@ async function run() {
   // ── 檢查點 2: 首頁大廳與教師台 ──
   console.log('\n[2/5] Testing Lobby & Teacher Hub...');
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=lobby` });
-  await new Promise(r => setTimeout(r, 800));
+  await waitForAppReady();
+  await new Promise(r => setTimeout(r, 300));
   hasError = await client.evaluate(`document.body.innerText.includes('畫面載入遇到小插曲')`);
   if (hasError) failures.push({ target: 'Lobby', error: 'Crashed' });
   else console.log('  ✓ Lobby loaded smoothly');
@@ -252,7 +278,8 @@ async function run() {
   client.exceptions = [];
   client.consoleErrors = [];
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=teacher-hub` });
-  await new Promise(r => setTimeout(r, 800));
+  await waitForAppReady();
+  await new Promise(r => setTimeout(r, 300));
   hasError = await client.evaluate(`document.body.innerText.includes('畫面載入遇到小插曲')`);
   if (hasError || client.exceptions.length > 0) {
     failures.push({ target: 'TeacherHub', error: 'Crashed', details: client.exceptions });
@@ -267,7 +294,8 @@ async function run() {
     })()
   `);
   await client.send('Page.reload');
-  await new Promise(r => setTimeout(r, 800));
+  await waitForAppReady();
+  await new Promise(r => setTimeout(r, 500));
   const auditTabClicked = await client.evaluate(`
     (() => {
       const btns = Array.from(document.querySelectorAll('button'));
@@ -300,7 +328,8 @@ async function run() {
 
   // ── 試題附圖 4 方案體驗台驗測 (ImageZoomShowcase) ──
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=zoom-showcase` });
-  await new Promise(r => setTimeout(r, 600));
+  await waitForAppReady();
+  await new Promise(r => setTimeout(r, 400));
   const zoomShowcaseCheck = await client.evaluate(`
     (() => {
       const text = document.body.innerText || '';
