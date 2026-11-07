@@ -11,6 +11,7 @@
  *
  * 架構規範：
  * - 選擇題歸檔正解固定在 options[0] (A)，組卷時由學生端引擎自動執行 Fisher-Yates 隨機洗牌
+ * - 支援「動態誘答項抽樣 (Dynamic Distractor Sampling)」：可建立 6~7 個答項池，組卷時動態抽樣 4 選項
  * - 是非題固定 A: True / B: False
  * - 寫作重組單字塊純詞彙無句末標點洩題，選項為完整標點大小寫標準句
  */
@@ -29,16 +30,22 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/apple.svg",
       "/assets/exam/preA1/banana.svg",
       "/assets/exam/preA1/orange.svg",
-      "/assets/exam/preA1/grape.svg"
+      "/assets/exam/preA1/grape.svg",
+      "/assets/exam/preA1/cake.svg",
+      "/assets/exam/preA1/bread.svg",
+      "/assets/exam/preA1/cookie.svg"
     ],
     "answer": 0,
-    "explanation": "英文「apple」意為蘋果，對應圖片 (A)。",
+    "explanation": "英文「apple」意為蘋果，對應蘋果線稿插圖。",
     "reviewed": true
   },
   {
@@ -54,16 +61,22 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
-      "/assets/exam/preA1/ruler.svg",
       "/assets/exam/preA1/pencil.svg",
+      "/assets/exam/preA1/ruler.svg",
       "/assets/exam/preA1/book.svg",
-      "/assets/exam/preA1/scissors.svg"
+      "/assets/exam/preA1/scissors.svg",
+      "/assets/exam/preA1/eraser.svg",
+      "/assets/exam/preA1/pen.svg",
+      "/assets/exam/preA1/desk.svg"
     ],
-    "answer": 1,
-    "explanation": "英文「pencil」意為鉛筆，對應圖片 (B)。",
+    "answer": 0,
+    "explanation": "英文「pencil」意為鉛筆，對應鉛筆線稿插圖。",
     "reviewed": true
   },
   {
@@ -77,12 +90,15 @@ export const TME_PRE_A1_BANK = [
     "question": "看題目線稿插圖，選出正確的英文單字：",
     "image": "/assets/exam/preA1/cat.svg",
     "options": [
-      "dog",
       "cat",
+      "dog",
       "pig",
-      "bird"
+      "bird",
+      "rabbit",
+      "elephant",
+      "monkey"
     ],
-    "answer": 1,
+    "answer": 0,
     "explanation": "插圖中為貓咪線稿，英文為「cat」。",
     "reviewed": true
   },
@@ -102,16 +118,20 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)"
     ],
     "optionImages": [
       "/assets/exam/preA1/umbrella.svg",
       "/assets/exam/preA1/cap.svg",
       "/assets/exam/preA1/shoe.svg",
-      "/assets/exam/preA1/jacket.svg"
+      "/assets/exam/preA1/jacket.svg",
+      "/assets/exam/preA1/hat.svg",
+      "/assets/exam/preA1/tshirt.svg"
     ],
     "answer": 0,
-    "explanation": "聽力發音為「umbrella（雨傘）」，故選圖片 (A)。",
+    "explanation": "聽力發音為「umbrella（雨傘）」，故選雨傘線稿插圖。",
     "reviewed": true
   },
   {
@@ -465,10 +485,13 @@ export const TME_PRE_A1_BANK = [
       "library",
       "restaurant",
       "zoo",
-      "playground"
+      "playground",
+      "park",
+      "school",
+      "hospital"
     ],
     "answer": 0,
-    "explanation": "插圖為擺滿書架與安靜閱讀桌椅之場所，英文為「圖書館（library）」，故選 (A)。",
+    "explanation": "插圖為具備三角山牆與書本徽記的圖書館建築，英文為「library」。",
     "reviewed": false
   },
   {
@@ -1268,7 +1291,10 @@ export const TME_PRE_A1_BANK = [
       "dog",
       "cat",
       "pig",
-      "duck"
+      "duck",
+      "rabbit",
+      "bear",
+      "fish"
     ],
     "answer": 0,
     "explanation": "插圖中為小狗線稿，英文單字為「dog」。",
@@ -1288,7 +1314,10 @@ export const TME_PRE_A1_BANK = [
       "elephant",
       "monkey",
       "bear",
-      "rabbit"
+      "rabbit",
+      "cat",
+      "dog",
+      "duck"
     ],
     "answer": 0,
     "explanation": "插圖中為大耳朵長鼻子的大象線稿，英文為「elephant」。",
@@ -1308,7 +1337,10 @@ export const TME_PRE_A1_BANK = [
       "chair",
       "desk",
       "bed",
-      "sofa"
+      "sofa",
+      "door",
+      "clock",
+      "box"
     ],
     "answer": 0,
     "explanation": "插圖為附帶靠背的椅子線稿，英文為「chair」。",
@@ -1328,7 +1360,10 @@ export const TME_PRE_A1_BANK = [
       "car",
       "bus",
       "train",
-      "boat"
+      "boat",
+      "bike",
+      "truck",
+      "plane"
     ],
     "answer": 0,
     "explanation": "插圖為小客車線稿，英文為「car」。",
@@ -1348,7 +1383,10 @@ export const TME_PRE_A1_BANK = [
       "duck",
       "bird",
       "pig",
-      "cat"
+      "cat",
+      "dog",
+      "rabbit",
+      "fish"
     ],
     "answer": 0,
     "explanation": "插圖為浮在水上的扁嘴小鴨線稿，英文為「duck」。",
@@ -1368,7 +1406,10 @@ export const TME_PRE_A1_BANK = [
       "eraser",
       "pencil",
       "ruler",
-      "scissors"
+      "scissors",
+      "pen",
+      "book",
+      "bag"
     ],
     "answer": 0,
     "explanation": "插圖為削斜角擦拭用的橡皮擦，英文為「eraser」。",
@@ -1388,7 +1429,10 @@ export const TME_PRE_A1_BANK = [
       "pizza",
       "cake",
       "bread",
-      "cookie"
+      "cookie",
+      "egg",
+      "milk",
+      "ice cream"
     ],
     "answer": 0,
     "explanation": "插圖為切片帶起司與香腸片的披薩線稿，英文為「pizza」。",
@@ -2240,10 +2284,13 @@ export const TME_PRE_A1_BANK = [
       "park",
       "zoo",
       "school",
-      "hospital"
+      "hospital",
+      "library",
+      "restaurant",
+      "playground"
     ],
     "answer": 0,
-    "explanation": "插圖為綠樹與休閒長椅之場所，代表「公園（park）」，故選 (A)。",
+    "explanation": "插圖為公園綠地與長椅，英文為「park」。",
     "reviewed": true
   },
   {
@@ -2260,10 +2307,13 @@ export const TME_PRE_A1_BANK = [
       "school",
       "library",
       "restaurant",
-      "park"
+      "park",
+      "zoo",
+      "playground",
+      "hospital"
     ],
     "answer": 0,
-    "explanation": "插圖為帶有鐘樓與教室大門之校舍建築，代表「學校（school）」，故選 (A)。",
+    "explanation": "插圖為帶有鐘樓的學校校舍線稿，英文為「school」。",
     "reviewed": true
   },
   {
@@ -2280,10 +2330,13 @@ export const TME_PRE_A1_BANK = [
       "zoo",
       "park",
       "library",
-      "playground"
+      "playground",
+      "school",
+      "restaurant",
+      "hospital"
     ],
     "answer": 0,
-    "explanation": "插圖為觀賞動物的拱門場所「動物園（zoo）」，故選 (A)。",
+    "explanation": "插圖為動物園入口與柵欄線稿，英文為「zoo」。",
     "reviewed": true
   },
   {
@@ -2300,10 +2353,13 @@ export const TME_PRE_A1_BANK = [
       "restaurant",
       "school",
       "zoo",
-      "library"
+      "library",
+      "park",
+      "playground",
+      "hospital"
     ],
     "answer": 0,
-    "explanation": "插圖為餐桌椅與餐具齊備之用餐場所「餐廳（restaurant）」，故選 (A)。",
+    "explanation": "插圖為餐廳與刀叉招牌線稿，英文為「restaurant」。",
     "reviewed": true
   },
   {
@@ -2320,10 +2376,13 @@ export const TME_PRE_A1_BANK = [
       "playground",
       "park",
       "library",
-      "zoo"
+      "zoo",
+      "school",
+      "restaurant",
+      "hospital"
     ],
     "answer": 0,
-    "explanation": "插圖為學校遊樂設施與滑梯場所「操場/遊戲區（playground）」，故選 (A)。",
+    "explanation": "插圖為溜滑梯與遊樂器材線稿，英文為「playground」。",
     "reviewed": true
   },
   {
@@ -2340,10 +2399,13 @@ export const TME_PRE_A1_BANK = [
       "bag",
       "book",
       "desk",
-      "chair"
+      "chair",
+      "pencil",
+      "ruler",
+      "eraser"
     ],
     "answer": 0,
-    "explanation": "插圖為雙肩學生書包，英文為「bag」，故選 (A)。",
+    "explanation": "插圖為雙肩書包線稿，英文為「bag」。",
     "reviewed": true
   },
   {
@@ -2360,10 +2422,13 @@ export const TME_PRE_A1_BANK = [
       "desk",
       "chair",
       "pen",
-      "ruler"
+      "ruler",
+      "bag",
+      "book",
+      "pencil"
     ],
     "answer": 0,
-    "explanation": "插圖為學生課桌，英文為「desk」，故選 (A)。",
+    "explanation": "插圖為附帶抽屜的書桌線稿，英文為「desk」。",
     "reviewed": true
   },
   {

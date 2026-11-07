@@ -51,7 +51,7 @@ import {
   getTaskLabel
 } from './examBlueprint';
 
-const CHOICE_LABELS = ['A', 'B', 'C', 'D'];
+const CHOICE_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 const ALL_BOOK_OPTIONS = ['g1', 'g2', 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const formatBookLabel = (bKey) => {
   if (bKey === 'g1') return '1年大寫';
@@ -384,7 +384,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
       if (sourceList.length === 0) return;
 
-      // 隨機洗牌每題的 (A)(B)(C)(D) 選項順序（若題目具 preserveOptionOrder 或是非題則保留原順序；若具備 optionImages 則選項文字與圖檔綁定同步洗牌）
+      // 動態誘答項抽樣與選項隨機洗牌：
+      // 1. 若題目具 preserveOptionOrder 或是非題，保留原順序
+      // 2. 若 options 數量超過目標選項數（預設 4 選項），從誘答項池動態隨機抽取 (targetCount - 1) 個，與唯一正確答案組合成目標數量的答項 (Dynamic Distractor Sampling)
+      // 3. 選項文字與 optionImages 成對綁定同步抽樣與 Fisher-Yates 隨機洗牌
       const prepared = sourceList.map((q) => {
         const isTrueFalse = q.subType === 'read-truefalse' || (q.options?.length === 2 && (q.options[0]?.includes('True') || q.options[0]?.includes('相符')));
         if (q.preserveOptionOrder || isTrueFalse) {
@@ -403,17 +406,41 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           isCorrect: idx === q.answer
         }));
 
-        // Fisher-Yates 隨機洗牌
-        for (let i = combined.length - 1; i > 0; i--) {
+        // 目標呈現選項數（預設 4，若原選項長度 <= 4 則維持原選項長度；亦可由題目自定義 targetOptionCount）
+        const targetCount = Math.max(2, Math.min(combined.length, q.targetOptionCount || (combined.length <= 4 ? combined.length : 4)));
+
+        let workingSet = combined;
+        // 若選項總數超過目標呈現數，啟動動態誘答項抽樣 (Dynamic Distractor Sampling: 1 正解 + C(n, k) 誘答)
+        if (combined.length > targetCount) {
+          const correctItem = combined.find((c) => c.isCorrect) || combined[0];
+          const distractorPool = combined.filter((c) => !c.isCorrect);
+
+          // 對誘答項池進行隨機洗牌後抽取需要的數量 (targetCount - 1)
+          for (let i = distractorPool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [distractorPool[i], distractorPool[j]] = [distractorPool[j], distractorPool[i]];
+          }
+          const sampledDistractors = distractorPool.slice(0, targetCount - 1);
+          workingSet = [correctItem, ...sampledDistractors];
+        }
+
+        // Fisher-Yates 隨機洗牌工作集合
+        for (let i = workingSet.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [combined[i], combined[j]] = [combined[j], combined[i]];
+          [workingSet[i], workingSet[j]] = [workingSet[j], workingSet[i]];
         }
 
         return {
           ...q,
-          options: combined.map((c) => c.text),
-          optionImages: hasOptionImages ? combined.map((c) => c.img) : q.optionImages,
-          answer: combined.findIndex((c) => c.isCorrect)
+          options: workingSet.map((c, idx) => {
+            // 若為圖片選項且文字為通用圖片標籤，同步重新格式化為當前對應標籤
+            if (hasOptionImages && (/^圖片\s*\([A-Z0-9]\)$/.test(c.text) || /^選項\s*\([A-Z0-9]\)$/.test(c.text))) {
+              return `圖片 (${CHOICE_LABELS[idx] || idx + 1})`;
+            }
+            return c.text;
+          }),
+          optionImages: hasOptionImages ? workingSet.map((c) => c.img) : q.optionImages,
+          answer: workingSet.findIndex((c) => c.isCorrect)
         };
       });
 
