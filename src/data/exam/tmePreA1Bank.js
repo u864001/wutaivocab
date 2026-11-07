@@ -1,5 +1,5 @@
 /**
- * Test My English Pre-A1 官方模擬題庫 (Phase 2 全量擴充版)
+ * Test My English Pre-A1 官方模擬題庫 (Phase 2 全量擴充版 - 全選擇題 6~7 答項池)
  *
  * 涵蓋 Pre-A1 五大面向與 17 種子題型：
  * 1. 字彙 (vocab): 看字選圖 (8)、看圖選字 (8)、聽音選圖 (8)、聽音選字 (8)
@@ -11,7 +11,7 @@
  *
  * 架構規範：
  * - 選擇題歸檔正解固定在 options[0] (A)，組卷時由學生端引擎自動執行 Fisher-Yates 隨機洗牌
- * - 支援「動態誘答項抽樣 (Dynamic Distractor Sampling)」：可建立 6~7 個答項池，組卷時動態抽樣 4 選項
+ * - 全量支援「動態誘答項抽樣 (Dynamic Distractor Sampling)」：所有選擇題具備 6~7 個答項池，組卷時動態抽樣 4 選項
  * - 是非題固定 A: True / B: False
  * - 寫作重組單字塊純詞彙無句末標點洩題，選項為完整標點大小寫標準句
  */
@@ -150,7 +150,9 @@ export const TME_PRE_A1_BANK = [
       "yellow",
       "yallow",
       "yollow",
-      "yellw"
+      "yellw",
+      "yello",
+      "yelow"
     ],
     "answer": 0,
     "explanation": "聽力發音為顏色「yellow（黃色）」，正確拼字為 y-e-l-l-o-w。",
@@ -173,7 +175,9 @@ export const TME_PRE_A1_BANK = [
       "The boy is riding a bicycle.",
       "The boy is swimming.",
       "The boy is sleeping.",
-      "The boy is reading a book."
+      "The boy is reading a book.",
+      "The boy is running in the park.",
+      "The boy is playing with a ball."
     ],
     "answer": 0,
     "explanation": "插圖為腳踏車，且聽力內容「The boy is riding a bicycle.（男孩正在騎腳踏車）」，故選 (A)。",
@@ -195,13 +199,17 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)"
     ],
     "optionImages": [
       "/assets/exam/preA1/library.svg",
       "/assets/exam/preA1/zoo.svg",
       "/assets/exam/preA1/playground.svg",
-      "/assets/exam/preA1/restaurant.svg"
+      "/assets/exam/preA1/restaurant.svg",
+      "/assets/exam/preA1/park.svg",
+      "/assets/exam/preA1/school.svg"
     ],
     "answer": 0,
     "explanation": "對話中 Peter 說「I am going to the library」，故前往地點為圖書館 (A)。",
@@ -223,7 +231,9 @@ export const TME_PRE_A1_BANK = [
       "I'm fine, thank you.",
       "I'm ten years old.",
       "I like apples.",
-      "It is a pen."
+      "It is a pen.",
+      "My name is John.",
+      "Yes, I do."
     ],
     "answer": 0,
     "explanation": "問句「How are you doing today?（你今天好嗎？）」，標準應答為「I’m fine, thank you.」。",
@@ -245,7 +255,9 @@ export const TME_PRE_A1_BANK = [
       "It is three thirty.",
       "It is on the table.",
       "I have three books.",
-      "It is sunny today."
+      "It is sunny today.",
+      "It is very big.",
+      "At the school gate."
     ],
     "answer": 0,
     "explanation": "問句「What time is it now?（現在幾點？）」，詢問時間應回答「It is three thirty.（現在三點半）」。",
@@ -264,10 +276,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽禮貌問候，選出最適當的回應句子：",
     "options": [
-      "Nice to meet you, too.",
-      "Good night, Mom.",
-      "You are welcome.",
-      "I am very sorry."
+      "It is in your bag.",
+      "It is five dollars.",
+      "She is my sister.",
+      "I can swim.",
+      "It is very delicious.",
+      "He is ten years old."
     ],
     "answer": 0,
     "explanation": "初次見面問候「Nice to meet you.（很高興認識你）」，標準回應為「Nice to meet you, too.」。",
@@ -286,10 +300,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽問路問句，選出最適當的回應句子：",
     "options": [
-      "It is next to the bookstore.",
-      "I don't have letters.",
-      "It is fifty dollars.",
-      "I am eating lunch."
+      "Yes, I do.",
+      "No, it isn't.",
+      "Yes, she can.",
+      "I am a student.",
+      "It is red.",
+      "They are fine."
     ],
     "answer": 0,
     "explanation": "問句詢問郵局地點（Where is the post office?），應回答具體方位「It is next to the bookstore.（在書店隔壁）」。",
@@ -308,10 +324,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
-      "Yes, please. I am thirsty.",
-      "No, it's not an orange.",
-      "I can jump very high.",
-      "She is my sister."
+      "It is blue.",
+      "It is my brother's.",
+      "I have two caps.",
+      "It is on the desk.",
+      "Yes, it is.",
+      "I like blue caps."
     ],
     "answer": 0,
     "explanation": "對方禮貌詢問「Do you want some orange juice?（要喝點柳橙汁嗎？）」，接受時回答「Yes, please. I am thirsty.（好的請給我，我很渴）」。",
@@ -330,10 +348,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
-      "It is Tony's jacket.",
-      "I like blue jackets.",
-      "It is eighty dollars.",
-      "She is reading a book."
+      "Yes, I can.",
+      "Yes, I am.",
+      "No, they don't.",
+      "I like swimming.",
+      "At the swimming pool.",
+      "It is five o'clock."
     ],
     "answer": 0,
     "explanation": "問句使用 Whose（誰的）詢問夾克所有權，回答應為所有格「It is Tony's jacket.（那是東尼的外套）」。",
@@ -355,7 +375,9 @@ export const TME_PRE_A1_BANK = [
       "Water",
       "Milk",
       "Juice",
-      "Tea"
+      "Tea",
+      "Coffee",
+      "Soda"
     ],
     "answer": 0,
     "explanation": "Tom 回答「I want some water」，故 Tom 想要水。",
@@ -377,7 +399,9 @@ export const TME_PRE_A1_BANK = [
       "The zoo",
       "The park",
       "The school",
-      "The museum"
+      "The museum",
+      "The library",
+      "The hospital"
     ],
     "answer": 0,
     "explanation": "對話中 Kelly 清楚表示「I am going to the zoo to see the pandas」，故前往動物園。",
@@ -396,10 +420,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "聽對話，回答問題：How much is the pencil box?",
     "options": [
-      "Sixty dollars ($60)",
-      "Sixteen dollars ($16)",
-      "Six dollars ($6)",
-      "Six hundred dollars ($600)"
+      "The elephant",
+      "The rabbit",
+      "The monkey",
+      "The bear",
+      "The dog",
+      "The duck"
     ],
     "answer": 0,
     "explanation": "店員回答「It is sixty dollars.（60元）」，選項 ① 正確。",
@@ -418,10 +444,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "聽對話，回答問題：How does Andy go to school?",
     "options": [
-      "By bicycle",
-      "By bus",
-      "On foot",
-      "By car"
+      "At eight ten",
+      "At seven fifty",
+      "At eight thirty",
+      "At nine o'clock",
+      "At seven thirty",
+      "At eight o'clock"
     ],
     "answer": 0,
     "explanation": "Andy 回答「I ride my bicycle with Peter」，交通方式為騎腳踏車（By bicycle）。",
@@ -440,10 +468,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "聽對話，回答問題：What day is today?",
     "options": [
-      "Wednesday",
-      "Monday",
-      "Friday",
-      "Sunday"
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Two",
+      "Seven"
     ],
     "answer": 0,
     "explanation": "全班回答「Today is Wednesday!（今天星期三）」，故選 ①。",
@@ -462,10 +492,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "聽對話，回答問題：What is Ben's father?",
     "options": [
-      "A bus driver",
-      "A doctor",
-      "A teacher",
-      "A cook"
+      "Cooking dinner",
+      "Washing the car",
+      "Reading a newspaper",
+      "Watching television",
+      "Sleeping in bed",
+      "Cleaning the room"
     ],
     "answer": 0,
     "explanation": "Ben 明確說明「No, he is a bus driver.（不，他是一位公車司機）」，故選 ①。",
@@ -508,7 +540,9 @@ export const TME_PRE_A1_BANK = [
       "It is rainy. The girl has an umbrella.",
       "It is sunny. The girl is swimming.",
       "It is windy. The boy is flying a kite.",
-      "It is snowy. The children are making a snowman."
+      "It is snowy. The children are making a snowman.",
+      "The girl is waiting for the school bus.",
+      "The girl is wearing a warm winter coat."
     ],
     "answer": 0,
     "explanation": "插圖為下雨天小女孩撐傘情境，句子 (A) 完全吻合。",
@@ -633,7 +667,9 @@ export const TME_PRE_A1_BANK = [
       "play",
       "eat",
       "write",
-      "sing"
+      "sing",
+      "draw",
+      "sleep"
     ],
     "answer": 0,
     "explanation": "狗狗喜歡「玩」紅色的球，片語為 play with a ball，故選 (A) play。",
@@ -656,7 +692,9 @@ export const TME_PRE_A1_BANK = [
       "bikes",
       "beds",
       "chairs",
-      "desks"
+      "desks",
+      "shoes",
+      "boxes"
     ],
     "answer": 0,
     "explanation": "在公園裡騎的是腳踏車（ride bikes），故選 ① bikes。",
@@ -676,10 +714,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "依短文文意，空格處應填入哪一個單字？",
     "options": [
-      "milk",
-      "pens",
-      "shoes",
-      "books"
+      "am",
+      "is",
+      "are",
+      "be",
+      "were",
+      "was"
     ],
     "answer": 0,
     "explanation": "動詞為 drinks（喝），且單位為 a glass of（一杯），空格只能填可飲用的液體 milk（牛奶）。",
@@ -699,10 +739,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "依短文文意，空格處應填入哪一個單字？",
     "options": [
-      "library",
-      "kitchen",
-      "bedroom",
-      "bathroom"
+      "happy",
+      "cold",
+      "hungry",
+      "tired",
+      "sad",
+      "angry"
     ],
     "answer": 0,
     "explanation": "找書與閱讀應前往圖書館（library），故選 (A)。",
@@ -722,10 +764,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "依文意，空格處應填入哪一個單字？",
     "options": [
-      "umbrella",
-      "apple",
-      "orange",
-      "eraser"
+      "in",
+      "on",
+      "under",
+      "at",
+      "behind",
+      "next"
     ],
     "answer": 0,
     "explanation": "雨天出門提醒攜帶的應為雨傘（umbrella），冠詞為 an 也符合母音開頭。",
@@ -745,10 +789,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "依短文文意，空格處應填入哪一個單字？",
     "options": [
-      "lunch",
-      "breakfast",
-      "dinner",
-      "supper"
+      "like",
+      "need",
+      "see",
+      "want",
+      "have",
+      "make"
     ],
     "answer": 0,
     "explanation": "中午十二點（twelve o'clock）吃的餐點為午餐（lunch），故選 ①。",
@@ -1140,13 +1186,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/cake.svg",
       "/assets/exam/preA1/bread.svg",
       "/assets/exam/preA1/cookie.svg",
-      "/assets/exam/preA1/pizza.svg"
+      "/assets/exam/preA1/pizza.svg",
+      "/assets/exam/preA1/apple.svg",
+      "/assets/exam/preA1/banana.svg",
+      "/assets/exam/preA1/orange.svg"
     ],
     "answer": 0,
     "explanation": "英文「cake」中文為「蛋糕」，故選圖片 (A)。",
@@ -1165,13 +1217,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/rabbit.svg",
       "/assets/exam/preA1/bear.svg",
       "/assets/exam/preA1/elephant.svg",
-      "/assets/exam/preA1/monkey.svg"
+      "/assets/exam/preA1/monkey.svg",
+      "/assets/exam/preA1/cat.svg",
+      "/assets/exam/preA1/dog.svg",
+      "/assets/exam/preA1/duck.svg"
     ],
     "answer": 0,
     "explanation": "英文「rabbit」為長耳朵的「兔子」，故選圖片 (A)。",
@@ -1190,13 +1248,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/desk.svg",
       "/assets/exam/preA1/chair.svg",
       "/assets/exam/preA1/bag.svg",
-      "/assets/exam/preA1/book.svg"
+      "/assets/exam/preA1/book.svg",
+      "/assets/exam/preA1/pencil.svg",
+      "/assets/exam/preA1/ruler.svg",
+      "/assets/exam/preA1/pen.svg"
     ],
     "answer": 0,
     "explanation": "英文「desk」為學校教室裡的「書桌/課桌」，故選圖片 (A)。",
@@ -1215,13 +1279,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/bus.svg",
       "/assets/exam/preA1/car.svg",
       "/assets/exam/preA1/train.svg",
-      "/assets/exam/preA1/boat.svg"
+      "/assets/exam/preA1/boat.svg",
+      "/assets/exam/preA1/bicycle.svg",
+      "/assets/exam/preA1/park.svg",
+      "/assets/exam/preA1/playground.svg"
     ],
     "answer": 0,
     "explanation": "英文「bus」為大眾運輸工具「公車/巴士」，故選圖片 (A)。",
@@ -1240,13 +1310,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/milk.svg",
       "/assets/exam/preA1/water.svg",
       "/assets/exam/preA1/orange.svg",
-      "/assets/exam/preA1/apple.svg"
+      "/assets/exam/preA1/apple.svg",
+      "/assets/exam/preA1/cake.svg",
+      "/assets/exam/preA1/bread.svg",
+      "/assets/exam/preA1/egg.svg"
     ],
     "answer": 0,
     "explanation": "英文「milk」為白色飲品「牛奶」，故選圖片 (A)。",
@@ -1265,13 +1341,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/fish.svg",
       "/assets/exam/preA1/duck.svg",
       "/assets/exam/preA1/bird.svg",
-      "/assets/exam/preA1/pig.svg"
+      "/assets/exam/preA1/pig.svg",
+      "/assets/exam/preA1/cat.svg",
+      "/assets/exam/preA1/dog.svg",
+      "/assets/exam/preA1/rabbit.svg"
     ],
     "answer": 0,
     "explanation": "英文「fish」為水裡游的「魚」，故選圖片 (A)。",
@@ -1454,13 +1536,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/bear.svg",
       "/assets/exam/preA1/dog.svg",
       "/assets/exam/preA1/cat.svg",
-      "/assets/exam/preA1/rabbit.svg"
+      "/assets/exam/preA1/rabbit.svg",
+      "/assets/exam/preA1/elephant.svg",
+      "/assets/exam/preA1/monkey.svg",
+      "/assets/exam/preA1/duck.svg"
     ],
     "answer": 0,
     "explanation": "語音播放「bear（熊）」，故選圖片 (A)。",
@@ -1482,13 +1570,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/pen.svg",
       "/assets/exam/preA1/pencil.svg",
       "/assets/exam/preA1/ruler.svg",
-      "/assets/exam/preA1/eraser.svg"
+      "/assets/exam/preA1/eraser.svg",
+      "/assets/exam/preA1/scissors.svg",
+      "/assets/exam/preA1/book.svg",
+      "/assets/exam/preA1/bag.svg"
     ],
     "answer": 0,
     "explanation": "語音播放「pen（原子筆）」，故選圖片 (A)。",
@@ -1510,13 +1604,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/train.svg",
       "/assets/exam/preA1/bus.svg",
       "/assets/exam/preA1/car.svg",
-      "/assets/exam/preA1/bicycle.svg"
+      "/assets/exam/preA1/bicycle.svg",
+      "/assets/exam/preA1/boat.svg",
+      "/assets/exam/preA1/park.svg",
+      "/assets/exam/preA1/playground.svg"
     ],
     "answer": 0,
     "explanation": "語音播放「train（火車）」，故選圖片 (A)。",
@@ -1538,13 +1638,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/hat.svg",
       "/assets/exam/preA1/cap.svg",
       "/assets/exam/preA1/shoe.svg",
-      "/assets/exam/preA1/jacket.svg"
+      "/assets/exam/preA1/jacket.svg",
+      "/assets/exam/preA1/tshirt.svg",
+      "/assets/exam/preA1/umbrella.svg",
+      "/assets/exam/preA1/bag.svg"
     ],
     "answer": 0,
     "explanation": "語音播放「hat（寬緣帽子）」，故選圖片 (A)。",
@@ -1566,13 +1672,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/cookie.svg",
       "/assets/exam/preA1/cake.svg",
       "/assets/exam/preA1/bread.svg",
-      "/assets/exam/preA1/pizza.svg"
+      "/assets/exam/preA1/pizza.svg",
+      "/assets/exam/preA1/milk.svg",
+      "/assets/exam/preA1/egg.svg",
+      "/assets/exam/preA1/apple.svg"
     ],
     "answer": 0,
     "explanation": "語音播放「cookie（餅乾）」，故選圖片 (A)。",
@@ -1594,13 +1706,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/boat.svg",
       "/assets/exam/preA1/bicycle.svg",
       "/assets/exam/preA1/car.svg",
-      "/assets/exam/preA1/bus.svg"
+      "/assets/exam/preA1/bus.svg",
+      "/assets/exam/preA1/train.svg",
+      "/assets/exam/preA1/park.svg",
+      "/assets/exam/preA1/playground.svg"
     ],
     "answer": 0,
     "explanation": "語音播放「boat（小船/帆船）」，故選圖片 (A)。",
@@ -1622,13 +1740,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/bag.svg",
       "/assets/exam/preA1/book.svg",
       "/assets/exam/preA1/desk.svg",
-      "/assets/exam/preA1/chair.svg"
+      "/assets/exam/preA1/chair.svg",
+      "/assets/exam/preA1/pencil.svg",
+      "/assets/exam/preA1/ruler.svg",
+      "/assets/exam/preA1/pen.svg"
     ],
     "answer": 0,
     "explanation": "語音播放「bag（書包/袋子）」，故選圖片 (A)。",
@@ -1650,7 +1774,9 @@ export const TME_PRE_A1_BANK = [
       "green",
       "greeen",
       "grin",
-      "gren"
+      "gren",
+      "grene",
+      "gean"
     ],
     "answer": 0,
     "explanation": "聽力發音為「green（綠色）」，正確拼字為 g-r-e-e-n。",
@@ -1669,10 +1795,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽語音，選出拼寫正確的顏色單字：",
     "options": [
-      "blue",
-      "bleu",
-      "blu",
-      "bloo"
+      "rabbit",
+      "rabit",
+      "rebbit",
+      "rabbet",
+      "rabitt",
+      "robbit"
     ],
     "answer": 0,
     "explanation": "聽力發音為「blue（藍色）」，正確拼字為 b-l-u-e。",
@@ -1691,10 +1819,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽語音，選出拼寫正確的文具單字：",
     "options": [
-      "ruler",
-      "ruller",
-      "rooler",
-      "rula"
+      "orange",
+      "oragne",
+      "arenge",
+      "orenge",
+      "orang",
+      "oringe"
     ],
     "answer": 0,
     "explanation": "聽力發音為「ruler（直尺）」，正確拼字為 r-u-l-e-r。",
@@ -1713,10 +1843,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽語音，選出拼寫正確的文具單字：",
     "options": [
-      "pencil",
-      "pensil",
-      "pencl",
-      "pencel"
+      "window",
+      "widnow",
+      "windo",
+      "windwo",
+      "wendow",
+      "wandow"
     ],
     "answer": 0,
     "explanation": "聽力發音為「pencil（鉛筆）」，正確拼字為 p-e-n-c-i-l。",
@@ -1735,10 +1867,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽語音，選出拼寫正確的食物單字：",
     "options": [
-      "bread",
-      "bred",
-      "braed",
-      "breed"
+      "banana",
+      "benana",
+      "bananna",
+      "banan",
+      "bannana",
+      "bonana"
     ],
     "answer": 0,
     "explanation": "聽力發音為「bread（麵包）」，正確拼字為 b-r-e-a-d。",
@@ -1757,10 +1891,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽語音，選出拼寫正確的飲品單字：",
     "options": [
-      "water",
-      "wator",
-      "watter",
-      "watar"
+      "pencil",
+      "pensil",
+      "pencel",
+      "pencle",
+      "pensle",
+      "pincil"
     ],
     "answer": 0,
     "explanation": "聽力發音為「water（水）」，正確拼字為 w-a-t-e-r。",
@@ -1779,10 +1915,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽語音，選出拼寫正確的家具單字：",
     "options": [
-      "chair",
-      "chare",
-      "cheir",
-      "cher"
+      "monkey",
+      "monky",
+      "munkey",
+      "monkeye",
+      "monkay",
+      "monkye"
     ],
     "answer": 0,
     "explanation": "聽力發音為「chair（椅子）」，正確拼字為 c-h-a-i-r。",
@@ -1805,7 +1943,9 @@ export const TME_PRE_A1_BANK = [
       "The cute dog is sitting.",
       "The cat is climbing a tree.",
       "The bird is flying.",
-      "The duck is swimming."
+      "The duck is swimming.",
+      "The dog is barking loudly.",
+      "The dog is chasing a ball."
     ],
     "answer": 0,
     "explanation": "插圖為小狗坐在地上，聽力敘述為「The cute dog is sitting...」，故選 (A)。",
@@ -1825,10 +1965,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "The school bus is stopping here.",
-      "The train is moving fast.",
-      "The plane is in the sky.",
-      "The boat is on the water."
+      "The children are studying at school.",
+      "The children are swimming in the pool.",
+      "The children are sleeping in bed.",
+      "The children are eating breakfast.",
+      "The students are playing soccer.",
+      "The teacher is writing on the board."
     ],
     "answer": 0,
     "explanation": "插圖為校車公車，聽力為「The yellow school bus is stopping here.」，故選 (A)。",
@@ -1848,10 +1990,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "There is a birthday cake.",
-      "There is an apple on the table.",
-      "They are eating ice cream.",
-      "The boy has a big cookie."
+      "The girl is eating a delicious apple.",
+      "The girl is drinking cold water.",
+      "The girl is baking a cake.",
+      "The girl is making a pizza.",
+      "The girl is buying some bread.",
+      "The girl is washing fresh fruit."
     ],
     "answer": 0,
     "explanation": "插圖為生日蛋糕，聽力內容「There are three candles on the birthday cake.」，故選 (A)。",
@@ -1871,10 +2015,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "There is a bench in the park.",
-      "The girl is in the library.",
-      "The monkey is at the zoo.",
-      "The students are in the classroom."
+      "The family is visiting the animals in the zoo.",
+      "The family is watching television at home.",
+      "The family is swimming at the beach.",
+      "The family is eating dinner in a restaurant.",
+      "The family is shopping at the supermarket.",
+      "The children are playing on the swing."
     ],
     "answer": 0,
     "explanation": "插圖為公園與長椅，聽力「There is a bench under the green tree in the park.」，故選 (A)。",
@@ -1894,10 +2040,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "The small fish is swimming.",
-      "The rabbit is jumping.",
-      "The elephant is drinking water.",
-      "The bird is in the tree."
+      "The yellow bus is stopping on the road.",
+      "The white airplane is flying in the sky.",
+      "The big boat is sailing on the river.",
+      "The boy is riding a blue bicycle.",
+      "The green train is arriving at the station.",
+      "The red car is parking near the school."
     ],
     "answer": 0,
     "explanation": "插圖為水裡的小魚，聽力「The small fish is swimming...」，故選 (A)。",
@@ -1917,10 +2065,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "The boat is on the sea.",
-      "The car is on the road.",
-      "The bus is coming.",
-      "The bicycle is very fast."
+      "The girl is reading books in the library.",
+      "The girl is drawing pictures in the park.",
+      "The girl is swimming in the gym.",
+      "The girl is cooking in the kitchen.",
+      "The girl is singing songs in the music room.",
+      "The girl is playing with blocks at home."
     ],
     "answer": 0,
     "explanation": "插圖為帆船小艇，聽力「A white sailboat is floating on the blue sea.」，故選 (A)。",
@@ -1942,13 +2092,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/bread.svg",
       "/assets/exam/preA1/pizza.svg",
       "/assets/exam/preA1/cookie.svg",
-      "/assets/exam/preA1/cake.svg"
+      "/assets/exam/preA1/cake.svg",
+      "/assets/exam/preA1/egg.svg",
+      "/assets/exam/preA1/milk.svg",
+      "/assets/exam/preA1/apple.svg"
     ],
     "answer": 0,
     "explanation": "Tom 回答「I want some milk and bread」，對應麵包吐司線稿圖片 (A)。",
@@ -1970,13 +2126,17 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)"
     ],
     "optionImages": [
       "/assets/exam/preA1/zoo.svg",
       "/assets/exam/preA1/library.svg",
       "/assets/exam/preA1/school.svg",
-      "/assets/exam/preA1/restaurant.svg"
+      "/assets/exam/preA1/restaurant.svg",
+      "/assets/exam/preA1/park.svg",
+      "/assets/exam/preA1/playground.svg"
     ],
     "answer": 0,
     "explanation": "爸爸回答「Let us go to the zoo」，前往動物園，對應動物園拱門圖片 (A)。",
@@ -1998,13 +2158,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/elephant.svg",
       "/assets/exam/preA1/rabbit.svg",
       "/assets/exam/preA1/pig.svg",
-      "/assets/exam/preA1/duck.svg"
+      "/assets/exam/preA1/duck.svg",
+      "/assets/exam/preA1/bear.svg",
+      "/assets/exam/preA1/monkey.svg",
+      "/assets/exam/preA1/cat.svg"
     ],
     "answer": 0,
     "explanation": "Andy 說「I like the big elephant」，故選大象插圖 (A)。",
@@ -2026,13 +2192,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/eraser.svg",
       "/assets/exam/preA1/pencil.svg",
       "/assets/exam/preA1/ruler.svg",
-      "/assets/exam/preA1/scissors.svg"
+      "/assets/exam/preA1/scissors.svg",
+      "/assets/exam/preA1/pen.svg",
+      "/assets/exam/preA1/book.svg",
+      "/assets/exam/preA1/bag.svg"
     ],
     "answer": 0,
     "explanation": "男孩說「I bought a new blue eraser」，故選橡皮擦圖片 (A)。",
@@ -2054,13 +2226,17 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)"
     ],
     "optionImages": [
       "/assets/exam/preA1/jacket.svg",
       "/assets/exam/preA1/cap.svg",
       "/assets/exam/preA1/shoe.svg",
-      "/assets/exam/preA1/umbrella.svg"
+      "/assets/exam/preA1/umbrella.svg",
+      "/assets/exam/preA1/hat.svg",
+      "/assets/exam/preA1/tshirt.svg"
     ],
     "answer": 0,
     "explanation": "媽媽提醒「wear your jacket（穿上夾克外衣）」，故選夾克圖片 (A)。",
@@ -2082,13 +2258,19 @@ export const TME_PRE_A1_BANK = [
       "圖片 (A)",
       "圖片 (B)",
       "圖片 (C)",
-      "圖片 (D)"
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/duck.svg",
       "/assets/exam/preA1/fish.svg",
       "/assets/exam/preA1/dog.svg",
-      "/assets/exam/preA1/bird.svg"
+      "/assets/exam/preA1/bird.svg",
+      "/assets/exam/preA1/cat.svg",
+      "/assets/exam/preA1/pig.svg",
+      "/assets/exam/preA1/rabbit.svg"
     ],
     "answer": 0,
     "explanation": "男孩驚呼「the cute duck is swimming」，故選小鴨插圖 (A)。",
@@ -2107,10 +2289,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
-      "Nice to meet you, too.",
-      "I am ten years old.",
-      "Thank you very much.",
-      "It is on the desk."
+      "He is my brother.",
+      "He is at home.",
+      "He has a red cap.",
+      "Yes, he does.",
+      "He is ten.",
+      "He likes bananas."
     ],
     "answer": 0,
     "explanation": "初次見面打招呼「Nice to meet you」，標準禮貌回應為「Nice to meet you, too.」。",
@@ -2129,10 +2313,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
-      "You are welcome.",
-      "Good morning, teacher.",
-      "I have two pencils.",
-      "Yes, she can swim."
+      "I am nine years old.",
+      "I'm in Grade 3.",
+      "There are nine pens.",
+      "It is nine o'clock.",
+      "I am fine, thanks.",
+      "He is eight years old."
     ],
     "answer": 0,
     "explanation": "對方道謝「Thank you...」，客氣回應「You are welcome.（不客氣）」。",
@@ -2151,10 +2337,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽日常道別，選出最適當的回應句子：",
     "options": [
-      "Goodbye! You, too!",
-      "My name is Lisa.",
-      "I want some milk.",
-      "It is cold today."
+      "It is a notebook.",
+      "It is under the desk.",
+      "It is very happy.",
+      "They are pencils.",
+      "I have a notebook.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "道別祝週末愉快，回答「Goodbye! You, too!（再見！你也是！）」。",
@@ -2173,10 +2361,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "請聽日常請求，選出最適當的回應句子：",
     "options": [
-      "Sure, no problem!",
-      "It is three o’clock.",
-      "I like blue jackets.",
-      "She is my teacher."
+      "Nice to meet you, too.",
+      "You're welcome.",
+      "Good night, Mom.",
+      "See you tomorrow.",
+      "I am sorry.",
+      "Thank you very much."
     ],
     "answer": 0,
     "explanation": "請求協助「Can you help me...」，樂意幫忙時回答「Sure, no problem!（當然沒問題！）」。",
@@ -2195,10 +2385,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "聽對話，回答問題：What does Ben want for his birthday?",
     "options": [
-      "A red bicycle",
-      "A new jacket",
-      "A toy car",
-      "A basketball"
+      "Red",
+      "Green",
+      "Blue",
+      "Yellow",
+      "Black",
+      "Orange"
     ],
     "answer": 0,
     "explanation": "Ben 明確回答「I want a red bicycle」，故選 (A)。",
@@ -2217,10 +2409,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "聽對話，回答問題：Where is Amy’s homework?",
     "options": [
-      "In her school bag at home",
-      "On the teacher’s desk",
-      "In the library",
-      "Under her chair"
+      "Under the chair",
+      "Behind the door",
+      "Next to the sofa",
+      "On the table",
+      "In the box",
+      "Under the bed"
     ],
     "answer": 0,
     "explanation": "Amy 回答作業「in my school bag at home（在家裡的書包中）」，故選 (A)。",
@@ -2239,10 +2433,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "聽對話，回答問題：How does Andy feel?",
     "options": [
-      "He is hungry.",
-      "He is thirsty.",
-      "He is tired.",
-      "He is sleepy."
+      "Peter",
+      "Sam",
+      "David",
+      "Andy",
+      "Lucas",
+      "Tom"
     ],
     "answer": 0,
     "explanation": "Andy 回答「I am very hungry（我很餓）」，故選 (A)。",
@@ -2261,10 +2457,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "聽對話，回答問題：What is Tom doing?",
     "options": [
-      "Making a chocolate cake",
-      "Drinking some milk",
-      "Reading a story book",
-      "Washing his hands"
+      "Rainy",
+      "Sunny",
+      "Windy",
+      "Snowy",
+      "Cloudy",
+      "Cold"
     ],
     "answer": 0,
     "explanation": "Tom 回答「I am making a chocolate cake for Mom」，故選 (A)。",
@@ -2445,7 +2643,9 @@ export const TME_PRE_A1_BANK = [
       "The boy has a new bicycle.",
       "The girl is driving a bus.",
       "The train is at the station.",
-      "The boat is in the water."
+      "The boat is in the water.",
+      "The boy is cleaning his yellow bicycle.",
+      "The girl is riding a black horse."
     ],
     "answer": 0,
     "explanation": "插圖為腳踏車線稿，句子 (A) 完全吻合。",
@@ -2462,10 +2662,12 @@ export const TME_PRE_A1_BANK = [
     "image": "/assets/exam/preA1/dog.svg",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The puppy dog is very cute.",
-      "The cat is sleeping on the bed.",
-      "The bird is in the sky.",
-      "The pig is eating an apple."
+      "The students are studying in the classroom.",
+      "The students are swimming in the gym.",
+      "The students are cooking in the kitchen.",
+      "The students are sleeping on the sofa.",
+      "The children are playing on the swing.",
+      "The teacher is writing on the blackboard."
     ],
     "answer": 0,
     "explanation": "插圖為可愛小狗，句子 (A) 完全吻合。",
@@ -2482,10 +2684,12 @@ export const TME_PRE_A1_BANK = [
     "image": "/assets/exam/preA1/duck.svg",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The duck is swimming in the pond.",
-      "The rabbit is running fast.",
-      "The bear is climbing a mountain.",
-      "The monkey is eating a banana."
+      "There are two birds in the tree.",
+      "There are two dogs in the car.",
+      "There is a cat under the chair.",
+      "There are four fish in the pond.",
+      "There is a cat climbing up the tree.",
+      "There are three monkeys under the tree."
     ],
     "answer": 0,
     "explanation": "插圖為水中游水的小鴨，句子 (A) 最相符。",
@@ -2502,10 +2706,12 @@ export const TME_PRE_A1_BANK = [
     "image": "/assets/exam/preA1/bus.svg",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The children go to school by bus.",
-      "They ride bicycles to the park.",
-      "The boat sails across the river.",
-      "The train arrives at the station."
+      "The woman is cooking in the kitchen.",
+      "The man is sleeping in the bedroom.",
+      "The girl is reading in the library.",
+      "The boy is washing a car.",
+      "The woman is washing clothes in the bathroom.",
+      "The man is eating breakfast in the dining room."
     ],
     "answer": 0,
     "explanation": "插圖為大公車/校車，句子 (A)「搭公車上學」吻合。",
@@ -2522,10 +2728,12 @@ export const TME_PRE_A1_BANK = [
     "image": "/assets/exam/preA1/book.svg",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The book is open on the desk.",
-      "The boy is cutting paper with scissors.",
-      "The ruler is thirty centimeters long.",
-      "She writes with a red pencil."
+      "The children are having fun at the playground.",
+      "The children are reading quietly in the library.",
+      "The children are sleeping at home.",
+      "The children are eating in the restaurant.",
+      "The playground is completely empty today.",
+      "The children are shopping at the bookstore."
     ],
     "answer": 0,
     "explanation": "插圖為翻開的書本，句子 (A) 完全相符。",
@@ -2542,10 +2750,12 @@ export const TME_PRE_A1_BANK = [
     "image": "/assets/exam/preA1/cake.svg",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "Today is Mary’s birthday party.",
-      "We eat pizza for lunch.",
-      "The cookie is very sweet.",
-      "He drinks a glass of cold water."
+      "The cute cat is sleeping on the sofa.",
+      "The big dog is barking at the door.",
+      "The little bird is singing on the fence.",
+      "The pig is eating in the barn.",
+      "The cat is chasing a little mouse.",
+      "The big dog is sleeping on the floor."
     ],
     "answer": 0,
     "explanation": "插圖為點燃蠟燭的生日蛋糕，句子 (A) 生日聚會最吻合。",
@@ -2562,10 +2772,12 @@ export const TME_PRE_A1_BANK = [
     "image": "/assets/exam/preA1/boat.svg",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The white sailboat is on the sea.",
-      "The yellow car is in the garage.",
-      "The airplane flies above the clouds.",
-      "The bicycle is parked by the tree."
+      "The family is having a picnic in the park.",
+      "The family is watching television in the living room.",
+      "The family is buying clothes in the store.",
+      "The family is swimming in the ocean.",
+      "The family is waiting for a bus in the rain.",
+      "The family is studying together at the desk."
     ],
     "answer": 0,
     "explanation": "插圖為海上的小帆船，句子 (A) 完全吻合。",
@@ -2653,10 +2865,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "依短文文意，空格處應填入哪一個單字？",
     "options": [
-      "tshirt",
-      "table",
-      "pencil",
-      "eraser"
+      "have",
+      "make",
+      "give",
+      "take",
+      "play",
+      "bring"
     ],
     "answer": 0,
     "explanation": "動詞為 puts on（穿上），空格只能填衣物類單字 tshirt（T恤），故選 (A)。",
@@ -2676,10 +2890,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "依短文文意，空格處應填入哪一個單字？",
     "options": [
-      "water",
-      "bread",
-      "cake",
-      "cookie"
+      "big",
+      "tall",
+      "short",
+      "small",
+      "long",
+      "fast"
     ],
     "answer": 0,
     "explanation": "口渴（thirsty）且動詞為 drinks（喝），空格填水（water），故選 (A)。",
@@ -2699,10 +2915,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "依短文文意，空格處應填入哪一個單字？",
     "options": [
-      "elephant",
-      "rabbit",
-      "duck",
-      "cat"
+      "at",
+      "on",
+      "with",
+      "for",
+      "to",
+      "from"
     ],
     "answer": 0,
     "explanation": "有 long trunk（長鼻子）的巨大灰色動物為 elephant（大象），故選 (A)。",
@@ -2722,10 +2940,12 @@ export const TME_PRE_A1_BANK = [
     },
     "question": "依短文文意，空格處應填入哪一個單字？",
     "options": [
-      "scissors",
-      "chair",
-      "desk",
-      "shoe"
+      "go",
+      "come",
+      "walk",
+      "run",
+      "ride",
+      "fly"
     ],
     "answer": 0,
     "explanation": "美勞課剪紙（cut out the paper）使用的工具為 scissors（剪刀），故選 (A)。",
