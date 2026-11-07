@@ -145,6 +145,29 @@ export function assembleExamForm(pool, targetCount) {
   let typeKeys = Object.keys(byType);
   if (typeKeys.length === 0) return [];
 
+  // 若為寫作重組專題目（W-SCRAMBLE）且具備十大句型標籤，跨句型均衡抽樣
+  if (typeKeys.length === 1 && typeKeys[0] === 'W-SCRAMBLE') {
+    const scrambleItems = byType['W-SCRAMBLE'];
+    const hasPatterns = scrambleItems.some((q) => q.patternIndex);
+    if (hasPatterns) {
+      const byPattern = {};
+      for (const q of scrambleItems) {
+        const pKey = q.patternIndex || 1;
+        (byPattern[pKey] ||= []).push(q);
+      }
+      const pKeys = Object.keys(byPattern).sort((a, b) => Number(a) - Number(b));
+      const perPatternCount = Math.floor(targetCount / pKeys.length);
+      const remainder = targetCount % pKeys.length;
+      const picked = [];
+      pKeys.forEach((pk, idx) => {
+        const need = perPatternCount + (idx < remainder ? 1 : 0);
+        const shuffled = shuffle(byPattern[pk]);
+        picked.push(...shuffled.slice(0, need));
+      });
+      return picked.sort((a, b) => (a.patternIndex || 0) - (b.patternIndex || 0));
+    }
+  }
+
   // 10 題以下只取 2～3 種題型（依題量加權隨機挑選）
   if (targetCount <= 10 && typeKeys.length > 3) {
     const want = Math.random() < 0.5 ? 2 : 3;

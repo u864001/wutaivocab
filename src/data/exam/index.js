@@ -11,7 +11,7 @@ import { EXAM_TRACKS } from './examTracks';
 import { TME_PRE_A1_SPEC, TME_PRE_A1_CATEGORIES } from './tmePreA1Meta';
 import { SAA_EXAM_SPEC, SAA_PASSAGE_SAMPLE_SCHEMA } from './saaExamMeta';
 import { HERE_WE_GO_BOOK_META, HERE_WE_GO_MCQ_BANK } from '../hereWeGoMcqBank';
-import { TME_PRE_A1_BANK } from './tmePreA1Bank';
+import { TME_PRE_A1_BANK, TME_PRE_A1_SCRAMBLE_BANK, TME_SCRAMBLE_PATTERNS } from './tmePreA1Bank';
 import { SAA_EXAM_BANK } from './saaExamBank';
 import {
   SAA_115_G4_QUESTIONS,
@@ -30,6 +30,8 @@ export {
   HERE_WE_GO_BOOK_META,
   HERE_WE_GO_MCQ_BANK,
   TME_PRE_A1_BANK,
+  TME_PRE_A1_SCRAMBLE_BANK,
+  TME_SCRAMBLE_PATTERNS,
   SAA_EXAM_BANK,
   SAA_115_G4_QUESTIONS,
   SAA_115_G5_QUESTIONS,

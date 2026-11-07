@@ -17,6 +17,7 @@ import {
   Sparkles,
   UserCheck,
   Headphones,
+  PenTool,
   GraduationCap,
   ChevronRight,
   Clock
@@ -173,7 +174,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // SAA 題型組合: 'standard' (聽15+閱20) | 'listening' (聽20) | 'reading' (閱20)
   const [selectedSaaFormat, setSelectedSaaFormat] = useState('standard');
 
-  // Pre-A1 設定: 'standard' (聽15+閱15) | 'listening' (聽20) | 'reading' (閱20)
+  // Pre-A1 設定: 'standard' (聽15+閱15) | 'listening' (聽20) | 'reading' (閱20) | 'writing' (寫作重組20)
   const [selectedPreA1Format, setSelectedPreA1Format] = useState('standard');
 
   const isSelectedBookOwnGrade = useMemo(() => {
@@ -258,6 +259,9 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     }
     if (selectedPreA1Format === 'reading') {
       return TME_PRE_A1_BANK.filter((q) => q.category === 'reading' || q.taskType?.startsWith('R-') || q.taskType?.startsWith('V-'));
+    }
+    if (selectedPreA1Format === 'writing') {
+      return TME_PRE_A1_BANK.filter((q) => q.category === 'writing' || q.taskType === 'W-SCRAMBLE');
     }
     return TME_PRE_A1_BANK;
   }, [selectedPreA1Format]);
@@ -1509,6 +1513,41 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       <span className="text-base sm:text-lg font-black text-sky-600 dark:text-sky-400">20 題</span>
                     </div>
                   </button>
+
+                  {/* 膠囊 D: 寫作句子重組 20 題 (國小核心十大句型) */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPreA1Format('writing')}
+                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
+                      selectedPreA1Format === 'writing'
+                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        selectedPreA1Format === 'writing' ? 'bg-sky-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                      }`}>
+                        <PenTool size={20} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                            寫作句子重組 20 題
+                          </span>
+                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-200">
+                            國小核心十大句型
+                          </span>
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          Wh-問句、Be動詞、Can/Do助動詞、進行式與介系詞等 10 大核心句型立體磁吸重組特訓
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-base sm:text-lg font-black text-sky-600 dark:text-sky-400">20 題</span>
+                    </div>
+                  </button>
                 </div>
               </div>
 
@@ -1971,6 +2010,69 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             <div className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-wide py-1">
               {formatQuestionStem(currentQ.question)}
             </div>
+
+            {/* 寫作重組專屬：彩色立體磁吸單字積木架 (3D Magnetic Word Blocks Rack) */}
+            {(currentQ.tokens || currentQ.scrambledWords) && (
+              <div className="my-3 sm:my-4 p-3.5 sm:p-5 rounded-3xl bg-gradient-to-b from-slate-100/95 via-slate-50 to-slate-200/90 dark:from-slate-800/90 dark:to-slate-900/90 border-2 border-slate-300 dark:border-slate-700 shadow-inner flex flex-col gap-3">
+                {/* 頂部標籤列：句型徽章與提示 */}
+                <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+                  <div className="flex items-center gap-2">
+                    {currentQ.pattern && (
+                      <span className="px-2.5 py-1 rounded-full text-xs font-black bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xs">
+                        {currentQ.pattern}
+                      </span>
+                    )}
+                    <span className="text-slate-600 dark:text-slate-300 font-bold flex items-center gap-1">
+                      <span>🧲</span>
+                      <span>磁吸單字積木（點擊積木發音）</span>
+                    </span>
+                  </div>
+                  {currentQ.chinese && (
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">
+                      中文語意：{currentQ.chinese}
+                    </span>
+                  )}
+                </div>
+
+                {/* 對話情境填空框 (若題目有 contextPrompt) */}
+                {currentQ.contextPrompt && (
+                  <div className="px-3.5 py-2 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 font-mono text-xs sm:text-sm text-slate-800 dark:text-slate-200 whitespace-pre-line leading-relaxed shadow-xs">
+                    {currentQ.contextPrompt}
+                  </div>
+                )}
+
+                {/* 3D 磁吸積木展示槽 (Magnetic Rack Tray) */}
+                <div className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-300/80 dark:border-slate-800 shadow-sm flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 min-h-[72px]">
+                  {(currentQ.tokens || currentQ.scrambledWords || []).map((word, wIdx) => {
+                    const CHIP_PALETTES = [
+                      'bg-rose-500 hover:bg-rose-600 text-white border-b-4 border-rose-700 shadow-rose-200 dark:shadow-none',
+                      'bg-sky-500 hover:bg-sky-600 text-white border-b-4 border-sky-700 shadow-sky-200 dark:shadow-none',
+                      'bg-emerald-500 hover:bg-emerald-600 text-white border-b-4 border-emerald-700 shadow-emerald-200 dark:shadow-none',
+                      'bg-amber-500 hover:bg-amber-600 text-white border-b-4 border-amber-700 shadow-amber-200 dark:shadow-none',
+                      'bg-indigo-500 hover:bg-indigo-600 text-white border-b-4 border-indigo-700 shadow-indigo-200 dark:shadow-none',
+                      'bg-fuchsia-500 hover:bg-fuchsia-600 text-white border-b-4 border-fuchsia-700 shadow-fuchsia-200 dark:shadow-none',
+                      'bg-teal-500 hover:bg-teal-600 text-white border-b-4 border-teal-700 shadow-teal-200 dark:shadow-none',
+                      'bg-purple-500 hover:bg-purple-600 text-white border-b-4 border-purple-700 shadow-purple-200 dark:shadow-none',
+                    ];
+                    const colorClass = CHIP_PALETTES[wIdx % CHIP_PALETTES.length];
+
+                    return (
+                      <button
+                        key={wIdx}
+                        type="button"
+                        onClick={() => speakQuestion(word)}
+                        title="點擊聆聽單字發音"
+                        className={`group relative px-3.5 py-2 sm:px-4.5 sm:py-2.5 rounded-2xl font-black text-base sm:text-lg tracking-wide transition-all transform hover:-translate-y-0.5 active:translate-y-1 cursor-pointer select-none shadow-md flex items-center gap-1.5 ${colorClass}`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-white/40 shadow-inner block shrink-0" />
+                        <span>{word}</span>
+                        <Volume2 size={13} className="opacity-0 group-hover:opacity-80 transition-opacity ml-0.5" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {currentQ.image && (
               <div className="flex justify-center my-2 sm:my-3">
@@ -2518,6 +2620,45 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       className="max-h-48 sm:max-h-56 max-w-full w-auto object-contain rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm p-1.5"
                       loading="lazy"
                     />
+                  </div>
+                )}
+
+                {/* 寫作重組單字卡回顧 */}
+                {(currentReviewItem.q.tokens || currentReviewItem.q.scrambledWords) && (
+                  <div className="my-2.5 p-3 rounded-2xl bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 shadow-inner">
+                    <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-2 flex items-center justify-between">
+                      <span className="flex items-center gap-1">
+                        <span>🧲</span>
+                        <span>給定磁吸單字積木：</span>
+                      </span>
+                      {currentReviewItem.q.pattern && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                          {currentReviewItem.q.pattern}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 justify-center">
+                      {(currentReviewItem.q.tokens || currentReviewItem.q.scrambledWords || []).map((word, wIdx) => {
+                        const PALETTES = [
+                          'bg-rose-500 text-white',
+                          'bg-sky-500 text-white',
+                          'bg-emerald-500 text-white',
+                          'bg-amber-500 text-white',
+                          'bg-indigo-500 text-white',
+                          'bg-fuchsia-500 text-white',
+                          'bg-teal-500 text-white',
+                          'bg-purple-500 text-white'
+                        ];
+                        return (
+                          <span
+                            key={wIdx}
+                            className={`px-2.5 py-1 rounded-xl text-xs font-black shadow-xs ${PALETTES[wIdx % PALETTES.length]}`}
+                          >
+                            {word}
+                          </span>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
