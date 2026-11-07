@@ -82,10 +82,29 @@ for (const q of lqa) {
 }
 console.log(`✓ Phase 2E: listen-conv-qa (${lqa.length} items) - QA answer option matches conversation explanation`);
 
+// 2F: read-passage
+const passages = TME_PRE_A1_BANK.filter(q => q.subType === 'read-passage');
+for (const q of passages) {
+  if (!q.passage?.title || !q.passage?.text) {
+    errors.push(`[${q.id}] read-passage missing passage title or text`);
+  }
+  if (!q.groupId) {
+    errors.push(`[${q.id}] read-passage missing groupId`);
+  }
+  const opt = q.options[q.answer]?.toLowerCase();
+  const exp = q.explanation?.toLowerCase();
+  const optKeywords = opt.split(/\s+/).filter(w => w.length > 2);
+  const matched = optKeywords.some(w => exp.includes(w));
+  if (!matched) {
+    errors.push(`[${q.id}] read-passage opt "${opt}" not found in explanation "${q.explanation}"`);
+  }
+}
+console.log(`✓ Phase 2F: read-passage (${passages.length} items) - passage text, groupId & question explanation verified`);
+
 if (errors.length > 0) {
   console.error(`\n❌ Found ${errors.length} errors:`);
   errors.forEach(e => console.error(`  - ${e}`));
   process.exit(1);
 } else {
-  console.log(`\n🎉 ALL 178 PRE-A1 QUESTIONS PASSED SEMANTIC ALIGNMENT & OPTION AUDIT WITH 0 ERRORS!`);
+  console.log(`\n🎉 ALL ${TME_PRE_A1_BANK.length} PRE-A1 QUESTIONS PASSED SEMANTIC ALIGNMENT & OPTION AUDIT WITH 0 ERRORS!`);
 }

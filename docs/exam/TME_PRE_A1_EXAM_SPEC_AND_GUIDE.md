@@ -13,7 +13,7 @@
 flowchart LR
     A["Pre-A1 檢定模擬總體系"] --> B["字彙 (Vocab)<br/>32 題"]
     A --> C["聽力 (Listening)<br/>34 題"]
-    A --> D["閱讀 (Reading)<br/>36 題"]
+    A --> D["閱讀 (Reading)<br/>68 題"]
     A --> E["寫作重組 (Writing)<br/>60 題"]
     A --> F["口說 (Speaking)<br/>16 題"]
 ```
@@ -171,10 +171,97 @@ flowchart LR
 
 ---
 
-## 四、 本手冊維護與後續章節推進路徑 (Roadmap)
+## 四、 閱讀專項：生活情境短文題型與篇章填空解題心法 (Reading Master Guide)
+
+本系統閱讀題庫擴充至 **68 題**，全面涵蓋教育部國小 1～8 冊高頻詞彙與常見真實情境。以下解構五大閱讀子面向、非重點超綱字註解規範與核心破題策略：
+
+### 1. 閱讀能力指標與五大子題型架構 (68 題全量)
+
+| 子題型代碼 | 官方題型名稱 | 題數 | 評量目標與題型特徵 |
+| :--- | :--- | :--- | :--- |
+| `read-pic2word` (V-PIC) | 看圖選字 | 8 題 | 生活場所、文具、教室設備等具象線稿與單字直覺對應。 |
+| `read-pic2sent` (G-CTX) | 看圖選句 | 8 題 | 結合進行式、存在句與主詞動作之生活情境整句理解。 |
+| `read-truefalse` (R-TF) | 是非判斷 | 10 題 | 2～3 句微型短文之資訊對照與真偽辨識（True / False）。 |
+| `read-cloze` (R-CLOZE) | 段落填空 | 18 題 | 具備完整脈絡的生活短文（40～60 字），依動詞搭配與語意選出正確名詞/形容詞。 |
+| `read-passage` (R-COMP) | 篇章閱讀理解 | 24 題 | 6 大生活篇章（每篇 4 題組題）：涵蓋霧臺山林生活、校園失物招領告示、生日邀請函、寵物日記、晨間好習慣、四季天氣。 |
+
+---
+
+### 2. 嚴謹課綱範圍與文末星號 (*) 註解規範 (Footnote Policy)
+
+本系統閱讀篇章命題嚴守三大原則：
+1. **核心骨幹嚴守課綱**：句型與主體單字 100% 來自國小英語 1～8 冊核心詞庫（家庭、學校、動物、食物、日常作息、方位與顏色）。
+2. **非核心情境超綱字文末附註**：為豐富文章真實感（如告示格式、部落文化），篇章中出現之少數非核心單字，**一律於文末以星號 (*) 提供清晰繁體中文註解**，例如：
+   ```text
+   * stone slab house: 石板屋
+   * boiled millet cake: 水煮小米糕
+   * lost and found: 失物招領
+   * invitation: 邀請函
+   * strawberry: 草莓
+   * fever: 發燒
+   ```
+3. **消除應考恐慌**：學生在答題時可隨時參照文末註解，評量重心回歸「閱讀理解與資訊擷取」本質，而非背誦罕見生詞。
+
+---
+
+### 3. 短文填空 (Cloze) 破題三部曲
+
+短文填空考驗學生在微型語境中提取正確詞彙的能力，指導學生依照以下「三部曲」作答：
+
+- **第一步：看動詞與固定搭配 (Collocation)**：
+  - 空格前若有 `drinks a glass of ____`，空格必為可飲用液體（如 `milk`, `water`），直接排除固體食物或文具。
+  - 空格前若有 `play the ____`，後接樂器（如 `piano`）；若為 `play ____` 不加 the，後接球類（如 `basketball`）。
+  - 空格前若有 `brush your ____`，固定搭配為牙齒（`teeth`）。
+- **第二步：看冠詞與單複數 (Article & Number)**：
+  - 空格前有 `an ____`，表示答案必須為**母音發音開頭之單數名詞**（如 `umbrella`, `apple`, `eraser`），子音開頭的 `pencil`, `ruler` 可直接排除。
+  - 空格前有 `five yellow ____`，答案必為複數名詞（如 `ducks`）。
+- **第三步：通讀整句檢查生活常理**：
+  - 代入選項後朗讀一次，確保前後文意通順符合生活邏輯。
+
+---
+
+### 4. 篇章閱讀理解 (Reading Comprehension) 實戰定位策略 (Scan & Locate)
+
+面對 60～100 字的生活短文、告示或邀請函，學生不需逐字死背，應掌握「關鍵字定位法」：
+
+1. **問句疑問詞引導搜尋路徑**：
+   - 遇到 `What time`：目光直接掃描文章中的**數字與時間標記**（如 `from 2:00 PM to 5:00 PM`、`seven o'clock`）。
+   - 遇到 `Where`：目光掃描**介系詞短語與地點名詞**（如 `outside their stone slab house`、`near the gym`、`in the library`）。
+   - 遇到 `Who / Whose`：尋找大寫專有名詞與所有格（如 `Kevin's birthday party`、`Amy's cat`）。
+   - 遇到 `Why`：尋找原因連接詞或動詞目的（如 `helps students study well`、`gives the body strong energy`）。
+2. **告示與邀請函特徵區塊快讀**：
+   - 標題（Title）：辨識活動主題（LOST AND FOUND / BIRTHDAY PARTY）。
+   - 欄位（When, Where, Activities）：一對一核對題目選項。
+   - 聯絡與期限（Contact / Reply deadline）：注意 `before December 8th` 等時間陷阱。
+
+---
+
+### 5. 代表性經典題組解析
+
+#### 【經典範例一：在地文化生活短文】
+> **篇章內容**：
+> Leo and his sister, Maya, live in Wutai. Today is Sunday, and the weather is sunny and warm.
+> In the morning, they help their grandfather in the vegetable garden. They pick fresh red tomatoes and green beans.
+> In the afternoon, they sit outside their stone slab house. Grandfather tells them stories about the mountains while they eat sweet boiled millet cakes.
+> Leo loves his mountain home very much.
+> 
+> \* stone slab house: 石板屋  
+> \* boiled millet cake: 水煮小米糕  
+> \* fresh: 新鮮的  
+
+- **類題 1**：What is the weather like in Wutai today?
+  - 正解：`(A) It is sunny and warm.`
+  - 誘答陷阱：`(B) It is cold and rainy.`（雨天為常見反向誘答）
+  - 解題策略：直接定位第一段第二句「the weather is sunny and warm」。
+- **類題 2**：Where do the children sit in the afternoon?
+  - 正解：`(A) Outside their stone slab house`
+  - 解題策略：利用時間副詞「In the afternoon」精確定位到第三段第一句。
+
+---
+
+## 五、 本手冊維護與後續章節推進路徑 (Roadmap)
 
 本手冊將隨後續開發，按以下規劃持續推進：
-1. **第伍章：閱讀面向生活情境短文題型與篇章填空答題心法**（隨 R-CLOZE 題庫擴充同步紀錄）
-2. **第陸章：聽力日常溝通問答（L-RESP）與言談理解（L-CONV）關鍵應答句典**
-3. **第柒章：字彙三位一體圖文音對應表與高頻核心 200 詞字表**
-4. **第捌章：口說 AI 語音即時評測評分規準 (Rubrics) 與常見發音盲點指引**
+1. **第伍章：聽力日常溝通問答（L-RESP）與言談理解（L-CONV）關鍵應答句典**（即將推進）
+2. **第陸章：字彙三位一體圖文音對應表與高頻核心 200 詞字表**
+3. **第柒章：口說 AI 語音即時評測評分規準 (Rubrics) 與常見發音盲點指引**

@@ -1,3 +1,4 @@
+import { TME_PRE_A1_READING_BANK } from './tmePreA1ReadingBank.js';
 /**
  * Test My English Pre-A1 官方模擬題庫 (Phase 3 擴充版 - 整合國小十大核心句型重組題庫)
  *
@@ -2869,7 +2870,13 @@ const NON_WRITING_ITEMS = [
   }
 ];
 
+// Filter out old reading items from NON_WRITING_ITEMS to ensure no duplicate reading questions
+const NON_READING_ITEMS = NON_WRITING_ITEMS.filter(q => q.category !== 'reading');
+
+export { TME_PRE_A1_READING_BANK };
+
 export const TME_PRE_A1_BANK = [
-  ...NON_WRITING_ITEMS,
+  ...NON_READING_ITEMS,
+  ...TME_PRE_A1_READING_BANK,
   ...TME_PRE_A1_SCRAMBLE_BANK
 ];

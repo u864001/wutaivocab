@@ -37,7 +37,8 @@ export const TME_PRE_A1_CATEGORIES = {
       { code: 'read-pic2word', label: '看圖選字', prompt: '看生活圖卡或告示，選出正確的單字。' },
       { code: 'read-truefalse', label: '是非判斷', prompt: '閱讀英文句子並對照圖片，選出 True (相符) 或 False (不符)。' },
       { code: 'read-pic2sent', label: '看圖選句', prompt: '看生活情境圖片，選出最相符的英文句子。' },
-      { code: 'read-cloze', label: '段落填空', prompt: '閱讀簡短短文，在空格中選出最適當的單字。' }
+      { code: 'read-cloze', label: '段落填空', prompt: '閱讀簡短短文，在空格中選出最適當的單字。' },
+      { code: 'read-passage', label: '篇章閱讀理解', prompt: '閱讀生活短文、告示或邀請函，回答篇章理解問題。' }
     ]
   },
   speaking: {
