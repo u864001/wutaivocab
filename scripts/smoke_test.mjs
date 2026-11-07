@@ -223,17 +223,20 @@ async function run() {
     console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks, ${HERE_WE_GO_MCQ_BANK.length} MCQs & SAA 115 [105 questions, 70 diagrams] verified)`);
   }
 
-  const waitForAppReady = async (maxAttempts = 30) => {
+  const waitForAppReady = async (maxAttempts = 40) => {
+    await new Promise(r => setTimeout(r, 400));
     for (let i = 0; i < maxAttempts; i++) {
-      const isSyncing = await client.evaluate(`
+      const status = await client.evaluate(`
         (() => {
-          if (!document.body) return true;
+          if (!document.body) return 'empty';
           const text = document.body.innerText || '';
-          return text.includes('正在同步雲端單字庫') || text.includes('Adventure World Loading');
+          if (text.includes('正在同步雲端單字庫') || text.includes('Adventure World Loading') || text.includes('高山祕境') || text.includes('Forest Wisdom') || text.includes('冒險境界')) return 'syncing';
+          if (text.length > 30) return 'ready';
+          return 'loading';
         })()
       `);
-      if (!isSyncing) return true;
-      await new Promise(r => setTimeout(r, 200));
+      if (status === 'ready') return true;
+      await new Promise(r => setTimeout(r, 250));
     }
     return false;
   };
