@@ -66,6 +66,57 @@ export function isFormalItem(q) {
   return q?.reviewed !== false;
 }
 
+/**
+ * 擷取題目的核心詞彙／評量標的（用於防撞去重，防止同卷一字多出）
+ */
+export function extractTargetToken(q) {
+  if (!q) return null;
+  if (q.targetToken) return String(q.targetToken).toLowerCase().trim();
+  if (q.targetWord) return String(q.targetWord).toLowerCase().trim();
+  if (q.word) return String(q.word).toLowerCase().trim();
+
+  // 1. 從題目主圖檔名推導（如 /assets/exam/preA1/banana.png -> banana）
+  if (q.image && typeof q.image === 'string') {
+    const m = q.image.match(/\/([^/.]+)\.(png|svg|jpg|jpeg|webp)$/i);
+    if (m) {
+      return m[1].toLowerCase().replace(/^action_/, '').replace(/^rainy_/, '').trim();
+    }
+  }
+
+  // 2. 從看字選圖 (vocab-word2pic) 題幹關鍵字推導（如「看單字選出相符的物品線稿插圖：apple」）
+  if (q.subType === 'vocab-word2pic' && q.question) {
+    const m = q.question.match(/[：:]\s*([a-zA-Z\s]+)$/);
+    if (m) return m[1].toLowerCase().trim();
+  }
+
+  // 3. 從聽音選圖 (vocab-audio2pic) 與聽音選字 (vocab-audio2word) 之語音文本推導
+  if ((q.subType === 'vocab-audio2pic' || q.subType === 'vocab-audio2word') && q.media?.audioText) {
+    return String(q.media.audioText).toLowerCase().trim();
+  }
+
+  // 4. 從圖片選項正解圖檔名推導
+  if (Array.isArray(q.optionImages) && q.optionImages[q.answer]) {
+    const m = q.optionImages[q.answer].match(/\/([^/.]+)\.(png|svg|jpg|jpeg|webp)$/i);
+    if (m) {
+      return m[1].toLowerCase().replace(/^action_/, '').replace(/^rainy_/, '').trim();
+    }
+  }
+
+  // 5. 從看圖選字 (vocab-pic2word, read-pic2word) 正解單字推導（字數 <= 2 且非圖片標籤）
+  if (
+    (q.subType === 'vocab-pic2word' || q.subType === 'read-pic2word' || q.taskType === 'V-PIC' || q.taskType === 'V-WORD' || q.section === 'vocabulary') &&
+    Array.isArray(q.options) &&
+    q.options[q.answer]
+  ) {
+    const opt = String(q.options[q.answer]).trim();
+    if (!opt.startsWith('圖片') && !opt.startsWith('選項') && opt.split(/\s+/).length <= 2 && !opt.includes('?')) {
+      return opt.toLowerCase().trim();
+    }
+  }
+
+  return null;
+}
+
 function shuffle(list) {
   const arr = [...list];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -193,16 +244,64 @@ export function assembleExamForm(pool, targetCount) {
   );
 
   const form = [];
+  const seenTargetTokens = new Set();
+
   for (const k of orderedTypes) {
-    const units = shuffle(toUnits(byType[k]));
+    const rawUnits = toUnits(byType[k]);
+    if (rawUnits.length === 0) continue;
+
+    // 分層分桶：依冊次 (book) 與單元 (unit) 分群
+    const byStratum = new Map();
+    for (const unit of rawUnits) {
+      const sample = unit[0];
+      const stratumKey = sample?.book != null ? `b${sample.book}_${sample.unit || 'u'}` : (sample?.unit || sample?.subType || 'default');
+      if (!byStratum.has(stratumKey)) byStratum.set(stratumKey, []);
+      byStratum.get(stratumKey).push(unit);
+    }
+
+    // 各分層內隨機打散，並按 Round-Robin 輪巡交錯排布（確保各冊次/單元均勻抽樣，避免偏重單一冊次或單元）
+    const stratumKeys = shuffle([...byStratum.keys()]);
+    for (const sk of stratumKeys) {
+      byStratum.set(sk, shuffle(byStratum.get(sk)));
+    }
+
+    const interleavedUnits = [];
+    let hasMore = true;
+    while (hasMore) {
+      hasMore = false;
+      for (const sk of stratumKeys) {
+        const list = byStratum.get(sk);
+        if (list && list.length > 0) {
+          interleavedUnits.push(list.shift());
+          if (list.length > 0) hasMore = true;
+        }
+      }
+    }
+
+    // 核心標的去重防撞：優先挑選無衝突的題目 (Clean Units)，衝突題退至後備 (Collision Fallback)
+    const cleanUnits = [];
+    const collisionUnits = [];
+    for (const unit of interleavedUnits) {
+      const tokens = unit.map(extractTargetToken).filter(Boolean);
+      const hasCollision = tokens.some((t) => seenTargetTokens.has(t));
+      if (hasCollision) {
+        collisionUnits.push(unit);
+      } else {
+        cleanUnits.push(unit);
+      }
+    }
+
+    const candidateQueue = [...cleanUnits, ...collisionUnits];
     const chosen = [];
     let count = 0;
-    for (const unit of units) {
+    for (const unit of candidateQueue) {
       if (count >= alloc[k]) break;
       if (count + unit.length > alloc[k] && count > 0) continue;
       chosen.push(unit);
       count += unit.length;
+      unit.map(extractTargetToken).filter(Boolean).forEach((t) => seenTargetTokens.add(t));
     }
+
     // 由易到難（題組以組內最低難度排序，組內順序不變）
     chosen.sort(
       (a, b) =>
@@ -210,6 +309,14 @@ export function assembleExamForm(pool, targetCount) {
     );
     for (const unit of chosen) form.push(...unit);
   }
+
+  // 精準校準總題數：若因題組 (groupId) 不可拆散導致總題數超出 targetCount，自單題題型末端精確微調
+  while (form.length > targetCount) {
+    const singleIdx = form.findLastIndex((q) => !q.groupId);
+    if (singleIdx === -1) break;
+    form.splice(singleIdx, 1);
+  }
+
   return form;
 }
 
