@@ -40,7 +40,11 @@ import {
   formatStudentDisplayName
 } from '../../utils/studentIdHelper';
 import { recordMcqExamStats, recordPreA1MasteryLeaderboard } from '../../services/supabase';
-import { recordExamMasterySession } from '../../utils/masteryHelper';
+import {
+  recordExamMasterySession,
+  loadStudentMastery,
+  MASTERY_STATES
+} from '../../utils/masteryHelper';
 import { PreA1MasteryDashboard } from '../../components/exam/PreA1MasteryDashboard';
 import {
   assembleExamForm,
@@ -180,6 +184,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   const [selectedPreA1Format, setSelectedPreA1Format] = useState('standard');
   // 正式施測模式 (30題 • 限時35分 • 雙次聽力播音 • 分母300題)
   const [isFormalExam, setIsFormalExam] = useState(false);
+  const [masteryInitialTrack, setMasteryInitialTrack] = useState('tme-preA1');
   const finalizeExamRef = useRef(null);
 
   const isSelectedBookOwnGrade = useMemo(() => {
@@ -350,7 +355,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       let sourceList = [];
 
       if (customPool && Array.isArray(customPool) && customPool.length > 0) {
-        sourceList = [...customPool];
+        sourceList = customTargetCount ? [...customPool].slice(0, Number(customTargetCount)) : [...customPool];
       } else if (scopeMode === 'tme-preA1') {
         targetCount = isFormalExam || selectedPreA1Format === 'standard' ? 30 : 20;
         sourceList = assembleExamForm(tmePool, targetCount);
@@ -813,15 +818,62 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overscroll-contain">
           <PreA1MasteryDashboard
             student={currentStudent}
-            onBack={() => setSetupSubView('preA1')}
-            onStartDrill={(subType) => {
-              const drillPool = TME_PRE_A1_BANK.filter(
-                (q) => q.subType === subType || q.taskType === subType
-              );
-              if (drillPool.length > 0) {
+            initialTrack={masteryInitialTrack || 'tme-preA1'}
+            onBack={() => {
+              if (masteryInitialTrack === 'ministry-assessment') setSetupSubView('saa');
+              else if (masteryInitialTrack === 'curriculum') setSetupSubView('textbook');
+              else setSetupSubView('preA1');
+            }}
+            onStartDrill={(subType, count = 5, mode = 'all', track = 'tme-preA1') => {
+              const studentId = currentStudent?.student_id || currentStudent?.id || 'guest';
+              const snap = loadStudentMastery(studentId);
+              const trackKey = track || 'tme-preA1';
+              const itemsMap = snap?.tracks?.[trackKey]?.items || {};
+
+              let bank = [];
+              if (trackKey === 'tme-preA1') {
+                bank = TME_PRE_A1_BANK;
                 setScopeMode('tme-preA1');
+              } else if (trackKey === 'ministry-assessment') {
+                bank = SAA_EXAM_BANK;
+                setScopeMode('ministry-assessment');
+              } else {
+                bank = HERE_WE_GO_MCQ_BANK;
+                setScopeMode('curriculum');
+              }
+
+              let drillPool = bank.filter((q) => {
+                if (trackKey === 'curriculum') {
+                  const bookNum = Number(subType.replace('b', ''));
+                  return q.subType === subType || q.bookGroup === subType || q.book === bookNum;
+                }
+                return q.subType === subType || q.taskType === subType;
+              });
+              if (drillPool.length === 0) {
+                drillPool = bank;
+              }
+
+              if (mode === 'mistakes') {
+                const mistakePool = drillPool.filter((q) => {
+                  const it = itemsMap[q.id];
+                  return it && it.status !== MASTERY_STATES.MASTERED;
+                });
+                if (mistakePool.length > 0) drillPool = mistakePool;
+              } else if (mode === 'new') {
+                const newPool = drillPool.filter((q) => !itemsMap[q.id]);
+                if (newPool.length > 0) drillPool = newPool;
+              }
+
+              if (drillPool.length > 0) {
+                // Fisher-Yates 隨機洗牌
+                const shuffled = [...drillPool];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                const selected = shuffled.slice(0, Math.min(count, shuffled.length));
                 setIsFormalExam(false);
-                startExamSession(drillPool, Math.min(5, drillPool.length), true);
+                startExamSession(selected, selected.length, true);
               }
             }}
           />
@@ -1116,6 +1168,37 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           {setupSubView === 'textbook' && (
             <div className="flex flex-col gap-3">
+              {/* 課本檢定頂部精熟診斷卡捷徑橫幅 */}
+              <div className="shrink-0 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 dark:from-amber-950/40 dark:via-orange-950/40 dark:to-amber-950/40 border border-amber-300/40 dark:border-amber-700/40 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <BookOpen size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                      <span>Here We Go 1,289 全冊題庫</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                        1～8 冊 · 字母專冊 · 國一先修
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      動態滾動精熟體系：錯題連對 2 次翻盤解鎖為精熟，段考扎實鞏固
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMasteryInitialTrack('curriculum');
+                    setSetupSubView('preA1-dashboard');
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-black shadow-xs flex items-center gap-1.5 transition cursor-pointer shrink-0"
+                >
+                  <BookOpen size={15} />
+                  <span>查看課本精熟診斷卡 ➔</span>
+                </button>
+              </div>
+
               {/* 步驟 1：選擇冊別 */}
               <div className="shrink-0 flex flex-col gap-2.5 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70">
                 <div className="flex items-center justify-between gap-2 text-xs">
@@ -1314,6 +1397,37 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           {setupSubView === 'saa' && (
             <div className="flex flex-col gap-3">
+              {/* SAA 頂部精熟診斷卡捷徑橫幅 */}
+              <div className="shrink-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 dark:from-emerald-950/40 dark:via-teal-950/40 dark:to-emerald-950/40 border border-emerald-300/40 dark:border-emerald-700/40 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <ClipboardCheck size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                      <span>教育部 SAA 學力成就 180 全題庫</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
+                        聽力三大題 · 閱讀二大題
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      動態滾動精熟體系：錯題連對 2 次翻盤解鎖為精熟，拒絕歷史錯誤懲罰
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMasteryInitialTrack('ministry-assessment');
+                    setSetupSubView('preA1-dashboard');
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-xs flex items-center gap-1.5 transition cursor-pointer shrink-0"
+                >
+                  <ClipboardCheck size={15} />
+                  <span>查看學力精熟診斷卡 ➔</span>
+                </button>
+              </div>
+
               {/* 步驟 1：選擇施測年級 */}
               <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2.5">
                 <div className="flex items-center justify-between">
@@ -1521,7 +1635,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setSetupSubView('preA1-dashboard')}
+                  onClick={() => {
+                    setMasteryInitialTrack('tme-preA1');
+                    setSetupSubView('preA1-dashboard');
+                  }}
                   className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-black shadow-sm flex items-center gap-1.5 transition cursor-pointer"
                 >
                   <Award size={15} />
