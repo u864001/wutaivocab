@@ -5,7 +5,7 @@
  * 合法依據：著作權法第 9 條第 1 項第 5 款公立考試試題非著作權標的
  */
 
-import { SAA_115_ALL_QUESTIONS } from './saa/index.js';
+import { SAA_115_ALL_QUESTIONS, SAA_114_ALL_QUESTIONS } from './saa/index.js';
 
 const SAA_SIMULATED_BANK = [
   {
@@ -1852,5 +1852,7 @@ const SAA_SIMULATED_BANK = [
 
 export const SAA_EXAM_BANK = [
   ...SAA_115_ALL_QUESTIONS,
+  ...SAA_114_ALL_QUESTIONS,
   ...SAA_SIMULATED_BANK
 ];
+

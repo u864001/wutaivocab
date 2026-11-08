@@ -30,7 +30,8 @@ import {
   HERE_WE_GO_MCQ_BANK,
   TME_PRE_A1_BANK,
   SAA_EXAM_BANK,
-  SAA_115_EXAM_PAPERS
+  SAA_115_EXAM_PAPERS,
+  SAA_ALL_EXAM_PAPERS
 } from '../../data/exam';
 import { playDialogueSpeech, stopDialogueSpeech, isDialogue } from '../../services/dialogueSpeaker';
 import { useStudent } from '../../context/StudentContext';
@@ -177,6 +178,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     return g >= 4 && g <= 6 ? g : 4;
   }, [currentStudent?.grade]);
   const [selectedSaaGrade, setSelectedSaaGrade] = useState(defaultSaaGrade);
+  // SAA 測驗年度: 115 (最新全真試卷) | 114 (114年全真試卷)
+  const [selectedSaaYear, setSelectedSaaYear] = useState(115);
   // SAA 題型組合: 'standard' (聽15+閱20) | 'listening' (聽20) | 'reading' (閱20)
   const [selectedSaaFormat, setSelectedSaaFormat] = useState('standard');
 
@@ -279,7 +282,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // 縣市學力檢測 (SAA) 題庫 (Scaffold & Registry)
   const saaPool = useMemo(() => {
     const g = Number(selectedSaaGrade) || 4;
-    const paper = SAA_115_EXAM_PAPERS[g];
+    const y = Number(selectedSaaYear) || 115;
+    const paper = SAA_ALL_EXAM_PAPERS?.[y]?.[g] || SAA_115_EXAM_PAPERS[g];
     if (paper && selectedSaaFormat === 'standard') {
       return paper.questions;
     }
@@ -290,7 +294,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       list = list.filter((q) => q.section === 'reading' || q.type?.startsWith('R-') || q.taskType?.startsWith('R-') || q.taskType?.startsWith('V-') || q.taskType?.startsWith('G-'));
     }
     return list;
-  }, [selectedSaaGrade, selectedSaaFormat]);
+  }, [selectedSaaGrade, selectedSaaFormat, selectedSaaYear]);
 
   // 計時器（若為正式施測模式則限時 35 分鐘 2100 秒，逾時自動交卷）
   useEffect(() => {
@@ -1428,12 +1432,56 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </button>
               </div>
 
-              {/* 步驟 1：選擇施測年級 */}
+              {/* 步驟 1：選擇測驗年度 */}
               <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-xs font-black flex items-center justify-center">
                       1
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      選擇施測年度 (Exam Year)
+                    </span>
+                  </div>
+                  <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
+                    歷屆官方全真試卷
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                  {[
+                    { year: 115, label: '115 年度全真卷', badge: '最新施測 (35題)' },
+                    { year: 114, label: '114 年度全真卷', badge: '正式題本 (35題)' }
+                  ].map((y) => {
+                    const active = selectedSaaYear === y.year;
+                    return (
+                      <button
+                        key={y.year}
+                        type="button"
+                        onClick={() => setSelectedSaaYear(y.year)}
+                        className={`py-2 px-3 rounded-xl border-2 text-center transition flex items-center justify-between cursor-pointer ${
+                          active
+                            ? 'border-purple-600 bg-purple-600 text-white shadow-md'
+                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-purple-300'
+                        }`}
+                      >
+                        <span className="text-xs sm:text-sm font-black">{y.label}</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                          active ? 'bg-purple-800/60 text-purple-100' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                        }`}>
+                          {y.badge}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 步驟 2：選擇施測年級 */}
+              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-xs font-black flex items-center justify-center">
+                      2
                     </span>
                     <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                       選擇施測年級
@@ -1471,7 +1519,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </div>
               </div>
 
-              {/* 步驟 2：選擇題型與題數組合 (向下彈出三大膠囊) */}
+              {/* 步驟 3：選擇題型與題數組合 (向下彈出三大膠囊) */}
               <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2.5 animate-fadeIn">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -2020,7 +2068,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         : scopeMode === 'tme-preA1'
         ? 'Test My English Pre-A1 官方模擬檢定'
         : scopeMode === 'ministry-assessment'
-        ? `教育部 SAA 臺灣學生學習成就評量 (${selectedSaaGrade} 年級卷)`
+        ? `教育部 SAA 臺灣學生學習成就評量 (${selectedSaaYear} 年度 • ${selectedSaaGrade} 年級卷)`
         : `${formatBookLabel(selectedBook)} 課程能力檢定`;
 
     const subTitleDesc =
