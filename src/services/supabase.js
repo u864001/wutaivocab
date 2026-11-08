@@ -441,6 +441,73 @@ export const recordMcqExamStats = async ({ grade, book, name, correctCount, tota
   }
 };
 
+// ── Test My English Pre-A1 官方模擬精熟榜同步紀錄 (mode: prea1-mastery) ──
+export const recordPreA1MasteryLeaderboard = async ({ grade, name, studentId, masteredCount, totalItems = 250, masteryRate }) => {
+  const deviceId = getDeviceId();
+  const currentWeek = getWeekNumber();
+  let cleanName = (name || '').trim();
+  if (!cleanName) return null;
+  if (containsProfanity(cleanName)) {
+    cleanName = '文明好學生';
+  }
+
+  const gNum = parseInt(grade, 10) || 0;
+  const canonicalBook = gNum > 0 ? `g${gNum}` : 'prea1';
+
+  try {
+    const { data: row } = await supabase
+      .from('leaderboard')
+      .select('id, score, time')
+      .eq('device_id', deviceId)
+      .eq('name', cleanName)
+      .eq('week', currentWeek)
+      .eq('mode', 'prea1-mastery')
+      .maybeSingle();
+
+    if (row?.id) {
+      if (masteredCount >= (row.score || 0)) {
+        await supabase
+          .from('leaderboard')
+          .update({
+            score: masteredCount,
+            time: masteryRate,
+            book: canonicalBook,
+            created_at: new Date().toISOString()
+          })
+          .eq('id', row.id);
+      }
+    } else {
+      await supabase.from('leaderboard').insert([
+        {
+          device_id: deviceId,
+          name: cleanName,
+          mode: 'prea1-mastery',
+          book: canonicalBook,
+          score: masteredCount,
+          time: masteryRate,
+          week: currentWeek
+        }
+      ]);
+    }
+
+    // 清除英雄榜快取
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('lb_g4_')) {
+          localStorage.removeItem(k);
+        }
+      }
+    } catch (e) {}
+
+    return { masteredCount, masteryRate };
+  } catch (err) {
+    console.warn('同步 Pre-A1 精熟排行失敗:', err);
+    return null;
+  }
+};
+
+
 // ── 讀取排行榜 (支援單冊/多冊與單模式/多模式合併，每位同學取最高成績) ──
 export const fetchLeaderboard = async (week, mode, bookOrBooks, limit = 50) => {
   try {

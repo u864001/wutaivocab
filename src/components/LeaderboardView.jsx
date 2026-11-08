@@ -13,7 +13,8 @@ import {
 import { getCurrentSemesterId, getSemesterDisplayName } from '../utils/semesterHelper';
 import { soundEngine } from '../services/audio';
 import { useEasterEgg } from '../hooks/useEasterEgg';
-import { pad2, formatStudentBadge, isGuestStudent } from '../utils/studentIdHelper';
+import { pad2, formatStudentBadge, formatStudentDisplayName, isGuestStudent } from '../utils/studentIdHelper';
+import { loadStudentMastery } from '../utils/masteryHelper';
 import {
   Trophy, ArrowLeft, RotateCw, Medal, Calendar,
   BookOpen, Puzzle, Rocket, Sparkles, Keyboard,
@@ -33,7 +34,11 @@ export const GRADE_LEADERBOARD_TABS = [
 ];
 
 const THEME_WALLPAPERS = {
-  all: '/assets/lobby/theme_explore.jpg',
+  all: '/assets/lobby/theme_quiz.jpg',
+  exam_king: '/assets/lobby/theme_quiz.jpg',
+  coin_king: '/assets/lobby/theme_town.jpg',
+  point_king: '/assets/lobby/theme_explore.jpg',
+  game_king: '/assets/lobby/theme_speed.jpg',
   explore: '/assets/lobby/theme_explore.jpg',
   speed: '/assets/lobby/theme_speed.jpg',
   quiz: '/assets/lobby/theme_quiz.jpg',
@@ -42,118 +47,64 @@ const THEME_WALLPAPERS = {
   mcq_exam: '/assets/lobby/theme_quiz.jpg'
 };
 
-export const DOMAIN_CATEGORIES = [
-  { id: 'all', zh: '全部項目', en: 'All' },
-  { id: 'explore', zh: '探索解謎', en: 'Explore' },
-  { id: 'speed', zh: '極速反應', en: 'Speed' },
-  { id: 'quiz', zh: '經典測驗', en: 'Quiz' },
-  { id: 'battle', zh: '多人對戰', en: 'Battle' },
-  { id: 'langlab', zh: '雙語聽說', en: 'Language Lab' },
-  { id: 'mcq_exam', zh: '題庫檢定', en: 'Exam Hub' }
+// 四大天王核心分類 (Option A 優先學術檢定架構)
+export const FOUR_CHAMPION_TABS = [
+  { id: 'exam_king', zh: '👑 測驗王', en: '👑 Exam King', desc: 'Pre-A1 官方模擬 • 課本檢定 • 學力成就' },
+  { id: 'coin_king', zh: '🪙 金幣王', en: '🪙 Coin King', desc: '全校資產金幣榜 • 努力學習累積' },
+  { id: 'point_king', zh: '🧭 積分王', en: '🧭 Quest King', desc: '霧臺家園探索積分 • 任務歷險' },
+  { id: 'game_king', zh: '🎮 遊戲王', en: '🎮 Game King', desc: '密室 • 找不同 • 迷宮 • 貪食蛇 • 隕石等 9 款小遊戲' }
 ];
 
+export const DOMAIN_CATEGORIES = FOUR_CHAMPION_TABS;
+
 export const CONSOLIDATED_GAME_MODES = [
-  // ── 探索解謎 (Explore) ──
+  // ══════════════════════════════════════════════════════════════════
+  // 👑 測驗王 (Exam King - 核心學術檢定與能力評量)
+  // ══════════════════════════════════════════════════════════════════
   {
-    id: 'escape',
-    label: '密室逃脫',
-    icon: KeyRound,
-    color: 'text-amber-400',
-    unit: '秒',
-    category: 'explore',
-    modeKeys: ['escape'],
-    subModes: [{ key: 'escape', label: '三連環脫逃' }]
+    id: 'prea1_mastery',
+    label: 'Pre-A1 官方精熟',
+    icon: Award,
+    color: 'text-sky-400',
+    unit: '題精熟',
+    category: 'mcq_exam',
+    champion: 'exam_king',
+    modeKeys: ['prea1-mastery'],
+    subModes: [{ key: 'prea1-mastery', label: '全卷 250 題滾動精熟' }]
   },
   {
-    id: 'spotter',
-    label: '神探找不同',
-    icon: Eye,
-    color: 'text-amber-400',
-    unit: '秒',
-    category: 'explore',
-    modeKeys: ['spotter'],
-    subModes: [{ key: 'spotter', label: '鷹眼搜查' }]
-  },
-  {
-    id: 'maze',
-    label: '字母迷宮',
-    icon: Compass,
-    color: 'text-teal-400',
-    unit: '秒',
-    category: 'explore',
-    modeKeys: ['maze-upper', 'maze-lower', 'maze-master'],
-    subModes: [
-      { key: 'maze-upper', label: '大寫巡航' },
-      { key: 'maze-lower', label: '小寫巡航' }
-    ]
-  },
-  {
-    id: 'memory',
-    label: '記憶翻牌',
-    icon: Trophy,
-    color: 'text-cyan-400',
-    unit: '分',
-    category: 'explore',
-    modeKeys: ['memory-single'],
-    subModes: [{ key: 'memory-single', label: '標準翻牌' }]
-  },
-
-  // ── 極速反應 (Speed) ──
-  {
-    id: 'mole',
-    label: '單字打地鼠',
-    icon: Zap,
+    id: 'mcq_king',
+    label: '檢定測驗王',
+    icon: Crown,
     color: 'text-amber-400',
     unit: '分',
-    category: 'speed',
-    modeKeys: ['mole-vocab', 'mole-abc'],
-    subModes: [
-      { key: 'mole-vocab', label: '單字地穴' },
-      { key: 'mole-abc', label: '字母地穴' }
-    ]
+    category: 'mcq_exam',
+    champion: 'exam_king',
+    modeKeys: ['mcq-king'],
+    subModes: [{ key: 'mcq-king', label: '綜合實力 (答對×準確率)' }]
   },
   {
-    id: 'swipe',
-    label: '是非滑牌',
+    id: 'mcq_diligent',
+    label: '刷題勤學王',
     icon: Flame,
-    color: 'text-rose-400',
-    unit: '分',
-    category: 'speed',
-    modeKeys: ['swipe-vocab', 'swipe-abc'],
-    subModes: [
-      { key: 'swipe-vocab', label: '30秒單字' },
-      { key: 'swipe-abc', label: '30秒字母' }
-    ]
-  },
-  {
-    id: 'meteor',
-    label: '隕石防衛',
-    icon: Rocket,
-    color: 'text-amber-400',
-    unit: '分',
-    category: 'speed',
-    modeKeys: ['meteor-zh-en', 'meteor-en-zh', 'meteor-abc'],
-    subModes: [
-      { key: 'meteor-zh-en', label: '中選英' },
-      { key: 'meteor-en-zh', label: '英選中' },
-      { key: 'meteor-abc', label: 'ABC 防衛' }
-    ]
-  },
-  {
-    id: 'snake',
-    label: '百步貪蛇',
-    icon: Zap,
     color: 'text-emerald-400',
-    unit: '分',
-    category: 'speed',
-    modeKeys: ['snake-normal', 'snake-survival', 'snake-easy'],
-    subModes: [
-      { key: 'snake-normal', label: '競速挑戰' },
-      { key: 'snake-survival', label: '生存挑戰' }
-    ]
+    unit: '題',
+    category: 'mcq_exam',
+    champion: 'exam_king',
+    modeKeys: ['mcq-diligent'],
+    subModes: [{ key: 'mcq-diligent', label: '本週累計答對題數' }]
   },
-
-  // ── 經典測驗 (Quiz - 4 大核心挑戰) ──
+  {
+    id: 'mcq_accurate',
+    label: '百發精準王',
+    icon: Award,
+    color: 'text-indigo-400',
+    unit: '%',
+    category: 'mcq_exam',
+    champion: 'exam_king',
+    modeKeys: ['mcq-accurate'],
+    subModes: [{ key: 'mcq-accurate', label: '滿20題總答對率' }]
+  },
   {
     id: 'quiz',
     label: '中英字義速辨',
@@ -161,6 +112,7 @@ export const CONSOLIDATED_GAME_MODES = [
     color: 'text-sky-400',
     unit: '分',
     category: 'quiz',
+    champion: 'exam_king',
     modeKeys: ['quiz-choice', 'quiz-zh-en', 'quiz-en-zh', 'quiz-hard'],
     subModes: [
       { key: 'quiz-choice', label: '雙向速測' },
@@ -176,6 +128,7 @@ export const CONSOLIDATED_GAME_MODES = [
     color: 'text-cyan-400',
     unit: '分',
     category: 'quiz',
+    champion: 'exam_king',
     modeKeys: ['quiz-listening', 'quiz-listening-word', 'quiz-listening-sentence', 'quiz-listening-qa'],
     subModes: [
       { key: 'quiz-listening', label: '聽力全能' },
@@ -191,6 +144,7 @@ export const CONSOLIDATED_GAME_MODES = [
     color: 'text-amber-400',
     unit: '分',
     category: 'quiz',
+    champion: 'exam_king',
     modeKeys: ['spelling'],
     subModes: [{ key: 'spelling', label: '標準拼字' }]
   },
@@ -201,37 +155,13 @@ export const CONSOLIDATED_GAME_MODES = [
     color: 'text-emerald-400',
     unit: '分',
     category: 'quiz',
+    champion: 'exam_king',
     modeKeys: ['handwriting', 'handwriting-abc'],
     subModes: [
       { key: 'handwriting', label: '實戰默寫' },
       { key: 'handwriting-abc', label: '字母書寫' }
     ]
   },
-
-  // ── 多人對戰 (Battle) ──
-  {
-    id: 'battle',
-    label: '多人連線',
-    icon: Swords,
-    color: 'text-purple-400',
-    unit: '勝',
-    category: 'battle',
-    modeKeys: ['battle-wins'],
-    subModes: [{ key: 'battle-wins', label: '勝場累積' }]
-  },
-  {
-    id: 'monopoly',
-    label: '大富翁財富',
-    icon: Coins,
-    color: 'text-amber-400',
-    unit: '金幣',
-    category: 'battle',
-    isSpecial: 'monopoly',
-    modeKeys: ['monopoly'],
-    subModes: [{ key: 'monopoly', label: '金幣總資產' }]
-  },
-
-  // ── 雙語聽說 (Language Lab) ──
   {
     id: 'listening_lab',
     label: '聽力特訓',
@@ -239,6 +169,7 @@ export const CONSOLIDATED_GAME_MODES = [
     color: 'text-sky-400',
     unit: '題',
     category: 'langlab',
+    champion: 'exam_king',
     modeKeys: ['listening_lab'],
     subModes: [{ key: 'listening_lab', label: '聽力特訓' }]
   },
@@ -249,40 +180,160 @@ export const CONSOLIDATED_GAME_MODES = [
     color: 'text-rose-400',
     unit: '題',
     category: 'langlab',
+    champion: 'exam_king',
     modeKeys: ['speaking_lab'],
     subModes: [{ key: 'speaking_lab', label: '口說跟讀' }]
   },
 
-  // ── 課本題庫檢定 (Exam Hub - 三大累計榜) ──
+  // ══════════════════════════════════════════════════════════════════
+  // 🪙 金幣王 (Coin King - 總資產財富榜)
+  // ══════════════════════════════════════════════════════════════════
   {
-    id: 'mcq_king',
-    label: '檢定測驗王',
-    icon: Crown,
+    id: 'monopoly',
+    label: '大富翁財富',
+    icon: Coins,
+    color: 'text-amber-400',
+    unit: '金幣',
+    category: 'battle',
+    champion: 'coin_king',
+    isSpecial: 'monopoly',
+    modeKeys: ['monopoly'],
+    subModes: [{ key: 'monopoly', label: '金幣總資產' }]
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // 🧭 積分王 (Quest King - 家園任務歷險積分榜)
+  // ══════════════════════════════════════════════════════════════════
+  {
+    id: 'town_quest',
+    label: '家園探索歷險積分',
+    icon: Compass,
+    color: 'text-teal-400',
+    unit: '分',
+    category: 'battle',
+    champion: 'point_king',
+    isSpecial: 'quest',
+    modeKeys: ['quest-points'],
+    subModes: [{ key: 'quest-points', label: '探索總積分' }]
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // 🎮 遊戲王 (Game King - 9 大休閒小遊戲)
+  // ══════════════════════════════════════════════════════════════════
+  {
+    id: 'escape',
+    label: '密室逃脫',
+    icon: KeyRound,
+    color: 'text-amber-400',
+    unit: '秒',
+    category: 'explore',
+    champion: 'game_king',
+    modeKeys: ['escape'],
+    subModes: [{ key: 'escape', label: '三連環脫逃' }]
+  },
+  {
+    id: 'spotter',
+    label: '神探找不同',
+    icon: Eye,
+    color: 'text-amber-400',
+    unit: '秒',
+    category: 'explore',
+    champion: 'game_king',
+    modeKeys: ['spotter'],
+    subModes: [{ key: 'spotter', label: '鷹眼搜查' }]
+  },
+  {
+    id: 'maze',
+    label: '字母迷宮',
+    icon: Compass,
+    color: 'text-teal-400',
+    unit: '秒',
+    category: 'explore',
+    champion: 'game_king',
+    modeKeys: ['maze-upper', 'maze-lower', 'maze-master'],
+    subModes: [
+      { key: 'maze-upper', label: '大寫巡航' },
+      { key: 'maze-lower', label: '小寫巡航' }
+    ]
+  },
+  {
+    id: 'memory',
+    label: '記憶翻牌',
+    icon: Trophy,
+    color: 'text-cyan-400',
+    unit: '分',
+    category: 'explore',
+    champion: 'game_king',
+    modeKeys: ['memory-single'],
+    subModes: [{ key: 'memory-single', label: '標準翻牌' }]
+  },
+  {
+    id: 'mole',
+    label: '單字打地鼠',
+    icon: Zap,
     color: 'text-amber-400',
     unit: '分',
-    category: 'mcq_exam',
-    modeKeys: ['mcq-king'],
-    subModes: [{ key: 'mcq-king', label: '綜合實力 (答對×準確率)' }]
+    category: 'speed',
+    champion: 'game_king',
+    modeKeys: ['mole-vocab', 'mole-abc'],
+    subModes: [
+      { key: 'mole-vocab', label: '單字地穴' },
+      { key: 'mole-abc', label: '字母地穴' }
+    ]
   },
   {
-    id: 'mcq_diligent',
-    label: '刷題勤學王',
+    id: 'swipe',
+    label: '是非滑牌',
     icon: Flame,
-    color: 'text-emerald-400',
-    unit: '題',
-    category: 'mcq_exam',
-    modeKeys: ['mcq-diligent'],
-    subModes: [{ key: 'mcq-diligent', label: '本週累計答對題數' }]
+    color: 'text-rose-400',
+    unit: '分',
+    category: 'speed',
+    champion: 'game_king',
+    modeKeys: ['swipe-vocab', 'swipe-abc'],
+    subModes: [
+      { key: 'swipe-vocab', label: '30秒單字' },
+      { key: 'swipe-abc', label: '30秒字母' }
+    ]
   },
   {
-    id: 'mcq_accurate',
-    label: '百發精準王',
-    icon: Award,
-    color: 'text-indigo-400',
-    unit: '%',
-    category: 'mcq_exam',
-    modeKeys: ['mcq-accurate'],
-    subModes: [{ key: 'mcq-accurate', label: '滿20題總答對率' }]
+    id: 'meteor',
+    label: '隕石防衛',
+    icon: Rocket,
+    color: 'text-amber-400',
+    unit: '分',
+    category: 'speed',
+    champion: 'game_king',
+    modeKeys: ['meteor-zh-en', 'meteor-en-zh', 'meteor-abc'],
+    subModes: [
+      { key: 'meteor-zh-en', label: '中選英' },
+      { key: 'meteor-en-zh', label: '英選中' },
+      { key: 'meteor-abc', label: 'ABC 防衛' }
+    ]
+  },
+  {
+    id: 'snake',
+    label: '百步貪蛇',
+    icon: Zap,
+    color: 'text-emerald-400',
+    unit: '分',
+    category: 'speed',
+    champion: 'game_king',
+    modeKeys: ['snake-normal', 'snake-survival', 'snake-easy'],
+    subModes: [
+      { key: 'snake-normal', label: '競速挑戰' },
+      { key: 'snake-survival', label: '生存挑戰' }
+    ]
+  },
+  {
+    id: 'battle',
+    label: '多人連線',
+    icon: Swords,
+    color: 'text-purple-400',
+    unit: '勝',
+    category: 'battle',
+    champion: 'game_king',
+    modeKeys: ['battle-wins'],
+    subModes: [{ key: 'battle-wins', label: '勝場累積' }]
   }
 ];
 
@@ -304,7 +355,8 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
 
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const isPastWeek = selectedWeek < currentWeek;
-  const [selectedDomain, setSelectedDomain] = useState('all'); // 'all' | 'langlab' | 'arcade' | 'campus'
+  // 四大天王：預設為「測驗王」首頁
+  const [selectedDomain, setSelectedDomain] = useState('exam_king');
   const [boardData, setBoardData] = useState({}); // { [modeId]: items[] }
   const [isLoading, setIsLoading] = useState(false);
   const [modalModeId, setModalModeId] = useState(null); // 當前展開 Top 50 的遊戲模式 ID
@@ -352,6 +404,24 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
             fetchedList = await fetchMonopolyLeaderboard(isAll ? null : selectedGrade, 50);
           } else if (m.isSpecial === 'quest') {
             fetchedList = await fetchQuestPointsLeaderboard(isAll ? null : selectedGrade, 50);
+          } else if (m.id === 'prea1_mastery') {
+            const queryBooks = isAll ? null : [`g${parseInt(selectedGrade, 10)}`];
+            fetchedList = await fetchLeaderboard(selectedWeek, 'prea1-mastery', queryBooks, 50);
+            if ((!fetchedList || fetchedList.length === 0) && currentStudent) {
+              const sid = currentStudent.student_id || currentStudent.id;
+              const snap = loadStudentMastery(sid);
+              const tme = snap?.tracks?.['tme-preA1'];
+              if (tme && tme.mastered_count > 0) {
+                fetchedList = [{
+                  id: 'local_mastery_' + sid,
+                  name: formatStudentDisplayName(currentStudent),
+                  score: tme.mastered_count,
+                  time: Math.round((tme.mastered_count / (tme.total_items || 250)) * 100),
+                  book: `g${currentStudent.grade || 4}`,
+                  created_at: snap.updated_at
+                }];
+              }
+            }
           } else {
             // 一、二年級字母模式：若為字母遊戲模式或聽說測驗，不限冊別；課本題庫檢定則嚴格依 g1 / g2 篩選；全校大亂鬥不限冊別
             const queryBooks = isAll
@@ -722,10 +792,10 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
           </div>
         </div>
 
-        {/* ── 五大領域館別切換膠囊導覽列 ── */}
+        {/* ── 四大天王頂層導覽列 (👑 測驗王 | 🪙 金幣王 | 🧭 積分王 | 🎮 遊戲王) ── */}
         <div className="mb-6">
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-            {DOMAIN_CATEGORIES.map((cat) => {
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {FOUR_CHAMPION_TABS.map((cat) => {
               const isSelected = selectedDomain === cat.id;
               return (
                 <button
@@ -734,20 +804,29 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                     soundEngine.click();
                     setSelectedDomain(cat.id);
                   }}
-                  className={`px-3.5 sm:px-5 py-2 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-1.5 cursor-pointer shrink-0 shadow-lg border ${
+                  className={`p-3 sm:p-3.5 rounded-2xl text-left transition-all flex flex-col justify-between gap-1 cursor-pointer shadow-lg border ${
                     isSelected
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-emerald-300 ring-2 ring-emerald-400/40 scale-105 shadow-emerald-500/30'
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-emerald-300 ring-2 ring-emerald-400/50 scale-[1.02] shadow-emerald-500/30'
                       : isDark
                       ? 'bg-slate-950/75 text-slate-300 border-white/20 hover:text-white hover:bg-slate-900'
-                      : 'bg-white/85 text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-100 shadow-xs'
+                      : 'bg-white/85 text-slate-700 border-slate-200 hover:text-slate-900 hover:bg-slate-100 shadow-xs'
                   }`}
                 >
-                  <span>{lang === 'zh-TW' ? cat.zh : cat.en}</span>
-                  {cat.id === 'langlab' && (
-                    <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-stone-950 text-[10px] font-black animate-pulse">
-                      聽說
+                  <div className="flex items-center justify-between w-full">
+                    <span className="font-heading font-black text-xs sm:text-sm">
+                      {lang === 'zh-TW' ? cat.zh : cat.en}
                     </span>
-                  )}
+                    {cat.id === 'exam_king' && (
+                      <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-stone-950 text-[9px] font-black">
+                        核心
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-[10px] sm:text-[11px] leading-tight line-clamp-1 ${
+                    isSelected ? 'text-emerald-100' : 'text-slate-400 dark:text-slate-500'
+                  }`}>
+                    {cat.desc}
+                  </span>
                 </button>
               );
             })}
@@ -836,6 +915,8 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                           ? (entry.coins ?? 0)
                           : mode.isSpecial === 'quest'
                           ? (entry.quest_points ?? 0)
+                          : mode.id === 'prea1_mastery'
+                          ? `${entry.score} 題 (${entry.time || Math.round((entry.score / 250) * 100)}%)`
                           : (mode.id === 'escape' || mode.id === 'spotter')
                           ? (entry.time > 1000 ? (entry.time / 1000).toFixed(1) : (entry.time ?? entry.score))
                           : entry.score;
@@ -901,193 +982,85 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
             );
           };
 
-        if (selectedDomain === 'langlab') {
+        if (selectedDomain === 'coin_king') {
           return (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 animate-fadeIn">
-              {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'langlab').map(m => renderModeCard(m, true))}
+            <div className="space-y-4 animate-fadeIn">
+              <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-yellow-500/15 border border-amber-400/30 backdrop-blur-md space-y-1">
+                <div className="flex items-center gap-2">
+                  <Coins className="w-5 h-5 text-amber-500" />
+                  <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                    全校金幣富豪榮譽榜（Monopoly Wealth Board）
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  展現學生自主挑戰各項測驗與遊戲累積之總金幣資產，激勵持之以恆之勤學精神。
+                </p>
+              </div>
+              <div className="max-w-2xl mx-auto">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.champion === 'coin_king').map(m => renderModeCard(m, true))}
+              </div>
             </div>
           );
         }
 
-        if (selectedDomain === 'mcq_exam') {
+        if (selectedDomain === 'point_king') {
           return (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 animate-fadeIn">
-              {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'mcq_exam').map(m => renderModeCard(m, true))}
+            <div className="space-y-4 animate-fadeIn">
+              <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-teal-500/15 via-emerald-500/15 to-cyan-500/15 border border-teal-400/30 backdrop-blur-md space-y-1">
+                <div className="flex items-center gap-2">
+                  <Compass className="w-5 h-5 text-teal-400" />
+                  <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                    霧臺家園探索積分榜（Town Quest Points Board）
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  表彰在霧臺虛擬家園進行在地文化探索、NPC 英語對話歷險與自主任務之積分累積。
+                </p>
+              </div>
+              <div className="max-w-2xl mx-auto">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.champion === 'point_king').map(m => renderModeCard(m, true))}
+              </div>
             </div>
           );
         }
 
-        if (selectedDomain !== 'all') {
+        if (selectedDomain === 'game_king') {
           return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-fadeIn">
-              {CONSOLIDATED_GAME_MODES.filter(m => m.category === selectedDomain).map(m => renderModeCard(m))}
+            <div className="space-y-4 animate-fadeIn">
+              <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-purple-500/15 via-indigo-500/15 to-pink-500/15 border border-purple-400/30 backdrop-blur-md space-y-1">
+                <div className="flex items-center gap-2">
+                  <Rocket className="w-5 h-5 text-purple-400" />
+                  <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                    休閒小遊戲風雲榜（Arcade Games Arena）
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  涵蓋密室逃脫、神探找不同、字母迷宮、單字打地鼠、百步貪蛇、隕石防衛等 9 款寓教於樂休閒遊戲。
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-fadeIn">
+                {CONSOLIDATED_GAME_MODES.filter(m => m.champion === 'game_king').map(m => renderModeCard(m))}
+              </div>
             </div>
           );
         }
 
-        // 預設全部項目：依五大主題分類整齊呈現
+        // 預設與測驗王首頁 (Exam King)：三大英語檢定核心榜（Pre-A1 官方模擬 • 課本題庫 • 學力成就）
         return (
-          <div className="space-y-8 animate-fadeIn">
-            {/* 1. 探索解謎 */}
-            <div>
-              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-emerald-500/30">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">🧭</span>
-                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-emerald-300">
-                    探索解謎 (Explore)
-                  </h4>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
-                    4 大關卡
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    soundEngine.click();
-                    setSelectedDomain('explore');
-                  }}
-                  className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>聚焦此主題 ➔</span>
-                </button>
+          <div className="space-y-5 animate-fadeIn">
+            <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-sky-500/15 via-indigo-500/15 to-purple-500/15 border border-sky-400/30 backdrop-blur-md space-y-1">
+              <div className="flex items-center gap-2">
+                <Crown className="w-5 h-5 text-amber-400" />
+                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                  三大英語檢定核心榜（Pre-A1 官方模擬 • 課本題庫 • 學力成就）
+                </h3>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'explore').map(m => renderModeCard(m))}
-              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-300">
+                以「動態滾動精熟度」為核心評量指標（連對 2 次翻盤解鎖為精熟），涵蓋全卷 250 題官方 Pre-A1 試題、1,289 題課本檢定題庫與 115 題教育部 SAA 學力成就。
+              </p>
             </div>
-
-            {/* 2. 極速反應 */}
-            <div>
-              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-amber-500/30">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⚡</span>
-                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-amber-300">
-                    極速反應 (Speed)
-                  </h4>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-bold">
-                    5 大關卡
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    soundEngine.click();
-                    setSelectedDomain('speed');
-                  }}
-                  className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>聚焦此主題 ➔</span>
-                </button>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'speed').map(m => renderModeCard(m))}
-              </div>
-            </div>
-
-            {/* 3. 經典測驗 */}
-            <div>
-              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-sky-500/30">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">📖</span>
-                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-sky-300">
-                    經典測驗 (Quiz)
-                  </h4>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 font-bold">
-                    4 大題型
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    soundEngine.click();
-                    setSelectedDomain('quiz');
-                  }}
-                  className="text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>聚焦此主題 ➔</span>
-                </button>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'quiz').map(m => renderModeCard(m))}
-              </div>
-            </div>
-
-            {/* 4. 多人對戰 */}
-            <div>
-              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-purple-500/30">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⚔️</span>
-                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-purple-300">
-                    多人對戰 (Battle)
-                  </h4>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400 font-bold">
-                    連線與財富
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    soundEngine.click();
-                    setSelectedDomain('battle');
-                  }}
-                  className="text-xs font-bold text-purple-400 hover:text-purple-300 flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>聚焦此主題 ➔</span>
-                </button>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'battle').map(m => renderModeCard(m))}
-              </div>
-            </div>
-
-            {/* 5. 雙語聽說 */}
-            <div>
-              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-rose-500/30">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">🎧</span>
-                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-rose-300">
-                    雙語聽說 (Language Lab)
-                  </h4>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 font-bold">
-                    聽說分立
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    soundEngine.click();
-                    setSelectedDomain('langlab');
-                  }}
-                  className="text-xs font-bold text-rose-400 hover:text-rose-300 flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>聚焦此主題 ➔</span>
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'langlab').map(m => renderModeCard(m, true))}
-              </div>
-            </div>
-
-            {/* 6. 課本題庫檢定 */}
-            <div>
-              <div className="flex items-center justify-between mb-3 pb-1.5 border-b border-indigo-500/30">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">📝</span>
-                  <h4 className="font-heading font-black text-sm sm:text-base text-slate-800 dark:text-indigo-300">
-                    霧臺英語檢定 (Wutai Assessment Arena)
-                  </h4>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 font-bold">
-                    本年級 ≥ 60% 累計三冠榜
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    soundEngine.click();
-                    setSelectedDomain('mcq_exam');
-                  }}
-                  className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>聚焦此主題 ➔</span>
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-                {CONSOLIDATED_GAME_MODES.filter(m => m.category === 'mcq_exam').map(m => renderModeCard(m, true))}
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-fadeIn">
+              {CONSOLIDATED_GAME_MODES.filter(m => m.champion === 'exam_king').map(m => renderModeCard(m))}
             </div>
           </div>
         );

@@ -734,6 +734,38 @@
     - 🧭 **積分王**：探索與語境對話總積分榜。
     - 🎮 **遊戲王**：綜合總勝場榜，收折展開 14 款小遊戲子榜。
 
+#### 50. 動態滾動精熟引擎、學生風琴診斷卡、正式施測模式、四大天王排行榜與教師矩陣全面完工落地 (`masteryHelper.js`, `PreA1MasteryDashboard.jsx`, `PureMcqExamView.jsx`, `LeaderboardView.jsx`, `TeacherMasteryAnalytics.jsx`, `TeacherHub.jsx`)
+* **動態滾動精熟狀態機引擎 (`src/utils/masteryHelper.js`, `test_mastery_engine.mjs`)**：
+  - 實作完整四態狀態機：`unattempted` $\to$ 首答對翻 `mastered`，首答錯轉 `remedial`；`remedial` 於訂正答對 1 次轉入 `probation`，連對 2 次正式翻盤晉升為 `mastered`；`mastered` 或 `probation` 期間若再答錯則退回 `remedial`。
+  - 本地快照 `wutai_student_mastery_${id}` 與 Supabase `leaderboard (mode: 'prea1-mastery')` 雙軌安全融合。
+  - 完整單元測試 4/4 項 100% 通過。
+* **學生端 iPad 一頁式風琴折診斷卡 (`src/components/exam/PreA1MasteryDashboard.jsx`)**：
+  - 5 大面向大卡片（字彙 50 題、聽力 44 題、閱讀 80 題、寫作 60 題、口說 16 題，總分母 250 題）風琴收合。
+  - 展開顯示 19 個子題型：掌握進度條、即時星級（★★★ $\ge 80\%$ 翡翠綠、★★☆ $60\sim79\%$ 琥珀金、★☆☆ $<60\%$ 玫瑰紅）、掌握/待加強題數標籤。
+  - 零介面負擔一鍵【🎯 專項特訓 5 題】：直接呼叫 `onStartDrill(subType, 5)`，由考卷引擎即時組出 5 題精選特訓卷。
+  - 頂部篩選膠囊：支援「全部 (預設)」與「僅正式測驗」即時重算，並可勾選「僅限半年內」。
+* **檢定卷正式施測模式與聽力雙播標準協議 (`src/games/exam/PureMcqExamView.jsx`)**：
+  - 新增施測模式切換器：`[ 🎓 正式施測模式 (30題 • 限時35分 • 聽力雙播) ]` vs `[ 🎯 專項自主練習模式 ]`。
+  - 35 分鐘（2100 秒）高規格倒數計時器：剩餘 5 分鐘醒目琥珀警示、時間終止自動封卷交卷。
+  - 官方級聽力標準雙播協議 (`speakQuestion(text, 2)`): 播放第 1 次 $\to$ 2 秒倒數暫停 $\to$ 播放第 2 次 $\to$ 播畢開放作答；正式施測期間鎖定手動無限重播。
+  - 考卷送出時自動呼叫 `recordExamMasterySession` 與 `recordPreA1MasteryLeaderboard` 滾動刷新雲端與本地精熟庫。
+  - 新增 `[ 📊 查看個人 Pre-A1 精熟診斷卡 ➔ ]` 快速子視圖。
+* **四大天王榮譽榜革新 (`src/components/LeaderboardView.jsx`)**：
+  - 確立以「學術成果優先」之四大天王導航：
+    - 👑 **測驗王 (Exam King, 預設)**：整合 Pre-A1 250 題滾動精熟榜、翰林課本 1,289 題三大累計榜、自選題庫四大挑戰榜、雙語聽說實驗室。
+    - 🪙 **金幣王 (Coin King)**：全校各年級累積賺取總金幣榜。
+    - 🧭 **積分王 (Quest King)**：全校各年級小鎮探索總積分榜。
+    - 🎮 **遊戲王 (Game King)**：9 款休閒小遊戲綜合總勝場與子榜（密室逃脫、鷹眼神探、迷宮、記憶翻牌、打地鼠、滑牌、隕石、貪食蛇、對戰）。
+  - 維持 `CONSOLIDATED_GAME_MODES` 與學生個人探險執照徽章 (`StudentProfileModal`) 100% 格式相容。
+* **教師端 Pre-A1 精熟評量分析中樞 (`src/components/exam/TeacherMasteryAnalytics.jsx`, `src/components/TeacherHub.jsx`)**：
+  - 於 `TeacherHub` 新增獨立第七分頁【精熟評量分析 (`mastery`)】。
+  - 年級切換器（全校總覽、一至六年級）、4 大 KPI 關鍵數據卡（測驗人次、全班平均精熟率、及格率 $\ge 70\%$、最急需補救面向提示）。
+  - 5 大面向全班宏觀熱力氣壓計（直觀掌握字彙、聽力、閱讀、寫作、口說平均掌握百分比）。
+  - 全班座號熱力矩陣清單：支援座號、姓名、完成題數、掌握題數、各面向顏色標籤與精熟星級排序。
+  - 學生個人 19 子項透視浮層（Modal Inspector）與一鍵代發特訓機制。
+  - 一鍵匯出全班精熟度統計 CSV 報表 (`PreA1_班級精熟度統計表_YYYY-MM-DD.csv`)。
+* **全專案 6 階段無頭 Chrome 回歸測試 100% 通過 (Zero Crashes)**。
+
 ---
 
 ### 四、核心目錄與關鍵模組結構

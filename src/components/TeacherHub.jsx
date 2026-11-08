@@ -17,9 +17,10 @@ import {
   Lock, ArrowLeft, PlusCircle, Trash2, CheckCircle2, AlertCircle,
   FileSpreadsheet, Sparkles, Trophy, Swords, Shield, Activity,
   Megaphone, Download, RotateCw, Search, Calendar, Filter, Users,
-  Database, Clock, AlertTriangle, FileCheck2, ZoomIn
+  Database, Clock, AlertTriangle, FileCheck2, ZoomIn, Award, BarChart3
 } from 'lucide-react';
 import { ExamAuditZone } from './exam/ExamAuditZone';
+import { TeacherMasteryAnalytics } from './exam/TeacherMasteryAnalytics';
 
 class ExamAuditErrorBoundary extends React.Component {
   state = { hasError: false };
@@ -80,7 +81,7 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase,
   });
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
-  const [activeTab, setActiveTab] = useState('words'); // words | scores | exam-audit | arenas | system | announcement
+  const [activeTab, setActiveTab] = useState('words'); // words | scores | mastery | exam-audit | arenas | system | announcement
   const [toast, setToast] = useState(null);
 
   // ── Tab 1: 題庫管理狀態 ──
@@ -569,7 +570,7 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase,
       )}
 
       {/* ── 主功能分頁切換卡 ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-6">
         <button
           onClick={() => setActiveTab('words')}
           className={`p-3 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all ${
@@ -592,6 +593,18 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase,
         >
           <Trophy className="w-4 h-4" />
           <span>全校成績管理</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('mastery')}
+          className={`p-3 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all ${
+            activeTab === 'mastery'
+              ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30 scale-[1.02]'
+              : 'bg-white/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-white border border-slate-200 dark:border-slate-700'
+          }`}
+        >
+          <Award className="w-4 h-4" />
+          <span>精熟評量分析</span>
         </button>
 
         <button
@@ -1214,6 +1227,15 @@ export const TeacherHub = ({ onBack, words = [], onRefreshWords, onOpenShowcase,
         <ExamAuditErrorBoundary>
           <ExamAuditZone onBack={() => setActiveTab('words')} />
         </ExamAuditErrorBoundary>
+      )}
+
+      {/* ============================================================ */}
+      {/* ── TAB 7: Pre-A1 官方模擬精熟矩陣與弱點診斷 ── */}
+      {/* ============================================================ */}
+      {activeTab === 'mastery' && (
+        <div className="space-y-6">
+          <TeacherMasteryAnalytics />
+        </div>
       )}
     </div>
   );

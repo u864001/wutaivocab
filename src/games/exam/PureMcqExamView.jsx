@@ -39,7 +39,9 @@ import {
   formatStudentBadge,
   formatStudentDisplayName
 } from '../../utils/studentIdHelper';
-import { recordMcqExamStats } from '../../services/supabase';
+import { recordMcqExamStats, recordPreA1MasteryLeaderboard } from '../../services/supabase';
+import { recordExamMasterySession } from '../../utils/masteryHelper';
+import { PreA1MasteryDashboard } from '../../components/exam/PreA1MasteryDashboard';
 import {
   assembleExamForm,
   buildFormOutline,
@@ -176,6 +178,9 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
   // Pre-A1 設定: 'standard' (聽15+閱15) | 'listening' (聽20) | 'reading' (閱20) | 'writing' (寫作重組20)
   const [selectedPreA1Format, setSelectedPreA1Format] = useState('standard');
+  // 正式施測模式 (30題 • 限時35分 • 雙次聽力播音 • 分母250題)
+  const [isFormalExam, setIsFormalExam] = useState(false);
+  const finalizeExamRef = useRef(null);
 
   const isSelectedBookOwnGrade = useMemo(() => {
     return isBookInOwnGrade(
@@ -282,14 +287,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     return list;
   }, [selectedSaaGrade, selectedSaaFormat]);
 
-  // 計時器（純紀錄用時）
+  // 計時器（若為正式施測模式則限時 35 分鐘 2100 秒，逾時自動交卷）
   useEffect(() => {
     if (phase !== 'exam' || !startTime) return;
     const timer = setInterval(() => {
-      setElapsedSec(Math.floor((Date.now() - startTime) / 1000));
+      const cur = Math.floor((Date.now() - startTime) / 1000);
+      setElapsedSec(cur);
+      if (isFormalExam && cur >= 2100) {
+        clearInterval(timer);
+        finalizeExamRef.current?.();
+      }
     }, 1000);
     return () => clearInterval(timer);
-  }, [phase, startTime]);
+  }, [phase, startTime, isFormalExam]);
 
   // 作答中自動保存進度至 LocalStorage（6小時內有效，維護健康回應機制）
   useEffect(() => {
@@ -342,7 +352,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       if (customPool && Array.isArray(customPool) && customPool.length > 0) {
         sourceList = [...customPool];
       } else if (scopeMode === 'tme-preA1') {
-        targetCount = selectedPreA1Format === 'standard' ? 30 : 20;
+        targetCount = isFormalExam || selectedPreA1Format === 'standard' ? 30 : 20;
         sourceList = assembleExamForm(tmePool, targetCount);
       } else if (scopeMode === 'ministry-assessment') {
         if (selectedSaaFormat === 'standard') {
@@ -469,6 +479,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       scopeMode,
       selectedSaaFormat,
       selectedPreA1Format,
+      isFormalExam,
       mistakeQuestions,
       currentStudent?.grade,
       curriculumPool,
@@ -477,8 +488,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     ]
   );
 
-  // 語音朗讀題幹（支援多角色對話男女聲；一、二年級中文題幹自動使用 zh-TW 語音讀題；三～六年級英文題幹使用 en-US 朗讀）
-  const speakQuestion = (text) => {
+  // 語音朗讀題幹（支援多角色對話男女聲；一、二年級中文題幹自動使用 zh-TW 語音讀題；三～六年級英文題幹使用 en-US 朗讀；支援正式檢定雙次播放協定）
+  const speakQuestion = (text, repeatTimes = 1) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     try {
       const raw = String(text || '');
@@ -495,11 +506,42 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       const utter = new SpeechSynthesisUtterance(clean);
       utter.lang = hasChinese ? 'zh-TW' : 'en-US';
       utter.rate = 0.9;
+      if (repeatTimes > 1) {
+        utter.onend = () => {
+          setTimeout(() => {
+            try {
+              const utter2 = new SpeechSynthesisUtterance(clean);
+              utter2.lang = hasChinese ? 'zh-TW' : 'en-US';
+              utter2.rate = 0.9;
+              window.speechSynthesis.speak(utter2);
+            } catch {}
+          }, 2000);
+        };
+      }
       window.speechSynthesis.speak(utter);
     } catch {
       // Ignore TTS errors
     }
   };
+
+  // 正式施測模式：進入聽力試題時自動觸發雙次朗讀協定（間隔 2 秒播放兩遍）
+  useEffect(() => {
+    if (phase !== 'exam' || !isFormalExam) return;
+    const curQ = questions[currentIndex];
+    if (!curQ) return;
+    const isListening =
+      curQ.category === 'listening' ||
+      curQ.taskType?.startsWith('L-') ||
+      curQ.subType?.startsWith('listen-') ||
+      curQ.taskType === 'V-AUDIO-WORD' ||
+      curQ.taskType === 'V-AUDIO-PIC';
+    if (isListening) {
+      const timer = setTimeout(() => {
+        speakQuestion(curQ.media?.audioText || curQ.question, 2);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [phase, currentIndex, isFormalExam, questions]);
 
   // 點選選項（純粹記錄作答，無遊戲音效）
   const handleSelectOption = (optIdx) => {
@@ -583,6 +625,39 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       }).catch(() => {});
     }
 
+    // 記錄三大檢定動態滾動精熟狀態
+    const currentSid = currentStudent?.student_id || currentStudent?.id || 'guest';
+    const examTrack =
+      scopeMode === 'tme-preA1'
+        ? 'tme-preA1'
+        : scopeMode === 'ministry-assessment'
+        ? 'ministry-assessment'
+        : 'curriculum';
+    const updatedSnap = recordExamMasterySession(
+      currentSid,
+      examTrack,
+      questions,
+      answers,
+      isFormalExam || selectedPreA1Format === 'standard'
+    );
+
+    // 若為 Pre-A1 且學生已登入，同步滾動精熟度至英雄榜 (mode: prea1-mastery)
+    if (scopeMode === 'tme-preA1' && isLoggedIn) {
+      const tmeTrack = updatedSnap?.tracks?.['tme-preA1'];
+      if (tmeTrack) {
+        const mCount = tmeTrack.mastered_count || 0;
+        const mRate = Math.round((mCount / (tmeTrack.total_items || 250)) * 100);
+        recordPreA1MasteryLeaderboard({
+          grade: currentStudent?.grade,
+          name: formatStudentDisplayName(currentStudent),
+          studentId: currentSid,
+          masteredCount: mCount,
+          totalItems: tmeTrack.total_items || 250,
+          masteryRate: mRate
+        }).catch(() => {});
+      }
+    }
+
     if (coinsEarned > 0 && isLoggedIn && !hasAwardedCoinsRef.current) {
       hasAwardedCoinsRef.current = true;
       addCoins(coinsEarned);
@@ -627,12 +702,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     saveMistakeMap,
     selectedBook,
     currentStudent?.grade,
+    currentStudent?.student_id,
+    currentStudent?.id,
     isLoggedIn,
     addCoins,
     onComplete,
     elapsedSec,
-    inProgressKey
+    inProgressKey,
+    isFormalExam,
+    selectedPreA1Format
   ]);
+
+  finalizeExamRef.current = finalizeExam;
 
   const handleRequestSubmit = () => {
     const answeredCount = Object.keys(answers).length;
@@ -719,6 +800,27 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         : scopeMode === 'ministry-assessment'
         ? saaPool.length > 0
         : false;
+
+    if (setupSubView === 'preA1-dashboard') {
+      return renderShell(
+        <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overscroll-contain">
+          <PreA1MasteryDashboard
+            student={currentStudent}
+            onBack={() => setSetupSubView('preA1')}
+            onStartDrill={(subType) => {
+              const drillPool = TME_PRE_A1_BANK.filter(
+                (q) => q.subType === subType || q.taskType === subType
+              );
+              if (drillPool.length > 0) {
+                setScopeMode('tme-preA1');
+                setIsFormalExam(false);
+                startExamSession(drillPool, Math.min(5, drillPool.length), true);
+              }
+            }}
+          />
+        </div>
+      );
+    }
 
     return renderShell(
       <>
@@ -1392,7 +1494,35 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           {setupSubView === 'preA1' && (
             <div className="flex flex-col gap-3">
-              {/* 步驟 1：選擇測驗題型組合 (三大膠囊) */}
+              {/* 頂部快捷入口：個人精熟診斷卡 & 250 題庫總覽 */}
+              <div className="shrink-0 p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/50 dark:to-indigo-950/50 border border-sky-200 dark:border-sky-800 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black shadow-sm shrink-0">
+                    <Award size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                      <span>Test My English 官方 250 全題庫</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-200 text-sky-800 dark:bg-sky-900 dark:text-sky-200">
+                        五大面向 · 19 子題型
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      動態滾動精熟體系：錯題連對 2 次翻盤解鎖為精熟，拒絕歷史錯誤懲罰
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSetupSubView('preA1-dashboard')}
+                  className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-black shadow-sm flex items-center gap-1.5 transition cursor-pointer"
+                >
+                  <Award size={15} />
+                  <span>查看個人精熟診斷卡 ➔</span>
+                </button>
+              </div>
+
+              {/* 步驟 1：選擇施測模式 (正式施測 vs 專項練習) */}
               <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -1400,15 +1530,78 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       1
                     </span>
                     <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                      選擇測驗組合
+                      選擇施測模式
                     </span>
                   </div>
                   <span className="text-xs font-bold text-sky-600 dark:text-sky-400">
-                    教育部 Test My English 指標
+                    教育部標準規範
                   </span>
                 </div>
 
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsFormalExam(true);
+                      setSelectedPreA1Format('standard');
+                    }}
+                    className={`p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2 cursor-pointer ${
+                      isFormalExam
+                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
+                    }`}
+                  >
+                    <div>
+                      <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                        <span>🎓 正式施測模式</span>
+                        <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                          全真規格
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                        30 題 (聽15+閱15) · 限時 35 分鐘 · 聽力自動朗讀 2 遍
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsFormalExam(false)}
+                    className={`p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2 cursor-pointer ${
+                      !isFormalExam
+                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
+                    }`}
+                  >
+                    <div>
+                      <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                        <span>🎯 專項自主練習模式</span>
+                        <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                          無壓力練習
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                        自由選擇聽力、閱讀、寫作重組等專門題組
+                      </div>
+                    </div>
+                  </button>
+                </div>
+
+                {isFormalExam ? (
+                  <div className="p-3 rounded-xl bg-sky-100/70 dark:bg-sky-950/50 border border-sky-300 dark:border-sky-800 text-xs text-sky-900 dark:text-sky-200 space-y-1">
+                    <div className="font-black flex items-center gap-1.5">
+                      <Sparkles size={14} className="text-sky-600" />
+                      <span>正式施測模式已就緒</span>
+                    </div>
+                    <div className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                      包含生活聽力 15 題與看圖閱讀 15 題，試題依循易到難階梯排序。聽力題型將依國際施測標準<strong>自動朗讀兩次</strong>。全卷限時 35 分鐘，答對 21 題 (70%) 即達 Pre-A1 合格標準！
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2 pt-1">
+                    <div className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                      選擇練習題型組合：
+                    </div>
                   {/* 膠囊 A: 聽 15 + 閱 15 (官方標準 30 題) */}
                   <button
                     type="button"
@@ -1549,7 +1742,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     </div>
                   </button>
                 </div>
-              </div>
+              )}
+            </div>
 
               {/* 口說與寫作四技整合說明小卡 */}
               <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 border border-sky-200 dark:border-sky-800/60 space-y-2">
@@ -1673,7 +1867,9 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               >
                 <span>
                   {scopeMode === 'tme-preA1'
-                    ? (tmePool.length > 0 ? `開始 Pre-A1 測驗 (${selectedPreA1Format === 'standard' ? 30 : 20} 題)` : '🚧 Pre-A1 官方題庫編製中 (敬請期待)')
+                    ? (isFormalExam
+                        ? '開始 Pre-A1 正式施測 (30 題 · 限時 35 分)'
+                        : (tmePool.length > 0 ? `開始 Pre-A1 練習 (${selectedPreA1Format === 'standard' ? 30 : 20} 題)` : '🚧 Pre-A1 官方題庫編製中 (敬請期待)'))
                     : scopeMode === 'ministry-assessment'
                     ? (saaPool.length > 0 ? `開始學力測驗 (${selectedSaaFormat === 'standard' ? 35 : 20} 題)` : '🚧 SAA 學力題庫編製中 (敬請期待)')
                     : scopeMode === 'mistakes'
@@ -1940,7 +2136,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       <>
         {/* 頂端三欄極簡狀態列：左「離開」、中「測驗冊別」、右「題號進度與標記」 */}
         <div className="shrink-0 px-4 sm:px-6 py-3 border-b border-slate-200 dark:border-slate-800 grid grid-cols-3 items-center bg-slate-50/90 dark:bg-slate-900/90">
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setShowExitConfirm(true)}
@@ -1949,6 +2145,16 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               <ArrowLeft size={15} />
               離開
             </button>
+            {isFormalExam && (
+              <span className={`px-2.5 py-1 rounded-lg border font-mono font-black text-xs flex items-center gap-1 ${
+                Math.max(0, 2100 - elapsedSec) < 300
+                  ? 'bg-rose-50 border-rose-300 text-rose-600 animate-pulse'
+                  : 'bg-amber-50 border-amber-300 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+              }`}>
+                <Clock size={13} />
+                <span>{formatTime(Math.max(0, 2100 - elapsedSec))}</span>
+              </span>
+            )}
           </div>
 
           <div className="text-center truncate font-black text-sm sm:text-base text-slate-800 dark:text-slate-100">
