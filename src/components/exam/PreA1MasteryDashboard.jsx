@@ -16,14 +16,53 @@ import {
   PenTool,
   Mic,
   Layers,
-  HelpCircle
+  HelpCircle,
+  Star
 } from 'lucide-react';
 import {
   loadStudentMastery,
   getMasteryLevel,
+  getMorandiCoverageTier,
   MASTERY_STATES
 } from '../../utils/masteryHelper';
 import { formatStudentDisplayName } from '../../utils/studentIdHelper';
+
+// 3D 立體金星列與 100% 滿分流光掃過特效組件 (無空星留白設計，靠左排列)
+const MasteryStarsDisplay = ({ stars = 0, isPerfect = false, label = '' }) => {
+  if (stars <= 0) {
+    return (
+      <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 italic">
+        {label || '未起評'}
+      </span>
+    );
+  }
+
+  return (
+    <div className={`relative inline-flex items-center gap-1 ${isPerfect ? 'shimmer-stars-halo' : ''}`}>
+      {/* 100% 滿分金屬流光斜掃背景層 */}
+      {isPerfect && <span className="shimmer-sheen-sweep" />}
+      <div className="flex items-center gap-0.5">
+        {Array.from({ length: stars }).map((_, i) => (
+          <Star
+            key={i}
+            size={14}
+            className={`transition-all ${
+              isPerfect
+                ? 'text-amber-400 fill-amber-400 filter drop-shadow-[0_1px_2px_rgba(245,158,11,0.6)]'
+                : 'text-amber-400 fill-amber-400 filter drop-shadow-[0_1px_1px_rgba(0,0,0,0.15)]'
+            }`}
+          />
+        ))}
+      </div>
+      {isPerfect && (
+        <span className="ml-1 px-1.5 py-0.2 rounded-md bg-amber-400/20 text-amber-600 dark:text-amber-300 border border-amber-300/40 text-[10px] font-black flex items-center gap-0.5">
+          <Sparkles size={10} className="animate-pulse" />
+          <span>滿分</span>
+        </span>
+      )}
+    </div>
+  );
+};
 
 // Pre-A1 五大面向與 19 子題型官方規格對應表
 export const PRE_A1_DASHBOARD_META = [
@@ -126,20 +165,24 @@ export const PreA1MasteryDashboard = ({
     return res;
   }, [rawItems, filterMode, onlyRecentHalfYear]);
 
-  // 計算全卷 250 題總精熟數據
+  // 計算全卷 250 題總精熟與涵蓋數據
   const overallStats = useMemo(() => {
     const itemsList = Object.values(filteredItems);
     const masteredCount = itemsList.filter((it) => it.status === MASTERY_STATES.MASTERED).length;
     const attemptedCount = itemsList.length;
     const totalBank = 250;
-    const rate = Math.round((masteredCount / totalBank) * 100);
-    const level = getMasteryLevel(rate, attemptedCount);
+    // 品質指標：以已挑戰題目計算實質精熟率 (做錯可翻盤，加題不掉星)
+    const masteryRate = attemptedCount > 0 ? Math.round((masteredCount / attemptedCount) * 100) : 0;
+    const level = getMasteryLevel(masteryRate, attemptedCount);
+    // 開拓指標：以全題庫 250 題計算涵蓋深度 (莫蘭迪五階底色)
+    const coverage = getMorandiCoverageTier(attemptedCount, totalBank);
     return {
       masteredCount,
       attemptedCount,
       totalBank,
-      rate,
-      level
+      masteryRate,
+      level,
+      coverage
     };
   }, [filteredItems]);
 
@@ -248,31 +291,72 @@ export const PreA1MasteryDashboard = ({
         </div>
       </div>
 
+      {/* 嵌入 100% 滿分金屬流光與呼吸金光動畫樣式 */}
+      <style>{`
+        @keyframes shimmerSheen {
+          0% { transform: translateX(-120%) rotate(35deg); opacity: 0; }
+          20% { opacity: 0.9; }
+          60% { opacity: 0.9; }
+          100% { transform: translateX(220%) rotate(35deg); opacity: 0; }
+        }
+        .shimmer-stars-halo {
+          position: relative;
+          overflow: hidden;
+          padding: 2px 6px;
+          border-radius: 8px;
+          background: rgba(251, 191, 36, 0.12);
+          border: 1px solid rgba(251, 191, 36, 0.4);
+          filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.55));
+        }
+        .shimmer-sheen-sweep {
+          position: absolute;
+          top: -60%;
+          left: -60%;
+          width: 220%;
+          height: 220%;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.85) 50%,
+            transparent 100%
+          );
+          pointer-events: none;
+          animation: shimmerSheen 3.5s infinite ease-in-out;
+        }
+      `}</style>
+
       {/* 總體概覽卡片 (Overview Hero Banner) */}
       <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 bg-gradient-to-r from-indigo-600 via-sky-600 to-indigo-700 text-white shadow-lg">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-sm">
-                全卷 250 題通算進度
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm">
+                全卷 250 題開拓進度：{overallStats.attemptedCount}/250 題 ({overallStats.coverage.rate}% {overallStats.coverage.label})
               </span>
-              <span className="text-xs font-extrabold text-amber-200">
-                {overallStats.level.badge} {overallStats.level.label}
-              </span>
+              <div className="flex items-center gap-1.5 bg-black/20 px-2 py-0.5 rounded-lg">
+                <MasteryStarsDisplay
+                  stars={overallStats.level.stars}
+                  isPerfect={overallStats.level.isPerfect}
+                  label={overallStats.level.label}
+                />
+                <span className="text-xs font-extrabold text-amber-200">
+                  {overallStats.level.label}
+                </span>
+              </div>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl sm:text-4xl font-black tracking-tight">
                 {overallStats.masteredCount}
               </span>
               <span className="text-sm text-indigo-100 font-bold">
-                / {overallStats.totalBank} 題完全精熟
+                / {overallStats.attemptedCount} 題精熟
               </span>
               <span className="text-lg font-black text-amber-300 ml-2">
-                ({overallStats.rate}%)
+                (精熟率 {overallStats.masteryRate}%)
               </span>
             </div>
             <p className="text-xs text-indigo-100 max-w-xl">
-              已挑戰 {overallStats.attemptedCount} 道相異題目。錯題只要在後續測驗中「連對 2 次」，即可直接翻盤為精熟金星！
+              以已挑戰題目計算實質精熟率（做錯可翻盤，加題不掉星）。題庫開拓覆蓋率透過莫蘭迪五階底色（灰棕綠藍金）溫和提醒！
             </p>
           </div>
 
@@ -280,11 +364,11 @@ export const PreA1MasteryDashboard = ({
             <div className="w-full sm:w-48 bg-black/20 rounded-full h-3.5 p-0.5 overflow-hidden">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-amber-300 to-yellow-400 transition-all duration-500 shadow-sm"
-                style={{ width: `${Math.min(100, Math.max(overallStats.rate, 3))}%` }}
+                style={{ width: `${Math.min(100, Math.max(overallStats.coverage.rate, 3))}%` }}
               />
             </div>
             <span className="text-[11px] font-bold text-indigo-100">
-              全校精熟大師門檻：≥ 80% (200題)
+              全卷開拓涵蓋率：{overallStats.coverage.rate}% ({overallStats.coverage.label})
             </span>
           </div>
         </div>
@@ -306,21 +390,29 @@ export const PreA1MasteryDashboard = ({
             );
             const mCount = subItems.filter((it) => it.status === MASTERY_STATES.MASTERED).length;
             const aCount = subItems.length;
-            const rate = Math.round((mCount / sub.total) * 100);
-            const level = getMasteryLevel(rate, aCount);
+
+            // 品質指標：以已做題數 aCount 計算精熟率
+            const masteryRate = aCount > 0 ? Math.round((mCount / aCount) * 100) : 0;
+            const level = getMasteryLevel(masteryRate, aCount);
+
+            // 開拓指標：以該題型總數 sub.total 計算莫蘭迪底色
+            const coverage = getMorandiCoverageTier(aCount, sub.total);
+
             catMastered += mCount;
             catAttempted += aCount;
             return {
               ...sub,
               masteredCount: mCount,
               attemptedCount: aCount,
-              rate,
-              level
+              masteryRate,
+              level,
+              coverage
             };
           });
 
-          const catRate = Math.round((catMastered / cat.total) * 100);
-          const catLevel = getMasteryLevel(catRate, catAttempted);
+          const catMasteryRate = catAttempted > 0 ? Math.round((catMastered / catAttempted) * 100) : 0;
+          const catLevel = getMasteryLevel(catMasteryRate, catAttempted);
+          const catCoverage = getMorandiCoverageTier(catAttempted, cat.total);
 
           return (
             <div
@@ -335,7 +427,7 @@ export const PreA1MasteryDashboard = ({
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${catLevel.bgClass} ${catLevel.textClass} border ${catLevel.borderClass}`}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${catCoverage.pillBg}`}
                   >
                     <Icon size={20} />
                   </div>
@@ -344,34 +436,37 @@ export const PreA1MasteryDashboard = ({
                       <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                         {cat.label}
                       </span>
+                      {/* 莫蘭迪開拓標籤 */}
                       <span
-                        className={`px-2 py-0.5 rounded-full text-[11px] font-black border ${catLevel.bgClass} ${catLevel.textClass} ${catLevel.borderClass}`}
+                        className={`px-2 py-0.5 rounded-full text-[11px] font-black border ${catCoverage.pillBg}`}
                       >
-                        {catLevel.badge} {catLevel.label} ({catRate}%)
+                        開拓 {catAttempted}/{cat.total} 題 ({catCoverage.rate}%)
                       </span>
+                      {/* 品質立體金星 */}
+                      <MasteryStarsDisplay
+                        stars={catLevel.stars}
+                        isPerfect={catLevel.isPerfect}
+                        label={catLevel.label}
+                      />
                     </div>
                     <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      精熟 {catMastered} / {cat.total} 題 ｜ 涵蓋 {catSubTypes.length} 種官方子題型
+                      精熟 {catMastered} / {catAttempted} 題 ({catMasteryRate}%) ｜ 涵蓋 {catSubTypes.length} 種官方子題型
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
-                  {/* 進度條 */}
+                  {/* 開拓進度條 */}
                   <div className="hidden sm:flex flex-col items-end gap-1 w-32">
                     <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all duration-300 ${
-                          catRate >= 80
-                            ? 'bg-emerald-500'
-                            : catRate >= 60
-                            ? 'bg-amber-500'
-                            : 'bg-rose-500'
-                        }`}
-                        style={{ width: `${Math.min(100, Math.max(catRate, 4))}%` }}
+                        className={`h-full rounded-full transition-all duration-300 ${catCoverage.barColor}`}
+                        style={{ width: `${Math.min(100, Math.max(catCoverage.rate, 4))}%` }}
                       />
                     </div>
-                    <span className="text-[10px] text-slate-400 font-bold">{catRate}% 完成</span>
+                    <span className="text-[10px] text-slate-400 font-bold">
+                      開拓 {catCoverage.rate}% ({catCoverage.label})
+                    </span>
                   </div>
 
                   <div className="p-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500">
@@ -380,36 +475,53 @@ export const PreA1MasteryDashboard = ({
                 </div>
               </button>
 
-              {/* 展開之子題型細項清單 */}
+              {/* 展開之子題型細項清單 (套用莫蘭迪五階柔和底色) */}
               {isExpanded && (
                 <div className="border-t border-slate-100 dark:border-slate-800 p-2 sm:p-3 bg-slate-50/50 dark:bg-slate-900/50 space-y-2 animate-fadeIn">
                   {subTypeStats.map((sub) => {
-                    const isRed = sub.level.stars === 1;
+                    const isRed = sub.masteryRate < 50 && sub.attemptedCount > 0;
                     return (
                       <div
                         key={sub.key}
-                        className="bg-white dark:bg-slate-800/80 rounded-xl p-2.5 sm:p-3 border border-slate-200/80 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition hover:shadow-xs"
+                        className={`${sub.coverage.bgCard} rounded-xl p-2.5 sm:p-3 border ${sub.coverage.borderCard} flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition hover:shadow-xs`}
                       >
-                        <div className="space-y-0.5 min-w-0">
+                        <div className="space-y-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-100">
                               {sub.label}
                             </span>
+
+                            {/* 莫蘭迪開拓標籤 */}
                             <span
-                              className={`px-1.5 py-0.2 rounded text-[10px] font-black border ${sub.level.bgClass} ${sub.level.textClass} ${sub.level.borderClass}`}
+                              className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${sub.coverage.pillBg}`}
                             >
-                              {sub.level.badge} {sub.level.label}
+                              開拓 {sub.attemptedCount}/{sub.total} 題 ({sub.coverage.rate}%)
                             </span>
-                            <span className="text-xs font-black text-indigo-600 dark:text-indigo-400">
-                              {sub.masteredCount} / {sub.total} 題 ({sub.rate}%)
-                            </span>
+
+                            {/* 品質立體金星 (靠左對齊，無空星留白設計) */}
+                            <MasteryStarsDisplay
+                              stars={sub.level.stars}
+                              isPerfect={sub.level.isPerfect}
+                              label={sub.level.label}
+                            />
+
+                            {/* 精熟率數據 */}
+                            {sub.attemptedCount > 0 ? (
+                              <span className="text-xs font-black text-slate-700 dark:text-slate-200">
+                                精熟 {sub.masteredCount}/{sub.attemptedCount} 題 ({sub.masteryRate}%)
+                              </span>
+                            ) : (
+                              <span className="text-xs font-bold text-slate-400">
+                                尚未挑戰 (0/{sub.total})
+                              </span>
+                            )}
                           </div>
-                          <p className="text-[11px] text-slate-400 dark:text-slate-400 truncate">
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                             {sub.desc}
                           </p>
                         </div>
 
-                        {/* 一鍵專項特訓按鈕 (無痛複用現有考卷引擎) */}
+                        {/* 一鍵專項特訓按鈕 */}
                         <div className="shrink-0 flex items-center justify-end gap-2">
                           {onStartDrill && (
                             <button

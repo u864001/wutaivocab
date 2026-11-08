@@ -42,23 +42,44 @@ assert.strictEqual(r6.status, MASTERY_STATES.REMEDIAL, 'Probation question must 
 assert.strictEqual(r6.consecutiveCorrect, 0);
 console.log('  ✓ Error while Mastered or in Probation reliably drops back to REMEDIAL.');
 
-// Test 4: Mastery Level and Star Rubrics
+// Test 4: Mastery Level and Star Rubrics (Option C + No Empty Stars)
 console.log('\n[4/4] Validating Mastery Level and Star Rubrics...');
-const lvlUnattempted = getMasteryLevel(0, 1);
-assert.strictEqual(lvlUnattempted.stars, 0);
-assert.strictEqual(lvlUnattempted.color, 'slate');
+const lvlUnattempted = getMasteryLevel(0, 0);
+assert.strictEqual(lvlUnattempted.stars, 0, 'Unattempted should have 0 stars');
+assert.strictEqual(lvlUnattempted.isPerfect, false);
 
-const lvlGold = getMasteryLevel(85, 20);
-assert.strictEqual(lvlGold.stars, 3);
-assert.strictEqual(lvlGold.color, 'emerald');
+const lvlPoor = getMasteryLevel(45, 20);
+assert.strictEqual(lvlPoor.stars, 0, '< 50% accuracy MUST have 0 stars (no empty stars, clean)');
+assert.strictEqual(lvlPoor.label, '待加強');
 
-const lvlSilver = getMasteryLevel(72, 20);
-assert.strictEqual(lvlSilver.stars, 2);
-assert.strictEqual(lvlSilver.color, 'amber');
+const lvl1 = getMasteryLevel(65, 20);
+assert.strictEqual(lvl1.stars, 1, '50-69% should have 1 star');
+assert.strictEqual(lvl1.label, '基礎');
 
-const lvlBronze = getMasteryLevel(45, 20);
-assert.strictEqual(lvlBronze.stars, 1);
-assert.strictEqual(lvlBronze.color, 'rose');
-console.log('  ✓ 3-tier colors and stars (★★★ 80%+, ★★☆ 60-79%, ★☆☆ <60%) verified.');
+const lvl2 = getMasteryLevel(85, 20);
+assert.strictEqual(lvl2.stars, 2, '70-89% should have 2 stars');
+assert.strictEqual(lvl2.label, '熟練');
+
+const lvl3 = getMasteryLevel(95, 20);
+assert.strictEqual(lvl3.stars, 3, '90-99% should have 3 stars');
+assert.strictEqual(lvl3.isPerfect, false);
+assert.strictEqual(lvl3.label, '精熟');
+
+const lvlPerfect = getMasteryLevel(100, 20);
+assert.strictEqual(lvlPerfect.stars, 3, '100% should have 3 stars');
+assert.strictEqual(lvlPerfect.isPerfect, true, '100% MUST trigger isPerfect for metallic shimmer');
+assert.strictEqual(lvlPerfect.label, '滿分精熟');
+
+console.log('  ✓ Star rubrics (0 stars for <50%, 1 for 50-69%, 2 for 70-89%, 3 for 90-99%, 3+isPerfect for 100%) verified.');
+
+// Test 5: Morandi Coverage Tiers
+import { getMorandiCoverageTier } from '../src/utils/masteryHelper.js';
+console.log('\n[5/5] Validating Morandi Coverage Tiers (Mist Gray, Oat Brown, Sage Green, Haze Blue, Champagne Gold)...');
+assert.strictEqual(getMorandiCoverageTier(3, 14).tier, 'gray');
+assert.strictEqual(getMorandiCoverageTier(8, 14).tier, 'brown');
+assert.strictEqual(getMorandiCoverageTier(11, 14).tier, 'green');
+assert.strictEqual(getMorandiCoverageTier(12, 14).tier, 'blue');
+assert.strictEqual(getMorandiCoverageTier(14, 14).tier, 'gold');
+console.log('  ✓ Morandi 5-tier coverage verified (<50% gray, 50-69% brown, 70-79% green, 80-89% blue, 90%+ gold).');
 
 console.log('\n🎉 ALL ROLLING MASTERY ENGINE UNIT TESTS PASSED 100%!\n');

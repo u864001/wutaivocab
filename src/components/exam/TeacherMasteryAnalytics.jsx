@@ -22,10 +22,11 @@ import {
   Mic,
   Layers,
   ArrowRight,
-  X
+  X,
+  Star
 } from 'lucide-react';
 import { PRE_A1_DASHBOARD_META } from './PreA1MasteryDashboard';
-import { loadStudentMastery, getMasteryLevel, MASTERY_STATES } from '../../utils/masteryHelper';
+import { loadStudentMastery, getMasteryLevel, getMorandiCoverageTier, MASTERY_STATES } from '../../utils/masteryHelper';
 import { supabase } from '../../services/supabase';
 import { formatStudentBadge, formatStudentDisplayName, parseStudentId } from '../../utils/studentIdHelper';
 
@@ -137,16 +138,22 @@ export const TeacherMasteryAnalytics = ({ onStartDrillForStudent }) => {
           if (it?.status === MASTERY_STATES.MASTERED) catMastered++;
           if (it) catAttempted++;
         });
-        const catRate = Math.round((catMastered / cat.total) * 100);
+        const catMasteryRate = catAttempted > 0 ? Math.round((catMastered / catAttempted) * 100) : 0;
+        const catCoverage = getMorandiCoverageTier(catAttempted, cat.total);
         categoryStats[cat.category] = {
           mastered: catMastered,
+          attempted: catAttempted,
           total: cat.total,
-          rate: catRate,
-          level: getMasteryLevel(catRate, catAttempted)
+          rate: catMasteryRate,
+          coverageRate: catCoverage.rate,
+          coverage: catCoverage,
+          level: getMasteryLevel(catMasteryRate, catAttempted)
         };
       });
 
-      const overallLevel = getMasteryLevel(masteryRate, attemptedCount);
+      const overallMasteryRate = attemptedCount > 0 ? Math.round((masteredCount / attemptedCount) * 100) : 0;
+      const overallCoverage = getMorandiCoverageTier(attemptedCount, totalBank);
+      const overallLevel = getMasteryLevel(overallMasteryRate, attemptedCount);
 
       results.push({
         student_id: sid,
@@ -158,7 +165,9 @@ export const TeacherMasteryAnalytics = ({ onStartDrillForStudent }) => {
         masteredCount,
         attemptedCount,
         totalBank,
-        masteryRate,
+        masteryRate: overallMasteryRate,
+        coverageRate: overallCoverage.rate,
+        coverage: overallCoverage,
         overallLevel,
         categoryStats,
         rawItems,
@@ -525,9 +534,15 @@ export const TeacherMasteryAnalytics = ({ onStartDrillForStudent }) => {
                         {stu.masteredCount} / {stu.totalBank}
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black ${level.bgClass} ${level.textClass}`}>
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black ${level.bgClass} ${level.textClass}`}>
                           <span>{stu.masteryRate}%</span>
-                          <span className="text-[10px]">{level.badge}</span>
+                          {level.stars > 0 && (
+                            <span className="flex items-center text-amber-500">
+                              {Array.from({ length: level.stars }).map((_, i) => (
+                                <Star key={i} size={11} fill="currentColor" />
+                              ))}
+                            </span>
+                          )}
                         </span>
                       </td>
 
@@ -611,8 +626,15 @@ export const TeacherMasteryAnalytics = ({ onStartDrillForStudent }) => {
                     {inspectingStudent.masteredCount} / {inspectingStudent.totalBank} 題 ({inspectingStudent.masteryRate}%)
                   </div>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-black ${inspectingStudent.overallLevel.bgClass} ${inspectingStudent.overallLevel.textClass}`}>
-                  {inspectingStudent.overallLevel.label} {inspectingStudent.overallLevel.badge}
+                <span className={`px-3 py-1 rounded-full text-xs font-black flex items-center gap-1.5 ${inspectingStudent.overallLevel.bgClass} ${inspectingStudent.overallLevel.textClass}`}>
+                  <span>{inspectingStudent.overallLevel.label}</span>
+                  {inspectingStudent.overallLevel.stars > 0 && (
+                    <span className="flex items-center text-amber-500">
+                      {Array.from({ length: inspectingStudent.overallLevel.stars }).map((_, i) => (
+                        <Star key={i} size={12} fill="currentColor" />
+                      ))}
+                    </span>
+                  )}
                 </span>
               </div>
 
@@ -659,20 +681,20 @@ export const TeacherMasteryAnalytics = ({ onStartDrillForStudent }) => {
 
                               <div className="shrink-0 text-right">
                                 {isMastered ? (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                                    🟢 精熟
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                                    完全精熟
                                   </span>
                                 ) : isProbation ? (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                                    🟡 考驗中 (再對1次解鎖)
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                                    考驗中 (再對1次解鎖)
                                   </span>
                                 ) : isRemedial ? (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">
-                                    🔴 待加強
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-300 dark:border-rose-800">
+                                    待補救加強
                                   </span>
                                 ) : (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                                    ⚪ 未挑戰
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                                    尚未挑戰
                                   </span>
                                 )}
                               </div>

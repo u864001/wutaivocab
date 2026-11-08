@@ -59,52 +59,156 @@ export function nextMasteryState(currentState = MASTERY_STATES.UNATTEMPTED, cons
 }
 
 /**
- * 計算精熟度星級與三色燈指標
+ * 計算精熟度星級（品質指標：以本人做過的題目為分母）
+ * 規則（方案 C + 無空星原則）：
+ * - 未挑戰 (attemptedCount === 0) 或 答對率 < 50%：0 星（不顯示任何星星，留白乾淨）
+ * - 50% ~ 69%：1 顆立體金星 (基礎及格)
+ * - 70% ~ 89%：2 顆立體金星 (良等熟練)
+ * - 90% ~ 99%：3 顆立體金星 (優等精熟)
+ * - 100% 滿分精熟：3 顆立體金星 + isPerfect = true (觸發 45度金屬流光 + 呼吸金光)
  * @param {number} masteryRate 精熟百分比 (0-100)
  * @param {number} attemptedCount 累計挑戰過之題數
  */
 export function getMasteryLevel(masteryRate = 0, attemptedCount = 0) {
-  if (attemptedCount < 3 && masteryRate === 0) {
+  if (!attemptedCount || attemptedCount <= 0) {
     return {
       stars: 0,
+      isPerfect: false,
       color: 'slate',
       bgClass: 'bg-slate-100 dark:bg-slate-800/60',
       textClass: 'text-slate-500 dark:text-slate-400',
       borderClass: 'border-slate-300 dark:border-slate-700',
-      badge: '☆☆☆',
       label: '未挑戰'
     };
   }
-  if (masteryRate >= 80) {
+
+  if (masteryRate < 50) {
     return {
-      stars: 3,
-      color: 'emerald',
-      bgClass: 'bg-emerald-50 dark:bg-emerald-950/40',
-      textClass: 'text-emerald-600 dark:text-emerald-400',
-      borderClass: 'border-emerald-300 dark:border-emerald-700',
-      badge: '★★★',
-      label: '精熟'
+      stars: 0,
+      isPerfect: false,
+      color: 'rose',
+      bgClass: 'bg-rose-50 dark:bg-rose-950/40',
+      textClass: 'text-rose-600 dark:text-rose-400',
+      borderClass: 'border-rose-250 dark:border-rose-800',
+      label: '待加強'
     };
   }
-  if (masteryRate >= 60) {
+
+  if (masteryRate < 70) {
     return {
-      stars: 2,
+      stars: 1,
+      isPerfect: false,
       color: 'amber',
       bgClass: 'bg-amber-50 dark:bg-amber-950/40',
       textClass: 'text-amber-600 dark:text-amber-400',
-      borderClass: 'border-amber-300 dark:border-amber-700',
-      badge: '★★☆',
-      label: '掌握'
+      borderClass: 'border-amber-250 dark:border-amber-800',
+      label: '基礎'
+    };
+  }
+
+  if (masteryRate < 90) {
+    return {
+      stars: 2,
+      isPerfect: false,
+      color: 'sky',
+      bgClass: 'bg-sky-50 dark:bg-sky-950/40',
+      textClass: 'text-sky-600 dark:text-sky-400',
+      borderClass: 'border-sky-250 dark:border-sky-800',
+      label: '熟練'
+    };
+  }
+
+  if (masteryRate < 100) {
+    return {
+      stars: 3,
+      isPerfect: false,
+      color: 'emerald',
+      bgClass: 'bg-emerald-50 dark:bg-emerald-950/40',
+      textClass: 'text-emerald-600 dark:text-emerald-400',
+      borderClass: 'border-emerald-250 dark:border-emerald-800',
+      label: '精熟'
+    };
+  }
+
+  // 100% 滿分神級（全數精熟零錯題）
+  return {
+    stars: 3,
+    isPerfect: true,
+    color: 'yellow',
+    bgClass: 'bg-yellow-50 dark:bg-yellow-950/40',
+    textClass: 'text-amber-600 dark:text-amber-300',
+    borderClass: 'border-amber-300 dark:border-amber-700',
+    label: '滿分精熟'
+  };
+}
+
+/**
+ * 計算莫蘭迪題庫涵蓋率五階層次（底色指標：以題庫總題數為分母）
+ * 規則：
+ * - < 50%    : 淡霧灰 (Mist Gray) - 採樣起步
+ * - 50%~69%  : 淡暖燕麥棕 (Oat Brown) - 初探開拓
+ * - 70%~79%  : 淡鼠尾草綠 (Sage Green) - 熟練深造
+ * - 80%~89%  : 淡霧霾藍 (Haze Blue) - 黃金廣博
+ * - ≥ 90%    : 淡香檳暖金 (Champagne Gold) - 宗師全通
+ * @param {number} attemptedCount 學生做過的題數
+ * @param {number} totalBank 該題庫/子題型總題數
+ */
+export function getMorandiCoverageTier(attemptedCount = 0, totalBank = 1) {
+  const safeBank = Math.max(1, totalBank || 1);
+  const rate = Math.round((attemptedCount / safeBank) * 100);
+
+  if (rate < 50) {
+    return {
+      tier: 'gray',
+      rate,
+      label: '採樣起步',
+      bgCard: 'bg-slate-50/80 dark:bg-slate-850/60',
+      borderCard: 'border-slate-200/80 dark:border-slate-700/60',
+      pillBg: 'bg-slate-100 text-slate-600 dark:bg-slate-850 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+      barColor: 'bg-slate-400'
+    };
+  }
+  if (rate < 70) {
+    return {
+      tier: 'brown',
+      rate,
+      label: '初探開拓',
+      bgCard: 'bg-amber-50/40 dark:bg-amber-950/20',
+      borderCard: 'border-amber-200/60 dark:border-amber-900/40',
+      pillBg: 'bg-amber-100/70 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200 border-amber-300/60 dark:border-amber-800/50',
+      barColor: 'bg-amber-500'
+    };
+  }
+  if (rate < 80) {
+    return {
+      tier: 'green',
+      rate,
+      label: '熟練深造',
+      bgCard: 'bg-emerald-50/40 dark:bg-emerald-950/20',
+      borderCard: 'border-emerald-200/60 dark:border-emerald-900/40',
+      pillBg: 'bg-emerald-100/70 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 border-emerald-300/60 dark:border-emerald-800/50',
+      barColor: 'bg-emerald-500'
+    };
+  }
+  if (rate < 90) {
+    return {
+      tier: 'blue',
+      rate,
+      label: '黃金廣博',
+      bgCard: 'bg-sky-50/40 dark:bg-sky-950/20',
+      borderCard: 'border-sky-200/60 dark:border-sky-900/40',
+      pillBg: 'bg-sky-100/70 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200 border-sky-300/60 dark:border-sky-800/50',
+      barColor: 'bg-sky-500'
     };
   }
   return {
-    stars: 1,
-    color: 'rose',
-    bgClass: 'bg-rose-50 dark:bg-rose-950/40',
-    textClass: 'text-rose-600 dark:text-rose-400',
-    borderClass: 'border-rose-300 dark:border-rose-700',
-    badge: '★☆☆',
-    label: '待加強'
+    tier: 'gold',
+    rate,
+    label: '宗師全通',
+    bgCard: 'bg-yellow-50/60 dark:bg-yellow-950/25',
+    borderCard: 'border-yellow-300/70 dark:border-yellow-800/50',
+    pillBg: 'bg-yellow-100/80 text-yellow-900 dark:bg-yellow-900/50 dark:text-yellow-200 border-yellow-300/80 dark:border-yellow-700/60',
+    barColor: 'bg-yellow-500'
   };
 }
 
