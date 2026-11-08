@@ -5,7 +5,7 @@
  * 核心原則：
  * 1. 拒絕歷史懲罰：評量學生當前能力，非懲罰歷史錯誤。
  * 2. 成長型思維：錯題後只要累計「連對 2 次」，即翻盤解鎖為精熟（連續猜對機率僅 6.25%）。
- * 3. 分母固定為題庫總試題數（如 Pre-A1 為 250 題），確保數據真實覆蓋。
+ * 3. 分母固定為題庫總試題數（如 Pre-A1 為 300 題），確保數據真實覆蓋。
  */
 
 export const MASTERY_STATES = {
@@ -239,7 +239,7 @@ export function createEmptyMasterySnapshot(studentId) {
     updated_at: new Date().toISOString(),
     tracks: {
       'tme-preA1': {
-        total_items: 250,
+        total_items: 300,
         mastered_count: 0,
         attempted_count: 0,
         total_attempts: 0,
@@ -276,7 +276,7 @@ export function recordExamMasterySession(studentId, track = 'tme-preA1', questio
   const snap = loadStudentMastery(studentId);
   if (!snap.tracks[track]) {
     snap.tracks[track] = {
-      total_items: track === 'tme-preA1' ? 250 : questions.length,
+      total_items: track === 'tme-preA1' ? 300 : questions.length,
       mastered_count: 0,
       attempted_count: 0,
       total_attempts: 0,

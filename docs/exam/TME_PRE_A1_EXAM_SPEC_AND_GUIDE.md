@@ -11,11 +11,11 @@
 
 ```mermaid
 flowchart LR
-    A["Pre-A1 檢定模擬總體系 (共 250 題)"] --> B["字彙 (Vocab)<br/>50 題"]
-    A --> C["聽力 (Listening)<br/>44 題"]
-    A --> D["閱讀 (Reading)<br/>80 題"]
+    A["Pre-A1 檢定模擬總體系 (共 300 題)"] --> B["字彙 (Vocab)<br/>56 題"]
+    A --> C["聽力 (Listening)<br/>60 題"]
+    A --> D["閱讀 (Reading)<br/>88 題"]
     A --> E["寫作重組 (Writing)<br/>60 題"]
-    A --> F["口說 (Speaking)<br/>16 題"]
+    A --> F["口說 (Speaking)<br/>36 題"]
 ```
 
 ### 1. 測驗標準規格
@@ -320,7 +320,7 @@ flowchart LR
 - 👑 **【測驗王 (Exam King, 預設首頁)】**：
   - 榮譽榜頂級首位！彰顯學術努力成果。
   - 橫向滾動精準鎖定三大軌道：
-    1. **Pre-A1 官方模擬 250 題全域精熟榜**（即時呈現精熟題數與精熟百分比）。
+    1. **Pre-A1 官方模擬 300 題全域精熟榜**（即時呈現精熟題數與精熟百分比）。
     2. **翰林國小 Here We Go 1,289 題三大累計榜**（單元檢定、聽力大考、學力模擬）。
     3. **自選題庫四大挑戰榜**（中選英、英選中、拼字、聽說實驗室）。
 - 🪙 **【金幣王 (Coin King)】**：全校/各年級累積賺取總金幣榜（勤奮打卡、每日複習與大富翁資產象徵）。
@@ -329,7 +329,51 @@ flowchart LR
 
 ---
 
-## 六、 本手冊維護與後續章節推進路徑 (Roadmap)
+## 六、 Phase 4 平衡擴充：300 題題庫架構、中高年級主題平衡與多角色美語防呆
+
+### 1. 題庫平衡擴充總覽 (Before 250 題 vs After 300 題)
+為徹底消弭先前版本中「口說專項匱乏（僅 16 題，占比 6.4%）」與「低年級題量過密、中高年級題量偏少」之失衡情況，Phase 4 注入 50 道高標準試題：
+
+| 能力面向 | 舊題數 (250題) | 新題數 (300題) | 擴充增幅 | 關鍵平衡與優化重點 |
+| :--- | :--- | :--- | :--- | :--- |
+| **口說 (Speaking)** | 16 題 (6.4%) | **36 題 (12.0%)** | **+20 題 (+125%)** | 單字 +6 (12題)、短句 +8 (14題)、長句 +6 (10題)，全量覆蓋中高年級生活會話。 |
+| **聽力 (Listening)** | 44 題 (17.6%) | **60 題 (20.0%)** | **+16 題 (+36%)** | 選正確回應 `listen-resp` +8 (達18題)、生活對話理解 `listen-conv-qa` +8 (達18題)。 |
+| **字彙 (Vocab)** | 50 題 (20.0%) | **56 題 (18.7%)** | **+6 題 (+12%)** | 聽音選字 `vocab-audio2word` +6 (達14題)，與其餘 3 大字彙子項 (各14題) 完美齊平。 |
+| **閱讀 (Reading)** | 80 題 (32.0%) | **88 題 (29.3%)** | **+8 題 (+10%)** | 是非判斷 `read-truefalse` +4 (達14題齊平)；新增第 7 篇篇章題組《霧臺校園傳統射箭與運動會》(4題)。 |
+| **寫作 (Writing)** | 60 題 (24.0%) | **60 題 (20.0%)** | 0 題 (維持) | 國小十大核心句型重組題庫已達最高完備度（42 答句 + 18 問句）。 |
+| **總計** | **250 題** | **300 題** | **+50 題** | 五大面向配比均勻，全面奠定教育部 Pre-A1 官方模擬測驗標準。 |
+
+### 2. 冊次與主題覆蓋度平衡（國小第 4～8 冊核心主題覆蓋）
+Phase 4 新增之 50 道題目專注強化國小中高年級生活語境，解決了過去題目集中在 1～3 冊生活初階單字的問題：
+- **時間作息與生活習慣 (Book 4)**：`What time do you get up?`, `What time does the movie start?`, `It starts at seven thirty.`
+- **天氣氣象與季節活動 (Book 4, Book 6)**：`weather`, `summer`, `season`, `How's the weather today?`, `It is sunny and hot in Pingtung.`
+- **交通工具與問路指引 (Book 5, Book 6)**：`I go to school by bus.`, `Go straight and turn right at the bank.`, `Turn left at the next corner.`
+- **職業志向與生活場所 (Book 5, Book 6)**：`doctor`, `hospital`, `library`, `What do you want to be?`, `He is an English teacher.`
+- **身體狀況與健康病痛 (Book 6)**：`I have a terrible headache.`, `a sore throat and a high fever`, `stay in bed and rest.`
+- **過去式時態與假日回顧 (Book 7, Book 8)**：`yesterday`, `Where were you yesterday?`, `I was at the library with Amy.`, `We went camping yesterday.`
+- **霧臺校園體育與文化傳承**：篇章 7《Wutai Sports Day & Traditional Archery》（傳統射箭、木弓、箭靶紅心、地瓜派），兼具國際英語力與部落在地認同。
+
+### 3. 多角色對話語音美語防呆機制 (Multi-Character English-Only Guardrail)
+為徹底根絕 Web Speech API 在特定作業系統（如 Windows / macOS / Linux）因語音名稱比對瑕疵誤調用非英語系語音（例如 Daniel 為葡萄牙語 `pt-PT`，Ben 為德語/法語）的嚴重問題：
+1. **英語語系前置強過濾 (`isEnglishVoice`)**：
+   - 全面要求 `(v.lang || '').toLowerCase().startsWith('en')`。
+   - 任何非英語語音在第一道檢驗門檻即被排除，絕不進入候選音色池。
+2. **音色優先順位 (American English First)**：
+   - 優先順位：美式英語 (`en-US`) $\to$ 英式英語 (`en-GB`) $\to$ 通用英語 (`en-*`)。
+3. **角色音色快取與性別輪替 (`voiceObj` Cache & Rotation)**：
+   - 同一對話中，同一角色指派音色後予以快取鎖定，全段對話音色始終保持一致。
+   - 多位同性別角色（如 Dad 與 Boy，或 Mom 與 Girl）依序輪替不同音色。
+4. **人設音調與語速差異化 (Pitch & Rate Modulation)**：
+   - 成年男性（Dad, Doctor）：`pitch: 0.74`（低沉厚實成熟男音）、`rate: 0.88`。
+   - 少年男學生（Tom, Ben, Andy）：`pitch: 1.18`（清亮少年男音）、`rate: 0.94`。
+   - 成年女性（Mom, Teacher）：`pitch: 1.02`（溫和成熟女音）、`rate: 0.88`。
+   - 少女女學生（Lucy, Amy, Girl）：`pitch: 1.25`（清脆靈動少女音）、`rate: 0.92`。
+   - 即便學生設備僅安裝單一系統英語音色，男女老幼角色亦具備立體之辨識度。
+5. **單句朗讀強綁定**：在 `PureMcqExamView.jsx` 中，英文試題朗讀強制選取 `en-US` 語音物件，杜絕未設定 `utter.voice` 導致作業系統預設非英語發音之漏洞。
+
+---
+
+## 七、 本手冊維護與後續章節推進路徑 (Roadmap)
 
 本手冊將隨後續開發，按以下規劃持續推進：
 1. **第柒章：聽力日常溝通問答（L-RESP）與言談理解（L-CONV）關鍵應答句典**

@@ -178,7 +178,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
   // Pre-A1 設定: 'standard' (聽15+閱15) | 'listening' (聽20) | 'reading' (閱20) | 'writing' (寫作重組20)
   const [selectedPreA1Format, setSelectedPreA1Format] = useState('standard');
-  // 正式施測模式 (30題 • 限時35分 • 雙次聽力播音 • 分母250題)
+  // 正式施測模式 (30題 • 限時35分 • 雙次聽力播音 • 分母300題)
   const [isFormalExam, setIsFormalExam] = useState(false);
   const finalizeExamRef = useRef(null);
 
@@ -506,6 +506,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       const utter = new SpeechSynthesisUtterance(clean);
       utter.lang = hasChinese ? 'zh-TW' : 'en-US';
       utter.rate = 0.9;
+      if (!hasChinese && window.speechSynthesis.getVoices) {
+        const voices = window.speechSynthesis.getVoices() || [];
+        const enVoices = voices.filter(v => (v?.lang || '').toLowerCase().replace('_', '-').startsWith('en'));
+        const usVoice = enVoices.find(v => (v?.lang || '').toLowerCase().replace('_', '-').startsWith('en-us')) || enVoices[0];
+        if (usVoice) utter.voice = usVoice;
+      }
       if (repeatTimes > 1) {
         utter.onend = () => {
           setTimeout(() => {
@@ -513,6 +519,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               const utter2 = new SpeechSynthesisUtterance(clean);
               utter2.lang = hasChinese ? 'zh-TW' : 'en-US';
               utter2.rate = 0.9;
+              if (utter.voice) utter2.voice = utter.voice;
               window.speechSynthesis.speak(utter2);
             } catch {}
           }, 2000);
@@ -646,13 +653,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       const tmeTrack = updatedSnap?.tracks?.['tme-preA1'];
       if (tmeTrack) {
         const mCount = tmeTrack.mastered_count || 0;
-        const mRate = Math.round((mCount / (tmeTrack.total_items || 250)) * 100);
+        const mRate = Math.round((mCount / (tmeTrack.total_items || 300)) * 100);
         recordPreA1MasteryLeaderboard({
           grade: currentStudent?.grade,
           name: formatStudentDisplayName(currentStudent),
           studentId: currentSid,
           masteredCount: mCount,
-          totalItems: tmeTrack.total_items || 250,
+          totalItems: tmeTrack.total_items || 300,
           masteryRate: mRate
         }).catch(() => {});
       }
@@ -1494,7 +1501,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           {setupSubView === 'preA1' && (
             <div className="flex flex-col gap-3">
-              {/* 頂部快捷入口：個人精熟診斷卡 & 250 題庫總覽 */}
+              {/* 頂部快捷入口：個人精熟診斷卡 & 300 題庫總覽 */}
               <div className="shrink-0 p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/50 dark:to-indigo-950/50 border border-sky-200 dark:border-sky-800 flex flex-wrap items-center justify-between gap-3 shadow-xs">
                 <div className="flex items-center gap-2.5">
                   <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black shadow-sm shrink-0">
@@ -1502,7 +1509,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   </div>
                   <div>
                     <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span>Test My English 官方 250 全題庫</span>
+                      <span>Test My English 官方 300 全題庫</span>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-200 text-sky-800 dark:bg-sky-900 dark:text-sky-200">
                         五大面向 · 19 子題型
                       </span>

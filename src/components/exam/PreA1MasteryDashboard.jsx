@@ -71,12 +71,12 @@ export const PRE_A1_DASHBOARD_META = [
     label: '字彙專項 (Vocabulary)',
     icon: Layers,
     color: 'emerald',
-    total: 50,
+    total: 56,
     subTypes: [
       { key: 'vocab-word2pic', label: '看字選圖', total: 14, desc: '生活單字對照物品黑白線稿' },
       { key: 'vocab-pic2word', label: '看圖選字', total: 14, desc: '生活物品線稿選正確英文單字' },
       { key: 'vocab-audio2pic', label: '聽音選圖', total: 14, desc: '語音單字對應相符插圖' },
-      { key: 'vocab-audio2word', label: '聽音選字', total: 8, desc: '語音單字辨別正確英文字母拼寫' }
+      { key: 'vocab-audio2word', label: '聽音選字', total: 14, desc: '語音單字辨別正確英文字母拼寫' }
     ]
   },
   {
@@ -84,12 +84,12 @@ export const PRE_A1_DASHBOARD_META = [
     label: '聽力專項 (Listening)',
     icon: Headphones,
     color: 'sky',
-    total: 44,
+    total: 60,
     subTypes: [
       { key: 'listen-pic2sent', label: '看圖選句', total: 12, desc: '情境插圖對應真實日常英文句子' },
       { key: 'listen-dlg2pic', label: '聽對話選圖', total: 12, desc: '男女日常對話選出相符情境圖' },
-      { key: 'listen-resp', label: '選正確回應', total: 10, desc: '聽日常交際問句，選出最適當回應' },
-      { key: 'listen-conv-qa', label: '聽對話答題', total: 10, desc: '聽生活對話情境回答理解選擇題' }
+      { key: 'listen-resp', label: '選正確回應', total: 18, desc: '聽日常交際問句，選出最適當回應' },
+      { key: 'listen-conv-qa', label: '聽對話答題', total: 18, desc: '聽生活對話情境回答理解選擇題' }
     ]
   },
   {
@@ -97,13 +97,13 @@ export const PRE_A1_DASHBOARD_META = [
     label: '閱讀專項 (Reading)',
     icon: BookOpen,
     color: 'indigo',
-    total: 80,
+    total: 88,
     subTypes: [
       { key: 'read-pic2word', label: '看圖選字', total: 14, desc: '生活場所與職業線稿選英文' },
       { key: 'read-pic2sent', label: '看圖選句', total: 14, desc: '生活情境線稿選相符敘述句子' },
-      { key: 'read-truefalse', label: '是非判斷', total: 10, desc: '日常生活短文情境與敘述對照 True/False' },
+      { key: 'read-truefalse', label: '是非判斷', total: 14, desc: '日常生活短文情境與敘述對照 True/False' },
       { key: 'read-cloze', label: '短文填空', total: 18, desc: '校園與在地生活短文空格填詞' },
-      { key: 'read-passage', label: '篇章理解題組', total: 24, desc: '6 大在地與生活篇章 4 題題組' }
+      { key: 'read-passage', label: '篇章理解題組', total: 28, desc: '7 大在地與生活篇章 4 題題組' }
     ]
   },
   {
@@ -122,11 +122,11 @@ export const PRE_A1_DASHBOARD_META = [
     label: '口說專項 (Speaking)',
     icon: Mic,
     color: 'rose',
-    total: 16,
+    total: 36,
     subTypes: [
-      { key: 'speak-word', label: '單字片語朗讀', total: 6, desc: '生活單字與片語發音清晰度' },
-      { key: 'speak-short', label: '短句朗讀', total: 6, desc: '日常問候與問句語調朗讀' },
-      { key: 'speak-long', label: '長句朗讀', total: 4, desc: '生活情境連貫長句斷句與連音' }
+      { key: 'speak-word', label: '單字片語朗讀', total: 12, desc: '生活單字與片語發音清晰度' },
+      { key: 'speak-short', label: '短句朗讀', total: 14, desc: '日常問候與問句語調朗讀' },
+      { key: 'speak-long', label: '長句朗讀', total: 10, desc: '生活情境連貫長句斷句與連音' }
     ]
   }
 ];
@@ -165,16 +165,16 @@ export const PreA1MasteryDashboard = ({
     return res;
   }, [rawItems, filterMode, onlyRecentHalfYear]);
 
-  // 計算全卷 250 題總精熟與涵蓋數據
+  // 計算全卷 300 題總精熟與涵蓋數據
   const overallStats = useMemo(() => {
     const itemsList = Object.values(filteredItems);
     const masteredCount = itemsList.filter((it) => it.status === MASTERY_STATES.MASTERED).length;
     const attemptedCount = itemsList.length;
-    const totalBank = 250;
+    const totalBank = 300;
     // 品質指標：以已挑戰題目計算實質精熟率 (做錯可翻盤，加題不掉星)
     const masteryRate = attemptedCount > 0 ? Math.round((masteredCount / attemptedCount) * 100) : 0;
     const level = getMasteryLevel(masteryRate, attemptedCount);
-    // 開拓指標：以全題庫 250 題計算涵蓋深度 (莫蘭迪五階底色)
+    // 開拓指標：以全題庫 300 題計算涵蓋深度 (莫蘭迪五階底色)
     const coverage = getMorandiCoverageTier(attemptedCount, totalBank);
     return {
       masteredCount,
@@ -331,7 +331,7 @@ export const PreA1MasteryDashboard = ({
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm">
-                全卷 250 題開拓進度：{overallStats.attemptedCount}/250 題 ({overallStats.coverage.rate}% {overallStats.coverage.label})
+                全卷 300 題開拓進度：{overallStats.attemptedCount}/300 題 ({overallStats.coverage.rate}% {overallStats.coverage.label})
               </span>
               <div className="flex items-center gap-1.5 bg-black/20 px-2 py-0.5 rounded-lg">
                 <MasteryStarsDisplay

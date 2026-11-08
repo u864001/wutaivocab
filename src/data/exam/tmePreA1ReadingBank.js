@@ -693,6 +693,74 @@ export const TME_PRE_A1_READING_BANK = [
     "reviewed": true
   },
   {
+    "id": "tme-read-tf-11",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-truefalse",
+    "serialNum": 11,
+    "taskType": "R-TF",
+    "difficulty": 1,
+    "question": "閱讀生活情境：\nGrandpa usually takes the bus to the farmers' market at eight o'clock in the morning.\n\n判斷下列敘述是否相符：\nGrandpa goes to the market by bus. (爺爺搭公車去市場)",
+    "options": [
+      "True (相符)",
+      "False (不符)"
+    ],
+    "answer": 0,
+    "explanation": "文中「takes the bus to the farmers' market」，敘述相符，故選 True。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-tf-12",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-truefalse",
+    "serialNum": 12,
+    "taskType": "R-TF",
+    "difficulty": 2,
+    "question": "閱讀生活情境：\nEmily was sick yesterday. She stayed in bed and drank hot water all day.\n\n判斷下列敘述是否相符：\nEmily played basketball with her classmates yesterday. (Emily 昨天和同學打籃球)",
+    "options": [
+      "True (相符)",
+      "False (不符)"
+    ],
+    "answer": 1,
+    "explanation": "文中寫「Emily was sick yesterday. She stayed in bed...（生病臥床）」，非打籃球，敘述不符，故選 False。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-tf-13",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-truefalse",
+    "serialNum": 13,
+    "taskType": "R-TF",
+    "difficulty": 2,
+    "question": "閱讀生活情境：\nMark wants to be a doctor in the future because he likes helping sick people get well.\n\n判斷下列敘述是否相符：\nMark wants to be a police officer. (Mark 想成為一名警察)",
+    "options": [
+      "True (相符)",
+      "False (不符)"
+    ],
+    "answer": 1,
+    "explanation": "文中寫「Mark wants to be a doctor（醫生）」，非警察，敘述不符，故選 False。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-tf-14",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-truefalse",
+    "serialNum": 14,
+    "taskType": "R-TF",
+    "difficulty": 1,
+    "question": "閱讀生活情境：\nIn summer, it is often sunny and hot in Pingtung. Children love eating cold watermelon after school.\n\n判斷下列敘述是否相符：\nSummer in Pingtung is often sunny and hot. (屏東的夏天經常陽光明媚且炎熱)",
+    "options": [
+      "True (相符)",
+      "False (不符)"
+    ],
+    "answer": 0,
+    "explanation": "文中「it is often sunny and hot in Pingtung」，敘述相符，故選 True。",
+    "reviewed": true
+  },
+  {
     "id": "tme-read-cloze-07",
     "track": "tme-preA1",
     "category": "reading",
@@ -1366,6 +1434,102 @@ export const TME_PRE_A1_READING_BANK = [
     ],
     "answer": 0,
     "explanation": "冬天段落「People wear warm sweaters, coats, and scarves when they go outside.」，穿著毛衣、外套與圍巾，故選 (A)。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p07-01",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-passage",
+    "serialNum": 1,
+    "taskType": "R-COMP",
+    "difficulty": 1,
+    "groupId": "tme-read-g07",
+    "passage": {
+      "title": "【霧臺校園與傳統體育】Wutai Sports Day & Traditional Archery",
+      "text": "Every November, Wutai Elementary School holds a wonderful sports day.\nAll the students wear their tribe sports clothes and gather on the green school field.\nThere are many exciting games: the 100-meter race, tug-of-war, and traditional archery.\nArchery is a proud tradition of the Rukai people. Students use wooden bows and arrows to shoot at round targets.\nKavalu, a brave boy in Grade 5, hits the center of the yellow target and wins first prize!\nEveryone claps their hands happily and eats delicious sweet potato pies together.\n\n* sports day: 運動會\n* archery: 傳統射箭\n* bow and arrow: 弓與箭\n* target: 箭靶\n* tug-of-war: 拔河\n* prize: 獎品 / 獎項"
+    },
+    "question": "When does Wutai Elementary School hold its sports day?",
+    "options": [
+      "In November",
+      "In July",
+      "In March",
+      "In January"
+    ],
+    "answer": 0,
+    "explanation": "第一句「Every November, Wutai Elementary School holds a wonderful sports day.」，故選 (A) In November。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p07-02",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-passage",
+    "serialNum": 2,
+    "taskType": "R-COMP",
+    "difficulty": 1,
+    "groupId": "tme-read-g07",
+    "passage": {
+      "title": "【霧臺校園與傳統體育】Wutai Sports Day & Traditional Archery",
+      "text": "Every November, Wutai Elementary School holds a wonderful sports day.\nAll the students wear their tribe sports clothes and gather on the green school field.\nThere are many exciting games: the 100-meter race, tug-of-war, and traditional archery.\nArchery is a proud tradition of the Rukai people. Students use wooden bows and arrows to shoot at round targets.\nKavalu, a brave boy in Grade 5, hits the center of the yellow target and wins first prize!\nEveryone claps their hands happily and eats delicious sweet potato pies together.\n\n* sports day: 運動會\n* archery: 傳統射箭\n* bow and arrow: 弓與箭\n* target: 箭靶\n* tug-of-war: 拔河\n* prize: 獎品 / 獎項"
+    },
+    "question": "What traditional game do the students play on sports day?",
+    "options": [
+      "Traditional archery",
+      "Ice hockey",
+      "Surfing in the ocean",
+      "Skiing on snow"
+    ],
+    "answer": 0,
+    "explanation": "文中提到「tug-of-war, and traditional archery（拔河與傳統射箭）」，故選 (A) Traditional archery。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p07-03",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-passage",
+    "serialNum": 3,
+    "taskType": "R-COMP",
+    "difficulty": 1,
+    "groupId": "tme-read-g07",
+    "passage": {
+      "title": "【霧臺校園與傳統體育】Wutai Sports Day & Traditional Archery",
+      "text": "Every November, Wutai Elementary School holds a wonderful sports day.\nAll the students wear their tribe sports clothes and gather on the green school field.\nThere are many exciting games: the 100-meter race, tug-of-war, and traditional archery.\nArchery is a proud tradition of the Rukai people. Students use wooden bows and arrows to shoot at round targets.\nKavalu, a brave boy in Grade 5, hits the center of the yellow target and wins first prize!\nEveryone claps their hands happily and eats delicious sweet potato pies together.\n\n* sports day: 運動會\n* archery: 傳統射箭\n* bow and arrow: 弓與箭\n* target: 箭靶\n* tug-of-war: 拔河\n* prize: 獎品 / 獎項"
+    },
+    "question": "What does Kavalu hit to win first prize?",
+    "options": [
+      "The center of the target",
+      "A flying bird",
+      "A tall tree",
+      "The school gate"
+    ],
+    "answer": 0,
+    "explanation": "文中「hits the center of the yellow target and wins first prize!」，命中箭靶紅心，故選 (A)。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p07-04",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-passage",
+    "serialNum": 4,
+    "taskType": "R-COMP",
+    "difficulty": 1,
+    "groupId": "tme-read-g07",
+    "passage": {
+      "title": "【霧臺校園與傳統體育】Wutai Sports Day & Traditional Archery",
+      "text": "Every November, Wutai Elementary School holds a wonderful sports day.\nAll the students wear their tribe sports clothes and gather on the green school field.\nThere are many exciting games: the 100-meter race, tug-of-war, and traditional archery.\nArchery is a proud tradition of the Rukai people. Students use wooden bows and arrows to shoot at round targets.\nKavalu, a brave boy in Grade 5, hits the center of the yellow target and wins first prize!\nEveryone claps their hands happily and eats delicious sweet potato pies together.\n\n* sports day: 運動會\n* archery: 傳統射箭\n* bow and arrow: 弓與箭\n* target: 箭靶\n* tug-of-war: 拔河\n* prize: 獎品 / 獎項"
+    },
+    "question": "What do the students eat happily together after the games?",
+    "options": [
+      "Sweet potato pies",
+      "Chocolate ice cream",
+      "Spaghetti",
+      "Hamburgers and fries"
+    ],
+    "answer": 0,
+    "explanation": "最後一句「eats delicious sweet potato pies together」，吃美味地瓜派，故選 (A)。",
     "reviewed": true
   },
   {

@@ -125,7 +125,7 @@ export const TeacherMasteryAnalytics = ({ onStartDrillForStudent }) => {
       const cloudRecord = cloudMasteryScores.get(prof.nickname || prof.name);
       let masteredCount = tmeTrack?.mastered_count || (cloudRecord?.masteredCount || 0);
       let attemptedCount = tmeTrack?.attempted_count || (masteredCount > 0 ? masteredCount : 0);
-      const totalBank = 250;
+      const totalBank = 300;
       let masteryRate = Math.round((masteredCount / totalBank) * 100);
 
       // 五大面向分項統計
@@ -300,7 +300,7 @@ export const TeacherMasteryAnalytics = ({ onStartDrillForStudent }) => {
             <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span>Test My English Pre-A1 官方精熟評量分析</span>
               <span className="text-xs px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 dark:bg-sky-900/60 dark:text-sky-200 font-bold">
-                全卷 250 題五大面向
+                全卷 300 題五大面向
               </span>
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -366,7 +366,7 @@ export const TeacherMasteryAnalytics = ({ onStartDrillForStudent }) => {
             </span>
           </div>
           <div className="text-[11px] text-slate-400">
-            固定分母 250 題真實覆蓋率
+            固定分母 300 題真實覆蓋率
           </div>
         </div>
 
@@ -602,7 +602,7 @@ export const TeacherMasteryAnalytics = ({ onStartDrillForStudent }) => {
                     </span>
                   </h3>
                   <div className="text-xs text-sky-100 mt-0.5">
-                    Pre-A1 全卷 250 題 · 19 子題型動態滾動精熟履歷
+                    Pre-A1 全卷 300 題 · 19 子題型動態滾動精熟履歷
                   </div>
                 </div>
               </div>

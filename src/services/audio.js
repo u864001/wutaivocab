@@ -128,8 +128,15 @@ export const PERSONAS = {
   }
 };
 
+// 判斷是否為通用英語語系 (強制杜絕葡語、法語、德語等非英語混入)
+export const isEnglishVoice = (v) => {
+  const lang = (v?.lang || '').toLowerCase().replace('_', '-');
+  return lang.startsWith('en');
+};
+
 const isExplicitMale = (v) => {
-  const name = (v.name || '').toLowerCase();
+  if (!isEnglishVoice(v)) return false;
+  const name = (v?.name || '').toLowerCase();
   const femaleSignals = [
     'female', 'woman', 'girl', 'zira', 'jenny', 'samantha', 'aria', 'hazel', 
     'victoria', 'karen', 'linda', 'anna', 'michelle', 'ana', 'ava', 'emma', 
@@ -147,7 +154,8 @@ const isExplicitMale = (v) => {
 };
 
 const isExplicitFemale = (v) => {
-  const name = (v.name || '').toLowerCase();
+  if (!isEnglishVoice(v)) return false;
+  const name = (v?.name || '').toLowerCase();
   const maleSignals = [
     'david', 'guy', 'mark', 'christopher', 'eric', 'roger', 'steffan', 
     'alex', 'fred', 'daniel', 'george', 'oliver', 'tom', 'aaron', 'bruce', 
@@ -206,10 +214,15 @@ class VoiceManager {
     if (!this.voices || this.voices.length === 0) return null;
 
     const isTargetEnglish = !persona.lang || persona.lang.toLowerCase().startsWith('en');
-    const englishVoices = this.voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+    const englishVoices = this.voices.filter(v => isEnglishVoice(v));
 
-    // 若目標語系為英語，強制只從英文語音池篩選，嚴禁退回本地非英語系（如中文）
-    const pool = isTargetEnglish ? englishVoices : this.voices;
+    // 依目標口音分流 (如 en-US 美語優先、en-GB 次之)，嚴防退回本地非英語系（如中文、葡語）
+    const targetLang = (persona.lang || 'en-US').toLowerCase().replace('_', '-');
+    const targetLangVoices = englishVoices.filter(v => (v?.lang || '').toLowerCase().replace('_', '-').startsWith(targetLang));
+    const fallbackEnVoices = englishVoices.filter(v => !(v?.lang || '').toLowerCase().replace('_', '-').startsWith(targetLang));
+    const sortedEnglishPool = [...targetLangVoices, ...fallbackEnVoices];
+
+    const pool = isTargetEnglish ? sortedEnglishPool : this.voices;
     if (pool.length === 0) {
       return null;
     }

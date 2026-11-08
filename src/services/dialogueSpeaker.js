@@ -8,15 +8,22 @@
 
 import { soundEngine } from './audio';
 
-// 判斷是否為美語發音 (en-US)
+// 判斷是否為通用英語語系 (強制杜絕葡語、法語、德語等非英語混入)
+const isEnglishVoice = (v) => {
+  const lang = (v?.lang || '').toLowerCase().replace('_', '-');
+  return lang.startsWith('en');
+};
+
+// 判斷是否為美式英語 (en-US)
 const isAmericanEnglish = (v) => {
-  const lang = (v.lang || '').toLowerCase().replace('_', '-');
+  const lang = (v?.lang || '').toLowerCase().replace('_', '-');
   return lang.startsWith('en-us');
 };
 
-// 判斷是否為明確男性音色
+// 判斷是否為明確男性音色（強制必須為英語系語音！）
 const isExplicitMale = (v) => {
-  const name = (v.name || '').toLowerCase();
+  if (!isEnglishVoice(v)) return false;
+  const name = (v?.name || '').toLowerCase();
   const femaleSignals = [
     'female', 'woman', 'girl', 'zira', 'jenny', 'samantha', 'aria', 'hazel', 
     'victoria', 'karen', 'linda', 'anna', 'michelle', 'ana', 'ava', 'emma', 
@@ -33,9 +40,10 @@ const isExplicitMale = (v) => {
   return maleSignals.some(m => name.includes(m));
 };
 
-// 判斷是否為明確女性音色
+// 判斷是否為明確女性音色（強制必須為英語系語音！）
 const isExplicitFemale = (v) => {
-  const name = (v.name || '').toLowerCase();
+  if (!isEnglishVoice(v)) return false;
+  const name = (v?.name || '').toLowerCase();
   const maleSignals = [
     'david', 'guy', 'mark', 'christopher', 'eric', 'roger', 'steffan', 
     'alex', 'fred', 'daniel', 'george', 'oliver', 'tom', 'aaron', 'bruce', 
@@ -183,35 +191,45 @@ class DialoguePlayer {
   getVoices() {
     if (typeof window === 'undefined' || !window.speechSynthesis) return [];
     const all = window.speechSynthesis.getVoices() || [];
-    // 優先美語 en-US，其餘 en 語系次之
-    const enVoices = all.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+    // 強制只篩選英語發音！嚴防葡萄牙語、法語、德語等非英語音混入！
+    const enVoices = all.filter(v => isEnglishVoice(v));
+    // 優先美式英語 (en-US)，次優先英式英語 (en-GB)，再其餘英文
     const usVoices = enVoices.filter(v => isAmericanEnglish(v));
-    const nonUsVoices = enVoices.filter(v => !isAmericanEnglish(v));
-    return [...usVoices, ...nonUsVoices];
+    const gbVoices = enVoices.filter(v => (v.lang || '').toLowerCase().replace('_', '-').startsWith('en-gb'));
+    const nonUsVoices = enVoices.filter(v => !isAmericanEnglish(v) && !(v.lang || '').toLowerCase().replace('_', '-').startsWith('en-gb'));
+    return [...usVoices, ...gbVoices, ...nonUsVoices];
   }
 
   resolveVoiceForTurn(turn, voices, speakerHistory = {}) {
     if (!voices || voices.length === 0) return null;
+
+    // 若同一對話中該角色之前已指派過音色，直接沿用保持角色聲音一致性
+    if (speakerHistory[turn.speaker]?.voiceObj) {
+      return speakerHistory[turn.speaker].voiceObj;
+    }
 
     // 優先從美語列表中尋找
     const candidateVoices = voices;
 
     if (turn.gender === 'female') {
       const femaleVoices = candidateVoices.filter(v => isExplicitFemale(v));
-      if (femaleVoices.length > 0) {
-        // 若有不同女性，輪替音色
-        const idx = Object.keys(speakerHistory).filter(k => speakerHistory[k]?.gender === 'female').length;
-        return femaleVoices[idx % femaleVoices.length];
-      }
+      const pool = femaleVoices.length > 0 ? femaleVoices : candidateVoices;
+      const assignedCount = Object.keys(speakerHistory).filter(k => speakerHistory[k]?.gender === 'female').length;
+      return pool[assignedCount % pool.length];
     } else if (turn.gender === 'male') {
       const maleVoices = candidateVoices.filter(v => isExplicitMale(v));
-      if (maleVoices.length > 0) {
-        // 大人優先第一音色（如 David），少年/小孩優先第二音色（如 Mark / Guy / Alex）
-        if (turn.role === 'adult-male') {
-          return maleVoices[0];
-        } else {
-          return maleVoices.length > 1 ? maleVoices[1] : maleVoices[0];
+      const pool = maleVoices.length > 0 ? maleVoices : candidateVoices;
+      const assignedCount = Object.keys(speakerHistory).filter(k => speakerHistory[k]?.gender === 'male').length;
+
+      if (turn.role === 'adult-male') {
+        // 大人優先第一音色（如 David）
+        return pool[0];
+      } else {
+        // 少年/小孩（如 Tom, Ben, Andy）若有多個音色，優先指派第二音色或依序輪替
+        if (pool.length > 1) {
+          return pool[(assignedCount % (pool.length - 1)) + 1];
         }
+        return pool[0];
       }
     } else {
       // 考官/旁白：優先自然流暢的美式音色
@@ -285,7 +303,7 @@ class DialoguePlayer {
       const voice = this.resolveVoiceForTurn(turn, voices, speakerHistory);
       if (voice) {
         utterance.voice = voice;
-        speakerHistory[turn.speaker] = { voice: voice.name, gender: turn.gender, role: turn.role };
+        speakerHistory[turn.speaker] = { voice: voice.name, voiceObj: voice, gender: turn.gender, role: turn.role };
       }
 
       // 關鍵人設音調與語速差異化（即便系統只有單一音色，也能立體區隔爸爸與小孩）

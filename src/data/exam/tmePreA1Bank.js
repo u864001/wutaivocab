@@ -1,14 +1,14 @@
 import { TME_PRE_A1_READING_BANK } from './tmePreA1ReadingBank.js';
 /**
- * Test My English Pre-A1 官方模擬題庫 (Phase 3 擴充版 - 整合國小十大核心句型重組題庫)
+ * Test My English Pre-A1 官方模擬題庫 (Phase 4 平衡擴充版 - 強化口說、聽力與中高年級生活情境)
  *
  * 涵蓋 Pre-A1 五大面向：
- * 1. 字彙 (vocab): 看字選圖 (14)、看圖選字 (14)、聽音選圖 (14)、聽音選字 (8) [共 50 題]
- * 2. 聽力 (listening): 看圖選句 (12)、聽對話選圖 (12)、選正確回應 (10)、聽對話答題 (10) [共 44 題]
- * 3. 閱讀 (reading): 看圖選字 (14)、看圖選句 (14)、是非判斷 (10)、短文填空 (18)、篇章閱讀理解 (24) [共 80 題]
+ * 1. 字彙 (vocab): 看字選圖 (14)、看圖選字 (14)、聽音選圖 (14)、聽音選字 (14) [共 56 題]
+ * 2. 聽力 (listening): 看圖選句 (12)、聽對話選圖 (12)、選正確回應 (18)、聽對話答題 (18) [共 60 題]
+ * 3. 閱讀 (reading): 看圖選字 (14)、看圖選句 (14)、是非判斷 (14)、短文填空 (18)、篇章閱讀理解 (28) [共 88 題]
  * 4. 寫作 (writing): 國小十大核心句型重組題庫 (各句型 6 題，共 60 題，立體磁吸積木) [共 60 題]
- * 5. 口說 (speaking): 單字朗讀 (6)、短句朗讀 (6)、長句朗讀 (4) [共 16 題]
- * 總計 250 題。
+ * 5. 口說 (speaking): 單字朗讀 (12)、短句朗讀 (14)、長句朗讀 (10) [共 36 題]
+ * 總計 300 題。
  *
  * 架構規範：
  * - 選擇題正解固定在 options[0] (A)，組卷時由學生端引擎自動執行 Fisher-Yates 隨機洗牌
@@ -1618,6 +1618,150 @@ const NON_WRITING_ITEMS = [
     "reviewed": true
   },
   {
+    "id": "tme-vocab-a2w-09",
+    "track": "tme-preA1",
+    "category": "vocab",
+    "subType": "vocab-audio2word",
+    "serialNum": 9,
+    "taskType": "L-WORD",
+    "difficulty": 2,
+    "media": {
+      "audioText": "doctor"
+    },
+    "question": "請聽語音，選出拼寫正確的職業單字：",
+    "options": [
+      "doctor",
+      "docter",
+      "doctur",
+      "docktor",
+      "dactor",
+      "doktor"
+    ],
+    "answer": 0,
+    "explanation": "聽力發音為「doctor（醫生）」，正確拼字為 d-o-c-t-o-r。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-vocab-a2w-10",
+    "track": "tme-preA1",
+    "category": "vocab",
+    "subType": "vocab-audio2word",
+    "serialNum": 10,
+    "taskType": "L-WORD",
+    "difficulty": 2,
+    "media": {
+      "audioText": "library"
+    },
+    "question": "請聽語音，選出拼寫正確的場所單字：",
+    "options": [
+      "library",
+      "libary",
+      "libreary",
+      "liblary",
+      "libery",
+      "lybrary"
+    ],
+    "answer": 0,
+    "explanation": "聽力發音為「library（圖書館）」，正確拼字為 l-i-b-r-a-r-y。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-vocab-a2w-11",
+    "track": "tme-preA1",
+    "category": "vocab",
+    "subType": "vocab-audio2word",
+    "serialNum": 11,
+    "taskType": "L-WORD",
+    "difficulty": 1,
+    "media": {
+      "audioText": "weather"
+    },
+    "question": "請聽語音，選出拼寫正確的氣象單字：",
+    "options": [
+      "weather",
+      "wether",
+      "waether",
+      "wheather",
+      "weathur",
+      "wezer"
+    ],
+    "answer": 0,
+    "explanation": "聽力發音為「weather（天氣）」，正確拼字為 w-e-a-t-h-e-r。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-vocab-a2w-12",
+    "track": "tme-preA1",
+    "category": "vocab",
+    "subType": "vocab-audio2word",
+    "serialNum": 12,
+    "taskType": "L-WORD",
+    "difficulty": 1,
+    "media": {
+      "audioText": "summer"
+    },
+    "question": "請聽語音，選出拼寫正確的季節單字：",
+    "options": [
+      "summer",
+      "sumer",
+      "sammer",
+      "summor",
+      "summerr",
+      "sommer"
+    ],
+    "answer": 0,
+    "explanation": "聽力發音為「summer（夏天）」，正確拼字為 s-u-m-m-e-r。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-vocab-a2w-13",
+    "track": "tme-preA1",
+    "category": "vocab",
+    "subType": "vocab-audio2word",
+    "serialNum": 13,
+    "taskType": "L-WORD",
+    "difficulty": 2,
+    "media": {
+      "audioText": "season"
+    },
+    "question": "請聽語音，選出拼寫正確的時間季節單字：",
+    "options": [
+      "season",
+      "seson",
+      "seezon",
+      "seasen",
+      "ceason",
+      "seison"
+    ],
+    "answer": 0,
+    "explanation": "聽力發音為「season（季節）」，正確拼字為 s-e-a-s-o-n。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-vocab-a2w-14",
+    "track": "tme-preA1",
+    "category": "vocab",
+    "subType": "vocab-audio2word",
+    "serialNum": 14,
+    "taskType": "L-WORD",
+    "difficulty": 2,
+    "media": {
+      "audioText": "pocket"
+    },
+    "question": "請聽語音，選出拼寫正確的衣物部件單字：",
+    "options": [
+      "pocket",
+      "poket",
+      "pocet",
+      "pockit",
+      "pucket",
+      "pockt"
+    ],
+    "answer": 0,
+    "explanation": "聽力發音為「pocket（口袋）」，正確拼字為 p-o-c-k-e-t。",
+    "reviewed": true
+  },
+  {
     "id": "tme-listen-p2s-02",
     "track": "tme-preA1",
     "category": "listening",
@@ -2064,6 +2208,198 @@ const NON_WRITING_ITEMS = [
     "reviewed": true
   },
   {
+    "id": "tme-listen-resp-11",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-resp",
+    "serialNum": 11,
+    "taskType": "L-QA",
+    "difficulty": 1,
+    "media": {
+      "audioText": "How do you go to school every morning, Peter?"
+    },
+    "question": "請聽日常問句，選出最適當的回應句子：",
+    "options": [
+      "I go to school by bike.",
+      "I like apples very much.",
+      "It is ten o'clock.",
+      "He is my teacher.",
+      "Yes, I am.",
+      "She is at home."
+    ],
+    "answer": 0,
+    "explanation": "詢問上學交通方式「How do you go to school...」，最適當回答為「I go to school by bike.（我騎腳踏車上學）」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-resp-12",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-resp",
+    "serialNum": 12,
+    "taskType": "L-QA",
+    "difficulty": 2,
+    "media": {
+      "audioText": "What time does the movie start tonight?"
+    },
+    "question": "請聽日常問句，選出最適當的回應句子：",
+    "options": [
+      "It starts at seven thirty.",
+      "It is a good pencil.",
+      "I am ten years old.",
+      "She is singing a song.",
+      "No, it isn't.",
+      "They are in the park."
+    ],
+    "answer": 0,
+    "explanation": "詢問電影幾點開始「What time does the movie start...」，最適當回答為「It starts at seven thirty.（七點半開始）」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-resp-13",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-resp",
+    "serialNum": 13,
+    "taskType": "L-QA",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Where were you yesterday afternoon, Lisa?"
+    },
+    "question": "請聽日常問句，選出最適當的回應句子：",
+    "options": [
+      "I was at the library with Amy.",
+      "I want an ice cream.",
+      "It is sunny today.",
+      "Yes, she is my friend.",
+      "I have three dogs.",
+      "Tomorrow is Friday."
+    ],
+    "answer": 0,
+    "explanation": "詢問昨天下午人在何處「Where were you yesterday...」，最適當回答為過去式「I was at the library with Amy.（我和 Amy 在圖書館）」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-resp-14",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-resp",
+    "serialNum": 14,
+    "taskType": "L-QA",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Excuse me, where is the nearest hospital?"
+    },
+    "question": "請聽日常問句，選出最適當的回應句子：",
+    "options": [
+      "Go straight and turn right at the bank.",
+      "I have a headache.",
+      "He is a great doctor.",
+      "Yes, it is very big.",
+      "I like hamburgers.",
+      "No, thank you."
+    ],
+    "answer": 0,
+    "explanation": "問路詢問醫院在哪裡「where is the nearest hospital」，最適當回答指引方向「Go straight and turn right at the bank.（直走並在銀行右轉）」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-resp-15",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-resp",
+    "serialNum": 15,
+    "taskType": "L-QA",
+    "difficulty": 1,
+    "media": {
+      "audioText": "What do you do on weekends, Tom?"
+    },
+    "question": "請聽日常問句，選出最適當的回應句子：",
+    "options": [
+      "I often play soccer with my friends.",
+      "My name is Tom.",
+      "I am twelve years old.",
+      "It is a sunny Sunday.",
+      "She is my mother.",
+      "There are five books."
+    ],
+    "answer": 0,
+    "explanation": "詢問週末休閒活動「What do you do on weekends...」，最適當回答為「I often play soccer with my friends.（我常和朋友踢足球）」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-resp-16",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-resp",
+    "serialNum": 16,
+    "taskType": "L-QA",
+    "difficulty": 1,
+    "media": {
+      "audioText": "May I borrow your ruler, please?"
+    },
+    "question": "請聽日常請求，選出最適當的回應句子：",
+    "options": [
+      "Sure, here you are.",
+      "You are welcome.",
+      "I don't know him.",
+      "Nice to meet you.",
+      "Goodbye, see you.",
+      "It is my cat."
+    ],
+    "answer": 0,
+    "explanation": "禮貌借文具「May I borrow your ruler...」，出借時回答「Sure, here you are.（當然，拿去吧）」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-resp-17",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-resp",
+    "serialNum": 17,
+    "taskType": "L-QA",
+    "difficulty": 2,
+    "media": {
+      "audioText": "What does your father do, Kevin?"
+    },
+    "question": "請聽日常問句，選出最適當的回應句子：",
+    "options": [
+      "He is an English teacher.",
+      "He likes playing baseball.",
+      "He is forty years old.",
+      "He is at home now.",
+      "Yes, he does.",
+      "He has a black car."
+    ],
+    "answer": 0,
+    "explanation": "詢問父親職業「What does your father do...」，回答職業「He is an English teacher.（他是一位英文老師）」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-resp-18",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-resp",
+    "serialNum": 18,
+    "taskType": "L-QA",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Whose jacket is this on the chair?"
+    },
+    "question": "請聽日常問句，選出最適當的回應句子：",
+    "options": [
+      "It is Kelly's jacket.",
+      "It is blue and warm.",
+      "I wear a coat.",
+      "He is tall and strong.",
+      "Yes, it is mine jacket.",
+      "Under the chair."
+    ],
+    "answer": 0,
+    "explanation": "詢問外套是誰的「Whose jacket is this...」，所有格回答「It is Kelly's jacket.（這是 Kelly 的外套）」。",
+    "reviewed": true
+  },
+  {
     "id": "tme-listen-qa-07",
     "track": "tme-preA1",
     "category": "listening",
@@ -2157,6 +2493,198 @@ const NON_WRITING_ITEMS = [
 ],
     "answer": 0,
     "explanation": "Tom 回答「I am making a chocolate cake for Mom」，故選 (A) Making a chocolate cake。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-qa-11",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-conv-qa",
+    "serialNum": 11,
+    "taskType": "L-CONV",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Boy: What's the matter with you, Lucy? Girl: I have a bad stomachache, so I can't eat lunch. Question: Why can't Lucy eat lunch?"
+    },
+    "question": "聽對話，回答問題：Why can't Lucy eat lunch?",
+    "options": [
+      "She has a bad stomachache.",
+      "She lost her lunchbox.",
+      "She is not hungry.",
+      "She is playing basketball.",
+      "She is at home.",
+      "She doesn't like apples."
+    ],
+    "answer": 0,
+    "explanation": "Lucy 說「I have a bad stomachache（我胃痛得很厲害）」，故選 (A)。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-qa-12",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-conv-qa",
+    "serialNum": 12,
+    "taskType": "L-CONV",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Man: Where are you going this weekend, Mrs. Lin? Woman: I am taking my children to Wutai to visit the slate houses. Question: Where is Mrs. Lin going this weekend?"
+    },
+    "question": "聽對話，回答問題：Where is Mrs. Lin going this weekend?",
+    "options": [
+      "To Wutai to visit slate houses",
+      "To the cinema to watch a movie",
+      "To the supermarket to buy milk",
+      "To the beach to go swimming",
+      "To the hospital to see a doctor",
+      "To the library to study English"
+    ],
+    "answer": 0,
+    "explanation": "Mrs. Lin 回答要去霧臺參觀石板屋「taking my children to Wutai to visit the slate houses」，故選 (A)。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-qa-13",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-conv-qa",
+    "serialNum": 13,
+    "taskType": "L-CONV",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Mom: Tom, please turn off the TV. It is time for bed. Tom: Okay, Mom. Good night! Question: What should Tom do now?"
+    },
+    "question": "聽對話，回答問題：What should Tom do now?",
+    "options": [
+      "Turn off the TV and go to bed",
+      "Eat his dinner in the kitchen",
+      "Do his English homework",
+      "Play computer games",
+      "Clean up his bedroom",
+      "Call his friend Peter"
+    ],
+    "answer": 0,
+    "explanation": "媽媽提醒該關電視睡覺「turn off the TV. It is time for bed」，故選 (A)。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-qa-14",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-conv-qa",
+    "serialNum": 14,
+    "taskType": "L-CONV",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Doctor: How can I help you today, Peter? Boy: I have a sore throat and a high fever, Dr. Owl. Question: What symptoms does Peter have?"
+    },
+    "question": "聽對話，回答問題：What symptoms does Peter have?",
+    "options": [
+      "A sore throat and a high fever",
+      "A broken leg",
+      "A toothache and a runny nose",
+      "An earache",
+      "He feels hungry",
+      "He has a stomachache"
+    ],
+    "answer": 0,
+    "explanation": "Peter 描述症狀「a sore throat and a high fever（喉嚨痛且發高燒）」，故選 (A)。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-qa-15",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-conv-qa",
+    "serialNum": 15,
+    "taskType": "L-CONV",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Girl: Which subject do you like best, Andy? Boy: I love science because we do fun experiments in the lab. Question: Which subject does Andy like best?"
+    },
+    "question": "聽對話，回答問題：Which subject does Andy like best?",
+    "options": [
+      "Science",
+      "Art",
+      "Music",
+      "Math",
+      "PE",
+      "History"
+    ],
+    "answer": 0,
+    "explanation": "Andy 回答最喜歡自然科學「I love science」，故選 (A) Science。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-qa-16",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-conv-qa",
+    "serialNum": 16,
+    "taskType": "L-CONV",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Woman: Welcome to Bear Supermarket. Can I help you? Man: Yes, please. I am looking for fresh milk and eggs. Question: What does the man want to buy?"
+    },
+    "question": "聽對話，回答問題：What does the man want to buy?",
+    "options": [
+      "Fresh milk and eggs",
+      "Bananas and apples",
+      "Bread and butter",
+      "Juice and candy",
+      "Fish and rice",
+      "Tea and coffee"
+    ],
+    "answer": 0,
+    "explanation": "男子要買鮮奶與雞蛋「looking for fresh milk and eggs」，故選 (A)。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-qa-17",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-conv-qa",
+    "serialNum": 17,
+    "taskType": "L-CONV",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Boy: Amy, do you want to play badminton with me after school? Girl: I'd love to, but I have a piano lesson at four thirty. Question: Why can't Amy play badminton?"
+    },
+    "question": "聽對話，回答問題：Why can't Amy play badminton?",
+    "options": [
+      "She has a piano lesson at four thirty.",
+      "She has too much homework.",
+      "She doesn't like badminton.",
+      "She is sick in bed.",
+      "She forgot her sports shoes.",
+      "She has to help her mother."
+    ],
+    "answer": 0,
+    "explanation": "Amy 說明原因「I have a piano lesson at four thirty（四點半有鋼琴課）」，故選 (A)。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-listen-qa-18",
+    "track": "tme-preA1",
+    "category": "listening",
+    "subType": "listen-conv-qa",
+    "serialNum": 18,
+    "taskType": "L-CONV",
+    "difficulty": 2,
+    "media": {
+      "audioText": "Girl: Did you go to the summer camp in Hualien yesterday, David? Boy: Yes, I took the train there with my family. Question: How did David go to Hualien?"
+    },
+    "question": "聽對話，回答問題：How did David go to Hualien?",
+    "options": [
+      "By train",
+      "By bus",
+      "By bicycle",
+      "By airplane",
+      "By boat",
+      "On foot"
+    ],
+    "answer": 0,
+    "explanation": "David 回答「I took the train there（搭火車去）」，故選 (A) By train。",
     "reviewed": true
   },
   {
@@ -2867,8 +3395,347 @@ const NON_WRITING_ITEMS = [
     "answer": 0,
     "explanation": "長句朗讀評測標的，注意 remember 與 umbrella 之連音與語調。",
     "reviewed": true
-  }
-,
+  },
+  {
+    "id": "tme-speak-w-07",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-word",
+    "serialNum": 7,
+    "taskType": "S-READ",
+    "difficulty": 1,
+    "targetText": "doctor",
+    "question": "【口說：單字朗讀】請點擊麥克風，清晰朗讀出下列英文單字：",
+    "options": [
+      "doctor"
+    ],
+    "answer": 0,
+    "explanation": "標的單字為「doctor（醫生）」，注意雙音節重音。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-w-08",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-word",
+    "serialNum": 8,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "library",
+    "question": "【口說：單字朗讀】請點擊麥克風，清晰朗讀出下列英文單字：",
+    "options": [
+      "library"
+    ],
+    "answer": 0,
+    "explanation": "標的單字為「library（圖書館）」，注意 li-brar-y 發音節奏。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-w-09",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-word",
+    "serialNum": 9,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "hospital",
+    "question": "【口說：單字朗讀】請點擊麥克風，清晰朗讀出下列英文單字：",
+    "options": [
+      "hospital"
+    ],
+    "answer": 0,
+    "explanation": "標的單字為「hospital（醫院）」，注意 hos-pi-tal 發音。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-w-10",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-word",
+    "serialNum": 10,
+    "taskType": "S-READ",
+    "difficulty": 1,
+    "targetText": "weather",
+    "question": "【口說：單字朗讀】請點擊麥克風，清晰朗讀出下列英文單字：",
+    "options": [
+      "weather"
+    ],
+    "answer": 0,
+    "explanation": "標的單字為「weather（天氣）」，注意 th 有聲咬舌發音。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-w-11",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-word",
+    "serialNum": 11,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "yesterday",
+    "question": "【口說：單字朗讀】請點擊麥克風，清晰朗讀出下列英文單字：",
+    "options": [
+      "yesterday"
+    ],
+    "answer": 0,
+    "explanation": "標的單字為「yesterday（昨天）」，注意 yes-ter-day 三音節發音。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-w-12",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-word",
+    "serialNum": 12,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "delicious",
+    "question": "【口說：單字朗讀】請點擊麥克風，清晰朗讀出下列英文單字：",
+    "options": [
+      "delicious"
+    ],
+    "answer": 0,
+    "explanation": "標的單字為「delicious（好吃的、美味的）」，注意 cious 發 /ʃəs/ 音。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-s-07",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-short",
+    "serialNum": 7,
+    "taskType": "S-READ",
+    "difficulty": 1,
+    "targetText": "What time do you get up?",
+    "question": "【口說：短句朗讀】請點擊麥克風，流暢朗讀出下列英文短句：",
+    "options": [
+      "What time do you get up?"
+    ],
+    "answer": 0,
+    "explanation": "標的短句為「What time do you get up?（你幾點起床？）」，日常時間句型。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-s-08",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-short",
+    "serialNum": 8,
+    "taskType": "S-READ",
+    "difficulty": 1,
+    "targetText": "How's the weather today?",
+    "question": "【口說：短句朗讀】請點擊麥克風，流暢朗讀出下列英文短句：",
+    "options": [
+      "How's the weather today?"
+    ],
+    "answer": 0,
+    "explanation": "標的短句為「How's the weather today?（今天天氣如何？）」，氣象基本句型。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-s-09",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-short",
+    "serialNum": 9,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "I go to school by bus.",
+    "question": "【口說：短句朗讀】請點擊麥克風，流暢朗讀出下列英文短句：",
+    "options": [
+      "I go to school by bus."
+    ],
+    "answer": 0,
+    "explanation": "標的短句為「I go to school by bus.（我搭公車上學）」，交通工具句型。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-s-10",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-short",
+    "serialNum": 10,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "Where were you yesterday?",
+    "question": "【口說：短句朗讀】請點擊麥克風，流暢朗讀出下列英文短句：",
+    "options": [
+      "Where were you yesterday?"
+    ],
+    "answer": 0,
+    "explanation": "標的短句為「Where were you yesterday?（你昨天在哪裡？）」，be動詞過去式句型。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-s-11",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-short",
+    "serialNum": 11,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "What do you want to be?",
+    "question": "【口說：短句朗讀】請點擊麥克風，流暢朗讀出下列英文短句：",
+    "options": [
+      "What do you want to be?"
+    ],
+    "answer": 0,
+    "explanation": "標的短句為「What do you want to be?（你長大想當什麼？）」，職業詢問句型。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-s-12",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-short",
+    "serialNum": 12,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "I have a terrible headache.",
+    "question": "【口說：短句朗讀】請點擊麥克風，流暢朗讀出下列英文短句：",
+    "options": [
+      "I have a terrible headache."
+    ],
+    "answer": 0,
+    "explanation": "標的短句為「I have a terrible headache.（我頭痛得很厲害）」，身體狀況句型。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-s-13",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-short",
+    "serialNum": 13,
+    "taskType": "S-READ",
+    "difficulty": 1,
+    "targetText": "What's your favorite subject?",
+    "question": "【口說：短句朗讀】請點擊麥克風，流暢朗讀出下列英文短句：",
+    "options": [
+      "What's your favorite subject?"
+    ],
+    "answer": 0,
+    "explanation": "標的短句為「What's your favorite subject?（你最喜歡什麼科目？）」，學科喜好句型。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-s-14",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-short",
+    "serialNum": 14,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "Turn left at the next corner.",
+    "question": "【口說：短句朗讀】請點擊麥克風，流暢朗讀出下列英文短句：",
+    "options": [
+      "Turn left at the next corner."
+    ],
+    "answer": 0,
+    "explanation": "標的短句為「Turn left at the next corner.（在下一個轉角左轉）」，方向指引句型。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-l-05",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-long",
+    "serialNum": 5,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "Students practice traditional archery with wooden bows on the school field every Friday afternoon.",
+    "question": "【口說：長句朗讀】請注意斷句與語調，完整朗讀下列英文長句：",
+    "options": [
+      "Students practice traditional archery with wooden bows on the school field every Friday afternoon."
+    ],
+    "answer": 0,
+    "explanation": "長句朗讀評測標的，注意 traditional archery 與 wooden bows 之連音與節奏。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-l-06",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-long",
+    "serialNum": 6,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "If you have a fever, please drink plenty of warm water and stay in bed to rest.",
+    "question": "【口說：長句朗讀】請注意斷句與語調，完整朗讀下列英文長句：",
+    "options": [
+      "If you have a fever, please drink plenty of warm water and stay in bed to rest."
+    ],
+    "answer": 0,
+    "explanation": "長句朗讀評測標的，注意條件子句 If you have a fever 之停頓與語調。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-l-07",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-long",
+    "serialNum": 7,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "We went camping in the mountains yesterday and saw many bright stars in the night sky.",
+    "question": "【口說：長句朗讀】請注意斷句與語調，完整朗讀下列英文長句：",
+    "options": [
+      "We went camping in the mountains yesterday and saw many bright stars in the night sky."
+    ],
+    "answer": 0,
+    "explanation": "長句朗讀評測標的，注意過去式 went 與 night sky 之連貫發音。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-l-08",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-long",
+    "serialNum": 8,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "My grandmother makes delicious millet cakes in her traditional stone house during the harvest festival.",
+    "question": "【口說：長句朗讀】請注意斷句與語調，完整朗讀下列英文長句：",
+    "options": [
+      "My grandmother makes delicious millet cakes in her traditional stone house during the harvest festival."
+    ],
+    "answer": 0,
+    "explanation": "長句朗讀評測標的，注意 millet cakes、traditional stone house 與 harvest festival。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-l-09",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-long",
+    "serialNum": 9,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "You can take the train to the city station and then walk three blocks to the science museum.",
+    "question": "【口說：長句朗讀】請注意斷句與語調，完整朗讀下列英文長句：",
+    "options": [
+      "You can take the train to the city station and then walk three blocks to the science museum."
+    ],
+    "answer": 0,
+    "explanation": "長句朗讀評測標的，注意 directions 指引與 science museum 連貫發音。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-speak-l-10",
+    "track": "tme-preA1",
+    "category": "speaking",
+    "subType": "speak-long",
+    "serialNum": 10,
+    "taskType": "S-READ",
+    "difficulty": 2,
+    "targetText": "Every summer, our English teacher leads an exciting summer camp full of singing, cooking, and games.",
+    "question": "【口說：長句朗讀】請注意斷句與語調，完整朗讀下列英文長句：",
+    "options": [
+      "Every summer, our English teacher leads an exciting summer camp full of singing, cooking, and games."
+    ],
+    "answer": 0,
+    "explanation": "長句朗讀評測標的，注意 summer camp 與列舉 singing, cooking, and games 之揚抑語調。",
+    "reviewed": true
+  },
   {
     "id": "tme-vocab-w2p-09",
     "track": "tme-preA1",

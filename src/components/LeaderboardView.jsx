@@ -70,7 +70,7 @@ export const CONSOLIDATED_GAME_MODES = [
     category: 'mcq_exam',
     champion: 'exam_king',
     modeKeys: ['prea1-mastery'],
-    subModes: [{ key: 'prea1-mastery', label: '全卷 250 題滾動精熟' }]
+    subModes: [{ key: 'prea1-mastery', label: '全卷 300 題滾動精熟' }]
   },
   {
     id: 'mcq_king',
@@ -416,7 +416,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                   id: 'local_mastery_' + sid,
                   name: formatStudentDisplayName(currentStudent),
                   score: tme.mastered_count,
-                  time: Math.round((tme.mastered_count / (tme.total_items || 250)) * 100),
+                  time: Math.round((tme.mastered_count / (tme.total_items || 300)) * 100),
                   book: `g${currentStudent.grade || 4}`,
                   created_at: snap.updated_at
                 }];
@@ -916,7 +916,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                           : mode.isSpecial === 'quest'
                           ? (entry.quest_points ?? 0)
                           : mode.id === 'prea1_mastery'
-                          ? `${entry.score} 題 (${entry.time || Math.round((entry.score / 250) * 100)}%)`
+                          ? `${entry.score} 題 (${entry.time || Math.round((entry.score / 300) * 100)}%)`
                           : (mode.id === 'escape' || mode.id === 'spotter')
                           ? (entry.time > 1000 ? (entry.time / 1000).toFixed(1) : (entry.time ?? entry.score))
                           : entry.score;
@@ -1056,7 +1056,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub, words = [] }) => {
                 </h3>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-300">
-                以「動態滾動精熟度」為核心評量指標（連對 2 次翻盤解鎖為精熟），涵蓋全卷 250 題官方 Pre-A1 試題、1,289 題課本檢定題庫與 115 題教育部 SAA 學力成就。
+                以「動態滾動精熟度」為核心評量指標（連對 2 次翻盤解鎖為精熟），涵蓋全卷 300 題官方 Pre-A1 試題、1,289 題課本檢定題庫與 115 題教育部 SAA 學力成就。
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 animate-fadeIn">

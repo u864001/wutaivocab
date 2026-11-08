@@ -442,7 +442,7 @@ export const recordMcqExamStats = async ({ grade, book, name, correctCount, tota
 };
 
 // ── Test My English Pre-A1 官方模擬精熟榜同步紀錄 (mode: prea1-mastery) ──
-export const recordPreA1MasteryLeaderboard = async ({ grade, name, studentId, masteredCount, totalItems = 250, masteryRate }) => {
+export const recordPreA1MasteryLeaderboard = async ({ grade, name, studentId, masteredCount, totalItems = 300, masteryRate }) => {
   const deviceId = getDeviceId();
   const currentWeek = getWeekNumber();
   let cleanName = (name || '').trim();
