@@ -11,9 +11,9 @@
 
 ```mermaid
 flowchart LR
-    A["Pre-A1 檢定模擬總體系"] --> B["字彙 (Vocab)<br/>32 題"]
-    A --> C["聽力 (Listening)<br/>34 題"]
-    A --> D["閱讀 (Reading)<br/>68 題"]
+    A["Pre-A1 檢定模擬總體系 (共 250 題)"] --> B["字彙 (Vocab)<br/>50 題"]
+    A --> C["聽力 (Listening)<br/>44 題"]
+    A --> D["閱讀 (Reading)<br/>80 題"]
     A --> E["寫作重組 (Writing)<br/>60 題"]
     A --> F["口說 (Speaking)<br/>16 題"]
 ```

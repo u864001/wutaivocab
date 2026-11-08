@@ -1,13 +1,13 @@
 /**
  * Test My English Pre-A1 官方模擬題庫 — 閱讀專項題庫模組 (Reading Bank)
  * 涵蓋四大閱讀子面向：
- * 1. 看圖選字 (V-PIC / read-pic2word) - 8 題
- * 2. 看圖選句 (G-CTX / read-pic2sent) - 8 題
+ * 1. 看圖選字 (V-PIC / read-pic2word) - 14 題
+ * 2. 看圖選句 (G-CTX / read-pic2sent) - 14 題
  * 3. 是非判斷 (R-TF / read-truefalse) - 10 題
  * 4. 短文填空 (R-CLOZE / read-cloze) - 18 題
  * 5. 篇章閱讀理解題組 (R-COMP / read-passage) - 6 大生活篇章 (24 題)
  * 
- * 總題數：68 題
+ * 總題數：80 題
  * 嚴守國小英語第 1～8 冊課綱詞彙範圍；文中所涉在地文化或生活情境非核心單字，均於文末以星號 (*) 附註中文註解。
  */
 
@@ -1566,6 +1566,277 @@ export const TME_PRE_A1_READING_BANK = [
     ],
     "answer": 0,
     "explanation": "在藍天中高高飛翔的動物為鳥類（bird flying high in the sky），故選 (A) bird。",
+    "reviewed": true
+  }
+,
+  {
+    "id": "tme-read-p2w-09",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2word",
+    "serialNum": 9,
+    "taskType": "V-PIC",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/hospital.png",
+    "question": "看生活場所線稿插圖，選出正確的英文單字：",
+    "options": [
+      "hospital",
+      "clinic",
+      "school",
+      "library",
+      "supermarket",
+      "park",
+      "zoo"
+    ],
+    "answer": 0,
+    "explanation": "插圖為帶有紅十字記號的醫院建築，英文為「hospital」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2w-10",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2word",
+    "serialNum": 10,
+    "taskType": "V-PIC",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/rainbow.png",
+    "question": "看大自然景觀線稿插圖，選出正確的英文單字：",
+    "options": [
+      "rainbow",
+      "cloud",
+      "snowman",
+      "river",
+      "sea",
+      "flower",
+      "tree"
+    ],
+    "answer": 0,
+    "explanation": "插圖為天空中美麗的彩虹，英文為「rainbow」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2w-11",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2word",
+    "serialNum": 11,
+    "taskType": "V-PIC",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/doctor.png",
+    "question": "看人物職業線稿插圖，選出正確的英文單字：",
+    "options": [
+      "doctor",
+      "nurse",
+      "teacher",
+      "student",
+      "police officer",
+      "farmer",
+      "cook"
+    ],
+    "answer": 0,
+    "explanation": "插圖為身著白袍並配戴聽診器的醫師，英文為「doctor」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2w-12",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2word",
+    "serialNum": 12,
+    "taskType": "V-PIC",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/pizza.png",
+    "question": "看美味食物線稿插圖，選出正確的英文單字：",
+    "options": [
+      "pizza",
+      "hamburger",
+      "sandwich",
+      "bread",
+      "cake",
+      "noodles",
+      "rice"
+    ],
+    "answer": 0,
+    "explanation": "插圖為切片起司義式披薩，英文為「pizza」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2w-13",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2word",
+    "serialNum": 13,
+    "taskType": "V-PIC",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/police_officer.png",
+    "question": "看人物職業線稿插圖，選出正確的英文單字：",
+    "options": [
+      "police officer",
+      "doctor",
+      "nurse",
+      "teacher",
+      "farmer",
+      "pilot",
+      "student"
+    ],
+    "answer": 0,
+    "explanation": "插圖為戴大盤警帽值勤的警察人員，英文為「police officer」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2w-14",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2word",
+    "serialNum": 14,
+    "taskType": "V-PIC",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/beach.png",
+    "question": "看休閒場所線稿插圖，選出正確的英文單字：",
+    "options": [
+      "beach",
+      "mountain",
+      "river",
+      "park",
+      "zoo",
+      "sea",
+      "forest"
+    ],
+    "answer": 0,
+    "explanation": "插圖為有陽傘、躺椅與海浪的沙灘海邊，英文為「beach」。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2s-09",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2sent",
+    "serialNum": 9,
+    "taskType": "G-CTX",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/action_brush_teeth.png",
+    "question": "看情境線稿插圖，選出描述最相符的句子：",
+    "options": [
+      "The boy brushes his teeth every morning.",
+      "The boy is washing his face.",
+      "The boy is eating an apple.",
+      "The boy is swimming in the pool.",
+      "The boy is riding a bicycle.",
+      "The boy is sleeping in bed."
+    ],
+    "answer": 0,
+    "explanation": "插圖中男孩在鏡子前認真刷牙，句子 (A)「The boy brushes his teeth every morning.」完全吻合。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2s-10",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2sent",
+    "serialNum": 10,
+    "taskType": "G-CTX",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/action_play_basketball.png",
+    "question": "看情境線稿插圖，選出描述最相符的句子：",
+    "options": [
+      "The students are playing basketball together.",
+      "The students are running in the classroom.",
+      "The students are singing in the music room.",
+      "The students are flying a kite in the field.",
+      "The students are making a snowman.",
+      "The students are reading books in the library."
+    ],
+    "answer": 0,
+    "explanation": "插圖中學生正在球場跳起投籃，句子 (A)「The students are playing basketball together.」完全吻合。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2s-11",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2sent",
+    "serialNum": 11,
+    "taskType": "G-CTX",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/action_swim.png",
+    "question": "看情境線稿插圖，選出描述最相符的句子：",
+    "options": [
+      "The girl can swim very fast.",
+      "The girl cannot swim at all.",
+      "The girl is cooking noodles.",
+      "The girl is riding a horse.",
+      "The girl is climbing a tree.",
+      "The girl is playing the guitar."
+    ],
+    "answer": 0,
+    "explanation": "插圖為女孩戴泳鏡在池中游泳，句子 (A)「The girl can swim very fast.」相符。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2s-12",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2sent",
+    "serialNum": 12,
+    "taskType": "G-CTX",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/action_read_book.png",
+    "question": "看情境線稿插圖，選出描述最相符的句子：",
+    "options": [
+      "The student is reading a book carefully.",
+      "The student is playing computer games.",
+      "The student is watching a movie.",
+      "The student is washing the dishes.",
+      "The student is dancing to the music.",
+      "The student is riding a bus to school."
+    ],
+    "answer": 0,
+    "explanation": "插圖為學生端坐在書桌前專注看書，句子 (A) 符合圖意。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2s-13",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2sent",
+    "serialNum": 13,
+    "taskType": "G-CTX",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/snowman.png",
+    "question": "看情境線稿插圖，選出描述最相符的句子：",
+    "options": [
+      "It is cold and snowy. There is a snowman.",
+      "It is hot and sunny at the beach.",
+      "It is rainy. The girl has an umbrella.",
+      "There are many animals in the zoo.",
+      "The boy is playing soccer in the park.",
+      "The family is eating dinner at home."
+    ],
+    "answer": 0,
+    "explanation": "插圖為雪地裡的戴帽圍巾雪人，句子 (A)「It is cold and snowy. There is a snowman.」符合題意。",
+    "reviewed": true
+  },
+  {
+    "id": "tme-read-p2s-14",
+    "track": "tme-preA1",
+    "category": "reading",
+    "subType": "read-pic2sent",
+    "serialNum": 14,
+    "taskType": "G-CTX",
+    "difficulty": 1,
+    "image": "/assets/exam/preA1/action_sing_song.png",
+    "question": "看情境線稿插圖，選出描述最相符的句子：",
+    "options": [
+      "The boy is singing a cheerful song.",
+      "The boy is drawing a red flower.",
+      "The boy is drinking a glass of water.",
+      "The boy is driving a blue car.",
+      "The boy is feeding a little dog.",
+      "The boy is riding a train."
+    ],
+    "answer": 0,
+    "explanation": "插圖為男孩手握麥克風歡樂唱歌，句子 (A)「The boy is singing a cheerful song.」最相符。",
     "reviewed": true
   }
 ];
