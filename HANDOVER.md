@@ -46,9 +46,9 @@
   * Web Speech API + edge-tts 語音發音與口說辨識評測。
 * **資料庫與後端**：Supabase (`src/services/supabase.js`)，支援離線模式與遊客訪客本地降級機制。
 * **主要遠端倉庫**：
-  * GitHub `origin`：`https://github.com/u864001/wutaivocab.git`
-  * GitHub `vercel`：`https://github.com/u8640012026/wutaivocab.git`
-* **主機發布服務**：Cloudflare Pages (`wutaivocab.pages.dev`)
+  * GitHub `origin`：`https://github.com/u8640012026/wutaivocab.git`（已配置 `CLOUDFLARE_API_TOKEN` Secret，推送 `main` 自動透過 GitHub Actions 部署至 Cloudflare Pages）
+  * GitHub `upstream`：`https://github.com/u864001/wutaivocab.git`
+* **主機發布服務**：Cloudflare Pages (`https://wutaivocab.pages.dev`) ＆ Vercel (`https://wutaivocab.vercel.app`)
 
 ---
 
