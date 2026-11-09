@@ -12,7 +12,7 @@ import {
 import { getCurrentSemesterId, getSemesterDisplayName } from '../utils/semesterHelper';
 import { soundEngine } from '../services/audio';
 import { useEasterEgg } from '../hooks/useEasterEgg';
-import { pad2, formatStudentBadge, formatStudentDisplayName, isGuestStudent } from '../utils/studentIdHelper';
+import { pad2, formatStudentBadge, formatStudentDisplayName, isGuestStudent, parseStudentId } from '../utils/studentIdHelper';
 import { loadStudentMastery } from '../utils/masteryHelper';
 import {
   Trophy, ArrowLeft, RotateCw, Calendar, BookOpen, Puzzle, Rocket,
@@ -48,7 +48,8 @@ export const FOUR_CHAMPION_PANELS = [
     borderClass: 'border-sky-500/50 hover:border-sky-400',
     activeRingClass: 'ring-sky-400/80 border-sky-300',
     plaqueBg: 'bg-gradient-to-r from-sky-950/90 via-slate-950/85 to-indigo-950/90 border-sky-400/40 shadow-sky-950/60',
-    accentText: 'text-sky-300'
+    accentText: 'text-sky-300',
+    bannerGradient: 'from-sky-500/30 via-indigo-500/10 to-transparent'
   },
   {
     id: 'coin_king',
@@ -63,7 +64,8 @@ export const FOUR_CHAMPION_PANELS = [
     borderClass: 'border-amber-500/50 hover:border-amber-400',
     activeRingClass: 'ring-amber-400/80 border-amber-300',
     plaqueBg: 'bg-gradient-to-r from-amber-950/90 via-slate-950/85 to-yellow-950/90 border-amber-400/40 shadow-amber-950/60',
-    accentText: 'text-amber-300'
+    accentText: 'text-amber-300',
+    bannerGradient: 'from-amber-500/30 via-yellow-500/10 to-transparent'
   },
   {
     id: 'point_king',
@@ -78,7 +80,8 @@ export const FOUR_CHAMPION_PANELS = [
     borderClass: 'border-emerald-500/50 hover:border-emerald-400',
     activeRingClass: 'ring-emerald-400/80 border-emerald-300',
     plaqueBg: 'bg-gradient-to-r from-emerald-950/90 via-slate-950/85 to-teal-950/90 border-emerald-400/40 shadow-emerald-950/60',
-    accentText: 'text-emerald-300'
+    accentText: 'text-emerald-300',
+    bannerGradient: 'from-emerald-500/30 via-teal-500/10 to-transparent'
   },
   {
     id: 'game_king',
@@ -93,7 +96,8 @@ export const FOUR_CHAMPION_PANELS = [
     borderClass: 'border-purple-500/50 hover:border-purple-400',
     activeRingClass: 'ring-purple-400/80 border-purple-300',
     plaqueBg: 'bg-gradient-to-r from-purple-950/90 via-slate-950/85 to-fuchsia-950/90 border-purple-400/40 shadow-purple-950/60',
-    accentText: 'text-purple-300'
+    accentText: 'text-purple-300',
+    bannerGradient: 'from-purple-500/30 via-fuchsia-500/10 to-transparent'
   }
 ];
 
@@ -124,7 +128,7 @@ export const EXAM_KING_SUBTRACKS = [
     icon: Crown,
     unit: '分',
     badgeColor: 'border-amber-400 text-amber-200 bg-amber-500/25 ring-amber-400/50',
-    modeKeys: ['mcq-king', 'mcq-diligent']
+    modeKeys: ['mcq-king', 'mcq-diligent', 'mcq-accurate']
   },
   {
     id: 'speaking_lab',
@@ -133,7 +137,7 @@ export const EXAM_KING_SUBTRACKS = [
     icon: Mic,
     unit: '題',
     badgeColor: 'border-rose-400 text-rose-200 bg-rose-500/25 ring-rose-400/50',
-    modeKeys: ['speaking_lab']
+    modeKeys: ['speaking_lab', 'speaking-lab', 'speaking']
   }
 ];
 
@@ -149,7 +153,7 @@ export const GAME_KING_CATEGORIES = [
       { id: 'escape', name: '神祕密室逃脫', icon: KeyRound, unit: '秒', modeKeys: ['escape'] },
       { id: 'spotter', name: '鷹眼神探找不同', icon: Eye, unit: '秒', modeKeys: ['spotter'] },
       { id: 'maze', name: '字母巡航迷宮', icon: Compass, unit: '秒', modeKeys: ['maze-upper', 'maze-lower', 'maze-master'] },
-      { id: 'memory', name: '翻牌記憶對決', icon: Sparkles, unit: '分', modeKeys: ['memory-single'] }
+      { id: 'memory', name: '翻牌記憶對決', icon: Sparkles, unit: '分', modeKeys: ['memory-single', 'memory', 'memory-abc'] }
     ]
   },
   {
@@ -159,10 +163,10 @@ export const GAME_KING_CATEGORIES = [
     colorClass: 'border-amber-400 text-amber-300 bg-amber-500/15',
     activeClass: 'ring-2 ring-amber-400 border-amber-300 bg-amber-500/35 text-white shadow-amber-500/30 shadow-md',
     games: [
-      { id: 'mole', name: '單字打地鼠', icon: Zap, unit: '分', modeKeys: ['mole-vocab', 'mole-abc'] },
-      { id: 'swipe', name: '極速是非滑牌', icon: Flame, unit: '分', modeKeys: ['swipe-vocab', 'swipe-abc'] },
-      { id: 'meteor', name: '3D 隕石防衛戰', icon: Rocket, unit: '分', modeKeys: ['meteor-zh-en', 'meteor-en-zh', 'meteor-abc'] },
-      { id: 'snake', name: '叢林神山貪蛇', icon: Zap, unit: '分', modeKeys: ['snake-normal', 'snake-survival', 'snake-easy'] }
+      { id: 'mole', name: '單字打地鼠', icon: Zap, unit: '分', modeKeys: ['mole-vocab', 'mole-abc', 'mole'] },
+      { id: 'swipe', name: '極速是非滑牌', icon: Flame, unit: '分', modeKeys: ['swipe-vocab', 'swipe-abc', 'swipe'] },
+      { id: 'meteor', name: '3D 隕石防衛戰', icon: Rocket, unit: '分', modeKeys: ['meteor-words', 'meteor-zh-en', 'meteor-en-zh', 'meteor-abc', 'meteor-speed'] },
+      { id: 'snake', name: '叢林神山貪蛇', icon: Zap, unit: '分', modeKeys: ['snake-normal', 'snake-survival', 'snake-easy', 'snake-casual', 'snake-hard'] }
     ]
   },
   {
@@ -173,8 +177,8 @@ export const GAME_KING_CATEGORIES = [
     activeClass: 'ring-2 ring-sky-400 border-sky-300 bg-sky-500/35 text-white shadow-sky-500/30 shadow-md',
     games: [
       { id: 'quiz', name: '中英字義速辨', icon: Keyboard, unit: '分', modeKeys: ['quiz-choice', 'quiz-zh-en', 'quiz-en-zh', 'quiz-hard'] },
-      { id: 'listening', name: '聽力三合一', icon: Volume2, unit: '分', modeKeys: ['quiz-listening', 'quiz-listening-word', 'quiz-listening-sentence', 'quiz-listening-qa'] },
-      { id: 'spelling', name: '單字積木拼裝', icon: Puzzle, unit: '分', modeKeys: ['spelling'] },
+      { id: 'listening', name: '聽力三合一', icon: Volume2, unit: '分', modeKeys: ['quiz-listening', 'quiz-listening-word', 'quiz-listening-sentence', 'quiz-listening-qa', 'listening_lab'] },
+      { id: 'spelling', name: '單字積木拼裝', icon: Puzzle, unit: '分', modeKeys: ['spelling', 'spelling-abc'] },
       { id: 'handwriting', name: '神筆筆順書寫', icon: PenTool, unit: '分', modeKeys: ['handwriting', 'handwriting-abc'] }
     ]
   },
@@ -185,7 +189,7 @@ export const GAME_KING_CATEGORIES = [
     colorClass: 'border-purple-400 text-purple-300 bg-purple-500/15',
     activeClass: 'ring-2 ring-purple-400 border-purple-300 bg-purple-500/35 text-white shadow-purple-500/30 shadow-md',
     games: [
-      { id: 'battle', name: '即時多人連線', icon: Swords, unit: '勝', modeKeys: ['battle-wins'] }
+      { id: 'battle', name: '即時多人連線', icon: Swords, unit: '勝', modeKeys: ['battle-wins', 'battle'] }
     ]
   }
 ];
@@ -230,31 +234,95 @@ export const CONSOLIDATED_GAME_MODES = [
   )
 ];
 
+// ── 格式化學生顯示：暱稱優先、座號後括號「英勇穿山甲 (6甲3號)」──
+export const parseStudentFormat = (entry, lang = 'zh-TW') => {
+  if (!entry) return { nickname: '好學生', badge: '', full: '好學生' };
+
+  if (isGuestStudent(entry)) {
+    const rawNick = entry.name || entry.nickname || '訪客勇士';
+    const cleanNick = rawNick.replace(/^\[訪客\]\s*/, '').trim() || '訪客勇士';
+    return { nickname: cleanNick, badge: '[訪客]', full: `${cleanNick} [訪客]` };
+  }
+
+  let rawName = String(entry.name || entry.nickname || '').trim();
+  let sid = String(entry.student_id || entry.id || (typeof entry.book === 'string' && entry.book.length === 6 && /^\d+$/.test(entry.book) ? entry.book : '')).trim();
+
+  let nickname = rawName;
+  let badge = '';
+
+  // 1. 若名稱內含括號 e.g. "4年甲班 01號 (英勇穿山甲)"
+  const parenMatch = rawName.match(/^(.*?)\s*[\(（](.*?)[\)）]$/);
+  if (parenMatch) {
+    const prefix = parenMatch[1].trim();
+    nickname = parenMatch[2].trim();
+    // 轉化精簡格式 "4甲1號"
+    const m = prefix.match(/(\d+)\s*年\s*([甲乙丙他])\s*班\s*(\d+)\s*號/);
+    if (m) {
+      badge = `(${m[1]}${m[2]}${parseInt(m[3], 10)}號)`;
+    } else {
+      badge = `(${prefix.replace(/年/g, '').replace(/班/g, '').replace(/\s+/g, '')})`;
+    }
+  }
+
+  // 2. 若尚未取得 badge，但可由 6 碼學號解析 (e.g. "060103" -> "(6甲3號)")
+  if (!badge && sid && sid.length === 6 && /^\d+$/.test(sid)) {
+    const g = parseInt(sid.substring(0, 2), 10);
+    const cNum = parseInt(sid.substring(2, 4), 10);
+    const seat = parseInt(sid.substring(4, 6), 10);
+    const cChar = cNum === 1 ? '甲' : cNum === 2 ? '乙' : cNum === 3 ? '丙' : '';
+    if (g > 0 && g <= 6) {
+      badge = `(${g}${cChar}${seat}號)`;
+    }
+  }
+
+  // 3. 回退學生自帶 badge
+  if (!badge) {
+    const fallbackB = formatStudentBadge(entry, lang);
+    if (fallbackB && fallbackB !== '[訪客]' && fallbackB !== '訪客') {
+      badge = `(${fallbackB.replace(/\s+/g, '')})`;
+    }
+  }
+
+  return {
+    nickname: nickname || '好學生',
+    badge,
+    full: badge ? `${nickname} ${badge}` : nickname
+  };
+};
+
 // ── 3A 遊戲立體金屬名次徽章 (絕不使用廉價 Emoji) ──
 const MetallicRankMedal = ({ rank, size = 'md' }) => {
+  const sizeMap = {
+    xs: 'w-4 h-4 text-[10px]',
+    sm: 'w-5 h-5 text-xs',
+    md: 'w-6 h-6 text-xs',
+    lg: 'w-7 h-7 text-sm'
+  };
+  const sizeClass = sizeMap[size] || sizeMap.md;
+
   if (rank === 1) {
     return (
-      <div className={`${size === 'lg' ? 'w-8 h-8 text-sm' : size === 'sm' ? 'w-5 h-5 text-[11px]' : 'w-6 h-6 text-xs'} rounded-xl bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 text-amber-950 ring-2 ring-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.7)] font-black font-mono flex items-center justify-center shrink-0`}>
+      <div className={`${sizeClass} rounded-xl bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 text-amber-950 ring-2 ring-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.7)] font-black font-mono flex items-center justify-center shrink-0`}>
         <span>1</span>
       </div>
     );
   }
   if (rank === 2) {
     return (
-      <div className={`${size === 'lg' ? 'w-8 h-8 text-sm' : size === 'sm' ? 'w-5 h-5 text-[11px]' : 'w-6 h-6 text-xs'} rounded-xl bg-gradient-to-br from-slate-100 via-slate-300 to-slate-400 text-slate-900 ring-2 ring-slate-200 shadow-[0_0_10px_rgba(226,232,240,0.6)] font-black font-mono flex items-center justify-center shrink-0`}>
+      <div className={`${sizeClass} rounded-xl bg-gradient-to-br from-slate-100 via-slate-300 to-slate-400 text-slate-900 ring-2 ring-slate-200 shadow-[0_0_10px_rgba(226,232,240,0.6)] font-black font-mono flex items-center justify-center shrink-0`}>
         <span>2</span>
       </div>
     );
   }
   if (rank === 3) {
     return (
-      <div className={`${size === 'lg' ? 'w-8 h-8 text-sm' : size === 'sm' ? 'w-5 h-5 text-[11px]' : 'w-6 h-6 text-xs'} rounded-xl bg-gradient-to-br from-amber-600 via-amber-700 to-yellow-900 text-amber-100 ring-2 ring-amber-500 shadow-[0_0_10px_rgba(217,119,6,0.5)] font-black font-mono flex items-center justify-center shrink-0`}>
+      <div className={`${sizeClass} rounded-xl bg-gradient-to-br from-amber-600 via-amber-700 to-yellow-900 text-amber-100 ring-2 ring-amber-500 shadow-[0_0_10px_rgba(217,119,6,0.5)] font-black font-mono flex items-center justify-center shrink-0`}>
         <span>3</span>
       </div>
     );
   }
   return (
-    <div className={`${size === 'lg' ? 'w-8 h-8 text-xs' : size === 'sm' ? 'w-5 h-5 text-[10px]' : 'w-6 h-6 text-xs'} rounded-xl bg-slate-800/90 text-slate-300 border border-white/15 font-bold font-mono flex items-center justify-center shrink-0`}>
+    <div className={`${sizeClass} rounded-xl bg-slate-800/90 text-slate-300 border border-white/15 font-bold font-mono flex items-center justify-center shrink-0`}>
       <span>{rank}</span>
     </div>
   );
@@ -352,7 +420,35 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // 載入所有模式榜單
+  // ── 判斷一筆紀錄是否符合當前選中之年級 (冊次、學號前綴、姓名三重比對，徹底杜絕漏榜) ──
+  const isEntryInGrade = useCallback((entry, targetGrade) => {
+    if (!targetGrade || targetGrade === 'all' || targetGrade === '00') return true;
+    const gradeStr = String(targetGrade).padStart(2, '0');
+    const gradeNum = parseInt(gradeStr, 10);
+
+    // 1. 學號比對 (entry.book 或 entry.student_id 開頭為 '04' 等)
+    const sid = String(entry.student_id || entry.book || '');
+    if (sid.length === 6 && /^\d+$/.test(sid)) {
+      if (sid.startsWith(gradeStr)) return true;
+    }
+
+    // 2. 冊次比對
+    const gradeTab = GRADE_LEADERBOARD_TABS.find(t => t.id === gradeStr);
+    const bStr = String(entry.book || '').toLowerCase();
+    if (gradeTab?.books && gradeTab.books.includes(bStr)) return true;
+    if (bStr === `g${gradeNum}`) return true;
+
+    // 3. 通用教材 (abc) 或小遊戲：比對學生暱稱或姓名內含之年級字眼
+    const rawName = String(entry.name || '');
+    if (rawName.includes(`${gradeNum}年`) || rawName.includes(`${gradeNum}甲`) || rawName.includes(`${gradeNum}乙`)) {
+      return true;
+    }
+
+    // 4. 若該遊戲本身為全校性無分冊 (例如 spotter, escape, battle)，且學生無年級資訊，於全年級展示
+    return false;
+  }, []);
+
+  // 載入所有模式榜單 (全面補齊所有子榜與防漏查詢)
   const loadGradeBoards = useCallback(async (force = false) => {
     setIsLoading(true);
     const results = { ...boardData };
@@ -361,7 +457,6 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
     const now = Date.now();
 
     const isAll = activeGradeObj.isAllSchool || selectedGrade === 'all' || selectedGrade === '00';
-    const isAlphabetGrade = Boolean(activeGradeObj.isAlphabet);
     const books = isAll ? null : activeGradeObj.books;
 
     await Promise.all(
@@ -388,8 +483,11 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
           } else if (m.isSpecial === 'quest') {
             fetchedList = await fetchQuestPointsLeaderboard(isAll ? null : selectedGrade, 50);
           } else if (m.id === 'prea1_mastery') {
-            const queryBooks = isAll ? null : [`g${parseInt(selectedGrade, 10)}`];
-            fetchedList = await fetchLeaderboard(selectedWeek, 'prea1-mastery', queryBooks, 50);
+            // 查詢 Pre-A1 官方精熟
+            fetchedList = await fetchLeaderboard(selectedWeek, 'prea1-mastery', null, 50);
+            if (!isAll && Array.isArray(fetchedList)) {
+              fetchedList = fetchedList.filter(row => isEntryInGrade(row, selectedGrade));
+            }
             if ((!fetchedList || fetchedList.length === 0) && currentStudent) {
               const sid = currentStudent.student_id || currentStudent.id;
               const snap = loadStudentMastery(sid);
@@ -406,8 +504,11 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
               }
             }
           } else if (m.id === 'saa_mastery') {
-            const queryBooks = isAll ? null : [`g${parseInt(selectedGrade, 10)}`];
-            fetchedList = await fetchLeaderboard(selectedWeek, ['saa-mastery', 'mcq-saa'], queryBooks, 50);
+            // 查詢 SAA 學力成就
+            fetchedList = await fetchLeaderboard(selectedWeek, ['saa-mastery', 'mcq-saa'], null, 50);
+            if (!isAll && Array.isArray(fetchedList)) {
+              fetchedList = fetchedList.filter(row => isEntryInGrade(row, selectedGrade));
+            }
             if ((!fetchedList || fetchedList.length === 0) && currentStudent) {
               const sid = currentStudent.student_id || currentStudent.id;
               const snap = loadStudentMastery(sid);
@@ -424,15 +525,10 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
               }
             }
           } else {
-            const queryBooks = isAll
-              ? null
-              : m.champion === 'exam_king'
-              ? (selectedGrade === '01' ? ['g1'] : selectedGrade === '02' ? ['g2'] : books)
-              : (isAlphabetGrade && (m.id === 'maze' || m.id === 'swipe' || m.id === 'meteor' || m.id === 'memory' || m.id === 'listening_lab' || m.id === 'speaking_lab'))
-              ? null
-              : books;
+            // 所有小遊戲與檢定：先寬查後精準過濾，徹底杜絕因為 book 存學號或 abc 導致被 SQL 排除
+            const queryBooks = isAll ? null : (books ? [...books, 'abc', `g${parseInt(selectedGrade, 10)}`] : null);
+            fetchedList = await fetchLeaderboard(selectedWeek, m.modeKeys, queryBooks, 80);
 
-            fetchedList = await fetchLeaderboard(selectedWeek, m.modeKeys, queryBooks, 50);
             if (Array.isArray(fetchedList)) {
               if (m.id === 'escape') {
                 fetchedList = fetchedList.filter(row => row.time && Number(row.time) > 1);
@@ -442,6 +538,11 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
               if (isPast) {
                 fetchedList = fetchedList.filter(row => !isGuestStudent(row));
               }
+              if (!isAll) {
+                // 精準過濾年級
+                fetchedList = fetchedList.filter(row => isEntryInGrade(row, selectedGrade));
+              }
+              fetchedList = fetchedList.slice(0, 50);
             }
           }
         } catch (err) {
@@ -458,54 +559,89 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
 
     setBoardData(results);
     setIsLoading(false);
-  }, [selectedWeek, selectedGrade, activeGradeObj, currentWeek, currentStudent]);
+  }, [selectedWeek, selectedGrade, activeGradeObj, currentWeek, currentStudent, isEntryInGrade]);
 
   useEffect(() => {
     loadGradeBoards();
   }, [loadGradeBoards]);
 
-  // ── 四大天王前三名即時預覽 (零混亂分數，純名次與座號姓名) ──
-  const previewTopThree = useMemo(() => {
-    const getTopThree = (list) => {
-      if (!Array.isArray(list)) return [];
-      const cleanList = isPastWeek ? list.filter(r => !isGuestStudent(r)) : list;
-      return cleanList.slice(0, 3).map(r => ({
-        name: formatStudentDisplayName(r),
-        badge: formatStudentBadge(r, lang)
-      }));
+  // ════════════════════════════════════════════════════════════════
+  // ── 四大天王綜合加總排序演算法 (加總各子榜排位權重，真材實料四大王者) ──
+  // ════════════════════════════════════════════════════════════════
+  const championRankings = useMemo(() => {
+    // 依子榜名次進行標準錦標賽排位加權 (Rank Points: 第 1 名 50 分 ... 第 50 名 1 分)
+    const computeConsolidatedRank = (trackIds) => {
+      const studentMap = new Map();
+
+      trackIds.forEach(tId => {
+        const list = boardData[tId] || [];
+        if (!Array.isArray(list)) return;
+
+        list.slice(0, 50).forEach((entry, idx) => {
+          if (isPastWeek && isGuestStudent(entry)) return;
+          const parsed = parseStudentFormat(entry, lang);
+          const nameKey = parsed.nickname;
+          const rankPoints = 50 - idx; // 第 1 名 50 分
+
+          if (!studentMap.has(nameKey)) {
+            studentMap.set(nameKey, {
+              ...entry,
+              nickname: parsed.nickname,
+              badge: parsed.badge,
+              full: parsed.full,
+              totalWeight: 0,
+              bestRank: idx + 1,
+              topCount: 0
+            });
+          }
+
+          const s = studentMap.get(nameKey);
+          s.totalWeight += rankPoints;
+          s.topCount += 1;
+          if (idx + 1 < s.bestRank) s.bestRank = idx + 1;
+          // 若原先缺少 badge 則更新
+          if (!s.badge && parsed.badge) s.badge = parsed.badge;
+        });
+      });
+
+      const sorted = Array.from(studentMap.values()).sort((a, b) => {
+        if (b.totalWeight !== a.totalWeight) return b.totalWeight - a.totalWeight;
+        return a.bestRank - b.bestRank;
+      });
+
+      return sorted;
     };
 
-    const examSource = (boardData['prea1_mastery']?.length > 0)
-      ? boardData['prea1_mastery']
-      : (boardData['mcq_king']?.length > 0)
-      ? boardData['mcq_king']
-      : (boardData['saa_mastery'] || []);
+    // 1. 測驗之王綜合榜：4 大官方子榜綜合加權
+    const examTrackIds = ['prea1_mastery', 'saa_mastery', 'mcq_king', 'speaking_lab'];
+    const examKingList = computeConsolidatedRank(examTrackIds);
 
-    const coinSource = boardData['monopoly'] || [];
-    const pointSource = boardData['town_quest'] || [];
-
-    const arcadeIds = ['escape', 'spotter', 'maze', 'mole', 'swipe', 'meteor', 'snake', 'battle'];
-    const gamePlayersMap = new Map();
-    arcadeIds.forEach(id => {
-      const gList = boardData[id] || [];
-      gList.forEach((r, idx) => {
-        const name = formatStudentDisplayName(r);
-        if (!gamePlayersMap.has(name) || idx + 1 < gamePlayersMap.get(name).bestRank) {
-          gamePlayersMap.set(name, {
-            name,
-            badge: formatStudentBadge(r, lang),
-            bestRank: idx + 1
-          });
-        }
-      });
+    // 2. 金幣之王：富豪總資產 Top 50
+    const coinList = (boardData['monopoly'] || []).map(r => {
+      const parsed = parseStudentFormat(r, lang);
+      return { ...r, nickname: parsed.nickname, badge: parsed.badge, full: parsed.full };
     });
-    const gameSource = Array.from(gamePlayersMap.values()).sort((a, b) => a.bestRank - b.bestRank);
+
+    // 3. 積分之王：家園探索歷險 Top 50
+    const questList = (boardData['town_quest'] || []).map(r => {
+      const parsed = parseStudentFormat(r, lang);
+      return { ...r, nickname: parsed.nickname, badge: parsed.badge, full: parsed.full };
+    });
+
+    // 4. 遊戲之王綜合榜：14 款單字遊戲綜合加總加權
+    const arcadeTrackIds = [
+      'escape', 'spotter', 'maze', 'memory',
+      'mole', 'swipe', 'meteor', 'snake',
+      'quiz', 'listening', 'spelling', 'handwriting',
+      'battle'
+    ];
+    const gameKingList = computeConsolidatedRank(arcadeTrackIds);
 
     return {
-      exam_king: getTopThree(examSource),
-      coin_king: getTopThree(coinSource),
-      point_king: getTopThree(pointSource),
-      game_king: gameSource.slice(0, 3)
+      exam_king: examKingList,
+      coin_king: coinList,
+      point_king: questList,
+      game_king: gameKingList
     };
   }, [boardData, isPastWeek, lang]);
 
@@ -518,11 +654,11 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
   const isSelf = useCallback((entry) => {
     if (!currentStudent) return false;
     const curSid = currentStudent.student_id || currentStudent.id;
-    const curName = currentStudent.name || currentStudent.displayName;
+    const curName = currentStudent.nickname || currentStudent.name;
     const entrySid = entry.student_id || entry.id;
-    const entryName = entry.name;
+    const entryName = entry.name || entry.nickname;
     if (curSid && (entrySid === curSid || String(entrySid).includes(String(curSid)))) return true;
-    if (curName && entryName === curName) return true;
+    if (curName && (entryName === curName || String(entryName).includes(String(curName)))) return true;
     return false;
   }, [currentStudent]);
 
@@ -530,16 +666,16 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
     <div className={`fixed inset-0 w-full h-[100dvh] flex flex-col justify-between overflow-hidden select-none z-10 animate-fadeIn font-sans transition-colors duration-500 ${
       isDark ? 'bg-slate-950 text-white' : 'bg-slate-900 text-slate-100'
     }`}>
-      {/* ── 專屬高階背景層 (背景背景化，大武山稜線大氣深邃) ── */}
+      {/* ── 專屬高階背景層 (大武山全景長卷深層透光，絕不反白刺眼) ── */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
         <img
           key={currentWallpaper}
           src={currentWallpaper}
           alt="Dawu Mountain Atmosphere"
-          className="w-full h-full object-cover object-center scale-105 brightness-[0.45] contrast-[1.15] blur-[1px] transition-all duration-700 ease-out"
+          className="w-full h-full object-cover object-center scale-105 brightness-[0.55] contrast-[1.15] transition-all duration-700 ease-out"
         />
-        {/* 全域深邃暗夜漸層 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-slate-950/40 to-slate-950/90 pointer-events-none" />
+        {/* 全域深邃漸層 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/30 to-slate-950/85 pointer-events-none" />
       </div>
 
       {/* ════════════════════════════════════════════════════════════════
@@ -757,7 +893,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
       </header>
 
       {/* ════════════════════════════════════════════════════════════════
-          【中央主舞台：大武山四聯手風琴屏風長卷】(佔據 92% 畫面，震撼大氣)
+          【中央主舞台：大武山四聯手風琴長卷】(橫向連續無縫四合一，手機直立自適應)
          ════════════════════════════════════════════════════════════════ */}
       <main className="relative z-20 flex-1 w-full max-w-[1550px] mx-auto p-2 sm:p-3 md:p-3.5 flex flex-col justify-center overflow-hidden">
         <div className="w-full h-full flex flex-col md:flex-row items-stretch gap-2 sm:gap-2.5 md:gap-3.5 overflow-hidden">
@@ -765,9 +901,13 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
             const isSelected = activeCol === panel.id;
             const isCompressed = activeCol !== null && !isSelected;
             const Icon = panel.icon;
-            const previews = previewTopThree[panel.id] || [];
 
-            // 手風琴動態比例：展開 7 (佔大主版)，壓縮 0.75 (極簡神山立柱)，常態等寬 1
+            // 綜合排序名單 (加總各子榜排位權重，真材實料四大王者)
+            const rankingList = championRankings[panel.id] || [];
+            const topThree = rankingList.slice(0, 3);
+            const topOne = topThree[0] || null;
+
+            // 橫向手風琴比例：展開 7，壓縮 0.75，常態等寬 1
             const flexStyle = {
               flex: isSelected ? (window.innerWidth >= 768 ? 7 : 6) : isCompressed ? 0.75 : 1
             };
@@ -790,27 +930,27 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                     : `${panel.borderClass} hover:scale-[1.01]`
                 }`}
               >
-                {/* ── 大武山屏風高階背景圖層 (Banana 頂級藝術原畫) ── */}
+                {/* ── 大武山屏風高階背景圖層 (橫向連續無縫裁切原畫) ── */}
                 <img
                   src={panel.bgImage}
                   alt={panel.title}
                   className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-700 ease-out select-none pointer-events-none ${
                     isSelected
-                      ? 'brightness-[0.35] contrast-[1.1] blur-[0.5px]'
+                      ? 'brightness-[0.70] contrast-[1.1] scale-100'
                       : isCompressed
-                      ? 'brightness-[0.35] contrast-[1.15]'
-                      : 'brightness-[0.78] contrast-[1.1] group-hover:brightness-[0.9] group-hover:scale-105'
+                      ? 'brightness-[0.45] contrast-[1.15]'
+                      : 'brightness-[0.80] contrast-[1.1] group-hover:brightness-[0.92] group-hover:scale-105'
                   }`}
                 />
 
-                {/* 展開時深色背景化遮罩 (保證前景排行榜 100% 清晰易讀) */}
+                {/* 柔和透光微暗角遮罩 (確保能清楚看見大武山背景，同時文字超清晰) */}
                 <div className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${
                   isSelected
-                    ? 'bg-gradient-to-b from-slate-950/90 via-slate-950/80 to-slate-950/95'
-                    : 'bg-gradient-to-t from-slate-950/95 via-slate-950/20 to-slate-950/30'
+                    ? 'bg-gradient-to-b from-slate-950/70 via-slate-950/45 to-slate-950/75'
+                    : 'bg-gradient-to-t from-slate-950/90 via-slate-950/25 to-slate-950/30'
                 }`} />
 
-                {/* ── 狀態一：壓縮收折柱 (Vertical Calligraphy Spine) ── */}
+                {/* ── 狀態一：壓縮收折柱 (橫向桌機/平板收折脊柱) ── */}
                 {isCompressed ? (
                   <div className="relative z-10 w-full h-full flex md:flex-col items-center justify-between p-2 sm:p-2.5 text-center animate-fadeIn select-none">
                     <span className="w-1.5 h-1.5 rounded-full bg-white/40 mt-1" />
@@ -827,61 +967,111 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                     <span className="w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-white animate-pulse mb-1" />
                   </div>
                 ) : !isSelected ? (
-                  /* ── 狀態二：未展開常態屏風 (展示宏偉原畫 ＋ 前三名純名次預覽) ── */
-                  <div className="relative z-10 w-full h-full p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden animate-fadeIn select-none">
-                    {/* 頂部標題 */}
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="w-9 h-9 rounded-2xl bg-black/60 border border-white/20 flex items-center justify-center text-white shadow-md">
-                          <Icon className="w-5 h-5 text-amber-400" />
+                  /* ── 狀態二：未展開常態屏風 (手機直式僅 Top1、橫向大氣 Top3) ── */
+                  <div className="relative z-10 w-full h-full p-2.5 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden animate-fadeIn select-none">
+                    {/* ── [A. 手機直立專屬排版 (md:hidden)]：左邊王名，右邊靠右展示 Top 1 ── */}
+                    <div className="flex md:hidden items-center justify-between w-full h-full my-auto px-1">
+                      {/* 左側：王名 */}
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-black/60 border border-white/20 flex items-center justify-center text-amber-400 shadow-md shrink-0">
+                          <Icon className="w-4 h-4" />
                         </div>
-                        <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full border bg-black/50 border-white/20 text-amber-300">
-                          TOP 50
-                        </span>
+                        <div>
+                          <h3 className={`font-serif font-black text-base ${panel.titleGlow}`}>
+                            {panel.title}
+                          </h3>
+                          <span className="text-[10px] text-slate-300 font-bold block line-clamp-1">
+                            {panel.realm.split('•')[0]}
+                          </span>
+                        </div>
                       </div>
-                      <h3 className={`font-serif font-black text-lg sm:text-xl md:text-2xl tracking-wide ${panel.titleGlow}`}>
-                        {panel.title}
-                      </h3>
-                      <p className="text-[11px] text-slate-300 line-clamp-1 font-bold">
-                        {panel.realm}
-                      </p>
-                    </div>
 
-                    {/* 中央：前三名榮譽預覽 (零混亂分數，純金屬徽章 + 姓名) */}
-                    <div className="my-auto py-3 space-y-1.5">
-                      {previews.length === 0 ? (
-                        <div className="py-4 text-center text-xs font-bold text-slate-400 flex flex-col items-center gap-1">
-                          <Sparkles className="w-4 h-4 text-slate-500" />
-                          <span>虛位以待，快成為第一人！</span>
-                        </div>
-                      ) : (
-                        previews.map((entry, rIdx) => (
-                          <div
-                            key={entry.name + rIdx}
-                            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-black border transition-colors ${
-                              rIdx === 0
-                                ? 'bg-amber-400/20 border-amber-400/50 text-amber-200'
-                                : rIdx === 1
-                                ? 'bg-white/10 border-white/15 text-slate-200'
-                                : 'bg-amber-900/20 border-amber-800/40 text-amber-200'
-                            }`}
-                          >
-                            <MetallicRankMedal rank={rIdx + 1} size="sm" />
-                            <span className="truncate flex-1">{entry.name}</span>
+                      {/* 右側：靠右緊湊展示 Top 1 */}
+                      <div className="flex items-center gap-1.5">
+                        {topOne ? (
+                          <div className="flex items-center gap-1.5 bg-black/55 border border-white/20 rounded-xl px-2 py-1 shadow-md">
+                            <MetallicRankMedal rank={1} size="xs" />
+                            <span className="text-xs font-black text-amber-200 truncate max-w-[85px] sm:max-w-[120px]">
+                              {topOne.nickname}
+                            </span>
+                            {topOne.badge && (
+                              <span className="text-[10px] text-slate-300 font-mono shrink-0">
+                                {topOne.badge}
+                              </span>
+                            )}
                           </div>
-                        ))
-                      )}
+                        ) : (
+                          <span className="text-xs text-slate-400 font-bold">虛位以待</span>
+                        )}
+                        <ChevronRight className="w-4 h-4 text-amber-400 shrink-0 ml-0.5 group-hover:translate-x-0.5 transition-transform" />
+                      </div>
                     </div>
 
-                    {/* 底部展開按鈕 */}
-                    <div className="pt-2 border-t border-white/15 flex items-center justify-between text-xs font-black text-slate-300 group-hover:text-white transition-colors">
-                      <span>點擊展開完整神殿</span>
-                      <Maximize2 className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                    {/* ── [B. 橫向平板/桌機專屬排版 (hidden md:flex)]：展示較大字體 Top 3 ── */}
+                    <div className="hidden md:flex flex-col justify-between h-full w-full">
+                      {/* 頂部標題 */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="w-10 h-10 rounded-2xl bg-black/60 border border-white/20 flex items-center justify-center text-white shadow-md">
+                            <Icon className="w-5 h-5 text-amber-400" />
+                          </div>
+                          <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full border bg-black/50 border-white/20 text-amber-300">
+                            TOP 50
+                          </span>
+                        </div>
+                        <h3 className={`font-serif font-black text-xl lg:text-2xl tracking-wide ${panel.titleGlow}`}>
+                          {panel.title}
+                        </h3>
+                        <p className="text-xs text-slate-300 line-clamp-1 font-bold">
+                          {panel.realm}
+                        </p>
+                      </div>
+
+                      {/* 中央：較大字體 Top 3 預覽 (暱稱優先，後括號班級座號) */}
+                      <div className="my-auto py-3 space-y-2">
+                        {topThree.length === 0 ? (
+                          <div className="py-6 text-center text-xs font-bold text-slate-400 flex flex-col items-center gap-1.5">
+                            <Sparkles className="w-5 h-5 text-slate-500" />
+                            <span>虛位以待，快成為第一人！</span>
+                          </div>
+                        ) : (
+                          topThree.map((entry, rIdx) => (
+                            <div
+                              key={entry.nickname + rIdx}
+                              className={`flex items-center justify-between gap-2 px-3 py-2 rounded-xl border transition-all ${
+                                rIdx === 0
+                                  ? 'bg-amber-400/25 border-amber-400/60 text-amber-200 shadow-sm'
+                                  : rIdx === 1
+                                  ? 'bg-white/10 border-white/20 text-slate-200'
+                                  : 'bg-amber-900/25 border-amber-800/40 text-amber-200'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 truncate flex-1">
+                                <MetallicRankMedal rank={rIdx + 1} size="md" />
+                                <span className="text-sm lg:text-base font-black truncate max-w-[125px]">
+                                  {entry.nickname}
+                                </span>
+                              </div>
+                              {entry.badge && (
+                                <span className="text-xs font-mono font-bold text-slate-300 shrink-0">
+                                  {entry.badge}
+                                </span>
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+
+                      {/* 底部展開按鈕 */}
+                      <div className="pt-2 border-t border-white/15 flex items-center justify-between text-xs font-black text-slate-300 group-hover:text-white transition-colors">
+                        <span>點擊展開完整神殿</span>
+                        <Maximize2 className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                      </div>
                     </div>
                   </div>
                 ) : (
-                  /* ── 狀態三：手風琴展開神殿 (Flex: 7，極致前景美化 Top 50 排行榜) ── */
-                  <div className="relative z-10 w-full h-full p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden animate-fadeIn select-none">
+                  /* ── 狀態三：手風琴展開神殿 (Flex: 7，極致前景 3A 排行榜 ＋ 清晰透光背景) ── */
+                  <div className="relative z-10 w-full h-full p-2.5 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden animate-fadeIn select-none">
                     {/* 1. 展開頂部尊爵銘牌 ＋ 關閉還原按鈕 */}
                     <div className={`px-3 py-2 rounded-2xl backdrop-blur-md border shadow-xl flex items-center justify-between shrink-0 mb-2.5 ${panel.plaqueBg}`}>
                       <div className="flex items-center gap-2.5">
@@ -906,7 +1096,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                           soundEngine.click();
                           setActiveCol(null);
                         }}
-                        className="px-3 py-1.5 rounded-xl bg-black/70 hover:bg-black/90 text-white text-xs font-black border border-white/25 transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-md shrink-0"
+                        className="px-3 py-1.5 rounded-xl bg-black/75 hover:bg-black/95 text-white text-xs font-black border border-white/25 transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-md shrink-0"
                         title="還原四聯大武山全景"
                       >
                         <X className="w-3.5 h-3.5 text-amber-400" />
@@ -914,13 +1104,13 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                       </button>
                     </div>
 
-                    {/* 2. 前景排行榜內容區 (依王別精緻呈現) */}
+                    {/* 2. 前景排行榜內容區 (深色毛玻璃水晶卡片，大武山清晰可見、文字銳利) */}
                     <div className="flex-1 overflow-hidden flex flex-col">
                       {/* ── 領域 A: 測驗之王 (四大官方子榜) ── */}
                       {panel.id === 'exam_king' && (
                         <div className="flex-1 flex flex-col overflow-hidden">
                           {/* 四大子榜切換膠囊 */}
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-2.5 shrink-0">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-2 shrink-0">
                             {EXAM_KING_SUBTRACKS.map(track => {
                               const isSubActive = activeExamSubtrack === track.id;
                               const SubIcon = track.icon;
@@ -936,7 +1126,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                                   className={`p-2 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-2 ${
                                     isSubActive
                                       ? `ring-2 ${track.badgeColor} font-black scale-[1.02] shadow-lg`
-                                      : 'bg-black/50 border-white/10 text-slate-300 hover:bg-black/70'
+                                      : 'bg-black/60 border-white/10 text-slate-300 hover:bg-black/80'
                                   }`}
                                 >
                                   <SubIcon className="w-4 h-4 shrink-0" />
@@ -949,16 +1139,16 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                             })}
                           </div>
 
-                          {/* 測驗之王 Top 50 精美列表 */}
+                          {/* 測驗之王 Top 50 列表 */}
                           {(() => {
                             const curTrack = EXAM_KING_SUBTRACKS.find(t => t.id === activeExamSubtrack) || EXAM_KING_SUBTRACKS[0];
                             const list = (boardData[curTrack.id] || []).slice(0, 50);
 
                             return (
-                              <div className="flex-1 flex flex-col overflow-hidden bg-black/40 border border-white/10 rounded-2xl p-1.5 shadow-inner">
+                              <div className="flex-1 flex flex-col overflow-hidden bg-slate-950/75 backdrop-blur-md border border-white/15 rounded-2xl p-1.5 shadow-xl">
                                 {/* 表頭 */}
                                 <div className="px-3 py-1 flex items-center justify-between text-[11px] font-mono font-bold text-slate-400 border-b border-white/10 mb-1">
-                                  <span>名次 / 英雄勇士</span>
+                                  <span>名次 / 英雄名號 (班級座號)</span>
                                   <span>精熟實戰成績</span>
                                 </div>
 
@@ -972,34 +1162,35 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                                   ) : (
                                     list.map((entry, idx) => {
                                       const self = isSelf(entry);
+                                      const parsed = parseStudentFormat(entry, lang);
                                       return (
                                         <div
                                           key={entry.id || entry.student_id || idx}
                                           className={`flex items-center justify-between p-2 rounded-xl text-xs sm:text-sm border transition-all ${
                                             self
-                                              ? 'ring-2 ring-emerald-400 bg-emerald-950/40 border-emerald-400/80 shadow-emerald-900/50 shadow-md'
+                                              ? 'ring-2 ring-emerald-400 bg-emerald-950/50 border-emerald-400/80 shadow-emerald-900/50 shadow-md'
                                               : idx === 0
-                                              ? 'bg-gradient-to-r from-amber-500/25 via-yellow-500/10 to-black/30 border-amber-400/70 font-black shadow-sm'
+                                              ? 'bg-gradient-to-r from-amber-500/30 via-yellow-500/15 to-black/40 border-amber-400/80 font-black shadow-md'
                                               : idx === 1
-                                              ? 'bg-gradient-to-r from-slate-300/20 via-slate-200/5 to-black/30 border-slate-300/50 font-bold'
+                                              ? 'bg-gradient-to-r from-slate-300/25 via-slate-200/10 to-black/40 border-slate-300/60 font-bold'
                                               : idx === 2
-                                              ? 'bg-gradient-to-r from-amber-800/20 via-amber-700/5 to-black/30 border-amber-700/40 font-bold'
-                                              : 'bg-black/35 border-white/10 text-slate-200 hover:bg-black/55'
+                                              ? 'bg-gradient-to-r from-amber-800/25 via-amber-700/10 to-black/40 border-amber-700/50 font-bold'
+                                              : 'bg-black/40 border-white/10 text-slate-200 hover:bg-black/60'
                                           }`}
                                         >
                                           <div className="flex items-center gap-2 truncate pr-2">
                                             <MetallicRankMedal rank={idx + 1} size={idx < 3 ? 'md' : 'sm'} />
-                                            <span className="font-heading font-black truncate max-w-[130px] sm:max-w-[200px]">
-                                              {formatStudentDisplayName(entry)}
+                                            <span className="font-heading font-black truncate max-w-[120px] sm:max-w-[180px]">
+                                              {parsed.nickname}
                                             </span>
-                                            {self && (
-                                              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 font-mono font-black border border-emerald-400/50">
-                                                ★ 你的英雄
+                                            {parsed.badge && (
+                                              <span className="text-[11px] text-slate-300 font-mono font-bold shrink-0">
+                                                {parsed.badge}
                                               </span>
                                             )}
-                                            {entry.book && (
-                                              <span className="text-[9px] px-1.5 py-0.2 rounded border bg-white/10 border-white/15 text-slate-300 font-mono">
-                                                B{entry.book}
+                                            {self && (
+                                              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 font-mono font-black border border-emerald-400/50 shrink-0">
+                                                ★ 你的英雄
                                               </span>
                                             )}
                                           </div>
@@ -1022,44 +1213,47 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
 
                       {/* ── 領域 B: 金幣之王 (總資產財富榜 Top 50) ── */}
                       {panel.id === 'coin_king' && (
-                        <div className="flex-1 flex flex-col overflow-hidden bg-black/40 border border-white/10 rounded-2xl p-1.5 shadow-inner">
+                        <div className="flex-1 flex flex-col overflow-hidden bg-slate-950/75 backdrop-blur-md border border-white/15 rounded-2xl p-1.5 shadow-xl">
                           {/* 表頭 */}
                           <div className="px-3 py-1 flex items-center justify-between text-[11px] font-mono font-bold text-slate-400 border-b border-white/10 mb-1">
-                            <span>名次 / 英雄勇士</span>
+                            <span>名次 / 英雄名號 (班級座號)</span>
                             <span>金幣累積總資產</span>
                           </div>
 
                           <div className="flex-1 overflow-y-auto space-y-1 pr-1 scrollbar-thin">
                             {((boardData['monopoly'] || []).slice(0, 50)).map((entry, idx) => {
                               const self = isSelf(entry);
+                              const parsed = parseStudentFormat(entry, lang);
                               return (
                                 <div
                                   key={entry.student_id || idx}
                                   className={`flex items-center justify-between p-2 rounded-xl text-xs sm:text-sm border transition-all ${
                                     self
-                                      ? 'ring-2 ring-emerald-400 bg-emerald-950/40 border-emerald-400/80 shadow-emerald-900/50 shadow-md'
+                                      ? 'ring-2 ring-emerald-400 bg-emerald-950/50 border-emerald-400/80 shadow-emerald-900/50 shadow-md'
                                       : idx === 0
-                                      ? 'bg-gradient-to-r from-amber-500/25 via-yellow-500/10 to-black/30 border-amber-400/70 font-black shadow-sm'
+                                      ? 'bg-gradient-to-r from-amber-500/30 via-yellow-500/15 to-black/40 border-amber-400/80 font-black shadow-md'
                                       : idx === 1
-                                      ? 'bg-gradient-to-r from-slate-300/20 via-slate-200/5 to-black/30 border-slate-300/50 font-bold'
+                                      ? 'bg-gradient-to-r from-slate-300/25 via-slate-200/10 to-black/40 border-slate-300/60 font-bold'
                                       : idx === 2
-                                      ? 'bg-gradient-to-r from-amber-800/20 via-amber-700/5 to-black/30 border-amber-700/40 font-bold'
-                                      : 'bg-black/35 border-white/10 text-slate-200 hover:bg-black/55'
+                                      ? 'bg-gradient-to-r from-amber-800/25 via-amber-700/10 to-black/40 border-amber-700/50 font-bold'
+                                      : 'bg-black/40 border-white/10 text-slate-200 hover:bg-black/60'
                                   }`}
                                 >
                                   <div className="flex items-center gap-2 truncate pr-2">
                                     <MetallicRankMedal rank={idx + 1} size={idx < 3 ? 'md' : 'sm'} />
-                                    <span className="font-heading font-black truncate max-w-[130px] sm:max-w-[200px]">
-                                      {formatStudentDisplayName(entry)}
+                                    <span className="font-heading font-black truncate max-w-[120px] sm:max-w-[180px]">
+                                      {parsed.nickname}
                                     </span>
+                                    {parsed.badge && (
+                                      <span className="text-[11px] text-slate-300 font-mono font-bold shrink-0">
+                                        {parsed.badge}
+                                      </span>
+                                    )}
                                     {self && (
-                                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 font-mono font-black border border-emerald-400/50">
+                                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 font-mono font-black border border-emerald-400/50 shrink-0">
                                         ★ 你的英雄
                                       </span>
                                     )}
-                                    <span className="text-[10px] text-slate-400 font-mono">
-                                      {formatStudentBadge(entry, lang)}
-                                    </span>
                                   </div>
                                   <div className="font-mono font-black text-right shrink-0 text-amber-400 flex items-center gap-1">
                                     <Coins className="w-4 h-4 text-amber-400" />
@@ -1075,44 +1269,47 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
 
                       {/* ── 領域 C: 積分之王 (家園探索歷險 Top 50) ── */}
                       {panel.id === 'point_king' && (
-                        <div className="flex-1 flex flex-col overflow-hidden bg-black/40 border border-white/10 rounded-2xl p-1.5 shadow-inner">
+                        <div className="flex-1 flex flex-col overflow-hidden bg-slate-950/75 backdrop-blur-md border border-white/15 rounded-2xl p-1.5 shadow-xl">
                           {/* 表頭 */}
                           <div className="px-3 py-1 flex items-center justify-between text-[11px] font-mono font-bold text-slate-400 border-b border-white/10 mb-1">
-                            <span>名次 / 英雄勇士</span>
+                            <span>名次 / 英雄名號 (班級座號)</span>
                             <span>小鎮歷險探索積分</span>
                           </div>
 
                           <div className="flex-1 overflow-y-auto space-y-1 pr-1 scrollbar-thin">
                             {((boardData['town_quest'] || []).slice(0, 50)).map((entry, idx) => {
                               const self = isSelf(entry);
+                              const parsed = parseStudentFormat(entry, lang);
                               return (
                                 <div
                                   key={entry.student_id || idx}
                                   className={`flex items-center justify-between p-2 rounded-xl text-xs sm:text-sm border transition-all ${
                                     self
-                                      ? 'ring-2 ring-emerald-400 bg-emerald-950/40 border-emerald-400/80 shadow-emerald-900/50 shadow-md'
+                                      ? 'ring-2 ring-emerald-400 bg-emerald-950/50 border-emerald-400/80 shadow-emerald-900/50 shadow-md'
                                       : idx === 0
-                                      ? 'bg-gradient-to-r from-emerald-500/25 via-teal-500/10 to-black/30 border-emerald-400/70 font-black shadow-sm'
+                                      ? 'bg-gradient-to-r from-emerald-500/30 via-teal-500/15 to-black/40 border-emerald-400/80 font-black shadow-md'
                                       : idx === 1
-                                      ? 'bg-gradient-to-r from-slate-300/20 via-slate-200/5 to-black/30 border-slate-300/50 font-bold'
+                                      ? 'bg-gradient-to-r from-slate-300/25 via-slate-200/10 to-black/40 border-slate-300/60 font-bold'
                                       : idx === 2
-                                      ? 'bg-gradient-to-r from-emerald-800/20 via-emerald-700/5 to-black/30 border-emerald-700/40 font-bold'
-                                      : 'bg-black/35 border-white/10 text-slate-200 hover:bg-black/55'
+                                      ? 'bg-gradient-to-r from-emerald-800/25 via-emerald-700/10 to-black/40 border-emerald-700/50 font-bold'
+                                      : 'bg-black/40 border-white/10 text-slate-200 hover:bg-black/60'
                                   }`}
                                 >
                                   <div className="flex items-center gap-2 truncate pr-2">
                                     <MetallicRankMedal rank={idx + 1} size={idx < 3 ? 'md' : 'sm'} />
-                                    <span className="font-heading font-black truncate max-w-[130px] sm:max-w-[200px]">
-                                      {formatStudentDisplayName(entry)}
+                                    <span className="font-heading font-black truncate max-w-[120px] sm:max-w-[180px]">
+                                      {parsed.nickname}
                                     </span>
+                                    {parsed.badge && (
+                                      <span className="text-[11px] text-slate-300 font-mono font-bold shrink-0">
+                                        {parsed.badge}
+                                      </span>
+                                    )}
                                     {self && (
-                                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 font-mono font-black border border-emerald-400/50">
+                                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 font-mono font-black border border-emerald-400/50 shrink-0">
                                         ★ 你的英雄
                                       </span>
                                     )}
-                                    <span className="text-[10px] text-slate-400 font-mono">
-                                      {formatStudentBadge(entry, lang)}
-                                    </span>
                                   </div>
                                   <div className="font-mono font-black text-right shrink-0 text-emerald-400 flex items-center gap-1">
                                     <Compass className="w-4 h-4 text-emerald-400" />
@@ -1126,7 +1323,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                         </div>
                       )}
 
-                      {/* ── 領域 D: 遊戲之王 (四分類 ＋ 各小遊戲 Top 50) ── */}
+                      {/* ── 領域 D: 遊戲之王 (四大分類 ＋ 各小遊戲 Top 50) ── */}
                       {panel.id === 'game_king' && (
                         <div className="flex-1 flex flex-col overflow-hidden">
                           {/* 四大領域切換膠囊 (探索解謎、極速反應、經典測驗、多人連線) */}
@@ -1145,7 +1342,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                                     setActiveGameId(cat.games[0].id);
                                   }}
                                   className={`p-1.5 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-1.5 ${
-                                    isCatActive ? cat.activeClass : 'bg-black/50 border-white/10 text-slate-300 hover:bg-black/70'
+                                    isCatActive ? cat.activeClass : 'bg-black/60 border-white/10 text-slate-300 hover:bg-black/80'
                                   }`}
                                 >
                                   <CatIcon className="w-3.5 h-3.5 shrink-0" />
@@ -1162,7 +1359,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                             const list = (boardData[curGame.id] || []).slice(0, 50);
 
                             return (
-                              <div className="flex-1 flex flex-col overflow-hidden bg-black/40 border border-white/10 rounded-2xl p-1.5 shadow-inner">
+                              <div className="flex-1 flex flex-col overflow-hidden bg-slate-950/75 backdrop-blur-md border border-white/15 rounded-2xl p-1.5 shadow-xl">
                                 <div className="flex items-center gap-1 overflow-x-auto scrollbar-none pb-1.5 mb-1 shrink-0 border-b border-white/10">
                                   {curCat.games.map(g => {
                                     const isGameActive = curGame.id === g.id;
@@ -1191,7 +1388,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
 
                                 {/* 表頭 */}
                                 <div className="px-3 py-1 flex items-center justify-between text-[11px] font-mono font-bold text-slate-400 border-b border-white/5 mb-1">
-                                  <span>名次 / 英雄勇士</span>
+                                  <span>名次 / 英雄名號 (班級座號)</span>
                                   <span>挑戰成績 ({curGame.unit})</span>
                                 </div>
 
@@ -1206,34 +1403,35 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                                   ) : (
                                     list.map((entry, idx) => {
                                       const self = isSelf(entry);
+                                      const parsed = parseStudentFormat(entry, lang);
                                       return (
                                         <div
                                           key={entry.id || entry.student_id || idx}
                                           className={`flex items-center justify-between p-2 rounded-xl text-xs sm:text-sm border transition-all ${
                                             self
-                                              ? 'ring-2 ring-emerald-400 bg-emerald-950/40 border-emerald-400/80 shadow-emerald-900/50 shadow-md'
+                                              ? 'ring-2 ring-emerald-400 bg-emerald-950/50 border-emerald-400/80 shadow-emerald-900/50 shadow-md'
                                               : idx === 0
-                                              ? 'bg-gradient-to-r from-purple-500/25 via-fuchsia-500/10 to-black/30 border-purple-400/70 font-black shadow-sm'
+                                              ? 'bg-gradient-to-r from-purple-500/30 via-fuchsia-500/15 to-black/40 border-purple-400/80 font-black shadow-md'
                                               : idx === 1
-                                              ? 'bg-gradient-to-r from-slate-300/20 via-slate-200/5 to-black/30 border-slate-300/50 font-bold'
+                                              ? 'bg-gradient-to-r from-slate-300/25 via-slate-200/10 to-black/40 border-slate-300/60 font-bold'
                                               : idx === 2
-                                              ? 'bg-gradient-to-r from-purple-800/20 via-purple-700/5 to-black/30 border-purple-700/40 font-bold'
-                                              : 'bg-black/35 border-white/10 text-slate-200 hover:bg-black/55'
+                                              ? 'bg-gradient-to-r from-purple-800/25 via-purple-700/10 to-black/40 border-purple-700/50 font-bold'
+                                              : 'bg-black/40 border-white/10 text-slate-200 hover:bg-black/60'
                                           }`}
                                         >
                                           <div className="flex items-center gap-2 truncate pr-2">
                                             <MetallicRankMedal rank={idx + 1} size={idx < 3 ? 'md' : 'sm'} />
-                                            <span className="font-heading font-black truncate max-w-[130px] sm:max-w-[200px]">
-                                              {formatStudentDisplayName(entry)}
+                                            <span className="font-heading font-black truncate max-w-[120px] sm:max-w-[180px]">
+                                              {parsed.nickname}
                                             </span>
-                                            {self && (
-                                              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 font-mono font-black border border-emerald-400/50">
-                                                ★ 你的英雄
+                                            {parsed.badge && (
+                                              <span className="text-[11px] text-slate-300 font-mono font-bold shrink-0">
+                                                {parsed.badge}
                                               </span>
                                             )}
-                                            {entry.book && (
-                                              <span className="text-[9px] px-1.5 py-0.2 rounded border bg-white/10 border-white/15 text-slate-300 font-mono">
-                                                B{entry.book}
+                                            {self && (
+                                              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 font-mono font-black border border-emerald-400/50 shrink-0">
+                                                ★ 你的英雄
                                               </span>
                                             )}
                                           </div>
