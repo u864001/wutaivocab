@@ -413,11 +413,8 @@ export const TME_PRE_A1_READING_BANK = [
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "playground",
-      "park",
-      "library",
-      "zoo",
-      "school",
-      "restaurant",
+      "supermarket",
+      "bookstore",
       "hospital"
     ],
     "answer": 0,

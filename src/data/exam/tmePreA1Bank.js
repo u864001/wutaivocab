@@ -2576,19 +2576,17 @@ const NON_WRITING_ITEMS = [
     "taskType": "L-CONV",
     "difficulty": 2,
     "media": {
-      "audioText": "Doctor: How can I help you today, Peter? Boy: I have a sore throat and a high fever, Dr. Owl. Question: What symptoms does Peter have?"
+      "audioText": "Doctor: What's wrong with you, Peter? Boy: I have a sore throat and a fever, Dr. Owl. Question: What's wrong with Peter?"
     },
-    "question": "聽對話，回答問題：What symptoms does Peter have?",
+    "question": "聽對話，回答問題：What's wrong with Peter?",
     "options": [
-      "A sore throat and a high fever",
-      "A broken leg",
-      "A toothache and a runny nose",
-      "An earache",
-      "He feels hungry",
-      "He has a stomachache"
+      "He has a sore throat and a fever.",
+      "He has a broken leg.",
+      "He has a toothache.",
+      "He has an earache."
     ],
     "answer": 0,
-    "explanation": "Peter 描述症狀「a sore throat and a high fever（喉嚨痛且發高燒）」，故選 (A)。",
+    "explanation": "Peter 說明身體狀況「a sore throat and a fever（喉嚨痛且發燒）」，故選 (A)。",
     "reviewed": true
   },
   {
@@ -2791,11 +2789,8 @@ const NON_WRITING_ITEMS = [
     "question": "看生活場所線稿插圖，選出正確的英文單字：",
     "options": [
       "playground",
-      "park",
-      "library",
-      "zoo",
-      "school",
-      "restaurant",
+      "supermarket",
+      "bookstore",
       "hospital"
     ],
     "answer": 0,
