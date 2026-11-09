@@ -310,7 +310,9 @@ export function recordExamMasterySession(studentId, track = 'tme-preA1', questio
       last_attempt_at: now,
       is_formal: isFormal || current.is_formal || false,
       category: q.category || 'vocab',
-      subType: q.subType || q.taskType || 'unknown'
+      subType: q.subType || q.taskType || 'unknown',
+      taskType: q.taskType || q.subType || 'unknown',
+      book: q.book
     };
 
     trackData.total_attempts = (trackData.total_attempts || 0) + 1;

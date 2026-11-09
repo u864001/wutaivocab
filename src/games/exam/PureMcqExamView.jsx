@@ -1052,7 +1052,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         課本題庫練習
                       </span>
                       <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                        1,289 題分冊精熟
+                        3,317 題分冊精熟
                       </span>
                     </div>
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">
@@ -1180,7 +1180,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   </div>
                   <div>
                     <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span>Here We Go 1,289 全冊題庫</span>
+                      <span>Here We Go 3,317 全冊題庫</span>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
                         1～8 冊 · 字母專冊 · 國一先修
                       </span>

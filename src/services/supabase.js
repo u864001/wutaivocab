@@ -1325,15 +1325,26 @@ export const fetchTeacherAuditRecordsFromCloud = async () => {
     }
   } catch (e) {}
 
-  // 軌道 B: leaderboard (mode = 'exam-audit-note')
+  // 軌道 B: leaderboard (mode = 'exam-audit-note') 全量分頁讀取
   try {
-    const { data: lbRows, error: lbErr } = await supabase
-      .from('leaderboard')
-      .select('*')
-      .eq('mode', 'exam-audit-note');
+    let allRows = [];
+    let page = 0;
+    const pageSize = 1000;
+    while (true) {
+      const { data: lbRows, error: lbErr } = await supabase
+        .from('leaderboard')
+        .select('*')
+        .eq('mode', 'exam-audit-note')
+        .range(page * pageSize, (page + 1) * pageSize - 1);
 
-    if (!lbErr && Array.isArray(lbRows)) {
-      lbRows.forEach(r => {
+      if (lbErr || !Array.isArray(lbRows) || lbRows.length === 0) break;
+      allRows = allRows.concat(lbRows);
+      if (lbRows.length < pageSize) break;
+      page++;
+    }
+
+    if (Array.isArray(allRows)) {
+      allRows.forEach(r => {
         const qId = r.name;
         if (!qId) return;
         let parsed = null;

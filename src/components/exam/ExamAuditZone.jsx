@@ -620,7 +620,7 @@ export function ExamAuditZone({ onBack }) {
       <div className="shrink-0 px-3 sm:px-6 pt-2 pb-1 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
         <div className="grid grid-cols-3 gap-2 max-w-4xl">
           {[
-            { id: 'textbook', label: '課本題庫練習', icon: BookOpen, count: HERE_WE_GO_MCQ_BANK.length, desc: '1,289 題分年級分題型' },
+            { id: 'textbook', label: '課本題庫練習', icon: BookOpen, count: HERE_WE_GO_MCQ_BANK.length, desc: `${HERE_WE_GO_MCQ_BANK.length.toLocaleString()} 題分年級分題型` },
             { id: 'ministry-assessment', label: '學力檢測練習', icon: GraduationCap, count: 105, desc: '115 全真 35 題原卷' },
             { id: 'tme-preA1', label: 'Pre A1 檢測練習', icon: Award, count: TME_PRE_A1_BANK.length, desc: '五大面向專項題庫' }
           ].map((tab) => {
