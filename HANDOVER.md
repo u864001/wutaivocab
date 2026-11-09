@@ -882,6 +882,23 @@
   - `tme-listen-qa-14`：超綱字 `symptom` 降級改寫為課綱標準句 `What's wrong with Peter?`，提供完整 6 大國小常見病痛誘答池（腿斷、牙痛、耳朵痛、胃痛、頭痛、流鼻水）。
   - `tme-read-p2w-06`：溜滑梯插圖誘答項排除包含關係之 `park`/`school`，替換為生活常識無歧義之 6 大場所誘答池（超市、書店、圖書館、動物園、餐廳、醫院）。
 
+#### 55. 全量 TME Pre-A1 題庫（300 題）AI 專家自動化審查通過、雲端雙軌同步與 25 筆教師意見精確校正
+* **25 筆教師意見精確校正入庫（全量配齊 1 正解 ＋ 6 誘答項，共 7 選項結構）**：
+  - **聽力看圖選句與音稿校準**：`tme-listen-p2s-04`（蛋糕一根蠟燭改為 `There is one candle on the cake.`）、`tme-listen-p2s-08`（正答補齊 `in the morning`）、`tme-listen-p2s-02`（正答補齊 `on the floor`）。
+  - **單複數與人稱性別校正**：`tme-listen-p2s-09`（單人投籃音稿與選項全數改為單數 `The student is playing basketball after school.`）、`tme-read-p2s-10`（改為 `The student is...`）；`tme-listen-p2s-10`、`tme-listen-p2s-11`、`tme-read-p2s-11`（女孩改男孩）；`tme-listen-p2s-12`、`tme-read-p2s-14`（男孩改女孩唱歌）。
+  - **選項排歧與生活常識防呆**：`tme-read-p2s-02`（滑板車 `scooter` 徹底排除腳踏車衝突）；`tme-read-p2s-05`（黑白印刷防呆，校車移除 `yellow`）；`tme-read-p2s-07`（生日蛋糕改為單數 `a candle`）；`tme-read-p2w-14`（沙灘題目排除相鄰單字 `sea` 換成 `museum`）。
+  - **聽力對話角色與台詞精修**：`tme-listen-d2p-02`（男生改為單選麵包 `I want some bread, please.`，排除牛奶雙重答案）；`tme-listen-d2p-06`（女聲台詞校正為 `Don't forget to wear your jacket, Peter.`，補齊 7 張衣物圖檔）；`tme-listen-qa-08`（改為男老師 Mr. Brown 與 Amy 對話，避免雙女聲混淆）；`tme-listen-qa-12`（Mrs. Lin 與男配角對話，正答 A 為電影院 `To the theater to watch a movie`）。
+  - **圖檔選項排歧升級**：`tme-vocab-a2p-09`（河流題目將容易混淆之海圖換為太陽 `sun.png`）；`tme-vocab-a2p-11`（smile 題目將微表情易混之 face/mouth 換為 `hand.png` 與 `foot.png`）；`tme-vocab-a2p-13`（大海題目將船換為山脈 `mountain.png`）；確認 `tme-vocab-p2w-13`（馬鈴薯）與 `tme-vocab-a2p-14`（exit sign）誘答項鮮明，排除法作答 100% 成立。
+* **未審 81 筆題庫全項盲解審查通過（21 篇章閱讀 ＋ 60 核心句型重組）**：
+  - **21 篇章閱讀題（`tme-read-p01-01` ~ `tme-read-p07-03`）**：涵蓋霧臺石板屋晴日生活、校園失物招領、Kevin 生日派對邀請函、Cookie 小白貓日常、早晨健康好習慣、臺灣四季風光、霧臺運動會與傳統射箭等 7 大本土與生活化題組；題幹清晰無歧義，`options[0]` 與文本事實 100% 契合，誘答項平行工整。
+  - **60 句型重組題（`tme-write-p01-01` ~ `tme-write-p10-06`）**：涵蓋國小十大核心句型（Wh- 問句、Be 動詞、Yes/No 問句、Can 助動詞、Do/Does 喜好、想要與需求、方位介系詞、現在進行式、There is/are 存在句、祈使句）；磁吸積木單字 tokens、scrambledWords 與 targetSentence 100% 精確吻合，誘答項語法錯誤結構設計完善。
+* **Supabase 雲端資料庫雙向聯集同步實施**：
+  - `leaderboard (mode='exam-audit-note')`：全量題庫 300 題（加上 SAA 14 題共 314 筆記錄）達成 100% 審核通過（`verified: true`）。
+  - 25 筆題目加註「【已依教師意見修正並通過覆核】」與詳細修正記錄；其餘題目加註「【AI 專家審核通過】」與專業檢核摘要。教師於後台可即時查閱完整記錄與歷史軌跡。
+* **全自動化防回歸與 CI/CD 驗收**：
+  - `npm run lint` 0 errors 通過。
+  - 6 階段無頭 Chrome smoke test（靜態契約檢查、排行榜、大廳與教師台、鷹眼神探、口說實驗室、核心遊戲互動點擊、14 款遊戲 × 4 身分全矩陣）100% 通過（`🎉 ALL FUNCTIONAL TESTS & ALL 14 GAMES PASSED 100% WITH ZERO CRASHES!`）。
+
 ---
 
 ### 四、核心目錄與關鍵模組結構

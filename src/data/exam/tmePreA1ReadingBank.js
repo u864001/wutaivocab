@@ -481,13 +481,14 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/bicycle.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The boy has a new bicycle.",
-      "The girl is driving a bus.",
-      "The train is at the station.",
-      "The boat is in the water.",
-      "The boy is cleaning his yellow bicycle.",
-      "The girl is riding a black horse."
-    ],
+    "The boy has a new bicycle.",
+    "The girl is driving a bus.",
+    "The train is at the station.",
+    "The boat is in the water.",
+    "The boy is cleaning his yellow scooter.",
+    "The girl is riding a black horse.",
+    "The students are walking to school."
+  ],
     "answer": 0,
     "explanation": "插圖為腳踏車線稿，句子 (A) 完全吻合。",
     "reviewed": true
@@ -547,15 +548,16 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/bus.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The students take the yellow school bus.",
-      "The woman is cooking in the kitchen.",
-      "The man is sleeping in the bedroom.",
-      "The girl is reading in the library.",
-      "The boy is washing a bicycle.",
-      "The children are swimming in the ocean."
-    ],
+    "The students take the school bus.",
+    "The woman is cooking in the kitchen.",
+    "The man is sleeping in the bedroom.",
+    "The girl is reading in the library.",
+    "The boy is washing a bicycle.",
+    "The children are swimming in the ocean.",
+    "The teacher is writing on the blackboard."
+  ],
     "answer": 0,
-    "explanation": "插圖為大公車/校車，句子 (A)「搭公車上學」完全吻合。",
+    "explanation": "圖片顯示學生正在搭校車，相符句子為 (A) The students take the school bus.。",
     "reviewed": true
   },
   {
@@ -591,15 +593,16 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/cake.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "There is a birthday cake with candles.",
-      "The cute cat is sleeping on the sofa.",
-      "The big dog is barking at the door.",
-      "The little bird is singing on the fence.",
-      "The children are playing on the swing.",
-      "The students are studying math."
-    ],
+    "There is a birthday cake with a candle.",
+    "The cute cat is sleeping on the sofa.",
+    "The big dog is barking at the door.",
+    "The little bird is singing on the fence.",
+    "The children are playing on the swing.",
+    "The students are studying math.",
+    "The grandmother is cooking dinner."
+  ],
     "answer": 0,
-    "explanation": "插圖為點燃蠟燭的生日蛋糕，句子 (A) 完全吻合。",
+    "explanation": "圖片為一個生日蛋糕插著一根蠟燭，相符句子為 (A) There is a birthday cake with a candle.。",
     "reviewed": true
   },
   {
@@ -1864,7 +1867,7 @@ export const TME_PRE_A1_READING_BANK = [
       "river",
       "park",
       "zoo",
-      "sea",
+      "museum",
       "forest"
     ],
     "answer": 0,
@@ -1904,15 +1907,16 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/action_play_basketball.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The students are playing basketball together.",
-      "The students are running in the classroom.",
-      "The students are singing in the music room.",
-      "The students are flying a kite in the field.",
-      "The students are making a snowman.",
-      "The students are reading books in the library."
-    ],
+    "The student is playing basketball.",
+    "The student is running in the classroom.",
+    "The student is singing in the music room.",
+    "The student is flying a kite in the field.",
+    "The student is making a snowman.",
+    "The student is reading books in the library.",
+    "The student is washing a yellow car."
+  ],
     "answer": 0,
-    "explanation": "插圖中學生正在球場跳起投籃，句子 (A)「The students are playing basketball together.」完全吻合。",
+    "explanation": "圖片顯示一位學生正在打籃球，相符句子為 (A) The student is playing basketball.。",
     "reviewed": true
   },
   {
@@ -1926,15 +1930,16 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/action_swim.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The girl can swim very fast.",
-      "The girl cannot swim at all.",
-      "The girl is cooking noodles.",
-      "The girl is riding a horse.",
-      "The girl is climbing a tree.",
-      "The girl is playing the guitar."
-    ],
+    "The boy can swim very fast.",
+    "The boy cannot swim at all.",
+    "The boy is cooking noodles.",
+    "The boy is riding a horse.",
+    "The boy is climbing a tree.",
+    "The boy is playing the guitar.",
+    "The boy is drinking hot milk."
+  ],
     "answer": 0,
-    "explanation": "插圖為女孩戴泳鏡在池中游泳，句子 (A)「The girl can swim very fast.」相符。",
+    "explanation": "圖片顯示小男孩游得很棒，相符句子為 (A) The boy can swim very fast.。",
     "reviewed": true
   },
   {
@@ -1992,15 +1997,16 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/action_sing_song.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The boy is singing a cheerful song.",
-      "The boy is drawing a red flower.",
-      "The boy is drinking a glass of water.",
-      "The boy is driving a blue car.",
-      "The boy is feeding a little dog.",
-      "The boy is riding a train."
-    ],
+    "The girl is singing a cheerful song.",
+    "The girl is drawing a red flower.",
+    "The girl is drinking a glass of water.",
+    "The girl is driving a blue car.",
+    "The girl is feeding a little dog.",
+    "The girl is riding a train.",
+    "The girl is sleeping in her bed."
+  ],
     "answer": 0,
-    "explanation": "插圖為男孩手握麥克風歡樂唱歌，句子 (A)「The boy is singing a cheerful song.」最相符。",
+    "explanation": "圖片顯示小女孩拿著麥克風正在唱歌，相符句子為 (A) The girl is singing a cheerful song.。",
     "reviewed": true
   }
 ];

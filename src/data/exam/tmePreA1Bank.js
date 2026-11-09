@@ -1775,15 +1775,16 @@ const NON_WRITING_ITEMS = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "The cute dog is sitting.",
-      "The cat is climbing a tree.",
-      "The bird is flying.",
-      "The duck is swimming.",
-      "The dog is barking loudly.",
-      "The dog is chasing a ball."
-    ],
+    "The cute dog is sitting on the floor.",
+    "The cat is climbing a tree.",
+    "The bird is flying.",
+    "The duck is swimming.",
+    "The dog is barking loudly.",
+    "The dog is chasing a ball.",
+    "The rabbit is jumping in the grass."
+  ],
     "answer": 0,
-    "explanation": "插圖為小狗坐在地上，聽力敘述為「The cute dog is sitting...」，故選 (A)。",
+    "explanation": "圖片顯示小狗正安靜坐在地板上，相符句子為 (A) The cute dog is sitting on the floor.。",
     "reviewed": true
   },
   {
@@ -1821,19 +1822,20 @@ const NON_WRITING_ITEMS = [
     "difficulty": 1,
     "image": "/assets/exam/preA1/cake.png",
     "media": {
-      "audioText": "There are three candles on the birthday cake."
+      "audioText": "There is one candle on the cake."
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "There are three candles on the birthday cake.",
-      "The girl is eating a delicious apple.",
-      "The boy is playing with a toy car.",
-      "The students are reading in the library.",
-      "The dog is running in the park.",
-      "The yellow bus is driving fast."
-],
+    "There is one candle on the cake.",
+    "The girl is eating a delicious apple.",
+    "The boy is playing with a toy car.",
+    "The students are reading in the library.",
+    "The dog is running in the park.",
+    "The yellow bus is driving fast.",
+    "The cat is sleeping on the chair."
+  ],
     "answer": 0,
-    "explanation": "插圖為生日蛋糕，聽力內容「There are three candles on the birthday cake.（生日蛋糕上有三支蠟燭）」，故選 (A)。",
+    "explanation": "圖片為一個插著一根蠟燭的蛋糕，句意相符者為 (A) There is one candle on the cake.。",
     "reviewed": true
   },
   {
@@ -1920,7 +1922,7 @@ const NON_WRITING_ITEMS = [
     "taskType": "L-CONV",
     "difficulty": 2,
     "media": {
-      "audioText": "Mom: What do you want for breakfast, Tom? Tom: I want some milk and bread, please."
+      "audioText": "Girl: What do you want to eat? Boy: I want some bread, please."
     },
     "question": "聽對話，選出 Tom 早餐想要的食物線稿插圖：",
     "options": [
@@ -1942,7 +1944,7 @@ const NON_WRITING_ITEMS = [
       "/assets/exam/preA1/apple.png"
     ],
     "answer": 0,
-    "explanation": "Tom 回答「I want some milk and bread」，對應麵包吐司線稿圖片 (A)。",
+    "explanation": "對話中男生說「I want some bread, please.」，麵包為圖片 (A)。",
     "reviewed": true
   },
   {
@@ -2054,25 +2056,27 @@ const NON_WRITING_ITEMS = [
     "taskType": "L-CONV",
     "difficulty": 2,
     "media": {
-      "audioText": "Mom: Don not forget to wear your jacket, Peter. Peter: Okay, Mom. I will put it on now."
+      "audioText": "Mom: Don't forget to wear your jacket, Peter. Peter: Okay, Mom. I will put it on now."
     },
     "question": "聽對話，選出媽媽提醒 Peter 穿上的衣物線稿插圖：",
     "options": [
-      "圖片 (A)",
-      "圖片 (B)",
-      "圖片 (C)",
-      "圖片 (D)",
-      "圖片 (E)",
-      "圖片 (F)"
-    ],
+    "圖片 (A)",
+    "圖片 (B)",
+    "圖片 (C)",
+    "圖片 (D)",
+    "圖片 (E)",
+    "圖片 (F)",
+    "圖片 (G)"
+  ],
     "optionImages": [
-      "/assets/exam/preA1/jacket.png",
-      "/assets/exam/preA1/cap.png",
-      "/assets/exam/preA1/shoe.png",
-      "/assets/exam/preA1/umbrella.png",
-      "/assets/exam/preA1/hat.png",
-      "/assets/exam/preA1/tshirt.png"
-    ],
+    "/assets/exam/preA1/jacket.png",
+    "/assets/exam/preA1/cap.png",
+    "/assets/exam/preA1/shoe.png",
+    "/assets/exam/preA1/umbrella.png",
+    "/assets/exam/preA1/hat.png",
+    "/assets/exam/preA1/tshirt.png",
+    "/assets/exam/preA1/pants.png"
+  ],
     "answer": 0,
     "explanation": "媽媽提醒「wear your jacket（穿上夾克外衣）」，故選夾克圖片 (A)。",
     "reviewed": true
@@ -2432,17 +2436,18 @@ const NON_WRITING_ITEMS = [
     "taskType": "L-CONV",
     "difficulty": 2,
     "media": {
-      "audioText": "Teacher: Where is your homework, Amy? Amy: It is in my school bag at home. Question: Where is Amy’s homework?"
+      "audioText": "Mr. Brown: Where is your homework, Amy? Amy: It is in my school bag at home. Question: Where is Amy's homework?"
     },
     "question": "聽對話，回答問題：Where is Amy’s homework?",
     "options": [
-      "In her school bag at home",
-      "Under the chair",
-      "On the teacher's desk",
-      "In the locker",
-      "In the library",
-      "Under her bed"
-],
+    "In her school bag at home",
+    "Under the chair",
+    "On the teacher's desk",
+    "In the locker",
+    "In the library",
+    "Under her bed",
+    "In the classroom cabinet"
+  ],
     "answer": 0,
     "explanation": "Amy 回答作業「in my school bag at home（在家裡的書包中）」，故選 (A)。",
     "reviewed": true
@@ -2528,19 +2533,20 @@ const NON_WRITING_ITEMS = [
     "taskType": "L-CONV",
     "difficulty": 2,
     "media": {
-      "audioText": "Man: Where are you going this weekend, Mrs. Lin? Woman: I am taking my children to Wutai to visit the slate houses. Question: Where is Mrs. Lin going this weekend?"
+      "audioText": "Man: Where are you going this weekend, Mrs. Lin? Woman: I am taking my children to the theater to watch a movie. Question: Where is Mrs. Lin going this weekend?"
     },
     "question": "聽對話，回答問題：Where is Mrs. Lin going this weekend?",
     "options": [
-      "To Wutai to visit slate houses",
-      "To the cinema to watch a movie",
-      "To the supermarket to buy milk",
-      "To the beach to go swimming",
-      "To the hospital to see a doctor",
-      "To the library to study English"
-    ],
+    "To the theater to watch a movie",
+    "To the cinema to buy popcorn",
+    "To the supermarket to buy milk",
+    "To the beach to go swimming",
+    "To the hospital to see a doctor",
+    "To the library to study English",
+    "To the park to ride bicycles"
+  ],
     "answer": 0,
-    "explanation": "Mrs. Lin 回答要去霧臺參觀石板屋「taking my children to Wutai to visit the slate houses」，故選 (A)。",
+    "explanation": "對話中林太太說「I am taking my children to the theater to watch a movie.」，故選 (A)。",
     "reviewed": true
   },
   {
@@ -2860,13 +2866,14 @@ const NON_WRITING_ITEMS = [
     "image": "/assets/exam/preA1/bicycle.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The boy has a new bicycle.",
-      "The girl is driving a bus.",
-      "The train is at the station.",
-      "The boat is in the water.",
-      "The boy is cleaning his yellow bicycle.",
-      "The girl is riding a black horse."
-    ],
+    "The boy has a new bicycle.",
+    "The girl is driving a bus.",
+    "The train is at the station.",
+    "The boat is in the water.",
+    "The boy is cleaning his yellow scooter.",
+    "The girl is riding a black horse.",
+    "The students are walking to school."
+  ],
     "answer": 0,
     "explanation": "插圖為腳踏車線稿，句子 (A) 完全吻合。",
     "reviewed": true
@@ -2926,15 +2933,16 @@ const NON_WRITING_ITEMS = [
     "image": "/assets/exam/preA1/bus.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "The students take the yellow school bus.",
-      "The woman is cooking in the kitchen.",
-      "The man is sleeping in the bedroom.",
-      "The girl is reading in the library.",
-      "The boy is washing a bicycle.",
-      "The children are swimming in the ocean."
-],
+    "The students take the school bus.",
+    "The woman is cooking in the kitchen.",
+    "The man is sleeping in the bedroom.",
+    "The girl is reading in the library.",
+    "The boy is washing a bicycle.",
+    "The children are swimming in the ocean.",
+    "The teacher is writing on the blackboard."
+  ],
     "answer": 0,
-    "explanation": "插圖為大公車/校車，句子 (A)「搭公車上學」完全吻合。",
+    "explanation": "圖片顯示學生正在搭校車，相符句子為 (A) The students take the school bus.。",
     "reviewed": true
   },
   {
@@ -2970,15 +2978,16 @@ const NON_WRITING_ITEMS = [
     "image": "/assets/exam/preA1/cake.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-      "There is a birthday cake with candles.",
-      "The cute cat is sleeping on the sofa.",
-      "The big dog is barking at the door.",
-      "The little bird is singing on the fence.",
-      "The children are playing on the swing.",
-      "The students are studying math."
-],
+    "There is a birthday cake with a candle.",
+    "The cute cat is sleeping on the sofa.",
+    "The big dog is barking at the door.",
+    "The little bird is singing on the fence.",
+    "The children are playing on the swing.",
+    "The students are studying math.",
+    "The grandmother is cooking dinner."
+  ],
     "answer": 0,
-    "explanation": "插圖為點燃蠟燭的生日蛋糕，句子 (A) 完全吻合。",
+    "explanation": "圖片為一個生日蛋糕插著一根蠟燭，相符句子為 (A) There is a birthday cake with a candle.。",
     "reviewed": true
   },
   {
@@ -4084,7 +4093,7 @@ const NON_WRITING_ITEMS = [
     ],
     "optionImages": [
       "/assets/exam/preA1/river.png",
-      "/assets/exam/preA1/sea.png",
+      "/assets/exam/preA1/sun.png",
       "/assets/exam/preA1/mountain.png",
       "/assets/exam/preA1/beach.png",
       "/assets/exam/preA1/park.png",
@@ -4152,11 +4161,11 @@ const NON_WRITING_ITEMS = [
     ],
     "optionImages": [
       "/assets/exam/preA1/smile.png",
-      "/assets/exam/preA1/face.png",
+      "/assets/exam/preA1/hand.png",
       "/assets/exam/preA1/head.png",
       "/assets/exam/preA1/eye.png",
       "/assets/exam/preA1/nose.png",
-      "/assets/exam/preA1/mouth.png",
+      "/assets/exam/preA1/foot.png",
       "/assets/exam/preA1/ear.png"
     ],
     "answer": 0,
@@ -4225,7 +4234,7 @@ const NON_WRITING_ITEMS = [
       "/assets/exam/preA1/rain.png",
       "/assets/exam/preA1/rainbow.png",
       "/assets/exam/preA1/sun.png",
-      "/assets/exam/preA1/boat.png"
+      "/assets/exam/preA1/mountain.png"
     ],
     "answer": 0,
     "explanation": "聽力發音為「sea（大海）」，故選壯闊海浪與海平面線稿插圖。",
@@ -4275,19 +4284,20 @@ const NON_WRITING_ITEMS = [
     "difficulty": 1,
     "image": "/assets/exam/preA1/action_brush_teeth.png",
     "media": {
-      "audioText": "The boy is brushing his teeth in the morning."
+      "audioText": "The boy brushes his teeth in the morning."
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "The boy is brushing his teeth.",
-      "The boy is washing his face.",
-      "The boy is eating breakfast.",
-      "The boy is drinking water.",
-      "The boy is sleeping in bed.",
-      "The boy is reading a book."
-    ],
+    "The boy brushes his teeth in the morning.",
+    "The boy is washing his face.",
+    "The boy is eating breakfast.",
+    "The boy is drinking water.",
+    "The boy is sleeping in bed.",
+    "The boy is reading a book.",
+    "The boy is washing his hands."
+  ],
     "answer": 0,
-    "explanation": "插圖為男孩拿牙刷刷牙，聽力內容「The boy is brushing his teeth.（男孩正在刷牙）」，故選 (A)。",
+    "explanation": "圖片顯示小男孩早上正在刷牙，相符句子為 (A) The boy brushes his teeth in the morning.。",
     "reviewed": true
   },
   {
@@ -4300,19 +4310,20 @@ const NON_WRITING_ITEMS = [
     "difficulty": 1,
     "image": "/assets/exam/preA1/action_play_basketball.png",
     "media": {
-      "audioText": "The students are playing basketball after school."
+      "audioText": "The student is playing basketball after school."
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "The students are playing basketball.",
-      "The students are playing soccer.",
-      "The students are riding bicycles.",
-      "The students are swimming in the pool.",
-      "The students are running in the park.",
-      "The students are dancing in the gym."
-    ],
+    "The student is playing basketball after school.",
+    "The student is playing soccer.",
+    "The student is riding a bicycle.",
+    "The student is swimming in the pool.",
+    "The student is running in the park.",
+    "The student is dancing in the gym.",
+    "The student is climbing a tree."
+  ],
     "answer": 0,
-    "explanation": "插圖中為投籃打籃球動作，聽力為「The students are playing basketball.（學生正在打籃球）」，故選 (A)。",
+    "explanation": "圖片顯示一位學生正在打籃球，故選 (A) The student is playing basketball after school.。",
     "reviewed": true
   },
   {
@@ -4325,19 +4336,20 @@ const NON_WRITING_ITEMS = [
     "difficulty": 1,
     "image": "/assets/exam/preA1/action_swim.png",
     "media": {
-      "audioText": "The girl is swimming like a little fish."
+      "audioText": "The boy is swimming like a little fish."
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "The girl is swimming.",
-      "The girl is riding a boat.",
-      "The girl is washing her hands.",
-      "The girl is drinking milk.",
-      "The girl is flying a kite.",
-      "The girl is singing a song."
-    ],
+    "The boy is swimming.",
+    "The boy is riding a boat.",
+    "The boy is washing his hands.",
+    "The boy is drinking milk.",
+    "The boy is flying a kite.",
+    "The boy is singing a song.",
+    "The boy is running in the gym."
+  ],
     "answer": 0,
-    "explanation": "插圖中為女孩游泳踢水情境，聽力為「The girl is swimming.（女孩正在游泳）」，故選 (A)。",
+    "explanation": "圖片顯示小男孩正在游泳，相符句子為 (A) The boy is swimming.。",
     "reviewed": true
   },
   {
@@ -4350,19 +4362,20 @@ const NON_WRITING_ITEMS = [
     "difficulty": 1,
     "image": "/assets/exam/preA1/action_read_book.png",
     "media": {
-      "audioText": "The girl is reading a book in the living room."
+      "audioText": "The boy is reading on the chair."
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "The girl is reading a book.",
-      "The girl is writing a letter.",
-      "The girl is drawing a picture.",
-      "The girl is playing the piano.",
-      "The girl is cooking in the kitchen.",
-      "The girl is climbing a tree."
-    ],
+    "The boy is reading on the chair.",
+    "The boy is writing a letter.",
+    "The boy is drawing a picture.",
+    "The boy is playing the piano.",
+    "The boy is cooking in the kitchen.",
+    "The boy is climbing a tree.",
+    "The boy is riding a horse."
+  ],
     "answer": 0,
-    "explanation": "插圖中為安靜閱讀課本書本情境，聽力為「The girl is reading a book.（女孩正在看書）」，故選 (A)。",
+    "explanation": "圖片顯示小男孩坐在椅子上看書，相符句子為 (A) The boy is reading on the chair.。",
     "reviewed": true
   },
   {
@@ -4375,19 +4388,20 @@ const NON_WRITING_ITEMS = [
     "difficulty": 1,
     "image": "/assets/exam/preA1/action_sing_song.png",
     "media": {
-      "audioText": "The boy is singing a song with a microphone."
+      "audioText": "The girl is singing a song with a microphone."
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-      "The boy is singing a song.",
-      "The boy is listening to music.",
-      "The boy is playing guitar.",
-      "The boy is talking on the telephone.",
-      "The boy is watching television.",
-      "The boy is eating an apple."
-    ],
+    "The girl is singing a song.",
+    "The girl is listening to music.",
+    "The girl is playing guitar.",
+    "The girl is talking on the telephone.",
+    "The girl is watching television.",
+    "The girl is eating an apple.",
+    "The girl is drawing a red cat."
+  ],
     "answer": 0,
-    "explanation": "插圖中為拿麥克風大聲唱歌情境，聽力為「The boy is singing a song.（男孩正在唱歌）」，故選 (A)。",
+    "explanation": "圖片顯示小女孩正在唱歌，相符句子為 (A) The girl is singing a song.。",
     "reviewed": true
   },
   {
