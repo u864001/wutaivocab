@@ -1371,4 +1371,204 @@ export const fetchTeacherAuditRecordsFromCloud = async () => {
   return merged;
 };
 
+/**
+ * 學生端回報試題疑義至 Supabase（mode = 'exam-student-report'）
+ * @param {Object} params
+ * @param {string} params.questionId 試題 ID (例如 hwg_b3_69)
+ * @param {string} [params.track] 測驗軌道 (textbook / ministry-assessment / tme-preA1)
+ * @param {string|number} [params.book] 冊別或年級
+ * @param {string} [params.tag] 回報快答標籤 (no_answer / image_error / audio_error / typo_error / other_error)
+ * @param {string} [params.label] 快答標籤文字說明
+ * @param {string} [params.studentId] 學生代號
+ * @param {string} [params.studentName] 學生姓名/暱稱
+ * @returns {Promise<{ success: boolean, offline?: boolean }>}
+ */
+export const submitStudentQuestionReport = async ({
+  questionId,
+  track = 'textbook',
+  book = null,
+  tag = 'other_error',
+  label = '其他問題',
+  studentId = 'guest',
+  studentName = '冒險家'
+}) => {
+  if (!questionId) return { success: false };
+
+  const nowIso = new Date().toISOString();
+  const nowSec = Math.floor(Date.now() / 1000);
+
+  const reportItem = {
+    tag,
+    label,
+    studentId,
+    studentName,
+    reportedAt: nowIso
+  };
+
+  try {
+    const { data: existingRows, error: fetchErr } = await supabase
+      .from('leaderboard')
+      .select('id, book, score')
+      .eq('mode', 'exam-student-report')
+      .eq('name', questionId)
+      .limit(1);
+
+    if (fetchErr) throw fetchErr;
+
+    if (existingRows && existingRows.length > 0) {
+      const row = existingRows[0];
+      let payload = {};
+      try {
+        payload = JSON.parse(row.book);
+      } catch {
+        payload = {};
+      }
+
+      const existingReports = Array.isArray(payload.reports) ? payload.reports : [];
+      // 保留最近 30 筆回報
+      const updatedReports = [reportItem, ...existingReports].slice(0, 30);
+      const newCount = (payload.reportCount || existingReports.length || 0) + 1;
+
+      const updatedPayload = {
+        ...payload,
+        questionId,
+        track,
+        book,
+        status: 'pending',
+        reportCount: newCount,
+        lastReportedAt: nowIso,
+        reports: updatedReports
+      };
+
+      await supabase
+        .from('leaderboard')
+        .update({
+          book: JSON.stringify(updatedPayload),
+          score: newCount,
+          time: nowSec,
+          created_at: nowIso
+        })
+        .eq('id', row.id);
+    } else {
+      const initialPayload = {
+        questionId,
+        track,
+        book,
+        status: 'pending',
+        reportCount: 1,
+        lastReportedAt: nowIso,
+        reports: [reportItem]
+      };
+
+      await supabase
+        .from('leaderboard')
+        .insert([{
+          device_id: 'student-report',
+          name: questionId,
+          mode: 'exam-student-report',
+          book: JSON.stringify(initialPayload),
+          score: 1,
+          time: nowSec,
+          week: 0
+        }]);
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.warn('雲端提交學生試題回報失敗 (本地降級):', err);
+    return { success: false, offline: true };
+  }
+};
+
+/**
+ * 從 Supabase 讀取全校學生回報之試題疑義清單
+ * @returns {Promise<Record<string, { questionId: string, track: string, book: any, reportCount: number, status: string, lastReportedAt: string, reports: Array<any> }>>}
+ */
+export const fetchStudentQuestionReportsFromCloud = async () => {
+  const reportsMap = {};
+  try {
+    let allRows = [];
+    let page = 0;
+    const pageSize = 1000;
+    while (true) {
+      const { data: rows, error } = await supabase
+        .from('leaderboard')
+        .select('*')
+        .eq('mode', 'exam-student-report')
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+
+      if (error || !Array.isArray(rows) || rows.length === 0) break;
+      allRows = allRows.concat(rows);
+      if (rows.length < pageSize) break;
+      page++;
+    }
+
+    allRows.forEach((r) => {
+      const qId = r.name;
+      if (!qId) return;
+      let payload = null;
+      try {
+        payload = JSON.parse(r.book);
+      } catch {
+        payload = null;
+      }
+      if (payload) {
+        reportsMap[qId] = {
+          ...payload,
+          id: r.id,
+          reportCount: payload.reportCount || r.score || 0,
+          status: payload.status || (r.score > 0 ? 'pending' : 'resolved'),
+          time: r.time
+        };
+      }
+    });
+  } catch (e) {
+    console.warn('讀取學生試題回報失敗:', e);
+  }
+  return reportsMap;
+};
+
+/**
+ * 教師於後台解除/結案指定試題之學生疑義標註
+ * @param {string} questionId
+ * @returns {Promise<boolean>}
+ */
+export const resolveStudentQuestionReportInCloud = async (questionId) => {
+  if (!questionId) return false;
+  try {
+    const { data: existingRows } = await supabase
+      .from('leaderboard')
+      .select('id, book')
+      .eq('mode', 'exam-student-report')
+      .eq('name', questionId)
+      .limit(1);
+
+    if (existingRows && existingRows.length > 0) {
+      const row = existingRows[0];
+      let payload = {};
+      try {
+        payload = JSON.parse(row.book);
+      } catch {
+        payload = {};
+      }
+      payload.status = 'resolved';
+      payload.resolvedAt = new Date().toISOString();
+
+      await supabase
+        .from('leaderboard')
+        .update({
+          book: JSON.stringify(payload),
+          score: 0,
+          time: Math.floor(Date.now() / 1000)
+        })
+        .eq('id', row.id);
+      return true;
+    }
+  } catch (err) {
+    console.warn('解除學生疑義回報失敗:', err);
+  }
+  return false;
+};
+
+
 

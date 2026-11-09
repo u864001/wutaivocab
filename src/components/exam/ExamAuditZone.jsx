@@ -36,7 +36,8 @@ import {
   CheckCheck,
   Square,
   Headphones,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
 import {
   playDialogueSpeech,
@@ -56,7 +57,9 @@ import {
 import { TASK_TYPES, getTaskType, getTaskLabel } from '../../games/exam/examBlueprint';
 import {
   saveTeacherAuditRecordToCloud,
-  fetchTeacherAuditRecordsFromCloud
+  fetchTeacherAuditRecordsFromCloud,
+  fetchStudentQuestionReportsFromCloud,
+  resolveStudentQuestionReportInCloud
 } from '../../services/supabase';
 
 const AUDIT_STORAGE_KEY = 'wutai_exam_audit_records_v1';
@@ -76,6 +79,8 @@ export function ExamAuditZone({ onBack }) {
 
   const [cloudSyncStatus, setCloudSyncStatus] = useState('synced'); // 'synced' | 'saving' | 'error'
   const [isCloudLoading, setIsCloudLoading] = useState(false);
+  const [studentReports, setStudentReports] = useState({});
+  const [onlyStudentReported, setOnlyStudentReported] = useState(false);
 
   // ── 開啟組件時自動自 Supabase 雲端載入並聯集融合 ──
   useEffect(() => {
@@ -106,10 +111,47 @@ export function ExamAuditZone({ onBack }) {
         if (isMounted) setIsCloudLoading(false);
       });
 
+    fetchStudentQuestionReportsFromCloud()
+      .then((repMap) => {
+        if (!isMounted || !repMap) return;
+        setStudentReports(repMap);
+      })
+      .catch((err) => {
+        console.warn('Supabase fetch student reports failed', err);
+      });
+
     return () => {
       isMounted = false;
     };
   }, []);
+
+  const totalPendingReportsCount = useMemo(() => {
+    return Object.values(studentReports).filter(
+      (r) => r.status === 'pending' || (r.reportCount > 0 && r.status !== 'resolved')
+    ).length;
+  }, [studentReports]);
+
+  const handleResolveStudentReport = async (questionId) => {
+    if (!questionId) return;
+    try {
+      await resolveStudentQuestionReportInCloud(questionId);
+      setStudentReports((prev) => {
+        const updated = { ...prev };
+        if (updated[questionId]) {
+          updated[questionId] = {
+            ...updated[questionId],
+            status: 'resolved',
+            reportCount: 0
+          };
+        }
+        return updated;
+      });
+      setToastMessage(`✓ 已解除題目 ${questionId} 學生疑義警示！`);
+      setTimeout(() => setToastMessage(null), 3000);
+    } catch (e) {
+      console.warn('Resolve report failed', e);
+    }
+  };
 
   const saveAuditRecords = useCallback((nextRecords) => {
     setAuditRecords(nextRecords);
@@ -314,11 +356,19 @@ export function ExamAuditZone({ onBack }) {
     preA1RawPool
   ]);
 
-  // ── 依「排除已檢核通過」篩選後的待檢核清單 ──
+  // ── 依「學生疑義」或「排除已檢核通過」篩選後的待檢核清單 ──
   const displayPool = useMemo(() => {
-    if (!excludeVerified) return currentCategoryFullPool;
-    return currentCategoryFullPool.filter((q) => !auditRecords[q?.id]?.verified);
-  }, [currentCategoryFullPool, excludeVerified, auditRecords]);
+    let pool = currentCategoryFullPool;
+    if (onlyStudentReported) {
+      pool = pool.filter((q) => {
+        const rep = studentReports[q?.id];
+        return rep && (rep.status === 'pending' || (rep.reportCount > 0 && rep.status !== 'resolved'));
+      });
+    } else if (excludeVerified) {
+      pool = pool.filter((q) => !auditRecords[q?.id]?.verified);
+    }
+    return pool;
+  }, [currentCategoryFullPool, onlyStudentReported, excludeVerified, auditRecords, studentReports]);
 
   // 確保索引絕對不會因切換分類或排除已檢核而越界溢出
   const safeIdx = displayPool.length > 0
@@ -339,7 +389,8 @@ export function ExamAuditZone({ onBack }) {
     selectedSaaGrade,
     selectedPreA1Category,
     selectedPreA1SubType,
-    excludeVerified
+    excludeVerified,
+    onlyStudentReported
   ]);
 
   // 同步校正 currentIdx
@@ -585,7 +636,31 @@ export function ExamAuditZone({ onBack }) {
             </span>
           </div>
 
-          <label className="flex items-center gap-1.5 font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 cursor-pointer hover:bg-indigo-50/60 dark:hover:bg-slate-700 transition">
+          <button
+            type="button"
+            onClick={() => {
+              setOnlyStudentReported((prev) => !prev);
+              setCurrentIdx(0);
+            }}
+            className={`flex items-center gap-1.5 font-bold px-2.5 py-1.5 rounded-xl border transition cursor-pointer text-xs ${
+              onlyStudentReported
+                ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/70 text-amber-800 dark:text-amber-200 ring-2 ring-amber-500/40 shadow-xs'
+                : totalPendingReportsCount > 0
+                ? 'border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 hover:border-amber-400'
+                : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-500 hover:bg-slate-100'
+            }`}
+            title="僅看學生在自組練習中回報有問題的題目"
+          >
+            <AlertTriangle size={13} className={onlyStudentReported || totalPendingReportsCount > 0 ? 'text-amber-600 dark:text-amber-400' : ''} />
+            <span>學生回報疑義</span>
+            {totalPendingReportsCount > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-rose-500 text-white">
+                {totalPendingReportsCount}
+              </span>
+            )}
+          </button>
+
+          <label className="flex items-center gap-1.5 font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 cursor-pointer hover:bg-indigo-50/60 dark:hover:bg-slate-700 transition text-xs">
             <input
               type="checkbox"
               checked={excludeVerified}
@@ -1034,6 +1109,48 @@ export function ExamAuditZone({ onBack }) {
                     </button>
                   </div>
                 </div>
+
+                {/* 學生回報疑義警示橫幅 */}
+                {(() => {
+                  const rep = currentQ ? studentReports[currentQ.id] : null;
+                  if (!rep || (rep.status !== 'pending' && (!rep.reportCount || rep.status === 'resolved'))) return null;
+                  return (
+                    <div className="p-3 sm:p-4 rounded-xl bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-amber-500/15 border-2 border-amber-400 dark:border-amber-600 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs animate-fadeIn">
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-500 text-white flex items-center gap-1 shadow-xs">
+                            <AlertTriangle size={13} />
+                            學生回報疑義 ({rep.reportCount || rep.reports?.length || 1} 次)
+                          </span>
+                          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                            最近回報：{rep.reports?.[0]?.studentName || '學生'} · {new Date(rep.lastReportedAt || rep.reports?.[0]?.reportedAt || Date.now()).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                          {(rep.reports || []).map((item, rIdx) => (
+                            <span
+                              key={rIdx}
+                              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 text-xs font-bold shadow-2xs flex items-center gap-1"
+                            >
+                              <span>⚠️</span>
+                              <span>{item.label || item.tag}</span>
+                              {item.studentName && <span className="text-[10px] text-slate-400">({item.studentName})</span>}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleResolveStudentReport(currentQ.id)}
+                        className="shrink-0 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 transition shadow-sm cursor-pointer"
+                        title="確認題目無誤或已完成修正，一鍵清除學生回報警示"
+                      >
+                        <CheckCircle2 size={16} />
+                        <span>查核無誤（清除回報）</span>
+                      </button>
+                    </div>
+                  );
+                })()}
 
                 {/* ═════════════════════════════════════════════════════ */}
                 {/* 模式 A：題組題 (方案 3B 左右雙欄對照)               */}
@@ -1781,6 +1898,27 @@ export function ExamAuditZone({ onBack }) {
                       : '⏳ 待檢核'}
                   </span>
                 </div>
+
+                {/* 學生回報狀態標記 */}
+                {(() => {
+                  const rep = currentQ ? studentReports[currentQ.id] : null;
+                  if (!rep || (rep.status !== 'pending' && (!rep.reportCount || rep.status === 'resolved'))) return null;
+                  return (
+                    <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 font-bold">
+                        <AlertTriangle size={14} className="text-amber-600 shrink-0" />
+                        <span>學生練習回報疑義 ({rep.reportCount || 1} 次)</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleResolveStudentReport(currentQ.id)}
+                        className="text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 font-black underline shrink-0 cursor-pointer"
+                      >
+                        一鍵清除
+                      </button>
+                    </div>
+                  );
+                })()}
 
                 {/* 1. 「本題檢核通過」大核選框 */}
                 <div
