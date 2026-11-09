@@ -2583,7 +2583,10 @@ const NON_WRITING_ITEMS = [
       "He has a sore throat and a fever.",
       "He has a broken leg.",
       "He has a toothache.",
-      "He has an earache."
+      "He has an earache.",
+      "He has a stomachache.",
+      "He has a headache.",
+      "He has a runny nose."
     ],
     "answer": 0,
     "explanation": "Peter 說明身體狀況「a sore throat and a fever（喉嚨痛且發燒）」，故選 (A)。",
@@ -2791,6 +2794,9 @@ const NON_WRITING_ITEMS = [
       "playground",
       "supermarket",
       "bookstore",
+      "library",
+      "zoo",
+      "restaurant",
       "hospital"
     ],
     "answer": 0,

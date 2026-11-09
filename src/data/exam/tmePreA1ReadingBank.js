@@ -415,6 +415,9 @@ export const TME_PRE_A1_READING_BANK = [
       "playground",
       "supermarket",
       "bookstore",
+      "library",
+      "zoo",
+      "restaurant",
       "hospital"
     ],
     "answer": 0,
