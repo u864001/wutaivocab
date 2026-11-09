@@ -22,7 +22,8 @@ import {
   ChevronRight,
   Clock,
   AlertTriangle,
-  X
+  X,
+  Check
 } from 'lucide-react';
 import {
   EXAM_TRACKS,
@@ -62,7 +63,8 @@ import {
   saveInProgress,
   clearInProgress,
   purgeExpiredInProgress,
-  getTaskLabel
+  getTaskLabel,
+  extractTargetToken
 } from './examBlueprint';
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -179,9 +181,26 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // Scope Mode: 'curriculum' (課本範圍檢定) | 'ministry-assessment' (學力檢測) | 'tme-preA1' (Pre-A1) | 'mistakes' (個人易錯題複習)
   const [scopeMode, setScopeMode] = useState('curriculum');
   const [selectedBook, setSelectedBook] = useState(initialBook);
-  const [selectedUnits, setSelectedUnits] = useState(
-    () => HERE_WE_GO_BOOK_META[initialBook]?.units || []
-  );
+
+  // 課本題型模式: 'comprehensive' (綜合測驗: 聽力+筆試) | 'written' (純筆試: 避開聽力) | 'listening' (純聽力特訓)
+  const [textbookExamMode, setTextbookExamMode] = useState(() => {
+    if (initialBook === 'g1' || initialBook === 'g2') return 'written';
+    return 'comprehensive';
+  });
+  // 單元範圍快選標籤: 'midterm' (上半冊) | 'final' (下半冊) | 'all' (全冊) | 'custom' (自選)
+  const [rangePreset, setRangePreset] = useState(() => {
+    if (initialBook === 'g1' || initialBook === 'g2') return 'all';
+    return 'midterm';
+  });
+  const [isCustomUnitOpen, setIsCustomUnitOpen] = useState(false);
+  const [isPlayingAudioTest, setIsPlayingAudioTest] = useState(false);
+
+  const [selectedUnits, setSelectedUnits] = useState(() => {
+    const meta = HERE_WE_GO_BOOK_META[initialBook];
+    if (!meta) return [];
+    if (initialBook === 'g1' || initialBook === 'g2') return [...meta.units];
+    return meta.units.filter((u) => ['Starter', 'Unit 1', 'Unit 2', 'Review 1'].includes(u));
+  });
   // 測驗題數選項: 10 | 20 | 50
   const [questionCountOpt, setQuestionCountOpt] = useState(20);
 
@@ -297,17 +316,52 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     }
   }, [inProgressKey]);
 
+  // 切換範圍快捷設定
+  const applyRangePreset = useCallback((preset, bookKey = selectedBook) => {
+    setRangePreset(preset);
+    const meta = HERE_WE_GO_BOOK_META[bookKey];
+    if (!meta) return;
+    if (bookKey === 'g1' || bookKey === 'g2') {
+      setSelectedUnits([...meta.units]);
+      return;
+    }
+    if (preset === 'midterm') {
+      setSelectedUnits(meta.units.filter((u) => ['Starter', 'Unit 1', 'Unit 2', 'Review 1'].includes(u)));
+    } else if (preset === 'final') {
+      setSelectedUnits(meta.units.filter((u) => ['Unit 3', 'Unit 4', 'Review 2', 'Festival'].includes(u)));
+    } else if (preset === 'all') {
+      setSelectedUnits([...meta.units]);
+    }
+  }, [selectedBook]);
+
   // 當學生登入身分或年級變更時，自動同步預設冊別
   useEffect(() => {
     setSelectedBook(initialBook);
-    setSelectedUnits(HERE_WE_GO_BOOK_META[initialBook]?.units || []);
+    if (initialBook === 'g1' || initialBook === 'g2') {
+      setRangePreset('all');
+      setSelectedUnits(HERE_WE_GO_BOOK_META[initialBook]?.units || []);
+      setTextbookExamMode('written');
+    } else {
+      setRangePreset('midterm');
+      const meta = HERE_WE_GO_BOOK_META[initialBook];
+      if (meta) {
+        setSelectedUnits(meta.units.filter((u) => ['Starter', 'Unit 1', 'Unit 2', 'Review 1'].includes(u)));
+      }
+    }
   }, [initialBook]);
 
-  // 切換冊別時預設全選該冊所有單元
-  const handleSelectBook = (bookNum) => {
+  // 切換冊別時智慧分流
+  const handleSelectBook = useCallback((bookNum) => {
     setSelectedBook(bookNum);
-    setSelectedUnits(HERE_WE_GO_BOOK_META[bookNum]?.units || []);
-  };
+    if (bookNum === 'g1' || bookNum === 'g2') {
+      setRangePreset('all');
+      setSelectedUnits(HERE_WE_GO_BOOK_META[bookNum]?.units || []);
+      setTextbookExamMode('written');
+    } else {
+      const preset = rangePreset === 'custom' ? 'midterm' : rangePreset;
+      applyRangePreset(preset, bookNum);
+    }
+  }, [rangePreset, applyRangePreset]);
 
   const toggleUnit = (unitName) => {
     setSelectedUnits((prev) =>
@@ -464,8 +518,59 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         }
       } else {
         targetCount = Number(questionCountOpt) || 20;
+        let pool = curriculumPool;
+        const isG1G2 = selectedBook === 'g1' || selectedBook === 'g2';
+
+        if (!isG1G2) {
+          if (textbookExamMode === 'written') {
+            // 純讀寫筆試：完全避開聽力
+            pool = pool.filter((q) => !q.media?.audioText && !q.taskType?.startsWith('L-'));
+          } else if (textbookExamMode === 'listening') {
+            // 純聽力特訓：將對話題與單字題動態轉換為聽力播放題
+            pool = pool.map((q) => {
+              if (q.taskType === 'G-DLG') {
+                return {
+                  ...q,
+                  taskType: 'L-RESP',
+                  section: 'listening',
+                  media: { audioText: q.question.replace(/\s*______\s*/g, ' ... ') },
+                  question: '請聽語音對話或問句，選出最適當的回應：'
+                };
+              }
+              if (q.taskType === 'V-MEAN') {
+                const token = extractTargetToken(q) || (Array.isArray(q.options) ? q.options[q.answer] : '');
+                return {
+                  ...q,
+                  taskType: 'L-WORD',
+                  section: 'listening',
+                  media: { audioText: token },
+                  question: '請聽發音，選出正確的中文意思：'
+                };
+              }
+              return q;
+            }).filter((q) => q.media?.audioText || q.taskType?.startsWith('L-'));
+          } else {
+            // 綜合測驗 (段考標準)：約 25%~35% 聽力 + 70% 讀寫筆試
+            let audioCount = 0;
+            const maxAudio = Math.max(2, Math.round(targetCount * 0.3));
+            pool = pool.map((q) => {
+              if (q.taskType === 'G-DLG' && audioCount < maxAudio * 3) {
+                audioCount++;
+                return {
+                  ...q,
+                  taskType: 'L-RESP',
+                  section: 'listening',
+                  media: { audioText: q.question.replace(/\s*______\s*/g, ' ... ') },
+                  question: '請聽語音對話或問句，選出最適當的回應：'
+                };
+              }
+              return q;
+            });
+          }
+        }
+
         // 使用專業語言測驗組卷藍圖：按大題順序排布、難度遞增、題組不拆散
-        sourceList = assembleExamForm(curriculumPool, targetCount);
+        sourceList = assembleExamForm(pool, targetCount);
       }
 
       if (sourceList.length === 0) return;
@@ -556,7 +661,9 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       currentStudent?.grade,
       curriculumPool,
       tmePool,
-      saaPool
+      saaPool,
+      textbookExamMode,
+      selectedBook
     ]
   );
 
@@ -602,6 +709,57 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       // Ignore TTS errors
     }
   };
+
+  // 第 0 頁考前音量測試發音
+  const runAudioTest = useCallback(() => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    setIsPlayingAudioTest(true);
+    try {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance('Welcome to the Wutai English Test. Can you hear me clearly? Testing one, two, three.');
+      utter.lang = 'en-US';
+      utter.rate = 0.9;
+      const voices = window.speechSynthesis.getVoices() || [];
+      const enVoices = voices.filter(v => (v?.lang || '').toLowerCase().replace('_', '-').startsWith('en'));
+      const usVoice = enVoices.find(v => (v?.lang || '').toLowerCase().replace('_', '-').startsWith('en-us')) || enVoices[0];
+      if (usVoice) utter.voice = usVoice;
+      utter.onend = () => setIsPlayingAudioTest(false);
+      utter.onerror = () => setIsPlayingAudioTest(false);
+      window.speechSynthesis.speak(utter);
+    } catch {
+      setIsPlayingAudioTest(false);
+    }
+  }, []);
+
+  // 第 0 頁沒帶耳機時，一鍵切換純筆試並即時重組
+  const switchToWrittenMode = useCallback(() => {
+    setTextbookExamMode('written');
+    const pool = curriculumPool.filter((q) => !q.media?.audioText && !q.taskType?.startsWith('L-'));
+    const sourceList = assembleExamForm(pool, Number(questionCountOpt) || 20);
+    const prepared = sourceList.map((q) => {
+      const isTrueFalse = q.subType === 'read-truefalse' || (q.options?.length === 2 && (q.options[0]?.includes('True') || q.options[0]?.includes('相符')));
+      if (q.preserveOptionOrder || isTrueFalse) return { ...q };
+      const rawOptions = Array.isArray(q.options) ? [...q.options] : [];
+      if (rawOptions.length <= 4) return { ...q };
+      const correctOpt = rawOptions[0];
+      const distractors = rawOptions.slice(1);
+      for (let i = distractors.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [distractors[i], distractors[j]] = [distractors[j], distractors[i]];
+      }
+      const chosenDistractors = distractors.slice(0, 3);
+      const workingSet = [correctOpt, ...chosenDistractors];
+      const indices = [0, 1, 2, 3];
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      const shuffledOptions = indices.map((idx) => workingSet[idx]);
+      const newAnswer = indices.indexOf(0);
+      return { ...q, options: shuffledOptions, answer: newAnswer };
+    });
+    setQuestions(prepared);
+  }, [curriculumPool, questionCountOpt]);
 
   // 正式施測模式：進入聽力試題時自動觸發雙次朗讀協定（間隔 2 秒播放兩遍）
   useEffect(() => {
@@ -1312,24 +1470,24 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           {/* 模式 B：課本題庫練習 (setupSubView === 'textbook')                     */}
           {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
+          {/* 模式 B：課本題庫練習 (setupSubView === 'textbook') - 四聯階梯式布題台      */}
+          {/* ═══════════════════════════════════════════════════════════════════════ */}
           {setupSubView === 'textbook' && (
-            <div className="flex flex-col gap-3">
-              {/* 課本檢定頂部精熟診斷卡捷徑橫幅 */}
-              <div className="shrink-0 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 dark:from-amber-950/40 dark:via-orange-950/40 dark:to-amber-950/40 border border-amber-300/40 dark:border-amber-700/40 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <BookOpen size={20} />
+            <div className="flex-1 flex flex-col gap-3 min-h-0">
+              {/* 頂部極簡標籤橫幅（精熟診斷卡入口與題庫統計） */}
+              <div className="shrink-0 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 dark:from-amber-950/40 dark:via-orange-950/40 dark:to-amber-950/40 border border-amber-300/40 dark:border-amber-700/40 rounded-2xl p-2.5 sm:p-3 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <BookOpen size={16} />
                   </div>
-                  <div>
-                    <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <div className="min-w-0">
+                    <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5 truncate">
                       <span>Here We Go 3,317 全冊題庫</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-amber-200 text-amber-800 dark:bg-amber-900 dark:text-amber-200 shrink-0">
                         1～8 冊 · 字母專冊 · 國一先修
                       </span>
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      動態滾動精熟體系：錯題連對 2 次翻盤解鎖為精熟，段考扎實鞏固
-                    </p>
+                    </div>
                   </div>
                 </div>
                 <button
@@ -1338,201 +1496,436 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     setMasteryInitialTrack('curriculum');
                     setSetupSubView('preA1-dashboard');
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-black shadow-xs flex items-center gap-1.5 transition cursor-pointer shrink-0"
+                  className="px-2.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-black shadow-xs flex items-center gap-1 transition cursor-pointer shrink-0"
                 >
-                  <BookOpen size={15} />
-                  <span>查看課本精熟診斷卡 ➔</span>
+                  <BookOpen size={13} />
+                  <span>課本精熟卡 ➔</span>
                 </button>
               </div>
 
-              {/* 步驟 1：選擇冊別 */}
-              <div className="shrink-0 flex flex-col gap-2.5 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70">
-                <div className="flex items-center justify-between gap-2 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">
-                      1
-                    </span>
-                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                      選擇冊別
-                    </span>
-                    <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">
-                      （{bookMeta.subtitle}）
+              {/* 四聯階梯式任務控制台 (4-Column Progressive Mission Board - Zero Scroll on iPad) */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2.5 sm:gap-3 flex-1 min-h-0">
+                {/* ───────────────────────────────────────────────────────────── */}
+                {/* 欄 1：01 TARGET 冊別選擇                                        */}
+                {/* ───────────────────────────────────────────────────────────── */}
+                <div className="bg-white dark:bg-slate-800/90 rounded-2xl border-2 border-indigo-200/80 dark:border-indigo-900/60 p-3 flex flex-col gap-2 min-h-0 shadow-xs">
+                  <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-700/60">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center">
+                        1
+                      </span>
+                      <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                        01 TARGET 冊別
+                      </span>
+                    </div>
+                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${
+                      isSelectedBookOwnGrade
+                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
+                        : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
+                    }`}>
+                      {isSelectedBookOwnGrade ? '本年級計分' : '練習'}
                     </span>
                   </div>
-                  <span
-                    className={`font-black px-2 py-0.5 rounded-md ${
-                      isSelectedBookOwnGrade
-                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-                        : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
-                    }`}
-                  >
-                    {isSelectedBookOwnGrade ? '✓ 本年級計分' : '練習不計分'}
-                  </span>
-                </div>
 
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-11 gap-1.5">
-                  {ALL_BOOK_OPTIONS.map((bNum) => {
-                    const isSelected = selectedBook === bNum;
-                    const isOwn = isBookInOwnGrade(
-                      String(bNum),
-                      currentStudent?.grade,
-                      'mcq-exam'
-                    );
-                    return (
-                      <button
-                        key={String(bNum)}
-                        type="button"
-                        onClick={() => handleSelectBook(bNum)}
-                        className={`py-1.5 px-1 rounded-xl border text-center transition flex flex-col items-center justify-center relative cursor-pointer ${
-                          isSelected
-                            ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
-                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 text-slate-700 dark:text-slate-200'
-                        }`}
-                      >
-                        <span className="text-[11px] sm:text-xs font-black leading-tight">
-                          {formatBookLabel(bNum)}
-                        </span>
-                        {isOwn && (
-                          <span
-                            className={`text-[10px] font-bold leading-tight mt-0.5 ${
-                              isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'
+                  {/* 冊別按鈕網格 */}
+                  <div className="flex-1 flex flex-col gap-1.5 overflow-y-auto pr-0.5 min-h-0">
+                    {/* 低年級字母專冊 */}
+                    <div className="grid grid-cols-2 gap-1">
+                      {['g1', 'g2'].map((bKey) => {
+                        const isSelected = selectedBook === bKey;
+                        const isOwn = isBookInOwnGrade(bKey, currentStudent?.grade, 'mcq-exam');
+                        return (
+                          <button
+                            key={bKey}
+                            type="button"
+                            onClick={() => handleSelectBook(bKey)}
+                            className={`py-1.5 px-2 rounded-xl border text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                              isSelected
+                                ? 'border-indigo-600 bg-indigo-600 text-white shadow-xs font-black'
+                                : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300'
                             }`}
                           >
-                            本年級
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                            <span className="text-xs font-bold leading-tight">{formatBookLabel(bKey)}</span>
+                            {isOwn && (
+                              <span className={`text-[9px] font-bold ${isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                                ★ 本年級
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
 
-              {/* 步驟 2：選擇單元 */}
-              <div className="shrink-0 flex flex-col gap-2.5 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70">
-                <div className="flex flex-wrap items-center justify-between gap-1">
-                  <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">
-                      2
-                    </span>
-                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                      選擇單元
-                    </span>
-                    <span className="text-slate-500 dark:text-slate-400 text-xs hidden sm:inline">
-                      （可用題庫 {curriculumPool.length} 題）
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
+                    {/* 3~6 年級 1~8 冊 */}
+                    <div className="grid grid-cols-2 gap-1">
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map((bNum) => {
+                        const isSelected = selectedBook === bNum;
+                        const isOwn = isBookInOwnGrade(String(bNum), currentStudent?.grade, 'mcq-exam');
+                        return (
+                          <button
+                            key={bNum}
+                            type="button"
+                            onClick={() => handleSelectBook(bNum)}
+                            className={`py-1.5 px-2 rounded-xl border text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                              isSelected
+                                ? 'border-indigo-600 bg-indigo-600 text-white shadow-xs font-black'
+                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300'
+                            }`}
+                          >
+                            <span className="text-xs font-bold leading-tight">{formatBookLabel(bNum)}</span>
+                            {isOwn && (
+                              <span className={`text-[9px] font-bold ${isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                                ★ 本年級
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* 國一先修 */}
                     <button
                       type="button"
-                      onClick={() => setSelectedUnits([...bookMeta.units])}
-                      className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 cursor-pointer"
+                      onClick={() => handleSelectBook(9)}
+                      className={`w-full py-1.5 px-2 rounded-xl border text-center transition flex items-center justify-center gap-1 cursor-pointer ${
+                        selectedBook === 9
+                          ? 'border-indigo-600 bg-indigo-600 text-white shadow-xs font-black'
+                          : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300'
+                      }`}
                     >
-                      全選
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSelectedUnits(
-                          selectedBook === 'g1' || selectedBook === 'g2'
-                            ? bookMeta.units.slice(0, 2)
-                            : bookMeta.units.filter((u) =>
-                                ['Starter', 'Unit 1', 'Unit 2', 'Review 1'].includes(u)
-                              )
-                        )
-                      }
-                      className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white hover:bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer"
-                    >
-                      上半冊
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSelectedUnits(
-                          selectedBook === 'g1' || selectedBook === 'g2'
-                            ? bookMeta.units.slice(2)
-                            : bookMeta.units.filter((u) =>
-                                ['Unit 3', 'Unit 4', 'Review 2', 'Festival'].includes(u)
-                              )
-                        )
-                      }
-                      className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-white hover:bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer"
-                    >
-                      下半冊
+                      <span className="text-xs font-bold">國一先修 (Book 9)</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                  {bookMeta.units.map((unitName) => {
-                    const checked = selectedUnits.includes(unitName);
-                    return (
-                      <button
-                        key={unitName}
-                        type="button"
-                        onClick={() => toggleUnit(unitName)}
-                        className={`px-3 py-2 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${
-                          checked
-                            ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-950/60 text-indigo-900 dark:text-indigo-100 font-black'
-                            : 'border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/40 text-slate-400 font-bold'
-                        }`}
-                      >
-                        <span className="text-xs sm:text-sm truncate">{unitName}</span>
-                        {checked ? (
-                          <CheckSquare size={15} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
-                        ) : (
-                          <Square size={15} className="text-slate-300 dark:text-slate-600 shrink-0" />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* 步驟 3：選擇題數 */}
-              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-1">
-                  <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">
-                      3
-                    </span>
-                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                      選擇題數
+                {/* ───────────────────────────────────────────────────────────── */}
+                {/* 欄 2：02 SCOPE 評量範圍                                        */}
+                {/* ───────────────────────────────────────────────────────────── */}
+                <div className="bg-white dark:bg-slate-800/90 rounded-2xl border-2 border-indigo-200/80 dark:border-indigo-900/60 p-3 flex flex-col gap-2 min-h-0 shadow-xs">
+                  <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-700/60">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-amber-600 text-white text-[10px] font-black flex items-center justify-center">
+                        2
+                      </span>
+                      <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                        02 SCOPE 範圍
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-bold truncate">
+                      {curriculumPool.length} 題可用
                     </span>
                   </div>
-                  <span className="hidden md:inline text-xs font-bold text-slate-500 dark:text-slate-400">
-                    本年級答對率 ≥ 60% 才發金幣
-                  </span>
+
+                  <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-0.5 min-h-0">
+                    {/* 1, 2 年級：極簡自動通道 */}
+                    {(selectedBook === 'g1' || selectedBook === 'g2') ? (
+                      <div className="flex-1 flex flex-col items-center justify-center text-center p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60">
+                        <span className="text-2xl mb-1">🔤</span>
+                        <div className="text-xs font-black text-amber-900 dark:text-amber-100">
+                          全字母闖關檢定
+                        </div>
+                        <p className="text-[10px] text-amber-700 dark:text-amber-300 mt-1 leading-relaxed">
+                          涵蓋英文字母前後順序、缺漏字母填空與大小寫配對
+                        </p>
+                        <span className="mt-2 text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-200">
+                          ✓ 系統已全自動選定
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        {/* 3~6 年級三大段考快選膠囊 */}
+                        <div className="flex flex-col gap-1.5">
+                          {/* 上半冊 (期中考) */}
+                          <button
+                            type="button"
+                            onClick={() => applyRangePreset('midterm')}
+                            className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                              rangePreset === 'midterm'
+                                ? 'border-amber-600 bg-amber-50 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-black shadow-xs ring-1 ring-amber-500'
+                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-300 text-slate-700 dark:text-slate-300'
+                            }`}
+                          >
+                            <div className="min-w-0">
+                              <div className="text-xs font-black flex items-center gap-1">
+                                <span>⚡ 上半冊 (期中考)</span>
+                              </div>
+                              <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                                Starter, Unit 1, Unit 2, Review 1
+                              </div>
+                            </div>
+                            {rangePreset === 'midterm' && <CheckCircle2 size={15} className="text-amber-600 shrink-0" />}
+                          </button>
+
+                          {/* 下半冊 (期末考) */}
+                          <button
+                            type="button"
+                            onClick={() => applyRangePreset('final')}
+                            className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                              rangePreset === 'final'
+                                ? 'border-amber-600 bg-amber-50 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-black shadow-xs ring-1 ring-amber-500'
+                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-300 text-slate-700 dark:text-slate-300'
+                            }`}
+                          >
+                            <div className="min-w-0">
+                              <div className="text-xs font-black flex items-center gap-1">
+                                <span>⚡ 下半冊 (期末考)</span>
+                              </div>
+                              <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                                Unit 3, Unit 4, Review 2, Festival
+                              </div>
+                            </div>
+                            {rangePreset === 'final' && <CheckCircle2 size={15} className="text-amber-600 shrink-0" />}
+                          </button>
+
+                          {/* 全選 / 全冊總複習 */}
+                          <button
+                            type="button"
+                            onClick={() => applyRangePreset('all')}
+                            className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                              rangePreset === 'all'
+                                ? 'border-amber-600 bg-amber-50 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-black shadow-xs ring-1 ring-amber-500'
+                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-300 text-slate-700 dark:text-slate-300'
+                            }`}
+                          >
+                            <div className="min-w-0">
+                              <div className="text-xs font-black flex items-center gap-1">
+                                <span>🌟 全選 / 全冊總複習</span>
+                              </div>
+                              <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                                全冊 8 個單元總動員
+                              </div>
+                            </div>
+                            {rangePreset === 'all' && <CheckCircle2 size={15} className="text-amber-600 shrink-0" />}
+                          </button>
+                        </div>
+
+                        {/* 自選單元折疊抽屜 */}
+                        <div className="mt-auto pt-1 border-t border-slate-100 dark:border-slate-700">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setRangePreset('custom');
+                              setIsCustomUnitOpen((prev) => !prev);
+                            }}
+                            className={`w-full py-1.5 px-2 rounded-lg text-[11px] font-bold border flex items-center justify-between cursor-pointer transition ${
+                              rangePreset === 'custom'
+                                ? 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-300 text-indigo-700 dark:text-indigo-300'
+                                : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                            }`}
+                          >
+                            <span>⚙️ 自選特定單元 ({selectedUnits.length})</span>
+                            <span className="text-[10px]">{isCustomUnitOpen ? '▲ 收合' : '▼ 展開'}</span>
+                          </button>
+
+                          {isCustomUnitOpen && (
+                            <div className="grid grid-cols-2 gap-1 mt-1 p-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 max-h-36 overflow-y-auto">
+                              {bookMeta.units.map((unitName) => {
+                                const checked = selectedUnits.includes(unitName);
+                                return (
+                                  <button
+                                    key={unitName}
+                                    type="button"
+                                    onClick={() => {
+                                      setRangePreset('custom');
+                                      toggleUnit(unitName);
+                                    }}
+                                    className={`p-1 rounded-lg border text-left text-[10px] font-bold truncate flex items-center justify-between cursor-pointer ${
+                                      checked
+                                        ? 'bg-indigo-600 text-white border-indigo-600'
+                                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
+                                    }`}
+                                  >
+                                    <span className="truncate">{unitName}</span>
+                                    {checked && <Check size={11} className="shrink-0 ml-0.5" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                  {[
-                    { count: 10, label: '10 題', reward: '最高 +4' },
-                    { count: 20, label: '20 題', reward: '最高 +8' },
-                    { count: 50, label: '50 題', reward: '最高 +20' }
-                  ].map((opt) => {
-                    const active = questionCountOpt === opt.count;
-                    return (
-                      <button
-                        key={opt.count}
-                        type="button"
-                        onClick={() => setQuestionCountOpt(opt.count)}
-                        className={`py-2.5 px-3 rounded-xl border-2 text-center transition flex flex-col items-center justify-center cursor-pointer ${
-                          active
-                            ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
-                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-indigo-300'
-                        }`}
-                      >
-                        <span className="text-sm sm:text-base font-black">{opt.label}</span>
-                        <span
-                          className={`text-[11px] font-bold ${
-                            active ? 'text-amber-200' : 'text-amber-600 dark:text-amber-400'
+                {/* ───────────────────────────────────────────────────────────── */}
+                {/* 欄 3：03 MODE 施測型態                                         */}
+                {/* ───────────────────────────────────────────────────────────── */}
+                <div className="bg-white dark:bg-slate-800/90 rounded-2xl border-2 border-indigo-200/80 dark:border-indigo-900/60 p-3 flex flex-col gap-2 min-h-0 shadow-xs">
+                  <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-700/60">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-black flex items-center justify-center">
+                        3
+                      </span>
+                      <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                        03 MODE 型態
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold">
+                      聽力/筆試配置
+                    </span>
+                  </div>
+
+                  <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-0.5 min-h-0">
+                    {/* 1, 2 年級：極簡自動通道 */}
+                    {(selectedBook === 'g1' || selectedBook === 'g2') ? (
+                      <div className="flex-1 flex flex-col items-center justify-center text-center p-3 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/60">
+                        <span className="text-2xl mb-1">🎯</span>
+                        <div className="text-xs font-black text-purple-900 dark:text-purple-100">
+                          字母圖文全題型
+                        </div>
+                        <p className="text-[10px] text-purple-700 dark:text-purple-300 mt-1 leading-relaxed">
+                          自適應派發純字母、大小寫配對與趣味圖文題，免考複雜文法與長句
+                        </p>
+                        <span className="mt-2 text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-200 text-purple-900 dark:bg-purple-900 dark:text-purple-200">
+                          ✓ 低年級專屬通道
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        {/* 綜合測驗 */}
+                        <button
+                          type="button"
+                          onClick={() => setTextbookExamMode('comprehensive')}
+                          className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                            textbookExamMode === 'comprehensive'
+                              ? 'border-purple-600 bg-purple-50 dark:bg-purple-950/60 text-purple-950 dark:text-purple-100 font-black shadow-xs ring-1 ring-purple-500'
+                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-purple-300 text-slate-700 dark:text-slate-300'
                           }`}
                         >
-                          {opt.reward}
-                        </span>
-                      </button>
-                    );
-                  })}
+                          <div className="min-w-0">
+                            <div className="text-xs font-black flex items-center gap-1.5">
+                              <span>🎧 綜合測驗</span>
+                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-purple-200 text-purple-800 dark:bg-purple-900 dark:text-purple-200 shrink-0">
+                                段考標準
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
+                              含聽力 (約30%) ＋ 讀寫 (約70%)
+                            </div>
+                          </div>
+                          {textbookExamMode === 'comprehensive' && <CheckCircle2 size={15} className="text-purple-600 shrink-0" />}
+                        </button>
+
+                        {/* 純筆試測驗 */}
+                        <button
+                          type="button"
+                          onClick={() => setTextbookExamMode('written')}
+                          className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                            textbookExamMode === 'written'
+                              ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-950 dark:text-indigo-100 font-black shadow-xs ring-1 ring-indigo-500'
+                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          <div className="min-w-0">
+                            <div className="text-xs font-black flex items-center gap-1.5">
+                              <span>📝 純筆試測驗</span>
+                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 shrink-0">
+                                避開聽力
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
+                              100% 讀寫選擇題，安靜教室首選
+                            </div>
+                          </div>
+                          {textbookExamMode === 'written' && <CheckCircle2 size={15} className="text-indigo-600 shrink-0" />}
+                        </button>
+
+                        {/* 純聽力特訓 */}
+                        <button
+                          type="button"
+                          onClick={() => setTextbookExamMode('listening')}
+                          className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                            textbookExamMode === 'listening'
+                              ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 text-sky-950 dark:text-sky-100 font-black shadow-xs ring-1 ring-sky-500'
+                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300 text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          <div className="min-w-0">
+                            <div className="text-xs font-black flex items-center gap-1.5">
+                              <span>🔊 純聽力特訓</span>
+                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-sky-200 text-sky-800 dark:bg-sky-900 dark:text-sky-200 shrink-0">
+                                聽力衝刺
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
+                              全卷皆為聽力理解問答，戴耳機練習
+                            </div>
+                          </div>
+                          {textbookExamMode === 'listening' && <CheckCircle2 size={15} className="text-sky-600 shrink-0" />}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* ───────────────────────────────────────────────────────────── */}
+                {/* 欄 4：04 SCALE & LAUNCH 規模與啟動中樞 (吃下半部啟動鈕)           */}
+                {/* ───────────────────────────────────────────────────────────── */}
+                <div className="bg-white dark:bg-slate-800/90 rounded-2xl border-2 border-indigo-200/80 dark:border-indigo-900/60 p-3 flex flex-col justify-between gap-2 min-h-0 shadow-xs">
+                  <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-700/60">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center">
+                        4
+                      </span>
+                      <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                        04 SCALE 題數
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                      規模與啟動
+                    </span>
+                  </div>
+
+                  {/* 上半部：題數選擇 */}
+                  <div className="flex flex-col gap-1.5">
+                    {(selectedBook === 'g1' || selectedBook === 'g2' ? [
+                      { count: 10, label: '10 題', sub: '小試身手 • 最高 +4 金幣' },
+                      { count: 20, label: '20 題', sub: '勇者挑戰 • 最高 +8 金幣' }
+                    ] : [
+                      { count: 10, label: '10 題', sub: '速測 • 最高 +4 金幣' },
+                      { count: 20, label: '20 題', sub: '標準段考 • 最高 +8 金幣 (推薦)' },
+                      { count: 50, label: '50 題', sub: '大考衝刺 • 最高 +20 金幣' }
+                    ]).map((opt) => {
+                      const active = questionCountOpt === opt.count;
+                      return (
+                        <button
+                          key={opt.count}
+                          type="button"
+                          onClick={() => setQuestionCountOpt(opt.count)}
+                          className={`w-full py-2 px-2.5 rounded-xl border text-left transition flex items-center justify-between gap-2 cursor-pointer ${
+                            active
+                              ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-950 dark:text-emerald-100 font-black shadow-xs ring-1 ring-emerald-500'
+                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-300'
+                          }`}
+                        >
+                          <div>
+                            <span className="text-xs font-black">{opt.label}</span>
+                            <div className="text-[9px] text-emerald-700 dark:text-emerald-400 font-semibold">{opt.sub}</div>
+                          </div>
+                          {active && <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* 下半部：大尺寸啟動按鈕 (費茨法則：手指直接在第4欄就地啟動！) */}
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
+                    <button
+                      type="button"
+                      disabled={!canStart}
+                      onClick={() => startExamSession()}
+                      className="w-full py-3 px-3 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white font-black text-xs sm:text-sm shadow-md shadow-indigo-600/30 flex flex-col items-center justify-center gap-0.5 cursor-pointer transition active:scale-98 disabled:opacity-50"
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <Sparkles size={14} className="text-amber-300" />
+                        <span>🚀 開始檢定 (進入第0頁) ➔</span>
+                      </div>
+                      <span className="text-[9px] text-indigo-200 font-normal">
+                        點擊進入考前試卷指引與音量檢驗
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2165,6 +2558,38 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 <span>返回選單</span>
               </button>
 
+              {setupSubView === 'textbook' && (
+                <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 py-1.5 px-3 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
+                  <span className="text-indigo-600 dark:text-indigo-400 font-black">
+                    📖 {formatBookLabel(selectedBook)}
+                  </span>
+                  <span>•</span>
+                  <span>
+                    {selectedBook === 'g1' || selectedBook === 'g2'
+                      ? '🔤 全字母'
+                      : rangePreset === 'midterm'
+                      ? '⚡ 上半冊'
+                      : rangePreset === 'final'
+                      ? '⚡ 下半冊'
+                      : rangePreset === 'all'
+                      ? '🌟 全選'
+                      : `⚙️ 自選 ${selectedUnits.length} 單元`}
+                  </span>
+                  <span>•</span>
+                  <span>
+                    {textbookExamMode === 'comprehensive'
+                      ? '🎧 綜合測驗'
+                      : textbookExamMode === 'written'
+                      ? '📝 純筆試'
+                      : '🔊 純聽力'}
+                  </span>
+                  <span>•</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-black">
+                    {questionCountOpt} 題
+                  </span>
+                </div>
+              )}
+
               <button
                 type="button"
                 disabled={!canStart}
@@ -2371,15 +2796,90 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               </div>
             </div>
 
-            {/* 3. 正式作答規範與守則 (Standard Exam Conduct) */}
+            {/* 3. 考前音量與耳機檢驗互動站 (Pre-Exam Audio Station) */}
+            {hasAudioSection ? (
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-sky-50 via-indigo-50 to-purple-50 dark:from-sky-950/50 dark:via-indigo-950/50 dark:to-purple-950/50 border-2 border-indigo-200 dark:border-indigo-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <Headphones size={20} className={isPlayingAudioTest ? 'animate-pulse' : ''} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                        🔊 考前耳機與喇叭音量檢驗
+                      </span>
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200">
+                        含聽力測驗
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
+                      本試卷包含聽力大題，請調妥音量。點擊右側按鈕試聽美式發音確認清晰度。
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={runAudioTest}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95 ${
+                      isPlayingAudioTest
+                        ? 'bg-emerald-600 text-white shadow-emerald-500/25 ring-2 ring-emerald-400'
+                        : 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-200 border border-indigo-300 dark:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-600'
+                    }`}
+                  >
+                    <Volume2 size={16} className={isPlayingAudioTest ? 'animate-bounce' : ''} />
+                    <span>{isPlayingAudioTest ? '正在試聽發音...' : '🔊 點我測試耳機與喇叭音量'}</span>
+                  </button>
+
+                  {scopeMode === 'curriculum' && (
+                    <button
+                      type="button"
+                      onClick={switchToWrittenMode}
+                      className="px-2.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 transition cursor-pointer flex items-center gap-1"
+                      title="無耳機時一鍵重整為純筆試題型"
+                    >
+                      <span>🔇 沒耳機？轉純筆試</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
+                    <BookOpen size={16} />
+                  </div>
+                  <div>
+                    <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                      📝 純讀寫筆試模式（安靜作答）
+                    </span>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
+                      全卷無強制聽力題型，可安心作答（作答中仍可自由點擊單題朗讀鈕輔助學習）
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={runAudioTest}
+                  className="px-3 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 transition cursor-pointer flex items-center gap-1 shrink-0"
+                >
+                  <Volume2 size={13} />
+                  <span>{isPlayingAudioTest ? '播放中...' : '試聽發音'}</span>
+                </button>
+              </div>
+            )}
+
+            {/* 4. 正式作答規範與守則 (Standard Exam Conduct) */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
                 <div className="font-black text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
                   <Headphones size={14} />
-                  <span>音訊準備</span>
+                  <span>作答輔助</span>
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {hasAudioSection ? '本試卷包含聽力題型，請調妥耳機或喇叭音量；作答中可點擊朗讀按鈕。' : '題目支援中文或英文 TTS 朗讀題幹，建議佩戴耳機以獲取最佳效果。'}
+                  {hasAudioSection ? '聽力大題依標準朗讀，可隨時點擊題目喇叭鈕重聽。' : '題目支援中文與英文語音朗讀，需要時可點擊喇叭圖示。'}
                 </p>
               </div>
 
@@ -2415,9 +2915,9 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 setCurrentIndex(0);
                 setPhase('exam');
               }}
-              className="w-full sm:w-auto sm:min-w-[320px] py-4 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm sm:text-base shadow-xl shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              className="w-full sm:w-auto sm:min-w-[340px] py-4 px-8 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white font-black text-sm sm:text-base shadow-xl shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
             >
-              <span>🚀 正式開始測驗 (開始作答) ➔</span>
+              <span>🚀 我準備好了，開始作答 (進入第 1 題) ➔</span>
             </button>
           </div>
         </div>
