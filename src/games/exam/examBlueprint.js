@@ -114,6 +114,22 @@ export function extractTargetToken(q) {
     }
   }
 
+  // 6. 從題幹引號標註單字推導（如「單字「math」的中文意思是下列哪一個？」）
+  if (q.question && typeof q.question === 'string') {
+    const m = q.question.match(/「([^」]+)」/);
+    if (m) {
+      return m[1].toLowerCase().trim();
+    }
+  }
+
+  // 7. 從單字題 (V-MEAN) 正解單字推導
+  if (q.taskType === 'V-MEAN' && Array.isArray(q.options) && q.options[q.answer]) {
+    const opt = String(q.options[q.answer]).trim();
+    if (!opt.startsWith('圖片') && !opt.startsWith('選項') && opt.split(/\s+/).length <= 2 && !opt.includes('?') && !opt.includes('.')) {
+      return opt.toLowerCase().trim();
+    }
+  }
+
   return null;
 }
 
@@ -145,41 +161,66 @@ function toUnits(items) {
   return units;
 }
 
-/** 以最大餘數法依權重分配題數，每種至少 1 題，且不超過該題型可用題數 */
+/**
+ * 試卷題型名額分配演算法（各大題均衡配額 Round-Robin ＋ 單字題天花板保護）
+ * 核心原則：
+ * 1. 均等配額：各大題型（字彙、文法、對話、閱讀等）預設盡可能均分題數（如 3 題型各約 1/3、4 題型各約 1/4）。
+ * 2. 單字天花板保護：純單字語意題 (V-MEAN) 在多題型試卷中設定上限天花板（至多約 35%），絕不因題庫庫存多而灌水獨大。
+ * 3. 動態讓出與轉移：若某題型庫存不足其配額，剩餘名額均等移轉給其他仍有題目的題型。
+ */
 function allocate(targetCount, typeKeys, available) {
   const alloc = Object.fromEntries(typeKeys.map((k) => [k, 0]));
   let remaining = Math.min(
     targetCount,
-    typeKeys.reduce((s, k) => s + available[k], 0)
+    typeKeys.reduce((s, k) => s + (available[k] || 0), 0)
   );
-  // 先每種保底 1 題
-  for (const k of typeKeys) {
-    if (remaining <= 0) break;
-    alloc[k] = 1;
+  if (remaining <= 0) return alloc;
+
+  // 若只有單一題型，全數分派給該題型
+  if (typeKeys.length === 1) {
+    alloc[typeKeys[0]] = Math.min(remaining, available[typeKeys[0]] || 0);
+    return alloc;
+  }
+
+  // 多題型情境下，計算各題型的理想上限天花板（純單字題 V-MEAN 不超過 targetCount * 0.35 或均分額）
+  const maxWordCap = Math.max(1, Math.ceil(targetCount * (1 / typeKeys.length + 0.05)));
+  const effectiveCaps = {};
+  typeKeys.forEach((k) => {
+    if (k === 'V-MEAN' && typeKeys.length > 1) {
+      effectiveCaps[k] = Math.min(available[k] || 0, Math.max(maxWordCap, Math.ceil(targetCount * 0.35)));
+    } else {
+      effectiveCaps[k] = available[k] || 0;
+    }
+  });
+
+  // 第一階段：Round-Robin 輪巡均等分派（由目前題數最少、庫存充足的題型優先分派）
+  let progressed = true;
+  while (remaining > 0 && progressed) {
+    progressed = false;
+    const candidates = typeKeys
+      .filter((k) => alloc[k] < effectiveCaps[k])
+      .sort((a, b) => alloc[a] - alloc[b] || (available[b] || 0) - (available[a] || 0));
+
+    for (const k of candidates) {
+      if (remaining <= 0) break;
+      if (alloc[k] < effectiveCaps[k]) {
+        alloc[k]++;
+        remaining--;
+        progressed = true;
+      }
+    }
+  }
+
+  // 第二階段：若因某些題型庫存不足或受限天花板而仍有名額，放寬限制分給仍有庫存的題型
+  while (remaining > 0) {
+    const open = typeKeys
+      .filter((k) => alloc[k] < (available[k] || 0))
+      .sort((a, b) => alloc[a] - alloc[b] || (available[b] || 0) - (available[a] || 0));
+    if (open.length === 0) break;
+    alloc[open[0]]++;
     remaining--;
   }
-  // 依可用題數比例分配剩餘題數，滿額的題型自動讓出
-  while (remaining > 0) {
-    const open = typeKeys.filter((k) => alloc[k] < available[k]);
-    if (open.length === 0) break;
-    const totalAvail = open.reduce((s, k) => s + available[k], 0);
-    const shares = open.map((k) => ({ k, exact: (remaining * available[k]) / totalAvail }));
-    let given = 0;
-    for (const s of shares) {
-      const add = Math.min(Math.floor(s.exact), available[s.k] - alloc[s.k]);
-      alloc[s.k] += add;
-      given += add;
-    }
-    if (given === 0) {
-      // 最大餘數補 1 題
-      shares.sort((a, b) => (b.exact % 1) - (a.exact % 1));
-      const pick = shares.find((s) => alloc[s.k] < available[s.k]);
-      if (!pick) break;
-      alloc[pick.k] += 1;
-      given = 1;
-    }
-    remaining -= given;
-  }
+
   return alloc;
 }
 
