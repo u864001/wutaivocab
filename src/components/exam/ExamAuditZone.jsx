@@ -60,7 +60,7 @@ import {
 } from '../../services/supabase';
 
 const AUDIT_STORAGE_KEY = 'wutai_exam_audit_records_v1';
-const CHOICE_LABELS = ['A', 'B', 'C', 'D'];
+const CHOICE_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
 export function ExamAuditZone({ onBack }) {
   // ── 檢核儲存狀態 ──
