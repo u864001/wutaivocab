@@ -251,7 +251,7 @@ export const parseStudentFormat = (entry, lang = 'zh-TW') => {
   let badge = '';
 
   // 1. 若名稱內含括號 e.g. "4年甲班 01號 (英勇穿山甲)"
-  const parenMatch = rawName.match(/^(.*?)\s*[\(（](.*?)[\)）]$/);
+  const parenMatch = rawName.match(/^(.*?)\s*[(（](.*?)[)）]$/);
   if (parenMatch) {
     const prefix = parenMatch[1].trim();
     nickname = parenMatch[2].trim();
@@ -451,7 +451,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
   // 載入所有模式榜單 (全面補齊所有子榜與防漏查詢)
   const loadGradeBoards = useCallback(async (force = false) => {
     setIsLoading(true);
-    const results = { ...boardData };
+    const results = {};
     const isPast = selectedWeek < currentWeek;
     const cacheTtl = isPast ? 7 * 24 * 60 * 60 * 1000 : 45 * 1000;
     const now = Date.now();
