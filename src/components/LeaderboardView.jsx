@@ -33,14 +33,14 @@ export const GRADE_LEADERBOARD_TABS = [
   { id: 'all', zh: '全校大亂鬥', en: 'All School', books: null, isAllSchool: true }
 ];
 
-// ── 大武山四聯屏風畫四大天王定義 (高階生成繪圖、領域色調與排版) ──
+// ── 大武山四聯屏風畫四大天王定義 (現代 3A 遊戲概念大作、無縫連貫大武山群峰) ──
 export const FOUR_CHAMPION_PANELS = [
   {
     id: 'exam_king',
     title: '測驗之王',
     enTitle: 'EXAM KING',
     realm: '破曉藍調 • 官方模擬與實戰檢定',
-    bgImage: '/assets/leaderboard/polyptych_exam.jpg',
+    bgImage: '/assets/leaderboard/polyptych_exam.jpg?v=dawu3a',
     icon: Crown,
     colorName: 'sky',
     titleGlow: 'bg-gradient-to-b from-sky-100 via-sky-200 to-indigo-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_16px_rgba(56,189,248,0.8)]',
@@ -55,7 +55,7 @@ export const FOUR_CHAMPION_PANELS = [
     title: '金幣之王',
     enTitle: 'COIN KING',
     realm: '朝陽暖金 • 總資產財富殿堂',
-    bgImage: '/assets/leaderboard/polyptych_coin.jpg',
+    bgImage: '/assets/leaderboard/polyptych_coin.jpg?v=dawu3a',
     icon: Coins,
     colorName: 'amber',
     titleGlow: 'bg-gradient-to-b from-yellow-100 via-amber-300 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_18px_rgba(245,158,11,0.8)]',
@@ -70,7 +70,7 @@ export const FOUR_CHAMPION_PANELS = [
     title: '積分之王',
     enTitle: 'QUEST KING',
     realm: '林谷翡翠 • 家園探索歷險先鋒',
-    bgImage: '/assets/leaderboard/polyptych_quest.jpg',
+    bgImage: '/assets/leaderboard/polyptych_quest.jpg?v=dawu3a',
     icon: Compass,
     colorName: 'emerald',
     titleGlow: 'bg-gradient-to-b from-emerald-100 via-emerald-200 to-teal-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_16px_rgba(16,185,129,0.8)]',
@@ -85,7 +85,7 @@ export const FOUR_CHAMPION_PANELS = [
     title: '遊戲之王',
     enTitle: 'GAME KING',
     realm: '暮色紫霞 • 單字館小遊戲群英',
-    bgImage: '/assets/leaderboard/polyptych_game.jpg',
+    bgImage: '/assets/leaderboard/polyptych_game.jpg?v=dawu3a',
     icon: Rocket,
     colorName: 'purple',
     titleGlow: 'bg-gradient-to-b from-white via-purple-200 to-fuchsia-400 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)] drop-shadow-[0_0_18px_rgba(217,70,239,0.8)]',
@@ -509,13 +509,10 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
     };
   }, [boardData, isPastWeek, lang]);
 
-  // 全域大底圖：深層透光，以大武山破曉藍調為基底，展開時凸顯前景
+  // 全域大底圖：深層透光，以連貫的北大武神山群峰全景長卷為基底
   const currentWallpaper = useMemo(() => {
-    if (activeCol === 'coin_king') return '/assets/leaderboard/polyptych_coin.jpg';
-    if (activeCol === 'point_king') return '/assets/leaderboard/polyptych_quest.jpg';
-    if (activeCol === 'game_king') return '/assets/leaderboard/polyptych_game.jpg';
-    return '/assets/leaderboard/polyptych_exam.jpg';
-  }, [activeCol]);
+    return '/assets/leaderboard/dawu_panorama_full.jpg?v=dawu3a';
+  }, []);
 
   // 判斷是否為當前登入者
   const isSelf = useCallback((entry) => {
