@@ -23,7 +23,11 @@ import {
   Clock,
   AlertTriangle,
   X,
-  Check
+  Check,
+  Info,
+  SlidersHorizontal,
+  FileText,
+  Type
 } from 'lucide-react';
 import {
   EXAM_TRACKS,
@@ -203,6 +207,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   });
   // 測驗題數選項: 10 | 20 | 50
   const [questionCountOpt, setQuestionCountOpt] = useState(20);
+  // 四聯階梯布題台逐步引導狀態 (1: 冊別, 2: 範圍, 3: 型態, 4: 題數)
+  const [activeBoardStep, setActiveBoardStep] = useState(1);
+  const [maxReachedBoardStep, setMaxReachedBoardStep] = useState(1);
+  const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
 
   // 學力檢測 (SAA) 設定
   const defaultSaaGrade = useMemo(() => {
@@ -319,6 +327,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // 切換範圍快捷設定
   const applyRangePreset = useCallback((preset, bookKey = selectedBook) => {
     setRangePreset(preset);
+    setActiveBoardStep(3);
+    setMaxReachedBoardStep((prev) => Math.max(prev, 3));
     const meta = HERE_WE_GO_BOOK_META[bookKey];
     if (!meta) return;
     if (bookKey === 'g1' || bookKey === 'g2') {
@@ -353,6 +363,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // 切換冊別時智慧分流
   const handleSelectBook = useCallback((bookNum) => {
     setSelectedBook(bookNum);
+    setActiveBoardStep(2);
+    setMaxReachedBoardStep((prev) => Math.max(prev, 2));
     if (bookNum === 'g1' || bookNum === 'g2') {
       setRangePreset('all');
       setSelectedUnits(HERE_WE_GO_BOOK_META[bookNum]?.units || []);
@@ -768,10 +780,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     if (!curQ) return;
     const isListening =
       curQ.category === 'listening' ||
+      curQ.section === 'listening' ||
       curQ.taskType?.startsWith('L-') ||
+      curQ.taskType?.startsWith('A-') ||
       curQ.subType?.startsWith('listen-') ||
       curQ.taskType === 'V-AUDIO-WORD' ||
-      curQ.taskType === 'V-AUDIO-PIC';
+      curQ.taskType === 'V-AUDIO-PIC' ||
+      Boolean(curQ.media?.audioText);
     if (isListening) {
       const timer = setTimeout(() => {
         speakQuestion(curQ.media?.audioText || curQ.question, 2);
@@ -1508,10 +1523,23 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 {/* ───────────────────────────────────────────────────────────── */}
                 {/* 欄 1：01 TARGET 冊別選擇                                        */}
                 {/* ───────────────────────────────────────────────────────────── */}
-                <div className="bg-white dark:bg-slate-800/90 rounded-2xl border-2 border-indigo-200/80 dark:border-indigo-900/60 p-3 flex flex-col gap-2 min-h-0 shadow-xs">
+                <div
+                  onClick={() => setActiveBoardStep(1)}
+                  className={`rounded-2xl p-3 flex flex-col gap-2 min-h-0 transition-all cursor-pointer ${
+                    activeBoardStep === 1
+                      ? 'border-2 border-indigo-500 dark:border-indigo-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-indigo-500/25 dark:ring-indigo-400/25 opacity-100'
+                      : 1 <= maxReachedBoardStep
+                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-indigo-200'
+                      : 'border-2 border-dashed border-slate-200 dark:border-slate-750 bg-slate-50/70 dark:bg-slate-850/60 opacity-45 hover:opacity-75'
+                  }`}
+                >
                   <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-700/60">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center">
+                      <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center transition ${
+                        activeBoardStep === 1
+                          ? 'bg-indigo-600 text-white ring-2 ring-indigo-300'
+                          : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                      }`}>
                         1
                       </span>
                       <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
@@ -1538,16 +1566,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           <button
                             key={bKey}
                             type="button"
-                            onClick={() => handleSelectBook(bKey)}
-                            className={`py-1.5 px-2 rounded-xl border text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSelectBook(bKey);
+                            }}
+                            className={`py-2 px-2 rounded-xl border text-center transition flex flex-col items-center justify-center cursor-pointer ${
                               isSelected
                                 ? 'border-indigo-600 bg-indigo-600 text-white shadow-xs font-black'
                                 : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300'
                             }`}
                           >
-                            <span className="text-xs font-bold leading-tight">{formatBookLabel(bKey)}</span>
+                            <span className="text-sm font-black leading-tight">{formatBookLabel(bKey)}</span>
                             {isOwn && (
-                              <span className={`text-[9px] font-bold ${isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                              <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                 ★ 本年級
                               </span>
                             )}
@@ -1565,16 +1596,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           <button
                             key={bNum}
                             type="button"
-                            onClick={() => handleSelectBook(bNum)}
-                            className={`py-1.5 px-2 rounded-xl border text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSelectBook(bNum);
+                            }}
+                            className={`py-2 px-2 rounded-xl border text-center transition flex flex-col items-center justify-center cursor-pointer ${
                               isSelected
                                 ? 'border-indigo-600 bg-indigo-600 text-white shadow-xs font-black'
                                 : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300'
                             }`}
                           >
-                            <span className="text-xs font-bold leading-tight">{formatBookLabel(bNum)}</span>
+                            <span className="text-sm font-black leading-tight">{formatBookLabel(bNum)}</span>
                             {isOwn && (
-                              <span className={`text-[9px] font-bold ${isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                              <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                 ★ 本年級
                               </span>
                             )}
@@ -1586,14 +1620,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     {/* 國一先修 */}
                     <button
                       type="button"
-                      onClick={() => handleSelectBook(9)}
-                      className={`w-full py-1.5 px-2 rounded-xl border text-center transition flex items-center justify-center gap-1 cursor-pointer ${
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelectBook(9);
+                      }}
+                      className={`w-full py-2 px-2 rounded-xl border text-center transition flex items-center justify-center gap-1 cursor-pointer ${
                         selectedBook === 9
                           ? 'border-indigo-600 bg-indigo-600 text-white shadow-xs font-black'
                           : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300'
                       }`}
                     >
-                      <span className="text-xs font-bold">國一先修 (Book 9)</span>
+                      <span className="text-sm font-black">國一先修 (Book 9)</span>
                     </button>
                   </div>
                 </div>
@@ -1601,10 +1638,23 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 {/* ───────────────────────────────────────────────────────────── */}
                 {/* 欄 2：02 SCOPE 評量範圍                                        */}
                 {/* ───────────────────────────────────────────────────────────── */}
-                <div className="bg-white dark:bg-slate-800/90 rounded-2xl border-2 border-indigo-200/80 dark:border-indigo-900/60 p-3 flex flex-col gap-2 min-h-0 shadow-xs">
+                <div
+                  onClick={() => setActiveBoardStep(2)}
+                  className={`rounded-2xl p-3 flex flex-col gap-2 min-h-0 transition-all cursor-pointer ${
+                    activeBoardStep === 2
+                      ? 'border-2 border-indigo-500 dark:border-indigo-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-indigo-500/25 dark:ring-indigo-400/25 opacity-100'
+                      : 2 <= maxReachedBoardStep
+                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-indigo-200'
+                      : 'border-2 border-dashed border-slate-200 dark:border-slate-750 bg-slate-50/70 dark:bg-slate-850/60 opacity-45 hover:opacity-75'
+                  }`}
+                >
                   <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-700/60">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-5 h-5 rounded-full bg-amber-600 text-white text-[10px] font-black flex items-center justify-center">
+                      <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center transition ${
+                        activeBoardStep === 2
+                          ? 'bg-amber-600 text-white ring-2 ring-amber-300'
+                          : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                      }`}>
                         2
                       </span>
                       <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
@@ -1620,8 +1670,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     {/* 1, 2 年級：極簡自動通道 */}
                     {(selectedBook === 'g1' || selectedBook === 'g2') ? (
                       <div className="flex-1 flex flex-col items-center justify-center text-center p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60">
-                        <span className="text-2xl mb-1">🔤</span>
-                        <div className="text-xs font-black text-amber-900 dark:text-amber-100">
+                        <Type size={24} className="text-amber-600 dark:text-amber-400 mb-1" />
+                        <div className="text-sm font-black text-amber-900 dark:text-amber-100">
                           全字母闖關檢定
                         </div>
                         <p className="text-[10px] text-amber-700 dark:text-amber-300 mt-1 leading-relaxed">
@@ -1638,64 +1688,73 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           {/* 上半冊 (期中考) */}
                           <button
                             type="button"
-                            onClick={() => applyRangePreset('midterm')}
-                            className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              applyRangePreset('midterm');
+                            }}
+                            className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                               rangePreset === 'midterm'
                                 ? 'border-amber-600 bg-amber-50 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-black shadow-xs ring-1 ring-amber-500'
                                 : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-300 text-slate-700 dark:text-slate-300'
                             }`}
                           >
                             <div className="min-w-0">
-                              <div className="text-xs font-black flex items-center gap-1">
-                                <span>⚡ 上半冊 (期中考)</span>
+                              <div className="text-sm sm:text-base font-black flex items-center gap-1">
+                                <span>上半冊 (期中考)</span>
                               </div>
-                              <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                              <div className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
                                 Starter, Unit 1, Unit 2, Review 1
                               </div>
                             </div>
-                            {rangePreset === 'midterm' && <CheckCircle2 size={15} className="text-amber-600 shrink-0" />}
+                            {rangePreset === 'midterm' && <CheckCircle2 size={16} className="text-amber-600 shrink-0" />}
                           </button>
 
                           {/* 下半冊 (期末考) */}
                           <button
                             type="button"
-                            onClick={() => applyRangePreset('final')}
-                            className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              applyRangePreset('final');
+                            }}
+                            className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                               rangePreset === 'final'
                                 ? 'border-amber-600 bg-amber-50 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-black shadow-xs ring-1 ring-amber-500'
                                 : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-300 text-slate-700 dark:text-slate-300'
                             }`}
                           >
                             <div className="min-w-0">
-                              <div className="text-xs font-black flex items-center gap-1">
-                                <span>⚡ 下半冊 (期末考)</span>
+                              <div className="text-sm sm:text-base font-black flex items-center gap-1">
+                                <span>下半冊 (期末考)</span>
                               </div>
-                              <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                              <div className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
                                 Unit 3, Unit 4, Review 2, Festival
                               </div>
                             </div>
-                            {rangePreset === 'final' && <CheckCircle2 size={15} className="text-amber-600 shrink-0" />}
+                            {rangePreset === 'final' && <CheckCircle2 size={16} className="text-amber-600 shrink-0" />}
                           </button>
 
                           {/* 全選 / 全冊總複習 */}
                           <button
                             type="button"
-                            onClick={() => applyRangePreset('all')}
-                            className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              applyRangePreset('all');
+                            }}
+                            className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                               rangePreset === 'all'
                                 ? 'border-amber-600 bg-amber-50 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-black shadow-xs ring-1 ring-amber-500'
                                 : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-300 text-slate-700 dark:text-slate-300'
                             }`}
                           >
                             <div className="min-w-0">
-                              <div className="text-xs font-black flex items-center gap-1">
-                                <span>🌟 全選 / 全冊總複習</span>
+                              <div className="text-sm sm:text-base font-black flex items-center gap-1">
+                                <span>全冊總複習 (全選)</span>
                               </div>
-                              <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                              <div className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
                                 全冊 8 個單元總動員
                               </div>
                             </div>
-                            {rangePreset === 'all' && <CheckCircle2 size={15} className="text-amber-600 shrink-0" />}
+                            {rangePreset === 'all' && <CheckCircle2 size={16} className="text-amber-600 shrink-0" />}
                           </button>
                         </div>
 
@@ -1703,18 +1762,23 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         <div className="mt-auto pt-1 border-t border-slate-100 dark:border-slate-700">
                           <button
                             type="button"
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setRangePreset('custom');
+                              setActiveBoardStep(2);
                               setIsCustomUnitOpen((prev) => !prev);
                             }}
-                            className={`w-full py-1.5 px-2 rounded-lg text-[11px] font-bold border flex items-center justify-between cursor-pointer transition ${
+                            className={`w-full py-1.5 px-2 rounded-lg text-xs font-black border flex items-center justify-between cursor-pointer transition ${
                               rangePreset === 'custom'
                                 ? 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-300 text-indigo-700 dark:text-indigo-300'
                                 : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
                             }`}
                           >
-                            <span>⚙️ 自選特定單元 ({selectedUnits.length})</span>
-                            <span className="text-[10px]">{isCustomUnitOpen ? '▲ 收合' : '▼ 展開'}</span>
+                            <span className="flex items-center gap-1.5">
+                              <SlidersHorizontal size={13} />
+                              <span>自選特定單元 ({selectedUnits.length})</span>
+                            </span>
+                            <span className="text-[10px] font-semibold">{isCustomUnitOpen ? '▲ 收合' : '▼ 展開'}</span>
                           </button>
 
                           {isCustomUnitOpen && (
@@ -1725,18 +1789,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                                   <button
                                     key={unitName}
                                     type="button"
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                      e.stopPropagation();
                                       setRangePreset('custom');
                                       toggleUnit(unitName);
                                     }}
-                                    className={`p-1 rounded-lg border text-left text-[10px] font-bold truncate flex items-center justify-between cursor-pointer ${
+                                    className={`p-1.5 rounded-lg border text-left text-xs font-bold truncate flex items-center justify-between cursor-pointer ${
                                       checked
                                         ? 'bg-indigo-600 text-white border-indigo-600'
                                         : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
                                     }`}
                                   >
                                     <span className="truncate">{unitName}</span>
-                                    {checked && <Check size={11} className="shrink-0 ml-0.5" />}
+                                    {checked && <Check size={12} className="shrink-0 ml-0.5" />}
                                   </button>
                                 );
                               })}
@@ -1751,10 +1816,23 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 {/* ───────────────────────────────────────────────────────────── */}
                 {/* 欄 3：03 MODE 施測型態                                         */}
                 {/* ───────────────────────────────────────────────────────────── */}
-                <div className="bg-white dark:bg-slate-800/90 rounded-2xl border-2 border-indigo-200/80 dark:border-indigo-900/60 p-3 flex flex-col gap-2 min-h-0 shadow-xs">
+                <div
+                  onClick={() => setActiveBoardStep(3)}
+                  className={`rounded-2xl p-3 flex flex-col gap-2 min-h-0 transition-all cursor-pointer ${
+                    activeBoardStep === 3
+                      ? 'border-2 border-indigo-500 dark:border-indigo-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-indigo-500/25 dark:ring-indigo-400/25 opacity-100'
+                      : 3 <= maxReachedBoardStep
+                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-indigo-200'
+                      : 'border-2 border-dashed border-slate-200 dark:border-slate-750 bg-slate-50/70 dark:bg-slate-850/60 opacity-45 hover:opacity-75'
+                  }`}
+                >
                   <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-700/60">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-black flex items-center justify-center">
+                      <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center transition ${
+                        activeBoardStep === 3
+                          ? 'bg-purple-600 text-white ring-2 ring-purple-300'
+                          : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                      }`}>
                         3
                       </span>
                       <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
@@ -1770,8 +1848,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     {/* 1, 2 年級：極簡自動通道 */}
                     {(selectedBook === 'g1' || selectedBook === 'g2') ? (
                       <div className="flex-1 flex flex-col items-center justify-center text-center p-3 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/60">
-                        <span className="text-2xl mb-1">🎯</span>
-                        <div className="text-xs font-black text-purple-900 dark:text-purple-100">
+                        <GraduationCap size={24} className="text-purple-600 dark:text-purple-400 mb-1" />
+                        <div className="text-sm font-black text-purple-900 dark:text-purple-100">
                           字母圖文全題型
                         </div>
                         <p className="text-[10px] text-purple-700 dark:text-purple-300 mt-1 leading-relaxed">
@@ -1786,73 +1864,91 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         {/* 綜合測驗 */}
                         <button
                           type="button"
-                          onClick={() => setTextbookExamMode('comprehensive')}
-                          className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTextbookExamMode('comprehensive');
+                            setActiveBoardStep(4);
+                            setMaxReachedBoardStep((prev) => Math.max(prev, 4));
+                          }}
+                          className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                             textbookExamMode === 'comprehensive'
                               ? 'border-purple-600 bg-purple-50 dark:bg-purple-950/60 text-purple-950 dark:text-purple-100 font-black shadow-xs ring-1 ring-purple-500'
                               : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-purple-300 text-slate-700 dark:text-slate-300'
                           }`}
                         >
                           <div className="min-w-0">
-                            <div className="text-xs font-black flex items-center gap-1.5">
-                              <span>🎧 綜合測驗</span>
-                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-purple-200 text-purple-800 dark:bg-purple-900 dark:text-purple-200 shrink-0">
+                            <div className="text-sm sm:text-base font-black flex items-center gap-1.5">
+                              <Headphones size={15} className="text-purple-600 shrink-0" />
+                              <span>綜合測驗</span>
+                              <span className="text-[10px] font-black px-1.5 py-0.2 rounded-full bg-purple-200 text-purple-800 dark:bg-purple-900 dark:text-purple-200 shrink-0">
                                 段考標準
                               </span>
                             </div>
-                            <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
+                            <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
                               含聽力 (約30%) ＋ 讀寫 (約70%)
                             </div>
                           </div>
-                          {textbookExamMode === 'comprehensive' && <CheckCircle2 size={15} className="text-purple-600 shrink-0" />}
+                          {textbookExamMode === 'comprehensive' && <CheckCircle2 size={16} className="text-purple-600 shrink-0" />}
                         </button>
 
                         {/* 純筆試測驗 */}
                         <button
                           type="button"
-                          onClick={() => setTextbookExamMode('written')}
-                          className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTextbookExamMode('written');
+                            setActiveBoardStep(4);
+                            setMaxReachedBoardStep((prev) => Math.max(prev, 4));
+                          }}
+                          className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                             textbookExamMode === 'written'
                               ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-950 dark:text-indigo-100 font-black shadow-xs ring-1 ring-indigo-500'
                               : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 text-slate-700 dark:text-slate-300'
                           }`}
                         >
                           <div className="min-w-0">
-                            <div className="text-xs font-black flex items-center gap-1.5">
-                              <span>📝 純筆試測驗</span>
-                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 shrink-0">
+                            <div className="text-sm sm:text-base font-black flex items-center gap-1.5">
+                              <FileText size={15} className="text-indigo-600 shrink-0" />
+                              <span>純筆試測驗</span>
+                              <span className="text-[10px] font-black px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 shrink-0">
                                 避開聽力
                               </span>
                             </div>
-                            <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
+                            <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
                               100% 讀寫選擇題，安靜教室首選
                             </div>
                           </div>
-                          {textbookExamMode === 'written' && <CheckCircle2 size={15} className="text-indigo-600 shrink-0" />}
+                          {textbookExamMode === 'written' && <CheckCircle2 size={16} className="text-indigo-600 shrink-0" />}
                         </button>
 
                         {/* 純聽力特訓 */}
                         <button
                           type="button"
-                          onClick={() => setTextbookExamMode('listening')}
-                          className={`w-full p-2 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTextbookExamMode('listening');
+                            setActiveBoardStep(4);
+                            setMaxReachedBoardStep((prev) => Math.max(prev, 4));
+                          }}
+                          className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                             textbookExamMode === 'listening'
                               ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 text-sky-950 dark:text-sky-100 font-black shadow-xs ring-1 ring-sky-500'
                               : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300 text-slate-700 dark:text-slate-300'
                           }`}
                         >
                           <div className="min-w-0">
-                            <div className="text-xs font-black flex items-center gap-1.5">
-                              <span>🔊 純聽力特訓</span>
-                              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-full bg-sky-200 text-sky-800 dark:bg-sky-900 dark:text-sky-200 shrink-0">
+                            <div className="text-sm sm:text-base font-black flex items-center gap-1.5">
+                              <Volume2 size={15} className="text-sky-600 shrink-0" />
+                              <span>純聽力特訓</span>
+                              <span className="text-[10px] font-black px-1.5 py-0.2 rounded-full bg-sky-200 text-sky-800 dark:bg-sky-900 dark:text-sky-200 shrink-0">
                                 聽力衝刺
                               </span>
                             </div>
-                            <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
+                            <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
                               全卷皆為聽力理解問答，戴耳機練習
                             </div>
                           </div>
-                          {textbookExamMode === 'listening' && <CheckCircle2 size={15} className="text-sky-600 shrink-0" />}
+                          {textbookExamMode === 'listening' && <CheckCircle2 size={16} className="text-sky-600 shrink-0" />}
                         </button>
                       </>
                     )}
@@ -1860,12 +1956,25 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </div>
 
                 {/* ───────────────────────────────────────────────────────────── */}
-                {/* 欄 4：04 SCALE & LAUNCH 規模與啟動中樞 (吃下半部啟動鈕)           */}
+                {/* 欄 4：04 SCALE 題數規模 (右下控制列統一行使啟動職責)               */}
                 {/* ───────────────────────────────────────────────────────────── */}
-                <div className="bg-white dark:bg-slate-800/90 rounded-2xl border-2 border-indigo-200/80 dark:border-indigo-900/60 p-3 flex flex-col justify-between gap-2 min-h-0 shadow-xs">
+                <div
+                  onClick={() => setActiveBoardStep(4)}
+                  className={`rounded-2xl p-3 flex flex-col justify-between gap-2 min-h-0 transition-all cursor-pointer ${
+                    activeBoardStep === 4
+                      ? 'border-2 border-indigo-500 dark:border-indigo-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-indigo-500/25 dark:ring-indigo-400/25 opacity-100'
+                      : 4 <= maxReachedBoardStep
+                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-indigo-200'
+                      : 'border-2 border-dashed border-slate-200 dark:border-slate-750 bg-slate-50/70 dark:bg-slate-850/60 opacity-45 hover:opacity-75'
+                  }`}
+                >
                   <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-700/60">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center">
+                      <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center transition ${
+                        activeBoardStep === 4
+                          ? 'bg-emerald-600 text-white ring-2 ring-emerald-300'
+                          : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                      }`}>
                         4
                       </span>
                       <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
@@ -1873,11 +1982,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       </span>
                     </div>
                     <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                      規模與啟動
+                      測驗規模
                     </span>
                   </div>
 
-                  {/* 上半部：題數選擇 */}
+                  {/* 題數選擇 */}
                   <div className="flex flex-col gap-1.5">
                     {(selectedBook === 'g1' || selectedBook === 'g2' ? [
                       { count: 10, label: '10 題', sub: '小試身手 • 最高 +4 金幣' },
@@ -1892,39 +2001,42 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         <button
                           key={opt.count}
                           type="button"
-                          onClick={() => setQuestionCountOpt(opt.count)}
-                          className={`w-full py-2 px-2.5 rounded-xl border text-left transition flex items-center justify-between gap-2 cursor-pointer ${
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setQuestionCountOpt(opt.count);
+                            setActiveBoardStep(4);
+                            setMaxReachedBoardStep(4);
+                          }}
+                          className={`w-full py-2.5 px-3 rounded-xl border text-left transition flex items-center justify-between gap-2 cursor-pointer ${
                             active
                               ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-950 dark:text-emerald-100 font-black shadow-xs ring-1 ring-emerald-500'
                               : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-300'
                           }`}
                         >
                           <div>
-                            <span className="text-xs font-black">{opt.label}</span>
-                            <div className="text-[9px] text-emerald-700 dark:text-emerald-400 font-semibold">{opt.sub}</div>
+                            <span className="text-sm sm:text-base font-black">{opt.label}</span>
+                            <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">{opt.sub}</div>
                           </div>
-                          {active && <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />}
+                          {active && <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />}
                         </button>
                       );
                     })}
                   </div>
 
-                  {/* 下半部：大尺寸啟動按鈕 (費茨法則：手指直接在第4欄就地啟動！) */}
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
-                    <button
-                      type="button"
-                      disabled={!canStart}
-                      onClick={() => startExamSession()}
-                      className="w-full py-3 px-3 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white font-black text-xs sm:text-sm shadow-md shadow-indigo-600/30 flex flex-col items-center justify-center gap-0.5 cursor-pointer transition active:scale-98 disabled:opacity-50"
-                    >
-                      <div className="flex items-center gap-1.5">
-                        <Sparkles size={14} className="text-amber-300" />
-                        <span>🚀 開始檢定 (進入第0頁) ➔</span>
+                  {/* 下半部：精練布題摘要卡（視線引導至右下角全站啟動按鈕） */}
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-700/80">
+                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 text-xs">
+                      <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[11px] font-bold">
+                        <span>已選配置摘要</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-black">{questionCountOpt} 題</span>
                       </div>
-                      <span className="text-[9px] text-indigo-200 font-normal">
-                        點擊進入考前試卷指引與音量檢驗
-                      </span>
-                    </button>
+                      <div className="mt-1 font-black text-slate-800 dark:text-slate-100 truncate text-xs sm:text-sm">
+                        {formatBookLabel(selectedBook)} • {rangePreset === 'midterm' ? '期中考範圍' : rangePreset === 'final' ? '期末考範圍' : rangePreset === 'all' ? '全冊範圍' : `${selectedUnits.length} 個單元`}
+                      </div>
+                      <div className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+                        {textbookExamMode === 'comprehensive' ? '聽力 + 讀寫筆試' : textbookExamMode === 'written' ? '純讀寫筆試' : '純聽力特訓'}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2561,27 +2673,27 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               {setupSubView === 'textbook' && (
                 <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 py-1.5 px-3 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
                   <span className="text-indigo-600 dark:text-indigo-400 font-black">
-                    📖 {formatBookLabel(selectedBook)}
+                    {formatBookLabel(selectedBook)}
                   </span>
                   <span>•</span>
                   <span>
                     {selectedBook === 'g1' || selectedBook === 'g2'
-                      ? '🔤 全字母'
+                      ? '全字母'
                       : rangePreset === 'midterm'
-                      ? '⚡ 上半冊'
+                      ? '上半冊'
                       : rangePreset === 'final'
-                      ? '⚡ 下半冊'
+                      ? '下半冊'
                       : rangePreset === 'all'
-                      ? '🌟 全選'
-                      : `⚙️ 自選 ${selectedUnits.length} 單元`}
+                      ? '全冊'
+                      : `自選 ${selectedUnits.length} 單元`}
                   </span>
                   <span>•</span>
                   <span>
                     {textbookExamMode === 'comprehensive'
-                      ? '🎧 綜合測驗'
+                      ? '綜合測驗'
                       : textbookExamMode === 'written'
-                      ? '📝 純筆試'
-                      : '🔊 純聽力'}
+                      ? '純筆試'
+                      : '純聽力'}
                   </span>
                   <span>•</span>
                   <span className="text-emerald-600 dark:text-emerald-400 font-black">
@@ -2624,7 +2736,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     );
   }
 
-  // STEP 2.5: 本次測驗內容配置與說明 (Page 0 Official Dossier & Blueprint)
+  // STEP 2.5: 本次測驗內容配置與說明 (Page 0 Zero-Scroll iPad Blueprint & Dossier)
   // ============================================================================
   if (phase === 'instructions') {
     const outline = buildFormOutline(questions);
@@ -2638,36 +2750,27 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         ? `教育部 SAA 臺灣學生學習成就評量 (${selectedSaaYear} 年度 • ${selectedSaaGrade} 年級卷)`
         : `${formatBookLabel(selectedBook)} 課程能力檢定`;
 
-    const subTitleDesc =
-      scopeMode === 'mistakes'
-        ? '針對平時曾答錯題目進行集中診斷，同一題連續答對 2 次判定精熟並自動移出錯題池'
-        : scopeMode === 'tme-preA1'
-        ? '教育部官方認證指標，涵蓋生活情境聽力與看圖圖文理解，合格門檻為 70% (21 題)'
-        : scopeMode === 'ministry-assessment'
-        ? '參考臺中教育大學 SAA 全國性學力評量標準試卷，分「精熟 (≥85%) / 基礎 (60%~84%) / 待加強 (<60%)」三等第'
-        : `${bookMeta.title} • 測驗單元：${selectedUnits.join('、')}`;
-
     const candidateDisplayName = isLoggedIn
       ? formatStudentDisplayName(currentStudent)
       : '自主練習考生 (Guest)';
 
     const passCriteria =
       scopeMode === 'tme-preA1'
-        ? '答對 21 題 (70%) 達 Pre-A1 標準'
+        ? 'Pre-A1 合格：答對 21 題 (70%)'
         : scopeMode === 'ministry-assessment'
         ? '精熟門檻：答對率 ≥ 85%'
         : scopeMode === 'mistakes'
-        ? '連續答對 2 次即判定精熟出庫'
+        ? '連續答對 2 次判定精熟出庫'
         : isSelectedBookOwnGrade
-        ? '本年級答對率 ≥ 60% 可領取金幣'
-        : '自主練習 (不計金幣與英雄榜)';
+        ? '本年級合格率 ≥ 60% 獎勵金幣'
+        : '自主練習 (免計英雄榜)';
 
     const hasAudioSection = outline.some((p) => p.audio);
 
     return renderShell(
       <>
         {/* 頂端精簡導覽列 */}
-        <div className="shrink-0 px-4 sm:px-6 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50/80 dark:bg-slate-900/80">
+        <div className="shrink-0 px-4 sm:px-6 py-2.5 sm:py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50/80 dark:bg-slate-900/80">
           <button
             type="button"
             onClick={() => setPhase('setup')}
@@ -2677,144 +2780,107 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             重選範圍
           </button>
 
-          <div className="flex items-center gap-2">
-            <ClipboardCheck className="text-indigo-600 dark:text-indigo-400" size={20} />
-            <h2 className="text-sm sm:text-base md:text-lg font-black tracking-tight text-slate-900 dark:text-white">
-              試卷大綱與准考藍圖
+          <div className="flex items-center gap-2 min-w-0">
+            <ClipboardCheck className="text-indigo-600 dark:text-indigo-400 shrink-0" size={18} />
+            <h2 className="text-sm sm:text-base font-black tracking-tight text-slate-900 dark:text-white truncate">
+              {centerTitle}
             </h2>
           </div>
 
-          <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-            全卷 {questions.length} 題
-          </span>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsRulesModalOpen(true)}
+              className="px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+              title="查看作答守則與檢定說明"
+            >
+              <Info size={14} className="text-indigo-600 dark:text-indigo-400" />
+              <span className="hidden sm:inline">應試守則</span>
+            </button>
+            <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+              共 {questions.length} 題
+            </span>
+          </div>
         </div>
 
-        {/* 主體內容（結構化正式考試檔案卡，支援手機與平板響應自適應） */}
-        <div className="flex-1 min-h-0 p-3 sm:p-6 md:p-8 flex flex-col justify-between gap-4 overflow-y-auto overscroll-contain">
-          <div className="max-w-3xl mx-auto w-full space-y-4 my-auto py-1">
-            {/* 1. 考生准考證與試卷規格檔案卡 (Candidate & Paper Dossier) */}
-            <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-800/90 dark:via-slate-850 dark:to-slate-900 rounded-2xl p-4 sm:p-5 border-2 border-slate-200/90 dark:border-slate-700/80 shadow-md space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 dark:border-slate-700/70 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                    <Award size={22} />
-                  </div>
-                  <div>
-                    <span className="text-[11px] font-bold tracking-wider uppercase text-indigo-600 dark:text-indigo-400">
-                      Official Assessment Dossier
-                    </span>
-                    <h3 className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-tight">
-                      {centerTitle}
-                    </h3>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-xl bg-indigo-600 text-white font-black text-xs sm:text-sm shadow-xs">
-                    全卷 {questions.length} 題
-                  </span>
-                </div>
-              </div>
+        {/* 主體內容（iPad 一頁內免捲動自適應佈局） */}
+        <div className="flex-1 min-h-0 p-3 sm:p-5 flex flex-col justify-between max-w-3xl mx-auto w-full gap-3 overflow-hidden">
+          {/* 1. 次要資訊精簡膠囊列 (考生、時間、合格標準) */}
+          <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-slate-50/90 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/70 text-xs">
+            <div className="flex items-center gap-1.5 text-slate-750 dark:text-slate-200 font-bold min-w-0">
+              <UserCheck size={14} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
+              <span className="truncate max-w-[140px] sm:max-w-none">{candidateDisplayName}</span>
+            </div>
+            <div className="flex items-center gap-2.5 text-slate-500 dark:text-slate-400 font-semibold text-[11px] sm:text-xs">
+              <span className="flex items-center gap-1">
+                <Clock size={13} className="text-slate-400" />
+                約 {Math.max(15, Math.ceil(questions.length * 1.2))} 分鐘
+              </span>
+              <span>•</span>
+              <span className="text-indigo-600 dark:text-indigo-400 font-bold">{passCriteria}</span>
+            </div>
+          </div>
 
-              {/* 四格准考規格網格 */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1 text-xs">
-                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
-                  <span className="text-slate-400 dark:text-slate-500 font-semibold block text-[10px] uppercase">受測考生</span>
-                  <span className="font-black text-slate-800 dark:text-slate-200 text-xs sm:text-sm truncate block mt-0.5">
-                    {candidateDisplayName}
-                  </span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
-                  <span className="text-slate-400 dark:text-slate-500 font-semibold block text-[10px] uppercase">建議時間</span>
-                  <span className="font-black text-slate-800 dark:text-slate-200 text-xs sm:text-sm block mt-0.5">
-                    約 {Math.max(15, Math.ceil(questions.length * 1.2))} 分鐘
-                  </span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
-                  <span className="text-slate-400 dark:text-slate-500 font-semibold block text-[10px] uppercase">合格/指標</span>
-                  <span className="font-black text-indigo-600 dark:text-indigo-400 text-xs truncate block mt-0.5">
-                    {passCriteria}
-                  </span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
-                  <span className="text-slate-400 dark:text-slate-500 font-semibold block text-[10px] uppercase">測驗形式</span>
-                  <span className="font-black text-slate-800 dark:text-slate-200 text-xs block mt-0.5">
-                    一頁一題單選
-                  </span>
-                </div>
-              </div>
-
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 pt-1">
-                {subTitleDesc}
-              </div>
+          {/* 2. 主要資訊一：試卷大題題型分布藍圖 (Exam Blueprint Pills) */}
+          <div className="flex-1 min-h-0 flex flex-col justify-center space-y-1.5">
+            <div className="flex items-center justify-between text-xs font-black text-slate-800 dark:text-slate-200">
+              <span className="flex items-center gap-1.5">
+                <ClipboardCheck size={15} className="text-indigo-600 dark:text-indigo-400" />
+                試卷題型分布藍圖 (共 {questions.length} 題)
+              </span>
+              <span className="text-[11px] text-slate-400 font-normal">
+                {outline.length} 個大題部分
+              </span>
             </div>
 
-            {/* 2. 大題題型配置藍圖 (Section Breakdown Timeline) */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs sm:text-sm font-black text-slate-800 dark:text-slate-200">
-                <span className="flex items-center gap-1.5">
-                  <ClipboardCheck size={16} className="text-indigo-600 dark:text-indigo-400" />
-                  試卷大題題型藍圖 (Exam Blueprint)
-                </span>
-                <span className="text-[11px] text-slate-500 font-normal">
-                  共 {outline.length} 個大題部分
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
-                {outline.map((part, idx) => {
-                  const isAudio = part.audio;
-                  return (
-                    <div
-                      key={idx}
-                      className="bg-white dark:bg-slate-800/90 rounded-xl p-3 border border-slate-200 dark:border-slate-700 flex items-center justify-between shadow-xs hover:border-indigo-400 transition"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center justify-center border border-indigo-200 dark:border-indigo-800 shrink-0">
-                          {idx + 1}
-                        </span>
-                        <div className="min-w-0">
-                          <div className="text-xs sm:text-sm font-black text-slate-800 dark:text-white truncate flex items-center gap-1.5">
-                            <span>{part.label}</span>
-                            {isAudio && (
-                              <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 flex items-center gap-0.5">
-                                <Headphones size={10} />
-                                聽力
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-[11px] text-slate-400 font-semibold truncate mt-0.5">
-                            {part.sectionLabel}
-                          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 overflow-y-auto max-h-[220px] sm:max-h-none pr-0.5">
+              {outline.map((part, idx) => {
+                const isAudio = part.audio;
+                return (
+                  <div
+                    key={idx}
+                    className="bg-white dark:bg-slate-800/90 rounded-xl p-2.5 sm:p-3 border border-slate-200 dark:border-slate-700 flex items-center justify-between shadow-2xs hover:border-indigo-400 transition"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="w-6 h-6 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center justify-center border border-indigo-200 dark:border-indigo-800 shrink-0">
+                        {idx + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-xs sm:text-sm font-black text-slate-800 dark:text-white truncate flex items-center gap-1.5">
+                          <span>{part.label}</span>
+                          {isAudio && (
+                            <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 flex items-center gap-0.5 shrink-0">
+                              <Headphones size={10} />
+                              聽力
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] text-slate-400 font-medium truncate mt-0.5">
+                          {part.sectionLabel}
                         </div>
                       </div>
-                      <span className="text-xs font-black px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0 ml-2">
-                        第 {part.start}–{part.end} 題 ({part.end - part.start + 1} 題)
-                      </span>
                     </div>
-                  );
-                })}
-              </div>
+                    <span className="text-xs font-black px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0 ml-2">
+                      第 {part.start}–{part.end} 題 ({part.end - part.start + 1} 題)
+                    </span>
+                  </div>
+                );
+              })}
             </div>
+          </div>
 
-            {/* 3. 考前音量與耳機檢驗互動站 (Pre-Exam Audio Station) */}
+          {/* 3. 主要資訊二：考前耳機與音量檢驗互動條 (精簡文字，<15字) */}
+          <div className="shrink-0">
             {hasAudioSection ? (
-              <div className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-sky-50 via-indigo-50 to-purple-50 dark:from-sky-950/50 dark:via-indigo-950/50 dark:to-purple-950/50 border-2 border-indigo-200 dark:border-indigo-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                    <Headphones size={20} className={isPlayingAudioTest ? 'animate-pulse' : ''} />
+              <div className="p-3 rounded-xl bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 border border-indigo-200 dark:border-indigo-800/80 flex items-center justify-between gap-2.5 shadow-2xs">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                    <Headphones size={16} />
                   </div>
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
-                        🔊 考前耳機與喇叭音量檢驗
-                      </span>
-                      <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200">
-                        含聽力測驗
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
-                      本試卷包含聽力大題，請調妥音量。點擊右側按鈕試聽美式發音確認清晰度。
-                    </p>
+                    <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white block">
+                      含聽力大題，請確認設備音量
+                    </span>
                   </div>
                 </div>
 
@@ -2822,91 +2888,41 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   <button
                     type="button"
                     onClick={runAudioTest}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95 ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95 ${
                       isPlayingAudioTest
                         ? 'bg-emerald-600 text-white shadow-emerald-500/25 ring-2 ring-emerald-400'
                         : 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-200 border border-indigo-300 dark:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-600'
                     }`}
                   >
-                    <Volume2 size={16} className={isPlayingAudioTest ? 'animate-bounce' : ''} />
-                    <span>{isPlayingAudioTest ? '正在試聽發音...' : '🔊 點我測試耳機與喇叭音量'}</span>
+                    <Volume2 size={14} className={isPlayingAudioTest ? 'animate-bounce' : ''} />
+                    <span>{isPlayingAudioTest ? '播放中...' : '試聽發音'}</span>
                   </button>
 
                   {scopeMode === 'curriculum' && (
                     <button
                       type="button"
                       onClick={switchToWrittenMode}
-                      className="px-2.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 transition cursor-pointer flex items-center gap-1"
-                      title="無耳機時一鍵重整為純筆試題型"
+                      className="px-2 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 transition cursor-pointer"
+                      title="沒耳機？點此切換為純筆試"
                     >
-                      <span>🔇 沒耳機？轉純筆試</span>
+                      轉純筆試
                     </button>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0">
-                    <BookOpen size={16} />
-                  </div>
-                  <div>
-                    <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
-                      📝 純讀寫筆試模式（安靜作答）
-                    </span>
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                      全卷無強制聽力題型，可安心作答（作答中仍可自由點擊單題朗讀鈕輔助學習）
-                    </span>
-                  </div>
+              <div className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300 font-bold">
+                  <FileText size={15} className="text-slate-500 shrink-0" />
+                  <span>純筆試測驗 • 全卷無聽力題，請安心作答</span>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={runAudioTest}
-                  className="px-3 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 transition cursor-pointer flex items-center gap-1 shrink-0"
-                >
-                  <Volume2 size={13} />
-                  <span>{isPlayingAudioTest ? '播放中...' : '試聽發音'}</span>
-                </button>
+                <span className="text-[11px] text-slate-400">作答中仍可隨時點擊發音輔助</span>
               </div>
             )}
-
-            {/* 4. 正式作答規範與守則 (Standard Exam Conduct) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-                <div className="font-black text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
-                  <Headphones size={14} />
-                  <span>作答輔助</span>
-                </div>
-                <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {hasAudioSection ? '聽力大題依標準朗讀，可隨時點擊題目喇叭鈕重聽。' : '題目支援中文與英文語音朗讀，需要時可點擊喇叭圖示。'}
-                </p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-                <div className="font-black text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                  <Flag size={14} />
-                  <span>標記與檢查</span>
-                </div>
-                <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
-                  作答時可隨時點擊右上角 🚩 標記待查題目；交卷前系統會提示未答題數以防漏答。
-                </p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
-                <div className="font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                  <Clock size={14} />
-                  <span>正式計時起點</span>
-                </div>
-                <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
-                  點選下方按鈕後才會進入第 1 題並正式開始計時；斷線 6 小時內皆可無縫接續。
-                </p>
-              </div>
-            </div>
           </div>
 
-          {/* 底部開始測驗 CTA */}
-          <div className="shrink-0 flex items-center justify-center pt-2 pb-1">
+          {/* 4. 主要資訊三：準備好了開始作答按鈕 (Big, tactile CTA) */}
+          <div className="shrink-0 pt-1">
             <button
               type="button"
               onClick={() => {
@@ -2915,12 +2931,74 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 setCurrentIndex(0);
                 setPhase('exam');
               }}
-              className="w-full sm:w-auto sm:min-w-[340px] py-4 px-8 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white font-black text-sm sm:text-base shadow-xl shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              className="w-full py-3.5 sm:py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white font-black text-sm sm:text-base shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
             >
-              <span>🚀 我準備好了，開始作答 (進入第 1 題) ➔</span>
+              <span>準備好了，開始作答 ({questions.length} 題)</span>
+              <ArrowRight size={18} />
             </button>
           </div>
         </div>
+
+        {/* 考前應試守則說明彈窗 (固定資訊優雅收納，點擊小圖示即可開啟) */}
+        {isRulesModalOpen && (
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2 text-slate-900 dark:text-white font-black text-base">
+                  <Info size={18} className="text-indigo-600 dark:text-indigo-400" />
+                  <span>應試指南與作答守則</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsRulesModalOpen(false)}
+                  className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white flex items-center justify-center transition cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/70 space-y-1">
+                  <div className="font-black text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                    <Flag size={14} />
+                    <span>標記待查與防漏答</span>
+                  </div>
+                  <p className="text-[11px] text-slate-650 dark:text-slate-300">
+                    不確定答案時可點擊右上角旗幟標記，交卷前系統會提示未答題數以防疏漏。
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/70 space-y-1">
+                  <div className="font-black text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <Headphones size={14} />
+                    <span>語音朗讀與聽力播放</span>
+                  </div>
+                  <p className="text-[11px] text-slate-650 dark:text-slate-300">
+                    聽力試題依檢定標準播放兩次，一般讀寫題亦可點擊題目旁的喇叭按鈕進行發音輔助。
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/70 space-y-1">
+                  <div className="font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                    <Clock size={14} />
+                    <span>自動暫存與斷線續考</span>
+                  </div>
+                  <p className="text-[11px] text-slate-650 dark:text-slate-300">
+                    作答中進度每題自動儲存，若遇設備斷線或意外關閉，6 小時內重新進入皆可無縫接續。
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsRulesModalOpen(false)}
+                className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition cursor-pointer shadow-xs"
+              >
+                我瞭解了，關閉說明
+              </button>
+            </div>
+          </div>
+        )}
       </>
     );
   }
@@ -3007,23 +3085,21 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 Question {currentIndex + 1}
               </span>
               <div className="flex items-center gap-1.5">
-                {!isFormalExam && (
-                  reportedQuestions[currentQ.id] ? (
-                    <span className="px-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-1">
-                      <CheckCircle2 size={13} />
-                      已回報
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => handleOpenReportModal(currentQ)}
-                      className="px-2.5 py-1 rounded-lg border border-amber-300 dark:border-amber-700/60 bg-amber-50/80 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                      title="題目有問題？點此快速回報給老師"
-                    >
-                      <AlertTriangle size={13} />
-                      回報問題
-                    </button>
-                  )
+                {reportedQuestions[currentQ.id] ? (
+                  <span className="px-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-1">
+                    <CheckCircle2 size={13} />
+                    已回報
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenReportModal(currentQ)}
+                    className="px-2.5 py-1 rounded-lg border border-amber-300 dark:border-amber-700/60 bg-amber-50/80 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    title="題目有問題？點此快速回報給老師"
+                  >
+                    <AlertTriangle size={13} />
+                    回報問題
+                  </button>
                 )}
                 <button
                   type="button"

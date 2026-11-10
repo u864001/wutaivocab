@@ -380,11 +380,11 @@ export const StandardQuiz = ({
               </h2>
             ) : mode === 'quiz-listening' ? (
               <div className="flex flex-col items-center">
-                {/* 題目提示語句 (情境問答或句子辨句) */}
-                {currentQuestion.promptZh && (
+                {/* 題目提示語句 (情境問答、句子辨句或字母題目提示) */}
+                {(currentQuestion.promptZh || currentQuestion.prompt) && (
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-300/40 text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm font-black mb-3 animate-fadeIn">
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>{currentQuestion.promptZh}</span>
+                    <span>{currentQuestion.promptZh || currentQuestion.prompt}</span>
                   </div>
                 )}
 
@@ -405,13 +405,21 @@ export const StandardQuiz = ({
                 </p>
               </div>
             ) : (
-              <h2 className="text-3xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 font-heading">
-                {currentQuestion.en}
-              </h2>
+              <div className="flex flex-col items-center">
+                {(currentQuestion.promptZh || currentQuestion.prompt) && (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-300/40 text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm font-black mb-3 animate-fadeIn">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{currentQuestion.promptZh || currentQuestion.prompt}</span>
+                  </div>
+                )}
+                <h2 className="text-3xl sm:text-5xl font-black text-slate-800 dark:text-slate-100 font-heading">
+                  {currentQuestion.target || currentQuestion.en}
+                </h2>
+              </div>
             )}
           </div>
 
-          {/* 🌟 4 大實體觸控卡片選項 (句子辨句、情境問答專用) 🌟 */}
+          {/* 🌟 4 大實體觸控卡片選項 (句子辨句、情境問答、字母認讀專用) 🌟 */}
           {hasOptions ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-w-2xl mx-auto w-full">
               {currentQuestion.options.map((opt) => {
@@ -447,12 +455,12 @@ export const StandardQuiz = ({
                     </span>
 
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm sm:text-base font-black leading-snug break-words ${
+                      <p className={`text-base sm:text-xl font-black leading-snug break-words ${
                         showSuccess || showWrongSelection || showAnswerReveal
                           ? 'text-white'
                           : 'text-slate-800 dark:text-slate-100'
                       }`}>
-                        {opt.textEn}
+                        {opt.textEn || opt.text || opt.label || ''}
                       </p>
                       {opt.textZh && (
                         <p className={`text-xs font-bold mt-1 ${

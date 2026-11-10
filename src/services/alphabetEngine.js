@@ -135,8 +135,8 @@ export const generateQuizAlphabetQuestions = (quizType = 'upper_to_lower', count
     }
 
     const rawOptions = [
-      { text: correctAnswer, isCorrect: true },
-      ...distractors.map(d => ({ text: d, isCorrect: false }))
+      { text: correctAnswer, textEn: correctAnswer, isCorrect: true },
+      ...distractors.map(d => ({ text: d, textEn: d, isCorrect: false }))
     ];
 
     const shuffledOptions = SHUFFLE(rawOptions).map((opt, optIdx) => ({
