@@ -333,7 +333,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How are you?",
       "I am fine, thank you.",
       "Nice to meet you, too.",
-      "My name is Leo.",
+      "Good morning.",
       "I am ten years old."
     ],
     "answer": 0,
@@ -360,7 +360,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm fine.",
       "I am fine, thank you.",
       "Nice to meet you, too.",
-      "My name is Leo.",
+      "Good morning.",
       "I am ten years old."
     ],
     "answer": 0,
@@ -520,10 +520,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "?",
       ".",
       "!",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      ",",
+      ";",
+      ":",
+      "..."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -577,7 +577,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I am fine, thank you.",
       "Nice to meet you, too.",
       "My name is Leo.",
-      "I am ten years old."
+      "I am a student."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -604,7 +604,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I am fine, thank you.",
       "Nice to meet you, too.",
       "My name is Leo.",
-      "I am ten years old."
+      "I am very happy."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -684,7 +684,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm Max.",
       "I am fine, thank you.",
       "Nice to meet you, too.",
-      "I am ten years old.",
+      "I am very happy.",
       "It is seven o'clock."
     ],
     "answer": 0,
@@ -735,11 +735,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "I'm five years old.",
       "Hi, my name is Max.",
-      "Hello, Ryan. I'm four.",
+      "I am very happy.",
       "I am fine, thank you.",
       "Nice to meet you, too.",
       "My name is Leo.",
-      "I am ten years old."
+      "I am a student."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -3304,7 +3304,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I want to go to the Moon.",
       "I am fine, thank you.",
       "Nice to meet you, too.",
-      "My name is Leo."
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "詢問對方姓名使用「What’s your name?」，回答用「My name is ...」或「I’m ...」。"
@@ -4252,7 +4252,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "science"
     ],
     "answer": 0,
-    "explanation": "特定星期幾（如 Monday, Thursday）前面固定搭配介系詞「on」。"
+    "explanation": "根據前句「I like drawing.（我喜歡畫畫）」，可知星期五上的是美術課「art class」。"
   },
   {
     "id": "hwg_b5_152",
@@ -9540,7 +9540,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm eight.",
       "I am fine, thank you.",
       "Nice to meet you, too.",
-      "My name is Leo.",
+      "Good morning.",
       "I am ten years old."
     ],
     "answer": 0,
@@ -9565,7 +9565,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm fine, thank you.",
       "My name is Lucas.",
       "It's blue.",
-      "I am fine, thank you.",
+      "I am very happy.",
       "Nice to meet you, too.",
       "My name is Leo.",
       "I am ten years old."
@@ -9648,7 +9648,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "You are welcome.",
       "I am fine, thank you.",
       "Nice to meet you, too.",
-      "My name is Leo.",
+      "Good morning.",
       "I am ten years old."
     ],
     "answer": 0,
@@ -9673,7 +9673,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm fine, thank you.",
       "My name is Max.",
       "It's blue.",
-      "I am fine, thank you.",
+      "I am very happy.",
       "Nice to meet you, too.",
       "My name is Leo.",
       "I am ten years old."
@@ -9756,7 +9756,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "You are welcome.",
       "I am fine, thank you.",
       "Nice to meet you, too.",
-      "My name is Leo.",
+      "Good morning.",
       "I am ten years old."
     ],
     "answer": 0,
@@ -9781,7 +9781,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm fine, thank you.",
       "It's blue.",
       "My name is Leo.",
-      "I am fine, thank you.",
+      "I am very happy.",
       "Nice to meet you, too.",
       "I am ten years old.",
       "It is seven o'clock."
@@ -9864,7 +9864,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm eight.",
       "I am fine, thank you.",
       "Nice to meet you, too.",
-      "My name is Leo.",
+      "Good morning.",
       "I am ten years old."
     ],
     "answer": 0,
@@ -9889,7 +9889,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm fine, thank you.",
       "My name is Kulas.",
       "It's blue.",
-      "I am fine, thank you.",
+      "I am very happy.",
       "Nice to meet you, too.",
       "My name is Leo.",
       "I am ten years old."
@@ -9972,7 +9972,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "You are welcome.",
       "I am fine, thank you.",
       "Nice to meet you, too.",
-      "My name is Leo.",
+      "Good morning.",
       "I am ten years old."
     ],
     "answer": 0,
@@ -9997,7 +9997,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm fine, thank you.",
       "My name is Ryan.",
       "It's blue.",
-      "I am fine, thank you.",
+      "I am very happy.",
       "Nice to meet you, too.",
       "My name is Leo.",
       "I am ten years old."
@@ -10081,7 +10081,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I am fine, thank you.",
       "Nice to meet you, too.",
       "My name is Leo.",
-      "I am ten years old."
+      "I am very happy."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10162,7 +10162,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I am fine, thank you.",
       "Nice to meet you, too.",
       "My name is Leo.",
-      "I am ten years old."
+      "I am very happy."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10243,7 +10243,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I am fine, thank you.",
       "Nice to meet you, too.",
       "My name is Leo.",
-      "I am ten years old."
+      "I am very happy."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10324,7 +10324,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I am fine, thank you.",
       "Nice to meet you, too.",
       "My name is Leo.",
-      "I am ten years old."
+      "I am very happy."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10405,7 +10405,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I am fine, thank you.",
       "Nice to meet you, too.",
       "My name is Leo.",
-      "I am ten years old."
+      "I am very happy."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -28379,7 +28379,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「A」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "D",
@@ -28406,7 +28406,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「B」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「B」緊接著的下一個字母是哪一個？",
     "options": [
       "C",
       "O",
@@ -28433,7 +28433,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「C」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「C」緊接著的下一個字母是哪一個？",
     "options": [
       "D",
       "P",
@@ -28460,7 +28460,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「D」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「D」緊接著的下一個字母是哪一個？",
     "options": [
       "E",
       "F",
@@ -28487,7 +28487,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「E」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「E」緊接著的下一個字母是哪一個？",
     "options": [
       "F",
       "P",
@@ -28514,7 +28514,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「F」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「F」緊接著的下一個字母是哪一個？",
     "options": [
       "G",
       "O",
@@ -28541,7 +28541,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「G」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「G」緊接著的下一個字母是哪一個？",
     "options": [
       "H",
       "A",
@@ -28568,7 +28568,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「H」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「H」緊接著的下一個字母是哪一個？",
     "options": [
       "I",
       "J",
@@ -28595,7 +28595,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「I」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「I」緊接著的下一個字母是哪一個？",
     "options": [
       "J",
       "L",
@@ -28622,7 +28622,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「J」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「J」緊接著的下一個字母是哪一個？",
     "options": [
       "K",
       "Y",
@@ -28649,7 +28649,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「K」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "T",
@@ -28676,7 +28676,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「L」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「L」緊接著的下一個字母是哪一個？",
     "options": [
       "M",
       "W",
@@ -28703,7 +28703,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「M」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「M」緊接著的下一個字母是哪一個？",
     "options": [
       "N",
       "Z",
@@ -28730,7 +28730,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「N」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「N」緊接著的下一個字母是哪一個？",
     "options": [
       "O",
       "C",
@@ -28757,7 +28757,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「O」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「O」緊接著的下一個字母是哪一個？",
     "options": [
       "P",
       "F",
@@ -28784,7 +28784,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「P」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「P」緊接著的下一個字母是哪一個？",
     "options": [
       "Q",
       "O",
@@ -28811,7 +28811,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「Q」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「Q」緊接著的下一個字母是哪一個？",
     "options": [
       "R",
       "P",
@@ -28838,7 +28838,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「R」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「R」緊接著的下一個字母是哪一個？",
     "options": [
       "S",
       "C",
@@ -28865,7 +28865,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「S」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「S」緊接著的下一個字母是哪一個？",
     "options": [
       "T",
       "L",
@@ -28892,7 +28892,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「T」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「T」緊接著的下一個字母是哪一個？",
     "options": [
       "U",
       "V",
@@ -28919,7 +28919,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「U」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「U」緊接著的下一個字母是哪一個？",
     "options": [
       "V",
       "W",
@@ -28946,7 +28946,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「V」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「V」緊接著的下一個字母是哪一個？",
     "options": [
       "W",
       "M",
@@ -28973,7 +28973,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「W」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「W」緊接著的下一個字母是哪一個？",
     "options": [
       "X",
       "Z",
@@ -29000,7 +29000,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「X」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「X」緊接著的下一個字母是哪一個？",
     "options": [
       "Y",
       "V",
@@ -29027,7 +29027,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「Y」後面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「Y」緊接著的下一個字母是哪一個？",
     "options": [
       "Z",
       "S",
@@ -29054,7 +29054,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「B」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「B」緊接著的前一個字母是哪一個？",
     "options": [
       "A",
       "H",
@@ -29081,7 +29081,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「C」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「C」緊接著的前一個字母是哪一個？",
     "options": [
       "B",
       "R",
@@ -29108,7 +29108,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「D」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「D」緊接著的前一個字母是哪一個？",
     "options": [
       "C",
       "G",
@@ -29135,7 +29135,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「E」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「E」緊接著的前一個字母是哪一個？",
     "options": [
       "D",
       "B",
@@ -29162,7 +29162,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「F」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「F」緊接著的前一個字母是哪一個？",
     "options": [
       "E",
       "B",
@@ -29189,7 +29189,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「G」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「G」緊接著的前一個字母是哪一個？",
     "options": [
       "F",
       "P",
@@ -29216,7 +29216,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「H」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「H」緊接著的前一個字母是哪一個？",
     "options": [
       "G",
       "C",
@@ -29243,7 +29243,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「I」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「I」緊接著的前一個字母是哪一個？",
     "options": [
       "H",
       "N",
@@ -29270,7 +29270,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「J」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「J」緊接著的前一個字母是哪一個？",
     "options": [
       "I",
       "L",
@@ -29297,7 +29297,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「K」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「K」緊接著的前一個字母是哪一個？",
     "options": [
       "J",
       "U",
@@ -29324,7 +29324,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「L」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「L」緊接著的前一個字母是哪一個？",
     "options": [
       "K",
       "X",
@@ -29351,7 +29351,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「M」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「M」緊接著的前一個字母是哪一個？",
     "options": [
       "L",
       "I",
@@ -29378,7 +29378,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「N」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「N」緊接著的前一個字母是哪一個？",
     "options": [
       "M",
       "V",
@@ -29405,7 +29405,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「O」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「O」緊接著的前一個字母是哪一個？",
     "options": [
       "N",
       "H",
@@ -29432,7 +29432,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「P」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「P」緊接著的前一個字母是哪一個？",
     "options": [
       "O",
       "Q",
@@ -29459,7 +29459,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「Q」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「Q」緊接著的前一個字母是哪一個？",
     "options": [
       "P",
       "R",
@@ -29486,7 +29486,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「R」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「R」緊接著的前一個字母是哪一個？",
     "options": [
       "Q",
       "G",
@@ -29513,7 +29513,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「S」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「S」緊接著的前一個字母是哪一個？",
     "options": [
       "R",
       "K",
@@ -29540,7 +29540,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「T」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「T」緊接著的前一個字母是哪一個？",
     "options": [
       "S",
       "Z",
@@ -29567,7 +29567,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「U」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「U」緊接著的前一個字母是哪一個？",
     "options": [
       "T",
       "I",
@@ -29594,7 +29594,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「V」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「V」緊接著的前一個字母是哪一個？",
     "options": [
       "U",
       "W",
@@ -29621,7 +29621,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「W」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「W」緊接著的前一個字母是哪一個？",
     "options": [
       "V",
       "Y",
@@ -29648,7 +29648,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「X」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「X」緊接著的前一個字母是哪一個？",
     "options": [
       "W",
       "M",
@@ -29675,7 +29675,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「Y」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「Y」緊接著的前一個字母是哪一個？",
     "options": [
       "X",
       "K",
@@ -29702,7 +29702,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在大寫字母「Z」前面的字母是哪一個？",
+    "question": "請問依照字母順序，大寫字母「Z」緊接著的前一個字母是哪一個？",
     "options": [
       "Y",
       "X",
@@ -84566,7 +84566,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「P」後面的字母是哪一個？",
+    "question": "請問在英文字母「P」緊接著的下一個字母是哪一個？",
     "options": [
       "Q",
       "A",
@@ -84593,7 +84593,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -84620,7 +84620,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -84647,7 +84647,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「M」後面的字母是哪一個？",
+    "question": "請問在英文字母「M」緊接著的下一個字母是哪一個？",
     "options": [
       "N",
       "A",
@@ -84674,7 +84674,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -84701,7 +84701,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「F」後面的字母是哪一個？",
+    "question": "請問在英文字母「F」緊接著的下一個字母是哪一個？",
     "options": [
       "G",
       "A",
@@ -84728,7 +84728,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「E」後面的字母是哪一個？",
+    "question": "請問在英文字母「E」緊接著的下一個字母是哪一個？",
     "options": [
       "F",
       "A",
@@ -84755,7 +84755,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「I」後面的字母是哪一個？",
+    "question": "請問在英文字母「I」緊接著的下一個字母是哪一個？",
     "options": [
       "J",
       "A",
@@ -84782,7 +84782,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「S」後面的字母是哪一個？",
+    "question": "請問在英文字母「S」緊接著的下一個字母是哪一個？",
     "options": [
       "T",
       "A",
@@ -84809,7 +84809,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -84836,7 +84836,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「D」後面的字母是哪一個？",
+    "question": "請問在英文字母「D」緊接著的下一個字母是哪一個？",
     "options": [
       "E",
       "A",
@@ -84863,7 +84863,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「R」後面的字母是哪一個？",
+    "question": "請問在英文字母「R」緊接著的下一個字母是哪一個？",
     "options": [
       "S",
       "A",
@@ -84890,7 +84890,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「S」後面的字母是哪一個？",
+    "question": "請問在英文字母「S」緊接著的下一個字母是哪一個？",
     "options": [
       "T",
       "A",
@@ -84917,7 +84917,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「C」後面的字母是哪一個？",
+    "question": "請問在英文字母「C」緊接著的下一個字母是哪一個？",
     "options": [
       "D",
       "A",
@@ -84944,7 +84944,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -84971,7 +84971,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「E」後面的字母是哪一個？",
+    "question": "請問在英文字母「E」緊接著的下一個字母是哪一個？",
     "options": [
       "F",
       "A",
@@ -84998,7 +84998,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「U」後面的字母是哪一個？",
+    "question": "請問在英文字母「U」緊接著的下一個字母是哪一個？",
     "options": [
       "V",
       "A",
@@ -85025,7 +85025,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -85052,7 +85052,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -85079,7 +85079,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「I」後面的字母是哪一個？",
+    "question": "請問在英文字母「I」緊接著的下一個字母是哪一個？",
     "options": [
       "J",
       "A",
@@ -85106,7 +85106,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「W」後面的字母是哪一個？",
+    "question": "請問在英文字母「W」緊接著的下一個字母是哪一個？",
     "options": [
       "X",
       "A",
@@ -85133,7 +85133,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「R」後面的字母是哪一個？",
+    "question": "請問在英文字母「R」緊接著的下一個字母是哪一個？",
     "options": [
       "S",
       "A",
@@ -85160,7 +85160,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -85187,7 +85187,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「H」後面的字母是哪一個？",
+    "question": "請問在英文字母「H」緊接著的下一個字母是哪一個？",
     "options": [
       "I",
       "A",
@@ -85214,7 +85214,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「N」後面的字母是哪一個？",
+    "question": "請問在英文字母「N」緊接著的下一個字母是哪一個？",
     "options": [
       "O",
       "A",
@@ -85241,7 +85241,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「J」後面的字母是哪一個？",
+    "question": "請問在英文字母「J」緊接著的下一個字母是哪一個？",
     "options": [
       "K",
       "A",
@@ -85268,7 +85268,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「U」後面的字母是哪一個？",
+    "question": "請問在英文字母「U」緊接著的下一個字母是哪一個？",
     "options": [
       "V",
       "A",
@@ -85295,7 +85295,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「M」後面的字母是哪一個？",
+    "question": "請問在英文字母「M」緊接著的下一個字母是哪一個？",
     "options": [
       "N",
       "A",
@@ -85322,7 +85322,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「H」後面的字母是哪一個？",
+    "question": "請問在英文字母「H」緊接著的下一個字母是哪一個？",
     "options": [
       "I",
       "A",
@@ -85349,7 +85349,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -85376,7 +85376,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「S」後面的字母是哪一個？",
+    "question": "請問在英文字母「S」緊接著的下一個字母是哪一個？",
     "options": [
       "T",
       "A",
@@ -85403,7 +85403,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「X」後面的字母是哪一個？",
+    "question": "請問在英文字母「X」緊接著的下一個字母是哪一個？",
     "options": [
       "Y",
       "A",
@@ -85430,7 +85430,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -85457,7 +85457,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -85484,7 +85484,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「I」後面的字母是哪一個？",
+    "question": "請問在英文字母「I」緊接著的下一個字母是哪一個？",
     "options": [
       "J",
       "A",
@@ -85511,7 +85511,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「N」後面的字母是哪一個？",
+    "question": "請問在英文字母「N」緊接著的下一個字母是哪一個？",
     "options": [
       "O",
       "A",
@@ -85538,7 +85538,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「O」後面的字母是哪一個？",
+    "question": "請問在英文字母「O」緊接著的下一個字母是哪一個？",
     "options": [
       "P",
       "A",
@@ -85565,7 +85565,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「L」後面的字母是哪一個？",
+    "question": "請問在英文字母「L」緊接著的下一個字母是哪一個？",
     "options": [
       "M",
       "A",
@@ -85592,7 +85592,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -85619,7 +85619,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「X」後面的字母是哪一個？",
+    "question": "請問在英文字母「X」緊接著的下一個字母是哪一個？",
     "options": [
       "Y",
       "A",
@@ -85646,7 +85646,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「W」後面的字母是哪一個？",
+    "question": "請問在英文字母「W」緊接著的下一個字母是哪一個？",
     "options": [
       "X",
       "A",
@@ -85673,7 +85673,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「C」後面的字母是哪一個？",
+    "question": "請問在英文字母「C」緊接著的下一個字母是哪一個？",
     "options": [
       "D",
       "A",
@@ -85700,7 +85700,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「J」後面的字母是哪一個？",
+    "question": "請問在英文字母「J」緊接著的下一個字母是哪一個？",
     "options": [
       "K",
       "A",
@@ -85727,7 +85727,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「I」後面的字母是哪一個？",
+    "question": "請問在英文字母「I」緊接著的下一個字母是哪一個？",
     "options": [
       "J",
       "A",
@@ -85754,7 +85754,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「Q」後面的字母是哪一個？",
+    "question": "請問在英文字母「Q」緊接著的下一個字母是哪一個？",
     "options": [
       "R",
       "A",
@@ -85781,7 +85781,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「N」後面的字母是哪一個？",
+    "question": "請問在英文字母「N」緊接著的下一個字母是哪一個？",
     "options": [
       "O",
       "A",
@@ -85808,7 +85808,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「B」後面的字母是哪一個？",
+    "question": "請問在英文字母「B」緊接著的下一個字母是哪一個？",
     "options": [
       "C",
       "A",
@@ -85835,7 +85835,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「G」後面的字母是哪一個？",
+    "question": "請問在英文字母「G」緊接著的下一個字母是哪一個？",
     "options": [
       "H",
       "A",
@@ -85862,7 +85862,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -85889,7 +85889,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「F」後面的字母是哪一個？",
+    "question": "請問在英文字母「F」緊接著的下一個字母是哪一個？",
     "options": [
       "G",
       "A",
@@ -85916,7 +85916,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「O」後面的字母是哪一個？",
+    "question": "請問在英文字母「O」緊接著的下一個字母是哪一個？",
     "options": [
       "P",
       "A",
@@ -85943,7 +85943,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「L」後面的字母是哪一個？",
+    "question": "請問在英文字母「L」緊接著的下一個字母是哪一個？",
     "options": [
       "M",
       "A",
@@ -85970,7 +85970,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「X」後面的字母是哪一個？",
+    "question": "請問在英文字母「X」緊接著的下一個字母是哪一個？",
     "options": [
       "Y",
       "A",
@@ -85997,7 +85997,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「T」後面的字母是哪一個？",
+    "question": "請問在英文字母「T」緊接著的下一個字母是哪一個？",
     "options": [
       "U",
       "A",
@@ -86024,7 +86024,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「N」後面的字母是哪一個？",
+    "question": "請問在英文字母「N」緊接著的下一個字母是哪一個？",
     "options": [
       "O",
       "A",
@@ -86051,7 +86051,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「Q」後面的字母是哪一個？",
+    "question": "請問在英文字母「Q」緊接著的下一個字母是哪一個？",
     "options": [
       "R",
       "A",
@@ -86078,7 +86078,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「B」後面的字母是哪一個？",
+    "question": "請問在英文字母「B」緊接著的下一個字母是哪一個？",
     "options": [
       "C",
       "A",
@@ -86105,7 +86105,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「H」後面的字母是哪一個？",
+    "question": "請問在英文字母「H」緊接著的下一個字母是哪一個？",
     "options": [
       "I",
       "A",
@@ -86132,7 +86132,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「Q」後面的字母是哪一個？",
+    "question": "請問在英文字母「Q」緊接著的下一個字母是哪一個？",
     "options": [
       "R",
       "A",
@@ -86159,7 +86159,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「B」後面的字母是哪一個？",
+    "question": "請問在英文字母「B」緊接著的下一個字母是哪一個？",
     "options": [
       "C",
       "A",
@@ -86186,7 +86186,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「O」後面的字母是哪一個？",
+    "question": "請問在英文字母「O」緊接著的下一個字母是哪一個？",
     "options": [
       "P",
       "A",
@@ -86213,7 +86213,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「O」後面的字母是哪一個？",
+    "question": "請問在英文字母「O」緊接著的下一個字母是哪一個？",
     "options": [
       "P",
       "A",
@@ -86240,7 +86240,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「R」後面的字母是哪一個？",
+    "question": "請問在英文字母「R」緊接著的下一個字母是哪一個？",
     "options": [
       "S",
       "A",
@@ -86267,7 +86267,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「R」後面的字母是哪一個？",
+    "question": "請問在英文字母「R」緊接著的下一個字母是哪一個？",
     "options": [
       "S",
       "A",
@@ -86294,7 +86294,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -86321,7 +86321,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「H」後面的字母是哪一個？",
+    "question": "請問在英文字母「H」緊接著的下一個字母是哪一個？",
     "options": [
       "I",
       "A",
@@ -86348,7 +86348,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「F」後面的字母是哪一個？",
+    "question": "請問在英文字母「F」緊接著的下一個字母是哪一個？",
     "options": [
       "G",
       "A",
@@ -86375,7 +86375,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「H」後面的字母是哪一個？",
+    "question": "請問在英文字母「H」緊接著的下一個字母是哪一個？",
     "options": [
       "I",
       "A",
@@ -86402,7 +86402,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「D」後面的字母是哪一個？",
+    "question": "請問在英文字母「D」緊接著的下一個字母是哪一個？",
     "options": [
       "E",
       "A",
@@ -86429,7 +86429,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「E」後面的字母是哪一個？",
+    "question": "請問在英文字母「E」緊接著的下一個字母是哪一個？",
     "options": [
       "F",
       "A",
@@ -86456,7 +86456,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -86483,7 +86483,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「T」後面的字母是哪一個？",
+    "question": "請問在英文字母「T」緊接著的下一個字母是哪一個？",
     "options": [
       "U",
       "A",
@@ -86510,7 +86510,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「M」後面的字母是哪一個？",
+    "question": "請問在英文字母「M」緊接著的下一個字母是哪一個？",
     "options": [
       "N",
       "A",
@@ -86537,7 +86537,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -86564,7 +86564,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「P」後面的字母是哪一個？",
+    "question": "請問在英文字母「P」緊接著的下一個字母是哪一個？",
     "options": [
       "Q",
       "A",
@@ -86591,7 +86591,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「H」後面的字母是哪一個？",
+    "question": "請問在英文字母「H」緊接著的下一個字母是哪一個？",
     "options": [
       "I",
       "A",
@@ -86618,7 +86618,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「N」後面的字母是哪一個？",
+    "question": "請問在英文字母「N」緊接著的下一個字母是哪一個？",
     "options": [
       "O",
       "A",
@@ -86645,7 +86645,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「R」後面的字母是哪一個？",
+    "question": "請問在英文字母「R」緊接著的下一個字母是哪一個？",
     "options": [
       "S",
       "A",
@@ -86672,7 +86672,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -86699,7 +86699,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「O」後面的字母是哪一個？",
+    "question": "請問在英文字母「O」緊接著的下一個字母是哪一個？",
     "options": [
       "P",
       "A",
@@ -86726,7 +86726,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「E」後面的字母是哪一個？",
+    "question": "請問在英文字母「E」緊接著的下一個字母是哪一個？",
     "options": [
       "F",
       "A",
@@ -86753,7 +86753,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「M」後面的字母是哪一個？",
+    "question": "請問在英文字母「M」緊接著的下一個字母是哪一個？",
     "options": [
       "N",
       "A",
@@ -86780,7 +86780,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「S」後面的字母是哪一個？",
+    "question": "請問在英文字母「S」緊接著的下一個字母是哪一個？",
     "options": [
       "T",
       "A",
@@ -86807,7 +86807,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「F」後面的字母是哪一個？",
+    "question": "請問在英文字母「F」緊接著的下一個字母是哪一個？",
     "options": [
       "G",
       "A",
@@ -86834,7 +86834,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「G」後面的字母是哪一個？",
+    "question": "請問在英文字母「G」緊接著的下一個字母是哪一個？",
     "options": [
       "H",
       "A",
@@ -86861,7 +86861,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「L」後面的字母是哪一個？",
+    "question": "請問在英文字母「L」緊接著的下一個字母是哪一個？",
     "options": [
       "M",
       "A",
@@ -86888,7 +86888,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「I」後面的字母是哪一個？",
+    "question": "請問在英文字母「I」緊接著的下一個字母是哪一個？",
     "options": [
       "J",
       "A",
@@ -86915,7 +86915,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「G」後面的字母是哪一個？",
+    "question": "請問在英文字母「G」緊接著的下一個字母是哪一個？",
     "options": [
       "H",
       "A",
@@ -86942,7 +86942,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「V」後面的字母是哪一個？",
+    "question": "請問在英文字母「V」緊接著的下一個字母是哪一個？",
     "options": [
       "W",
       "A",
@@ -86969,7 +86969,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「L」後面的字母是哪一個？",
+    "question": "請問在英文字母「L」緊接著的下一個字母是哪一個？",
     "options": [
       "M",
       "A",
@@ -87320,7 +87320,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「V」後面的字母是哪一個？",
+    "question": "請問在英文字母「V」緊接著的下一個字母是哪一個？",
     "options": [
       "W",
       "A",
@@ -87347,7 +87347,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「C」後面的字母是哪一個？",
+    "question": "請問在英文字母「C」緊接著的下一個字母是哪一個？",
     "options": [
       "D",
       "A",
@@ -87374,7 +87374,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「P」後面的字母是哪一個？",
+    "question": "請問在英文字母「P」緊接著的下一個字母是哪一個？",
     "options": [
       "Q",
       "A",
@@ -87401,7 +87401,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「T」後面的字母是哪一個？",
+    "question": "請問在英文字母「T」緊接著的下一個字母是哪一個？",
     "options": [
       "U",
       "A",
@@ -87428,7 +87428,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -87455,7 +87455,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「P」後面的字母是哪一個？",
+    "question": "請問在英文字母「P」緊接著的下一個字母是哪一個？",
     "options": [
       "Q",
       "A",
@@ -87482,7 +87482,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「D」後面的字母是哪一個？",
+    "question": "請問在英文字母「D」緊接著的下一個字母是哪一個？",
     "options": [
       "E",
       "A",
@@ -87509,7 +87509,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「Q」後面的字母是哪一個？",
+    "question": "請問在英文字母「Q」緊接著的下一個字母是哪一個？",
     "options": [
       "R",
       "A",
@@ -87536,7 +87536,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「D」後面的字母是哪一個？",
+    "question": "請問在英文字母「D」緊接著的下一個字母是哪一個？",
     "options": [
       "E",
       "A",
@@ -87563,7 +87563,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -87590,7 +87590,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「C」後面的字母是哪一個？",
+    "question": "請問在英文字母「C」緊接著的下一個字母是哪一個？",
     "options": [
       "D",
       "A",
@@ -87617,7 +87617,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「G」後面的字母是哪一個？",
+    "question": "請問在英文字母「G」緊接著的下一個字母是哪一個？",
     "options": [
       "H",
       "A",
@@ -87644,7 +87644,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「V」後面的字母是哪一個？",
+    "question": "請問在英文字母「V」緊接著的下一個字母是哪一個？",
     "options": [
       "W",
       "A",
@@ -87671,7 +87671,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「V」後面的字母是哪一個？",
+    "question": "請問在英文字母「V」緊接著的下一個字母是哪一個？",
     "options": [
       "W",
       "A",
@@ -87698,7 +87698,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「U」後面的字母是哪一個？",
+    "question": "請問在英文字母「U」緊接著的下一個字母是哪一個？",
     "options": [
       "V",
       "A",
@@ -87725,7 +87725,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「B」後面的字母是哪一個？",
+    "question": "請問在英文字母「B」緊接著的下一個字母是哪一個？",
     "options": [
       "C",
       "A",
@@ -87752,7 +87752,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「W」後面的字母是哪一個？",
+    "question": "請問在英文字母「W」緊接著的下一個字母是哪一個？",
     "options": [
       "X",
       "A",
@@ -87779,7 +87779,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「I」後面的字母是哪一個？",
+    "question": "請問在英文字母「I」緊接著的下一個字母是哪一個？",
     "options": [
       "J",
       "A",
@@ -88130,7 +88130,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「C」後面的字母是哪一個？",
+    "question": "請問在英文字母「C」緊接著的下一個字母是哪一個？",
     "options": [
       "D",
       "A",
@@ -88157,7 +88157,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「Q」後面的字母是哪一個？",
+    "question": "請問在英文字母「Q」緊接著的下一個字母是哪一個？",
     "options": [
       "R",
       "A",
@@ -88184,7 +88184,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「G」後面的字母是哪一個？",
+    "question": "請問在英文字母「G」緊接著的下一個字母是哪一個？",
     "options": [
       "H",
       "A",
@@ -88211,7 +88211,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「U」後面的字母是哪一個？",
+    "question": "請問在英文字母「U」緊接著的下一個字母是哪一個？",
     "options": [
       "V",
       "A",
@@ -88238,7 +88238,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「O」後面的字母是哪一個？",
+    "question": "請問在英文字母「O」緊接著的下一個字母是哪一個？",
     "options": [
       "P",
       "A",
@@ -88265,7 +88265,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「N」後面的字母是哪一個？",
+    "question": "請問在英文字母「N」緊接著的下一個字母是哪一個？",
     "options": [
       "O",
       "A",
@@ -88292,7 +88292,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「T」後面的字母是哪一個？",
+    "question": "請問在英文字母「T」緊接著的下一個字母是哪一個？",
     "options": [
       "U",
       "A",
@@ -88319,7 +88319,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「I」後面的字母是哪一個？",
+    "question": "請問在英文字母「I」緊接著的下一個字母是哪一個？",
     "options": [
       "J",
       "A",
@@ -88346,7 +88346,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「N」後面的字母是哪一個？",
+    "question": "請問在英文字母「N」緊接著的下一個字母是哪一個？",
     "options": [
       "O",
       "A",
@@ -88373,7 +88373,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「B」後面的字母是哪一個？",
+    "question": "請問在英文字母「B」緊接著的下一個字母是哪一個？",
     "options": [
       "C",
       "A",
@@ -88400,7 +88400,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「M」後面的字母是哪一個？",
+    "question": "請問在英文字母「M」緊接著的下一個字母是哪一個？",
     "options": [
       "N",
       "A",
@@ -88427,7 +88427,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「V」後面的字母是哪一個？",
+    "question": "請問在英文字母「V」緊接著的下一個字母是哪一個？",
     "options": [
       "W",
       "A",
@@ -88454,7 +88454,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「C」後面的字母是哪一個？",
+    "question": "請問在英文字母「C」緊接著的下一個字母是哪一個？",
     "options": [
       "D",
       "A",
@@ -88481,7 +88481,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「U」後面的字母是哪一個？",
+    "question": "請問在英文字母「U」緊接著的下一個字母是哪一個？",
     "options": [
       "V",
       "A",
@@ -88508,7 +88508,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「U」後面的字母是哪一個？",
+    "question": "請問在英文字母「U」緊接著的下一個字母是哪一個？",
     "options": [
       "V",
       "A",
@@ -88535,7 +88535,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「D」後面的字母是哪一個？",
+    "question": "請問在英文字母「D」緊接著的下一個字母是哪一個？",
     "options": [
       "E",
       "A",
@@ -88562,7 +88562,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「W」後面的字母是哪一個？",
+    "question": "請問在英文字母「W」緊接著的下一個字母是哪一個？",
     "options": [
       "X",
       "A",
@@ -88589,7 +88589,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「H」後面的字母是哪一個？",
+    "question": "請問在英文字母「H」緊接著的下一個字母是哪一個？",
     "options": [
       "I",
       "A",
@@ -88940,7 +88940,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「B」後面的字母是哪一個？",
+    "question": "請問在英文字母「B」緊接著的下一個字母是哪一個？",
     "options": [
       "C",
       "A",
@@ -88967,7 +88967,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -88994,7 +88994,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「R」後面的字母是哪一個？",
+    "question": "請問在英文字母「R」緊接著的下一個字母是哪一個？",
     "options": [
       "S",
       "A",
@@ -89021,7 +89021,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「B」後面的字母是哪一個？",
+    "question": "請問在英文字母「B」緊接著的下一個字母是哪一個？",
     "options": [
       "C",
       "A",
@@ -89048,7 +89048,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「X」後面的字母是哪一個？",
+    "question": "請問在英文字母「X」緊接著的下一個字母是哪一個？",
     "options": [
       "Y",
       "A",
@@ -89075,7 +89075,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「R」後面的字母是哪一個？",
+    "question": "請問在英文字母「R」緊接著的下一個字母是哪一個？",
     "options": [
       "S",
       "A",
@@ -89102,7 +89102,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「T」後面的字母是哪一個？",
+    "question": "請問在英文字母「T」緊接著的下一個字母是哪一個？",
     "options": [
       "U",
       "A",
@@ -89129,7 +89129,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「P」後面的字母是哪一個？",
+    "question": "請問在英文字母「P」緊接著的下一個字母是哪一個？",
     "options": [
       "Q",
       "A",
@@ -89156,7 +89156,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「I」後面的字母是哪一個？",
+    "question": "請問在英文字母「I」緊接著的下一個字母是哪一個？",
     "options": [
       "J",
       "A",
@@ -89183,7 +89183,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「F」後面的字母是哪一個？",
+    "question": "請問在英文字母「F」緊接著的下一個字母是哪一個？",
     "options": [
       "G",
       "A",
@@ -89210,7 +89210,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「D」後面的字母是哪一個？",
+    "question": "請問在英文字母「D」緊接著的下一個字母是哪一個？",
     "options": [
       "E",
       "A",
@@ -89237,7 +89237,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「F」後面的字母是哪一個？",
+    "question": "請問在英文字母「F」緊接著的下一個字母是哪一個？",
     "options": [
       "G",
       "A",
@@ -89264,7 +89264,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「V」後面的字母是哪一個？",
+    "question": "請問在英文字母「V」緊接著的下一個字母是哪一個？",
     "options": [
       "W",
       "A",
@@ -89291,7 +89291,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「D」後面的字母是哪一個？",
+    "question": "請問在英文字母「D」緊接著的下一個字母是哪一個？",
     "options": [
       "E",
       "A",
@@ -89318,7 +89318,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「K」後面的字母是哪一個？",
+    "question": "請問在英文字母「K」緊接著的下一個字母是哪一個？",
     "options": [
       "L",
       "A",
@@ -89345,7 +89345,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「A」後面的字母是哪一個？",
+    "question": "請問在英文字母「A」緊接著的下一個字母是哪一個？",
     "options": [
       "B",
       "C",
@@ -89372,7 +89372,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「M」後面的字母是哪一個？",
+    "question": "請問在英文字母「M」緊接著的下一個字母是哪一個？",
     "options": [
       "N",
       "A",
@@ -89399,7 +89399,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "請問在英文字母「V」後面的字母是哪一個？",
+    "question": "請問在英文字母「V」緊接著的下一個字母是哪一個？",
     "options": [
       "W",
       "A",

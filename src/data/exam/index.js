@@ -7,12 +7,12 @@
  * 4. 個人易錯題弱點擊破室 (mistakes)
  */
 
-import { EXAM_TRACKS } from './examTracks';
-import { TME_PRE_A1_SPEC, TME_PRE_A1_CATEGORIES } from './tmePreA1Meta';
-import { SAA_EXAM_SPEC, SAA_PASSAGE_SAMPLE_SCHEMA } from './saaExamMeta';
-import { HERE_WE_GO_BOOK_META, HERE_WE_GO_MCQ_BANK } from '../hereWeGoMcqBank';
-import { TME_PRE_A1_BANK, TME_PRE_A1_SCRAMBLE_BANK, TME_SCRAMBLE_PATTERNS, TME_PRE_A1_READING_BANK } from './tmePreA1Bank';
-import { SAA_EXAM_BANK } from './saaExamBank';
+import { EXAM_TRACKS } from './examTracks.js';
+import { TME_PRE_A1_SPEC, TME_PRE_A1_CATEGORIES } from './tmePreA1Meta.js';
+import { SAA_EXAM_SPEC, SAA_PASSAGE_SAMPLE_SCHEMA } from './saaExamMeta.js';
+import { HERE_WE_GO_BOOK_META, HERE_WE_GO_MCQ_BANK } from '../hereWeGoMcqBank.js';
+import { TME_PRE_A1_BANK, TME_PRE_A1_SCRAMBLE_BANK, TME_SCRAMBLE_PATTERNS, TME_PRE_A1_READING_BANK } from './tmePreA1Bank.js';
+import { SAA_EXAM_BANK } from './saaExamBank.js';
 import {
   SAA_115_G4_QUESTIONS,
   SAA_115_G5_QUESTIONS,

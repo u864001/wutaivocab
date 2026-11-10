@@ -186,7 +186,7 @@ async function run() {
     mcqIds.add(q.id);
     if (!mcqBookCounts[q.book] && mcqBookCounts[q.book] !== 0) failures.push({ target: 'Static Contract: Invalid MCQ book', id: q.id });
     else mcqBookCounts[q.book]++;
-    if (!Array.isArray(q.options) || q.options.length < 3 || new Set(q.options).size !== q.options.length) {
+    if (!Array.isArray(q.options) || q.options.length < 3 || new Set(q.options.map(o => String(o || '').toLowerCase().trim())).size !== q.options.length) {
       failures.push({ target: 'Static Contract: Invalid MCQ options', id: q.id });
     }
     if (typeof q.answer !== 'number' || q.answer < 0 || q.answer >= q.options.length) {
@@ -197,6 +197,9 @@ async function run() {
     }
     if (q.explanation && q.explanation.includes('依據本課核心句型')) {
       failures.push({ target: 'Static Contract: Templated explanation found', id: q.id });
+    }
+    if ((q.book === 'g1' || q.book === 'g2') && (/後面的字母/.test(q.question) || /前面的字母/.test(q.question)) && !/緊接/.test(q.question)) {
+      failures.push({ target: 'Static Contract: Ambiguous letter order phrasing', id: q.id });
     }
   }
   for (const b of ['g1', 'g2', 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
