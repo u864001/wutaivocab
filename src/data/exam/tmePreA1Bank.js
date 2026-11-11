@@ -124,7 +124,8 @@ const NON_WRITING_ITEMS = [
       "圖片 (C)",
       "圖片 (D)",
       "圖片 (E)",
-      "圖片 (F)"
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/umbrella.png",
@@ -132,7 +133,8 @@ const NON_WRITING_ITEMS = [
       "/assets/exam/preA1/shoe.png",
       "/assets/exam/preA1/jacket.png",
       "/assets/exam/preA1/hat.png",
-      "/assets/exam/preA1/tshirt.png"
+      "/assets/exam/preA1/tshirt.png",
+      "/assets/exam/preA1/dress.png"
     ],
     "answer": 0,
     "explanation": "聽力發音為「umbrella（雨傘）」，故選雨傘線稿插圖。",
@@ -156,7 +158,8 @@ const NON_WRITING_ITEMS = [
       "yollow",
       "yellw",
       "yello",
-      "yelow"
+      "yelow",
+      "yelloh"
     ],
     "answer": 0,
     "explanation": "聽力發音為顏色「yellow（黃色）」，正確拼字為 y-e-l-l-o-w。",
@@ -181,7 +184,8 @@ const NON_WRITING_ITEMS = [
       "The boy is sleeping.",
       "The boy is reading a book.",
       "The boy is running in the park.",
-      "The boy is playing with a ball."
+      "The boy is playing with a ball.",
+      "The boy is climbing a tree."
     ],
     "answer": 0,
     "explanation": "插圖為腳踏車，且聽力內容「The boy is riding a bicycle.（男孩正在騎腳踏車）」，故選 (A)。",
@@ -205,7 +209,8 @@ const NON_WRITING_ITEMS = [
       "圖片 (C)",
       "圖片 (D)",
       "圖片 (E)",
-      "圖片 (F)"
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/library.png",
@@ -213,7 +218,8 @@ const NON_WRITING_ITEMS = [
       "/assets/exam/preA1/playground.png",
       "/assets/exam/preA1/restaurant.png",
       "/assets/exam/preA1/park.png",
-      "/assets/exam/preA1/school.png"
+      "/assets/exam/preA1/school.png",
+      "/assets/exam/preA1/supermarket.png"
     ],
     "answer": 0,
     "explanation": "對話中 Peter 說「I am going to the library」，故前往地點為圖書館 (A)。",
@@ -237,7 +243,8 @@ const NON_WRITING_ITEMS = [
       "I like apples.",
       "It is a pen.",
       "My name is John.",
-      "Yes, I do."
+      "Yes, I do.",
+      "Good night."
     ],
     "answer": 0,
     "explanation": "問句「How are you doing today?（你今天好嗎？）」，標準應答為「I’m fine, thank you.」。",
@@ -261,7 +268,8 @@ const NON_WRITING_ITEMS = [
       "I have three books.",
       "It is sunny today.",
       "It is very big.",
-      "At the school gate."
+      "At the school gate.",
+      "It is my favorite pencil."
     ],
     "answer": 0,
     "explanation": "問句「What time is it now?（現在幾點？）」，詢問時間應回答「It is three thirty.（現在三點半）」。",
@@ -285,8 +293,9 @@ const NON_WRITING_ITEMS = [
       "It is five dollars.",
       "She is my sister.",
       "I can swim.",
-      "He is ten years old."
-],
+      "He is ten years old.",
+      "Good afternoon."
+    ],
     "answer": 0,
     "explanation": "初次見面問候「Nice to meet you.（很高興認識你）」，標準回應為「Nice to meet you, too.」。",
     "reviewed": true
@@ -309,8 +318,9 @@ const NON_WRITING_ITEMS = [
       "No, it isn't.",
       "I am a student.",
       "It is red.",
-      "They are fine."
-],
+      "They are fine.",
+      "I like reading."
+    ],
     "answer": 0,
     "explanation": "問句詢問郵局地點（Where is the post office?），應回答具體方位「It is next to the bookstore.（在書店隔壁）」。",
     "reviewed": true
@@ -333,8 +343,9 @@ const NON_WRITING_ITEMS = [
       "It is my brother's.",
       "I have two caps.",
       "It is on the desk.",
-      "I like blue caps."
-],
+      "I like blue caps.",
+      "It is ten o'clock."
+    ],
     "answer": 0,
     "explanation": "對方禮貌詢問「Do you want some orange juice?（要喝點柳橙汁嗎？）」，接受時回答「Yes, please. I am thirsty.（好的請給我，我很渴）」。",
     "reviewed": true
@@ -357,8 +368,9 @@ const NON_WRITING_ITEMS = [
       "Yes, I am.",
       "No, they don't.",
       "I like swimming.",
-      "It is five o'clock."
-],
+      "It is five o'clock.",
+      "She is my sister."
+    ],
     "answer": 0,
     "explanation": "問句使用 Whose（誰的）詢問夾克所有權，回答應為所有格「It is Tony's jacket.（那是東尼的外套）」。",
     "reviewed": true
@@ -381,7 +393,8 @@ const NON_WRITING_ITEMS = [
       "Juice",
       "Tea",
       "Coffee",
-      "Soda"
+      "Soda",
+      "Lemonade"
     ],
     "answer": 0,
     "explanation": "Tom 回答「I want some water」，故 Tom 想要水。",
@@ -405,7 +418,8 @@ const NON_WRITING_ITEMS = [
       "The school",
       "The museum",
       "The library",
-      "The hospital"
+      "The hospital",
+      "The bookstore"
     ],
     "answer": 0,
     "explanation": "對話中 Kelly 清楚表示「I am going to the zoo to see the pandas」，故前往動物園。",
@@ -429,8 +443,9 @@ const NON_WRITING_ITEMS = [
       "The rabbit",
       "The monkey",
       "Sixteen dollars",
-      "Six dollars"
-],
+      "Six dollars",
+      "Twenty dollars"
+    ],
     "answer": 0,
     "explanation": "店員回答「It is sixty dollars.（60元）」，故選 (A) Sixty dollars。",
     "reviewed": true
@@ -453,8 +468,9 @@ const NON_WRITING_ITEMS = [
       "By bus",
       "On foot",
       "By car",
-      "By train"
-],
+      "By train",
+      "By metro"
+    ],
     "answer": 0,
     "explanation": "Andy 回答「I ride my bicycle with Peter」，交通方式為騎腳踏車（By bicycle），故選 (A)。",
     "reviewed": false
@@ -477,8 +493,9 @@ const NON_WRITING_ITEMS = [
       "Monday",
       "Friday",
       "Sunday",
-      "Thursday"
-],
+      "Thursday",
+      "Saturday"
+    ],
     "answer": 0,
     "explanation": "全班回答「Today is Wednesday!（今天星期三）」，故選 (A) Wednesday。",
     "reviewed": true
@@ -501,8 +518,9 @@ const NON_WRITING_ITEMS = [
       "A doctor",
       "A teacher",
       "A cook",
-      "A police officer"
-],
+      "A police officer",
+      "A nurse"
+    ],
     "answer": 0,
     "explanation": "Ben 明確說明「No, he is a bus driver.（不，他是一位公車司機）」，故選 (A) A bus driver。",
     "reviewed": true
@@ -724,7 +742,7 @@ const NON_WRITING_ITEMS = [
       "rice",
       "pizza",
       "egg"
-],
+    ],
     "answer": 0,
     "explanation": "動詞為 drinks（喝），且單位為 a glass of（一杯），空格只能填可飲用的液體 milk（牛奶），故選 (A)。",
     "reviewed": false
@@ -749,7 +767,7 @@ const NON_WRITING_ITEMS = [
       "park",
       "zoo",
       "hospital"
-],
+    ],
     "answer": 0,
     "explanation": "找書與閱讀應前往圖書館（library），故選 (A)。",
     "reviewed": false
@@ -774,7 +792,7 @@ const NON_WRITING_ITEMS = [
       "ruler",
       "jacket",
       "eraser"
-],
+    ],
     "answer": 0,
     "explanation": "雨天出門提醒攜帶的應為雨傘（umbrella），冠詞為 an 也符合母音開頭，故選 (A)。",
     "reviewed": false
@@ -799,7 +817,7 @@ const NON_WRITING_ITEMS = [
       "homework",
       "baseball",
       "sleep"
-],
+    ],
     "answer": 0,
     "explanation": "中午十二點（twelve o'clock）吃的餐點為午餐（lunch），故選 (A)。",
     "reviewed": true
@@ -1467,7 +1485,8 @@ const NON_WRITING_ITEMS = [
       "grin",
       "gren",
       "grene",
-      "gean"
+      "gean",
+      "grean"
     ],
     "answer": 0,
     "explanation": "聽力發音為「green（綠色）」，正確拼字為 g-r-e-e-n。",
@@ -1491,8 +1510,9 @@ const NON_WRITING_ITEMS = [
       "bloo",
       "blu",
       "blew",
-      "bolue"
-],
+      "bolue",
+      "bloue"
+    ],
     "answer": 0,
     "explanation": "聽力發音為「blue（藍色）」，正確拼字為 b-l-u-e。",
     "reviewed": true
@@ -1515,8 +1535,9 @@ const NON_WRITING_ITEMS = [
       "rouler",
       "ruller",
       "rulor",
-      "rurle"
-],
+      "rurle",
+      "rooler"
+    ],
     "answer": 0,
     "explanation": "聽力發音為「ruler（直尺）」，正確拼字為 r-u-l-e-r。",
     "reviewed": true
@@ -1539,8 +1560,9 @@ const NON_WRITING_ITEMS = [
       "pencel",
       "pencle",
       "pensle",
-      "pincil"
-],
+      "pincil",
+      "pensel"
+    ],
     "answer": 0,
     "explanation": "聽力發音為「pencil（鉛筆）」，正確拼字為 p-e-n-c-i-l。",
     "reviewed": true
@@ -1563,8 +1585,9 @@ const NON_WRITING_ITEMS = [
       "braed",
       "breed",
       "briad",
-      "brede"
-],
+      "brede",
+      "braid"
+    ],
     "answer": 0,
     "explanation": "聽力發音為「bread（麵包）」，正確拼字為 b-r-e-a-d。",
     "reviewed": true
@@ -1587,8 +1610,9 @@ const NON_WRITING_ITEMS = [
       "woter",
       "watter",
       "wator",
-      "wateur"
-],
+      "wateur",
+      "worter"
+    ],
     "answer": 0,
     "explanation": "聽力發音為「water（水）」，正確拼字為 w-a-t-e-r。",
     "reviewed": true
@@ -1611,8 +1635,9 @@ const NON_WRITING_ITEMS = [
       "cheir",
       "chiar",
       "chaer",
-      "char"
-],
+      "char",
+      "chaire"
+    ],
     "answer": 0,
     "explanation": "聽力發音為「chair（椅子）」，正確拼字為 c-h-a-i-r。",
     "reviewed": true
@@ -1635,7 +1660,8 @@ const NON_WRITING_ITEMS = [
       "doctur",
       "docktor",
       "dactor",
-      "doktor"
+      "doktor",
+      "doctar"
     ],
     "answer": 0,
     "explanation": "聽力發音為「doctor（醫生）」，正確拼字為 d-o-c-t-o-r。",
@@ -1659,7 +1685,8 @@ const NON_WRITING_ITEMS = [
       "libreary",
       "liblary",
       "libery",
-      "lybrary"
+      "lybrary",
+      "librairy"
     ],
     "answer": 0,
     "explanation": "聽力發音為「library（圖書館）」，正確拼字為 l-i-b-r-a-r-y。",
@@ -1683,7 +1710,8 @@ const NON_WRITING_ITEMS = [
       "waether",
       "wheather",
       "weathur",
-      "wezer"
+      "wezer",
+      "weathor"
     ],
     "answer": 0,
     "explanation": "聽力發音為「weather（天氣）」，正確拼字為 w-e-a-t-h-e-r。",
@@ -1707,7 +1735,8 @@ const NON_WRITING_ITEMS = [
       "sammer",
       "summor",
       "summerr",
-      "sommer"
+      "sommer",
+      "summir"
     ],
     "answer": 0,
     "explanation": "聽力發音為「summer（夏天）」，正確拼字為 s-u-m-m-e-r。",
@@ -1731,7 +1760,8 @@ const NON_WRITING_ITEMS = [
       "seezon",
       "seasen",
       "ceason",
-      "seison"
+      "seison",
+      "seasun"
     ],
     "answer": 0,
     "explanation": "聽力發音為「season（季節）」，正確拼字為 s-e-a-s-o-n。",
@@ -1755,7 +1785,8 @@ const NON_WRITING_ITEMS = [
       "pocet",
       "pockit",
       "pucket",
-      "pockt"
+      "pockt",
+      "pockat"
     ],
     "answer": 0,
     "explanation": "聽力發音為「pocket（口袋）」，正確拼字為 p-o-c-k-e-t。",
@@ -1775,14 +1806,14 @@ const NON_WRITING_ITEMS = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-    "The cute dog is sitting on the floor.",
-    "The cat is climbing a tree.",
-    "The bird is flying.",
-    "The duck is swimming.",
-    "The dog is barking loudly.",
-    "The dog is chasing a ball.",
-    "The rabbit is jumping in the grass."
-  ],
+      "The cute dog is sitting on the floor.",
+      "The cat is climbing a tree.",
+      "The bird is flying.",
+      "The duck is swimming.",
+      "The dog is barking loudly.",
+      "The dog is chasing a ball.",
+      "The rabbit is jumping in the grass."
+    ],
     "answer": 0,
     "explanation": "圖片顯示小狗正安靜坐在地板上，相符句子為 (A) The cute dog is sitting on the floor.。",
     "reviewed": true
@@ -1806,8 +1837,9 @@ const NON_WRITING_ITEMS = [
       "The boy is riding a blue bicycle.",
       "The white boat is in the water.",
       "The cute dog is sleeping.",
-      "The girl is eating a red apple."
-],
+      "The girl is eating a red apple.",
+      "The red car is moving fast."
+    ],
     "answer": 0,
     "explanation": "插圖為校車公車，聽力為「The yellow school bus is stopping here.（黃色校車停在這邊）」，故選 (A)。",
     "reviewed": true
@@ -1826,14 +1858,14 @@ const NON_WRITING_ITEMS = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-    "There is one candle on the cake.",
-    "The girl is eating a delicious apple.",
-    "The boy is playing with a toy car.",
-    "The students are reading in the library.",
-    "The dog is running in the park.",
-    "The yellow bus is driving fast.",
-    "The cat is sleeping on the chair."
-  ],
+      "There is one candle on the cake.",
+      "The girl is eating a delicious apple.",
+      "The boy is playing with a toy car.",
+      "The students are reading in the library.",
+      "The dog is running in the park.",
+      "The yellow bus is driving fast.",
+      "The cat is sleeping on the chair."
+    ],
     "answer": 0,
     "explanation": "圖片為一個插著一根蠟燭的蛋糕，句意相符者為 (A) There is one candle on the cake.。",
     "reviewed": true
@@ -1857,8 +1889,9 @@ const NON_WRITING_ITEMS = [
       "The children are having lunch at home.",
       "The boy is washing his bicycle.",
       "The cat is sleeping on the sofa.",
-      "The students are singing in the classroom."
-],
+      "The students are singing in the classroom.",
+      "The dog is chasing a butterfly."
+    ],
     "answer": 0,
     "explanation": "插圖為公園與長椅，聽力「There is a bench under the green tree in the park.（公園裡的綠樹下有一張長椅）」，故選 (A)。",
     "reviewed": true
@@ -1882,8 +1915,9 @@ const NON_WRITING_ITEMS = [
       "The girl is writing with a pencil.",
       "The mother is cooking in the kitchen.",
       "The birds are flying in the sky.",
-      "The boy is reading a book under the tree."
-],
+      "The boy is reading a book under the tree.",
+      "The monkey is eating a banana."
+    ],
     "answer": 0,
     "explanation": "插圖為水裡的小魚，聽力「The small fish is swimming happily in the water.（小魚在水裡開心地游著）」，故選 (A)。",
     "reviewed": true
@@ -1907,8 +1941,9 @@ const NON_WRITING_ITEMS = [
       "The children are eating cake at the party.",
       "The cat is playing with a ball.",
       "The teacher is writing on the blackboard.",
-      "The students are running in the gym."
-],
+      "The students are running in the gym.",
+      "The airplane is flying in the clouds."
+    ],
     "answer": 0,
     "explanation": "插圖為帆船小艇，聽力「A white sailboat is floating on the blue sea.（一艘白色帆船漂浮在藍色海面上）」，故選 (A)。",
     "reviewed": true
@@ -1965,7 +2000,8 @@ const NON_WRITING_ITEMS = [
       "圖片 (C)",
       "圖片 (D)",
       "圖片 (E)",
-      "圖片 (F)"
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/zoo.png",
@@ -1973,7 +2009,8 @@ const NON_WRITING_ITEMS = [
       "/assets/exam/preA1/school.png",
       "/assets/exam/preA1/restaurant.png",
       "/assets/exam/preA1/park.png",
-      "/assets/exam/preA1/playground.png"
+      "/assets/exam/preA1/playground.png",
+      "/assets/exam/preA1/supermarket.png"
     ],
     "answer": 0,
     "explanation": "爸爸回答「Let us go to the zoo」，前往動物園，對應動物園拱門圖片 (A)。",
@@ -2060,23 +2097,23 @@ const NON_WRITING_ITEMS = [
     },
     "question": "聽對話，選出媽媽提醒 Peter 穿上的衣物線稿插圖：",
     "options": [
-    "圖片 (A)",
-    "圖片 (B)",
-    "圖片 (C)",
-    "圖片 (D)",
-    "圖片 (E)",
-    "圖片 (F)",
-    "圖片 (G)"
-  ],
+      "圖片 (A)",
+      "圖片 (B)",
+      "圖片 (C)",
+      "圖片 (D)",
+      "圖片 (E)",
+      "圖片 (F)",
+      "圖片 (G)"
+    ],
     "optionImages": [
-    "/assets/exam/preA1/jacket.png",
-    "/assets/exam/preA1/cap.png",
-    "/assets/exam/preA1/shoe.png",
-    "/assets/exam/preA1/umbrella.png",
-    "/assets/exam/preA1/hat.png",
-    "/assets/exam/preA1/tshirt.png",
-    "/assets/exam/preA1/pants.png"
-  ],
+      "/assets/exam/preA1/jacket.png",
+      "/assets/exam/preA1/cap.png",
+      "/assets/exam/preA1/shoe.png",
+      "/assets/exam/preA1/umbrella.png",
+      "/assets/exam/preA1/hat.png",
+      "/assets/exam/preA1/tshirt.png",
+      "/assets/exam/preA1/pants.png"
+    ],
     "answer": 0,
     "explanation": "媽媽提醒「wear your jacket（穿上夾克外衣）」，故選夾克圖片 (A)。",
     "reviewed": true
@@ -2133,8 +2170,9 @@ const NON_WRITING_ITEMS = [
       "He is at home.",
       "He has a red cap.",
       "Yes, he does.",
-      "He is ten."
-],
+      "He is ten.",
+      "I am reading."
+    ],
     "answer": 0,
     "explanation": "初次見面打招呼「Nice to meet you」，標準禮貌回應為「Nice to meet you, too.（我也很高興認識你）」。",
     "reviewed": true
@@ -2157,8 +2195,9 @@ const NON_WRITING_ITEMS = [
       "I'm in Grade 3.",
       "There are nine pens.",
       "It is nine o'clock.",
-      "I am fine, thanks."
-],
+      "I am fine, thanks.",
+      "Good morning."
+    ],
     "answer": 0,
     "explanation": "對方道謝「Thank you...」，客氣回應「You are welcome.（不客氣）」。",
     "reviewed": true
@@ -2181,8 +2220,9 @@ const NON_WRITING_ITEMS = [
       "It is under the desk.",
       "It is very happy.",
       "They are pencils.",
-      "Yes, it is."
-],
+      "Yes, it is.",
+      "I can jump high."
+    ],
     "answer": 0,
     "explanation": "道別祝週末愉快，回答「Goodbye! You, too!（再見！你也是！）」。",
     "reviewed": true
@@ -2205,8 +2245,9 @@ const NON_WRITING_ITEMS = [
       "Good night, Mom.",
       "See you tomorrow.",
       "I am sorry.",
-      "Thank you very much."
-],
+      "Thank you very much.",
+      "Yes, it is big."
+    ],
     "answer": 0,
     "explanation": "請求協助「Can you help me...」，樂意幫忙時回答「Sure, no problem!（當然沒問題！）」。",
     "reviewed": true
@@ -2229,7 +2270,8 @@ const NON_WRITING_ITEMS = [
       "It is ten o'clock.",
       "He is my teacher.",
       "Yes, I am.",
-      "She is at home."
+      "She is at home.",
+      "I have a pet cat."
     ],
     "answer": 0,
     "explanation": "詢問上學交通方式「How do you go to school...」，最適當回答為「I go to school by bike.（我騎腳踏車上學）」。",
@@ -2253,7 +2295,8 @@ const NON_WRITING_ITEMS = [
       "I am ten years old.",
       "She is singing a song.",
       "No, it isn't.",
-      "They are in the park."
+      "They are in the park.",
+      "He is twenty years old."
     ],
     "answer": 0,
     "explanation": "詢問電影幾點開始「What time does the movie start...」，最適當回答為「It starts at seven thirty.（七點半開始）」。",
@@ -2277,7 +2320,8 @@ const NON_WRITING_ITEMS = [
       "It is sunny today.",
       "Yes, she is my friend.",
       "I have three dogs.",
-      "Tomorrow is Friday."
+      "Tomorrow is Friday.",
+      "I like orange juice."
     ],
     "answer": 0,
     "explanation": "詢問昨天下午人在何處「Where were you yesterday...」，最適當回答為過去式「I was at the library with Amy.（我和 Amy 在圖書館）」。",
@@ -2301,7 +2345,8 @@ const NON_WRITING_ITEMS = [
       "He is a great doctor.",
       "Yes, it is very big.",
       "I like hamburgers.",
-      "No, thank you."
+      "No, thank you.",
+      "He is sleeping now."
     ],
     "answer": 0,
     "explanation": "問路詢問醫院在哪裡「where is the nearest hospital」，最適當回答指引方向「Go straight and turn right at the bank.（直走並在銀行右轉）」。",
@@ -2325,7 +2370,8 @@ const NON_WRITING_ITEMS = [
       "I am twelve years old.",
       "It is a sunny Sunday.",
       "She is my mother.",
-      "There are five books."
+      "There are five books.",
+      "It is a blue ball."
     ],
     "answer": 0,
     "explanation": "詢問週末休閒活動「What do you do on weekends...」，最適當回答為「I often play soccer with my friends.（我常和朋友踢足球）」。",
@@ -2349,7 +2395,8 @@ const NON_WRITING_ITEMS = [
       "I don't know him.",
       "Nice to meet you.",
       "Goodbye, see you.",
-      "It is my cat."
+      "It is my cat.",
+      "I am ten."
     ],
     "answer": 0,
     "explanation": "禮貌借文具「May I borrow your ruler...」，出借時回答「Sure, here you are.（當然，拿去吧）」。",
@@ -2373,7 +2420,8 @@ const NON_WRITING_ITEMS = [
       "He is forty years old.",
       "He is at home now.",
       "Yes, he does.",
-      "He has a black car."
+      "He has a black car.",
+      "He is eating breakfast."
     ],
     "answer": 0,
     "explanation": "詢問父親職業「What does your father do...」，回答職業「He is an English teacher.（他是一位英文老師）」。",
@@ -2397,7 +2445,8 @@ const NON_WRITING_ITEMS = [
       "I wear a coat.",
       "He is tall and strong.",
       "Yes, it is mine jacket.",
-      "Under the chair."
+      "Under the chair.",
+      "They are running."
     ],
     "answer": 0,
     "explanation": "詢問外套是誰的「Whose jacket is this...」，所有格回答「It is Kelly's jacket.（這是 Kelly 的外套）」。",
@@ -2421,8 +2470,9 @@ const NON_WRITING_ITEMS = [
       "A basketball",
       "A toy robot",
       "A blue notebook",
-      "A teddy bear"
-],
+      "A teddy bear",
+      "A school bag"
+    ],
     "answer": 0,
     "explanation": "Ben 明確回答「I want a red bicycle」，故選 (A) A red bicycle。",
     "reviewed": true
@@ -2440,14 +2490,14 @@ const NON_WRITING_ITEMS = [
     },
     "question": "聽對話，回答問題：Where is Amy’s homework?",
     "options": [
-    "In her school bag at home",
-    "Under the chair",
-    "On the teacher's desk",
-    "In the locker",
-    "In the library",
-    "Under her bed",
-    "In the classroom cabinet"
-  ],
+      "In her school bag at home",
+      "Under the chair",
+      "On the teacher's desk",
+      "In the locker",
+      "In the library",
+      "Under her bed",
+      "In the classroom cabinet"
+    ],
     "answer": 0,
     "explanation": "Amy 回答作業「in my school bag at home（在家裡的書包中）」，故選 (A)。",
     "reviewed": true
@@ -2470,8 +2520,9 @@ const NON_WRITING_ITEMS = [
       "Thirsty",
       "Tired",
       "Happy",
-      "Angry"
-],
+      "Angry",
+      "Sad"
+    ],
     "answer": 0,
     "explanation": "Andy 回答「I am very hungry（我很餓）」，故選 (A) Hungry。",
     "reviewed": true
@@ -2494,8 +2545,9 @@ const NON_WRITING_ITEMS = [
       "Washing the dishes",
       "Drinking milk",
       "Eating breakfast",
-      "Reading a book"
-],
+      "Reading a book",
+      "Cleaning the table"
+    ],
     "answer": 0,
     "explanation": "Tom 回答「I am making a chocolate cake for Mom」，故選 (A) Making a chocolate cake。",
     "reviewed": true
@@ -2518,7 +2570,8 @@ const NON_WRITING_ITEMS = [
       "She is not hungry.",
       "She is playing basketball.",
       "She is at home.",
-      "She doesn't like apples."
+      "She doesn't like apples.",
+      "She has a high fever."
     ],
     "answer": 0,
     "explanation": "Lucy 說「I have a bad stomachache（我胃痛得很厲害）」，故選 (A)。",
@@ -2537,14 +2590,14 @@ const NON_WRITING_ITEMS = [
     },
     "question": "聽對話，回答問題：Where is Mrs. Lin going this weekend?",
     "options": [
-    "To the theater to watch a movie",
-    "To the cinema to buy popcorn",
-    "To the supermarket to buy milk",
-    "To the beach to go swimming",
-    "To the hospital to see a doctor",
-    "To the library to study English",
-    "To the park to ride bicycles"
-  ],
+      "To the theater to watch a movie",
+      "To the cinema to buy popcorn",
+      "To the supermarket to buy milk",
+      "To the beach to go swimming",
+      "To the hospital to see a doctor",
+      "To the library to study English",
+      "To the park to ride bicycles"
+    ],
     "answer": 0,
     "explanation": "對話中林太太說「I am taking my children to the theater to watch a movie.」，故選 (A)。",
     "reviewed": true
@@ -2567,7 +2620,8 @@ const NON_WRITING_ITEMS = [
       "Do his English homework",
       "Play computer games",
       "Clean up his bedroom",
-      "Call his friend Peter"
+      "Call his friend Peter",
+      "Wash his hands and face"
     ],
     "answer": 0,
     "explanation": "媽媽提醒該關電視睡覺「turn off the TV. It is time for bed」，故選 (A)。",
@@ -2616,7 +2670,8 @@ const NON_WRITING_ITEMS = [
       "Music",
       "Math",
       "PE",
-      "History"
+      "History",
+      "English"
     ],
     "answer": 0,
     "explanation": "Andy 回答最喜歡自然科學「I love science」，故選 (A) Science。",
@@ -2640,7 +2695,8 @@ const NON_WRITING_ITEMS = [
       "Bread and butter",
       "Juice and candy",
       "Fish and rice",
-      "Tea and coffee"
+      "Tea and coffee",
+      "Noodles and soup"
     ],
     "answer": 0,
     "explanation": "男子要買鮮奶與雞蛋「looking for fresh milk and eggs」，故選 (A)。",
@@ -2664,7 +2720,8 @@ const NON_WRITING_ITEMS = [
       "She doesn't like badminton.",
       "She is sick in bed.",
       "She forgot her sports shoes.",
-      "She has to help her mother."
+      "She has to help her mother.",
+      "She is going to the dentist."
     ],
     "answer": 0,
     "explanation": "Amy 說明原因「I have a piano lesson at four thirty（四點半有鋼琴課）」，故選 (A)。",
@@ -2688,7 +2745,8 @@ const NON_WRITING_ITEMS = [
       "By bicycle",
       "By airplane",
       "By boat",
-      "On foot"
+      "On foot",
+      "By car"
     ],
     "answer": 0,
     "explanation": "David 回答「I took the train there（搭火車去）」，故選 (A) By train。",
@@ -2866,14 +2924,14 @@ const NON_WRITING_ITEMS = [
     "image": "/assets/exam/preA1/bicycle.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-    "The boy has a new bicycle.",
-    "The girl is driving a bus.",
-    "The train is at the station.",
-    "The boat is in the water.",
-    "The boy is cleaning his yellow scooter.",
-    "The girl is riding a black horse.",
-    "The students are walking to school."
-  ],
+      "The boy has a new bicycle.",
+      "The girl is driving a bus.",
+      "The train is at the station.",
+      "The boat is in the water.",
+      "The boy is cleaning his yellow scooter.",
+      "The girl is riding a black horse.",
+      "The students are walking to school."
+    ],
     "answer": 0,
     "explanation": "插圖為腳踏車線稿，句子 (A) 完全吻合。",
     "reviewed": true
@@ -2895,7 +2953,7 @@ const NON_WRITING_ITEMS = [
       "The birds are singing in the sky.",
       "The children are playing basketball.",
       "The teacher is writing on the blackboard."
-],
+    ],
     "answer": 0,
     "explanation": "插圖為可愛小狗坐在地上，句子 (A) 完全吻合。",
     "reviewed": true
@@ -2917,7 +2975,7 @@ const NON_WRITING_ITEMS = [
       "There are four fish in the pond.",
       "There is a monkey climbing the tree.",
       "There are three dogs in the car."
-],
+    ],
     "answer": 0,
     "explanation": "插圖為水中游水的小鴨，句子 (A) 最相符。",
     "reviewed": true
@@ -2933,14 +2991,14 @@ const NON_WRITING_ITEMS = [
     "image": "/assets/exam/preA1/bus.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-    "The students take the school bus.",
-    "The woman is cooking in the kitchen.",
-    "The man is sleeping in the bedroom.",
-    "The girl is reading in the library.",
-    "The boy is washing a bicycle.",
-    "The children are swimming in the ocean.",
-    "The teacher is writing on the blackboard."
-  ],
+      "The students take the school bus.",
+      "The woman is cooking in the kitchen.",
+      "The man is sleeping in the bedroom.",
+      "The girl is reading in the library.",
+      "The boy is washing a bicycle.",
+      "The children are swimming in the ocean.",
+      "The teacher is writing on the blackboard."
+    ],
     "answer": 0,
     "explanation": "圖片顯示學生正在搭校車，相符句子為 (A) The students take the school bus.。",
     "reviewed": true
@@ -2962,7 +3020,7 @@ const NON_WRITING_ITEMS = [
       "The woman is driving a car.",
       "The children are eating in the restaurant.",
       "The boy is playing basketball."
-],
+    ],
     "answer": 0,
     "explanation": "插圖為翻開的書本，句子 (A) 完全相符。",
     "reviewed": true
@@ -2978,14 +3036,14 @@ const NON_WRITING_ITEMS = [
     "image": "/assets/exam/preA1/cake.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-    "There is a birthday cake with a candle.",
-    "The cute cat is sleeping on the sofa.",
-    "The big dog is barking at the door.",
-    "The little bird is singing on the fence.",
-    "The children are playing on the swing.",
-    "The students are studying math.",
-    "The grandmother is cooking dinner."
-  ],
+      "There is a birthday cake with a candle.",
+      "The cute cat is sleeping on the sofa.",
+      "The big dog is barking at the door.",
+      "The little bird is singing on the fence.",
+      "The children are playing on the swing.",
+      "The students are studying math.",
+      "The grandmother is cooking dinner."
+    ],
     "answer": 0,
     "explanation": "圖片為一個生日蛋糕插著一根蠟燭，相符句子為 (A) There is a birthday cake with a candle.。",
     "reviewed": true
@@ -3007,7 +3065,7 @@ const NON_WRITING_ITEMS = [
       "The girl is shopping in the bookstore.",
       "The students are swimming in the ocean.",
       "The boy is flying a kite."
-],
+    ],
     "answer": 0,
     "explanation": "插圖為海上的小帆船，句子 (A) 完全吻合。",
     "reviewed": true
@@ -3100,7 +3158,7 @@ const NON_WRITING_ITEMS = [
       "clock",
       "book",
       "desk"
-],
+    ],
     "answer": 0,
     "explanation": "動詞為 puts on（穿上），空格只能填衣物類單字 shirt（襯衫/衣物），故選 (A)。",
     "reviewed": true
@@ -3125,7 +3183,7 @@ const NON_WRITING_ITEMS = [
       "pizza",
       "banana",
       "egg"
-],
+    ],
     "answer": 0,
     "explanation": "口渴（thirsty）且動詞為 drinks（喝），空格填水（water），故選 (A)。",
     "reviewed": true
@@ -3150,7 +3208,7 @@ const NON_WRITING_ITEMS = [
       "bird",
       "cat",
       "tiger"
-],
+    ],
     "answer": 0,
     "explanation": "有 long trunk（長鼻子）的巨大灰色動物為 elephant（大象），故選 (A)。",
     "reviewed": true
@@ -3175,7 +3233,7 @@ const NON_WRITING_ITEMS = [
       "erasers",
       "crayons",
       "brushes"
-],
+    ],
     "answer": 0,
     "explanation": "美勞課剪紙（cut out the paper）使用的工具為 scissors（剪刀），故選 (A)。",
     "reviewed": true
@@ -4288,14 +4346,14 @@ const NON_WRITING_ITEMS = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-    "The boy brushes his teeth in the morning.",
-    "The boy is washing his face.",
-    "The boy is eating breakfast.",
-    "The boy is drinking water.",
-    "The boy is sleeping in bed.",
-    "The boy is reading a book.",
-    "The boy is washing his hands."
-  ],
+      "The boy brushes his teeth in the morning.",
+      "The boy is washing his face.",
+      "The boy is eating breakfast.",
+      "The boy is drinking water.",
+      "The boy is sleeping in bed.",
+      "The boy is reading a book.",
+      "The boy is washing his hands."
+    ],
     "answer": 0,
     "explanation": "圖片顯示小男孩早上正在刷牙，相符句子為 (A) The boy brushes his teeth in the morning.。",
     "reviewed": true
@@ -4314,14 +4372,14 @@ const NON_WRITING_ITEMS = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-    "The student is playing basketball after school.",
-    "The student is playing soccer.",
-    "The student is riding a bicycle.",
-    "The student is swimming in the pool.",
-    "The student is running in the park.",
-    "The student is dancing in the gym.",
-    "The student is climbing a tree."
-  ],
+      "The student is playing basketball after school.",
+      "The student is playing soccer.",
+      "The student is riding a bicycle.",
+      "The student is swimming in the pool.",
+      "The student is running in the park.",
+      "The student is dancing in the gym.",
+      "The student is climbing a tree."
+    ],
     "answer": 0,
     "explanation": "圖片顯示一位學生正在打籃球，故選 (A) The student is playing basketball after school.。",
     "reviewed": true
@@ -4340,14 +4398,14 @@ const NON_WRITING_ITEMS = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-    "The boy is swimming.",
-    "The boy is riding a boat.",
-    "The boy is washing his hands.",
-    "The boy is drinking milk.",
-    "The boy is flying a kite.",
-    "The boy is singing a song.",
-    "The boy is running in the gym."
-  ],
+      "The boy is swimming.",
+      "The boy is riding a boat.",
+      "The boy is washing his hands.",
+      "The boy is drinking milk.",
+      "The boy is flying a kite.",
+      "The boy is singing a song.",
+      "The boy is running in the gym."
+    ],
     "answer": 0,
     "explanation": "圖片顯示小男孩正在游泳，相符句子為 (A) The boy is swimming.。",
     "reviewed": true
@@ -4366,14 +4424,14 @@ const NON_WRITING_ITEMS = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-    "The boy is reading on the chair.",
-    "The boy is writing a letter.",
-    "The boy is drawing a picture.",
-    "The boy is playing the piano.",
-    "The boy is cooking in the kitchen.",
-    "The boy is climbing a tree.",
-    "The boy is riding a horse."
-  ],
+      "The boy is reading on the chair.",
+      "The boy is writing a letter.",
+      "The boy is drawing a picture.",
+      "The boy is playing the piano.",
+      "The boy is cooking in the kitchen.",
+      "The boy is climbing a tree.",
+      "The boy is riding a horse."
+    ],
     "answer": 0,
     "explanation": "圖片顯示小男孩坐在椅子上看書，相符句子為 (A) The boy is reading on the chair.。",
     "reviewed": true
@@ -4392,14 +4450,14 @@ const NON_WRITING_ITEMS = [
     },
     "question": "看情境線稿插圖並聽語音，選出描述正確的句子：",
     "options": [
-    "The girl is singing a song.",
-    "The girl is listening to music.",
-    "The girl is playing guitar.",
-    "The girl is talking on the telephone.",
-    "The girl is watching television.",
-    "The girl is eating an apple.",
-    "The girl is drawing a red cat."
-  ],
+      "The girl is singing a song.",
+      "The girl is listening to music.",
+      "The girl is playing guitar.",
+      "The girl is talking on the telephone.",
+      "The girl is watching television.",
+      "The girl is eating an apple.",
+      "The girl is drawing a red cat."
+    ],
     "answer": 0,
     "explanation": "圖片顯示小女孩正在唱歌，相符句子為 (A) The girl is singing a song.。",
     "reviewed": true
@@ -4422,7 +4480,8 @@ const NON_WRITING_ITEMS = [
       "圖片 (C)",
       "圖片 (D)",
       "圖片 (E)",
-      "圖片 (F)"
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/rainbow.png",
@@ -4430,7 +4489,8 @@ const NON_WRITING_ITEMS = [
       "/assets/exam/preA1/moon.png",
       "/assets/exam/preA1/star.png",
       "/assets/exam/preA1/rain.png",
-      "/assets/exam/preA1/cloud.png"
+      "/assets/exam/preA1/cloud.png",
+      "/assets/exam/preA1/river.png"
     ],
     "answer": 0,
     "explanation": "對話中提到「a colorful rainbow after the rain」，故選彩虹 (A)。",
@@ -4454,7 +4514,8 @@ const NON_WRITING_ITEMS = [
       "圖片 (C)",
       "圖片 (D)",
       "圖片 (E)",
-      "圖片 (F)"
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/hospital.png",
@@ -4462,7 +4523,8 @@ const NON_WRITING_ITEMS = [
       "/assets/exam/preA1/library.png",
       "/assets/exam/preA1/park.png",
       "/assets/exam/preA1/bookstore.png",
-      "/assets/exam/preA1/supermarket.png"
+      "/assets/exam/preA1/supermarket.png",
+      "/assets/exam/preA1/cinema.png"
     ],
     "answer": 0,
     "explanation": "對話中提到「Let us go to the hospital」，故前往地點為醫院 (A)。",
@@ -4486,7 +4548,8 @@ const NON_WRITING_ITEMS = [
       "圖片 (C)",
       "圖片 (D)",
       "圖片 (E)",
-      "圖片 (F)"
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/noodles.png",
@@ -4494,7 +4557,8 @@ const NON_WRITING_ITEMS = [
       "/assets/exam/preA1/pizza.png",
       "/assets/exam/preA1/hamburger.png",
       "/assets/exam/preA1/sandwich.png",
-      "/assets/exam/preA1/bread.png"
+      "/assets/exam/preA1/bread.png",
+      "/assets/exam/preA1/egg.png"
     ],
     "answer": 0,
     "explanation": "對話中女孩回答「I want some hot chicken noodles」，故選麵條 (A)。",
@@ -4518,7 +4582,8 @@ const NON_WRITING_ITEMS = [
       "圖片 (C)",
       "圖片 (D)",
       "圖片 (E)",
-      "圖片 (F)"
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/hippo.png",
@@ -4526,7 +4591,8 @@ const NON_WRITING_ITEMS = [
       "/assets/exam/preA1/lion.png",
       "/assets/exam/preA1/bear.png",
       "/assets/exam/preA1/monkey.png",
-      "/assets/exam/preA1/tiger.png"
+      "/assets/exam/preA1/tiger.png",
+      "/assets/exam/preA1/zebra.png"
     ],
     "answer": 0,
     "explanation": "對話中男孩說「That is a hippo」，故選河馬 (A)。",
@@ -4550,7 +4616,8 @@ const NON_WRITING_ITEMS = [
       "圖片 (C)",
       "圖片 (D)",
       "圖片 (E)",
-      "圖片 (F)"
+      "圖片 (F)",
+      "圖片 (G)"
     ],
     "optionImages": [
       "/assets/exam/preA1/piano.png",
@@ -4558,7 +4625,8 @@ const NON_WRITING_ITEMS = [
       "/assets/exam/preA1/bell.png",
       "/assets/exam/preA1/robot.png",
       "/assets/exam/preA1/watch.png",
-      "/assets/exam/preA1/computer.png"
+      "/assets/exam/preA1/computer.png",
+      "/assets/exam/preA1/clock.png"
     ],
     "answer": 0,
     "explanation": "對話中女孩確認「Yes, I can play the piano」，故選鋼琴 (A)。",

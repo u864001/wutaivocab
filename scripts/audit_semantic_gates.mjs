@@ -1,5 +1,6 @@
 import { HERE_WE_GO_MCQ_BANK } from '../src/data/hereWeGoMcqBank.js';
 import { SAA_EXAM_BANK } from '../src/data/exam/saaExamBank.js';
+import { TME_PRE_A1_BANK } from '../src/data/exam/tmePreA1Bank.js';
 
 console.log('══════════════════════════════════════════════════════════════');
 console.log('  RUNNING DEEP MCQ SEMANTIC & PLAYABILITY QUALITY GATE       ');
@@ -45,17 +46,26 @@ const getTargetChar = (q) => {
   return null;
 };
 
+const BOILERPLATE_DISTRACTORS = new Set([
+  'i am fine thank you',
+  'nice to meet you too',
+  'my name is leo',
+  'i am ten years old',
+  'i am very happy'
+]);
+
 let issues = [];
 
+// 1. Textbook MCQ Bank (3,317 questions)
 for (const q of HERE_WE_GO_MCQ_BANK) {
-  // 1. Answer Index
+  // 1. Answer Index must be 0
   if (q.answer !== 0) {
     issues.push({ id: q.id, type: 'NON_ZERO_ANSWER', detail: q.answer });
   }
 
-  // 2. Options Count & Uniqueness
-  if (!Array.isArray(q.options) || q.options.length < 4) {
-    issues.push({ id: q.id, type: 'INSUFFICIENT_OPTIONS', count: q.options?.length });
+  // 2. Options Count must be exactly 7
+  if (!Array.isArray(q.options) || q.options.length !== 7) {
+    issues.push({ id: q.id, type: 'NON_7_OPTIONS', count: q.options?.length });
   } else {
     const trimmed = q.options.map(o => String(o || '').toLowerCase().trim());
     if (new Set(trimmed).size !== q.options.length) {
@@ -103,9 +113,51 @@ for (const q of HERE_WE_GO_MCQ_BANK) {
   if ((q.book === 'g1' || q.book === 'g2' || q.taskType?.startsWith('A-')) && q.options?.some(o => /^(am|is|are|was|were)$/i.test(o.trim()))) {
     issues.push({ id: q.id, type: 'NON_HOMOGENEOUS_BE_IN_ALPHABET', options: q.options });
   }
+
+  // 8. No generic boilerplate distractors in G-DLG
+  if (q.taskType === 'G-DLG') {
+    for (let i = 1; i < q.options.length; i++) {
+      const clean = q.options[i].toLowerCase().replace(/[.,!]/g, '').trim();
+      if (BOILERPLATE_DISTRACTORS.has(clean)) {
+        issues.push({ id: q.id, type: 'BOILERPLATE_DISTRACTOR_IN_GDLG', distractor: q.options[i] });
+      }
+    }
+  }
 }
 
-// 8. SAA Listening questions must not leak audio text in question prompt
+// 2. TME Pre-A1 Exam Bank (300 questions)
+for (const q of TME_PRE_A1_BANK) {
+  if (['S-WORD', 'S-SENT', 'S-READ'].includes(q.taskType)) {
+    if (!q.options || q.options.length !== 1) {
+      issues.push({ id: q.id, type: 'TME_SPEAKING_INVALID_OPTIONS', count: q.options?.length });
+    }
+  } else if (q.taskType === 'R-TF') {
+    if (!q.options || q.options.length !== 2) {
+      issues.push({ id: q.id, type: 'TME_TF_INVALID_OPTIONS', count: q.options?.length });
+    }
+  } else if (['W-SCRAMBLE', 'R-COMP'].includes(q.taskType)) {
+    if (!q.options || q.options.length !== 4) {
+      issues.push({ id: q.id, type: 'TME_PASSAGE_OR_SCRAMBLE_INVALID_OPTIONS', count: q.options?.length });
+    }
+  } else {
+    // Standard TME MCQs must have exactly 7 options and answer 0
+    if (!q.options || q.options.length !== 7) {
+      issues.push({ id: q.id, type: 'TME_MCQ_NON_7_OPTIONS', count: q.options?.length });
+    }
+    if (q.answer !== 0) {
+      issues.push({ id: q.id, type: 'TME_MCQ_NON_ZERO_ANSWER', answer: q.answer });
+    }
+  }
+
+  if (Array.isArray(q.options) && q.options.length > 1) {
+    const trimmed = q.options.map(o => String(o || '').toLowerCase().trim());
+    if (new Set(trimmed).size !== q.options.length) {
+      issues.push({ id: q.id, type: 'TME_DUPLICATE_OPTIONS', options: q.options });
+    }
+  }
+}
+
+// 3. SAA Listening questions must not leak audio text in question prompt
 for (const q of SAA_EXAM_BANK) {
   if (q.section === 'listening' && q.question && /[\n\s(（](音檔|問句|對話|廣播)[：:]/i.test(q.question)) {
     issues.push({ id: q.id, type: 'SAA_LISTENING_TRANSCRIPT_LEAK', question: q.question });
@@ -117,5 +169,6 @@ if (issues.length > 0) {
   console.error(JSON.stringify(issues.slice(0, 10), null, 2));
   process.exit(1);
 } else {
-  console.log(`✓ All ${HERE_WE_GO_MCQ_BANK.length} MCQs & ${SAA_EXAM_BANK.length} SAA items passed extended semantic quality gate with ZERO issues!`);
+  console.log(`✓ All ${HERE_WE_GO_MCQ_BANK.length} MCQs, ${TME_PRE_A1_BANK.length} TME items, & ${SAA_EXAM_BANK.length} SAA items passed extended semantic quality gate with ZERO issues!`);
 }
+

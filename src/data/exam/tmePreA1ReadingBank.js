@@ -1,16 +1,3 @@
-/**
- * Test My English Pre-A1 官方模擬題庫 — 閱讀專項題庫模組 (Reading Bank)
- * 涵蓋四大閱讀子面向：
- * 1. 看圖選字 (V-PIC / read-pic2word) - 14 題
- * 2. 看圖選句 (G-CTX / read-pic2sent) - 14 題
- * 3. 是非判斷 (R-TF / read-truefalse) - 10 題
- * 4. 短文填空 (R-CLOZE / read-cloze) - 18 題
- * 5. 篇章閱讀理解題組 (R-COMP / read-passage) - 6 大生活篇章 (24 題)
- * 
- * 總題數：80 題
- * 嚴守國小英語第 1～8 冊課綱詞彙範圍；文中所涉在地文化或生活情境非核心單字，均於文末以星號 (*) 附註中文註解。
- */
-
 export const TME_PRE_A1_READING_BANK = [
   {
     "id": "tme-read-p2w-01",
@@ -51,7 +38,8 @@ export const TME_PRE_A1_READING_BANK = [
       "It is windy. The boy is flying a kite.",
       "It is snowy. The children are making a snowman.",
       "The girl is waiting for the school bus.",
-      "The girl is wearing a warm winter coat."
+      "The girl is wearing a warm winter coat.",
+      "The boy is washing his hands."
     ],
     "answer": 0,
     "explanation": "插圖為下雨天小女孩撐傘情境，句子 (A) 完全吻合。",
@@ -178,7 +166,8 @@ export const TME_PRE_A1_READING_BANK = [
       "write",
       "sing",
       "draw",
-      "sleep"
+      "sleep",
+      "read"
     ],
     "answer": 0,
     "explanation": "狗狗喜歡「玩」紅色的球，片語為 play with a ball，故選 (A) play。",
@@ -203,7 +192,8 @@ export const TME_PRE_A1_READING_BANK = [
       "chairs",
       "desks",
       "shoes",
-      "boxes"
+      "boxes",
+      "bags"
     ],
     "answer": 0,
     "explanation": "在公園裡騎的是腳踏車（ride bikes），故選 ① bikes。",
@@ -228,7 +218,8 @@ export const TME_PRE_A1_READING_BANK = [
       "apple",
       "rice",
       "pizza",
-      "egg"
+      "egg",
+      "water"
     ],
     "answer": 0,
     "explanation": "動詞為 drinks（喝），且單位為 a glass of（一杯），空格只能填可飲用的液體 milk（牛奶），故選 (A)。",
@@ -253,7 +244,8 @@ export const TME_PRE_A1_READING_BANK = [
       "bedroom",
       "park",
       "zoo",
-      "hospital"
+      "hospital",
+      "supermarket"
     ],
     "answer": 0,
     "explanation": "找書與閱讀應前往圖書館（library），故選 (A)。",
@@ -278,7 +270,8 @@ export const TME_PRE_A1_READING_BANK = [
       "notebook",
       "ruler",
       "jacket",
-      "eraser"
+      "eraser",
+      "cap"
     ],
     "answer": 0,
     "explanation": "雨天出門提醒攜帶的應為雨傘（umbrella），冠詞為 an 也符合母音開頭，故選 (A)。",
@@ -303,7 +296,8 @@ export const TME_PRE_A1_READING_BANK = [
       "dinner",
       "homework",
       "baseball",
-      "sleep"
+      "sleep",
+      "snack"
     ],
     "answer": 0,
     "explanation": "中午十二點（twelve o'clock）吃的餐點為午餐（lunch），故選 (A)。",
@@ -481,14 +475,14 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/bicycle.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-    "The boy has a new bicycle.",
-    "The girl is driving a bus.",
-    "The train is at the station.",
-    "The boat is in the water.",
-    "The boy is cleaning his yellow scooter.",
-    "The girl is riding a black horse.",
-    "The students are walking to school."
-  ],
+      "The boy has a new bicycle.",
+      "The girl is driving a bus.",
+      "The train is at the station.",
+      "The boat is in the water.",
+      "The boy is cleaning his yellow scooter.",
+      "The girl is riding a black horse.",
+      "The students are walking to school."
+    ],
     "answer": 0,
     "explanation": "插圖為腳踏車線稿，句子 (A) 完全吻合。",
     "reviewed": true
@@ -509,7 +503,8 @@ export const TME_PRE_A1_READING_BANK = [
       "The cat is climbing the tree.",
       "The birds are singing in the sky.",
       "The children are playing basketball.",
-      "The teacher is writing on the blackboard."
+      "The teacher is writing on the blackboard.",
+      "The mother is cooking in the kitchen."
     ],
     "answer": 0,
     "explanation": "插圖為可愛小狗坐在地上，句子 (A) 完全吻合。",
@@ -531,7 +526,8 @@ export const TME_PRE_A1_READING_BANK = [
       "There is a cat under the chair.",
       "There are four fish in the pond.",
       "There is a monkey climbing the tree.",
-      "There are three dogs in the car."
+      "There are three dogs in the car.",
+      "There is a rabbit eating carrots."
     ],
     "answer": 0,
     "explanation": "插圖為水中游水的小鴨，句子 (A) 最相符。",
@@ -548,14 +544,14 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/bus.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-    "The students take the school bus.",
-    "The woman is cooking in the kitchen.",
-    "The man is sleeping in the bedroom.",
-    "The girl is reading in the library.",
-    "The boy is washing a bicycle.",
-    "The children are swimming in the ocean.",
-    "The teacher is writing on the blackboard."
-  ],
+      "The students take the school bus.",
+      "The woman is cooking in the kitchen.",
+      "The man is sleeping in the bedroom.",
+      "The girl is reading in the library.",
+      "The boy is washing a bicycle.",
+      "The children are swimming in the ocean.",
+      "The teacher is writing on the blackboard."
+    ],
     "answer": 0,
     "explanation": "圖片顯示學生正在搭校車，相符句子為 (A) The students take the school bus.。",
     "reviewed": true
@@ -576,7 +572,8 @@ export const TME_PRE_A1_READING_BANK = [
       "The cat is sleeping under the bed.",
       "The woman is driving a car.",
       "The children are eating in the restaurant.",
-      "The boy is playing basketball."
+      "The boy is playing basketball.",
+      "The boy is writing with a pencil."
     ],
     "answer": 0,
     "explanation": "插圖為翻開的書本，句子 (A) 完全相符。",
@@ -593,14 +590,14 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/cake.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-    "There is a birthday cake with a candle.",
-    "The cute cat is sleeping on the sofa.",
-    "The big dog is barking at the door.",
-    "The little bird is singing on the fence.",
-    "The children are playing on the swing.",
-    "The students are studying math.",
-    "The grandmother is cooking dinner."
-  ],
+      "There is a birthday cake with a candle.",
+      "The cute cat is sleeping on the sofa.",
+      "The big dog is barking at the door.",
+      "The little bird is singing on the fence.",
+      "The children are playing on the swing.",
+      "The students are studying math.",
+      "The grandmother is cooking dinner."
+    ],
     "answer": 0,
     "explanation": "圖片為一個生日蛋糕插著一根蠟燭，相符句子為 (A) There is a birthday cake with a candle.。",
     "reviewed": true
@@ -621,7 +618,8 @@ export const TME_PRE_A1_READING_BANK = [
       "The family is watching television at home.",
       "The girl is shopping in the bookstore.",
       "The students are swimming in the ocean.",
-      "The boy is flying a kite."
+      "The boy is flying a kite.",
+      "The boy is riding his bicycle."
     ],
     "answer": 0,
     "explanation": "插圖為海上的小帆船，句子 (A) 完全吻合。",
@@ -782,7 +780,8 @@ export const TME_PRE_A1_READING_BANK = [
       "apple",
       "clock",
       "book",
-      "desk"
+      "desk",
+      "hat"
     ],
     "answer": 0,
     "explanation": "動詞為 puts on（穿上），空格只能填衣物類單字 shirt（襯衫/衣物），故選 (A)。",
@@ -807,7 +806,8 @@ export const TME_PRE_A1_READING_BANK = [
       "cookie",
       "pizza",
       "banana",
-      "egg"
+      "egg",
+      "juice"
     ],
     "answer": 0,
     "explanation": "口渴（thirsty）且動詞為 drinks（喝），空格填水（water），故選 (A)。",
@@ -832,7 +832,8 @@ export const TME_PRE_A1_READING_BANK = [
       "monkey",
       "bird",
       "cat",
-      "tiger"
+      "tiger",
+      "bear"
     ],
     "answer": 0,
     "explanation": "有 long trunk（長鼻子）的巨大灰色動物為 elephant（大象），故選 (A)。",
@@ -857,7 +858,8 @@ export const TME_PRE_A1_READING_BANK = [
       "rulers",
       "erasers",
       "crayons",
-      "brushes"
+      "brushes",
+      "markers"
     ],
     "answer": 0,
     "explanation": "美勞課剪紙（cut out the paper）使用的工具為 scissors（剪刀），故選 (A)。",
@@ -1554,7 +1556,8 @@ export const TME_PRE_A1_READING_BANK = [
       "books",
       "pens",
       "clocks",
-      "cars"
+      "cars",
+      "birds"
     ],
     "answer": 0,
     "explanation": "在水池中（pond）游泳的水生動物為黃色小鴨（ducks），故選 (A) ducks。",
@@ -1579,7 +1582,8 @@ export const TME_PRE_A1_READING_BANK = [
       "chairs",
       "bicycles",
       "notebooks",
-      "rulers"
+      "rulers",
+      "apples"
     ],
     "answer": 0,
     "explanation": "製作水果沙拉（fruit salad），空格需填黃色水果（yellow bananas），故選 (A) bananas。",
@@ -1604,7 +1608,8 @@ export const TME_PRE_A1_READING_BANK = [
       "pizza",
       "park",
       "plane",
-      "paper"
+      "paper",
+      "guitar"
     ],
     "answer": 0,
     "explanation": "音樂課（music class）演奏的樂器為鋼琴（play the piano），故選 (A) piano。",
@@ -1629,7 +1634,8 @@ export const TME_PRE_A1_READING_BANK = [
       "bedroom",
       "bookstore",
       "bathroom",
-      "bottle"
+      "bottle",
+      "baseball"
     ],
     "answer": 0,
     "explanation": "放學後在球場（court）玩的球類運動為籃球（play basketball），故選 (A) basketball。",
@@ -1654,7 +1660,8 @@ export const TME_PRE_A1_READING_BANK = [
       "bags",
       "books",
       "desks",
-      "chairs"
+      "chairs",
+      "hands"
     ],
     "answer": 0,
     "explanation": "睡前衛生的固定片語為刷牙（brush your teeth），故選 (A) teeth。",
@@ -1679,7 +1686,8 @@ export const TME_PRE_A1_READING_BANK = [
       "supermarket",
       "bookstore",
       "bakery",
-      "zoo"
+      "zoo",
+      "park"
     ],
     "answer": 0,
     "explanation": "生病看醫生（see a doctor）應前往醫院（hospital），故選 (A) hospital。",
@@ -1704,7 +1712,8 @@ export const TME_PRE_A1_READING_BANK = [
       "clock",
       "ruler",
       "eraser",
-      "marker"
+      "marker",
+      "jacket"
     ],
     "answer": 0,
     "explanation": "下大雨防止淋濕的隨身雨具為雨傘（umbrella），故選 (A) umbrella。",
@@ -1729,13 +1738,13 @@ export const TME_PRE_A1_READING_BANK = [
       "dog",
       "pig",
       "rabbit",
-      "cat"
+      "cat",
+      "duck"
     ],
     "answer": 0,
     "explanation": "在藍天中高高飛翔的動物為鳥類（bird flying high in the sky），故選 (A) bird。",
     "reviewed": true
-  }
-,
+  },
   {
     "id": "tme-read-p2w-09",
     "track": "tme-preA1",
@@ -1890,7 +1899,8 @@ export const TME_PRE_A1_READING_BANK = [
       "The boy is eating an apple.",
       "The boy is swimming in the pool.",
       "The boy is riding a bicycle.",
-      "The boy is sleeping in bed."
+      "The boy is sleeping in bed.",
+      "The boy is drinking water."
     ],
     "answer": 0,
     "explanation": "插圖中男孩在鏡子前認真刷牙，句子 (A)「The boy brushes his teeth every morning.」完全吻合。",
@@ -1907,14 +1917,14 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/action_play_basketball.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-    "The student is playing basketball.",
-    "The student is running in the classroom.",
-    "The student is singing in the music room.",
-    "The student is flying a kite in the field.",
-    "The student is making a snowman.",
-    "The student is reading books in the library.",
-    "The student is washing a yellow car."
-  ],
+      "The student is playing basketball.",
+      "The student is running in the classroom.",
+      "The student is singing in the music room.",
+      "The student is flying a kite in the field.",
+      "The student is making a snowman.",
+      "The student is reading books in the library.",
+      "The student is washing a yellow car."
+    ],
     "answer": 0,
     "explanation": "圖片顯示一位學生正在打籃球，相符句子為 (A) The student is playing basketball.。",
     "reviewed": true
@@ -1930,14 +1940,14 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/action_swim.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-    "The boy can swim very fast.",
-    "The boy cannot swim at all.",
-    "The boy is cooking noodles.",
-    "The boy is riding a horse.",
-    "The boy is climbing a tree.",
-    "The boy is playing the guitar.",
-    "The boy is drinking hot milk."
-  ],
+      "The boy can swim very fast.",
+      "The boy cannot swim at all.",
+      "The boy is cooking noodles.",
+      "The boy is riding a horse.",
+      "The boy is climbing a tree.",
+      "The boy is playing the guitar.",
+      "The boy is drinking hot milk."
+    ],
     "answer": 0,
     "explanation": "圖片顯示小男孩游得很棒，相符句子為 (A) The boy can swim very fast.。",
     "reviewed": true
@@ -1958,7 +1968,8 @@ export const TME_PRE_A1_READING_BANK = [
       "The student is watching a movie.",
       "The student is washing the dishes.",
       "The student is dancing to the music.",
-      "The student is riding a bus to school."
+      "The student is riding a bus to school.",
+      "The student is drawing a picture."
     ],
     "answer": 0,
     "explanation": "插圖為學生端坐在書桌前專注看書，句子 (A) 符合圖意。",
@@ -1980,7 +1991,8 @@ export const TME_PRE_A1_READING_BANK = [
       "It is rainy. The girl has an umbrella.",
       "There are many animals in the zoo.",
       "The boy is playing soccer in the park.",
-      "The family is eating dinner at home."
+      "The family is eating dinner at home.",
+      "The children are swimming in the pool."
     ],
     "answer": 0,
     "explanation": "插圖為雪地裡的戴帽圍巾雪人，句子 (A)「It is cold and snowy. There is a snowman.」符合題意。",
@@ -1997,14 +2009,14 @@ export const TME_PRE_A1_READING_BANK = [
     "image": "/assets/exam/preA1/action_sing_song.png",
     "question": "看情境線稿插圖，選出描述最相符的句子：",
     "options": [
-    "The girl is singing a cheerful song.",
-    "The girl is drawing a red flower.",
-    "The girl is drinking a glass of water.",
-    "The girl is driving a blue car.",
-    "The girl is feeding a little dog.",
-    "The girl is riding a train.",
-    "The girl is sleeping in her bed."
-  ],
+      "The girl is singing a cheerful song.",
+      "The girl is drawing a red flower.",
+      "The girl is drinking a glass of water.",
+      "The girl is driving a blue car.",
+      "The girl is feeding a little dog.",
+      "The girl is riding a train.",
+      "The girl is sleeping in her bed."
+    ],
     "answer": 0,
     "explanation": "圖片顯示小女孩拿著麥克風正在唱歌，相符句子為 (A) The girl is singing a cheerful song.。",
     "reviewed": true

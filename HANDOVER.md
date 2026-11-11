@@ -54,6 +54,20 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.6 題庫品質全面大修訂 Batch 2：741 題對話題情境同質誘答重構、86 題 TME 擴充至 7 選項契約、CI 語意門禁強化 (`hereWeGoMcqBank.js`, `tmePreA1Bank.js`, `tmePreA1ReadingBank.js`, `scripts/audit_semantic_gates.mjs`)
+* **P1：741 題情境對話題（`G-DLG`）樣板誘答徹底消滅**：
+  * 原先 741 題對話題充斥通用樣板干擾句（如 `I am fine, thank you.`、`Nice to meet you, too.`、`My name is Leo.`、`I am ten years old.`、`I am very happy.`），鑑別度嚴重不足。
+  * 全數重構為**同語境、同文法類別、且在題幹情境下均不成立**之高品質同質誘答：
+    * 319 題短語文法填空：以同質文法標的（Wh-疑問詞、代名詞、助動詞、介系詞、冠詞等）補齊後續選項。
+    * 52 題問句題：以同語境 Wh-問句（時間、地點、天氣、食物、能力等）替換樣板陳述句。
+    * 370 題情境回答句：依食物/點餐、天氣、時間/日期、位置/方向、價格、個人能力等領域，替換為同情境具鑑別度之錯誤回答。
+  * 同步消除 8 處新誘答產生的縮寫/全寫雙黃蛋衝突（如 `hwg_b1_30` 之 `What is that?` 代換 `What is this?`；`hwg_b2_449` 之 `No, he can't.` 代換 `No, I cannot.`）。
+* **決議：86 題 TME Pre-A1 獨立選擇題全數升級為 7 選項規範**：
+  * TME 300 題結構嚴謹分流：36 題口說朗讀（1 目標）、14 題是非題（2 選項）、88 題重組/篇章閱讀（4 選項）、162 題一般獨立字彙/聽力/閱讀選擇題（全數統一為 7 選項，正答 index 0）。
+  * 針對原僅 6 選項之 86 題（1 題 `vocab-audio2pic`、14 題 `vocab-audio2word`、5 題 `listen-pic2sent`、7 題 `listen-dlg2pic`、18 題 `listen-resp`、15 題 `listen-conv-qa`、8 題 `read-pic2sent`、18 題 `read-cloze`）逐題補入第 7 個高同質性誘答，完全消滅 6 選項殘留。
+* **CI 語意門禁擴展升級 (`scripts/audit_semantic_gates.mjs`)**：
+  * 將課本題庫「強制恰為 7 選項」、TME 300 題結構契約、`G-DLG` 樣板句偵測列為永久 CI 自動門禁，100% 杜絕回歸。
+
 #### 0.0.5 題庫品質全面大修訂 Batch 1：消滅 SAA 聽力洩題、142 題字母單元歸位、74 題字母同質選項重構與 P0/P1 語意修復 (`saaExamBank.js`, `hereWeGoMcqBank.js`, `tmePreA1Bank.js`)
 * **P0：SAA 聽力測驗逐字稿畫面外洩全面根除 (35 題)**：
   * `saaExamBank.js` 聽力三大題（辨識句意、基本問答、言談理解）原先在題幹包含 `（音檔：...）`、`（問句：...）`、`（對話：...）` 與 `（廣播：...）`，導致學生在畫面上直接看到逐字稿。

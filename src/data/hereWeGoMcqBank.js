@@ -331,10 +331,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My name is Max.",
       "I'm fine.",
       "How are you?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
+      "See you later.",
+      "Have a nice day!",
       "Good morning.",
-      "I am ten years old."
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問對方姓名使用「What’s your name?」，回答用「My name is ...」或「I’m ...」。"
@@ -358,10 +358,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm Lucas.",
       "How are you?",
       "I'm fine.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
+      "See you later.",
+      "Have a nice day!",
       "Good morning.",
-      "I am ten years old."
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問對方姓名使用「What’s your name?」，回答用「My name is ...」或「I’m ...」。"
@@ -385,10 +385,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What's your name?",
       "Hello, I'm Emma.",
       "How are you?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "How old are you?",
+      "Where are you from?",
+      "Who is that?",
+      "What is this?"
     ],
     "answer": 0,
     "explanation": "詢問對方姓名使用「What’s your name?」，回答用「My name is ...」或「I’m ...」。"
@@ -412,10 +412,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How are you?",
       "Hello, I'm Kulas.",
       "What's your name?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "How old are you?",
+      "Where are you from?",
+      "Who is that?",
+      "What is this?"
     ],
     "answer": 0,
     "explanation": "「How are you?」為問候語「你好嗎？」，常以「I’m fine / great / good.」回應。"
@@ -493,10 +493,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm",
       "I",
       "My",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "You're",
+      "He's",
+      "She's",
+      "It's"
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -547,10 +547,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "You're",
       "Your",
       "My",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I'm",
+      "He's",
+      "She's",
+      "It's"
     ],
     "answer": 0,
     "explanation": "表達感謝說「Thank you.」，回應「不客氣」使用「You’re welcome.」。"
@@ -574,9 +574,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm ten.",
       "I'm fine.",
       "I'm Kulas.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
       "I am a student."
     ],
     "answer": 0,
@@ -601,10 +601,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm six years old.",
       "You're welcome.",
       "My name is Nina.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am very happy."
+      "See you later.",
+      "Have a nice day!",
+      "Good afternoon.",
+      "Excuse me."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -628,10 +628,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How old are you?",
       "What's your name?",
       "How are you?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where are you from?",
+      "Who is that?",
+      "What is this?",
+      "What time is it?"
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -655,10 +655,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Thank you.",
       "How old are you?",
       "How are you?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "表達感謝說「Thank you.」，回應「不客氣」使用「You’re welcome.」。"
@@ -680,11 +680,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How old are you? B: ______",
     "options": [
       "I'm eight years old.",
-      "My name is Leo.",
+      "See you later.",
       "I'm Max.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "I am very happy.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon.",
       "It is seven o'clock."
     ],
     "answer": 0,
@@ -709,10 +709,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Hi, I'm Nina.",
       "I'm fine.",
       "Thank you.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "對方打招呼並自我介紹姓名時，合宜的回應也是互相問候並介紹自己「Hi, I'm Nina.」；「I'm fine.」回答身體狀況，「Thank you.」表達感謝。"
@@ -735,10 +735,10 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "I'm five years old.",
       "Hi, my name is Max.",
-      "I am very happy.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon.",
       "I am a student."
     ],
     "answer": 0,
@@ -763,10 +763,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How old are you?",
       "What's your name?",
       "How are you?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where are you from?",
+      "Who is that?",
+      "What is this?",
+      "What time is it?"
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -790,10 +790,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "a",
       "am",
       "an",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "the",
+      "this",
+      "that",
+      "these"
     ],
     "answer": 0,
     "explanation": "單數可數名詞字首發音為母音（a, e, i, o, u）時搭配冠詞「an」，子音則搭配「a」。"
@@ -817,10 +817,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "an",
       "a",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "the",
+      "this",
+      "that",
+      "these"
     ],
     "answer": 0,
     "explanation": "單數可數名詞字首發音為母音（a, e, i, o, u）時搭配冠詞「an」，子音則搭配「a」。"
@@ -844,10 +844,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What",
       "How",
       "This",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where",
+      "When",
+      "Who",
+      "Whose"
     ],
     "answer": 0,
     "explanation": "由答句「It's a book.（它是一本書）」可知問句詢問眼前物品是什麼，疑問詞使用「What」；「How」問方式，「This」為代名詞不可做問句開頭疑問詞。"
@@ -871,10 +871,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's",
       "I'm",
       "This",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "You're",
+      "He's",
+      "She's",
+      "We're"
     ],
     "answer": 0,
     "explanation": "回答「What's this?」詢問的物品，標準代名詞答句為「It's (It is) + 物品」；「I'm」指人，「This」若單獨使用需接 is 不能直接接名詞片語。"
@@ -925,10 +925,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's a book.",
       "I'm fine.",
       "I'm ten.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問句「What's this?」詢問物品名稱，回答需用代名詞指稱物品「It's a book.」；「I'm fine.」回答近況，「I'm ten.」回答年齡。"
@@ -952,10 +952,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's an eraser.",
       "It's cool!",
       "I'm Max.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問句「What's that?」詢問遠處物品，回答以「It's an eraser.」說明物品名稱；「It's cool!」為讚美詞，「I'm Max.」為自我介紹。"
@@ -979,10 +979,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What's this?",
       "How old are you?",
       "What's your name?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "How are you?",
+      "Where are you from?",
+      "Who is that?",
+      "What is that?"
     ],
     "answer": 0,
     "explanation": "由答句「It's a pencil.（它是一支鉛筆）」可知問句是詢問眼前物品是什麼，故選「What's this?」；「How old are you?」問年齡，「What's your name?」問姓名。"
@@ -1006,10 +1006,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Good job!",
       "How are you?",
       "You're welcome.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "Good afternoon.",
+      "Excuse me."
     ],
     "answer": 0,
     "explanation": "答句為「Thanks!（謝謝！）」時，代表對方給予讚美或鼓勵，故前一句選「Good job!（做得好！）」最合宜；「You're welcome.」為不用謝。"
@@ -1033,10 +1033,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's",
       "I",
       "It",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I'm",
+      "You're",
+      "He's",
+      "She's"
     ],
     "answer": 0,
     "explanation": "詢問顏色使用「What color is it?」，回答使用「It’s + 顏色.」。"
@@ -1060,10 +1060,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "it",
       "old",
       "this",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I",
+      "you",
+      "he",
+      "she"
     ],
     "answer": 0,
     "explanation": "詢問顏色使用「What color is it?」，回答使用「It’s + 顏色.」。"
@@ -1087,10 +1087,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "color",
       "name",
       "that",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "there",
+      "here"
     ],
     "answer": 0,
     "explanation": "由答句「It's black.（它是黑色的）」可知問句詢問物品顏色，需搭配名詞「color」組成「What color is it?」；「name」問姓名，「that」為代名詞。"
@@ -1114,10 +1114,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "blue",
       "fine",
       "a book",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "red",
+      "yellow",
+      "green",
+      "black"
     ],
     "answer": 0,
     "explanation": "詢問顏色使用「What color is it?」，回答使用「It’s + 顏色.」。"
@@ -1141,10 +1141,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What",
       "What's",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where",
+      "When",
+      "Who",
+      "Whose"
     ],
     "answer": 0,
     "explanation": "詢問顏色使用「What color is it?」；「What's」為 What is 之縮寫，若放在 color 前會造成動詞重複，「How」無法直接搭配 color 詢問顏色。"
@@ -1168,10 +1168,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's blue.",
       "It's a ruler.",
       "I'm seven.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問顏色使用「What color is it?」，回答使用「It’s + 顏色.」。"
@@ -1195,10 +1195,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What color is it?",
       "What's your name?",
       "What's this?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "How are you?",
+      "How old are you?",
+      "Where are you from?",
+      "Who is that?"
     ],
     "answer": 0,
     "explanation": "詢問顏色使用「What color is it?」，回答使用「It’s + 顏色.」。"
@@ -1222,10 +1222,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's a pen.",
       "It's red.",
       "It's yellow.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問句「What's this?」詢問「這是什麼？」，回答應說明物品種類「It's a pen.（它是一支筆）」；「It's red.」與「It's yellow.」僅回答顏色未回答物品。"
@@ -1249,10 +1249,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Good morning.",
       "Good afternoon.",
       "Good job!",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Excuse me."
     ],
     "answer": 0,
     "explanation": "早晨見面問候「Good morning.」，合宜的禮貌回應同樣是「Good morning.」；「Good afternoon.」用於下午問候。"
@@ -1276,10 +1276,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's a pen.",
       "It's black.",
       "It's blue.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問句「What's that?」詢問遠處物品名稱，回答需指出物品「It's a pen.」；「It's black.」與「It's blue.」僅回答顏色。"
@@ -1303,10 +1303,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's green.",
       "It's an eraser.",
       "It's a pencil.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問顏色使用「What color is it?」，回答使用「It’s + 顏色.」。"
@@ -1330,10 +1330,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What's that?",
       "What color is it?",
       "What's your name?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "How are you?",
+      "How old are you?",
+      "Where are you from?",
+      "Who is that?"
     ],
     "answer": 0,
     "explanation": "由答句「It's a book.（它是一本書）」可知問句詢問物品是什麼，故選「What's that?」；「What color is it?」詢問顏色，「What's your name?」詢問姓名。"
@@ -1357,10 +1357,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What color is it?",
       "What's this?",
       "What's your name?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "How are you?",
+      "How old are you?",
+      "Where are you from?",
+      "Who is that?"
     ],
     "answer": 0,
     "explanation": "詢問顏色使用「What color is it?」，回答使用「It’s + 顏色.」。"
@@ -1439,9 +1439,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Let",
       "What",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "When",
+      "Whose"
     ],
     "answer": 0,
     "explanation": "由答句「She's my grandmother.（她是我的祖母）」可知問句詢問那位老師是「誰」，疑問詞使用「Who」；「What」詢問事物或職業，「How」詢問狀況。"
@@ -1466,9 +1466,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Am",
       "Are",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "主詞「your sister」為第三人稱單數（she），形成 Be 動詞疑問句開頭需用「Is」；「Am」搭配 I，「Are」搭配 you 或複數。"
@@ -1493,9 +1493,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I",
       "she",
       "you",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "we",
+      "they"
     ],
     "answer": 0,
     "explanation": "問句問「Chloe's father（克蘿伊的父親）」，代名詞為男性單數「he」；否定簡答為「No, he isn't.」；「she」為女性代名詞，「I」為第一人稱。"
@@ -1520,9 +1520,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's a student.",
       "He's a driver.",
       "I'm a teacher.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句「What's this?」詢問眼前物品，回答應用代名詞指稱事物「It's a board game.（它是桌遊）」；其他選項皆在介紹人物職業，與問句不符。"
@@ -1547,9 +1547,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My mother is tall.",
       "She's a doctor.",
       "She's not a nurse.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句「Who's she?」詢問對方的身分關係，回答以「She's my mother.（她是我的媽媽）」最符合情境；「She's a doctor.」為回答職業（What does she do?）。"
@@ -1574,9 +1574,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, you're not.",
       "Yes, I am.",
       "No, she's not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it."
     ],
     "answer": 0,
     "explanation": "以「Is your grandfather a cook?」提問，主詞 your grandfather 是男性單數，肯定簡答為「Yes, he is.」；「Yes, she is.」人稱代名詞錯誤。"
@@ -1601,9 +1601,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is your brother a cook?",
       "Is Iris a driver?",
       "Is your father a teacher?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "由答句「No, she's not. She's a driver.（不，她不是。她是司機。）」可知問句詢問某位女性的職業，且原問職業非 driver，故選「Is your sister a nurse?」。"
@@ -1628,9 +1628,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is your mother tall?",
       "Is Zoe a nurse?",
       "Are you a student?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "由答句「No, I'm not. I'm a student.（不，我不是。我是學生。）」可知問句直接詢問你是不是某職業，以「Are you ...?」提問且原問非 student，故選「Are you a nurse?」。"
@@ -1817,9 +1817,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's a cat.",
       "I'm a cook.",
       "It's big.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問天氣使用「How’s the weather?」，回答使用「It’s + 天氣形容詞 (sunny / rainy / windy / cloudy / hot / cold).」。"
@@ -1844,9 +1844,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I have an idea.",
       "It's big and tall.",
       "Let's go to Osaka.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問天氣使用「How’s the weather?」，回答使用「It’s + 天氣形容詞 (sunny / rainy / windy / cloudy / hot / cold).」。"
@@ -1871,9 +1871,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm a teacher.",
       "It's a dog.",
       "It's cloudy.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "對方說「Look at this kimono.（看這件和服）」，合宜的回應為稱讚衣物「It's pretty.（它真漂亮）」；其他選項描述職業、狗或陰天，與語意不符。"
@@ -1898,9 +1898,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Look at this kimono.",
       "Let's have some fun.",
       "How's the weather?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "由答句「Yeah! Let's go there.（好耶！我們去那裡吧）」可知前一句提到某個地點的好天氣，故選「It's sunny in Kyoto.（京都是晴天）」最自然。"
@@ -1925,9 +1925,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How old are you?",
       "Is he a teacher?",
       "How are you?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "Where are you from?",
+      "Who is that?"
     ],
     "answer": 0,
     "explanation": "詢問天氣使用「How’s the weather?」，回答使用「It’s + 天氣形容詞 (sunny / rainy / windy / cloudy / hot / cold).」。"
@@ -1952,9 +1952,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's rainy and cold in Osaka.",
       "Let's have some fun in the rain.",
       "Look at the pretty teacher.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "由答句「Great! It's sunny there.（太棒了！那裡天氣晴朗）」可知前句提出前往該地的提議，故選「I have an idea. Let's go to Osaka.（我有個好主意，我們去大阪吧）」。"
@@ -2060,9 +2060,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "am",
       "not",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "主詞「Caleb」為男性單數（he），否定簡答為「No, he isn't.」；「is」用於肯定簡答，「not」不能單獨做簡答結尾。"
@@ -2086,10 +2086,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "not",
       "isn't",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "問句為「are you full?」，第一人稱否定簡答為「No, I'm not.」；「isn't」用於第三人稱單數，「is」為肯定用法。"
@@ -2114,9 +2114,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "she's",
       "she",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I'm",
+      "You're",
+      "It's"
     ],
     "answer": 0,
     "explanation": "以「Is he thirsty?」提問，否定答句主詞維持「he」，縮寫為「No, he's not.」；「she」人稱錯誤，單獨「he」缺少 Be 動詞。"
@@ -2141,9 +2141,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "Yes, it is.",
       "Yes, she is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "以「Are you angry?」直接詢問對方，肯定回答需以第一人稱「Yes, I am.」回答；其他選項代名詞人稱不合。"
@@ -2168,9 +2168,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I can.",
       "Yes, he is.",
       "No, I'm not. I'm full.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句為「are you full?（你吃飽了嗎？）」，否定回答並補充說明自己很餓，合宜句子為「No, I'm not. I'm hungry.」；「Yes, I can.」助動詞不符。"
@@ -2195,9 +2195,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he is happy.",
       "No, he is not hungry.",
       "Yes, she is happy.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句「Is he happy?」詢問他的心情，肯定簡答為「Yes, he is.」或完整句「Yes, he is happy.」；「Yes, she is happy.」性別人稱不符。"
@@ -2222,9 +2222,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is she very full?",
       "Is Lucas thirsty?",
       "Are you tired?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "由答句「Yes, she is very tired.」可知問句詢問某位女性是否很累，故選「Is Emma tired?」；Lucas 為男性，you 答句應為 I am。"
@@ -2249,9 +2249,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are you Nina?",
       "Are you full?",
       "Are you sad?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "由答句「Yes, I'm fine.（是的，我很好）」可知問句是關心對方狀況「Are you OK?」；「Are you full?」問飽足感，「Are you sad?」問難過。"
@@ -2276,9 +2276,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is your mother thirsty?",
       "Is Nina hungry?",
       "Is your brother thirsty?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "由答句「Yes, he is. He's thirsty, too.（是的，他是。他也口渴。）」可知問句詢問某位男性的感受，故選「Is your father hungry?」最合宜。"
@@ -2303,9 +2303,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "windy",
       "cold",
       "warm",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問天氣使用「How’s the weather?」，回答使用「It’s + 天氣形容詞 (sunny / rainy / windy / cloudy / hot / cold).」。"
@@ -2330,9 +2330,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Sam",
       "your father",
       "your brother",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "由答句代名詞「she's not. She's sad.」可知問句主詞必為女性單數，選項中只有女性人名「Ava」符合；Sam、father、brother 皆為男性。"
@@ -2357,9 +2357,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "sunny",
       "warm",
       "windy",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "由對話「外面……我們在家玩桌遊吧」可知戶外天氣不佳，故選下雨的「rainy」；sunny（晴天）、warm（溫暖）與句意相反。"
@@ -2384,9 +2384,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "tall",
       "not sad",
       "thirsty",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "對話中詢問「你口渴嗎？」，回答「不，我不口渴。我很……」， hot 與前後文對比可知口渴與飢餓並列，選「hungry（飢餓的）」最合宜。"
@@ -2492,9 +2492,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "do",
       "like",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "詢問複數物品使用「What are these / those?」，回答一律用複數代名詞「They are (They’re) + 複數名詞.」。"
@@ -2519,9 +2519,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "do",
       "not",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "以助動詞 Do 提問「do you like apples?」，第一人稱否定簡答為「No, I don't.」；「am」為 Be 動詞不可用於助動詞 Do 之簡答。"
@@ -2546,9 +2546,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "You",
       "He",
       "I",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "she",
+      "it",
+      "we"
     ],
     "answer": 0,
     "explanation": "詢問複數物品使用「What are these / those?」，回答一律用複數代名詞「They are (They’re) + 複數名詞.」。"
@@ -2573,9 +2573,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I'm not.",
       "Yes, I can.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "以助動詞提問「Do you like bananas?」，否定簡答為「No, I don't.」；「No, I'm not.」為 Be 動詞提問之簡答。"
@@ -2600,9 +2600,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I like sandwiches.",
       "They're not sandwiches.",
       "Yes, I like sandwiches.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問複數物品使用「What are these / those?」，回答一律用複數代名詞「They are (They’re) + 複數名詞.」。"
@@ -2627,9 +2627,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I don't like hot dogs.",
       "They're apples.",
       "Yes, I like bananas.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "A 說「我喜歡蘋果，你呢？」，B 回應自己也喜歡蘋果，使用副詞 too「I like apples, too.」；「They're apples.」回答物品名稱非偏好。"
@@ -2654,9 +2654,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How's the weather?",
       "What are these?",
       "Are you tired?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "答句為「Yes, I do.」，代表問句是以助動詞 Do 提問的一般動詞現在式問句，故選「Do you like hamburgers?」。"
@@ -2681,9 +2681,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Do you like bananas?",
       "What are those?",
       "Are you hungry?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "答句為「No, I don't. I like bananas.」，可知問句是以助動詞 Do 詢問是否喜歡某種水果（非香蕉），故選「Do you like oranges?」。"
@@ -2708,9 +2708,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Oops, sorry!",
       "I don't like apples.",
       "How about you?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "表達感謝說「Thank you.」，回應「不客氣」使用「You’re welcome.」。"
@@ -2816,9 +2816,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "you",
       "she",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "it",
+      "they"
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -2843,9 +2843,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How",
       "Who",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "When",
+      "Whose"
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -2870,9 +2870,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "we",
       "I",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "she",
+      "it",
+      "they"
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -2897,9 +2897,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I'm not.",
       "I want some milk.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -2924,9 +2924,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What are these?",
       "Which one?",
       "I want some pizza.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -2951,9 +2951,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, we don't. We want some water.",
       "Yes, we do. We're thirsty.",
       "No, I don't. I want some water.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -2978,9 +2978,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Fred, do you want some pizza?",
       "Zoe, do you want some water?",
       "What are those?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -3005,9 +3005,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I do.",
       "This one.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -3032,9 +3032,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Let's have fun!",
       "No, I don't.",
       "How about you?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -3059,9 +3059,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "hamburgers",
       "bananas",
       "oranges",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問複數物品使用「What are these / those?」，回答一律用複數代名詞「They are (They’re) + 複數名詞.」。"
@@ -3086,9 +3086,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "orange juice",
       "hamburgers",
       "hot dogs",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -3113,9 +3113,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "water",
       "juice",
       "milk",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -3140,9 +3140,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "rice",
       "sandwiches",
       "cake",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -3275,9 +3275,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Look, it's big.",
       "Let's eat pomelos.",
       "I'm Chang-O.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句詢問「What's this?」，回答眼前的事物需用代名詞「It's a pomelo.（它是一顆柚子）」；其他選項未回答物品名稱。"
@@ -3302,8 +3302,8 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Chang-O is thirsty.",
       "Look, it's Earth.",
       "I want to go to the Moon.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
+      "See you later.",
+      "Have a nice day!",
       "Good morning."
     ],
     "answer": 0,
@@ -3329,9 +3329,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's a pomelo.",
       "They're moon cakes.",
       "She's Chang-O.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "A 說「看那個月亮」，B 抬頭看並表達讚嘆，合宜回應為「Wow! It's big.（哇！它好大）」；其他選項指稱柚子或月餅，與月亮不符。"
@@ -3356,9 +3356,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Let's eat moon cakes.",
       "We like pomelos.",
       "Jade Rabbit is happy.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "由答句「Yeah! Let's go there.（好耶！我們去那裡吧）」可知提議前往某處，故選「Let's go to the Moon!（我們去月球吧！）」。"
@@ -3518,9 +3518,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's sad and tired.",
       "She's sixty years old.",
       "She's sleeping.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "問句「Where's Lily?」詢問 Lily 的所在位置，回答需指出地點「She's in the dining room.（她在飯廳）」；其他選項回答心情、年齡或動作。"
@@ -3545,9 +3545,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's swimming.",
       "He's not my brother.",
       "He's one hundred.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "問句詢問「Where's your brother?（你哥哥在哪裡？）」，回答應指出地點「He's in the kitchen.（他在廚房）」；其他選項回答動作或年齡。"
@@ -3572,9 +3572,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's in the yard.",
       "He's happy.",
       "He's drinking.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -3599,9 +3599,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What is she doing?",
       "Who are you?",
       "How old are you?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "Where are you from?"
     ],
     "answer": 0,
     "explanation": "由答句「I'm in the bedroom.（我在臥室）」可知問句詢問對方人在哪裡，疑問詞用 Where，故選「Where are you?」；「Who are you?」問身分。"
@@ -3626,9 +3626,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What's she doing?",
       "Where's your sister?",
       "How old is his father?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "由答句「It's eight forty.（現在八點四十分）」可知問句詢問時間，固定句型為「What time is it?」；「What day is it?」問星期。"
@@ -3815,9 +3815,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Tuesday",
       "Friday",
       "Monday",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "由後句「We don't go to school.（我們不上學）」可知是週末，選項中「Saturday（星期六）」為週末不上課的日子；Tuesday、Friday、Monday 皆為平日上課日。"
@@ -3842,9 +3842,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Tuesday",
       "Monday",
       "Saturday",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "母親節（Mother's Day）固定在五月的第二個「Sunday（星期日）」；平日不會是母親節。"
@@ -3869,9 +3869,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "color",
       "✕ (不需填詞)",
       "time",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "由答句「It's Monday.（今天是星期一）」可知問句詢問星期幾，名詞填入「day」形成「What day is it?」；「color」問顏色，「time」問時刻。"
@@ -3896,9 +3896,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Sunday",
       "Wednesday",
       "Tuesday",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "由答句「Yes. I like Thursday.（是的。我喜歡星期四）」可知問句正是詢問今天是否為星期四，故填「Thursday」。"
@@ -3923,9 +3923,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes. It's Monday.",
       "It's sunny.",
       "It's not Monday.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾使用「What day is today?」，回答「It’s + 星期名稱 (Monday ~ Sunday).」。"
@@ -3950,9 +3950,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's Wednesday.",
       "It's not Wednesday.",
       "No. It's Wednesday.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句以「Is it Wednesday today?」提問，肯定簡答為「Yes, it is.」；「No. It's Wednesday.」前後矛盾。"
@@ -3977,9 +3977,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Time for lunch.",
       "Good afternoon.",
       "Have a good time.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it."
     ],
     "answer": 0,
     "explanation": "對方提議「今天是星期六，我們去玩吧！」，贊成對方的提議合宜回應「Good idea!（好主意！）」；「Time for lunch.」指該吃午餐了。"
@@ -4004,9 +4004,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Wait a minute.",
       "Here you are.",
       "Time for lunch.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Yes, please.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "對方提到「我想去看美式足球賽」，祝對方玩得愉快合宜說「Have a good time.（祝你玩得開心！）」；「Wait a minute.」叫人等一下。"
@@ -4031,9 +4031,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Where's Max?",
       "Is it Thursday today?",
       "What time is it?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾使用「What day is today?」，回答「It’s + 星期名稱 (Monday ~ Sunday).」。"
@@ -4058,9 +4058,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What day is today?",
       "It is Saturday.",
       "What time is it?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "由答句「No, it isn't. It's Saturday.」可知問句是詢問今天是否為某個非週六的日子，故選「Is it Sunday today?」；「What day is today?」不能用 Yes/No 簡答。"
@@ -4274,9 +4274,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Chinese",
       "science",
       "music",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "特定星期幾（如 Monday, Thursday）前面固定搭配介系詞「on」。"
@@ -4301,9 +4301,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "math",
       "social studies",
       "English",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "由答句「Yes, I do. I like to sing.（是的，我喜歡唱歌）」可知涉及唱歌的課程為「music（音樂課）」；math 為數學，English 為英語。"
@@ -4328,9 +4328,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "science",
       "math",
       "Chinese",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "特定星期幾（如 Monday, Thursday）前面固定搭配介系詞「on」。"
@@ -4355,9 +4355,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I like math.",
       "No, she doesn't.",
       "Yes, he does.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "特定星期幾（如 Monday, Thursday）前面固定搭配介系詞「on」。"
@@ -4382,9 +4382,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I do.",
       "Yes, he does.",
       "No, they don't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "特定星期幾（如 Monday, Thursday）前面固定搭配介系詞「on」。"
@@ -4409,9 +4409,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Follow me.",
       "Good idea!",
       "Have a good time.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "對方禮貌請求「Can I try it?（我可以試試看嗎？）」，爽快答應回答「Sure!（當然可以！）」；「Follow me.」指跟我來。"
@@ -4436,9 +4436,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Sure!",
       "Good idea!",
       "Me, too.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "對方詢問「洗手間在哪裡？」，帶對方前往合宜說「Follow me.（請跟我來）」；「Sure!」回答請求，「Good idea!」回答提議。"
@@ -4463,9 +4463,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Do they have science class today?",
       "Does she have social studies class today?",
       "Do you have social studies class today?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "由答句「Yes. I have science class today.（是的。我今天有自然課）」可知問句直接以第二人稱詢問是否有自然課，故選「Do you have science class today?」。"
@@ -4490,9 +4490,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Do you have English class on Monday?",
       "Does he have English class on Friday?",
       "Does he have Chinese class on Saturday?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "特定星期幾（如 Monday, Thursday）前面固定搭配介系詞「on」。"
@@ -4679,9 +4679,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "post office",
       "park",
       "bank",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問正要前往何處使用「Where are you going?」，回答「I’m / We’re going to the + 地點.」。"
@@ -4706,9 +4706,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "museum",
       "hospital",
       "bank",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問正要前往何處使用「Where are you going?」，回答「I’m / We’re going to the + 地點.」。"
@@ -4733,9 +4733,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "post office",
       "museum",
       "library",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "前句提到需要彩色筆（marker），買文具需前往「bookstore（書店/文具書店）」；post office 為郵局，museum 為博物館。"
@@ -4760,9 +4760,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "park",
       "supermarket",
       "bank",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問正要前往何處使用「Where are you going?」，回答「I’m / We’re going to the + 地點.」。"
@@ -4787,9 +4787,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're going to the park.",
       "Let's go to the post office.",
       "The bank is on Apple Street.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "詢問正要前往何處使用「Where are you going?」，回答「I’m / We’re going to the + 地點.」。"
@@ -4814,9 +4814,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "We're going to the bank.",
       "I'm going to the hospital.",
       "Excuse me. I'm lost.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "問句詢問醫院的位置「Where's the hospital?」，回答應指出地點所在街名「It's on Doctor Street.」；其他選項說明自己要去哪裡，未回答位置。"
@@ -4841,9 +4841,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Follow me.",
       "Me, too.",
       "Say cheese!",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "向陌生人問路或引起他人注意時，禮貌發語詞使用「Excuse me.（不好意思／請問一下）」；「Follow me.」指跟我來，「Say cheese!」為拍照說笑一個。"
@@ -4868,9 +4868,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Good idea!",
       "Excuse me.",
       "Sorry, I'm late.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "對方提議一起拍照（Let's take a picture.），拍照按快門時常說「Say cheese!（笑一個！）」；「Good idea!」通常在剛接受提議時說。"
@@ -4895,9 +4895,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "The museum is on Green Street.",
       "Where is he going?",
       "Where's the museum?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問正要前往何處使用「Where are you going?」，回答「I’m / We’re going to the + 地點.」。"
@@ -4922,9 +4922,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "We're going to the bank.",
       "Where's your brother?",
       "Where are you going?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "由答句「It's on Sunny Road.（它在晴朗路上）」可知問句詢問某個公共場所的位置，故選「Where's the post office?（郵局在哪裡？）」。"
@@ -5111,9 +5111,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "monkeys",
       "turtles",
       "koalas",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問可數名詞的數量使用「How many + 複數名詞 + are there?」，單數回答「There is one ...」，複數回答「There are ...」。"
@@ -5138,9 +5138,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "tigers",
       "lions",
       "horses",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "由答句「She likes zebras.（她喜歡斑馬）」可知問句詢問的動物也是「zebras」；tiger（老虎）、lion（獅子）、horse（馬）皆與答句不符。"
@@ -5165,9 +5165,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "elephant",
       "horse",
       "turtle",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "由對話「快跑！……別慌，只是機器貓」可知形容凶猛的大型貓科動物為「tiger（老虎）」；turtle 為烏龜，horse 為馬。"
@@ -5192,9 +5192,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "lions",
       "zebras",
       "koalas",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "由對話「在樹上跳……牠們喜歡你的香蕉」可知在樹上跳且愛吃香蕉的動物為「monkeys（猴子）」；lion 與 koala 不符合吃香蕉的習性特徵。"
@@ -5219,9 +5219,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Excuse me.",
       "Calm down.",
       "Follow me.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "詢問正要前往何處使用「Where are you going?」，回答「I’m / We’re going to the + 地點.」。"
@@ -5246,9 +5246,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Say cheese!",
       "Take care!",
       "Have a good time.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "對方看到狗感到害怕喊叫快跑，安慰對方放鬆別慌張說「Calm down.（冷靜點／別慌）」；「Take care!」為保重，「Say cheese!」為拍照說笑一個。"
@@ -5273,9 +5273,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I don't like elephants.",
       "He likes elephants.",
       "There are ten monkeys.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問可數名詞的數量使用「How many + 複數名詞 + are there?」，單數回答「There is one ...」，複數回答「There are ...」。"
@@ -5300,9 +5300,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes. She likes zebras.",
       "No. She likes horses.",
       "No, he doesn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "問句以「Does she like horses?」詢問，女性第三人稱肯定簡答為「Yes, she does.」；「No, he doesn't.」性別人稱錯誤。"
@@ -5327,9 +5327,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He doesn't like turtles.",
       "Does she like turtles?",
       "How many tigers are there?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問可數名詞的數量使用「How many + 複數名詞 + are there?」，單數回答「There is one ...」，複數回答「There are ...」。"
@@ -5354,9 +5354,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How many koalas are there?",
       "Does she like zebras?",
       "Does he like koalas?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "由答句「No, he doesn't. He likes koalas.」可知問句以 Does he 詢問他是否喜歡某種非無尾熊的動物，故選「Does he like monkeys?」。"
@@ -5624,9 +5624,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes. I like chicken sandwiches.",
       "Yes. I'd like some soup.",
       "No. I'd like some chicken.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -5651,9 +5651,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's Noah's pen.",
       "It's his bag.",
       "It's my soup.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "問句詢問「Whose cap is that on the chair?（椅子上的帽子是誰的？）」，回答需指稱該頂帽子「It's my cap.（那是我的帽子）」；其他選項指筆、書包或湯。"
@@ -5678,9 +5678,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My room number is 418.",
       "Her room is big.",
       "Her phone number is 0912-358-901.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "問句詢問「Luca 的房號是幾號？」，回答說明房號「Her room number is 305.」；「Her phone number...」回答電話號碼，與問句不符。"
@@ -5705,9 +5705,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, please.",
       "No, thank you.",
       "I don't like noodles.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "I am full.",
+      "I want some water."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -5732,9 +5732,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Whose backpack is this?",
       "Whose glasses are these?",
       "Whose water bottles are those?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "答句為「It's Alex's water bottle.（那是 Alex 的水壺）」，說明物品歸屬，可知問句是詢問水壺是誰的「Whose water bottle is that?」。"
@@ -5867,9 +5867,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "the museum",
       "the bank",
       "the park",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "後句提到「She likes cheeseburgers very much.（她非常喜歡起司漢堡）」，起司漢堡為美國的代表性代表食物，故選「the USA（美國）」。"
@@ -5894,9 +5894,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Spain",
       "India",
       "Singapore",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問來自哪個國家使用「Where are you / is he / is she from?」，英國與美國需加定冠詞「the UK / the USA」。"
@@ -5920,10 +5920,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Australia",
       "the USA",
       "Japan",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "後句說明「There are many kangaroos in his country.（他國家有許多袋鼠）」，袋鼠為澳洲特有代表性動物，故選「Australia（澳洲）」。"
@@ -5948,9 +5948,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Taiwan",
       "Spain",
       "Australia",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "前句提到「It's the Taj Mahal.（那是泰姬瑪哈陵）」，泰姬瑪哈陵為印度的世界著名古蹟，故選「India（印度）」。"
@@ -5975,9 +5975,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're from the USA.",
       "Yes. I'm from the UK.",
       "He's from Australia.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "詢問來自哪個國家使用「Where are you / is he / is she from?」，英國與美國需加定冠詞「the UK / the USA」。"
@@ -6002,9 +6002,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "No, he isn't.",
       "He's in the UK.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "問句為「Where is your grandpa from?（你的爺爺來自哪裡？）」，主詞為男性單數，回答用「He's from Spain.（他來自西班牙）」；「No...」不能用於回答 Where 問句。"
@@ -6029,9 +6029,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Where is Sophie from?",
       "Is Dylan from India?",
       "Are they from India?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問來自哪個國家使用「Where are you / is he / is she from?」，英國與美國需加定冠詞「the UK / the USA」。"
@@ -6056,9 +6056,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is your father from Japan?",
       "Where's your mother from?",
       "Is your mother from the UK?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問來自哪個國家使用「Where are you / is he / is she from?」，英國與美國需加定冠詞「the UK / the USA」。"
@@ -6083,9 +6083,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No. He's from the USA.",
       "He isn't from Taiwan.",
       "Yes. He's from the UK.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "問句為「Where's Amy's brother from?」，詢問來自何處不能用 Yes/No 簡答，直接回答國家「He's from Australia.（他來自澳洲）」。"
@@ -6110,9 +6110,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm from Spain.",
       "I'm hungry.",
       "I'd like some sandwiches.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "A 說「看！那是……」，B 讚美「好漂亮」，結合後續對話選「That's the Taj Mahal.（那是泰姬瑪哈陵）」最符合語意。"
@@ -6244,10 +6244,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "By taxi",
       "By scooter",
       "By bike",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -6271,10 +6271,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "on foot",
       "by train",
       "by bike",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -6299,9 +6299,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "on foot",
       "by bike",
       "by scooter",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -6326,9 +6326,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I go home by bus.",
       "Yes. I go to school by train.",
       "I don't go to school on foot.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -6353,9 +6353,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She goes to school by bike.",
       "She's going to school by metro.",
       "No, she isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "問句以助動詞 Does 提問「Does she go to school by metro?」，肯定簡答為「Yes, she does.」；「No, she isn't.」助動詞不符。"
@@ -6380,9 +6380,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No. He goes to the library by bus.",
       "He goes to the library with Sam.",
       "Yes. He goes to the library by car.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -6407,9 +6407,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Do you go to school by bus?",
       "Do you go to school by train?",
       "How do the boys go to school?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -6434,9 +6434,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is Hazel going to the bank?",
       "How does Hazel go to the bank?",
       "Does Hazel go to the bank by bike?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -6461,9 +6461,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Where are they going?",
       "How do they go to school?",
       "Do Ivy and Dylan go home by MRT?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "答句為「They go home by scooter.（他們騎機車回家）」，說明交通方式，問句需以 How 詢問如何回家，故選「How do Ivy and Dylan go home?」。"
@@ -6488,9 +6488,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "the USA",
       "Taiwan",
       "India",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問來自哪個國家使用「Where are you / is he / is she from?」，英國與美國需加定冠詞「the UK / the USA」。"
@@ -6514,10 +6514,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Japan",
       "Taiwan",
       "the UK",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "後句說明「她在學校不說英文也不說中文」，推論她來自說日語的國家，故選「Japan（日本）」；台灣說中文，英國說英文。"
@@ -6542,9 +6542,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "by bike",
       "by MRT",
       "on foot",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "後句提到「We sit together and eat apples.（我們坐在一起吃蘋果）」，代表是在車廂內共坐，且前往台北距離較遠，故選「by car（搭車／開車）」最合情理。"
@@ -6704,9 +6704,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "ride a bike",
       "play basketball",
       "go jogging",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "在圖書館（in the library）進行的活動，最合宜的為「study English（研讀英語）」；ride a bike（騎單車）與 play basketball（打籃球）為戶外運動。"
@@ -6731,9 +6731,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "rides a bike",
       "plays baseball",
       "listens to music",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問休閒活動使用「What do/does + 主詞 + do in one’s free time?」，第三人稱單數主詞（he/she）動詞須加 -s/-es。"
@@ -6812,9 +6812,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "We watch TV.",
       "She goes jogging.",
       "I study English.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句詢問「the girls（女孩們，複數 they）」週末做什麼，答句代名詞需用「They」形成「They play basketball.」；「We」或「I」人稱不符。"
@@ -6839,9 +6839,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He is sleeping in his room.",
       "He goes to school on foot.",
       "He'd like some noodles for lunch.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問休閒活動使用「What do/does + 主詞 + do in one’s free time?」，第三人稱單數主詞（he/she）動詞須加 -s/-es。"
@@ -6866,9 +6866,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're going to the bank.",
       "I listen to music in my free time.",
       "Yes, we play baseball in our free time.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問休閒活動使用「What do/does + 主詞 + do in one’s free time?」，第三人稱單數主詞（he/she）動詞須加 -s/-es。"
@@ -6893,9 +6893,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What is she doing in the kitchen?",
       "What does Leo do in his free time?",
       "Does she study English in her free time?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問休閒活動使用「What do/does + 主詞 + do in one’s free time?」，第三人稱單數主詞（he/she）動詞須加 -s/-es。"
@@ -6920,9 +6920,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What do the boys do after school?",
       "What do you and Meg do in your free time?",
       "What would you like for dinner?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "答句以第一人稱複數「We」回答放學後的活動，可知問句是直接詢問「你們（you）」，故選「What do you do after school?」。"
@@ -6947,9 +6947,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "We're your fans.",
       "I have a sore throat.",
       "Let me show you.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問休閒活動使用「What do/does + 主詞 + do in one’s free time?」，第三人稱單數主詞（he/she）動詞須加 -s/-es。"
@@ -7082,9 +7082,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "go to school",
       "go to bed",
       "take a shower",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7108,10 +7108,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "go to bed",
       "get up",
       "go to school",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7136,9 +7136,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "go home",
       "have dinner",
       "get up",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7163,9 +7163,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "playing baseball",
       "going to school",
       "going home",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "問句以 Be 動詞詢問 Kate 目前是否在臥室，答句以現在進行式說明「She's (She is) + V-ing」，故選「doing her homework（正在做功課）」。"
@@ -7190,9 +7190,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "We go to bed at 9:30.",
       "I take a shower at 4:00.",
       "We go to school on foot.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7217,9 +7217,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He goes to bed at 10:30.",
       "He goes home with his mom.",
       "He goes home by bus.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7244,9 +7244,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like some salad for lunch.",
       "I have dinner at home.",
       "We have lunch at 12:00.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7271,9 +7271,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What does Logan do in his free time?",
       "What time do you do your homework, Logan?",
       "Does Logan do his homework at five?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7298,9 +7298,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Does Grandma get up at eight o'clock?",
       "What time does your mother go home?",
       "What time do the girls get up?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7325,9 +7325,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Let's have a picnic.",
       "I can make a snowman.",
       "I make toys at school.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it."
     ],
     "answer": 0,
     "explanation": "前句請求「Can I be an elf, too?（我也可以當精靈嗎？）」，對方答應並主動示範教學，說「Let me show you how.（讓我示範給你看）」最為合宜。"
@@ -7352,9 +7352,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "play baseball",
       "go jogging",
       "ride a bike",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問休閒活動使用「What do/does + 主詞 + do in one’s free time?」，第三人稱單數主詞（he/she）動詞須加 -s/-es。"
@@ -7379,9 +7379,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "have dinner",
       "do her homework",
       "go to school",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7406,9 +7406,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "watches TV",
       "takes a shower",
       "goes to school",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "詢問休閒活動使用「What do/does + 主詞 + do in one’s free time?」，第三人稱單數主詞（he/she）動詞須加 -s/-es。"
@@ -7433,9 +7433,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "have lunch",
       "go to bed",
       "watch TV",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "媽媽催促孩子已經八點該上學了，使用祈使句原形動詞開頭「Andrew, get up!（安德魯，快起床！）」；OK, Mom 為遵從回應。"
@@ -7460,9 +7460,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "listen to music",
       "surf the Internet",
       "go jogging",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -7649,9 +7649,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "What",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7676,9 +7676,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "movie theater",
       "library",
       "post office",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7703,9 +7703,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "went shopping",
       "flew a kite",
       "rode a bike",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7730,9 +7730,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "rode a bike",
       "flew a kite",
       "watched TV",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7757,9 +7757,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They saw a movie.",
       "She went to the amusement park.",
       "She flew a kite.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7784,9 +7784,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What do you do on weekends?",
       "Where did he go last Tuesday?",
       "Were you at home?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7811,9 +7811,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She ate snacks.",
       "She saw a movie with Dylan.",
       "She flew a kite last Tuesday.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7838,9 +7838,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Did Nina visit a friend?",
       "Where was Nina yesterday?",
       "Where did your sisters go last night?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7865,9 +7865,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I went to the zoo.",
       "He didn't fly a kite.",
       "I drank juice.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is sunny and hot.",
+      "It is rainy today.",
+      "Take an umbrella."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7892,9 +7892,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They went to the library.",
       "We were at the park.",
       "I was at the amusement park.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8081,9 +8081,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Whose",
       "Where",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Who",
+      "Which"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8108,9 +8108,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She",
       "They",
       "He",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "you",
+      "it",
+      "we"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8135,9 +8135,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "see a movie",
       "write a letter",
       "have a picnic",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8162,9 +8162,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "sing songs",
       "draw a picture",
       "write a letter",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is sunny and hot.",
+      "It is rainy today.",
+      "Take an umbrella."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8189,9 +8189,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I go to the riverside park.",
       "We didn't swim.",
       "I sing songs.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8216,9 +8216,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Did Logan draw a picture last Monday?",
       "What is Logan doing now?",
       "Where did Logan go last Monday?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8243,9 +8243,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She is at home.",
       "She runs every morning.",
       "She didn't have a picnic this morning.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8270,9 +8270,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Do you run every day?",
       "Did you swim yesterday?",
       "Can you sing songs?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8297,9 +8297,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he wasn't at school.",
       "No, he didn't draw a picture.",
       "Yes, he does.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8324,9 +8324,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, we didn't.",
       "Yes, we did.",
       "Yes, they did.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8378,9 +8378,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I can",
       "I'm",
       "I don't",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8459,9 +8459,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does, She",
       "would, She",
       "does, She'd",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8486,9 +8486,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "plate",
       "glass",
       "plates",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8513,9 +8513,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "drink, cake",
       "drink, juice",
       "eat, juice",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8594,9 +8594,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "eat, bowls",
       "eat, boxes",
       "drink, pieces",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "冬瓜茶（winter melon tea）為液體飲料，動作使用「drink（喝）」，裝在玻璃杯中四杯使用複數單位詞「four glasses of ...」。"
@@ -8621,9 +8621,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "We'd like a bottle of juice.",
       "He'd like a box of cookies.",
       "I'd like a cup of milk.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8648,9 +8648,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What would you like to drink?",
       "What would she like to drink?",
       "What would you like to eat?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8675,9 +8675,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He'd like a bottle of tea.",
       "He'd like a cup of juice.",
       "He'd like a glass of water.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8702,9 +8702,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Did they like water?",
       "What would they like to eat?",
       "What do they like?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8729,9 +8729,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like two pieces of cake.",
       "We'd like a bowl of rice.",
       "I'd like a bag of chips.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8756,9 +8756,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like two bowls of salad.",
       "I'd like two plates of noodles.",
       "I'd like a bag of apples.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8945,9 +8945,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "time",
       "color",
       "day",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8972,9 +8972,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "February",
       "November",
       "April",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8999,9 +8999,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What",
       "Who",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問日期用「What’s the date today?」；只講月份用介系詞「in + 月份」，講出「幾月幾日（序數）」則用「on + 月份 + 序數」。"
@@ -9053,9 +9053,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Today is February 1st.",
       "Today is January 1st.",
       "Today is May 1st.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -9080,9 +9080,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What time is it?",
       "When is your birthday?",
       "What day is today?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "What's your name?",
+      "How are you?",
+      "How old are you?"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -9107,9 +9107,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's on October 20th.",
       "It's October.",
       "It's in October.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -9134,9 +9134,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's 17th.",
       "It's not in May.",
       "It's at seven.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問日期用「What’s the date today?」；只講月份用介系詞「in + 月份」，講出「幾月幾日（序數）」則用「on + 月份 + 序數」。"
@@ -9161,9 +9161,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Her birthday is on Saturday.",
       "Her birthday isn't on July 31st.",
       "Yes, it's in July.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問日期用「What’s the date today?」；只講月份用介系詞「in + 月份」，講出「幾月幾日（序數）」則用「on + 月份 + 序數」。"
@@ -9188,9 +9188,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My birthday is on April 30th.",
       "My birthday is on September 29th.",
       "My birthday is in spring.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問日期用「What’s the date today?」；只講月份用介系詞「in + 月份」，講出「幾月幾日（序數）」則用「on + 月份 + 序數」。"
@@ -9430,10 +9430,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "OK!",
       "I'm seven.",
       "It's red.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "回應老師課室指令使用「OK!」。"
@@ -9457,10 +9457,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Hello, Lucas!",
       "It's a pen.",
       "Thank you.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "初次打招呼自我介紹時，以「Hello, ...!」回應。"
@@ -9538,10 +9538,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My name is Emma.",
       "You are welcome.",
       "I'm eight.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
+      "See you later.",
+      "Have a nice day!",
       "Good morning.",
-      "I am ten years old."
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問姓名「What’s your name?」，回答「My name is ...」。"
@@ -9565,10 +9565,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm fine, thank you.",
       "My name is Lucas.",
       "It's blue.",
-      "I am very happy.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問候「How are you?」以「I’m fine, thank you.」回答。"
@@ -9646,10 +9646,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My name is Nina.",
       "I'm eight.",
       "You are welcome.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
+      "See you later.",
+      "Have a nice day!",
       "Good morning.",
-      "I am ten years old."
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問姓名「What’s your name?」，回答「My name is ...」。"
@@ -9673,10 +9673,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm fine, thank you.",
       "My name is Max.",
       "It's blue.",
-      "I am very happy.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問候「How are you?」以「I’m fine, thank you.」回答。"
@@ -9754,10 +9754,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My name is Chloe.",
       "I'm eight.",
       "You are welcome.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
+      "See you later.",
+      "Have a nice day!",
       "Good morning.",
-      "I am ten years old."
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問姓名「What’s your name?」，回答「My name is ...」。"
@@ -9780,10 +9780,10 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "I'm fine, thank you.",
       "It's blue.",
-      "My name is Leo.",
-      "I am very happy.",
-      "Nice to meet you, too.",
-      "I am ten years old.",
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon.",
       "It is seven o'clock."
     ],
     "answer": 0,
@@ -9862,10 +9862,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My name is Sophie.",
       "You are welcome.",
       "I'm eight.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
+      "See you later.",
+      "Have a nice day!",
       "Good morning.",
-      "I am ten years old."
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問姓名「What’s your name?」，回答「My name is ...」。"
@@ -9889,10 +9889,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm fine, thank you.",
       "My name is Kulas.",
       "It's blue.",
-      "I am very happy.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問候「How are you?」以「I’m fine, thank you.」回答。"
@@ -9970,10 +9970,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My name is Hannah.",
       "I'm eight.",
       "You are welcome.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
+      "See you later.",
+      "Have a nice day!",
       "Good morning.",
-      "I am ten years old."
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問姓名「What’s your name?」，回答「My name is ...」。"
@@ -9997,10 +9997,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm fine, thank you.",
       "My name is Ryan.",
       "It's blue.",
-      "I am very happy.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問候「How are you?」以「I’m fine, thank you.」回答。"
@@ -10024,10 +10024,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "was",
+      "were",
+      "be",
+      "do"
     ],
     "answer": 0,
     "explanation": "主詞「you」固定搭配 Be 動詞「are」。"
@@ -10078,10 +10078,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm six years old.",
       "I'm fine.",
       "It's a ruler.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am very happy."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10105,10 +10105,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "was",
+      "were",
+      "be",
+      "do"
     ],
     "answer": 0,
     "explanation": "主詞「you」固定搭配 Be 動詞「are」。"
@@ -10159,10 +10159,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm seven years old.",
       "I'm fine.",
       "It's a ruler.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am very happy."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10186,10 +10186,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "was",
+      "were",
+      "be",
+      "do"
     ],
     "answer": 0,
     "explanation": "主詞「you」固定搭配 Be 動詞「are」。"
@@ -10240,10 +10240,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm eight years old.",
       "I'm fine.",
       "It's a ruler.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am very happy."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10267,10 +10267,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "was",
+      "were",
+      "be",
+      "do"
     ],
     "answer": 0,
     "explanation": "主詞「you」固定搭配 Be 動詞「are」。"
@@ -10321,10 +10321,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm nine years old.",
       "I'm fine.",
       "It's a ruler.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am very happy."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10348,10 +10348,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "was",
+      "were",
+      "be",
+      "do"
     ],
     "answer": 0,
     "explanation": "主詞「you」固定搭配 Be 動詞「are」。"
@@ -10402,10 +10402,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm ten years old.",
       "I'm fine.",
       "It's a ruler.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am very happy."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10427,11 +10427,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Thank you very much! B: ______",
     "options": [
       "You're welcome.",
-      "My name is Leo.",
+      "See you later.",
       "I'm ten.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "I am ten years old.",
+      "Have a nice day!",
+      "Good afternoon.",
+      "Excuse me.",
       "It is seven o'clock."
     ],
     "answer": 0,
@@ -10456,10 +10456,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What's",
       "How's",
       "How old",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "答句回答名字，故問句為「What’s your name?」。"
@@ -10483,10 +10483,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How",
       "What",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where",
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問幾歲使用疑問詞「How old」。"
@@ -10510,10 +10510,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "a",
       "am",
       "an",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "the",
+      "this",
+      "that",
+      "these"
     ],
     "answer": 0,
     "explanation": "單數名詞「book」字首為子音發音，搭配不定冠詞「a」。"
@@ -10537,10 +10537,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, it's not.",
       "I'm seven.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10564,10 +10564,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, it is.",
       "Thank you.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 bag，故否定回答「No, it's not.」。"
@@ -10591,10 +10591,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "a",
       "am",
       "an",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "the",
+      "this",
+      "that",
+      "these"
     ],
     "answer": 0,
     "explanation": "單數名詞「pencil」字首為子音發音，搭配不定冠詞「a」。"
@@ -10618,10 +10618,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, it's not.",
       "I'm seven.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10645,10 +10645,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, it is.",
       "Thank you.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 eraser，故否定回答「No, it's not.」。"
@@ -10672,10 +10672,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "a",
       "am",
       "an",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "the",
+      "this",
+      "that",
+      "these"
     ],
     "answer": 0,
     "explanation": "單數名詞「ruler」字首為子音發音，搭配不定冠詞「a」。"
@@ -10699,10 +10699,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, it's not.",
       "I'm seven.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10726,10 +10726,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, it is.",
       "Thank you.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 marker，故否定回答「No, it's not.」。"
@@ -10753,10 +10753,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "I'm seven.",
       "No, it's not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10780,10 +10780,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, it is.",
       "Thank you.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 pencil，故否定回答「No, it's not.」。"
@@ -10807,10 +10807,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "an",
       "a",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "the",
+      "this",
+      "that",
+      "these"
     ],
     "answer": 0,
     "explanation": "單數名詞「apple」字首為母音發音，搭配不定冠詞「an」。"
@@ -10834,10 +10834,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "I'm seven.",
       "No, it's not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10861,10 +10861,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, it is.",
       "Thank you.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "後句說明它是 book，故否定回答「No, it's not.」。"
@@ -10888,10 +10888,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "a",
       "an",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "the",
+      "this",
+      "that",
+      "these"
     ],
     "answer": 0,
     "explanation": "單數名詞「bag」字首為子音發音，搭配不定冠詞「a」。"
@@ -10915,10 +10915,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "I'm seven.",
       "No, it's not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10942,10 +10942,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, it is.",
       "Thank you.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 ruler，故否定回答「No, it's not.」。"
@@ -10969,10 +10969,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "color",
       "name",
       "old",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "答句「It's red.」為顏色，故問句使用「What color」。"
@@ -10996,10 +10996,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's red and blue.",
       "I'm nine years old.",
       "It's a bag.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11023,10 +11023,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "color",
       "name",
       "old",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "答句「It's blue.」為顏色，故問句使用「What color」。"
@@ -11050,10 +11050,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's blue and yellow.",
       "It's a bag.",
       "I'm nine years old.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11077,10 +11077,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "color",
       "old",
       "name",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "答句「It's yellow.」為顏色，故問句使用「What color」。"
@@ -11104,10 +11104,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's yellow and green.",
       "It's a bag.",
       "I'm nine years old.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11131,10 +11131,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "color",
       "name",
       "old",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "答句「It's green.」為顏色，故問句使用「What color」。"
@@ -11158,10 +11158,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's green and black.",
       "I'm nine years old.",
       "It's a bag.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11185,10 +11185,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "color",
       "name",
       "old",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "答句「It's black.」為顏色，故問句使用「What color」。"
@@ -11212,10 +11212,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's black and white.",
       "It's a bag.",
       "I'm nine years old.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11239,10 +11239,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "color",
       "old",
       "name",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "答句「It's white.」為顏色，故問句使用「What color」。"
@@ -11266,10 +11266,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's white and red.",
       "It's a bag.",
       "I'm nine years old.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11293,10 +11293,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's",
       "It",
       "I'm",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "You're",
+      "He's",
+      "She's",
+      "We're"
     ],
     "answer": 0,
     "explanation": "回答單數物品需包含主詞與動詞「It’s (It is)」。"
@@ -11320,10 +11320,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's blue.",
       "Yes, it is.",
       "It's an eraser.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問顏色「What color is ...?」應回答顏色而非物品名稱。"
@@ -11347,10 +11347,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Happy Halloween! Here are some candies.",
       "You're welcome.",
       "It's a book.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "萬聖節口號「Trick or treat!」搭配「Happy Halloween!」。"
@@ -11482,10 +11482,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Fourteen, fifteen!",
       "No, I cannot.",
       "I'm fine.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "接著 11, 12, 13 往下數為「Fourteen, fifteen!」。"
@@ -11509,10 +11509,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Thank you!",
       "Try again.",
       "No, it isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "受到稱讚「Good job!」時應禮貌回答「Thank you!」。"
@@ -11536,10 +11536,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "a",
       "an",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "the",
+      "this",
+      "that",
+      "these"
     ],
     "answer": 0,
     "explanation": "small 為子音開頭，搭配不定冠詞「a」。"
@@ -11563,10 +11563,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is",
       "Can",
       "Are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "am",
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數指示代名詞 that 搭配 Be 動詞「Is」。"
@@ -11617,10 +11617,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, it is.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 cat，故否定回答「No, it's not.」。"
@@ -11644,10 +11644,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "I'm ten.",
       "No, I cannot.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -11671,10 +11671,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is",
       "Are",
       "Can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "am",
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數指示代名詞 that 搭配 Be 動詞「Is」。"
@@ -11725,10 +11725,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, I can.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 bird，故否定回答「No, it's not.」。"
@@ -11752,10 +11752,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, I cannot.",
       "I'm ten.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -11779,10 +11779,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is",
       "Are",
       "Can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "am",
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數指示代名詞 that 搭配 Be 動詞「Is」。"
@@ -11833,10 +11833,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, it is.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 fish，故否定回答「No, it's not.」。"
@@ -11860,10 +11860,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, I cannot.",
       "I'm ten.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -11887,10 +11887,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is",
       "Can",
       "Are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "am",
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數指示代名詞 that 搭配 Be 動詞「Is」。"
@@ -11941,10 +11941,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, it is.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 rabbit，故否定回答「No, it's not.」。"
@@ -11968,10 +11968,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "I'm ten.",
       "No, I cannot.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -11995,10 +11995,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is",
       "Are",
       "Can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "am",
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數指示代名詞 that 搭配 Be 動詞「Is」。"
@@ -12049,10 +12049,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, I can.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 turtle，故否定回答「No, it's not.」。"
@@ -12076,10 +12076,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, I cannot.",
       "I'm ten.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -12103,10 +12103,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Is",
       "Are",
       "Can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "am",
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數指示代名詞 that 搭配 Be 動詞「Is」。"
@@ -12157,10 +12157,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, it's not.",
       "Yes, it is.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明它是 dog，故否定回答「No, it's not.」。"
@@ -12184,10 +12184,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, I cannot.",
       "I'm ten.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -12211,10 +12211,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "do",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "is",
+      "are",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "以助動詞 Can 提問，肯定簡答使用「Yes, I can.」。"
@@ -12265,10 +12265,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he can.",
       "Yes, he is.",
       "No, it's not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it.",
+      "She cannot swim."
     ],
     "answer": 0,
     "explanation": "Can 疑問句搭配主詞 Lucas (he)，簡答用「Yes, he can.」。"
@@ -12292,10 +12292,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I can't.",
       "It's a dog.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "No, he can't.",
+      "He can do it.",
+      "She cannot swim.",
+      "Try your best."
     ],
     "answer": 0,
     "explanation": "後句「But I can sing.（但我會唱歌）」表轉折，故前句為否定「No, I can’t.」。"
@@ -12319,10 +12319,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "is",
+      "are",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "以助動詞 Can 提問，肯定簡答使用「Yes, I can.」。"
@@ -12373,10 +12373,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she can.",
       "No, it's not.",
       "Yes, she is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it.",
+      "She cannot swim."
     ],
     "answer": 0,
     "explanation": "Can 疑問句搭配主詞 Nina (she)，簡答用「Yes, she can.」。"
@@ -12400,10 +12400,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I can't.",
       "Yes, I can.",
       "It's a dog.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "No, he can't.",
+      "He can do it.",
+      "She cannot swim.",
+      "Try your best."
     ],
     "answer": 0,
     "explanation": "後句「But I can sing.（但我會唱歌）」表轉折，故前句為否定「No, I can’t.」。"
@@ -12427,10 +12427,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "is",
+      "are",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "以助動詞 Can 提問，肯定簡答使用「Yes, I can.」。"
@@ -12481,10 +12481,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he can.",
       "Yes, he is.",
       "No, it's not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it.",
+      "She cannot swim."
     ],
     "answer": 0,
     "explanation": "Can 疑問句搭配主詞 Leo (he)，簡答用「Yes, he can.」。"
@@ -12508,10 +12508,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I can't.",
       "Yes, I can.",
       "It's a dog.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "No, he can't.",
+      "He can do it.",
+      "She cannot swim.",
+      "Try your best."
     ],
     "answer": 0,
     "explanation": "後句「But I can sing.（但我會唱歌）」表轉折，故前句為否定「No, I can’t.」。"
@@ -12535,10 +12535,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "do",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "is",
+      "are",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "以助動詞 Can 提問，肯定簡答使用「Yes, I can.」。"
@@ -12589,10 +12589,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she can.",
       "Yes, she is.",
       "No, it's not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it.",
+      "She cannot swim."
     ],
     "answer": 0,
     "explanation": "Can 疑問句搭配主詞 Sophie (she)，簡答用「Yes, she can.」。"
@@ -12616,10 +12616,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I can't.",
       "It's a dog.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "No, he can't.",
+      "He can do it.",
+      "She cannot swim.",
+      "Try your best."
     ],
     "answer": 0,
     "explanation": "後句「But I can sing.（但我會唱歌）」表轉折，故前句為否定「No, I can’t.」。"
@@ -12643,10 +12643,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "is",
+      "are",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "以助動詞 Can 提問，肯定簡答使用「Yes, I can.」。"
@@ -12697,10 +12697,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he can.",
       "No, it's not.",
       "Yes, he is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it.",
+      "She cannot swim."
     ],
     "answer": 0,
     "explanation": "Can 疑問句搭配主詞 Ryan (he)，簡答用「Yes, he can.」。"
@@ -12724,10 +12724,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I can't.",
       "Yes, I can.",
       "It's a dog.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "No, he can't.",
+      "He can do it.",
+      "She cannot swim.",
+      "Try your best."
     ],
     "answer": 0,
     "explanation": "後句「But I can sing.（但我會唱歌）」表轉折，故前句為否定「No, I can’t.」。"
@@ -12751,10 +12751,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "is",
+      "are",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "以助動詞 Can 提問，肯定簡答使用「Yes, I can.」。"
@@ -12805,10 +12805,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she can.",
       "Yes, she is.",
       "No, it's not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it.",
+      "She cannot swim."
     ],
     "answer": 0,
     "explanation": "Can 疑問句搭配主詞 Maya (she)，簡答用「Yes, she can.」。"
@@ -12832,10 +12832,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I can't.",
       "Yes, I can.",
       "It's a dog.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "No, he can't.",
+      "He can do it.",
+      "She cannot swim.",
+      "Try your best."
     ],
     "answer": 0,
     "explanation": "後句「But I can sing.（但我會唱歌）」表轉折，故前句為否定「No, I can’t.」。"
@@ -12859,10 +12859,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "do",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "is",
+      "are",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "以助動詞 Can 提問，肯定簡答使用「Yes, I can.」。"
@@ -12913,10 +12913,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he can.",
       "Yes, he is.",
       "No, it's not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it.",
+      "She cannot swim."
     ],
     "answer": 0,
     "explanation": "Can 疑問句搭配主詞 Noah (he)，簡答用「Yes, he can.」。"
@@ -12940,10 +12940,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I can't.",
       "It's a dog.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "No, he can't.",
+      "He can do it.",
+      "She cannot swim.",
+      "Try your best."
     ],
     "answer": 0,
     "explanation": "後句「But I can sing.（但我會唱歌）」表轉折，故前句為否定「No, I can’t.」。"
@@ -12967,10 +12967,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "it",
       "that",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I",
+      "you",
+      "she",
+      "we"
     ],
     "answer": 0,
     "explanation": "主詞為 this/that 時，簡答句代名詞一律用「it」。"
@@ -12994,10 +12994,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can you dance?",
       "Are you Lucas?",
       "What is that?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "What's your name?",
+      "How are you?",
+      "How old are you?",
+      "Where are you from?"
     ],
     "answer": 0,
     "explanation": "答句為「Yes, I can.」，問句必以助動詞「Can you ...?」開頭。"
@@ -13021,10 +13021,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "it",
       "he",
       "that",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I",
+      "you",
+      "she",
+      "we"
     ],
     "answer": 0,
     "explanation": "主詞為 this/that 時，簡答句代名詞一律用「it」。"
@@ -13048,10 +13048,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can you draw?",
       "Are you Max?",
       "What is that?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "What's your name?",
+      "How are you?",
+      "How old are you?",
+      "Where are you from?"
     ],
     "answer": 0,
     "explanation": "答句為「Yes, I can.」，問句必以助動詞「Can you ...?」開頭。"
@@ -13075,10 +13075,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "it",
       "that",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I",
+      "you",
+      "she",
+      "we"
     ],
     "answer": 0,
     "explanation": "主詞為 this/that 時，簡答句代名詞一律用「it」。"
@@ -13102,10 +13102,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can you jump?",
       "What is that?",
       "Are you Leo?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "What's your name?",
+      "How are you?",
+      "How old are you?",
+      "Where are you from?"
     ],
     "answer": 0,
     "explanation": "答句為「Yes, I can.」，問句必以助動詞「Can you ...?」開頭。"
@@ -13129,10 +13129,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "it",
       "that",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I",
+      "you",
+      "she",
+      "we"
     ],
     "answer": 0,
     "explanation": "主詞為 this/that 時，簡答句代名詞一律用「it」。"
@@ -13156,10 +13156,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can you read?",
       "Are you Kulas?",
       "What is that?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "What's your name?",
+      "How are you?",
+      "How old are you?",
+      "Where are you from?"
     ],
     "answer": 0,
     "explanation": "答句為「Yes, I can.」，問句必以助動詞「Can you ...?」開頭。"
@@ -13183,10 +13183,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "it",
       "he",
       "that",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I",
+      "you",
+      "she",
+      "we"
     ],
     "answer": 0,
     "explanation": "主詞為 this/that 時，簡答句代名詞一律用「it」。"
@@ -13210,10 +13210,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can you sing?",
       "Are you Ryan?",
       "What is that?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "What's your name?",
+      "How are you?",
+      "How old are you?",
+      "Where are you from?"
     ],
     "answer": 0,
     "explanation": "答句為「Yes, I can.」，問句必以助動詞「Can you ...?」開頭。"
@@ -13237,10 +13237,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "it",
       "that",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I",
+      "you",
+      "she",
+      "we"
     ],
     "answer": 0,
     "explanation": "主詞為 this/that 時，簡答句代名詞一律用「it」。"
@@ -13264,10 +13264,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can you swim?",
       "What is that?",
       "Are you Owen?",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "What's your name?",
+      "How are you?",
+      "How old are you?",
+      "Where are you from?"
     ],
     "answer": 0,
     "explanation": "答句為「Yes, I can.」，問句必以助動詞「Can you ...?」開頭。"
@@ -13291,10 +13291,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "What",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where",
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問人物身分關係「他／她是誰？」使用疑問詞「Who」。"
@@ -13318,10 +13318,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's",
       "She's",
       "It's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I'm",
+      "You're",
+      "We're",
+      "They're"
     ],
     "answer": 0,
     "explanation": "father 性別對應的主詞＋Be動詞為「He's」。"
@@ -13345,10 +13345,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's my father.",
       "Yes, I can.",
       "She's my father.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問「那位男士是誰？」，回答「He's my father.」。"
@@ -13372,10 +13372,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "No, he can't.",
       "It's a bird.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "以 Is he...? 提問，肯定簡答為「Yes, he is.」。"
@@ -13399,10 +13399,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "What",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where",
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問人物身分關係「他／她是誰？」使用疑問詞「Who」。"
@@ -13426,10 +13426,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's",
       "It's",
       "He's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I'm",
+      "You're",
+      "We're",
+      "They're"
     ],
     "answer": 0,
     "explanation": "mother 性別對應的主詞＋Be動詞為「She's」。"
@@ -13453,10 +13453,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's my mother.",
       "He's my mother.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問「那位女士是誰？」，回答「She's my mother.」。"
@@ -13480,10 +13480,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she is.",
       "No, she can't.",
       "It's a bird.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "以 Is she...? 提問，肯定簡答為「Yes, she is.」。"
@@ -13507,10 +13507,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "How",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where",
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問人物身分關係「他／她是誰？」使用疑問詞「Who」。"
@@ -13534,10 +13534,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's",
       "She's",
       "It's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I'm",
+      "You're",
+      "We're",
+      "They're"
     ],
     "answer": 0,
     "explanation": "brother 性別對應的主詞＋Be動詞為「He's」。"
@@ -13561,10 +13561,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's my brother.",
       "She's my brother.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問「那位男士是誰？」，回答「He's my brother.」。"
@@ -13588,10 +13588,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "It's a bird.",
       "No, he can't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "以 Is he...? 提問，肯定簡答為「Yes, he is.」。"
@@ -13615,10 +13615,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "What",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where",
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問人物身分關係「他／她是誰？」使用疑問詞「Who」。"
@@ -13642,10 +13642,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's",
       "He's",
       "It's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I'm",
+      "You're",
+      "We're",
+      "They're"
     ],
     "answer": 0,
     "explanation": "sister 性別對應的主詞＋Be動詞為「She's」。"
@@ -13669,10 +13669,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's my sister.",
       "Yes, I can.",
       "He's my sister.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問「那位女士是誰？」，回答「She's my sister.」。"
@@ -13696,10 +13696,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she is.",
       "No, she can't.",
       "It's a bird.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "以 Is she...? 提問，肯定簡答為「Yes, she is.」。"
@@ -13723,10 +13723,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "What",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where",
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問人物身分關係「他／她是誰？」使用疑問詞「Who」。"
@@ -13750,10 +13750,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's",
       "It's",
       "She's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I'm",
+      "You're",
+      "We're",
+      "They're"
     ],
     "answer": 0,
     "explanation": "grandfather 性別對應的主詞＋Be動詞為「He's」。"
@@ -13777,10 +13777,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's my grandfather.",
       "She's my grandfather.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問「那位男士是誰？」，回答「He's my grandfather.」。"
@@ -13804,10 +13804,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "No, he can't.",
       "It's a bird.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "以 Is he...? 提問，肯定簡答為「Yes, he is.」。"
@@ -13831,10 +13831,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "How",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Where",
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問人物身分關係「他／她是誰？」使用疑問詞「Who」。"
@@ -13858,10 +13858,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's",
       "He's",
       "It's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "I'm",
+      "You're",
+      "We're",
+      "They're"
     ],
     "answer": 0,
     "explanation": "grandmother 性別對應的主詞＋Be動詞為「She's」。"
@@ -13885,10 +13885,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's my grandmother.",
       "He's my grandmother.",
       "Yes, I can.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "詢問「那位女士是誰？」，回答「She's my grandmother.」。"
@@ -13912,10 +13912,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she is.",
       "It's a bird.",
       "No, she can't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "以 Is she...? 提問，肯定簡答為「Yes, she is.」。"
@@ -13966,10 +13966,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "isn't",
       "not",
       "can't",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "Be 動詞 Is 提問，否定簡答使用「No, he isn't.」。"
@@ -13993,10 +13993,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he isn't.",
       "Yes, I am.",
       "Yes, he is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it.",
+      "She cannot swim."
     ],
     "answer": 0,
     "explanation": "後句說明職業其實是 cook，故否定回答「No, he isn't.」。"
@@ -14020,10 +14020,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am.",
       "Yes, you are.",
       "No, he is not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14074,10 +14074,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "isn't",
       "can't",
       "not",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "Be 動詞 Is 提問，否定簡答使用「No, she isn't.」。"
@@ -14101,10 +14101,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, she isn't.",
       "Yes, she is.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明職業其實是 driver，故否定回答「No, she isn't.」。"
@@ -14128,10 +14128,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am.",
       "Yes, you are.",
       "No, he is not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14182,10 +14182,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "isn't",
       "not",
       "can't",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "Be 動詞 Is 提問，否定簡答使用「No, she isn't.」。"
@@ -14209,10 +14209,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, she isn't.",
       "Yes, she is.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明職業其實是 doctor，故否定回答「No, she isn't.」。"
@@ -14236,10 +14236,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am.",
       "No, he is not.",
       "Yes, you are.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14290,10 +14290,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "isn't",
       "not",
       "can't",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "Be 動詞 Is 提問，否定簡答使用「No, he isn't.」。"
@@ -14317,10 +14317,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he isn't.",
       "Yes, I am.",
       "Yes, he is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明職業其實是 teacher，故否定回答「No, he isn't.」。"
@@ -14344,10 +14344,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am.",
       "Yes, you are.",
       "No, he is not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14398,10 +14398,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "isn't",
       "can't",
       "not",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "Be 動詞 Is 提問，否定簡答使用「No, he isn't.」。"
@@ -14425,10 +14425,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he isn't.",
       "Yes, he is.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "後句說明職業其實是 nurse，故否定回答「No, he isn't.」。"
@@ -14452,10 +14452,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am.",
       "Yes, you are.",
       "No, he is not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14506,10 +14506,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "isn't",
       "not",
       "can't",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "it",
+      "this",
+      "that",
+      "there"
     ],
     "answer": 0,
     "explanation": "Be 動詞 Is 提問，否定簡答使用「No, she isn't.」。"
@@ -14533,10 +14533,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, she isn't.",
       "Yes, she is.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it.",
+      "She cannot swim."
     ],
     "answer": 0,
     "explanation": "後句說明職業其實是 student，故否定回答「No, she isn't.」。"
@@ -14560,10 +14560,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am.",
       "No, he is not.",
       "Yes, you are.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it.",
+      "She cannot swim."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14587,10 +14587,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "my",
       "I",
       "you",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "a",
+      "an",
+      "the",
+      "this"
     ],
     "answer": 0,
     "explanation": "名詞 brother 前須使用所有格代名詞「my」。"
@@ -14614,9 +14614,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Nice to meet you, too.",
       "I'm a student.",
       "Thank you.",
-      "I am fine, thank you.",
-      "My name is Leo.",
-      "I am ten years old.",
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
       "It is seven o'clock."
     ],
     "answer": 0,
@@ -14641,10 +14641,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Thank you, sweetie! I love you.",
       "Try again.",
       "No, it's not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo.",
-      "I am ten years old."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "送給媽媽母親節卡片，媽媽回應「Thank you, sweetie! I love you.」。"
@@ -14696,9 +14696,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "can",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數不可數名詞 the weather 搭配 Be 動詞「is」。"
@@ -14723,9 +14723,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're apples.",
       "It's sunny and hot.",
       "I'm hungry.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句提到「帶把雨傘（take an umbrella）」，代表天氣下雨「It’s rainy.」。"
@@ -14750,9 +14750,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數不可數名詞 the weather 搭配 Be 動詞「is」。"
@@ -14777,9 +14777,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數不可數名詞 the weather 搭配 Be 動詞「is」。"
@@ -14804,9 +14804,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "can",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數不可數名詞 the weather 搭配 Be 動詞「is」。"
@@ -14831,9 +14831,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "are",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數不可數名詞 the weather 搭配 Be 動詞「is」。"
@@ -14858,9 +14858,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數不可數名詞 the weather 搭配 Be 動詞「is」。"
@@ -14885,9 +14885,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數不可數名詞 the weather 搭配 Be 動詞「is」。"
@@ -14912,9 +14912,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "can",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數不可數名詞 the weather 搭配 Be 動詞「is」。"
@@ -14939,9 +14939,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "are",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "Are you...? 的肯定簡答為「Yes, I am.」。"
@@ -14966,9 +14966,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I'm not.",
       "Yes, he is.",
       "It's windy.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句表示想要 eat some noodles，故肯定回答「Yes, I am.」。"
@@ -14993,9 +14993,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "is",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "Are you...? 的肯定簡答為「Yes, I am.」。"
@@ -15020,9 +15020,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "It's windy.",
       "No, I'm not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句表示想要 drink some juice，故肯定回答「Yes, I am.」。"
@@ -15047,9 +15047,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "are",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "Are you...? 的肯定簡答為「Yes, I am.」。"
@@ -15074,9 +15074,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I'm not.",
       "Yes, he is.",
       "It's windy.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句表示想要 take a rest，故肯定回答「Yes, I am.」。"
@@ -15101,9 +15101,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "is",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "Are you...? 的肯定簡答為「Yes, I am.」。"
@@ -15128,9 +15128,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "It's windy.",
       "No, I'm not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句表示想要 sing a song，故肯定回答「Yes, I am.」。"
@@ -15155,9 +15155,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "are",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "Are you...? 的肯定簡答為「Yes, I am.」。"
@@ -15182,9 +15182,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I'm not.",
       "Yes, he is.",
       "It's windy.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句表示想要 talk to Mom，故肯定回答「Yes, I am.」。"
@@ -15209,9 +15209,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "is",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "Are you...? 的肯定簡答為「Yes, I am.」。"
@@ -15236,9 +15236,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "It's windy.",
       "No, I'm not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句表示想要 take a walk，故肯定回答「Yes, I am.」。"
@@ -15263,9 +15263,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "That",
       "It",
       "This",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "he"
     ],
     "answer": 0,
     "explanation": "詢問複數「What are these?」，回答主詞一律使用「They」。"
@@ -15290,9 +15290,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, they aren't.",
       "It's sunny.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15317,9 +15317,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It",
       "This",
       "That",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "he"
     ],
     "answer": 0,
     "explanation": "詢問複數「What are those?」，回答主詞一律使用「They」。"
@@ -15344,9 +15344,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, they aren't.",
       "It's sunny.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15371,9 +15371,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "That",
       "It",
       "This",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "he"
     ],
     "answer": 0,
     "explanation": "詢問複數「What are these?」，回答主詞一律使用「They」。"
@@ -15398,9 +15398,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, they aren't.",
       "It's sunny.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15425,9 +15425,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It",
       "This",
       "That",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "he"
     ],
     "answer": 0,
     "explanation": "詢問複數「What are those?」，回答主詞一律使用「They」。"
@@ -15452,9 +15452,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, they aren't.",
       "It's sunny.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15479,9 +15479,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "That",
       "It",
       "This",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "he"
     ],
     "answer": 0,
     "explanation": "詢問複數「What are these?」，回答主詞一律使用「They」。"
@@ -15506,9 +15506,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, they aren't.",
       "It's sunny.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15533,9 +15533,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It",
       "This",
       "That",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "he"
     ],
     "answer": 0,
     "explanation": "詢問複數「What are those?」，回答主詞一律使用「They」。"
@@ -15560,9 +15560,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, they aren't.",
       "It's sunny.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is sunny and hot.",
+      "It is rainy today.",
+      "Take an umbrella."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15587,9 +15587,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "That",
       "It",
       "This",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "he"
     ],
     "answer": 0,
     "explanation": "詢問複數「What are these?」，回答主詞一律使用「They」。"
@@ -15614,9 +15614,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "No, they aren't.",
       "It's sunny.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15641,9 +15641,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It",
       "This",
       "That",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "he"
     ],
     "answer": 0,
     "explanation": "詢問複數「What are those?」，回答主詞一律使用「They」。"
@@ -15668,9 +15668,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, they aren't.",
       "It's sunny.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15695,9 +15695,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can",
       "Are",
       "Is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "一般動詞 want 的第二人稱疑問句使用助動詞「Do」。"
@@ -15722,9 +15722,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, please.",
       "Yes, I am.",
       "They're bananas.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "I am full.",
+      "I want some water."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -15749,9 +15749,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are",
       "Is",
       "Can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "一般動詞 want 的第二人稱疑問句使用助動詞「Do」。"
@@ -15776,9 +15776,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am.",
       "They're bananas.",
       "Yes, please.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "I am full.",
+      "I want some water."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -15803,9 +15803,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can",
       "Are",
       "Is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "一般動詞 want 的第二人稱疑問句使用助動詞「Do」。"
@@ -15830,9 +15830,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, please.",
       "Yes, I am.",
       "They're bananas.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "I am full.",
+      "I want some water."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -15857,9 +15857,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are",
       "Is",
       "Can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "一般動詞 want 的第二人稱疑問句使用助動詞「Do」。"
@@ -15884,9 +15884,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am.",
       "They're bananas.",
       "Yes, please.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "I am full.",
+      "I want some water."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -15911,9 +15911,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can",
       "Are",
       "Is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "一般動詞 want 的第二人稱疑問句使用助動詞「Do」。"
@@ -15938,9 +15938,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, please.",
       "Yes, I am.",
       "They're bananas.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "I am full.",
+      "I want some water."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -15965,9 +15965,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are",
       "Is",
       "Can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "一般動詞 want 的第二人稱疑問句使用助動詞「Do」。"
@@ -15992,9 +15992,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am.",
       "They're bananas.",
       "Yes, please.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "I am full.",
+      "I want some water."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -16019,9 +16019,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can",
       "Are",
       "Is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "一般動詞 want 的第二人稱疑問句使用助動詞「Do」。"
@@ -16046,9 +16046,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, please.",
       "Yes, I am.",
       "They're bananas.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "I am full.",
+      "I want some water."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -16073,9 +16073,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are",
       "Is",
       "Can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "一般動詞 want 的第二人稱疑問句使用助動詞「Do」。"
@@ -16100,9 +16100,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I am.",
       "They're bananas.",
       "Yes, please.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "I am full.",
+      "I want some water."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -16154,9 +16154,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's under the chair.",
       "I'm reading.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16181,9 +16181,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How",
       "Where",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問幾點鐘使用疑問詞「What time」。"
@@ -16235,9 +16235,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "It's under the chair.",
       "I'm reading.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16262,9 +16262,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How",
       "Where",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問幾點鐘使用疑問詞「What time」。"
@@ -16316,9 +16316,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm reading.",
       "Yes, it is.",
       "It's under the chair.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16343,9 +16343,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "How",
       "Where",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問幾點鐘使用疑問詞「What time」。"
@@ -16397,9 +16397,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's under the chair.",
       "I'm reading.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16424,9 +16424,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Where",
       "Who",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問幾點鐘使用疑問詞「What time」。"
@@ -16478,9 +16478,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's under the chair.",
       "I'm reading.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16505,9 +16505,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How",
       "Where",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問幾點鐘使用疑問詞「What time」。"
@@ -16559,9 +16559,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "It's under the chair.",
       "I'm reading.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16586,9 +16586,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How",
       "Where",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問幾點鐘使用疑問詞「What time」。"
@@ -16640,9 +16640,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "does",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 Emma 在現在進行式疑問句中搭配 Be 動詞「is」。"
@@ -16667,9 +16667,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's ten o'clock.",
       "He's cooking.",
       "I can cook.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16721,9 +16721,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 Nina 在現在進行式疑問句中搭配 Be 動詞「is」。"
@@ -16748,9 +16748,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I can eat.",
       "It's ten o'clock.",
       "He's eating.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16802,9 +16802,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 Chloe 在現在進行式疑問句中搭配 Be 動詞「is」。"
@@ -16829,9 +16829,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's sleeping.",
       "I can sleep.",
       "It's ten o'clock.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16883,9 +16883,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "are",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 Sophie 在現在進行式疑問句中搭配 Be 動詞「is」。"
@@ -16910,9 +16910,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's reading.",
       "I can read.",
       "It's ten o'clock.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16964,9 +16964,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "does",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 Hannah 在現在進行式疑問句中搭配 Be 動詞「is」。"
@@ -16991,9 +16991,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's ten o'clock.",
       "He's swimming.",
       "I can swim.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17045,9 +17045,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 Maya 在現在進行式疑問句中搭配 Be 動詞「is」。"
@@ -17072,9 +17072,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I can run.",
       "It's ten o'clock.",
       "He's running.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17126,9 +17126,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 Lily 在現在進行式疑問句中搭配 Be 動詞「is」。"
@@ -17153,9 +17153,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's writing.",
       "I can write.",
       "It's ten o'clock.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17207,9 +17207,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "are",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 Ava 在現在進行式疑問句中搭配 Be 動詞「is」。"
@@ -17234,9 +17234,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He's drinking.",
       "I can drink.",
       "It's ten o'clock.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17288,9 +17288,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "does",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 Bella 在現在進行式疑問句中搭配 Be 動詞「is」。"
@@ -17315,9 +17315,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's ten o'clock.",
       "He's drawing.",
       "I can draw.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17369,9 +17369,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 Uma 在現在進行式疑問句中搭配 Be 動詞「is」。"
@@ -17396,9 +17396,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I can dance.",
       "It's ten o'clock.",
       "He's dancing.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17423,9 +17423,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How",
       "What",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "答句「in the bedroom」為所在房間位置，故疑問詞用「Where」。"
@@ -17477,9 +17477,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "No, she isn't.",
       "He is cooking.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17504,9 +17504,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "How",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "答句「in the bathroom」為所在房間位置，故疑問詞用「Where」。"
@@ -17558,9 +17558,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "No, she isn't.",
       "He is cooking.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17585,9 +17585,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What",
       "Who",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "答句「in the living room」為所在房間位置，故疑問詞用「Where」。"
@@ -17639,9 +17639,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He is cooking.",
       "Yes, he is.",
       "No, she isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17666,9 +17666,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What",
       "Who",
       "How",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "答句「in the dining room」為所在房間位置，故疑問詞用「Where」。"
@@ -17720,9 +17720,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, she isn't.",
       "He is cooking.",
       "Yes, he is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17747,9 +17747,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "How",
       "What",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "答句「in the kitchen」為所在房間位置，故疑問詞用「Where」。"
@@ -17801,9 +17801,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "No, she isn't.",
       "He is cooking.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17828,9 +17828,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "How",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "When",
+      "Whose",
+      "Which"
     ],
     "answer": 0,
     "explanation": "答句「in the yard」為所在房間位置，故疑問詞用「Where」。"
@@ -17882,9 +17882,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he is.",
       "No, she isn't.",
       "He is cooking.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17909,9 +17909,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "hat 為單數名詞，Be 動詞搭配「is」。"
@@ -17936,9 +17936,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm in the bedroom.",
       "It's twelve thirty.",
       "They're on the chair.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品應以「It's + 介系詞片語」回答位置。"
@@ -17963,9 +17963,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "are",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "bag 為單數名詞，Be 動詞搭配「is」。"
@@ -17990,9 +17990,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're under the desk.",
       "I'm in the bedroom.",
       "It's twelve thirty.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品應以「It's + 介系詞片語」回答位置。"
@@ -18017,9 +18017,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "pencil case 為單數名詞，Be 動詞搭配「is」。"
@@ -18044,9 +18044,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm in the bedroom.",
       "It's twelve thirty.",
       "They're in the box.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品應以「It's + 介系詞片語」回答位置。"
@@ -18071,9 +18071,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "are",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "watch 為單數名詞，Be 動詞搭配「is」。"
@@ -18098,9 +18098,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're on the table.",
       "I'm in the bedroom.",
       "It's twelve thirty.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品應以「It's + 介系詞片語」回答位置。"
@@ -18125,9 +18125,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "keys 為複數名詞，Be 動詞搭配「are」。"
@@ -18152,9 +18152,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm in the bedroom.",
       "It's twelve thirty.",
       "It's in the bag.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "複數物品應以「They're + 介系詞片語」回答位置。"
@@ -18179,9 +18179,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "is",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "glasses 為複數名詞，Be 動詞搭配「are」。"
@@ -18206,9 +18206,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's on the book.",
       "I'm in the bedroom.",
       "It's twelve thirty.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "複數物品應以「They're + 介系詞片語」回答位置。"
@@ -18233,9 +18233,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "shoes 為複數名詞，Be 動詞搭配「are」。"
@@ -18260,9 +18260,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'm in the bedroom.",
       "It's twelve thirty.",
       "It's under the bed.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "複數物品應以「They're + 介系詞片語」回答位置。"
@@ -18287,9 +18287,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "is",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "socks 為複數名詞，Be 動詞搭配「are」。"
@@ -18314,9 +18314,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's in the box.",
       "I'm in the bedroom.",
       "It's twelve thirty.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "複數物品應以「They're + 介系詞片語」回答位置。"
@@ -18341,9 +18341,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "twelve",
       "two",
       "ten",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "依數字順序：20 (twenty), 21 (twenty-one), 22 (twenty-two)。"
@@ -18395,9 +18395,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's nine o'clock.",
       "Yes, I am.",
       "No, he isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it."
     ],
     "answer": 0,
     "explanation": "後句說明自己正在寫作業，故否定回答「No, I’m not.」。"
@@ -18422,9 +18422,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's",
       "He's",
       "She's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I'm",
+      "You're",
+      "We're"
     ],
     "answer": 0,
     "explanation": "複數物品代名詞使用「They’re (They are)」。"
@@ -18449,9 +18449,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, I'm not.",
       "He is in the yard.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品位置確認，肯定簡答「Yes, it is.」。"
@@ -18503,9 +18503,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's nine o'clock.",
       "Yes, I am.",
       "No, he isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句說明自己正在寫作業，故否定回答「No, I’m not.」。"
@@ -18530,9 +18530,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's",
       "He's",
       "She's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I'm",
+      "You're",
+      "We're"
     ],
     "answer": 0,
     "explanation": "複數物品代名詞使用「They’re (They are)」。"
@@ -18557,9 +18557,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, I'm not.",
       "He is in the yard.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品位置確認，肯定簡答「Yes, it is.」。"
@@ -18611,9 +18611,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's nine o'clock.",
       "Yes, I am.",
       "No, he isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明自己正在寫作業，故否定回答「No, I’m not.」。"
@@ -18638,9 +18638,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's",
       "He's",
       "She's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I'm",
+      "You're",
+      "We're"
     ],
     "answer": 0,
     "explanation": "複數物品代名詞使用「They’re (They are)」。"
@@ -18665,9 +18665,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, I'm not.",
       "He is in the yard.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "單數物品位置確認，肯定簡答「Yes, it is.」。"
@@ -18719,9 +18719,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's nine o'clock.",
       "Yes, I am.",
       "No, he isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明自己正在寫作業，故否定回答「No, I’m not.」。"
@@ -18746,9 +18746,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's",
       "He's",
       "She's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I'm",
+      "You're",
+      "We're"
     ],
     "answer": 0,
     "explanation": "複數物品代名詞使用「They’re (They are)」。"
@@ -18773,9 +18773,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, I'm not.",
       "He is in the yard.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品位置確認，肯定簡答「Yes, it is.」。"
@@ -18827,9 +18827,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's nine o'clock.",
       "Yes, I am.",
       "No, he isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Yes, I can.",
+      "No, I cannot.",
+      "He can do it."
     ],
     "answer": 0,
     "explanation": "後句說明自己正在寫作業，故否定回答「No, I’m not.」。"
@@ -18854,9 +18854,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's",
       "He's",
       "She's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I'm",
+      "You're",
+      "We're"
     ],
     "answer": 0,
     "explanation": "複數物品代名詞使用「They’re (They are)」。"
@@ -18908,9 +18908,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he isn't.",
       "It's nine o'clock.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明自己正在寫作業，故否定回答「No, I’m not.」。"
@@ -18935,9 +18935,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "She's",
       "It's",
       "He's",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I'm",
+      "You're",
+      "We're"
     ],
     "answer": 0,
     "explanation": "複數物品代名詞使用「They’re (They are)」。"
@@ -18989,9 +18989,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's under the bed.",
       "Yes, he is.",
       "Thank you.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "對方催促「快一點！已經七點五十分了！」，回應「糟了！我上學要遲到了！」。"
@@ -19016,9 +19016,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he isn't.",
       "It's six o'clock.",
       "It's under the table.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問端午節是否喜歡吃粽子（Do you like ...?），肯定回答「Yes, I do.」。"
@@ -19070,9 +19070,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "today",
       "they",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "she"
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾（Is today ...?），簡答句主詞一律用代名詞「it」。"
@@ -19124,9 +19124,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "having",
       "had",
       "has",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Does 之後的主要動詞必須還原為原形「have」。"
@@ -19151,9 +19151,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "he",
       "today",
       "they",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "she"
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾（Is today ...?），簡答句主詞一律用代名詞「it」。"
@@ -19205,9 +19205,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "has",
       "having",
       "had",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Does 之後的主要動詞必須還原為原形「have」。"
@@ -19232,9 +19232,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "they",
       "he",
       "today",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "she"
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾（Is today ...?），簡答句主詞一律用代名詞「it」。"
@@ -19286,9 +19286,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "has",
       "having",
       "had",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Does 之後的主要動詞必須還原為原形「have」。"
@@ -19313,9 +19313,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "today",
       "they",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "she"
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾（Is today ...?），簡答句主詞一律用代名詞「it」。"
@@ -19367,9 +19367,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "had",
       "has",
       "having",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Does 之後的主要動詞必須還原為原形「have」。"
@@ -19394,9 +19394,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "today",
       "they",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "she"
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾（Is today ...?），簡答句主詞一律用代名詞「it」。"
@@ -19448,9 +19448,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "having",
       "had",
       "has",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Does 之後的主要動詞必須還原為原形「have」。"
@@ -19475,9 +19475,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "he",
       "today",
       "they",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "she"
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾（Is today ...?），簡答句主詞一律用代名詞「it」。"
@@ -19529,9 +19529,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "has",
       "having",
       "had",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Does 之後的主要動詞必須還原為原形「have」。"
@@ -19556,9 +19556,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "they",
       "he",
       "today",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "I",
+      "you",
+      "she"
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾（Is today ...?），簡答句主詞一律用代名詞「it」。"
@@ -19610,9 +19610,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "has",
       "having",
       "had",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Does 之後的主要動詞必須還原為原形「have」。"
@@ -19637,9 +19637,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 She 搭配「is」形成「is going to the library」。"
@@ -19664,9 +19664,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "does",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 She 搭配「is」形成「is going to the post office」。"
@@ -19691,9 +19691,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "are",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 She 搭配「is」形成「is going to the hospital」。"
@@ -19718,9 +19718,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 She 搭配「is」形成「is going to the supermarket」。"
@@ -19745,9 +19745,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 She 搭配「is」形成「is going to the bookstore」。"
@@ -19772,9 +19772,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "does",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 She 搭配「is」形成「is going to the museum」。"
@@ -19799,9 +19799,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "are",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 She 搭配「is」形成「is going to the bank」。"
@@ -19826,9 +19826,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "第三人稱單數主詞 She 搭配「is」形成「is going to the park」。"
@@ -19853,9 +19853,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "does",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數主詞 He 搭配 Be 動詞「is」形成現在進行式。"
@@ -19880,9 +19880,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "can",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數主詞 He 搭配 Be 動詞「is」形成現在進行式。"
@@ -19907,9 +19907,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "are",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數主詞 He 搭配 Be 動詞「is」形成現在進行式。"
@@ -19934,9 +19934,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "does",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數主詞 He 搭配 Be 動詞「is」形成現在進行式。"
@@ -19961,9 +19961,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "does",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數主詞 He 搭配 Be 動詞「is」形成現在進行式。"
@@ -19988,9 +19988,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "can",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數主詞 He 搭配 Be 動詞「is」形成現在進行式。"
@@ -20042,9 +20042,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "His head hurt.",
       "He is in the park.",
       "It's his cap.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "單數部位「His head」搭配單數動詞「hurts」。"
@@ -20096,9 +20096,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He is in the park.",
       "It's his cap.",
       "His right arm hurt.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "單數部位「His right arm」搭配單數動詞「hurts」。"
@@ -20150,9 +20150,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "His left leg hurt.",
       "He is in the park.",
       "It's his cap.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "單數部位「His left leg」搭配單數動詞「hurts」。"
@@ -20204,9 +20204,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He is in the park.",
       "It's his cap.",
       "His right hand hurt.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "單數部位「His right hand」搭配單數動詞「hurts」。"
@@ -20258,9 +20258,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "His left foot hurt.",
       "He is in the park.",
       "It's his cap.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "單數部位「His left foot」搭配單數動詞「hurts」。"
@@ -20312,9 +20312,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He is in the park.",
       "It's his cap.",
       "His neck hurt.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "單數部位「His neck」搭配單數動詞「hurts」。"
@@ -20366,9 +20366,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "His back hurt.",
       "He is in the park.",
       "It's his cap.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "單數部位「His back」搭配單數動詞「hurts」。"
@@ -20420,9 +20420,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He is in the park.",
       "It's his cap.",
       "His nose hurt.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "單數部位「His nose」搭配單數動詞「hurts」。"
@@ -20474,9 +20474,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it does.",
       "No, they don't.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "複數部位「your eyes」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20528,9 +20528,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, they don't.",
       "Yes, I am.",
       "Yes, it does.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "複數部位「your ears」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20582,9 +20582,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it does.",
       "No, they don't.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "複數部位「your hands」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20636,9 +20636,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, they don't.",
       "Yes, I am.",
       "Yes, it does.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "複數部位「your legs」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20690,9 +20690,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it does.",
       "No, they don't.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "複數部位「your feet」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20744,9 +20744,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, they don't.",
       "Yes, I am.",
       "Yes, it does.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "複數部位「your arms」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20798,9 +20798,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it does.",
       "No, they don't.",
       "Yes, I am.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "複數部位「your knees」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20852,9 +20852,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, they don't.",
       "Yes, I am.",
       "Yes, it does.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "複數部位「your shoulders」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20879,9 +20879,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "do",
       "has",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "was"
     ],
     "answer": 0,
     "explanation": "以助動詞 Does 提問，肯定簡答使用「Yes, he does.」。"
@@ -20933,9 +20933,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I do.",
       "No, he doesn't.",
       "I'd like some soup.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -20960,9 +20960,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "has",
       "is",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "was"
     ],
     "answer": 0,
     "explanation": "以助動詞 Does 提問，肯定簡答使用「Yes, he does.」。"
@@ -21014,9 +21014,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I do.",
       "No, he doesn't.",
       "I'd like some soup.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21041,9 +21041,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "has",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "was"
     ],
     "answer": 0,
     "explanation": "以助動詞 Does 提問，肯定簡答使用「Yes, he does.」。"
@@ -21095,9 +21095,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like some soup.",
       "Yes, I do.",
       "No, he doesn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21122,9 +21122,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "has",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "was"
     ],
     "answer": 0,
     "explanation": "以助動詞 Does 提問，肯定簡答使用「Yes, he does.」。"
@@ -21176,9 +21176,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he doesn't.",
       "I'd like some soup.",
       "Yes, I do.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21203,9 +21203,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "do",
       "has",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "was"
     ],
     "answer": 0,
     "explanation": "以助動詞 Does 提問，肯定簡答使用「Yes, he does.」。"
@@ -21257,9 +21257,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I do.",
       "No, he doesn't.",
       "I'd like some soup.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21284,9 +21284,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "has",
       "is",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "was"
     ],
     "answer": 0,
     "explanation": "以助動詞 Does 提問，肯定簡答使用「Yes, he does.」。"
@@ -21338,9 +21338,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I do.",
       "No, he doesn't.",
       "I'd like some soup.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21365,9 +21365,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "has",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "was"
     ],
     "answer": 0,
     "explanation": "以助動詞 Does 提問，肯定簡答使用「Yes, he does.」。"
@@ -21419,9 +21419,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like some soup.",
       "Yes, I do.",
       "No, he doesn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21608,9 +21608,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "does",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "問句使用 would like，答句同樣使用「He would (He’d) like ...」。"
@@ -21635,9 +21635,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What",
       "Are",
       "Can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "禮貌詢問對方是否想要某餐點使用「Would you like some ...?」。"
@@ -21662,9 +21662,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, please.",
       "No, I don't.",
       "My leg hurts.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -21689,9 +21689,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "can",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "問句使用 would like，答句同樣使用「He would (He’d) like ...」。"
@@ -21716,9 +21716,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can",
       "What",
       "Are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "禮貌詢問對方是否想要某餐點使用「Would you like some ...?」。"
@@ -21743,9 +21743,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My leg hurts.",
       "Yes, please.",
       "No, I don't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -21770,9 +21770,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "can",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "問句使用 would like，答句同樣使用「He would (He’d) like ...」。"
@@ -21797,9 +21797,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are",
       "Can",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "禮貌詢問對方是否想要某餐點使用「Would you like some ...?」。"
@@ -21824,9 +21824,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I don't.",
       "My leg hurts.",
       "Yes, please.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -21851,9 +21851,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "is",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "問句使用 would like，答句同樣使用「He would (He’d) like ...」。"
@@ -21878,9 +21878,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are",
       "Can",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "禮貌詢問對方是否想要某餐點使用「Would you like some ...?」。"
@@ -21905,9 +21905,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, please.",
       "No, I don't.",
       "My leg hurts.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -21932,9 +21932,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "can",
       "does",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "問句使用 would like，答句同樣使用「He would (He’d) like ...」。"
@@ -21959,9 +21959,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "What",
       "Are",
       "Can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "禮貌詢問對方是否想要某餐點使用「Would you like some ...?」。"
@@ -21986,9 +21986,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, please.",
       "No, I don't.",
       "My leg hurts.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -22013,9 +22013,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "can",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "問句使用 would like，答句同樣使用「He would (He’d) like ...」。"
@@ -22040,9 +22040,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Can",
       "What",
       "Are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "禮貌詢問對方是否想要某餐點使用「Would you like some ...?」。"
@@ -22067,9 +22067,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My leg hurts.",
       "Yes, please.",
       "No, I don't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -22094,9 +22094,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "can",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "問句使用 would like，答句同樣使用「He would (He’d) like ...」。"
@@ -22121,9 +22121,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are",
       "Can",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "禮貌詢問對方是否想要某餐點使用「Would you like some ...?」。"
@@ -22148,9 +22148,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I don't.",
       "My leg hurts.",
       "Yes, please.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -22175,9 +22175,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "is",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "問句使用 would like，答句同樣使用「He would (He’d) like ...」。"
@@ -22202,9 +22202,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Are",
       "Can",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "禮貌詢問對方是否想要某餐點使用「Would you like some ...?」。"
@@ -22229,9 +22229,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, please.",
       "No, I don't.",
       "My leg hurts.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "No, thank you.",
+      "I am full."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -22256,9 +22256,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who's",
       "What",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "When",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問「誰的backpack」使用疑問所有格「Whose」。"
@@ -22283,9 +22283,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like some rice.",
       "They're Emma's backpack.",
       "She is Emma.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品 that backpack 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22310,9 +22310,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "Who's",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "When",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問「誰的umbrella」使用疑問所有格「Whose」。"
@@ -22337,9 +22337,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're Nina's umbrella.",
       "She is Nina.",
       "I'd like some rice.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品 that umbrella 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22364,9 +22364,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who's",
       "What",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "When",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問「誰的water bottle」使用疑問所有格「Whose」。"
@@ -22391,9 +22391,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like some rice.",
       "They're Chloe's water bottle.",
       "She is Chloe.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "單數物品 that water bottle 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22418,9 +22418,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "Who's",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "When",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問「誰的cap」使用疑問所有格「Whose」。"
@@ -22445,9 +22445,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're Sophie's cap.",
       "She is Sophie.",
       "I'd like some rice.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品 that cap 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22472,9 +22472,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who's",
       "What",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "When",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問「誰的workbook」使用疑問所有格「Whose」。"
@@ -22499,9 +22499,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like some rice.",
       "They're Hannah's workbook.",
       "She is Hannah.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品 that workbook 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22526,9 +22526,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "Who's",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "When",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問「誰的jacket」使用疑問所有格「Whose」。"
@@ -22553,9 +22553,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're Maya's jacket.",
       "She is Maya.",
       "I'd like some rice.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品 that jacket 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22580,9 +22580,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who's",
       "What",
       "Who",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "When",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問「誰的lunchbox」使用疑問所有格「Whose」。"
@@ -22607,9 +22607,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like some rice.",
       "They're Lily's lunchbox.",
       "She is Lily.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "單數物品 that lunchbox 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22634,9 +22634,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Who",
       "Who's",
       "What",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Where",
+      "When",
+      "Which"
     ],
     "answer": 0,
     "explanation": "詢問「誰的watch」使用疑問所有格「Whose」。"
@@ -22661,9 +22661,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're Ava's watch.",
       "She is Ava.",
       "I'd like some rice.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "單數物品 that watch 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22688,9 +22688,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "do",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "複數名詞 glasses 與指示代名詞 those 搭配複數 Be 動詞「are」。"
@@ -22715,9 +22715,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "Yes, they are.",
       "No, it isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 glasses，且主詞為複數，故選「No, they aren't.」。"
@@ -22742,9 +22742,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "複數名詞 shoes 與指示代名詞 those 搭配複數 Be 動詞「are」。"
@@ -22769,9 +22769,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, it isn't.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 shoes，且主詞為複數，故選「No, they aren't.」。"
@@ -22796,9 +22796,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "do",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "複數名詞 socks 與指示代名詞 those 搭配複數 Be 動詞「are」。"
@@ -22823,9 +22823,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "Yes, they are.",
       "No, it isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 socks，且主詞為複數，故選「No, they aren't.」。"
@@ -22850,9 +22850,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "複數名詞 gloves 與指示代名詞 those 搭配複數 Be 動詞「are」。"
@@ -22877,9 +22877,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, it isn't.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 gloves，且主詞為複數，故選「No, they aren't.」。"
@@ -22904,9 +22904,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "do",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "複數名詞 pants 與指示代名詞 those 搭配複數 Be 動詞「are」。"
@@ -22931,9 +22931,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "Yes, they are.",
       "No, it isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 pants，且主詞為複數，故選「No, they aren't.」。"
@@ -22958,9 +22958,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "複數名詞 notebooks 與指示代名詞 those 搭配複數 Be 動詞「are」。"
@@ -22985,9 +22985,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, it isn't.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 notebooks，且主詞為複數，故選「No, they aren't.」。"
@@ -23012,9 +23012,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "do",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "複數名詞 brushes 與指示代名詞 those 搭配複數 Be 動詞「are」。"
@@ -23039,9 +23039,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, it is.",
       "Yes, they are.",
       "No, it isn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 brushes，且主詞為複數，故選「No, they aren't.」。"
@@ -23066,9 +23066,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "am",
       "do",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "複數名詞 keys 與指示代名詞 those 搭配複數 Be 動詞「are」。"
@@ -23093,9 +23093,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, it isn't.",
       "Yes, it is.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 keys，且主詞為複數，故選「No, they aren't.」。"
@@ -23120,9 +23120,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "he",
       "they",
       "Lucas",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "表示某人的物品需在人名後加所有格「’s」。"
@@ -23147,9 +23147,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "they",
       "Max",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "表示某人的物品需在人名後加所有格「’s」。"
@@ -23174,9 +23174,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Leo",
       "he",
       "they",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "表示某人的物品需在人名後加所有格「’s」。"
@@ -23201,9 +23201,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Kulas",
       "he",
       "they",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "表示某人的物品需在人名後加所有格「’s」。"
@@ -23228,9 +23228,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "he",
       "they",
       "Ryan",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "表示某人的物品需在人名後加所有格「’s」。"
@@ -23255,9 +23255,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "they",
       "Owen",
       "he",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "表示某人的物品需在人名後加所有格「’s」。"
@@ -23282,9 +23282,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數主詞 Lucas 搭配 Be 動詞「is」（Where is ... from?）。"
@@ -23309,9 +23309,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數主詞 Max 搭配 Be 動詞「is」（Where is ... from?）。"
@@ -23336,9 +23336,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "does",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數主詞 Leo 搭配 Be 動詞「is」（Where is ... from?）。"
@@ -23363,9 +23363,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "are",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數主詞 Kulas 搭配 Be 動詞「is」（Where is ... from?）。"
@@ -23390,9 +23390,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數主詞 Ryan 搭配 Be 動詞「is」（Where is ... from?）。"
@@ -23417,9 +23417,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "am",
       "does",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數主詞 Owen 搭配 Be 動詞「is」（Where is ... from?）。"
@@ -23444,9 +23444,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "am",
       "does",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數主詞 Noah 搭配 Be 動詞「is」（Where is ... from?）。"
@@ -23471,9 +23471,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "are",
       "am",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "was",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "單數主詞 Alex 搭配 Be 動詞「is」（Where is ... from?）。"
@@ -23714,9 +23714,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "on",
       "in",
       "to",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "for",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "特定時刻「6:30」前面固定使用介系詞「at」。"
@@ -23768,9 +23768,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "in",
       "to",
       "on",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "for",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "特定時刻「7:20」前面固定使用介系詞「at」。"
@@ -23822,9 +23822,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "on",
       "in",
       "to",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "for",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "特定時刻「12:00」前面固定使用介系詞「at」。"
@@ -23876,9 +23876,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "in",
       "to",
       "on",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "for",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "特定時刻「4:15」前面固定使用介系詞「at」。"
@@ -23930,9 +23930,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "on",
       "in",
       "to",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "for",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "特定時刻「5:00」前面固定使用介系詞「at」。"
@@ -23984,9 +23984,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "in",
       "to",
       "on",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "for",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "特定時刻「6:30」前面固定使用介系詞「at」。"
@@ -24038,9 +24038,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "on",
       "in",
       "to",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "for",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "特定時刻「8:00」前面固定使用介系詞「at」。"
@@ -24092,9 +24092,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "in",
       "to",
       "on",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "for",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "特定時刻「9:30」前面固定使用介系詞「at」。"
@@ -24119,9 +24119,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I like winter.",
       "I was at home yesterday.",
       "It's five hundred dollars.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問平時休閒活動使用現在簡單式回答「I ... in my free time.」。"
@@ -24146,9 +24146,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I was at home yesterday.",
       "It's five hundred dollars.",
       "I like winter.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問平時休閒活動使用現在簡單式回答「I ... in my free time.」。"
@@ -24173,9 +24173,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I was at home yesterday.",
       "It's five hundred dollars.",
       "I like winter.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問平時休閒活動使用現在簡單式回答「I ... in my free time.」。"
@@ -24200,9 +24200,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's five hundred dollars.",
       "I like winter.",
       "I was at home yesterday.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問平時休閒活動使用現在簡單式回答「I ... in my free time.」。"
@@ -24227,9 +24227,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I like winter.",
       "I was at home yesterday.",
       "It's five hundred dollars.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問平時休閒活動使用現在簡單式回答「I ... in my free time.」。"
@@ -24254,9 +24254,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I was at home yesterday.",
       "It's five hundred dollars.",
       "I like winter.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is ten o'clock.",
+      "Time for school.",
+      "Hurry up!"
     ],
     "answer": 0,
     "explanation": "詢問平時休閒活動使用現在簡單式回答「I ... in my free time.」。"
@@ -24281,9 +24281,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "were",
       "is",
       "did",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "be"
     ],
     "answer": 0,
     "explanation": "過去時間 yesterday 搭配第三人稱單數主詞 Lucas，Be 動詞用過去式「was」。"
@@ -24335,9 +24335,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, they weren't.",
       "Yes, she was.",
       "No, she didn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "以 Was Emma...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24362,9 +24362,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "were",
       "is",
       "did",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "be"
     ],
     "answer": 0,
     "explanation": "過去時間 yesterday 搭配第三人稱單數主詞 Max，Be 動詞用過去式「was」。"
@@ -24416,9 +24416,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, she didn't.",
       "No, they weren't.",
       "Yes, she was.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "以 Was Nina...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24443,9 +24443,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "did",
       "were",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "be"
     ],
     "answer": 0,
     "explanation": "過去時間 yesterday 搭配第三人稱單數主詞 Leo，Be 動詞用過去式「was」。"
@@ -24497,9 +24497,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she was.",
       "No, she didn't.",
       "No, they weren't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "以 Was Chloe...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24524,9 +24524,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "did",
       "were",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "be"
     ],
     "answer": 0,
     "explanation": "過去時間 yesterday 搭配第三人稱單數主詞 Kulas，Be 動詞用過去式「was」。"
@@ -24578,9 +24578,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she was.",
       "No, she didn't.",
       "No, they weren't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "以 Was Sophie...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24605,9 +24605,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "were",
       "is",
       "did",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "be"
     ],
     "answer": 0,
     "explanation": "過去時間 yesterday 搭配第三人稱單數主詞 Ryan，Be 動詞用過去式「was」。"
@@ -24659,9 +24659,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, they weren't.",
       "Yes, she was.",
       "No, she didn't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "以 Was Hannah...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24686,9 +24686,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "were",
       "is",
       "did",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "be"
     ],
     "answer": 0,
     "explanation": "過去時間 yesterday 搭配第三人稱單數主詞 Owen，Be 動詞用過去式「was」。"
@@ -24740,9 +24740,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, she didn't.",
       "No, they weren't.",
       "Yes, she was.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "以 Was Maya...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24767,9 +24767,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "did",
       "were",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "be"
     ],
     "answer": 0,
     "explanation": "過去時間 yesterday 搭配第三人稱單數主詞 Noah，Be 動詞用過去式「was」。"
@@ -24821,9 +24821,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she was.",
       "No, she didn't.",
       "No, they weren't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "以 Was Lily...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24848,9 +24848,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "did",
       "were",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "are",
+      "be"
     ],
     "answer": 0,
     "explanation": "過去時間 yesterday 搭配第三人稱單數主詞 Alex，Be 動詞用過去式「was」。"
@@ -24902,9 +24902,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, she was.",
       "No, she didn't.",
       "No, they weren't.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is over there.",
+      "Go straight.",
+      "Turn left."
     ],
     "answer": 0,
     "explanation": "以 Was Ava...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24956,9 +24956,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "plays the piano",
       "playing",
       "played the piano",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「play the piano」。"
@@ -24983,9 +24983,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he did.",
       "He plays the piano every day.",
       "He was at the mall.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25037,9 +25037,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "played baseball",
       "plays baseball",
       "playing",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「play baseball」。"
@@ -25064,9 +25064,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He was at the mall.",
       "Yes, he did.",
       "He plays baseball every day.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25118,9 +25118,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "surfed the Internet",
       "surfs the Internet",
       "surfing",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「surf the Internet」。"
@@ -25145,9 +25145,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He surfs the Internet every day.",
       "He was at the mall.",
       "Yes, he did.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25199,9 +25199,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "watering",
       "watered the plants",
       "waters the plants",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「water the plants」。"
@@ -25226,9 +25226,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He waters the plants every day.",
       "He was at the mall.",
       "Yes, he did.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25280,9 +25280,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "watches a movie",
       "watching",
       "watched a movie",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「watch a movie」。"
@@ -25307,9 +25307,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, he did.",
       "He watches a movie every day.",
       "He was at the mall.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25361,9 +25361,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "listened to music",
       "listens to music",
       "listening",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「listen to music」。"
@@ -25388,9 +25388,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He was at the mall.",
       "Yes, he did.",
       "He listens to music every day.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25442,9 +25442,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "cleaned the room",
       "cleans the room",
       "cleaning",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「clean the room」。"
@@ -25469,9 +25469,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He cleans the room every day.",
       "He was at the mall.",
       "Yes, he did.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25523,9 +25523,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "walking",
       "walked the dog",
       "walks the dog",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「walk the dog」。"
@@ -25550,9 +25550,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He walks the dog every day.",
       "He was at the mall.",
       "Yes, he did.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25577,9 +25577,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Was; were",
       "Did; did",
       "Were; were",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "第一空主詞 you 搭配「Were」；第二空主詞 I 搭配「was」。"
@@ -25604,9 +25604,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "can",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數服飾「this T-shirt」詢問價格時搭配單數 Be 動詞「is」。"
@@ -25631,9 +25631,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's warm in spring.",
       "They're two hundred dollars.",
       "There are two coats.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "單數服飾以「It's + 金額 + dollars.」回答價格。"
@@ -25658,9 +25658,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "does",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數服飾「this coat」詢問價格時搭配單數 Be 動詞「is」。"
@@ -25685,9 +25685,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're nine hundred dollars.",
       "There are two coats.",
       "It's warm in spring.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "單數服飾以「It's + 金額 + dollars.」回答價格。"
@@ -25712,9 +25712,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "can",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數服飾「this dress」詢問價格時搭配單數 Be 動詞「is」。"
@@ -25739,9 +25739,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's warm in spring.",
       "They're seven hundred fifty dollars.",
       "There are two coats.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "單數服飾以「It's + 金額 + dollars.」回答價格。"
@@ -25766,9 +25766,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "does",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數服飾「this skirt」詢問價格時搭配單數 Be 動詞「is」。"
@@ -25793,9 +25793,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're four hundred dollars.",
       "There are two coats.",
       "It's warm in spring.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "單數服飾以「It's + 金額 + dollars.」回答價格。"
@@ -25820,9 +25820,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "can",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數服飾「this jacket」詢問價格時搭配單數 Be 動詞「is」。"
@@ -25847,9 +25847,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's warm in spring.",
       "They're eight hundred dollars.",
       "There are two coats.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "單數服飾以「It's + 金額 + dollars.」回答價格。"
@@ -25874,9 +25874,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "does",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數服飾「this hat」詢問價格時搭配單數 Be 動詞「is」。"
@@ -25901,9 +25901,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're one hundred fifty dollars.",
       "There are two coats.",
       "It's warm in spring.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "單數服飾以「It's + 金額 + dollars.」回答價格。"
@@ -25928,9 +25928,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "does",
       "can",
       "are",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數服飾「this shirt」詢問價格時搭配單數 Be 動詞「is」。"
@@ -25955,9 +25955,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's warm in spring.",
       "They're three hundred dollars.",
       "There are two coats.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "單數服飾以「It's + 金額 + dollars.」回答價格。"
@@ -25982,9 +25982,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "are",
       "does",
       "can",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "was",
+      "were"
     ],
     "answer": 0,
     "explanation": "單數服飾「this sweater」詢問價格時搭配單數 Be 動詞「is」。"
@@ -26009,9 +26009,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're six hundred dollars.",
       "There are two coats.",
       "It's warm in spring.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "單數服飾以「It's + 金額 + dollars.」回答價格。"
@@ -26036,9 +26036,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "was",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "成雙或複數服飾「these jeans」搭配複數 Be 動詞「are」。"
@@ -26063,9 +26063,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I was at the department store.",
       "It's eight hundred dollars.",
       "Yes, they are.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "複數服飾「those jeans」回答價格使用「They're + 金額 + dollars.」。"
@@ -26090,9 +26090,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "do",
       "was",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "成雙或複數服飾「these pants」搭配複數 Be 動詞「are」。"
@@ -26117,9 +26117,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's five hundred dollars.",
       "Yes, they are.",
       "I was at the department store.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "複數服飾「those pants」回答價格使用「They're + 金額 + dollars.」。"
@@ -26144,9 +26144,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "was",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "成雙或複數服飾「these shorts」搭配複數 Be 動詞「are」。"
@@ -26171,9 +26171,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I was at the department store.",
       "It's three hundred fifty dollars.",
       "Yes, they are.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "複數服飾「those shorts」回答價格使用「They're + 金額 + dollars.」。"
@@ -26198,9 +26198,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "do",
       "was",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "成雙或複數服飾「these shoes」搭配複數 Be 動詞「are」。"
@@ -26225,9 +26225,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's nine hundred ninety dollars.",
       "Yes, they are.",
       "I was at the department store.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "複數服飾「those shoes」回答價格使用「They're + 金額 + dollars.」。"
@@ -26252,9 +26252,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "was",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "成雙或複數服飾「these socks」搭配複數 Be 動詞「are」。"
@@ -26279,9 +26279,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I was at the department store.",
       "It's one hundred dollars.",
       "Yes, they are.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "複數服飾「those socks」回答價格使用「They're + 金額 + dollars.」。"
@@ -26306,9 +26306,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "do",
       "was",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "成雙或複數服飾「these boots」搭配複數 Be 動詞「are」。"
@@ -26333,9 +26333,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's seven hundred dollars.",
       "Yes, they are.",
       "I was at the department store.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "複數服飾「those boots」回答價格使用「They're + 金額 + dollars.」。"
@@ -26360,9 +26360,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "do",
       "was",
       "is",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "成雙或複數服飾「these glasses」搭配複數 Be 動詞「are」。"
@@ -26387,9 +26387,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I was at the department store.",
       "It's six hundred fifty dollars.",
       "Yes, they are.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "複數服飾「those glasses」回答價格使用「They're + 金額 + dollars.」。"
@@ -26414,9 +26414,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "is",
       "do",
       "was",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "am",
+      "were",
+      "be"
     ],
     "answer": 0,
     "explanation": "成雙或複數服飾「these gloves」搭配複數 Be 動詞「are」。"
@@ -26441,9 +26441,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's two hundred fifty dollars.",
       "Yes, they are.",
       "I was at the department store.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is fifty dollars.",
+      "That is too expensive.",
+      "Here is your change."
     ],
     "answer": 0,
     "explanation": "複數服飾「those gloves」回答價格使用「They're + 金額 + dollars.」。"
@@ -26468,9 +26468,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "at",
       "for",
       "on",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "to",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "四季名稱「spring」前面固定使用介系詞「in」。"
@@ -26495,9 +26495,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're five hundred dollars.",
       "It's warm and rainy.",
       "He was at the zoo.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問最喜歡的季節（What's ... favorite season?），回答「He likes spring.」。"
@@ -26522,9 +26522,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I do.",
       "No, I was not.",
       "My favorite season is spring.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is sunny and hot.",
+      "It is rainy today.",
+      "Take an umbrella."
     ],
     "answer": 0,
     "explanation": "以 Is it ...? 詢問天氣，肯定簡答使用「Yes, it is.」。"
@@ -26549,9 +26549,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "on",
       "at",
       "for",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "to",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "四季名稱「summer」前面固定使用介系詞「in」。"
@@ -26576,9 +26576,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "He was at the zoo.",
       "They're five hundred dollars.",
       "It's hot and sunny.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問最喜歡的季節（What's ... favorite season?），回答「He likes summer.」。"
@@ -26603,9 +26603,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "My favorite season is summer.",
       "Yes, I do.",
       "No, I was not.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is sunny and hot.",
+      "It is rainy today.",
+      "Take an umbrella."
     ],
     "answer": 0,
     "explanation": "以 Is it ...? 詢問天氣，肯定簡答使用「Yes, it is.」。"
@@ -26630,9 +26630,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "on",
       "at",
       "for",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "to",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "四季名稱「fall」前面固定使用介系詞「in」。"
@@ -26657,9 +26657,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's cool and windy.",
       "He was at the zoo.",
       "They're five hundred dollars.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問最喜歡的季節（What's ... favorite season?），回答「He likes fall.」。"
@@ -26684,9 +26684,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, I was not.",
       "My favorite season is fall.",
       "Yes, I do.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is sunny and hot.",
+      "It is rainy today.",
+      "Take an umbrella."
     ],
     "answer": 0,
     "explanation": "以 Is it ...? 詢問天氣，肯定簡答使用「Yes, it is.」。"
@@ -26711,9 +26711,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "for",
       "on",
       "at",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "to",
+      "with",
+      "by"
     ],
     "answer": 0,
     "explanation": "四季名稱「winter」前面固定使用介系詞「in」。"
@@ -26738,9 +26738,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "It's cold and snowy.",
       "He was at the zoo.",
       "They're five hundred dollars.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "Here you are.",
+      "Yes, please.",
+      "No, thank you."
     ],
     "answer": 0,
     "explanation": "詢問最喜歡的季節（What's ... favorite season?），回答「He likes winter.」。"
@@ -26765,9 +26765,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, I do.",
       "No, I was not.",
       "My favorite season is winter.",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "It is sunny and hot.",
+      "It is rainy today.",
+      "Take an umbrella."
     ],
     "answer": 0,
     "explanation": "以 Is it ...? 詢問天氣，肯定簡答使用「Yes, it is.」。"
@@ -26981,9 +26981,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "went shopping",
       "gos",
       "to go shopping",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「go shopping」。"
@@ -27035,9 +27035,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "to eat snacks",
       "ate snacks",
       "eats",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「eat snacks」。"
@@ -27089,9 +27089,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "drank juice",
       "drinks",
       "to drink juice",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「drink juice」。"
@@ -27143,9 +27143,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "to fly a kite",
       "flew a kite",
       "flys",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「fly a kite」。"
@@ -27197,9 +27197,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "rode a bike",
       "rides",
       "to ride a bike",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「ride a bike」。"
@@ -27251,9 +27251,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "to see a movie",
       "saw a movie",
       "sees",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「see a movie」。"
@@ -27305,9 +27305,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "swam",
       "swims",
       "to swim",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「swim」。"
@@ -27359,9 +27359,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "to sing songs",
       "sang songs",
       "sings",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "it",
+      "this",
+      "that"
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「sing songs」。"
@@ -27413,9 +27413,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "drew a picture",
       "draws",
       "to draw a picture",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「draw a picture」。"
@@ -27467,9 +27467,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "to write a letter",
       "wrote a letter",
       "writes",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「write a letter」。"
@@ -27521,9 +27521,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "took a walk",
       "takes",
       "to take a walk",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「take a walk」。"
@@ -27575,9 +27575,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "to have a picnic",
       "had a picnic",
       "haves",
-      "I am fine, thank you.",
-      "Nice to meet you, too.",
-      "My name is Leo."
+      "See you later.",
+      "Have a nice day!",
+      "You're welcome."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「have a picnic」。"
