@@ -201,6 +201,9 @@ async function run() {
     if ((q.book === 'g1' || q.book === 'g2') && (/後面的字母/.test(q.question) || /前面的字母/.test(q.question)) && !/緊接/.test(q.question)) {
       failures.push({ target: 'Static Contract: Ambiguous letter order phrasing', id: q.id });
     }
+    if (Array.isArray(q.scopes) && q.scopes.length > 2) {
+      failures.push({ target: 'Static Contract: MCQ scopes length > 2', id: q.id, scopes: q.scopes });
+    }
   }
   for (const b of ['g1', 'g2', 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
     if (mcqBookCounts[b] < 100) {

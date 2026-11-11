@@ -27,8 +27,20 @@ import {
   SAA_ALL_OFFICIAL_QUESTIONS,
   SAA_ALL_EXAM_PAPERS
 } from './saa/index.js';
+import {
+  CANONICAL_STATS,
+  LEGACY_TO_CANONICAL_MAP,
+  CANONICAL_META_MAP,
+  resolveCanonicalId,
+  isCanonicalId
+} from './canonicalMapping.js';
 
 export {
+  CANONICAL_STATS,
+  LEGACY_TO_CANONICAL_MAP,
+  CANONICAL_META_MAP,
+  resolveCanonicalId,
+  isCanonicalId,
   EXAM_TRACKS,
   TME_PRE_A1_SPEC,
   TME_PRE_A1_CATEGORIES,

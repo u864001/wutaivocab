@@ -8,33 +8,42 @@ import {
 } from '../src/data/exam/canonicalMapping.js';
 
 console.log('══════════════════════════════════════════════════════════════');
-console.log('  RUNNING SCHEME A CANONICAL SCHEMA & CI CONTRACT VERIFIER   ');
+console.log('  RUNNING SCHEME A DUAL-MODE SCHEMA & CI CONTRACT VERIFIER   ');
 console.log('══════════════════════════════════════════════════════════════');
 
 const errors = [];
 
-// 1. Total Bank Size Contract
-if (HERE_WE_GO_MCQ_BANK.length !== 3317) {
-  errors.push(`Total bank length is ${HERE_WE_GO_MCQ_BANK.length}, expected 3317.`);
+// 1. Dual-Mode Detection: Expanded (3,317) vs Pruned Canonical (1,589)
+const isPrunedMode = HERE_WE_GO_MCQ_BANK.length === 1589;
+const isExpandedMode = HERE_WE_GO_MCQ_BANK.length === 3317;
+
+if (!isPrunedMode && !isExpandedMode) {
+  errors.push(`Total bank length is ${HERE_WE_GO_MCQ_BANK.length}, expected either 3317 (expanded mode) or 1589 (pruned mode).`);
 }
+
+console.log(`Detected Mode: ${isPrunedMode ? 'PRUNED CANONICAL (1,589 items)' : 'EXPANDED DUAL (3,317 items)'}`);
 
 // 2. Canonical vs Clone Counts
 const canonicalItems = HERE_WE_GO_MCQ_BANK.filter(q => q.isCanonical === true);
 const cloneItems = HERE_WE_GO_MCQ_BANK.filter(q => q.isCanonical === false);
 
 if (canonicalItems.length !== 1589) {
-  errors.push(`Canonical questions count is ${canonicalItems.length}, expected 1589.`);
+  errors.push(`Canonical questions count is ${canonicalItems.length}, expected exactly 1589.`);
 }
 
-if (cloneItems.length !== 1728) {
-  errors.push(`Clone questions count is ${cloneItems.length}, expected 1728.`);
+if (isExpandedMode && cloneItems.length !== 1728) {
+  errors.push(`Clone questions count in expanded mode is ${cloneItems.length}, expected 1728.`);
+}
+
+if (isPrunedMode && cloneItems.length !== 0) {
+  errors.push(`Clone questions count in pruned mode is ${cloneItems.length}, expected 0.`);
 }
 
 if (canonicalItems.length + cloneItems.length !== HERE_WE_GO_MCQ_BANK.length) {
   errors.push(`Some questions have missing or non-boolean isCanonical.`);
 }
 
-// 3. ID and Pointer Integrity
+// 3. ID, Scopes, and Pointer Integrity
 const canonicalIdSet = new Set(canonicalItems.map(q => q.id));
 
 for (const q of HERE_WE_GO_MCQ_BANK) {
@@ -53,8 +62,21 @@ for (const q of HERE_WE_GO_MCQ_BANK) {
   }
   if (!Array.isArray(q.scopes) || q.scopes.length === 0) {
     errors.push(`Question ${q.id} has empty or non-array scopes.`);
-  } else if (!q.scopes.includes(q.primaryScope)) {
-    errors.push(`Question ${q.id} scopes do not include its primaryScope (${q.primaryScope}).`);
+  } else {
+    // 嚴格規範：scopes 長度不可超過 2 (原授課單元 + 對應 Review)
+    if (q.scopes.length > 2) {
+      errors.push(`Question ${q.id} has ${q.scopes.length} scopes (max allowed is 2: primaryScope + Review).`);
+    }
+    if (!q.scopes.includes(q.primaryScope)) {
+      errors.push(`Question ${q.id} scopes do not include its primaryScope (${q.primaryScope}).`);
+    }
+  }
+  // 品質檢查：7 選項與正答 index 0 契約
+  if (!Array.isArray(q.options) || q.options.length !== 7) {
+    errors.push(`Question ${q.id} has ${q.options?.length} options, expected exactly 7.`);
+  }
+  if (q.answer !== 0) {
+    errors.push(`Question ${q.id} answer index is ${q.answer}, expected 0.`);
   }
 }
 
@@ -99,9 +121,12 @@ if (errors.length > 0) {
   }
   process.exit(1);
 } else {
-  console.log('✓ All 3,317 questions verified:');
-  console.log('  - 1,589 In-Book Canonical Questions');
-  console.log('  - 1,728 In-Book Duplicate Clones');
-  console.log('  - 11 Books verified (all >= 100 independent questions)');
-  console.log('  - Complete bidirectional mapping & scope integrity verified 100%!');
+  console.log(`✓ All ${HERE_WE_GO_MCQ_BANK.length} questions verified in ${isPrunedMode ? 'PRUNED' : 'EXPANDED'} mode:`);
+  console.log(`  - 1,589 In-Book Canonical Questions`);
+  if (isExpandedMode) {
+    console.log(`  - 1,728 In-Book Duplicate Clones`);
+  }
+  console.log(`  - Max Scopes per question <= 2 verified!`);
+  console.log(`  - 11 Books verified (all >= 100 independent questions)`);
+  console.log(`  - Complete bidirectional mapping & scope integrity verified 100%!`);
 }

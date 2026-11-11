@@ -55,8 +55,10 @@ import {
 import {
   recordExamMasterySession,
   loadStudentMastery,
+  migrateMistakeMapToCanonical,
   MASTERY_STATES
 } from '../../utils/masteryHelper';
+import { resolveCanonicalId } from '../../data/exam';
 import { PreA1MasteryDashboard } from '../../components/exam/PreA1MasteryDashboard';
 import {
   assembleExamForm,
@@ -145,10 +147,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   }, [currentStudent]);
 
   // 讀取與儲存個人易錯題池: { [qId]: { wrongCount: number, streak: number, updatedAt: number } }
+  // （自動執行 Canonical 遷移，保證舊題號在題庫精簡後 100% 保留且不丟失）
   const [mistakeMap, setMistakeMap] = useState(() => {
     try {
       const raw = localStorage.getItem(mistakeStorageKey);
-      return raw ? JSON.parse(raw) : {};
+      const parsed = raw ? JSON.parse(raw) : {};
+      return migrateMistakeMapToCanonical(parsed, mistakeStorageKey);
     } catch {
       return {};
     }
@@ -157,7 +161,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(mistakeStorageKey);
-      setMistakeMap(raw ? JSON.parse(raw) : {});
+      const parsed = raw ? JSON.parse(raw) : {};
+      setMistakeMap(migrateMistakeMapToCanonical(parsed, mistakeStorageKey));
     } catch {
       setMistakeMap({});
     }
@@ -399,11 +404,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     return pool;
   }, [selectedBook, selectedUnits]);
 
-  // 個人易錯題列表（相容舊題號與 Canonical 題號）
+  // 個人易錯題列表（雙向相容舊題號與 Canonical 題號）
   const mistakeQuestions = useMemo(() => {
     const mistakeKeys = Object.keys(mistakeMap || {});
     if (mistakeKeys.length === 0) return [];
-    const ids = new Set(mistakeKeys);
+    const ids = new Set(mistakeKeys.flatMap((k) => [k, resolveCanonicalId(k)]));
     const seen = new Set();
     const list = [];
     for (const q of HERE_WE_GO_MCQ_BANK) {
@@ -837,7 +842,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
     questions.forEach((q, idx) => {
       const isRight = answers[idx] === q.answer;
-      const targetId = q.canonicalId || q.id;
+      const targetId = resolveCanonicalId(q.canonicalId || q.id);
       if (isRight) {
         correctCount++;
         // 在「個人易錯題複習」模式中答對既有易錯題：連續答對次數 +1，達 2 次即移出易錯池

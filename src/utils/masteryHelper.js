@@ -8,6 +8,8 @@
  * 3. 分母固定為題庫總試題數（如 Pre-A1 為 300 題），確保數據真實覆蓋。
  */
 
+import { resolveCanonicalId } from '../data/exam/canonicalMapping.js';
+
 export const MASTERY_STATES = {
   UNATTEMPTED: 'unattempted', // ⚪ 未挑戰
   MASTERED: 'mastered',       // 🟢 完全精熟
@@ -218,7 +220,7 @@ export function getMasteryStorageKey(studentId) {
   return `wutai_exam_mastery_${sid}`;
 }
 
-/** 讀取學生本機精熟快照 */
+/** 讀取學生本機精熟快照（自動相容並遷移 Canonical 題號） */
 export function loadStudentMastery(studentId) {
   const key = getMasteryStorageKey(studentId);
   try {
@@ -226,10 +228,132 @@ export function loadStudentMastery(studentId) {
     if (!raw) return createEmptyMasterySnapshot(studentId);
     const snap = JSON.parse(raw);
     if (!snap?.tracks) return createEmptyMasterySnapshot(studentId);
-    return snap;
+    return migrateMasterySnapshotToCanonical(snap, studentId);
   } catch {
     return createEmptyMasterySnapshot(studentId);
   }
+}
+
+/**
+ * 將錯題池中的舊題號（Clone ID）自動遷移並融合至標準題號（Canonical ID）
+ * @param {Object} rawMap 原始錯題 Map: { [qId]: { wrongCount, streak, updatedAt } }
+ * @param {string} [storageKey] 若提供且有發生遷移，則自動寫回 LocalStorage
+ * @returns {Object} 遷移融合後的標準錯題 Map
+ */
+export function migrateMistakeMapToCanonical(rawMap = {}, storageKey = null) {
+  if (!rawMap || typeof rawMap !== 'object') return {};
+  let migrated = false;
+  const canonicalMap = {};
+
+  for (const [key, value] of Object.entries(rawMap)) {
+    if (!value || typeof value !== 'object') continue;
+    const targetId = resolveCanonicalId(key) || key;
+    if (targetId !== key) {
+      migrated = true;
+    }
+
+    if (!canonicalMap[targetId]) {
+      canonicalMap[targetId] = {
+        ...value,
+        canonicalId: targetId
+      };
+    } else {
+      // 融合既有記錄
+      const existing = canonicalMap[targetId];
+      canonicalMap[targetId] = {
+        ...existing,
+        wrongCount: (existing.wrongCount || 0) + (value.wrongCount || 0),
+        streak: Math.max(existing.streak || 0, value.streak || 0),
+        updatedAt: Math.max(existing.updatedAt || 0, value.updatedAt || 0),
+        canonicalId: targetId
+      };
+      migrated = true;
+    }
+  }
+
+  if (migrated && storageKey && typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(canonicalMap));
+    } catch {
+      // 忽略 LocalStorage 例外
+    }
+  }
+
+  return canonicalMap;
+}
+
+/**
+ * 將學生精熟度快照中的舊題號（Clone ID）遷移至 Canonical ID 並重新統計
+ * @param {Object} snapshot 原始精熟度快照
+ * @param {string} [studentId] 若提供且有遷移，自動寫回 LocalStorage
+ * @returns {Object} 遷移後的精熟度快照
+ */
+export function migrateMasterySnapshotToCanonical(snapshot, studentId = null) {
+  if (!snapshot?.tracks) return snapshot;
+  let migrated = false;
+
+  for (const [trackName, trackData] of Object.entries(snapshot.tracks)) {
+    if (!trackData?.items) continue;
+    const itemsMap = trackData.items;
+    const nextItems = {};
+
+    for (const [key, item] of Object.entries(itemsMap)) {
+      if (!item) continue;
+      const targetId = resolveCanonicalId(item.canonicalId || item.id || key) || key;
+      if (targetId !== key) {
+        migrated = true;
+      }
+
+      if (!nextItems[targetId]) {
+        nextItems[targetId] = {
+          ...item,
+          canonicalId: targetId
+        };
+      } else {
+        // 融合既有進度（優先保留更高等級之精熟狀態）
+        const ex = nextItems[targetId];
+        const statusPriority = {
+          [MASTERY_STATES.MASTERED]: 3,
+          [MASTERY_STATES.PROBATION]: 2,
+          [MASTERY_STATES.REMEDIAL]: 1,
+          [MASTERY_STATES.UNATTEMPTED]: 0
+        };
+        const higherStatus = (statusPriority[ex.status] || 0) >= (statusPriority[item.status] || 0)
+          ? ex.status
+          : item.status;
+
+        nextItems[targetId] = {
+          ...ex,
+          status: higherStatus,
+          consecutive_correct: Math.max(ex.consecutive_correct || 0, item.consecutive_correct || 0),
+          attempts: (ex.attempts || 0) + (item.attempts || 0),
+          last_is_correct: item.last_is_correct !== undefined ? item.last_is_correct : ex.last_is_correct,
+          last_attempt_at: (item.last_attempt_at && (!ex.last_attempt_at || item.last_attempt_at > ex.last_attempt_at))
+            ? item.last_attempt_at
+            : ex.last_attempt_at,
+          is_formal: ex.is_formal || item.is_formal || false,
+          canonicalId: targetId
+        };
+        migrated = true;
+      }
+    }
+
+    if (migrated) {
+      const allItemVals = Object.values(nextItems);
+      trackData.mastered_count = allItemVals.filter((it) => it.status === MASTERY_STATES.MASTERED).length;
+      trackData.attempted_count = allItemVals.length;
+      trackData.items = nextItems;
+      if (trackName === 'curriculum') {
+        trackData.total_items = 1589;
+      }
+    }
+  }
+
+  if (migrated && studentId) {
+    saveStudentMastery(studentId, snapshot);
+  }
+
+  return snapshot;
 }
 
 /** 建立初始空白快照 */

@@ -54,6 +54,22 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.10 題庫品質全面大修訂 Batch 6：解除四大架構阻擋（Scopes 課綱正統歸位、學生歷程無損遷移、物理備份與雙模態 CI 契約）、落實 Prune 前安全防線 (`hereWeGoMcqBank.js`, `canonicalMapping.js`, `masteryHelper.js`, `PureMcqExamView.jsx`, `execute_canonical_prune.mjs`, `rollback_canonical_migration.mjs`, `verify_canonical_schema.mjs`, `smoke_test.mjs`)
+* **Blocker 1：Scopes 課綱正統歸位（徹底解決 7~8 scopes 漫延問題）**：
+  * 重新梳理全 11 冊（1~9 冊與 g1/g2）共 268 組單字群之 Here We Go 正統課本授課單元（`CURRICULUM_WORD_MAP`）。
+  * 嚴格規範 `scopes` 長度上限為 2（授課單元 + 對應 Review），徹底杜絕跨全冊漫延（長度 >= 3 降為 0，479 組單 scope，1,110 組雙 scopes）。
+  * 例如 `ruler` 正確歸屬於 `primaryScope: Unit 3`，`scopes: ['Unit 3', 'Review 2']`。
+* **Blocker 2：學生歷程與錯題本無損遷移（Legacy Data Protection）**：
+  * 在 `masteryHelper.js` 實現 `migrateMistakeMapToCanonical` 與 `migrateMasterySnapshotToCanonical`。
+  * `PureMcqExamView.jsx` 於初始化與 storageKey 變更時自動執行錯題遷移，`mistakeQuestions` 支援雙向相容查詢。
+  * `loadStudentMastery` 自動遷移學生歷程中之 Clone ID，精熟狀態保留最優並自動重新計算精熟分母（1,589 題）與總題數。
+* **Blocker 3：真物理備份與原子性替換（Physical Backup & Atomic Rollback）**：
+  * 建立物理備份檔 `src/data/backups/hereWeGoMcqBank.expanded.3317.js` 與 `src/data/backups/manifest.json`（SHA-256 Checksum）。
+  * `execute_canonical_prune.mjs` 採暫存檔驗證後原子性置換（`fs.renameSync`），遇到異常自動還原。
+  * `rollback_canonical_migration.mjs` 透過 SHA-256 校驗後原子性還原 3,317 題。已實測雙向往返 100% 成功。
+* **Blocker 4：CI 契約與 Smoke Test 支援雙模態（Dual-Mode Contract）**：
+  * `scripts/verify_canonical_schema.mjs` 與 `scripts/smoke_test.mjs` Stage 0 全面支援 `Expanded (3,317)` 與 `Pruned (1,589)` 雙模態驗證，並強制檢查 `scopes.length <= 2` 與 7 選項契約。
+
 #### 0.0.9 題庫品質全面大修訂 Batch 5：消滅 Luca 性別雙正解、修正詳解錯題與舊誘答描述、落實方案 A（In-book Canonical）非破壞性架構奠基 (`hereWeGoMcqBank.js`, `canonicalMapping.js`, `PureMcqExamView.jsx`, `masteryHelper.js`, `verify_canonical_schema.mjs`)
 * **P0：消滅 Luca 房號題雙正解 (`hwg_b7_204`)**：
   * 原選項同時包含 `Her room number is 305.` 與 `His room number is 305.`，因題幹無性別線索導致兩者皆合理。
