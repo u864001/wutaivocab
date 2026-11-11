@@ -63,6 +63,7 @@ import { resolveCanonicalId } from '../../data/exam';
 import { PreA1MasteryDashboard } from '../../components/exam/PreA1MasteryDashboard';
 import {
   assembleExamForm,
+  assemblePreA1ExamForm,
   buildFormOutline,
   buildTaskBreakdown,
   getInProgressKey,
@@ -292,7 +293,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     setIsSubmittingReport(true);
 
     try {
-      await submitStudentQuestionReport({
+      const res = await submitStudentQuestionReport({
         questionId: reportingQuestion.id,
         track: scopeMode,
         book: reportingQuestion.book || selectedBook,
@@ -302,19 +303,26 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         studentName: formatStudentDisplayName(currentStudent) || '冒險家'
       });
 
-      setReportedQuestions((prev) => ({
-        ...prev,
-        [reportingQuestion.id]: true
-      }));
-
       setShowReportModal(false);
-      setReportToastMessage('感謝你的回報！老師會盡快為大家檢查這題 ❤️');
+      if (res && res.success === false) {
+        setReportToastMessage('試題回報送出失敗，請檢查網路連線或稍後再試。');
+      } else {
+        setReportedQuestions((prev) => ({
+          ...prev,
+          [reportingQuestion.id]: true
+        }));
+        setReportToastMessage('感謝你的回報！老師會盡快為大家檢查這題 ❤️');
+      }
       setTimeout(() => {
         setReportToastMessage(null);
       }, 3500);
     } catch (err) {
       console.warn('Failed to submit report', err);
       setShowReportModal(false);
+      setReportToastMessage('試題回報送出失敗，請檢查網路連線或稍後再試。');
+      setTimeout(() => {
+        setReportToastMessage(null);
+      }, 3500);
     } finally {
       setIsSubmittingReport(false);
       setReportingQuestion(null);
@@ -405,14 +413,15 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     return pool;
   }, [selectedBook, selectedUnits]);
 
-  // 個人易錯題列表（雙向相容舊題號與 Canonical 題號）
+  // 個人易錯題列表（雙向相容舊題號與 Canonical 題號，全題庫跨軌道檢索）
   const mistakeQuestions = useMemo(() => {
     const mistakeKeys = Object.keys(mistakeMap || {});
     if (mistakeKeys.length === 0) return [];
     const ids = new Set(mistakeKeys.flatMap((k) => [k, resolveCanonicalId(k)]));
     const seen = new Set();
     const list = [];
-    for (const q of HERE_WE_GO_MCQ_BANK) {
+    const allBanks = [...HERE_WE_GO_MCQ_BANK, ...SAA_EXAM_BANK, ...TME_PRE_A1_BANK];
+    for (const q of allBanks) {
       const cId = q.canonicalId || q.id;
       if (ids.has(q.id) || ids.has(cId)) {
         if (!seen.has(cId)) {
@@ -469,11 +478,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     return () => clearInterval(timer);
   }, [phase, startTime, isFormalExam]);
 
-  // 作答中自動保存進度至 LocalStorage（6小時內有效，維護健康回應機制）
+  // 作答中自動保存進度至 LocalStorage（6小時內有效，維護健康回應機制與防作弊防逾時）
   useEffect(() => {
     if (phase === 'exam' && questions.length > 0 && startTime) {
       saveInProgress(inProgressKey, {
         startedAt: startTime,
+        deadlineAt: isFormalExam ? (startTime + 2100 * 1000) : null,
+        isFormalExam: Boolean(isFormalExam),
         questions,
         answers,
         flagged,
@@ -481,7 +492,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         elapsedSec,
         selectedBook,
         scopeMode,
-        questionCountOpt
+        questionCountOpt,
+        selectedPreA1Format,
+        selectedSaaFormat,
+        selectedSaaGrade,
+        selectedSaaYear,
+        selectedUnits,
+        textbookExamMode
       });
     }
   }, [
@@ -493,9 +510,16 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     elapsedSec,
     inProgressKey,
     startTime,
+    isFormalExam,
     selectedBook,
     scopeMode,
-    questionCountOpt
+    questionCountOpt,
+    selectedPreA1Format,
+    selectedSaaFormat,
+    selectedSaaGrade,
+    selectedSaaYear,
+    selectedUnits,
+    textbookExamMode
   ]);
 
   // 若在成績單頁面剛登入，自動補發當次應得金幣
@@ -521,7 +545,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         sourceList = customTargetCount ? [...customPool].slice(0, Number(customTargetCount)) : [...customPool];
       } else if (scopeMode === 'tme-preA1') {
         targetCount = isFormalExam || selectedPreA1Format === 'standard' ? 30 : 20;
-        sourceList = assembleExamForm(tmePool, targetCount);
+        if (isFormalExam || selectedPreA1Format === 'standard') {
+          sourceList = assemblePreA1ExamForm(tmePool, targetCount);
+        } else {
+          sourceList = assembleExamForm(tmePool, targetCount);
+        }
       } else if (scopeMode === 'ministry-assessment') {
         if (selectedSaaFormat === 'standard') {
           targetCount = 35;
@@ -546,7 +574,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           const pickedIds = new Set(sourceList.map((q) => q.id));
           const ownBooks = getDefaultBooksForGrade(currentStudent?.grade);
           const fillerCandidates = HERE_WE_GO_MCQ_BANK.filter(
-            (q) => ownBooks.includes(q.book) && !pickedIds.has(q.id)
+            (q) => (ownBooks.length === 0 || ownBooks.includes(q.book)) && !pickedIds.has(q.id)
           );
           for (let i = fillerCandidates.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -884,9 +912,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     const accuracyRatio = correctCount / total;
     const finalScore = Math.round(accuracyRatio * 100);
 
-    // 判斷是否符合本年級計分資格（易錯題複習或選擇學生自己年級的冊別）
+    // 判斷是否符合計分資格（易錯題複習、Pre-A1 官方模擬、學力檢測、或選擇學生本年級的課本冊別）
+    const isCurriculumTrack = scopeMode === 'curriculum';
     const isOwnGradeBook =
-      scopeMode === 'mistakes' ||
+      !isCurriculumTrack ||
       isBookInOwnGrade(String(selectedBook), currentStudent?.grade, 'mcq-exam');
 
     let coinsEarned = 0;
@@ -902,15 +931,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       coinsEarned = Math.min(20, Math.max(1, Math.round(total * accuracyRatio * 0.4)));
       reason = `通過檢定標準（答對率 ${finalScore}%），獲得 +${coinsEarned} 金幣並計入本週三大榜！`;
 
-      // 自動同步至課本檢定三大累計排行榜（測驗王、勤學王、精準王）
-      const displayName = formatStudentDisplayName(currentStudent);
-      recordMcqExamStats({
-        grade: currentStudent?.grade,
-        book: selectedBook,
-        name: displayName,
-        correctCount,
-        totalCount: total
-      }).catch(() => {});
+      // 僅限課本單元檢定同步至課本三大累計排行榜（測驗王、勤學王、精準王），杜絕跨軌道污染
+      if (scopeMode === 'curriculum') {
+        const displayName = formatStudentDisplayName(currentStudent);
+        recordMcqExamStats({
+          grade: currentStudent?.grade,
+          book: selectedBook,
+          name: displayName,
+          correctCount,
+          totalCount: total
+        }).catch(() => {});
+      }
     }
 
     // 記錄三大檢定動態滾動精熟狀態
@@ -1349,15 +1380,43 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 <button
                   type="button"
                   onClick={() => {
+                    if (savedSession.isFormalExam) {
+                      const now = Date.now();
+                      const deadline = savedSession.deadlineAt || (savedSession.startedAt + 2100 * 1000);
+                      const remainingMs = deadline - now;
+                      if (remainingMs <= 0) {
+                        clearInProgress(inProgressKey);
+                        setQuestions(savedSession.questions || []);
+                        setAnswers(savedSession.answers || {});
+                        setFlagged(savedSession.flagged || {});
+                        setElapsedSec(2100);
+                        setIsFormalExam(true);
+                        setSavedSession(null);
+                        alert('正式測驗 35 分鐘時間已逾時，系統自動為您結算作答成績！');
+                        setPhase('result');
+                        return;
+                      }
+                      setIsFormalExam(true);
+                      setStartTime(savedSession.startedAt);
+                      setElapsedSec(Math.floor((now - savedSession.startedAt) / 1000));
+                    } else {
+                      setIsFormalExam(false);
+                      setElapsedSec(savedSession.elapsedSec || 0);
+                      setStartTime(Date.now() - (savedSession.elapsedSec || 0) * 1000);
+                    }
                     setQuestions(savedSession.questions);
                     setAnswers(savedSession.answers || {});
                     setFlagged(savedSession.flagged || {});
                     setCurrentIndex(savedSession.currentIndex || 0);
-                    setElapsedSec(savedSession.elapsedSec || 0);
-                    setStartTime(Date.now() - (savedSession.elapsedSec || 0) * 1000);
                     if (savedSession.selectedBook) setSelectedBook(savedSession.selectedBook);
                     if (savedSession.questionCountOpt) setQuestionCountOpt(savedSession.questionCountOpt);
                     if (savedSession.scopeMode) setScopeMode(savedSession.scopeMode);
+                    if (savedSession.selectedPreA1Format) setSelectedPreA1Format(savedSession.selectedPreA1Format);
+                    if (savedSession.selectedSaaFormat) setSelectedSaaFormat(savedSession.selectedSaaFormat);
+                    if (savedSession.selectedSaaGrade) setSelectedSaaGrade(savedSession.selectedSaaGrade);
+                    if (savedSession.selectedSaaYear) setSelectedSaaYear(savedSession.selectedSaaYear);
+                    if (savedSession.selectedUnits) setSelectedUnits(savedSession.selectedUnits);
+                    if (savedSession.textbookExamMode) setTextbookExamMode(savedSession.textbookExamMode);
                     setSavedSession(null);
                     setPhase('exam');
                   }}
@@ -1440,7 +1499,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       </span>
                     </div>
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">
-                      參考教育部 SAA 學習成就評量：聽 15 閱 20 正式卷或專項特訓（已建立 75 題全真題庫）
+                      參考教育部 SAA 學習成就評量：聽 15 閱 20 正式卷或專項特訓（已建立 285 題全真題庫）
                     </p>
                   </div>
                 </div>
@@ -2092,7 +2151,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   </div>
                   <div>
                     <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span>教育部 SAA 學力成就 180 全題庫</span>
+                      <span>教育部 SAA 學力成就 285 全題庫</span>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
                         聽力三大題 · 閱讀二大題
                       </span>
@@ -2242,7 +2301,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           </span>
                         </div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          115 年度全真學力檢測標準試卷，1~35 題原卷原圖高解析完整呈現
+                          {selectedSaaYear} 年度全真學力檢測標準試卷，1~35 題原卷原圖高解析完整呈現
                         </div>
                       </div>
                     </div>

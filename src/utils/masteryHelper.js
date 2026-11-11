@@ -9,7 +9,17 @@
  */
 
 import { resolveCanonicalId, CANONICAL_STATS } from '../data/exam/canonicalMapping.js';
-const CURRICULUM_TOTAL_ITEMS = CANONICAL_STATS.canonicalItems;
+export const CURRICULUM_TOTAL_ITEMS = CANONICAL_STATS.canonicalItems;
+export const PRE_A1_TOTAL_ITEMS = 300;
+export const SAA_TOTAL_ITEMS = 285;
+
+/** 取得各軌道之題庫全量總題數（開拓覆蓋率分母） */
+export function getTrackTotalItems(track) {
+  if (track === 'curriculum') return CURRICULUM_TOTAL_ITEMS;
+  if (track === 'ministry-assessment') return SAA_TOTAL_ITEMS;
+  if (track === 'tme-preA1') return PRE_A1_TOTAL_ITEMS;
+  return 0;
+}
 
 export const MASTERY_STATES = {
   UNATTEMPTED: 'unattempted', // ⚪ 未挑戰
@@ -369,7 +379,21 @@ export function createEmptyMasterySnapshot(studentId) {
     updated_at: new Date().toISOString(),
     tracks: {
       'tme-preA1': {
-        total_items: 300,
+        total_items: PRE_A1_TOTAL_ITEMS,
+        mastered_count: 0,
+        attempted_count: 0,
+        total_attempts: 0,
+        items: {}
+      },
+      'ministry-assessment': {
+        total_items: SAA_TOTAL_ITEMS,
+        mastered_count: 0,
+        attempted_count: 0,
+        total_attempts: 0,
+        items: {}
+      },
+      'curriculum': {
+        total_items: CURRICULUM_TOTAL_ITEMS,
         mastered_count: 0,
         attempted_count: 0,
         total_attempts: 0,
@@ -404,16 +428,18 @@ export function saveStudentMastery(studentId, snapshot) {
  */
 export function recordExamMasterySession(studentId, track = 'tme-preA1', questions = [], answers = [], isFormal = false) {
   const snap = loadStudentMastery(studentId);
+  const expectedTotal = getTrackTotalItems(track) || questions.length;
   if (!snap.tracks[track]) {
     snap.tracks[track] = {
-      total_items: track === 'tme-preA1' ? 300 : track === 'curriculum' ? CURRICULUM_TOTAL_ITEMS : questions.length,
+      total_items: expectedTotal,
       mastered_count: 0,
       attempted_count: 0,
       total_attempts: 0,
       items: {}
     };
-  } else if (track === 'curriculum' && snap.tracks[track].total_items !== CURRICULUM_TOTAL_ITEMS) {
-    snap.tracks[track].total_items = CURRICULUM_TOTAL_ITEMS;
+  } else {
+    // 隨時同步最新題庫總題數（例如題庫動態擴充或校正）
+    snap.tracks[track].total_items = expectedTotal;
   }
 
   const trackData = snap.tracks[track];

@@ -193,6 +193,18 @@ function allocate(targetCount, typeKeys, available) {
     }
   });
 
+  // 10 題客觀綜合測驗配額：若同時有聽力與讀寫題型，聽力設定總額上限為 3 題（約 30% 聽力黃金配比）
+  if (
+    targetCount === 10 &&
+    typeKeys.some((k) => TASK_TYPES[k]?.section === 'listening') &&
+    typeKeys.some((k) => TASK_TYPES[k]?.section !== 'listening')
+  ) {
+    const listeningKeys = typeKeys.filter((k) => TASK_TYPES[k]?.section === 'listening');
+    listeningKeys.forEach((k) => {
+      effectiveCaps[k] = Math.min(effectiveCaps[k], Math.ceil(3 / listeningKeys.length));
+    });
+  }
+
   // 第一階段：Round-Robin 輪巡均等分派（由目前題數最少、庫存充足的題型優先分派）
   let progressed = true;
   while (remaining > 0 && progressed) {
@@ -260,8 +272,28 @@ export function assembleExamForm(pool, targetCount) {
     }
   }
 
-  // 10 題以下只取 2～3 種題型（依題量加權隨機挑選）
-  if (targetCount <= 10 && typeKeys.length > 3) {
+  // 10 題以下若兼具聽力與讀寫題型，確保 3 題聽力 + 7 題讀寫之黃金配比（~30% 聽力）
+  if (targetCount === 10 && typeKeys.length > 2) {
+    const listeningKeys = typeKeys.filter((k) => TASK_TYPES[k]?.section === 'listening');
+    const writtenKeys = typeKeys.filter((k) => TASK_TYPES[k]?.section !== 'listening');
+    if (listeningKeys.length > 0 && writtenKeys.length > 0) {
+      const pickedListening = listeningKeys[Math.floor(Math.random() * listeningKeys.length)];
+      const pickedWritten = shuffle(writtenKeys).slice(0, 2);
+      typeKeys = [pickedListening, ...pickedWritten];
+    } else {
+      const want = Math.random() < 0.5 ? 2 : 3;
+      const picked = [];
+      let candidates = [...typeKeys];
+      while (picked.length < want && candidates.length > 0) {
+        const total = candidates.reduce((s, k) => s + byType[k].length, 0);
+        let r = Math.random() * total;
+        const k = candidates.find((c) => (r -= byType[c].length) < 0) || candidates[0];
+        picked.push(k);
+        candidates = candidates.filter((c) => c !== k);
+      }
+      typeKeys = picked;
+    }
+  } else if (targetCount <= 10 && typeKeys.length > 3) {
     const want = Math.random() < 0.5 ? 2 : 3;
     const picked = [];
     let candidates = [...typeKeys];
@@ -359,6 +391,54 @@ export function assembleExamForm(pool, targetCount) {
   }
 
   return form;
+}
+
+/**
+ * 組出 Pre-A1 官方標準試卷 (Standard/Formal Exam)
+ * 規格見 docs/exam/TME_PRE_A1_EXAM_SPEC_AND_GUIDE.md
+ * - 30 題標準正式卷：精確配置 15 題聽力 + 15 題閱讀/字彙，作答時間 35 分鐘
+ * - 20 題模擬卷：精確配置 10 題聽力 + 10 題閱讀/字彙
+ * - 嚴格排除專題特訓題型：W-SCRAMBLE (寫作句子重組) 與 S-READ (口說朗讀)
+ * @param {Array} pool TME_PRE_A1_BANK 題庫或子集
+ * @param {number} targetCount 目標題數（預設 30，可選 20）
+ */
+export function assemblePreA1ExamForm(pool, targetCount = 30) {
+  const formal = (pool || []).filter(isFormalItem);
+
+  const isListeningItem = (q) => {
+    if (q.category === 'speaking' || String(q.taskType).startsWith('S-')) return false;
+    if (q.category === 'writing' || String(q.taskType).startsWith('W-')) return false;
+    return (
+      q.category === 'listening' ||
+      String(q.taskType).startsWith('L-') ||
+      String(q.subType).startsWith('vocab-audio') ||
+      Boolean(q.media?.audioText)
+    );
+  };
+
+  const isReadingVocabItem = (q) => {
+    if (isListeningItem(q)) return false;
+    if (q.category === 'writing' || q.taskType === 'W-SCRAMBLE') return false;
+    if (q.category === 'speaking' || String(q.taskType).startsWith('S-')) return false;
+    return (
+      q.category === 'reading' ||
+      q.category === 'vocab' ||
+      String(q.taskType).startsWith('R-') ||
+      String(q.taskType).startsWith('V-') ||
+      String(q.taskType).startsWith('G-')
+    );
+  };
+
+  const listeningPool = formal.filter(isListeningItem);
+  const readingPool = formal.filter(isReadingVocabItem);
+
+  const listeningTarget = Math.floor(targetCount / 2);
+  const readingTarget = targetCount - listeningTarget;
+
+  const listeningPicked = assembleExamForm(listeningPool, listeningTarget);
+  const readingPicked = assembleExamForm(readingPool, readingTarget);
+
+  return [...listeningPicked, ...readingPicked];
 }
 
 /**

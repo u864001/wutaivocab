@@ -1440,7 +1440,7 @@ export const submitStudentQuestionReport = async ({
         reports: updatedReports
       };
 
-      await supabase
+      const { error: updateError } = await supabase
         .from('leaderboard')
         .update({
           book: JSON.stringify(updatedPayload),
@@ -1449,6 +1449,7 @@ export const submitStudentQuestionReport = async ({
           created_at: nowIso
         })
         .eq('id', row.id);
+      if (updateError) throw updateError;
     } else {
       const initialPayload = {
         questionId,
@@ -1460,7 +1461,7 @@ export const submitStudentQuestionReport = async ({
         reports: [reportItem]
       };
 
-      await supabase
+      const { error: insertError } = await supabase
         .from('leaderboard')
         .insert([{
           device_id: 'student-report',
@@ -1471,12 +1472,13 @@ export const submitStudentQuestionReport = async ({
           time: nowSec,
           week: 0
         }]);
+      if (insertError) throw insertError;
     }
 
     return { success: true };
   } catch (err) {
     console.warn('雲端提交學生試題回報失敗 (本地降級):', err);
-    return { success: false, offline: true };
+    return { success: false, offline: true, error: err?.message || String(err) };
   }
 };
 
