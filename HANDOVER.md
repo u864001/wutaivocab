@@ -54,8 +54,34 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
-#### 0.0.15 Batch C（Book 5 & Book 6）100 題高規格擴充完成（全庫增至 1,889 題）、低年級 (G1/G2) 中文題幹語音朗讀助理全面上線 (`hereWeGoMcqBank.js`, `canonicalMapping.js`, `PureMcqExamView.jsx`, `test_batch_c_contract.mjs`, `expand_batch_c_b5_b6.mjs`)
-* **Batch C 擴充完成（Book 5 & Book 6 共 100 題純 Canonical 擴充，全庫增至 1,889 題）**：
+#### 0.0.16 鷹眼神探 (VocabSpotter) 低年級字母托盤圓形命中區重構、三大內容膠囊與高對比明顯度契約 (Commit `001462e`)
+* **根因定位與幾何重構（徹底根治小螢幕誤觸痛點）**：
+  * 原先旋轉字母按鈕使用瀏覽器 DOM 矩形，在小螢幕上因傾斜角度容易導致按鈕邊界相互重疊，學生點中相異字母時點擊事件常被相鄰普通字母攔截。
+  * 改採**隨機非重疊隱形圓形命中區（`createNonOverlappingSpotterCircles`）**：左右兩盤同一位置字母共用完全一致的圓心與半徑，彼此保留安全間距，絕對不出托盤邊界。
+  * 點擊判定由外層托盤 capture，透過 `resolveSpotterAlphabetHit` 計算觸點至圓心的歐氏距離，只要落在圓內即判定命中，完全不依賴 DOM 矩形，字母旋轉只改變視覺外觀、不影響判定範圍。
+* **SVG 向量字母自適應等比縮放**：
+  * 字母改由 SVG `<AlphabetGlyph>` 繪製在圓內，隨圓框大小同比縮放，文字絕對不會超出圓框。
+* **標準字型白名單與防呆契約**：
+  * 字型嚴格限制為無襯線標準字型（`system-ui`, `Arial`, `Verdana`, `Trebuchet MS`, `Tahoma`, `Segoe UI` 等）。
+  * 左右托盤同一位置永遠鎖定 100% 相同字型，**字型絕對不得作為差異變項**。
+* **四大可視差異維度與明顯度契約（廢除缺字空白設計）**：
+  * **顏色差異**：色距至少 $\ge 160$（使用對比色表 `CONTRASTING_SPOTTER_COLORS`）。
+  * **字體大小差異**：字級比例差距至少 $\ge 18$ SVG 單位（28~34 vs 52~60）。
+  * **旋轉角度差異**：旋轉角度差距至少 $\ge 55^\circ$（限旋轉易辨識之字母：`ABCDEFGJKLMPRTUVWY`）。
+  * **字母不同 / 大小寫不同**：大小寫相異限 `mixed` 模式，且排除容易混淆之字母：`ABDEFGHIJKLMNPQRTUY`。
+  * **複合差異**：約 28% 之目標允許疊加兩種可相容之差異。
+  * **徹底廢除「缺字空白（missing）」無效熱區**。
+  * 非目標字母之字母、顏色、大小、旋轉、字型在左右托盤 100% 像素完全相同。
+* **三大大小寫內容膠囊（Case Mode Capsules）**：
+  * `upper`（全大寫）：一年級預設，目標與干擾項純大寫。
+  * `lower`（全小寫）：二年級預設，目標與干擾項純小寫。
+  * `mixed`（大小寫混合）：每局強制保證大寫與小寫同時存在。
+  * 一、二年級大廳選單中皆可自由切換三種模式；全大寫/全小寫模式下差異目標絕不混入另一種大小寫。
+* **自動化防回歸測試（`scripts/smoke_test.mjs`）**：
+  * 新增圓框幾何一致性與非重疊檢驗、SVG 尺寸安全、字型白名單、顏色/大小/旋轉明顯度門檻、身分預設模式、混合模式多樣性，以及在無頭 Chrome 真實座標點擊差異字母成功加分且不扣心的端對端模擬。
+
+#### 0.0.15 Batch C（Book 5 & Book 6）100 題高規格擴充完成（全庫增至 1,889 題）獲 ChatGPT 隔離複檢全面通過、低年級 (G1/G2) 中文題幹語音朗讀助理全面上線 (`hereWeGoMcqBank.js`, `canonicalMapping.js`, `PureMcqExamView.jsx`, `test_batch_c_contract.mjs`, `expand_batch_c_b5_b6.mjs`)
+* **Batch C 擴充完成並經 ChatGPT 獨立隔離複檢全面通過（Book 5 & Book 6 共 100 題純 Canonical 擴充，全庫增至 1,889 題）**：
   * **Book 5 新增 50 題 (`hwg_b5_bc_01` ~ `hwg_b5_bc_50`)**：由 133 題擴充至 **183 題**。
   * **Book 6 新增 50 題 (`hwg_b6_bc_01` ~ `hwg_b6_bc_50`)**：由 149 題擴充至 **199 題**。
   * **嚴格符合 8/8/10/10/6/8 黃金配比**：每冊皆為 `L-WORD: 8`, `L-RESP: 8`, `V-MEAN: 10`, `G-MC: 10`, `G-CTX: 6`, `R-COMP: 8`。
