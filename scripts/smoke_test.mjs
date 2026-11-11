@@ -885,16 +885,25 @@ async function run() {
         await new Promise(r => setTimeout(r, 180));
         return true;
       };
+      const wizardFitsWithoutScroll = () => {
+        const wizard = document.querySelector('[data-testid="saa-wizard"]');
+        const contentScroller = wizard?.parentElement;
+        if (!wizard || !contentScroller) return false;
+        return contentScroller.scrollHeight <= contentScroller.clientHeight + 2;
+      };
 
       const entered = await clickVisible(findButton('學力檢測練習'));
       const step1 = (document.body.innerText || '').includes('第 1／3 步') && !!findButton('115 年度全真卷');
+      const step1NoScroll = wizardFitsWithoutScroll();
       const continued1 = await clickVisible(findButton('繼續：選擇年級'));
       const step2 = (document.body.innerText || '').includes('第 2／3 步') && !!findButton('五年級');
+      const step2NoScroll = wizardFitsWithoutScroll();
       const gradeSelected = await clickVisible(findButton('五年級'));
       const continued2 = await clickVisible(findButton('繼續：選擇試卷'));
       const step3 = (document.body.innerText || '').includes('第 3／3 步')
-        && !!findButton('聽力測驗 20 題')
-        && !!findButton('閱讀測驗 20 題');
+        && !!findButton('聽力專項')
+        && !!findButton('閱讀專項');
+      const step3NoScroll = wizardFitsWithoutScroll();
       const startButton = findButton('開始學力測驗');
       const startReachable = startButton ? await (async () => {
         startButton.scrollIntoView({ block: 'center' });
@@ -909,11 +918,14 @@ async function run() {
         && findButton('五年級').className.includes('bg-purple-600');
 
       return {
-        ok: entered && step1 && continued1 && step2 && gradeSelected && continued2 && step3 && startReachable && backed && preservedGrade,
+        ok: entered && step1 && step1NoScroll && continued1 && step2 && step2NoScroll && gradeSelected && continued2 && step3 && step3NoScroll && startReachable && backed && preservedGrade,
         entered,
         step1,
+        step1NoScroll,
         step2,
+        step2NoScroll,
         step3,
+        step3NoScroll,
         startReachable,
         preservedGrade
       };
