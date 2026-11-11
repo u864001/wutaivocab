@@ -51,13 +51,24 @@ const BOILERPLATE_DISTRACTORS = new Set([
   'nice to meet you too',
   'my name is leo',
   'i am ten years old',
-  'i am very happy'
+  'i am very happy',
+  'see you later',
+  'have a nice day',
+  "you're welcome",
+  'you are welcome'
 ]);
 
 let issues = [];
+const seenGlobalIds = new Set();
 
 // 1. Textbook MCQ Bank (3,317 questions)
 for (const q of HERE_WE_GO_MCQ_BANK) {
+  // 0. Unique ID check
+  if (!q.id || seenGlobalIds.has(q.id)) {
+    issues.push({ id: q.id, type: 'DUPLICATE_OR_MISSING_ID' });
+  }
+  seenGlobalIds.add(q.id);
+
   // 1. Answer Index must be 0
   if (q.answer !== 0) {
     issues.push({ id: q.id, type: 'NON_ZERO_ANSWER', detail: q.answer });
@@ -116,10 +127,34 @@ for (const q of HERE_WE_GO_MCQ_BANK) {
 
   // 8. No generic boilerplate distractors in G-DLG
   if (q.taskType === 'G-DLG') {
+    const normOpts = q.options.map(o => o.toLowerCase().replace(/[.,!]/g, '').trim());
+
     for (let i = 1; i < q.options.length; i++) {
-      const clean = q.options[i].toLowerCase().replace(/[.,!]/g, '').trim();
+      const clean = normOpts[i];
       if (BOILERPLATE_DISTRACTORS.has(clean)) {
         issues.push({ id: q.id, type: 'BOILERPLATE_DISTRACTOR_IN_GDLG', distractor: q.options[i] });
+      }
+    }
+
+    // 8a. No simultaneous Yes, please. and No, thank you.
+    if (normOpts.includes('yes please') && normOpts.includes('no thank you')) {
+      issues.push({ id: q.id, type: 'MULTI_POLITE_OFFER_ANSWERS', question: q.question });
+    }
+
+    // 8b. No simultaneous specific preposition location and general "over there"
+    if (/Where (?:is|are)/i.test(q.question)) {
+      const hasSpecific = normOpts.some(o => /^(?:it'?s|they'?re)\s+(?:in|on|under|next to|at)\s+/i.test(o));
+      const hasOverThere = normOpts.some(o => /over there/i.test(o));
+      if (hasSpecific && hasOverThere) {
+        issues.push({ id: q.id, type: 'WHERE_MULTI_LOCATION_ANSWERS', question: q.question });
+      }
+    }
+
+    // 8c. No multiple valid times without explicit clue in question
+    if (/What time is it/i.test(q.question) && !/\(\d+:\d+\)/.test(q.question)) {
+      const oclockTimes = normOpts.filter(o => /o'clock|thirty/.test(o) && /^(?:it'?s|it is)\s+/i.test(o));
+      if (oclockTimes.length > 1) {
+        issues.push({ id: q.id, type: 'TIME_MULTI_VALID_ANSWERS', question: q.question, oclockTimes });
       }
     }
   }
@@ -155,13 +190,25 @@ for (const q of TME_PRE_A1_BANK) {
       issues.push({ id: q.id, type: 'TME_DUPLICATE_OPTIONS', options: q.options });
     }
   }
+
+  // ID check
+  if (!q.id || seenGlobalIds.has(q.id)) {
+    issues.push({ id: q.id, type: 'DUPLICATE_OR_MISSING_ID' });
+  }
+  seenGlobalIds.add(q.id);
 }
 
-// 3. SAA Listening questions must not leak audio text in question prompt
+// 3. SAA Exam Bank (285 questions)
 for (const q of SAA_EXAM_BANK) {
   if (q.section === 'listening' && q.question && /[\n\s(（](音檔|問句|對話|廣播)[：:]/i.test(q.question)) {
     issues.push({ id: q.id, type: 'SAA_LISTENING_TRANSCRIPT_LEAK', question: q.question });
   }
+
+  // ID check
+  if (!q.id || seenGlobalIds.has(q.id)) {
+    issues.push({ id: q.id, type: 'DUPLICATE_OR_MISSING_ID' });
+  }
+  seenGlobalIds.add(q.id);
 }
 
 if (issues.length > 0) {

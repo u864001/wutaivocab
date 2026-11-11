@@ -54,6 +54,27 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.7 題庫品質全面大修訂 Batch 3：消滅 G-DLG 新三句樣板、根除禮貌與時間雙黃蛋、重構 18 題 TME 聽力回應與 CI 語意多重正解閘門 (`hereWeGoMcqBank.js`, `tmePreA1Bank.js`, `scripts/audit_semantic_gates.mjs`)
+* **P0：精準消滅矛盾回答與雙正解地雷**：
+  * `hwg_b3_582`：修正拒絕水卻要求水之矛盾，題幹改為 `A: Do you want some water, Sophie? B: ______ I want some juice.`，正解 `No, thank you.`，詳解同步精修。
+  * `hwg_b4_653`：修正原問句 `Is your brother in the kitchen?` 後句 `He's in the kitchen.` 卻誤設正解為 `No, he isn't.` 之矛盾，正解修正為 `Yes, he is.`。
+  * 5 題時間題（`hwg_b4_592`, `595`, `598`, `601`, `604`）：題幹明確加入標準時間線索（如 `(7:00)`、`(12:00)`、`(6:30)` 等），並重構誘答為人稱與介系詞文法干擾（`They're seven o'clock.`, `I'm seven o'clock.`, `At seven o'clock.`），徹底根除 `It is ten o'clock.` 造成的雙黃蛋。
+  * 65 題禮貌/邀請題（含 `hwg_b3_101`, `103`, `202`, `576~590` 等）：徹底拆解同題同時出現 `Yes, please.` 與 `No, thank you.` 造成的語意衝突，改以短語文法、助動詞/be動詞呼應干擾，保證唯一可成立正答。
+  * 8 題物品位置題（`hwg_b4_658~672`）：全面移除模糊干擾項 `It is over there.` 與 `Go straight.`，重構為介系詞受詞同質、僅以人稱代名詞一致性（`It's ...` vs `They're ...`）為唯一考點。
+  * `hwg_b7_236` 增補 `Dad drives us there.` 明確線索（唯一指向 `by car`）；`hwg_b5_143` 移除 `Is it Thursday today?` 誘答；`hwg_b7_219` 純化為國籍來源與人稱代名詞干擾。
+* **P1：195 題 G-DLG 新三句樣板（`See you later.`、`Have a nice day!`、`You're welcome.`）徹底清零**：
+  * 依實際問句之語言行為（Speech Act）與課綱單元目標，全面重構為同語境、同句型、具教育意義之真實同質誘答（年齡、姓名、顏色、身體病痛、過去式事件、現在進行式等），全題庫 3,317 題中上述 3 句樣板誘答數降至 **0**。
+* **P1：TME Pre-A1 全部 18 題「選適當回應句」重構升級**：
+  * 全數重做 18 題 `listen-resp` 的第 7 選項與干擾項，杜絕非相關無厘頭干擾句（如 `It is my favorite pencil.`、`I am ten.`），改為同句型/同社交情境但因人稱、時態、物品屬性不合而錯之高品質誘答。
+* **CI 語意門禁強化**：
+  * `scripts/audit_semantic_gates.mjs` 正式新增：
+    1. 全局題庫 ID 唯一性檢查（跨 3,317 課本 ＋ 300 TME ＋ 285 SAA）。
+    2. G-DLG 禁用新三句樣板偵測。
+    3. 邀請/請求題嚴禁同時出現 `Yes, please.` 與 `No, thank you.` 門禁。
+    4. Where 題嚴禁同時出現特定位置與 `It is over there.` 門禁。
+    5. What time is it 題無時間提示時嚴禁多個合法鐘點門禁。
+  * 3,317 課本 ＋ 300 TME ＋ 285 SAA 全量通過 100%。
+
 #### 0.0.6 題庫品質全面大修訂 Batch 2：741 題對話題情境同質誘答重構、86 題 TME 擴充至 7 選項契約、CI 語意門禁強化 (`hereWeGoMcqBank.js`, `tmePreA1Bank.js`, `tmePreA1ReadingBank.js`, `scripts/audit_semantic_gates.mjs`)
 * **P1：741 題情境對話題（`G-DLG`）樣板誘答徹底消滅**：
   * 原先 741 題對話題充斥通用樣板干擾句（如 `I am fine, thank you.`、`Nice to meet you, too.`、`My name is Leo.`、`I am ten years old.`、`I am very happy.`），鑑別度嚴重不足。

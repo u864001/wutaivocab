@@ -329,12 +329,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's your name? B: ______",
     "options": [
       "My name is Max.",
-      "I'm fine.",
-      "How are you?",
-      "See you later.",
-      "Have a nice day!",
-      "Good morning.",
-      "You're welcome."
+      "His name is Max.",
+      "Her name is Max.",
+      "Their name is Max.",
+      "Your name is Max.",
+      "My name are Max.",
+      "I are Max."
     ],
     "answer": 0,
     "explanation": "詢問對方姓名使用「What’s your name?」，回答用「My name is ...」或「I’m ...」。"
@@ -356,12 +356,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's your name? B: ______",
     "options": [
       "I'm Lucas.",
-      "How are you?",
-      "I'm fine.",
-      "See you later.",
-      "Have a nice day!",
-      "Good morning.",
-      "You're welcome."
+      "His name is Lucas.",
+      "Her name is Lucas.",
+      "Their name is Lucas.",
+      "Your name is Lucas.",
+      "My name are Lucas.",
+      "I are Lucas."
     ],
     "answer": 0,
     "explanation": "詢問對方姓名使用「What’s your name?」，回答用「My name is ...」或「I’m ...」。"
@@ -572,12 +572,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How old are you? B: ______",
     "options": [
       "I'm ten.",
-      "I'm fine.",
-      "I'm Kulas.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "I am a student."
+      "He is ten.",
+      "She is ten.",
+      "They are ten.",
+      "You are ten.",
+      "We are ten.",
+      "I are ten."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -599,12 +599,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How old are you? B: ______",
     "options": [
       "I'm six years old.",
-      "You're welcome.",
-      "My name is Nina.",
-      "See you later.",
-      "Have a nice day!",
-      "Good afternoon.",
-      "Excuse me."
+      "He is six years old.",
+      "She is six years old.",
+      "They are six years old.",
+      "You are six years old.",
+      "We are six years old.",
+      "I are six years old."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -653,12 +653,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: ______ B: You're welcome.",
     "options": [
       "Thank you.",
-      "How old are you?",
-      "How are you?",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "I'm sorry.",
+      "Excuse me.",
+      "Goodbye.",
+      "Good morning.",
+      "Nice to meet you.",
+      "How are you?"
     ],
     "answer": 0,
     "explanation": "表達感謝說「Thank you.」，回應「不客氣」使用「You’re welcome.」。"
@@ -680,12 +680,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How old are you? B: ______",
     "options": [
       "I'm eight years old.",
-      "See you later.",
-      "I'm Max.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon.",
-      "It is seven o'clock."
+      "He is eight years old.",
+      "She is eight years old.",
+      "They are eight years old.",
+      "You are eight years old.",
+      "We are eight years old.",
+      "I are eight years old."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -707,12 +707,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Hello, my name is Emma. B: ______",
     "options": [
       "Hi, I'm Nina.",
-      "I'm fine.",
-      "Thank you.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "His name is Tom.",
+      "Her name is Lily.",
+      "Good morning.",
+      "I'm ten.",
+      "He is my brother.",
+      "She is my sister."
     ],
     "answer": 0,
     "explanation": "對方打招呼並自我介紹姓名時，合宜的回應也是互相問候並介紹自己「Hi, I'm Nina.」；「I'm fine.」回答身體狀況，「Thank you.」表達感謝。"
@@ -734,12 +734,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Hi, Ryan. How old are you? B: ______",
     "options": [
       "I'm five years old.",
-      "Hi, my name is Max.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon.",
-      "I am a student."
+      "He is five years old.",
+      "She is five years old.",
+      "They are five years old.",
+      "You are five years old.",
+      "We are five years old.",
+      "I are five years old."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -923,12 +923,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's this? B: ______",
     "options": [
       "It's a book.",
-      "I'm fine.",
-      "I'm ten.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're a book.",
+      "I'm a book.",
+      "He's a book.",
+      "She's a book.",
+      "We're a book.",
+      "You're a book."
     ],
     "answer": 0,
     "explanation": "問句「What's this?」詢問物品名稱，回答需用代名詞指稱物品「It's a book.」；「I'm fine.」回答近況，「I'm ten.」回答年齡。"
@@ -950,12 +950,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's that? B: ______",
     "options": [
       "It's an eraser.",
-      "It's cool!",
-      "I'm Max.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're an eraser.",
+      "I'm an eraser.",
+      "He's an eraser.",
+      "She's an eraser.",
+      "We're an eraser.",
+      "You're an eraser."
     ],
     "answer": 0,
     "explanation": "問句「What's that?」詢問遠處物品，回答以「It's an eraser.」說明物品名稱；「It's cool!」為讚美詞，「I'm Max.」為自我介紹。"
@@ -1004,12 +1004,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: ______ B: Thanks!",
     "options": [
       "Good job!",
-      "How are you?",
-      "You're welcome.",
-      "See you later.",
-      "Have a nice day!",
-      "Good afternoon.",
-      "Excuse me."
+      "I'm sorry.",
+      "Excuse me.",
+      "Good night.",
+      "Good morning.",
+      "I'm fine.",
+      "See you."
     ],
     "answer": 0,
     "explanation": "答句為「Thanks!（謝謝！）」時，代表對方給予讚美或鼓勵，故前一句選「Good job!（做得好！）」最合宜；「You're welcome.」為不用謝。"
@@ -1166,12 +1166,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What color is it? B: ______",
     "options": [
       "It's blue.",
-      "It's a ruler.",
-      "I'm seven.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're blue.",
+      "I'm blue.",
+      "He's blue.",
+      "She's blue.",
+      "We're blue.",
+      "You're blue."
     ],
     "answer": 0,
     "explanation": "詢問顏色使用「What color is it?」，回答使用「It’s + 顏色.」。"
@@ -1220,12 +1220,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's this? B: ______",
     "options": [
       "It's a pen.",
-      "It's red.",
-      "It's yellow.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're a pen.",
+      "I'm a pen.",
+      "He's a pen.",
+      "She's a pen.",
+      "We're a pen.",
+      "You're a pen."
     ],
     "answer": 0,
     "explanation": "問句「What's this?」詢問「這是什麼？」，回答應說明物品種類「It's a pen.（它是一支筆）」；「It's red.」與「It's yellow.」僅回答顏色未回答物品。"
@@ -1248,11 +1248,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Good morning.",
       "Good afternoon.",
-      "Good job!",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Excuse me."
+      "Good evening.",
+      "Good night.",
+      "Goodbye.",
+      "I'm fine.",
+      "Thank you."
     ],
     "answer": 0,
     "explanation": "早晨見面問候「Good morning.」，合宜的禮貌回應同樣是「Good morning.」；「Good afternoon.」用於下午問候。"
@@ -1274,12 +1274,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's that? B: ______",
     "options": [
       "It's a pen.",
-      "It's black.",
-      "It's blue.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're a pen.",
+      "I'm a pen.",
+      "He's a pen.",
+      "She's a pen.",
+      "We're a pen.",
+      "You're a pen."
     ],
     "answer": 0,
     "explanation": "問句「What's that?」詢問遠處物品名稱，回答需指出物品「It's a pen.」；「It's black.」與「It's blue.」僅回答顏色。"
@@ -1301,12 +1301,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What color is it? B: ______",
     "options": [
       "It's green.",
-      "It's an eraser.",
-      "It's a pencil.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're green.",
+      "I'm green.",
+      "He's green.",
+      "She's green.",
+      "We're green.",
+      "You're green."
     ],
     "answer": 0,
     "explanation": "詢問顏色使用「What color is it?」，回答使用「It’s + 顏色.」。"
@@ -1517,12 +1517,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's this? B: ______",
     "options": [
       "It's a board game.",
-      "She's a student.",
-      "He's a driver.",
-      "I'm a teacher.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "They're a board.",
+      "I'm a board.",
+      "He's a board.",
+      "She's a board.",
+      "We're a board.",
+      "You're a board."
     ],
     "answer": 0,
     "explanation": "問句「What's this?」詢問眼前物品，回答應用代名詞指稱事物「It's a board game.（它是桌遊）」；其他選項皆在介紹人物職業，與問句不符。"
@@ -1544,12 +1544,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Who's she? B: ______",
     "options": [
       "She's my mother.",
-      "My mother is tall.",
-      "She's a doctor.",
-      "She's not a nurse.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is my mother.",
+      "He is my father.",
+      "They are my mother.",
+      "I am my mother.",
+      "She is my father.",
+      "It is my mother."
     ],
     "answer": 0,
     "explanation": "問句「Who's she?」詢問對方的身分關係，回答以「She's my mother.（她是我的媽媽）」最符合情境；「She's a doctor.」為回答職業（What does she do?）。"
@@ -1814,12 +1814,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How's the weather? B: ______",
     "options": [
       "It's cold.",
-      "It's a cat.",
-      "I'm a cook.",
-      "It's big.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "They're cold.",
+      "I'm cold.",
+      "It's on the table.",
+      "At ten o'clock.",
+      "Yes, it is.",
+      "He is cold."
     ],
     "answer": 0,
     "explanation": "詢問天氣使用「How’s the weather?」，回答使用「It’s + 天氣形容詞 (sunny / rainy / windy / cloudy / hot / cold).」。"
@@ -1841,12 +1841,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How's the weather in Osaka? B: ______",
     "options": [
       "It's sunny and windy.",
-      "I have an idea.",
-      "It's big and tall.",
-      "Let's go to Osaka.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "They're cold.",
+      "I'm cold.",
+      "It's on the table.",
+      "At ten o'clock.",
+      "Yes, it is.",
+      "He is cold."
     ],
     "answer": 0,
     "explanation": "詢問天氣使用「How’s the weather?」，回答使用「It’s + 天氣形容詞 (sunny / rainy / windy / cloudy / hot / cold).」。"
@@ -1868,12 +1868,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Look at this kimono. B: ______",
     "options": [
       "It's pretty.",
-      "I'm a teacher.",
-      "It's a dog.",
-      "It's cloudy.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "They're pretty.",
+      "I'm pretty.",
+      "He's pretty.",
+      "She's pretty.",
+      "We're pretty.",
+      "You're pretty."
     ],
     "answer": 0,
     "explanation": "對方說「Look at this kimono.（看這件和服）」，合宜的回應為稱讚衣物「It's pretty.（它真漂亮）」；其他選項描述職業、狗或陰天，與語意不符。"
@@ -1895,12 +1895,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: ______ B: Yeah! Let's go there.",
     "options": [
       "It's sunny in Kyoto.",
-      "Look at this kimono.",
-      "Let's have some fun.",
-      "How's the weather?",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "I don't like it.",
+      "No, we can't.",
+      "I'm at home.",
+      "It's raining outside.",
+      "He is sleeping.",
+      "They are busy."
     ],
     "answer": 0,
     "explanation": "由答句「Yeah! Let's go there.（好耶！我們去那裡吧）」可知前一句提到某個地點的好天氣，故選「It's sunny in Kyoto.（京都是晴天）」最自然。"
@@ -1953,8 +1953,8 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Let's have some fun in the rain.",
       "Look at the pretty teacher.",
       "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "由答句「Great! It's sunny there.（太棒了！那裡天氣晴朗）」可知前句提出前往該地的提議，故選「I have an idea. Let's go to Osaka.（我有個好主意，我們去大阪吧）」。"
@@ -2138,12 +2138,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you angry? B: ______",
     "options": [
       "Yes, I am.",
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, you are.",
+      "No, you aren't.",
       "Yes, he is.",
-      "Yes, it is.",
-      "Yes, she is.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "以「Are you angry?」直接詢問對方，肯定回答需以第一人稱「Yes, I am.」回答；其他選項代名詞人稱不合。"
@@ -2165,12 +2165,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Rex, are you full? B: ______",
     "options": [
       "No, I'm not. I'm hungry.",
-      "Yes, I can.",
+      "Yes, I am.",
+      "No, I don't.",
+      "Yes, I do.",
+      "No, he isn't.",
       "Yes, he is.",
-      "No, I'm not. I'm full.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, they aren't."
     ],
     "answer": 0,
     "explanation": "問句為「are you full?（你吃飽了嗎？）」，否定回答並補充說明自己很餓，合宜句子為「No, I'm not. I'm hungry.」；「Yes, I can.」助動詞不符。"
@@ -2192,12 +2192,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is he happy? B: ______",
     "options": [
       "Yes, he is happy.",
-      "No, he is happy.",
-      "No, he is not hungry.",
+      "No, he isn't happy.",
       "Yes, she is happy.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, she isn't happy.",
+      "Yes, I am happy.",
+      "No, I'm not happy.",
+      "Yes, they are happy."
     ],
     "answer": 0,
     "explanation": "問句「Is he happy?」詢問他的心情，肯定簡答為「Yes, he is.」或完整句「Yes, he is happy.」；「Yes, she is happy.」性別人稱不符。"
@@ -2570,12 +2570,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you like bananas? B: ______",
     "options": [
       "No, I don't.",
-      "No, I'm not.",
-      "Yes, I can.",
+      "Yes, I do.",
       "Yes, I am.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "No, I'm not.",
+      "Yes, they do.",
+      "No, they don't.",
+      "Yes, he does."
     ],
     "answer": 0,
     "explanation": "以助動詞提問「Do you like bananas?」，否定簡答為「No, I don't.」；「No, I'm not.」為 Be 動詞提問之簡答。"
@@ -2597,12 +2597,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are these? B: ______",
     "options": [
       "They're sandwiches.",
-      "I like sandwiches.",
-      "They're not sandwiches.",
-      "Yes, I like sandwiches.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "It's a sandwich.",
+      "I'm a sandwich.",
+      "He's a sandwich.",
+      "She's a sandwich.",
+      "We're sandwiches.",
+      "You're a sandwich."
     ],
     "answer": 0,
     "explanation": "詢問複數物品使用「What are these / those?」，回答一律用複數代名詞「They are (They’re) + 複數名詞.」。"
@@ -2628,8 +2628,8 @@ export const HERE_WE_GO_MCQ_BANK = [
       "They're apples.",
       "Yes, I like bananas.",
       "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "A 說「我喜歡蘋果，你呢？」，B 回應自己也喜歡蘋果，使用副詞 too「I like apples, too.」；「They're apples.」回答物品名稱非偏好。"
@@ -2705,12 +2705,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: ______ B: Thank you.",
     "options": [
       "Here you are.",
-      "Oops, sorry!",
-      "I don't like apples.",
-      "How about you?",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "I'm sorry.",
+      "Excuse me.",
+      "Good night.",
+      "Good morning.",
+      "I'm full.",
+      "See you."
     ],
     "answer": 0,
     "explanation": "表達感謝說「Thank you.」，回應「不客氣」使用「You’re welcome.」。"
@@ -2895,11 +2895,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, I don't.",
       "No, I'm not.",
-      "I want some milk.",
       "Yes, I am.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "No, it doesn't.",
+      "Yes, it is.",
+      "No, they don't.",
+      "Yes, she does."
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -2948,12 +2948,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Tracy, do you want some water? B: ______",
     "options": [
       "Yes, I do. I'm thirsty.",
-      "No, we don't. We want some water.",
       "Yes, we do. We're thirsty.",
-      "No, I don't. I want some water.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "No, we don't. We're thirsty.",
+      "Yes, I am. I'm thirsty.",
+      "No, I'm not. I'm thirsty.",
+      "Yes, she does. She's thirsty.",
+      "No, she doesn't. She's thirsty."
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -3006,8 +3006,8 @@ export const HERE_WE_GO_MCQ_BANK = [
       "This one.",
       "Yes, I am.",
       "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "詢問對方是否想要某食物用「Do you want some ...?」，肯定簡答「Yes, I/we do.」，否定「No, I/we don’t.」。"
@@ -3272,12 +3272,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's this? B: ______",
     "options": [
       "It's a pomelo.",
-      "Look, it's big.",
-      "Let's eat pomelos.",
-      "I'm Chang-O.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "They're a pomelo.",
+      "I'm a pomelo.",
+      "He's a pomelo.",
+      "She's a pomelo.",
+      "We're a pomelo.",
+      "You're a pomelo."
     ],
     "answer": 0,
     "explanation": "問句詢問「What's this?」，回答眼前的事物需用代名詞「It's a pomelo.（它是一顆柚子）」；其他選項未回答物品名稱。"
@@ -3299,12 +3299,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's your name? B: ______",
     "options": [
       "My name is Jade Rabbit.",
-      "Chang-O is thirsty.",
-      "Look, it's Earth.",
-      "I want to go to the Moon.",
-      "See you later.",
-      "Have a nice day!",
-      "Good morning."
+      "His name is Jade Rabbit.",
+      "Her name is Jade Rabbit.",
+      "Their name is Jade Rabbit.",
+      "Your name is Jade Rabbit.",
+      "My name are Jade Rabbit.",
+      "I are Jade Rabbit."
     ],
     "answer": 0,
     "explanation": "詢問對方姓名使用「What’s your name?」，回答用「My name is ...」或「I’m ...」。"
@@ -3326,12 +3326,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Look at the Moon. B: ______",
     "options": [
       "Wow! It's big.",
-      "It's a pomelo.",
-      "They're moon cakes.",
-      "She's Chang-O.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Wow! They're big.",
+      "Wow! I'm big.",
+      "Wow! He's big.",
+      "Wow! She's big.",
+      "Wow! We're big.",
+      "Wow! You're big."
     ],
     "answer": 0,
     "explanation": "A 說「看那個月亮」，B 抬頭看並表達讚嘆，合宜回應為「Wow! It's big.（哇！它好大）」；其他選項指稱柚子或月餅，與月亮不符。"
@@ -3353,12 +3353,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: ______ B: Yeah! Let's go there.",
     "options": [
       "Let's go to the Moon!",
-      "Let's eat moon cakes.",
-      "We like pomelos.",
-      "Jade Rabbit is happy.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "I don't like it.",
+      "No, we can't.",
+      "I'm at home.",
+      "It's raining outside.",
+      "He is sleeping.",
+      "They are busy."
     ],
     "answer": 0,
     "explanation": "由答句「Yeah! Let's go there.（好耶！我們去那裡吧）」可知提議前往某處，故選「Let's go to the Moon!（我們去月球吧！）」。"
@@ -3569,12 +3569,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How old is your grandfather? B: ______",
     "options": [
       "He's eighty-nine.",
-      "He's in the yard.",
-      "He's happy.",
-      "He's drinking.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She's eighty-nine.",
+      "I'm eighty-nine.",
+      "They're eighty-nine.",
+      "You're eighty-nine.",
+      "We're eighty-nine.",
+      "He are eighty-nine."
     ],
     "answer": 0,
     "explanation": "詢問年齡使用疑問詞「How old are you / is he / is she?」，回答用「主詞 + Be動詞 + 數字 (years old).」。"
@@ -3920,12 +3920,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What day is today? B: ______",
     "options": [
       "It's Monday.",
-      "Yes. It's Monday.",
-      "It's sunny.",
-      "It's not Monday.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "It's ten o'clock.",
+      "It's sunny today.",
+      "It's December.",
+      "They are Mondays.",
+      "I am Monday.",
+      "At Monday."
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾使用「What day is today?」，回答「It’s + 星期名稱 (Monday ~ Sunday).」。"
@@ -3947,12 +3947,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is it Wednesday today? B: ______",
     "options": [
       "Yes, it is.",
-      "It's Wednesday.",
-      "It's not Wednesday.",
-      "No. It's Wednesday.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, it isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, they are.",
+      "No, they aren't.",
+      "Yes, he is."
     ],
     "answer": 0,
     "explanation": "問句以「Is it Wednesday today?」提問，肯定簡答為「Yes, it is.」；「No. It's Wednesday.」前後矛盾。"
@@ -4004,9 +4004,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Wait a minute.",
       "Here you are.",
       "Time for lunch.",
-      "Yes, please.",
-      "No, thank you.",
-      "I am full."
+      "I am full.",
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "對方提到「我想去看美式足球賽」，祝對方玩得愉快合宜說「Have a good time.（祝你玩得開心！）」；「Wait a minute.」叫人等一下。"
@@ -4028,12 +4028,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: ______ B: It's Thursday.",
     "options": [
       "What day is today?",
-      "Where's Max?",
-      "Is it Thursday today?",
       "What time is it?",
-      "What's your name?",
-      "How are you?",
-      "How old are you?"
+      "What date is today?",
+      "Where are you?",
+      "How's the weather?",
+      "What are you doing?",
+      "What's this?"
     ],
     "answer": 0,
     "explanation": "詢問今天星期幾使用「What day is today?」，回答「It’s + 星期名稱 (Monday ~ Sunday).」。"
@@ -4352,12 +4352,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you have math class on Thursday? B: ______",
     "options": [
       "Yes, I do.",
-      "I like math.",
+      "No, I don't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, she does.",
       "No, she doesn't.",
-      "Yes, he does.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, they do."
     ],
     "answer": 0,
     "explanation": "特定星期幾（如 Monday, Thursday）前面固定搭配介系詞「on」。"
@@ -4379,12 +4379,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Does she have Chinese class on Monday? B: ______",
     "options": [
       "No, she doesn't.",
-      "Yes, I do.",
+      "Yes, she does.",
+      "No, he doesn't.",
       "Yes, he does.",
-      "No, they don't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, I don't.",
+      "Yes, I do.",
+      "No, she isn't."
     ],
     "answer": 0,
     "explanation": "特定星期幾（如 Monday, Thursday）前面固定搭配介系詞「on」。"
@@ -4410,8 +4410,8 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Good idea!",
       "Have a good time.",
       "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "對方禮貌請求「Can I try it?（我可以試試看嗎？）」，爽快答應回答「Sure!（當然可以！）」；「Follow me.」指跟我來。"
@@ -4865,12 +4865,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: This museum is beautiful! B: Yes. Let's take a picture. ______",
     "options": [
       "Say cheese!",
-      "Good idea!",
-      "Excuse me.",
-      "Sorry, I'm late.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "I'm full.",
+      "It's ten o'clock.",
+      "No, I don't.",
+      "She's a teacher.",
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "對方提議一起拍照（Let's take a picture.），拍照按快門時常說「Say cheese!（笑一個！）」；「Good idea!」通常在剛接受提議時說。"
@@ -5243,12 +5243,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Dogs! Run! B: ______ They're small dogs.",
     "options": [
       "Calm down.",
-      "Say cheese!",
-      "Take care!",
-      "Have a good time.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Good morning.",
+      "I'm full.",
+      "Yes, please.",
+      "Nice to meet you.",
+      "It's twelve thirty.",
+      "Say cheese!"
     ],
     "answer": 0,
     "explanation": "對方看到狗感到害怕喊叫快跑，安慰對方放鬆別慌張說「Calm down.（冷靜點／別慌）」；「Take care!」為保重，「Say cheese!」為拍照說笑一個。"
@@ -5270,12 +5270,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How many elephants are there? B: ______",
     "options": [
       "There are four elephants.",
-      "I don't like elephants.",
-      "He likes elephants.",
-      "There are ten monkeys.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "It is four elephants.",
+      "There is four elephants.",
+      "They have four elephants.",
+      "I see an elephant.",
+      "There are four big.",
+      "There four elephants."
     ],
     "answer": 0,
     "explanation": "詢問可數名詞的數量使用「How many + 複數名詞 + are there?」，單數回答「There is one ...」，複數回答「There are ...」。"
@@ -5297,12 +5297,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Does she like horses? B: ______",
     "options": [
       "Yes, she does.",
-      "Yes. She likes zebras.",
-      "No. She likes horses.",
+      "No, she doesn't.",
+      "Yes, he does.",
       "No, he doesn't.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, she is.",
+      "No, she isn't.",
+      "Yes, I do."
     ],
     "answer": 0,
     "explanation": "問句以「Does she like horses?」詢問，女性第三人稱肯定簡答為「Yes, she does.」；「No, he doesn't.」性別人稱錯誤。"
@@ -5621,12 +5621,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Would you like some chicken? B: ______",
     "options": [
       "No. I'd like some soup.",
-      "Yes. I like chicken sandwiches.",
-      "Yes. I'd like some soup.",
       "No. I'd like some chicken.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes. I'd like some soup.",
+      "Yes. I like chicken sandwiches.",
+      "No. She'd like some soup.",
+      "Yes. He'd like some chicken.",
+      "No, I don't like."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -5702,12 +5702,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like for dinner? B: ______",
     "options": [
       "I'd like some chicken.",
-      "Yes, please.",
-      "No, thank you.",
-      "I don't like noodles.",
-      "Here you are.",
-      "I am full.",
-      "I want some water."
+      "She'd like some beef noodles.",
+      "He'd like some beef noodles.",
+      "They'd like some beef noodles.",
+      "I'd like to sleep.",
+      "I have some beef noodles.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -6080,12 +6080,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where's Amy's brother from? B: ______",
     "options": [
       "He's from Australia.",
-      "No. He's from the USA.",
-      "He isn't from Taiwan.",
-      "Yes. He's from the UK.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "She's from Australia.",
+      "They're from Australia.",
+      "I'm from Australia.",
+      "We're from Australia.",
+      "He's from the bedroom.",
+      "He's at school."
     ],
     "answer": 0,
     "explanation": "問句為「Where's Amy's brother from?」，詢問來自何處不能用 Yes/No 簡答，直接回答國家「He's from Australia.（他來自澳洲）」。"
@@ -6107,12 +6107,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Look! ______ B: It's beautiful.",
     "options": [
       "That's the Taj Mahal.",
-      "I'm from Spain.",
-      "I'm hungry.",
-      "I'd like some sandwiches.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Those are the Taj Mahal.",
+      "These are the Taj Mahal.",
+      "I am the Taj Mahal.",
+      "We are the Taj Mahal.",
+      "He is the Taj Mahal.",
+      "She is the Taj Mahal."
     ],
     "answer": 0,
     "explanation": "A 說「看！那是……」，B 讚美「好漂亮」，結合後續對話選「That's the Taj Mahal.（那是泰姬瑪哈陵）」最符合語意。"
@@ -6536,15 +6536,15 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "A: How do you and your sisters go to Taipei? B: We go there ______. We sit together and eat apples.",
+    "question": "A: How do you and your sisters go to Taipei? B: We go there ______. Dad drives us there.",
     "options": [
       "by car",
       "by bike",
       "by MRT",
       "on foot",
-      "it",
-      "this",
-      "that"
+      "by train",
+      "by bus",
+      "by plane"
     ],
     "answer": 0,
     "explanation": "後句提到「We sit together and eat apples.（我們坐在一起吃蘋果）」，代表是在車廂內共坐，且前往台北距離較遠，故選「by car（搭車／開車）」最合情理。"
@@ -6809,12 +6809,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What do the girls do on weekends? B: ______",
     "options": [
       "They play basketball.",
-      "We watch TV.",
-      "She goes jogging.",
-      "I study English.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He plays basketball.",
+      "She plays basketball.",
+      "I play basketball.",
+      "They playing basketball.",
+      "They played yesterday.",
+      "We plays basketball."
     ],
     "answer": 0,
     "explanation": "問句詢問「the girls（女孩們，複數 they）」週末做什麼，答句代名詞需用「They」形成「They play basketball.」；「We」或「I」人稱不符。"
@@ -6944,12 +6944,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: ______ B: Me, too. It's fun!",
     "options": [
       "I play basketball in my free time.",
-      "We're your fans.",
-      "I have a sore throat.",
-      "Let me show you.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He plays basketball in his free time.",
+      "She plays basketball in her free time.",
+      "They play basketball in their free time.",
+      "I don't like basketball.",
+      "Do you like basketball?",
+      "Where is the basketball?"
     ],
     "answer": 0,
     "explanation": "詢問休閒活動使用「What do/does + 主詞 + do in one’s free time?」，第三人稱單數主詞（he/she）動詞須加 -s/-es。"
@@ -7106,12 +7106,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What time does Jeff usually ______? B: At 10:00. But he's not so tired today, so he wants to sleep at 11:00.",
     "options": [
       "go to bed",
-      "get up",
-      "go to school",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you.",
-      "I am full."
+      "At the park.",
+      "It is on the table.",
+      "Yes, he does.",
+      "No, he doesn't.",
+      "They are ten.",
+      "I like it."
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7133,12 +7133,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What time does she ______? B: At 6:30. She likes to sing in the bathroom.",
     "options": [
       "take a shower",
-      "go home",
-      "have dinner",
-      "get up",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "At the park.",
+      "It is on the table.",
+      "Yes, he does.",
+      "No, he doesn't.",
+      "They are ten.",
+      "I like it."
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7241,12 +7241,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What time do you have dinner? B: ______",
     "options": [
       "We have dinner at 6:00.",
-      "I'd like some salad for lunch.",
-      "I have dinner at home.",
-      "We have lunch at 12:00.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "At the park.",
+      "It is on the table.",
+      "Yes, he does.",
+      "No, he doesn't.",
+      "They are ten.",
+      "I like it."
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7376,12 +7376,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What time does your brother ______? B: At eight o'clock. He likes to sing in the bathroom.",
     "options": [
       "take a shower",
-      "have dinner",
-      "do her homework",
-      "go to school",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "At the park.",
+      "It is on the table.",
+      "Yes, he does.",
+      "No, he doesn't.",
+      "They are ten.",
+      "I like it."
     ],
     "answer": 0,
     "explanation": "詢問日常作息時間使用「What time do/does + 主詞 + 原形動詞?」，特定時刻前搭配介系詞「at」。"
@@ -7461,8 +7461,8 @@ export const HERE_WE_GO_MCQ_BANK = [
       "surf the Internet",
       "go jogging",
       "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -7700,12 +7700,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Evan do at the movie theater last Friday? B: He ______.",
     "options": [
       "saw a movie",
-      "went shopping",
-      "flew a kite",
-      "rode a bike",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "She saw a movie.",
+      "They saw a movie.",
+      "I saw a movie.",
+      "He sees a movie.",
+      "He is seeing a movie.",
+      "He will see a movie."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7889,12 +7889,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did you do yesterday morning? B: ______",
     "options": [
       "We saw a movie.",
-      "They went to the library.",
-      "We were at the park.",
-      "I was at the amusement park.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She played baseball.",
+      "They played baseball.",
+      "I played baseball.",
+      "He plays baseball.",
+      "He is playing baseball.",
+      "He will play baseball."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8135,9 +8135,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "see a movie",
       "write a letter",
       "have a picnic",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "take a walk",
+      "clean the room",
+      "play the piano"
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8186,12 +8186,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did you do last night? B: ______",
     "options": [
       "We took a walk.",
-      "I go to the riverside park.",
-      "We didn't swim.",
-      "I sing songs.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "We take a walk.",
+      "We will take a walk.",
+      "He took a walk.",
+      "They took a walk.",
+      "We are taking a walk.",
+      "We didn't swim."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8240,12 +8240,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did your mom do this morning? B: ______",
     "options": [
       "She got a haircut this morning.",
-      "She is at home.",
-      "She runs every morning.",
-      "She didn't have a picnic this morning.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He got a haircut this morning.",
+      "I got a haircut this morning.",
+      "They got a haircut this morning.",
+      "She gets a haircut this morning.",
+      "She is getting a haircut.",
+      "She will get a haircut."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8294,12 +8294,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Alex write a letter last Thursday? B: ______",
     "options": [
       "Yes, he did.",
-      "No, he wasn't at school.",
-      "No, he didn't draw a picture.",
       "Yes, he does.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, he doesn't.",
+      "Yes, she did.",
+      "No, she didn't.",
+      "Yes, he was.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8321,12 +8321,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did they take a walk last Monday? B: ______ They took a walk last Friday.",
     "options": [
       "No, they didn't.",
+      "Yes, they did.",
+      "No, they don't.",
+      "Yes, they do.",
       "No, we didn't.",
       "Yes, we did.",
-      "Yes, they did.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, he didn't."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8460,8 +8460,8 @@ export const HERE_WE_GO_MCQ_BANK = [
       "would, She",
       "does, She'd",
       "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8514,8 +8514,8 @@ export const HERE_WE_GO_MCQ_BANK = [
       "drink, juice",
       "eat, juice",
       "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8595,8 +8595,8 @@ export const HERE_WE_GO_MCQ_BANK = [
       "eat, boxes",
       "drink, pieces",
       "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "冬瓜茶（winter melon tea）為液體飲料，動作使用「drink（喝）」，裝在玻璃杯中四杯使用複數單位詞「four glasses of ...」。"
@@ -8618,12 +8618,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like to eat? B: ______",
     "options": [
       "I'd like a plate of noodles.",
-      "We'd like a bottle of juice.",
-      "He'd like a box of cookies.",
-      "I'd like a cup of milk.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "She'd like a bottle of milk.",
+      "He'd like a bottle of milk.",
+      "They'd like a bottle of milk.",
+      "I'd like to sleep.",
+      "I have some milk.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -8672,12 +8672,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is Terry hungry? B: Yes, he is. ______",
     "options": [
       "He'd like a box of sandwiches.",
-      "He'd like a bottle of tea.",
-      "He'd like a cup of juice.",
-      "He'd like a glass of water.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She'd like a box of sandwiches.",
+      "They'd like a box of sandwiches.",
+      "I'd like a box of sandwiches.",
+      "He'd like to sleep.",
+      "He is not hungry.",
+      "We'd like a box of sandwiches."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8726,12 +8726,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like to drink? B: ______",
     "options": [
       "We'd like two cups of tea.",
-      "I'd like two pieces of cake.",
-      "We'd like a bowl of rice.",
-      "I'd like a bag of chips.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "She'd like a bottle of milk.",
+      "He'd like a bottle of milk.",
+      "They'd like a bottle of milk.",
+      "I'd like to sleep.",
+      "I have some milk.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "表達禮貌點餐或想要某食物用「Would you like ...? / I’d like ...」，不可數與計量食物常搭配單位詞「a cup/bottle/bowl/piece/glass of ...」。"
@@ -8757,8 +8757,8 @@ export const HERE_WE_GO_MCQ_BANK = [
       "I'd like two plates of noodles.",
       "I'd like a bag of apples.",
       "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "I'm fine.",
+      "Good morning."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -9053,9 +9053,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Today is February 1st.",
       "Today is January 1st.",
       "Today is May 1st.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Today is April 1st.",
+      "Today is June 1st.",
+      "Today is March 28th."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -9104,12 +9104,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Excuse me. What's the date today? B: ______",
     "options": [
       "It's October 20th.",
-      "It's on October 20th.",
-      "It's October.",
-      "It's in October.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "It's on Monday.",
+      "It's ten o'clock.",
+      "It's sunny today.",
+      "They are October 20th.",
+      "It's five o'clock.",
+      "At October 20th."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -9131,12 +9131,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: When is your birthday? B: ______",
     "options": [
       "It's on May 17th.",
-      "It's 17th.",
-      "It's not in May.",
-      "It's at seven.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "It's on Monday.",
+      "It's ten o'clock.",
+      "It's sunny.",
+      "I have a birthday.",
+      "They are on May 17th.",
+      "She is on May 17th."
     ],
     "answer": 0,
     "explanation": "詢問日期用「What’s the date today?」；只講月份用介系詞「in + 月份」，講出「幾月幾日（序數）」則用「on + 月份 + 序數」。"
@@ -9158,12 +9158,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: When is Chloe's birthday? B: ______",
     "options": [
       "It's in July.",
-      "Her birthday is on Saturday.",
-      "Her birthday isn't on July 31st.",
-      "Yes, it's in July.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "It's on Monday.",
+      "It's ten o'clock.",
+      "It's sunny.",
+      "She has a birthday.",
+      "They are in July.",
+      "He is in July."
     ],
     "answer": 0,
     "explanation": "詢問日期用「What’s the date today?」；只講月份用介系詞「in + 月份」，講出「幾月幾日（序數）」則用「on + 月份 + 序數」。"
@@ -9185,12 +9185,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: My birthday is on August 29th. B: ______ Our birthdays are in the same week.",
     "options": [
       "My birthday is on August 24th.",
-      "My birthday is on April 30th.",
-      "My birthday is on September 29th.",
-      "My birthday is in spring.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "His birthday is on August 24th.",
+      "Her birthday is on August 24th.",
+      "Their birthday is on August 24th.",
+      "My birthday is in January.",
+      "Today is Monday.",
+      "It's ten o'clock."
     ],
     "answer": 0,
     "explanation": "詢問日期用「What’s the date today?」；只講月份用介系詞「in + 月份」，講出「幾月幾日（序數）」則用「on + 月份 + 序數」。"
@@ -9428,12 +9428,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Listen, please! B: ______",
     "options": [
       "OK!",
-      "I'm seven.",
-      "It's red.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "I don't know.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "Here it is.",
+      "It's sunny.",
+      "I'm fine."
     ],
     "answer": 0,
     "explanation": "回應老師課室指令使用「OK!」。"
@@ -9455,12 +9455,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Hi, I am Lucas. B: ______",
     "options": [
       "Hello, Lucas!",
-      "It's a pen.",
-      "Thank you.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "Hello, Mia!",
+      "Hello, Emily!",
+      "Goodbye, Lucas!",
+      "I am ten.",
+      "Good night.",
+      "Here you are."
     ],
     "answer": 0,
     "explanation": "初次打招呼自我介紹時，以「Hello, ...!」回應。"
@@ -9536,12 +9536,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's your name? B: ______",
     "options": [
       "My name is Emma.",
-      "You are welcome.",
-      "I'm eight.",
-      "See you later.",
-      "Have a nice day!",
-      "Good morning.",
-      "You're welcome."
+      "His name is Emma.",
+      "Her name is Emma.",
+      "Their name is Emma.",
+      "Your name is Emma.",
+      "My name are Emma.",
+      "I are Emma."
     ],
     "answer": 0,
     "explanation": "詢問姓名「What’s your name?」，回答「My name is ...」。"
@@ -9563,12 +9563,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How are you, Lucas? B: ______",
     "options": [
       "I'm fine, thank you.",
+      "He is fine, thank you.",
+      "She is fine, thank you.",
+      "They are fine, thank you.",
+      "I'm hungry.",
       "My name is Lucas.",
-      "It's blue.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "We are fine, thank you."
     ],
     "answer": 0,
     "explanation": "問候「How are you?」以「I’m fine, thank you.」回答。"
@@ -9644,12 +9644,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's your name? B: ______",
     "options": [
       "My name is Nina.",
-      "I'm eight.",
-      "You are welcome.",
-      "See you later.",
-      "Have a nice day!",
-      "Good morning.",
-      "You're welcome."
+      "His name is Nina.",
+      "Her name is Nina.",
+      "Their name is Nina.",
+      "Your name is Nina.",
+      "My name are Nina.",
+      "I are Nina."
     ],
     "answer": 0,
     "explanation": "詢問姓名「What’s your name?」，回答「My name is ...」。"
@@ -9671,12 +9671,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How are you, Max? B: ______",
     "options": [
       "I'm fine, thank you.",
-      "My name is Max.",
-      "It's blue.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is fine, thank you.",
+      "She is fine, thank you.",
+      "They are fine, thank you.",
+      "I'm hungry.",
+      "My name is Lucas.",
+      "We are fine, thank you."
     ],
     "answer": 0,
     "explanation": "問候「How are you?」以「I’m fine, thank you.」回答。"
@@ -9752,12 +9752,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's your name? B: ______",
     "options": [
       "My name is Chloe.",
-      "I'm eight.",
-      "You are welcome.",
-      "See you later.",
-      "Have a nice day!",
-      "Good morning.",
-      "You're welcome."
+      "His name is Chloe.",
+      "Her name is Chloe.",
+      "Their name is Chloe.",
+      "Your name is Chloe.",
+      "My name are Chloe.",
+      "I are Chloe."
     ],
     "answer": 0,
     "explanation": "詢問姓名「What’s your name?」，回答「My name is ...」。"
@@ -9779,12 +9779,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How are you, Leo? B: ______",
     "options": [
       "I'm fine, thank you.",
-      "It's blue.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon.",
-      "It is seven o'clock."
+      "He is fine, thank you.",
+      "She is fine, thank you.",
+      "They are fine, thank you.",
+      "I'm hungry.",
+      "My name is Lucas.",
+      "We are fine, thank you."
     ],
     "answer": 0,
     "explanation": "問候「How are you?」以「I’m fine, thank you.」回答。"
@@ -9860,12 +9860,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's your name? B: ______",
     "options": [
       "My name is Sophie.",
-      "You are welcome.",
-      "I'm eight.",
-      "See you later.",
-      "Have a nice day!",
-      "Good morning.",
-      "You're welcome."
+      "His name is Sophie.",
+      "Her name is Sophie.",
+      "Their name is Sophie.",
+      "Your name is Sophie.",
+      "My name are Sophie.",
+      "I are Sophie."
     ],
     "answer": 0,
     "explanation": "詢問姓名「What’s your name?」，回答「My name is ...」。"
@@ -9887,12 +9887,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How are you, Kulas? B: ______",
     "options": [
       "I'm fine, thank you.",
-      "My name is Kulas.",
-      "It's blue.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is fine, thank you.",
+      "She is fine, thank you.",
+      "They are fine, thank you.",
+      "I'm hungry.",
+      "My name is Lucas.",
+      "We are fine, thank you."
     ],
     "answer": 0,
     "explanation": "問候「How are you?」以「I’m fine, thank you.」回答。"
@@ -9968,12 +9968,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's your name? B: ______",
     "options": [
       "My name is Hannah.",
-      "I'm eight.",
-      "You are welcome.",
-      "See you later.",
-      "Have a nice day!",
-      "Good morning.",
-      "You're welcome."
+      "His name is Hannah.",
+      "Her name is Hannah.",
+      "Their name is Hannah.",
+      "Your name is Hannah.",
+      "My name are Hannah.",
+      "I are Hannah."
     ],
     "answer": 0,
     "explanation": "詢問姓名「What’s your name?」，回答「My name is ...」。"
@@ -9995,12 +9995,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How are you, Ryan? B: ______",
     "options": [
       "I'm fine, thank you.",
-      "My name is Ryan.",
-      "It's blue.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is fine, thank you.",
+      "She is fine, thank you.",
+      "They are fine, thank you.",
+      "I'm hungry.",
+      "My name is Lucas.",
+      "We are fine, thank you."
     ],
     "answer": 0,
     "explanation": "問候「How are you?」以「I’m fine, thank you.」回答。"
@@ -10076,12 +10076,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Happy birthday, Lucas! How old are you? B: ______",
     "options": [
       "I'm six years old.",
-      "I'm fine.",
-      "It's a ruler.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is six years old.",
+      "She is six years old.",
+      "They are six years old.",
+      "You are six years old.",
+      "We are six years old.",
+      "I are six years old."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10157,12 +10157,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Happy birthday, Max! How old are you? B: ______",
     "options": [
       "I'm seven years old.",
-      "I'm fine.",
-      "It's a ruler.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is seven years old.",
+      "She is seven years old.",
+      "They are seven years old.",
+      "You are seven years old.",
+      "We are seven years old.",
+      "I are seven years old."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10238,12 +10238,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Happy birthday, Leo! How old are you? B: ______",
     "options": [
       "I'm eight years old.",
-      "I'm fine.",
-      "It's a ruler.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is eight years old.",
+      "She is eight years old.",
+      "They are eight years old.",
+      "You are eight years old.",
+      "We are eight years old.",
+      "I are eight years old."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10319,12 +10319,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Happy birthday, Kulas! How old are you? B: ______",
     "options": [
       "I'm nine years old.",
-      "I'm fine.",
-      "It's a ruler.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is nine years old.",
+      "She is nine years old.",
+      "They are nine years old.",
+      "You are nine years old.",
+      "We are nine years old.",
+      "I are nine years old."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10400,12 +10400,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Happy birthday, Ryan! How old are you? B: ______",
     "options": [
       "I'm ten years old.",
-      "I'm fine.",
-      "It's a ruler.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is ten years old.",
+      "She is ten years old.",
+      "They are ten years old.",
+      "You are ten years old.",
+      "We are ten years old.",
+      "I are ten years old."
     ],
     "answer": 0,
     "explanation": "詢問年齡「How old are you?」，回答「I’m ... years old.」。"
@@ -10427,12 +10427,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Thank you very much! B: ______",
     "options": [
       "You're welcome.",
-      "See you later.",
-      "I'm ten.",
-      "Have a nice day!",
-      "Good afternoon.",
+      "I'm sorry.",
       "Excuse me.",
-      "It is seven o'clock."
+      "Goodbye.",
+      "Good morning.",
+      "Nice to meet you.",
+      "How are you?"
     ],
     "answer": 0,
     "explanation": "對方道謝說「Thank you」，應回答「You’re welcome.（不客氣）」。"
@@ -10535,12 +10535,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is this a book? B: ______ It's a book.",
     "options": [
       "Yes, it is.",
-      "No, it's not.",
-      "I'm seven.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10563,11 +10563,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, it's not.",
       "Yes, it is.",
-      "Thank you.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 bag，故否定回答「No, it's not.」。"
@@ -10616,12 +10616,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is this a pencil? B: ______ It's a pencil.",
     "options": [
       "Yes, it is.",
-      "No, it's not.",
-      "I'm seven.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10644,11 +10644,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, it's not.",
       "Yes, it is.",
-      "Thank you.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 eraser，故否定回答「No, it's not.」。"
@@ -10697,12 +10697,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is this a ruler? B: ______ It's a ruler.",
     "options": [
       "Yes, it is.",
-      "No, it's not.",
-      "I'm seven.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10725,11 +10725,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, it's not.",
       "Yes, it is.",
-      "Thank you.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 marker，故否定回答「No, it's not.」。"
@@ -10751,12 +10751,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is this an eraser? B: ______ It's an eraser.",
     "options": [
       "Yes, it is.",
-      "I'm seven.",
-      "No, it's not.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10779,11 +10779,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, it's not.",
       "Yes, it is.",
-      "Thank you.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 pencil，故否定回答「No, it's not.」。"
@@ -10832,12 +10832,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is this an apple? B: ______ It's an apple.",
     "options": [
       "Yes, it is.",
-      "I'm seven.",
-      "No, it's not.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you.",
-      "I am full."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10860,11 +10860,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, it's not.",
       "Yes, it is.",
-      "Thank you.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you.",
-      "I am full."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 book，故否定回答「No, it's not.」。"
@@ -10913,12 +10913,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is this a bag? B: ______ It's a bag.",
     "options": [
       "Yes, it is.",
-      "I'm seven.",
-      "No, it's not.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "前後名詞一致，肯定回答「Yes, it is.」。"
@@ -10941,11 +10941,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, it's not.",
       "Yes, it is.",
-      "Thank you.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 ruler，故否定回答「No, it's not.」。"
@@ -10994,12 +10994,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What color is your bag? B: ______",
     "options": [
       "It's red and blue.",
-      "I'm nine years old.",
-      "It's a bag.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're red.",
+      "I'm red.",
+      "He's red.",
+      "She's red.",
+      "We're red.",
+      "You're red."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11048,12 +11048,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What color is your bag? B: ______",
     "options": [
       "It's blue and yellow.",
-      "It's a bag.",
-      "I'm nine years old.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're blue.",
+      "I'm blue.",
+      "He's blue.",
+      "She's blue.",
+      "We're blue.",
+      "You're blue."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11102,12 +11102,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What color is your bag? B: ______",
     "options": [
       "It's yellow and green.",
-      "It's a bag.",
-      "I'm nine years old.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're yellow.",
+      "I'm yellow.",
+      "He's yellow.",
+      "She's yellow.",
+      "We're yellow.",
+      "You're yellow."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11156,12 +11156,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What color is your bag? B: ______",
     "options": [
       "It's green and black.",
-      "I'm nine years old.",
-      "It's a bag.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're green.",
+      "I'm green.",
+      "He's green.",
+      "She's green.",
+      "We're green.",
+      "You're green."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11210,12 +11210,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What color is your bag? B: ______",
     "options": [
       "It's black and white.",
-      "It's a bag.",
-      "I'm nine years old.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're black.",
+      "I'm black.",
+      "He's black.",
+      "She's black.",
+      "We're black.",
+      "You're black."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11264,12 +11264,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What color is your bag? B: ______",
     "options": [
       "It's white and red.",
-      "It's a bag.",
-      "I'm nine years old.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're white.",
+      "I'm white.",
+      "He's white.",
+      "She's white.",
+      "We're white.",
+      "You're white."
     ],
     "answer": 0,
     "explanation": "詢問物品顏色，以「It’s + 顏色.」回答。"
@@ -11318,12 +11318,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What color is the eraser? B: ______",
     "options": [
       "It's blue.",
-      "Yes, it is.",
-      "It's an eraser.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "They're blue.",
+      "I'm blue.",
+      "He's blue.",
+      "She's blue.",
+      "We're blue.",
+      "You're blue."
     ],
     "answer": 0,
     "explanation": "詢問顏色「What color is ...?」應回答顏色而非物品名稱。"
@@ -11345,12 +11345,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Trick or treat! B: ______",
     "options": [
       "Happy Halloween! Here are some candies.",
-      "You're welcome.",
-      "It's a book.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you.",
-      "I am full."
+      "Happy New Year!",
+      "Merry Christmas!",
+      "Happy birthday!",
+      "Good morning.",
+      "I'm fine.",
+      "Thank you."
     ],
     "answer": 0,
     "explanation": "萬聖節口號「Trick or treat!」搭配「Happy Halloween!」。"
@@ -11480,12 +11480,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Count with me! Eleven, twelve, thirteen! B: ______",
     "options": [
       "Fourteen, fifteen!",
-      "No, I cannot.",
+      "One, two, three!",
+      "Ten, nine, eight!",
+      "Twenty, thirty, forty!",
+      "Good morning.",
       "I'm fine.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "Thank you."
     ],
     "answer": 0,
     "explanation": "接著 11, 12, 13 往下數為「Fourteen, fifteen!」。"
@@ -11507,12 +11507,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Good job, Lucas! B: ______",
     "options": [
       "Thank you!",
-      "Try again.",
-      "No, it isn't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "I'm sorry.",
+      "Excuse me.",
+      "Good night.",
+      "Good morning.",
+      "I'm fine.",
+      "See you."
     ],
     "answer": 0,
     "explanation": "受到稱讚「Good job!」時應禮貌回答「Thank you!」。"
@@ -11616,11 +11616,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, it's not.",
       "Yes, it is.",
-      "Yes, I can.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 cat，故否定回答「No, it's not.」。"
@@ -11642,12 +11642,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is that your dog? B: ______ It's very cute.",
     "options": [
       "Yes, it is.",
-      "I'm ten.",
-      "No, I cannot.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -11723,12 +11723,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is this a cat? B: ______ It's a bird.",
     "options": [
       "No, it's not.",
-      "Yes, I can.",
       "Yes, it is.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 bird，故否定回答「No, it's not.」。"
@@ -11750,12 +11750,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is that your cat? B: ______ It's very cute.",
     "options": [
       "Yes, it is.",
-      "No, I cannot.",
-      "I'm ten.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -11832,11 +11832,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, it's not.",
       "Yes, it is.",
-      "Yes, I can.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 fish，故否定回答「No, it's not.」。"
@@ -11858,12 +11858,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is that your bird? B: ______ It's very cute.",
     "options": [
       "Yes, it is.",
-      "No, I cannot.",
-      "I'm ten.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -11940,11 +11940,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, it's not.",
       "Yes, it is.",
-      "Yes, I can.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 rabbit，故否定回答「No, it's not.」。"
@@ -11966,12 +11966,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is that your fish? B: ______ It's very cute.",
     "options": [
       "Yes, it is.",
-      "I'm ten.",
-      "No, I cannot.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -12047,12 +12047,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is this a rabbit? B: ______ It's a turtle.",
     "options": [
       "No, it's not.",
-      "Yes, I can.",
       "Yes, it is.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 turtle，故否定回答「No, it's not.」。"
@@ -12074,12 +12074,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is that your rabbit? B: ______ It's very cute.",
     "options": [
       "Yes, it is.",
-      "No, I cannot.",
-      "I'm ten.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -12156,11 +12156,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, it's not.",
       "Yes, it is.",
-      "Yes, I can.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明它是 dog，故否定回答「No, it's not.」。"
@@ -12182,12 +12182,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is that your turtle? B: ______ It's very cute.",
     "options": [
       "Yes, it is.",
-      "No, I cannot.",
-      "I'm ten.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, it isn't.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "詢問是否為你的寵物，肯定回答「Yes, it is.」。"
@@ -13343,12 +13343,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Who is that man? B: ______",
     "options": [
       "He's my father.",
-      "Yes, I can.",
-      "She's my father.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "She is my father.",
+      "She is my mother.",
+      "They are my father.",
+      "I am my father.",
+      "He is my mother.",
+      "It is my father."
     ],
     "answer": 0,
     "explanation": "詢問「那位男士是誰？」，回答「He's my father.」。"
@@ -13370,12 +13370,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is he your father? B: ______",
     "options": [
       "Yes, he is.",
-      "No, he can't.",
-      "It's a bird.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, he isn't.",
+      "Yes, she is.",
+      "No, she isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "以 Is he...? 提問，肯定簡答為「Yes, he is.」。"
@@ -13451,12 +13451,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Who is that woman? B: ______",
     "options": [
       "She's my mother.",
-      "He's my mother.",
-      "Yes, I can.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is my mother.",
+      "He is my father.",
+      "They are my mother.",
+      "I am my mother.",
+      "She is my father.",
+      "It is my mother."
     ],
     "answer": 0,
     "explanation": "詢問「那位女士是誰？」，回答「She's my mother.」。"
@@ -13478,12 +13478,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is she your mother? B: ______",
     "options": [
       "Yes, she is.",
-      "No, she can't.",
-      "It's a bird.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, she isn't.",
+      "Yes, he is.",
+      "No, he isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "以 Is she...? 提問，肯定簡答為「Yes, she is.」。"
@@ -13559,12 +13559,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Who is that man? B: ______",
     "options": [
       "He's my brother.",
-      "She's my brother.",
-      "Yes, I can.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "She is my father.",
+      "She is my mother.",
+      "They are my father.",
+      "I am my father.",
+      "He is my mother.",
+      "It is my father."
     ],
     "answer": 0,
     "explanation": "詢問「那位男士是誰？」，回答「He's my brother.」。"
@@ -13586,12 +13586,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is he your brother? B: ______",
     "options": [
       "Yes, he is.",
-      "It's a bird.",
-      "No, he can't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, he isn't.",
+      "Yes, she is.",
+      "No, she isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "以 Is he...? 提問，肯定簡答為「Yes, he is.」。"
@@ -13667,12 +13667,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Who is that woman? B: ______",
     "options": [
       "She's my sister.",
-      "Yes, I can.",
-      "He's my sister.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is my mother.",
+      "He is my father.",
+      "They are my mother.",
+      "I am my mother.",
+      "She is my father.",
+      "It is my mother."
     ],
     "answer": 0,
     "explanation": "詢問「那位女士是誰？」，回答「She's my sister.」。"
@@ -13694,12 +13694,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is she your sister? B: ______",
     "options": [
       "Yes, she is.",
-      "No, she can't.",
-      "It's a bird.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, she isn't.",
+      "Yes, he is.",
+      "No, he isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "以 Is she...? 提問，肯定簡答為「Yes, she is.」。"
@@ -13775,12 +13775,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Who is that man? B: ______",
     "options": [
       "He's my grandfather.",
-      "She's my grandfather.",
-      "Yes, I can.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "She is my father.",
+      "She is my mother.",
+      "They are my father.",
+      "I am my father.",
+      "He is my mother.",
+      "It is my father."
     ],
     "answer": 0,
     "explanation": "詢問「那位男士是誰？」，回答「He's my grandfather.」。"
@@ -13802,12 +13802,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is he your grandfather? B: ______",
     "options": [
       "Yes, he is.",
-      "No, he can't.",
-      "It's a bird.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, he isn't.",
+      "Yes, she is.",
+      "No, she isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "以 Is he...? 提問，肯定簡答為「Yes, he is.」。"
@@ -13883,12 +13883,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Who is that woman? B: ______",
     "options": [
       "She's my grandmother.",
-      "He's my grandmother.",
-      "Yes, I can.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "He is my mother.",
+      "He is my father.",
+      "They are my mother.",
+      "I am my mother.",
+      "She is my father.",
+      "It is my mother."
     ],
     "answer": 0,
     "explanation": "詢問「那位女士是誰？」，回答「She's my grandmother.」。"
@@ -13910,12 +13910,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is she your grandmother? B: ______",
     "options": [
       "Yes, she is.",
-      "It's a bird.",
-      "No, she can't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, she isn't.",
+      "Yes, he is.",
+      "No, he isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "以 Is she...? 提問，肯定簡答為「Yes, she is.」。"
@@ -14018,12 +14018,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you a doctor? B: ______",
     "options": [
       "Yes, I am.",
+      "Yes, I do.",
+      "No, I don't.",
       "Yes, you are.",
-      "No, he is not.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, you aren't.",
+      "Yes, he is.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14100,11 +14100,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, she isn't.",
       "Yes, she is.",
+      "No, he isn't.",
+      "Yes, he is.",
+      "No, I'm not.",
       "Yes, I am.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, they aren't."
     ],
     "answer": 0,
     "explanation": "後句說明職業其實是 driver，故否定回答「No, she isn't.」。"
@@ -14126,12 +14126,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you a nurse? B: ______",
     "options": [
       "Yes, I am.",
+      "Yes, I do.",
+      "No, I don't.",
       "Yes, you are.",
-      "No, he is not.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, you aren't.",
+      "Yes, he is.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14208,11 +14208,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, she isn't.",
       "Yes, she is.",
+      "No, he isn't.",
+      "Yes, he is.",
+      "No, I'm not.",
       "Yes, I am.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, they aren't."
     ],
     "answer": 0,
     "explanation": "後句說明職業其實是 doctor，故否定回答「No, she isn't.」。"
@@ -14234,12 +14234,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you a teacher? B: ______",
     "options": [
       "Yes, I am.",
-      "No, he is not.",
+      "Yes, I do.",
+      "No, I don't.",
       "Yes, you are.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, you aren't.",
+      "Yes, he is.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14315,12 +14315,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is Kulas a student? B: ______ He's a teacher.",
     "options": [
       "No, he isn't.",
-      "Yes, I am.",
       "Yes, he is.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, she isn't.",
+      "Yes, she is.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, they aren't."
     ],
     "answer": 0,
     "explanation": "後句說明職業其實是 teacher，故否定回答「No, he isn't.」。"
@@ -14342,12 +14342,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you a student? B: ______",
     "options": [
       "Yes, I am.",
+      "Yes, I do.",
+      "No, I don't.",
       "Yes, you are.",
-      "No, he is not.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, you aren't.",
+      "Yes, he is.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14424,11 +14424,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, he isn't.",
       "Yes, he is.",
+      "No, she isn't.",
+      "Yes, she is.",
+      "No, I'm not.",
       "Yes, I am.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, they aren't."
     ],
     "answer": 0,
     "explanation": "後句說明職業其實是 nurse，故否定回答「No, he isn't.」。"
@@ -14450,12 +14450,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you a driver? B: ______",
     "options": [
       "Yes, I am.",
+      "Yes, I do.",
+      "No, I don't.",
       "Yes, you are.",
-      "No, he is not.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "No, you aren't.",
+      "Yes, he is.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "問句主詞為「you（你）」，回答主詞應轉換為「I（我）」：「Yes, I am.」。"
@@ -14612,12 +14612,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Nice to meet you, Emma. B: ______",
     "options": [
       "Nice to meet you, too.",
-      "I'm a student.",
-      "Thank you.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "It is seven o'clock."
+      "I'm fine, thank you.",
+      "Good morning.",
+      "Here you are.",
+      "I'm sorry.",
+      "Good night.",
+      "Thank you."
     ],
     "answer": 0,
     "explanation": "初次見面問候「Nice to meet you.」，回應「Nice to meet you, too.」。"
@@ -14639,12 +14639,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Happy Mother's Day, Mom! This card is for you. B: ______",
     "options": [
       "Thank you, sweetie! I love you.",
-      "Try again.",
-      "No, it's not.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome.",
-      "Good afternoon."
+      "I'm sorry.",
+      "No, thank you.",
+      "Here you are.",
+      "Yes, it is.",
+      "It's a card.",
+      "Good night."
     ],
     "answer": 0,
     "explanation": "送給媽媽母親節卡片，媽媽回應「Thank you, sweetie! I love you.」。"
@@ -14720,12 +14720,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How's the weather today? B: ______ Let's take an umbrella.",
     "options": [
       "It's rainy.",
-      "They're apples.",
-      "It's sunny and hot.",
-      "I'm hungry.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "They're cold.",
+      "I'm cold.",
+      "It's on the table.",
+      "At ten o'clock.",
+      "Yes, it is.",
+      "He is cold."
     ],
     "answer": 0,
     "explanation": "後句提到「帶把雨傘（take an umbrella）」，代表天氣下雨「It’s rainy.」。"
@@ -14964,11 +14964,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Yes, I am.",
       "No, I'm not.",
+      "Yes, I do.",
+      "No, I don't.",
       "Yes, he is.",
-      "It's windy.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "No, he isn't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "後句表示想要 eat some noodles，故肯定回答「Yes, I am.」。"
@@ -15017,12 +15017,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you thirsty? B: Yes, I am. I want to drink some juice.",
     "options": [
       "Yes, I am.",
-      "Yes, he is.",
-      "It's windy.",
       "No, I'm not.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, he is.",
+      "No, he isn't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "後句表示想要 drink some juice，故肯定回答「Yes, I am.」。"
@@ -15072,11 +15072,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Yes, I am.",
       "No, I'm not.",
+      "Yes, I do.",
+      "No, I don't.",
       "Yes, he is.",
-      "It's windy.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "No, he isn't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "後句表示想要 take a rest，故肯定回答「Yes, I am.」。"
@@ -15125,12 +15125,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you happy? B: Yes, I am. I want to sing a song.",
     "options": [
       "Yes, I am.",
-      "Yes, he is.",
-      "It's windy.",
       "No, I'm not.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, he is.",
+      "No, he isn't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "後句表示想要 sing a song，故肯定回答「Yes, I am.」。"
@@ -15180,11 +15180,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Yes, I am.",
       "No, I'm not.",
+      "Yes, I do.",
+      "No, I don't.",
       "Yes, he is.",
-      "It's windy.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "No, he isn't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "後句表示想要 talk to Mom，故肯定回答「Yes, I am.」。"
@@ -15233,12 +15233,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you full? B: Yes, I am. I want to take a walk.",
     "options": [
       "Yes, I am.",
-      "Yes, he is.",
-      "It's windy.",
       "No, I'm not.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, he is.",
+      "No, he isn't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "後句表示想要 take a walk，故肯定回答「Yes, I am.」。"
@@ -15287,12 +15287,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are these apples? B: ______ They're sweet and yummy!",
     "options": [
       "Yes, they are.",
-      "Yes, it is.",
       "No, they aren't.",
-      "It's sunny.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, it is.",
+      "No, it isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, we are."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15342,11 +15342,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Yes, they are.",
       "No, they aren't.",
-      "It's sunny.",
       "Yes, it is.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, it isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, we are."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15395,12 +15395,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are these oranges? B: ______ They're sweet and yummy!",
     "options": [
       "Yes, they are.",
-      "Yes, it is.",
       "No, they aren't.",
-      "It's sunny.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, it is.",
+      "No, it isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, we are."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15450,11 +15450,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Yes, they are.",
       "No, they aren't.",
-      "It's sunny.",
       "Yes, it is.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, it isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, we are."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15503,12 +15503,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are these hamburgers? B: ______ They're sweet and yummy!",
     "options": [
       "Yes, they are.",
-      "Yes, it is.",
       "No, they aren't.",
-      "It's sunny.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, it is.",
+      "No, it isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, we are."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15611,12 +15611,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are these sandwiches? B: ______ They're sweet and yummy!",
     "options": [
       "Yes, they are.",
-      "Yes, it is.",
       "No, they aren't.",
-      "It's sunny.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, it is.",
+      "No, it isn't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, we are."
     ],
     "answer": 0,
     "explanation": "後句稱讚香甜好吃，且主詞為複數，故選「Yes, they are.」。"
@@ -15719,12 +15719,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you want some pizza, Emma? B: ______ I want some water.",
     "options": [
       "No, thank you.",
-      "Yes, please.",
+      "No, I don't.",
       "Yes, I am.",
-      "They're bananas.",
-      "Here you are.",
-      "I am full.",
-      "I want some water."
+      "No, I'm not.",
+      "Yes, it is.",
+      "No, it isn't.",
+      "Here you are."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -15773,12 +15773,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you want some juice, Nina? B: ______ I want some water.",
     "options": [
       "No, thank you.",
+      "No, I don't.",
       "Yes, I am.",
-      "They're bananas.",
-      "Yes, please.",
-      "Here you are.",
-      "I am full.",
-      "I want some water."
+      "No, I'm not.",
+      "Yes, it is.",
+      "No, it isn't.",
+      "Here you are."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -15827,12 +15827,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you want some milk, Chloe? B: ______ I want some water.",
     "options": [
       "No, thank you.",
-      "Yes, please.",
+      "No, I don't.",
       "Yes, I am.",
-      "They're bananas.",
-      "Here you are.",
-      "I am full.",
-      "I want some water."
+      "No, I'm not.",
+      "Yes, it is.",
+      "No, it isn't.",
+      "Here you are."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -15878,18 +15878,18 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "A: Do you want some water, Sophie? B: ______ I want some water.",
+    "question": "A: Do you want some water, Sophie? B: ______ I want some juice.",
     "options": [
       "No, thank you.",
       "Yes, I am.",
       "They're bananas.",
-      "Yes, please.",
       "Here you are.",
       "I am full.",
-      "I want some water."
+      "No, I'm not.",
+      "Yes, it is."
     ],
     "answer": 0,
-    "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
+    "explanation": "後句說「我想要果汁」，代表婉拒對方給予的水，禮貌拒絕回答「No, thank you.」。"
   },
   {
     "id": "hwg_b3_583",
@@ -15935,12 +15935,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you want some cake, Hannah? B: ______ I want some water.",
     "options": [
       "No, thank you.",
-      "Yes, please.",
+      "No, I don't.",
       "Yes, I am.",
-      "They're bananas.",
-      "Here you are.",
-      "I am full.",
-      "I want some water."
+      "No, I'm not.",
+      "Yes, it is.",
+      "No, it isn't.",
+      "Here you are."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -15989,12 +15989,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you want some ice cream, Maya? B: ______ I want some water.",
     "options": [
       "No, thank you.",
+      "No, I don't.",
       "Yes, I am.",
-      "They're bananas.",
-      "Yes, please.",
-      "Here you are.",
-      "I am full.",
-      "I want some water."
+      "No, I'm not.",
+      "Yes, it is.",
+      "No, it isn't.",
+      "Here you are."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -16043,12 +16043,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you want some soup, Lily? B: ______ I want some water.",
     "options": [
       "No, thank you.",
-      "Yes, please.",
+      "No, I don't.",
       "Yes, I am.",
-      "They're bananas.",
-      "Here you are.",
-      "I am full.",
-      "I want some water."
+      "No, I'm not.",
+      "Yes, it is.",
+      "No, it isn't.",
+      "Here you are."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -16097,12 +16097,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you want some tea, Ava? B: ______ I want some water.",
     "options": [
       "No, thank you.",
+      "No, I don't.",
       "Yes, I am.",
-      "They're bananas.",
-      "Yes, please.",
-      "Here you are.",
-      "I am full.",
-      "I want some water."
+      "No, I'm not.",
+      "Yes, it is.",
+      "No, it isn't.",
+      "Here you are."
     ],
     "answer": 0,
     "explanation": "後句說「我想要水」，代表婉拒對方的提議，禮貌回答「No, thank you.」。"
@@ -16148,15 +16148,15 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "A: Excuse me. What time is it? B: ______",
+    "question": "A: Excuse me. What time is it? (7:00) B: ______",
     "options": [
       "It's seven o'clock.",
-      "It's under the chair.",
+      "They're seven o'clock.",
+      "I'm seven o'clock.",
+      "At seven o'clock.",
+      "It is under the chair.",
       "I'm reading.",
-      "Yes, it is.",
-      "It is ten o'clock.",
-      "Time for school.",
-      "Hurry up!"
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16229,15 +16229,15 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "A: Excuse me. What time is it? B: ______",
+    "question": "A: Excuse me. What time is it? (12:00) B: ______",
     "options": [
       "It's twelve o'clock.",
-      "Yes, it is.",
-      "It's under the chair.",
+      "They're twelve o'clock.",
+      "I'm twelve o'clock.",
+      "At twelve o'clock.",
+      "It is under the chair.",
       "I'm reading.",
-      "It is ten o'clock.",
-      "Time for school.",
-      "Hurry up!"
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16310,15 +16310,15 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "A: Excuse me. What time is it? B: ______",
+    "question": "A: Excuse me. What time is it? (6:30) B: ______",
     "options": [
       "It's six thirty.",
+      "They're six thirty.",
+      "I'm six thirty.",
+      "At six thirty.",
+      "It is under the chair.",
       "I'm reading.",
-      "Yes, it is.",
-      "It's under the chair.",
-      "It is ten o'clock.",
-      "Time for school.",
-      "Hurry up!"
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16391,15 +16391,15 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "A: Excuse me. What time is it? B: ______",
+    "question": "A: Excuse me. What time is it? (9:30) B: ______",
     "options": [
       "It's nine thirty.",
-      "It's under the chair.",
+      "They're nine thirty.",
+      "I'm nine thirty.",
+      "At nine thirty.",
+      "It is under the chair.",
       "I'm reading.",
-      "Yes, it is.",
-      "It is ten o'clock.",
-      "Time for school.",
-      "Hurry up!"
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16472,15 +16472,15 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "A: Excuse me. What time is it? B: ______",
+    "question": "A: Excuse me. What time is it? (8:00) B: ______",
     "options": [
       "It's eight o'clock.",
-      "It's under the chair.",
+      "They're eight o'clock.",
+      "I'm eight o'clock.",
+      "At eight o'clock.",
+      "It is under the chair.",
       "I'm reading.",
-      "Yes, it is.",
-      "It is ten o'clock.",
-      "Time for school.",
-      "Hurry up!"
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "詢問時間「What time is it?」，回答「It’s + 時間.」。"
@@ -16664,12 +16664,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Lucas? B: ______",
     "options": [
       "I'm cooking.",
-      "It's ten o'clock.",
-      "He's cooking.",
-      "I can cook.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is cooking..",
+      "She is cooking..",
+      "They are cooking..",
+      "I cooking..",
+      "We are cooking..",
+      "You are cooking.."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16745,12 +16745,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Max? B: ______",
     "options": [
       "I'm eating.",
-      "I can eat.",
-      "It's ten o'clock.",
-      "He's eating.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is eating..",
+      "She is eating..",
+      "They are eating..",
+      "I eating..",
+      "We are eating..",
+      "You are eating.."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16826,12 +16826,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Leo? B: ______",
     "options": [
       "I'm sleeping.",
-      "He's sleeping.",
-      "I can sleep.",
-      "It's ten o'clock.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is sleeping..",
+      "She is sleeping..",
+      "They are sleeping..",
+      "I sleeping..",
+      "We are sleeping..",
+      "You are sleeping.."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16907,12 +16907,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Kulas? B: ______",
     "options": [
       "I'm reading.",
-      "He's reading.",
-      "I can read.",
-      "It's ten o'clock.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is reading..",
+      "She is reading..",
+      "They are reading..",
+      "I reading..",
+      "We are reading..",
+      "You are reading.."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16988,12 +16988,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Ryan? B: ______",
     "options": [
       "I'm swimming.",
-      "It's ten o'clock.",
-      "He's swimming.",
-      "I can swim.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is swimming..",
+      "She is swimming..",
+      "They are swimming..",
+      "I swimming..",
+      "We are swimming..",
+      "You are swimming.."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17069,12 +17069,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Owen? B: ______",
     "options": [
       "I'm running.",
-      "I can run.",
-      "It's ten o'clock.",
-      "He's running.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is running..",
+      "She is running..",
+      "They are running..",
+      "I running..",
+      "We are running..",
+      "You are running.."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17150,12 +17150,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Noah? B: ______",
     "options": [
       "I'm writing.",
-      "He's writing.",
-      "I can write.",
-      "It's ten o'clock.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is writing..",
+      "She is writing..",
+      "They are writing..",
+      "I writing..",
+      "We are writing..",
+      "You are writing.."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17231,12 +17231,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Alex? B: ______",
     "options": [
       "I'm drinking.",
-      "He's drinking.",
-      "I can drink.",
-      "It's ten o'clock.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is drinking..",
+      "She is drinking..",
+      "They are drinking..",
+      "I drinking..",
+      "We are drinking..",
+      "You are drinking.."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17312,12 +17312,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Ethan? B: ______",
     "options": [
       "I'm drawing.",
-      "It's ten o'clock.",
-      "He's drawing.",
-      "I can draw.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is drawing..",
+      "She is drawing..",
+      "They are drawing..",
+      "I drawing..",
+      "We are drawing..",
+      "You are drawing.."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17393,12 +17393,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Dylan? B: ______",
     "options": [
       "I'm dancing.",
-      "I can dance.",
-      "It's ten o'clock.",
-      "He's dancing.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "He is dancing..",
+      "She is dancing..",
+      "They are dancing..",
+      "I dancing..",
+      "We are dancing..",
+      "You are dancing.."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17797,13 +17797,13 @@ export const HERE_WE_GO_MCQ_BANK = [
     },
     "question": "A: Is your brother in the kitchen? B: ______ He's in the kitchen.",
     "options": [
-      "No, he isn't.",
       "Yes, he is.",
+      "No, he isn't.",
+      "Yes, she is.",
       "No, she isn't.",
-      "He is cooking.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17880,11 +17880,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, he isn't.",
       "Yes, he is.",
+      "Yes, she is.",
       "No, she isn't.",
-      "He is cooking.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17933,12 +17933,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where is the hat? B: ______",
     "options": [
       "It's on the chair.",
-      "I'm in the bedroom.",
-      "It's twelve thirty.",
       "They're on the chair.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "I'm on the chair.",
+      "He's on the chair.",
+      "She's on the chair.",
+      "We're on the chair.",
+      "You're on the chair."
     ],
     "answer": 0,
     "explanation": "單數物品應以「It's + 介系詞片語」回答位置。"
@@ -17988,11 +17988,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "It's under the desk.",
       "They're under the desk.",
-      "I'm in the bedroom.",
-      "It's twelve thirty.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "I'm under the desk.",
+      "He's under the desk.",
+      "She's under the desk.",
+      "We're under the desk.",
+      "You're under the desk."
     ],
     "answer": 0,
     "explanation": "單數物品應以「It's + 介系詞片語」回答位置。"
@@ -18041,12 +18041,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where is the pencil case? B: ______",
     "options": [
       "It's in the box.",
-      "I'm in the bedroom.",
-      "It's twelve thirty.",
       "They're in the box.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "I'm in the box.",
+      "He's in the box.",
+      "She's in the box.",
+      "We're in the box.",
+      "You're in the box."
     ],
     "answer": 0,
     "explanation": "單數物品應以「It's + 介系詞片語」回答位置。"
@@ -18096,11 +18096,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "It's on the table.",
       "They're on the table.",
-      "I'm in the bedroom.",
-      "It's twelve thirty.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "I'm on the table.",
+      "He's on the table.",
+      "She's on the table.",
+      "We're on the table.",
+      "You're on the table."
     ],
     "answer": 0,
     "explanation": "單數物品應以「It's + 介系詞片語」回答位置。"
@@ -18149,12 +18149,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where are the keys? B: ______",
     "options": [
       "They're in the bag.",
-      "I'm in the bedroom.",
-      "It's twelve thirty.",
       "It's in the bag.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "I'm in the bag.",
+      "He's in the bag.",
+      "She's in the bag.",
+      "We're in the bag.",
+      "You're in the bag."
     ],
     "answer": 0,
     "explanation": "複數物品應以「They're + 介系詞片語」回答位置。"
@@ -18204,11 +18204,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "They're on the book.",
       "It's on the book.",
-      "I'm in the bedroom.",
-      "It's twelve thirty.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "I'm on the book.",
+      "He's on the book.",
+      "She's on the book.",
+      "We're on the book.",
+      "You're on the book."
     ],
     "answer": 0,
     "explanation": "複數物品應以「They're + 介系詞片語」回答位置。"
@@ -18257,12 +18257,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where are the shoes? B: ______",
     "options": [
       "They're under the bed.",
-      "I'm in the bedroom.",
-      "It's twelve thirty.",
       "It's under the bed.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "I'm under the bed.",
+      "He's under the bed.",
+      "She's under the bed.",
+      "We're under the bed.",
+      "You're under the bed."
     ],
     "answer": 0,
     "explanation": "複數物品應以「They're + 介系詞片語」回答位置。"
@@ -18312,11 +18312,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "They're in the box.",
       "It's in the box.",
-      "I'm in the bedroom.",
-      "It's twelve thirty.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "I'm in the box.",
+      "He's in the box.",
+      "She's in the box.",
+      "We're in the box.",
+      "You're in the box."
     ],
     "answer": 0,
     "explanation": "複數物品應以「They're + 介系詞片語」回答位置。"
@@ -18500,12 +18500,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you eating, Max? B: ______ I'm doing my homework.",
     "options": [
       "No, I'm not.",
-      "It's nine o'clock.",
       "Yes, I am.",
+      "No, I don't.",
+      "Yes, I do.",
       "No, he isn't.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, he is.",
+      "No, they aren't."
     ],
     "answer": 0,
     "explanation": "後句說明自己正在寫作業，故否定回答「No, I’m not.」。"
@@ -18608,12 +18608,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you sleeping, Leo? B: ______ I'm doing my homework.",
     "options": [
       "No, I'm not.",
-      "It's nine o'clock.",
       "Yes, I am.",
+      "No, I don't.",
+      "Yes, I do.",
       "No, he isn't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, he is.",
+      "No, they aren't."
     ],
     "answer": 0,
     "explanation": "後句說明自己正在寫作業，故否定回答「No, I’m not.」。"
@@ -18662,12 +18662,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is the pencil case in the box? B: ______ Here it is!",
     "options": [
       "Yes, it is.",
-      "Yes, they are.",
+      "No, it isn't.",
+      "Yes, I am.",
       "No, I'm not.",
-      "He is in the yard.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, they are.",
+      "No, they aren't.",
+      "Yes, he is."
     ],
     "answer": 0,
     "explanation": "單數物品位置確認，肯定簡答「Yes, it is.」。"
@@ -18716,12 +18716,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you reading, Kulas? B: ______ I'm doing my homework.",
     "options": [
       "No, I'm not.",
-      "It's nine o'clock.",
       "Yes, I am.",
+      "No, I don't.",
+      "Yes, I do.",
       "No, he isn't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, he is.",
+      "No, they aren't."
     ],
     "answer": 0,
     "explanation": "後句說明自己正在寫作業，故否定回答「No, I’m not.」。"
@@ -18905,12 +18905,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are you running, Owen? B: ______ I'm doing my homework.",
     "options": [
       "No, I'm not.",
-      "No, he isn't.",
-      "It's nine o'clock.",
       "Yes, I am.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, I don't.",
+      "Yes, I do.",
+      "No, he isn't.",
+      "Yes, he is.",
+      "No, they aren't."
     ],
     "answer": 0,
     "explanation": "後句說明自己正在寫作業，故否定回答「No, I’m not.」。"
@@ -18986,12 +18986,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Hurry up! It is seven fifty! B: ______",
     "options": [
       "Oh, no! I'm late for school!",
-      "It's under the bed.",
-      "Yes, he is.",
-      "Thank you.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Good night!",
+      "I'm sleeping.",
+      "It's sunny.",
+      "Here you are.",
+      "No, thank you.",
+      "I'm full."
     ],
     "answer": 0,
     "explanation": "對方催促「快一點！已經七點五十分了！」，回應「糟了！我上學要遲到了！」。"
@@ -19013,12 +19013,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Happy Dragon Boat Festival! Do you like rice dumplings? B: ______",
     "options": [
       "Yes, I do. They are yummy!",
-      "No, he isn't.",
-      "It's six o'clock.",
-      "It's under the table.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "No, I don't.",
+      "Yes, I am.",
+      "No, I'm not.",
+      "Yes, they do.",
+      "No, they don't.",
+      "Yes, he does."
     ],
     "answer": 0,
     "explanation": "詢問端午節是否喜歡吃粽子（Do you like ...?），肯定回答「Yes, I do.」。"
@@ -20039,12 +20039,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's wrong with Lucas? B: ______",
     "options": [
       "His head hurts.",
-      "His head hurt.",
-      "He is in the park.",
-      "It's his cap.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She has a headache.",
+      "They have a headache.",
+      "I have a headache.",
+      "He have a headache.",
+      "He is a headache.",
+      "We have a headache."
     ],
     "answer": 0,
     "explanation": "單數部位「His head」搭配單數動詞「hurts」。"
@@ -20093,12 +20093,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's wrong with Max? B: ______",
     "options": [
       "His right arm hurts.",
-      "He is in the park.",
-      "It's his cap.",
-      "His right arm hurt.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She has a headache.",
+      "They have a headache.",
+      "I have a headache.",
+      "He have a headache.",
+      "He is a headache.",
+      "We have a headache."
     ],
     "answer": 0,
     "explanation": "單數部位「His right arm」搭配單數動詞「hurts」。"
@@ -20147,12 +20147,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's wrong with Leo? B: ______",
     "options": [
       "His left leg hurts.",
-      "His left leg hurt.",
-      "He is in the park.",
-      "It's his cap.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She has a headache.",
+      "They have a headache.",
+      "I have a headache.",
+      "He have a headache.",
+      "He is a headache.",
+      "We have a headache."
     ],
     "answer": 0,
     "explanation": "單數部位「His left leg」搭配單數動詞「hurts」。"
@@ -20201,12 +20201,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's wrong with Kulas? B: ______",
     "options": [
       "His right hand hurts.",
-      "He is in the park.",
-      "It's his cap.",
-      "His right hand hurt.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She has a headache.",
+      "They have a headache.",
+      "I have a headache.",
+      "He have a headache.",
+      "He is a headache.",
+      "We have a headache."
     ],
     "answer": 0,
     "explanation": "單數部位「His right hand」搭配單數動詞「hurts」。"
@@ -20255,12 +20255,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's wrong with Ryan? B: ______",
     "options": [
       "His left foot hurts.",
-      "His left foot hurt.",
-      "He is in the park.",
-      "It's his cap.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She has a headache.",
+      "They have a headache.",
+      "I have a headache.",
+      "He have a headache.",
+      "He is a headache.",
+      "We have a headache."
     ],
     "answer": 0,
     "explanation": "單數部位「His left foot」搭配單數動詞「hurts」。"
@@ -20309,12 +20309,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's wrong with Owen? B: ______",
     "options": [
       "His neck hurts.",
-      "He is in the park.",
-      "It's his cap.",
-      "His neck hurt.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She has a headache.",
+      "They have a headache.",
+      "I have a headache.",
+      "He have a headache.",
+      "He is a headache.",
+      "We have a headache."
     ],
     "answer": 0,
     "explanation": "單數部位「His neck」搭配單數動詞「hurts」。"
@@ -20363,12 +20363,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's wrong with Noah? B: ______",
     "options": [
       "His back hurts.",
-      "His back hurt.",
-      "He is in the park.",
-      "It's his cap.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She has a headache.",
+      "They have a headache.",
+      "I have a headache.",
+      "He have a headache.",
+      "He is a headache.",
+      "We have a headache."
     ],
     "answer": 0,
     "explanation": "單數部位「His back」搭配單數動詞「hurts」。"
@@ -20417,12 +20417,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's wrong with Alex? B: ______",
     "options": [
       "His nose hurts.",
-      "He is in the park.",
-      "It's his cap.",
-      "His nose hurt.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She has a headache.",
+      "They have a headache.",
+      "I have a headache.",
+      "He have a headache.",
+      "He is a headache.",
+      "We have a headache."
     ],
     "answer": 0,
     "explanation": "單數部位「His nose」搭配單數動詞「hurts」。"
@@ -20471,12 +20471,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do your eyes hurt? B: ______ I need to see a doctor.",
     "options": [
       "Yes, they do.",
-      "Yes, it does.",
       "No, they don't.",
-      "Yes, I am.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, it does.",
+      "No, it doesn't.",
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "複數部位「your eyes」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20526,11 +20526,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Yes, they do.",
       "No, they don't.",
-      "Yes, I am.",
       "Yes, it does.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, it doesn't.",
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "複數部位「your ears」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20579,12 +20579,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do your hands hurt? B: ______ I need to see a doctor.",
     "options": [
       "Yes, they do.",
-      "Yes, it does.",
       "No, they don't.",
-      "Yes, I am.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, it does.",
+      "No, it doesn't.",
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "複數部位「your hands」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20634,11 +20634,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Yes, they do.",
       "No, they don't.",
-      "Yes, I am.",
       "Yes, it does.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, it doesn't.",
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "複數部位「your legs」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20687,12 +20687,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do your feet hurt? B: ______ I need to see a doctor.",
     "options": [
       "Yes, they do.",
-      "Yes, it does.",
       "No, they don't.",
-      "Yes, I am.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, it does.",
+      "No, it doesn't.",
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "複數部位「your feet」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20742,11 +20742,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Yes, they do.",
       "No, they don't.",
-      "Yes, I am.",
       "Yes, it does.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, it doesn't.",
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "複數部位「your arms」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20795,12 +20795,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do your knees hurt? B: ______ I need to see a doctor.",
     "options": [
       "Yes, they do.",
-      "Yes, it does.",
       "No, they don't.",
-      "Yes, I am.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, it does.",
+      "No, it doesn't.",
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "複數部位「your knees」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20850,11 +20850,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Yes, they do.",
       "No, they don't.",
-      "Yes, I am.",
       "Yes, it does.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, it doesn't.",
+      "Yes, I do.",
+      "No, I don't.",
+      "Yes, they are."
     ],
     "answer": 0,
     "explanation": "複數部位「your shoulders」代名詞用 they，肯定簡答「Yes, they do.」。"
@@ -20930,12 +20930,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you have a headache? B: ______ I feel great today!",
     "options": [
       "No, I don't.",
-      "Yes, I do.",
+      "No, I'm not.",
+      "Yes, I am.",
       "No, he doesn't.",
-      "I'd like some soup.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, he does.",
+      "No, she doesn't.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21011,12 +21011,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you have a toothache? B: ______ I feel great today!",
     "options": [
       "No, I don't.",
-      "Yes, I do.",
+      "No, I'm not.",
+      "Yes, I am.",
       "No, he doesn't.",
-      "I'd like some soup.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, he does.",
+      "No, she doesn't.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21092,12 +21092,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you have a stomachache? B: ______ I feel great today!",
     "options": [
       "No, I don't.",
-      "I'd like some soup.",
-      "Yes, I do.",
+      "No, I'm not.",
+      "Yes, I am.",
       "No, he doesn't.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, he does.",
+      "No, she doesn't.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21173,12 +21173,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you have a fever? B: ______ I feel great today!",
     "options": [
       "No, I don't.",
+      "No, I'm not.",
+      "Yes, I am.",
       "No, he doesn't.",
-      "I'd like some soup.",
-      "Yes, I do.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, he does.",
+      "No, she doesn't.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21254,12 +21254,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you have a runny nose? B: ______ I feel great today!",
     "options": [
       "No, I don't.",
-      "Yes, I do.",
+      "No, I'm not.",
+      "Yes, I am.",
       "No, he doesn't.",
-      "I'd like some soup.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, he does.",
+      "No, she doesn't.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21335,12 +21335,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you have a sore throat? B: ______ I feel great today!",
     "options": [
       "No, I don't.",
-      "Yes, I do.",
+      "No, I'm not.",
+      "Yes, I am.",
       "No, he doesn't.",
-      "I'd like some soup.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, he does.",
+      "No, she doesn't.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21416,12 +21416,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Do you have a cold? B: ______ I feel great today!",
     "options": [
       "No, I don't.",
-      "I'd like some soup.",
-      "Yes, I do.",
+      "No, I'm not.",
+      "Yes, I am.",
       "No, he doesn't.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, he does.",
+      "No, she doesn't.",
+      "Yes, it is."
     ],
     "answer": 0,
     "explanation": "後句說「我今天感覺很棒！」，故否定回答「No, I don’t.」。"
@@ -21659,12 +21659,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like for breakfast? B: ______",
     "options": [
       "I'd like some beef noodles.",
-      "Yes, please.",
-      "No, I don't.",
-      "My leg hurts.",
-      "Here you are.",
-      "No, thank you.",
-      "I am full."
+      "She'd like some beef noodles.",
+      "He'd like some beef noodles.",
+      "They'd like some beef noodles.",
+      "I'd like to sleep.",
+      "I have some beef noodles.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -21740,12 +21740,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like for lunch? B: ______",
     "options": [
       "I'd like some pork rice.",
-      "My leg hurts.",
-      "Yes, please.",
-      "No, I don't.",
-      "Here you are.",
-      "No, thank you.",
-      "I am full."
+      "She'd like some beef noodles.",
+      "He'd like some beef noodles.",
+      "They'd like some beef noodles.",
+      "I'd like to sleep.",
+      "I have some beef noodles.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -21821,12 +21821,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like for dinner? B: ______",
     "options": [
       "I'd like some chicken soup.",
-      "No, I don't.",
-      "My leg hurts.",
-      "Yes, please.",
-      "Here you are.",
-      "No, thank you.",
-      "I am full."
+      "She'd like some beef noodles.",
+      "He'd like some beef noodles.",
+      "They'd like some beef noodles.",
+      "I'd like to sleep.",
+      "I have some beef noodles.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -21902,12 +21902,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like for breakfast? B: ______",
     "options": [
       "I'd like some fried rice.",
-      "Yes, please.",
-      "No, I don't.",
-      "My leg hurts.",
-      "Here you are.",
-      "No, thank you.",
-      "I am full."
+      "She'd like some beef noodles.",
+      "He'd like some beef noodles.",
+      "They'd like some beef noodles.",
+      "I'd like to sleep.",
+      "I have some beef noodles.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -21983,12 +21983,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like for lunch? B: ______",
     "options": [
       "I'd like some vegetable salad.",
-      "Yes, please.",
-      "No, I don't.",
-      "My leg hurts.",
-      "Here you are.",
-      "No, thank you.",
-      "I am full."
+      "She'd like some beef noodles.",
+      "He'd like some beef noodles.",
+      "They'd like some beef noodles.",
+      "I'd like to sleep.",
+      "I have some beef noodles.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -22064,12 +22064,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like for dinner? B: ______",
     "options": [
       "I'd like some ham sandwiches.",
-      "My leg hurts.",
-      "Yes, please.",
-      "No, I don't.",
-      "Here you are.",
-      "No, thank you.",
-      "I am full."
+      "She'd like some beef noodles.",
+      "He'd like some beef noodles.",
+      "They'd like some beef noodles.",
+      "I'd like to sleep.",
+      "I have some beef noodles.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -22145,12 +22145,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like for breakfast? B: ______",
     "options": [
       "I'd like some fish soup.",
-      "No, I don't.",
-      "My leg hurts.",
-      "Yes, please.",
-      "Here you are.",
-      "No, thank you.",
-      "I am full."
+      "She'd like some beef noodles.",
+      "He'd like some beef noodles.",
+      "They'd like some beef noodles.",
+      "I'd like to sleep.",
+      "I have some beef noodles.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -22226,12 +22226,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What would you like for lunch? B: ______",
     "options": [
       "I'd like some cheese burgers.",
-      "Yes, please.",
-      "No, I don't.",
-      "My leg hurts.",
-      "Here you are.",
-      "No, thank you.",
-      "I am full."
+      "She'd like some beef noodles.",
+      "He'd like some beef noodles.",
+      "They'd like some beef noodles.",
+      "I'd like to sleep.",
+      "I have some beef noodles.",
+      "At eight o'clock."
     ],
     "answer": 0,
     "explanation": "What 開頭的疑問句詢問想吃什麼，應具體回答食物「I’d like some ...」。"
@@ -22388,12 +22388,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Whose water bottle is that on the desk? B: ______",
     "options": [
       "It's Chloe's water bottle.",
-      "I'd like some rice.",
-      "They're Chloe's water bottle.",
+      "They're Chloe's.",
+      "It's on the table.",
+      "He has a water bottle.",
       "She is Chloe.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "Yes, it is mine.",
+      "Under the desk."
     ],
     "answer": 0,
     "explanation": "單數物品 that water bottle 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22604,12 +22604,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Whose lunchbox is that on the desk? B: ______",
     "options": [
       "It's Lily's lunchbox.",
-      "I'd like some rice.",
-      "They're Lily's lunchbox.",
-      "She is Lily.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "They're Chloe's.",
+      "It's on the table.",
+      "He has a water bottle.",
+      "She is Chloe.",
+      "Yes, it is mine.",
+      "Under the desk."
     ],
     "answer": 0,
     "explanation": "單數物品 that lunchbox 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22712,12 +22712,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are these Lucas's glasses? B: ______ They're my glasses.",
     "options": [
       "No, they aren't.",
-      "Yes, it is.",
       "Yes, they are.",
       "No, it isn't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, it is.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 glasses，且主詞為複數，故選「No, they aren't.」。"
@@ -22769,9 +22769,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, it isn't.",
       "Yes, it is.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 shoes，且主詞為複數，故選「No, they aren't.」。"
@@ -22820,12 +22820,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are these Leo's socks? B: ______ They're my socks.",
     "options": [
       "No, they aren't.",
-      "Yes, it is.",
       "Yes, they are.",
       "No, it isn't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, it is.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 socks，且主詞為複數，故選「No, they aren't.」。"
@@ -22877,9 +22877,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, it isn't.",
       "Yes, it is.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 gloves，且主詞為複數，故選「No, they aren't.」。"
@@ -22928,12 +22928,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are these Ryan's pants? B: ______ They're my pants.",
     "options": [
       "No, they aren't.",
-      "Yes, it is.",
       "Yes, they are.",
       "No, it isn't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, it is.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 pants，且主詞為複數，故選「No, they aren't.」。"
@@ -22985,9 +22985,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, it isn't.",
       "Yes, it is.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 notebooks，且主詞為複數，故選「No, they aren't.」。"
@@ -23036,12 +23036,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Are these Noah's brushes? B: ______ They're my brushes.",
     "options": [
       "No, they aren't.",
-      "Yes, it is.",
       "Yes, they are.",
       "No, it isn't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, it is.",
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 brushes，且主詞為複數，故選「No, they aren't.」。"
@@ -23093,9 +23093,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are.",
       "No, it isn't.",
       "Yes, it is.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, I'm not.",
+      "Yes, I am.",
+      "No, he isn't."
     ],
     "answer": 0,
     "explanation": "後句說明是我的 keys，且主詞為複數，故選「No, they aren't.」。"
@@ -24332,12 +24332,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Was Emma at home last night? B: ______ She was at home.",
     "options": [
       "No, she wasn't.",
-      "No, they weren't.",
       "Yes, she was.",
-      "No, she didn't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, she is.",
+      "No, she isn't.",
+      "Yes, he was.",
+      "No, he wasn't.",
+      "Yes, they were."
     ],
     "answer": 0,
     "explanation": "以 Was Emma...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24495,11 +24495,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, she wasn't.",
       "Yes, she was.",
-      "No, she didn't.",
-      "No, they weren't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, she is.",
+      "No, she isn't.",
+      "Yes, he was.",
+      "No, he wasn't.",
+      "Yes, they were."
     ],
     "answer": 0,
     "explanation": "以 Was Chloe...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24576,11 +24576,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "No, she wasn't.",
       "Yes, she was.",
-      "No, she didn't.",
-      "No, they weren't.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "No, she isn't.",
+      "Yes, she is.",
+      "No, he wasn't.",
+      "Yes, he was.",
+      "Yes, they were."
     ],
     "answer": 0,
     "explanation": "以 Was Sophie...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24656,12 +24656,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Was Hannah at the restaurant last night? B: ______ She was at home.",
     "options": [
       "No, she wasn't.",
-      "No, they weren't.",
       "Yes, she was.",
-      "No, she didn't.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, she is.",
+      "No, she isn't.",
+      "Yes, he was.",
+      "No, he wasn't.",
+      "Yes, they were."
     ],
     "answer": 0,
     "explanation": "以 Was Hannah...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24953,12 +24953,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Emma ______ yesterday? B: Yes, she did.",
     "options": [
       "play the piano",
-      "plays the piano",
-      "playing",
-      "played the piano",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, she didn't.",
+      "Yes, she does.",
+      "No, she doesn't.",
+      "Yes, he did.",
+      "No, he didn't.",
+      "Yes, she was."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「play the piano」。"
@@ -24980,12 +24980,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Lucas do yesterday evening? B: ______",
     "options": [
       "He played the piano.",
-      "Yes, he did.",
-      "He plays the piano every day.",
-      "He was at the mall.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She played the piano..",
+      "They played the piano..",
+      "I played the piano..",
+      "He plays baseball.",
+      "He is playing baseball.",
+      "He will play baseball."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25061,12 +25061,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Max do yesterday evening? B: ______",
     "options": [
       "He played baseball.",
-      "He was at the mall.",
-      "Yes, he did.",
-      "He plays baseball every day.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She played baseball..",
+      "They played baseball..",
+      "I played baseball..",
+      "He plays baseball.",
+      "He is playing baseball.",
+      "He will play baseball."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25115,12 +25115,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Chloe ______ yesterday? B: Yes, she did.",
     "options": [
       "surf the Internet",
-      "surfed the Internet",
-      "surfs the Internet",
-      "surfing",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, she didn't.",
+      "Yes, she does.",
+      "No, she doesn't.",
+      "Yes, he did.",
+      "No, he didn't.",
+      "Yes, she was."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「surf the Internet」。"
@@ -25142,12 +25142,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Leo do yesterday evening? B: ______",
     "options": [
       "He surfed the Internet.",
-      "He surfs the Internet every day.",
-      "He was at the mall.",
-      "Yes, he did.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She surfed the Internet..",
+      "They surfed the Internet..",
+      "I surfed the Internet..",
+      "He plays baseball.",
+      "He is playing baseball.",
+      "He will play baseball."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25196,12 +25196,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Sophie ______ yesterday? B: Yes, she did.",
     "options": [
       "water the plants",
-      "watering",
-      "watered the plants",
-      "waters the plants",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, she didn't.",
+      "Yes, she does.",
+      "No, she doesn't.",
+      "Yes, he did.",
+      "No, he didn't.",
+      "Yes, she was."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「water the plants」。"
@@ -25223,12 +25223,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Kulas do yesterday evening? B: ______",
     "options": [
       "He watered the plants.",
-      "He waters the plants every day.",
-      "He was at the mall.",
-      "Yes, he did.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She watered the plants..",
+      "They watered the plants..",
+      "I watered the plants..",
+      "He plays baseball.",
+      "He is playing baseball.",
+      "He will play baseball."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25277,12 +25277,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Hannah ______ yesterday? B: Yes, she did.",
     "options": [
       "watch a movie",
-      "watches a movie",
-      "watching",
-      "watched a movie",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, she didn't.",
+      "Yes, she does.",
+      "No, she doesn't.",
+      "Yes, he did.",
+      "No, he didn't.",
+      "Yes, she was."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「watch a movie」。"
@@ -25304,12 +25304,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Ryan do yesterday evening? B: ______",
     "options": [
       "He watched a movie.",
-      "Yes, he did.",
-      "He watches a movie every day.",
-      "He was at the mall.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She watched a movie..",
+      "They watched a movie..",
+      "I watched a movie..",
+      "He plays baseball.",
+      "He is playing baseball.",
+      "He will play baseball."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25358,12 +25358,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Maya ______ yesterday? B: Yes, she did.",
     "options": [
       "listen to music",
-      "listened to music",
-      "listens to music",
-      "listening",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, she didn't.",
+      "Yes, she does.",
+      "No, she doesn't.",
+      "Yes, he did.",
+      "No, he didn't.",
+      "Yes, she was."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「listen to music」。"
@@ -25385,12 +25385,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Owen do yesterday evening? B: ______",
     "options": [
       "He listened to music.",
-      "He was at the mall.",
-      "Yes, he did.",
-      "He listens to music every day.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She listened to music..",
+      "They listened to music..",
+      "I listened to music..",
+      "He plays baseball.",
+      "He is playing baseball.",
+      "He will play baseball."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25439,12 +25439,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Lily ______ yesterday? B: Yes, she did.",
     "options": [
       "clean the room",
-      "cleaned the room",
-      "cleans the room",
-      "cleaning",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, she didn't.",
+      "Yes, she does.",
+      "No, she doesn't.",
+      "Yes, he did.",
+      "No, he didn't.",
+      "Yes, she was."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「clean the room」。"
@@ -25466,12 +25466,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Noah do yesterday evening? B: ______",
     "options": [
       "He cleaned the room.",
-      "He cleans the room every day.",
-      "He was at the mall.",
-      "Yes, he did.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She cleaned the room..",
+      "They cleaned the room..",
+      "I cleaned the room..",
+      "He plays baseball.",
+      "He is playing baseball.",
+      "He will play baseball."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -25520,12 +25520,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Ava ______ yesterday? B: Yes, she did.",
     "options": [
       "walk the dog",
-      "walking",
-      "walked the dog",
-      "walks the dog",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "No, she didn't.",
+      "Yes, she does.",
+      "No, she doesn't.",
+      "Yes, he did.",
+      "No, he didn't.",
+      "Yes, she was."
     ],
     "answer": 0,
     "explanation": "過去式助動詞 Did 後方的動詞必須還原為原形「walk the dog」。"
@@ -25547,12 +25547,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Alex do yesterday evening? B: ______",
     "options": [
       "He walked the dog.",
-      "He walks the dog every day.",
-      "He was at the mall.",
-      "Yes, he did.",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "She walked the dog..",
+      "They walked the dog..",
+      "I walked the dog..",
+      "He plays baseball.",
+      "He is playing baseball.",
+      "He will play baseball."
     ],
     "answer": 0,
     "explanation": "詢問昨晚做了什麼事（What did ... do?），回答過去式動作。"
@@ -26007,11 +26007,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "It's six hundred dollars.",
       "They're six hundred dollars.",
-      "There are two coats.",
-      "It's warm in spring.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "I have six hundred dollars.",
+      "It is very cheap.",
+      "It is blue.",
+      "She has six hundred dollars.",
+      "At six o'clock."
     ],
     "answer": 0,
     "explanation": "單數服飾以「It's + 金額 + dollars.」回答價格。"
@@ -26492,12 +26492,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's Lucas's favorite season? B: ______ He likes to plant flowers.",
     "options": [
       "He likes spring.",
-      "They're five hundred dollars.",
-      "It's warm and rainy.",
-      "He was at the zoo.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "She likes spring.",
+      "They like spring.",
+      "I like spring.",
+      "He likes Sunday.",
+      "He likes basketball.",
+      "He likes dogs."
     ],
     "answer": 0,
     "explanation": "詢問最喜歡的季節（What's ... favorite season?），回答「He likes spring.」。"
@@ -26573,12 +26573,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's Max's favorite season? B: ______ He likes to go swimming at the beach.",
     "options": [
       "He likes summer.",
-      "He was at the zoo.",
-      "They're five hundred dollars.",
-      "It's hot and sunny.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "She likes summer.",
+      "They like summer.",
+      "I like summer.",
+      "He likes Sunday.",
+      "He likes basketball.",
+      "He likes dogs."
     ],
     "answer": 0,
     "explanation": "詢問最喜歡的季節（What's ... favorite season?），回答「He likes summer.」。"
@@ -26654,12 +26654,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's Leo's favorite season? B: ______ He likes to fly a kite in the park.",
     "options": [
       "He likes fall.",
-      "It's cool and windy.",
-      "He was at the zoo.",
-      "They're five hundred dollars.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "She likes fall.",
+      "They like fall.",
+      "I like fall.",
+      "He likes Sunday.",
+      "He likes basketball.",
+      "He likes dogs."
     ],
     "answer": 0,
     "explanation": "詢問最喜歡的季節（What's ... favorite season?），回答「He likes fall.」。"
@@ -26735,12 +26735,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's Kulas's favorite season? B: ______ He likes to make a snowman.",
     "options": [
       "He likes winter.",
-      "It's cold and snowy.",
-      "He was at the zoo.",
-      "They're five hundred dollars.",
-      "Here you are.",
-      "Yes, please.",
-      "No, thank you."
+      "She likes winter.",
+      "They like winter.",
+      "I like winter.",
+      "He likes Sunday.",
+      "He likes basketball.",
+      "He likes dogs."
     ],
     "answer": 0,
     "explanation": "詢問最喜歡的季節（What's ... favorite season?），回答「He likes winter.」。"
@@ -27140,12 +27140,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Kulas ______ yesterday? B: No, he didn't.",
     "options": [
       "fly a kite",
-      "to fly a kite",
-      "flew a kite",
-      "flys",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, he did.",
+      "No, he doesn't.",
+      "Yes, he does.",
+      "No, she didn't.",
+      "Yes, she did.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「fly a kite」。"
@@ -27194,12 +27194,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Ryan ______ yesterday? B: No, he didn't.",
     "options": [
       "ride a bike",
-      "rode a bike",
-      "rides",
-      "to ride a bike",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, he did.",
+      "No, he doesn't.",
+      "Yes, he does.",
+      "No, she didn't.",
+      "Yes, she did.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「ride a bike」。"
@@ -27248,12 +27248,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Owen ______ yesterday? B: No, he didn't.",
     "options": [
       "see a movie",
-      "to see a movie",
-      "saw a movie",
-      "sees",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, he did.",
+      "No, he doesn't.",
+      "Yes, he does.",
+      "No, she didn't.",
+      "Yes, she did.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「see a movie」。"
@@ -27410,12 +27410,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Ethan ______ yesterday? B: No, he didn't.",
     "options": [
       "draw a picture",
-      "drew a picture",
-      "draws",
-      "to draw a picture",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, he did.",
+      "No, he doesn't.",
+      "Yes, he does.",
+      "No, she didn't.",
+      "Yes, she did.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「draw a picture」。"
@@ -27464,12 +27464,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Dylan ______ yesterday? B: No, he didn't.",
     "options": [
       "write a letter",
-      "to write a letter",
-      "wrote a letter",
-      "writes",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, he did.",
+      "No, he doesn't.",
+      "Yes, he does.",
+      "No, she didn't.",
+      "Yes, she did.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「write a letter」。"
@@ -27518,12 +27518,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Lucas ______ yesterday? B: No, he didn't.",
     "options": [
       "take a walk",
-      "took a walk",
-      "takes",
-      "to take a walk",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, he did.",
+      "No, he doesn't.",
+      "Yes, he does.",
+      "No, she didn't.",
+      "Yes, she did.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「take a walk」。"
@@ -27572,12 +27572,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Did Max ______ yesterday? B: No, he didn't.",
     "options": [
       "have a picnic",
-      "to have a picnic",
-      "had a picnic",
-      "haves",
-      "See you later.",
-      "Have a nice day!",
-      "You're welcome."
+      "Yes, he did.",
+      "No, he doesn't.",
+      "Yes, he does.",
+      "No, she didn't.",
+      "Yes, she did.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "助動詞 Did 之後的動詞須還原為原形「have a picnic」。"

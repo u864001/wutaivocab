@@ -239,12 +239,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "I'm fine, thank you.",
+      "I'm doing my homework.",
+      "She is fine, thank you.",
       "I'm ten years old.",
-      "I like apples.",
-      "It is a pen.",
       "My name is John.",
-      "Yes, I do.",
-      "Good night."
+      "I am at school.",
+      "He is fine, thanks."
     ],
     "answer": 0,
     "explanation": "問句「How are you doing today?（你今天好嗎？）」，標準應答為「I’m fine, thank you.」。",
@@ -264,12 +264,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "It is three thirty.",
-      "It is on the table.",
-      "I have three books.",
+      "It is on Tuesday.",
+      "It is December.",
+      "At three thirty.",
       "It is sunny today.",
-      "It is very big.",
-      "At the school gate.",
-      "It is my favorite pencil."
+      "I have three clocks.",
+      "It is ten dollars."
     ],
     "answer": 0,
     "explanation": "問句「What time is it now?（現在幾點？）」，詢問時間應回答「It is three thirty.（現在三點半）」。",
@@ -289,12 +289,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽禮貌問候，選出最適當的回應句子：",
     "options": [
       "Nice to meet you, too.",
-      "It is in your bag.",
-      "It is five dollars.",
-      "She is my sister.",
-      "I can swim.",
-      "He is ten years old.",
-      "Good afternoon."
+      "You're welcome.",
+      "I'm sorry.",
+      "Good night.",
+      "See you tomorrow.",
+      "I am fine, thank you.",
+      "Here you are."
     ],
     "answer": 0,
     "explanation": "初次見面問候「Nice to meet you.（很高興認識你）」，標準回應為「Nice to meet you, too.」。",
@@ -314,12 +314,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽問路問句，選出最適當的回應句子：",
     "options": [
       "It is next to the bookstore.",
-      "Yes, I do.",
-      "No, it isn't.",
-      "I am a student.",
-      "It is red.",
-      "They are fine.",
-      "I like reading."
+      "I am at the post office.",
+      "He is next to the bookstore.",
+      "They are next to the bookstore.",
+      "At two o'clock.",
+      "Yes, please.",
+      "Go to school."
     ],
     "answer": 0,
     "explanation": "問句詢問郵局地點（Where is the post office?），應回答具體方位「It is next to the bookstore.（在書店隔壁）」。",
@@ -339,12 +339,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "Yes, please. I am thirsty.",
-      "It is blue.",
-      "It is my brother's.",
-      "I have two caps.",
-      "It is on the desk.",
-      "I like blue caps.",
-      "It is ten o'clock."
+      "No, I am not.",
+      "Yes, I am.",
+      "I like drinking tea.",
+      "She wants some juice.",
+      "Here you are.",
+      "Yes, it is orange juice."
     ],
     "answer": 0,
     "explanation": "對方禮貌詢問「Do you want some orange juice?（要喝點柳橙汁嗎？）」，接受時回答「Yes, please. I am thirsty.（好的請給我，我很渴）」。",
@@ -364,12 +364,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "It is Tony's jacket.",
-      "Yes, I can.",
-      "Yes, I am.",
-      "No, they don't.",
-      "I like swimming.",
-      "It is five o'clock.",
-      "She is my sister."
+      "He is Tony.",
+      "They are Tony's jackets.",
+      "It is on the chair.",
+      "Yes, it is a jacket.",
+      "She has a jacket.",
+      "Tony likes the jacket."
     ],
     "answer": 0,
     "explanation": "問句使用 Whose（誰的）詢問夾克所有權，回答應為所有格「It is Tony's jacket.（那是東尼的外套）」。",
@@ -2166,12 +2166,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "Nice to meet you, too.",
-      "He is my brother.",
-      "He is at home.",
-      "He has a red cap.",
-      "Yes, he does.",
-      "He is ten.",
-      "I am reading."
+      "You are welcome.",
+      "I'm fine, thank you.",
+      "Good night.",
+      "See you later.",
+      "Here you are.",
+      "I'm sorry."
     ],
     "answer": 0,
     "explanation": "初次見面打招呼「Nice to meet you」，標準禮貌回應為「Nice to meet you, too.（我也很高興認識你）」。",
@@ -2191,12 +2191,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "You are welcome.",
-      "I am nine years old.",
-      "I'm in Grade 3.",
-      "There are nine pens.",
-      "It is nine o'clock.",
-      "I am fine, thanks.",
-      "Good morning."
+      "Yes, please.",
+      "No, thank you.",
+      "I am fine, thank you.",
+      "Nice to meet you.",
+      "Goodbye.",
+      "I'm sorry."
     ],
     "answer": 0,
     "explanation": "對方道謝「Thank you...」，客氣回應「You are welcome.（不客氣）」。",
@@ -2216,12 +2216,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常道別，選出最適當的回應句子：",
     "options": [
       "Goodbye! You, too!",
-      "It is a notebook.",
-      "It is under the desk.",
-      "It is very happy.",
-      "They are pencils.",
-      "Yes, it is.",
-      "I can jump high."
+      "You are welcome.",
+      "Nice to meet you.",
+      "I am fine, thank you.",
+      "Good morning.",
+      "Here you are.",
+      "Yes, please."
     ],
     "answer": 0,
     "explanation": "道別祝週末愉快，回答「Goodbye! You, too!（再見！你也是！）」。",
@@ -2242,11 +2242,11 @@ const NON_WRITING_ITEMS = [
     "options": [
       "Sure, no problem!",
       "You're welcome.",
-      "Good night, Mom.",
-      "See you tomorrow.",
-      "I am sorry.",
-      "Thank you very much.",
-      "Yes, it is big."
+      "Nice to meet you.",
+      "I am Andy.",
+      "Yes, it is heavy.",
+      "Here you are.",
+      "Good afternoon."
     ],
     "answer": 0,
     "explanation": "請求協助「Can you help me...」，樂意幫忙時回答「Sure, no problem!（當然沒問題！）」。",
@@ -2266,12 +2266,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "I go to school by bike.",
-      "I like apples very much.",
-      "It is ten o'clock.",
-      "He is my teacher.",
-      "Yes, I am.",
-      "She is at home.",
-      "I have a pet cat."
+      "He goes to school by bike.",
+      "I go to the park by bike.",
+      "At seven thirty.",
+      "Yes, I go to school.",
+      "I like my school.",
+      "With my brother."
     ],
     "answer": 0,
     "explanation": "詢問上學交通方式「How do you go to school...」，最適當回答為「I go to school by bike.（我騎腳踏車上學）」。",
@@ -2291,12 +2291,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "It starts at seven thirty.",
-      "It is a good pencil.",
-      "I am ten years old.",
-      "She is singing a song.",
-      "No, it isn't.",
-      "They are in the park.",
-      "He is twenty years old."
+      "It is a good movie.",
+      "I like movies.",
+      "At the movie theater.",
+      "They start at seven thirty.",
+      "Yes, the movie starts.",
+      "On Friday night."
     ],
     "answer": 0,
     "explanation": "詢問電影幾點開始「What time does the movie start...」，最適當回答為「It starts at seven thirty.（七點半開始）」。",
@@ -2316,12 +2316,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "I was at the library with Amy.",
-      "I want an ice cream.",
-      "It is sunny today.",
-      "Yes, she is my friend.",
-      "I have three dogs.",
-      "Tomorrow is Friday.",
-      "I like orange juice."
+      "I am at the library now.",
+      "She was at the library.",
+      "At two o'clock.",
+      "It was sunny yesterday.",
+      "Yes, I was there.",
+      "I like the library."
     ],
     "answer": 0,
     "explanation": "詢問昨天下午人在何處「Where were you yesterday...」，最適當回答為過去式「I was at the library with Amy.（我和 Amy 在圖書館）」。",
@@ -2341,12 +2341,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "Go straight and turn right at the bank.",
-      "I have a headache.",
-      "He is a great doctor.",
-      "Yes, it is very big.",
-      "I like hamburgers.",
-      "No, thank you.",
-      "He is sleeping now."
+      "Yes, it is a hospital.",
+      "I am a doctor.",
+      "He is at the hospital.",
+      "At ten o'clock.",
+      "I don't have a hospital.",
+      "It is very big."
     ],
     "answer": 0,
     "explanation": "問路詢問醫院在哪裡「where is the nearest hospital」，最適當回答指引方向「Go straight and turn right at the bank.（直走並在銀行右轉）」。",
@@ -2366,12 +2366,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "I often play soccer with my friends.",
-      "My name is Tom.",
+      "He often plays soccer.",
+      "On Saturday and Sunday.",
+      "Yes, I do.",
       "I am twelve years old.",
-      "It is a sunny Sunday.",
-      "She is my mother.",
-      "There are five books.",
-      "It is a blue ball."
+      "At the sports park.",
+      "It is sunny on weekends."
     ],
     "answer": 0,
     "explanation": "詢問週末休閒活動「What do you do on weekends...」，最適當回答為「I often play soccer with my friends.（我常和朋友踢足球）」。",
@@ -2392,11 +2392,11 @@ const NON_WRITING_ITEMS = [
     "options": [
       "Sure, here you are.",
       "You are welcome.",
-      "I don't know him.",
       "Nice to meet you.",
-      "Goodbye, see you.",
-      "It is my cat.",
-      "I am ten."
+      "Yes, it is a ruler.",
+      "I am using my pen.",
+      "Goodbye.",
+      "I have two books."
     ],
     "answer": 0,
     "explanation": "禮貌借文具「May I borrow your ruler...」，出借時回答「Sure, here you are.（當然，拿去吧）」。",
@@ -2416,12 +2416,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "He is an English teacher.",
-      "He likes playing baseball.",
-      "He is forty years old.",
-      "He is at home now.",
+      "He is at school now.",
+      "My father is fine, thank you.",
       "Yes, he does.",
-      "He has a black car.",
-      "He is eating breakfast."
+      "I am an English teacher.",
+      "He is fifty years old.",
+      "He likes watching TV."
     ],
     "answer": 0,
     "explanation": "詢問父親職業「What does your father do...」，回答職業「He is an English teacher.（他是一位英文老師）」。",
@@ -2441,12 +2441,12 @@ const NON_WRITING_ITEMS = [
     "question": "請聽日常問句，選出最適當的回應句子：",
     "options": [
       "It is Kelly's jacket.",
-      "It is blue and warm.",
-      "I wear a coat.",
-      "He is tall and strong.",
-      "Yes, it is mine jacket.",
-      "Under the chair.",
-      "They are running."
+      "She is Kelly.",
+      "They are Kelly's jackets.",
+      "It is on the chair.",
+      "Yes, it is a blue jacket.",
+      "Kelly likes jackets.",
+      "Under the chair."
     ],
     "answer": 0,
     "explanation": "詢問外套是誰的「Whose jacket is this...」，所有格回答「It is Kelly's jacket.（這是 Kelly 的外套）」。",
