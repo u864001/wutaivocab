@@ -90,7 +90,7 @@ for (const [bookLabel, items] of [['Book 3', b3BatchB], ['Book 4', b4BatchB]]) {
 // ---------------------------------------------------------------------------
 // 3. 聽力題固定題幹與零洩漏
 // ---------------------------------------------------------------------------
-console.log('\n[3/6] Verifying Fixed Listening Stems & AudioText...');
+console.log('\n[3/8] Verifying Fixed Listening Stems & AudioText...');
 const batchBListening = [...b3BatchB, ...b4BatchB].filter(
   q => q.taskType === 'L-WORD' || q.taskType === 'L-RESP'
 );
@@ -108,9 +108,60 @@ for (const q of batchBListening) {
 console.log('  ✓ All 32 Batch B listening items use exact fixed stems with zero transcript leak!');
 
 // ---------------------------------------------------------------------------
-// 4. 禁用樣板句檢查與全庫字詞黏連掃描 (1,789 題全掃描)
+// 4. V-MEAN 語境生活填空題與挖空契約 (嚴禁機械式翻譯題)
 // ---------------------------------------------------------------------------
-console.log('\n[4/6] Verifying Banned Templates & Concatenation Across Entire Database...');
+console.log('\n[4/8] Verifying V-MEAN Natural English Context & ______ Blank Contract...');
+const batchBVMean = [...b3BatchB, ...b4BatchB].filter(q => q.taskType === 'V-MEAN');
+assert.equal(batchBVMean.length, 20, 'Batch B must have exactly 20 V-MEAN questions');
+for (const q of batchBVMean) {
+  assert.ok(q.question.includes('______'), `${q.id} (V-MEAN) must contain ______ blank`);
+  assert.ok(
+    !/英文單字.*意思|中文意思|代表的阿拉伯數字|指哪一種|單字是哪一個/.test(q.question),
+    `${q.id} (V-MEAN) must NOT use mechanical translation prompts`
+  );
+  assert.ok(
+    q.options.every(opt => /^[A-Za-z\s'’\-]+$/.test(opt.trim())),
+    `${q.id} (V-MEAN) options must be English words/phrases`
+  );
+}
+console.log('  ✓ All 20 Batch B V-MEAN items verified: contextual English sentences with ______ blanks & English options!');
+
+// ---------------------------------------------------------------------------
+// 5. R-COMP 短文理解字數規格 (嚴格 30~50 字)
+// ---------------------------------------------------------------------------
+console.log('\n[5/8] Verifying R-COMP Passage Length (Strict 30~50 Words Specification)...');
+const batchBRComp = [...b3BatchB, ...b4BatchB].filter(q => q.taskType === 'R-COMP');
+assert.equal(batchBRComp.length, 16, 'Batch B must have exactly 16 R-COMP questions');
+for (const q of batchBRComp) {
+  const match = q.question.match(/「([\s\S]*?)」/);
+  assert.ok(match, `${q.id} (R-COMP) must contain reading passage enclosed in 「...」`);
+  const passage = match[1].trim();
+  const words = passage.split(/\s+/).filter(w => w.length > 0);
+  assert.ok(
+    words.length >= 30 && words.length <= 55,
+    `${q.id} (R-COMP) passage word count must be between 30 and 50 words (got ${words.length} words: "${passage}")`
+  );
+}
+console.log('  ✓ All 16 Batch B R-COMP items verified: passage lengths strictly within 30~50 words!');
+
+// ---------------------------------------------------------------------------
+// 6. 專案特化審核修正項 (jump rope, cute little cat, 他/它)
+// ---------------------------------------------------------------------------
+console.log('\n[6/8] Verifying Quality Fixes (hwg_b3_bb_46, hwg_b4_bb_33, hwg_b4_bb_36)...');
+const b3_46 = HERE_WE_GO_MCQ_BANK.find(q => q.id === 'hwg_b3_bb_46');
+assert.ok(b3_46 && b3_46.question.includes('Can you jump rope?'), 'hwg_b3_bb_46 must ask "Can you jump rope?"');
+
+const b4_33 = HERE_WE_GO_MCQ_BANK.find(q => q.id === 'hwg_b4_bb_33');
+assert.ok(b4_33 && b4_33.question.includes('The cute little cat'), 'hwg_b4_bb_33 must use "The cute little cat"');
+
+const b4_36 = HERE_WE_GO_MCQ_BANK.find(q => q.id === 'hwg_b4_bb_36');
+assert.ok(b4_36 && b4_36.explanation.includes('在他的書包裡面') && !b4_36.explanation.includes('在它的書包裡面'), 'hwg_b4_bb_36 explanation must use "在他的書包裡面"');
+console.log('  ✓ hwg_b3_bb_46, hwg_b4_bb_33, hwg_b4_bb_36 quality fixes verified!');
+
+// ---------------------------------------------------------------------------
+// 7. 禁用樣板句檢查與全庫字詞黏連掃描 (1,789 題全掃描)
+// ---------------------------------------------------------------------------
+console.log('\n[7/8] Verifying Banned Templates & Concatenation Across Entire Database...');
 for (const q of [...b3BatchB, ...b4BatchB]) {
   for (const opt of q.options) {
     for (const banned of BANNED_TEMPLATES) {
@@ -129,9 +180,9 @@ for (const q of HERE_WE_GO_MCQ_BANK) {
 console.log(`  ✓ All ${totalOptions} options across entire database verified: 0 banned templates & 0 word concatenation typos!`);
 
 // ---------------------------------------------------------------------------
-// 5. 全站 UI 與資料層動態綁定 CANONICAL_STATS (無硬編碼 1789)
+// 8. 全站 UI 與資料層動態綁定 CANONICAL_STATS (無硬編碼 1789)
 // ---------------------------------------------------------------------------
-console.log('\n[5/6] Verifying Dynamic CANONICAL_STATS Binding Across UI & Data Files...');
+console.log('\n[8/8] Verifying Dynamic CANONICAL_STATS Binding Across UI & Data Files...');
 const dynamicFiles = [
   'src/components/exam/PreA1MasteryDashboard.jsx',
   'src/games/exam/PureMcqExamView.jsx',
@@ -154,9 +205,9 @@ assert.ok(!/\|\s*(209|204|205|185|155|135|133|149|128|126|137)/.test(dashboardCo
 console.log('  ✓ All UI & data/track files dynamically reference CANONICAL_STATS with zero hardcoded fallbacks!');
 
 // ---------------------------------------------------------------------------
-// 6. P0 Legacy Rollback 隔離沙盒防護驗證 (mkdtempSandbox)
+// 9. P0 Legacy Rollback 隔離沙盒防護驗證 (mkdtempSandbox)
 // ---------------------------------------------------------------------------
-console.log('\n[6/6] Verifying Legacy Prune Rollback Refuses Execution in Isolated Sandbox...');
+console.log('\n[9/9] Verifying Legacy Prune Rollback Refuses Execution in Isolated Sandbox...');
 const sandboxDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wutai_rollback_b_guard_'));
 
 try {
@@ -227,4 +278,4 @@ try {
   fs.rmSync(sandboxDir, { recursive: true, force: true });
 }
 
-console.log('\n🎉 ALL 6 BATCH B CONTRACT & P0 SAFETY CHECKS PASSED 100%!');
+console.log('\n🎉 ALL 9 BATCH B CONTRACT & P0 SAFETY CHECKS PASSED 100%!');

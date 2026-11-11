@@ -88,9 +88,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 1,
-    question: '英文單字「hungry」是指哪一種生理感覺？',
-    options: ['飢餓的', '口渴的', '生氣的', '疲累的', '傷心的', '害怕的', '害羞的'],
-    explanation: '「hungry」意為「飢餓的」；「口渴的」是 thirsty。'
+    question: 'I did not eat breakfast this morning. I am very ______ now.',
+    options: ['hungry', 'thirsty', 'tired', 'angry', 'sad', 'scared', 'shy'],
+    explanation: '句意為「我今天早上沒吃早餐，我現在很飢餓。」填入 hungry 最符合語境；thirsty 為口渴的。'
   }),
   createItem({
     id: 'hwg_b3_bb_02',
@@ -121,9 +121,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 2,
-    question: '閱讀對話：「Leo: Are you thirsty, Amy? Amy: No, I\'m not thirsty. I\'m hungry. I want a sandwich.」請問 Amy 現在感覺如何？',
+    question: "閱讀對話：「Leo and Amy are in the classroom after PE class. Leo asks, 'Are you thirsty, Amy?' Amy smiles and says, 'No, I am not thirsty. But I am very hungry. I want a big egg sandwich for lunch!'」請問 Amy 現在感覺如何？",
     options: ['肚子餓', '口渴', '很累', '生氣', '很飽', '感冒', '很熱'],
-    explanation: '根據對話 Amy 說「No, I\'m not thirsty. I\'m hungry.（我不渴，我肚子餓）」，故應選「肚子餓」。'
+    explanation: "根據對話 Amy 說「No, I am not thirsty. But I am very hungry.（我不渴，但我非常餓）」，故應選「肚子餓」。"
   }),
 
   // --- Unit 1 (Weather) ---
@@ -178,9 +178,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文單字「cloudy」的中文意思是什麼？',
-    options: ['多雲的／陰天的', '晴朗的', '下雨的', '下雪的', '風大的', '炎熱的', '寒冷的'],
-    explanation: '「cloudy」由名詞 cloud（雲）加上 y 構成形容詞，意為「多雲的／陰天的」。'
+    question: 'Look up at the sky. There are many gray clouds. It is ______ today.',
+    options: ['cloudy', 'sunny', 'rainy', 'snowy', 'windy', 'hot', 'cold'],
+    explanation: '句意為「抬頭看天空，有好多灰雲，今天多雲/陰天。」由 clouds 可知填入 cloudy 最符合語境；sunny 為晴朗的。'
   }),
   createItem({
     id: 'hwg_b3_bb_10',
@@ -189,9 +189,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '天氣非常冷，需要穿厚外套。英文中表示「寒冷的」單字是哪一個？',
+    question: 'Winter is here and snow is falling. It is very ______ outside.',
     options: ['cold', 'hot', 'warm', 'cool', 'sunny', 'rainy', 'windy'],
-    explanation: '「cold」表示「寒冷的」；hot 是炎熱的，warm 是溫暖的。'
+    explanation: '句意為「冬天來了而且下著雪，外面非常寒冷。」故填入 cold；hot 是炎熱的，warm 是溫暖的。'
   }),
   createItem({
     id: 'hwg_b3_bb_11',
@@ -233,9 +233,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 2,
-    question: '閱讀短文：「Today is Sunday. The sun is big and bright in the sky. Ken and his dog play in the park. It is very hot.」請問今天的天氣是怎樣？',
+    question: '閱讀短文：「Today is Sunday morning. The yellow sun is big and bright in the clear blue sky. Ken and his cute dog play happily on the green grass in the park. It is very hot outside.」請問今天的天氣是怎樣？',
     options: ['晴朗炎熱', '寒冷下雪', '狂風大雨', '陰暗多雲', '涼爽微風', '雷雨交加', '霧氣濃重'],
-    explanation: '根據文中「The sun is big and bright... It is very hot.」，可知天氣為「晴朗炎熱」。'
+    explanation: '根據文中「The yellow sun is big and bright... It is very hot outside.」，可知天氣為「晴朗炎熱」。'
   }),
   createItem({
     id: 'hwg_b3_bb_15',
@@ -244,9 +244,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 3,
-    question: '閱讀氣象報告：「Good morning! Today in Kaohsiung, it is sunny. But in Keelung, it is rainy and cold. Please take your umbrella!」請問基隆（Keelung）的天氣如何？',
+    question: '閱讀氣象報告：「Good morning, everyone! Here is the weather report. Today in Kaohsiung, it is sunny and warm. But in Keelung, dark clouds cover the sky. It is rainy and cold. Please remember to take your umbrella!」請問基隆（Keelung）的天氣如何？',
     options: ['又濕又冷下著雨', '晴朗大太陽', '多雲溫暖', '大風乾燥', '飄雪結冰', '酷熱難耐', '晴時多雲'],
-    explanation: '報告中明確指出「in Keelung, it is rainy and cold（在基隆是下雨且寒冷的）」，故選「又濕又冷下著雨」。'
+    explanation: '報告中明確指出「in Keelung, dark clouds cover the sky. It is rainy and cold」，故選「又濕又冷下著雨」。'
   }),
 
   // --- Unit 2 (Feelings & Food) ---
@@ -301,9 +301,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文單字「hot dog」的中文意思是什麼？',
-    options: ['熱狗', '漢堡', '三明治', '披薩', '炸雞', '麵包', '派餅'],
-    explanation: '「hot dog」意為「熱狗」；漢堡是 hamburger，三明治是 sandwich。'
+    question: 'Put a warm sausage inside a long bread roll. That is a delicious ______.',
+    options: ['hot dog', 'hamburger', 'sandwich', 'pizza', 'bread', 'pie', 'salad'],
+    explanation: '句意為「把一根熱香腸夾在長條麵包中，那就是美味的熱狗。」故選 hot dog；hamburger 是漢堡，sandwich 是三明治。'
   }),
   createItem({
     id: 'hwg_b3_bb_21',
@@ -312,9 +312,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文單字「thirsty」是指哪一種感覺？',
-    options: ['口渴的', '飢餓的', '睏倦的', '飽足的', '生病的', '著急的', '興奮的'],
-    explanation: '「thirsty」表示「口渴的」；「飢餓的」是 hungry。'
+    question: 'After running under the hot sun, I need some water. I am ______.',
+    options: ['thirsty', 'hungry', 'sleepy', 'full', 'sick', 'tired', 'excited'],
+    explanation: '句意為「在烈日下跑步後，我需要喝點水，我很口渴。」故選 thirsty；hungry 是飢餓的。'
   }),
   createItem({
     id: 'hwg_b3_bb_22',
@@ -356,9 +356,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 2,
-    question: '閱讀點餐對話：「Clerk: Welcome! What do you want? Eric: I want one hamburger and two apples. Clerk: Here you are. Eric: Thank you.」請問 Eric 總共點了幾顆蘋果？',
+    question: "閱讀點餐對話：「Eric walks into the fast food shop. The clerk says, 'Welcome! What do you want to eat?' Eric says, 'I want one hot hamburger and two red apples, please.' The clerk says, 'Here you are.' Eric says, 'Thank you!'」請問 Eric 總共點了幾顆蘋果？",
     options: ['2 顆', '1 顆', '3 顆', '4 顆', '0 顆', '5 顆', '6 顆'],
-    explanation: '根據 Eric 所說「I want one hamburger and two apples」，蘋果點了「2 顆（two apples）」。'
+    explanation: "根據 Eric 所說「I want one hot hamburger and two red apples, please.」，蘋果點了「2 顆（two red apples）」。"
   }),
   createItem({
     id: 'hwg_b3_bb_26',
@@ -367,9 +367,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 3,
-    question: '閱讀日記：「After basketball practice, Ben and Sam are tired and hungry. Ben eats a big sandwich. Sam eats two bananas and an apple. They are full and happy now.」請問 Sam 吃了什麼水果？',
+    question: "閱讀日記：「After basketball practice at four o'clock, Ben and Sam are tired and hungry. They sit under the tree. Ben eats a big chicken sandwich. Sam eats two yellow bananas and an apple. They are full and happy now.」請問 Sam 吃了什麼水果？",
     options: ['兩根香蕉和一顆蘋果', '一個大三明治', '兩個熱狗和漢堡', '三顆紅蘋果', '一碗熱湯', '一塊巧克力蛋糕', '四顆橘子'],
-    explanation: '文中指出「Sam eats two bananas and an apple」，因此 Sam 吃了「兩根香蕉和一顆蘋果」。'
+    explanation: "文中指出「Sam eats two yellow bananas and an apple」，因此 Sam 吃了「兩根香蕉和一顆蘋果」。"
   }),
 
   // --- Unit 3 (Drinks & What do you want?) ---
@@ -424,9 +424,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文單字「water」的中文意思是什麼？',
-    options: ['水', '牛奶', '果汁', '茶', '汽水', '湯', '咖啡'],
-    explanation: '「water」意為「水」；milk 是牛奶，juice 是果汁。'
+    question: 'Fish live in the river. They need clean ______ to swim and breathe.',
+    options: ['water', 'milk', 'juice', 'tea', 'soda', 'soup', 'coffee'],
+    explanation: '句意為「魚生活在河流裡，需要乾淨的水來游泳與呼吸。」故選 water；milk 是牛奶，juice 是果汁。'
   }),
   createItem({
     id: 'hwg_b3_bb_32',
@@ -435,9 +435,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文單字「tea」的中文意思是什麼？',
-    options: ['茶', '水', '牛奶', '果汁', '可樂', '冰淇淋', '沙拉'],
-    explanation: '「tea」意為「茶」；「水」是 water。'
+    question: 'Grandpa sits in the living room drinking a warm cup of green ______.',
+    options: ['tea', 'water', 'milk', 'juice', 'cola', 'soup', 'coffee'],
+    explanation: '句意為「爺爺坐在客廳喝著一杯熱綠茶。」green tea 為綠茶，故選 tea；water 是水，milk 是牛奶。'
   }),
   createItem({
     id: 'hwg_b3_bb_33',
@@ -479,9 +479,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 2,
-    question: '閱讀短文：「In the kitchen, Dad pours three glasses. Lucy wants some milk. Tim wants some orange juice. Dad drinks a cup of warm tea.」請問 Tim 想要喝什麼飲料？',
+    question: '閱讀短文：「In the clean kitchen, Dad prepares afternoon drinks for everyone. Lucy wants a tall glass of cold milk. Tim wants some sweet orange juice with ice. Dad drinks a cup of warm green tea. Everyone is happy.」請問 Tim 想要喝什麼飲料？',
     options: ['柳橙汁', '牛奶', '熱茶', '開水', '汽水', '蘋果汁', '熱可可'],
-    explanation: '根據文中「Tim wants some orange juice」，Tim 想喝的是「柳橙汁」。'
+    explanation: '根據文中「Tim wants some sweet orange juice with ice」，Tim 想喝的是「柳橙汁」。'
   }),
   createItem({
     id: 'hwg_b3_bb_37',
@@ -490,7 +490,7 @@ const BOOK_3_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 3,
-    question: '閱讀野餐記趣：「It is a sunny day. Penny and her brother are in the park. Penny is thirsty and drinks cold water. Her brother eats a banana and drinks apple juice.」請問誰喝了冰涼的開水？',
+    question: '閱讀野餐記趣：「It is a sunny Saturday afternoon. Penny and her brother are having a picnic in the park. Penny is thirsty and drinks cold water. Her brother eats a sweet banana and drinks a box of apple juice.」請問誰喝了冰涼的開水？',
     options: ['Penny', 'Penny 的哥哥', '他們的爸爸', '公園管理員', '他們的老師', 'Penny 的朋友', '沒有人'],
     explanation: '文中指出「Penny is thirsty and drinks cold water」，故喝水的是「Penny」。'
   }),
@@ -547,9 +547,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文動作單字「sing」的中文意思是什麼？',
-    options: ['唱歌', '跳舞', '游泳', '跑步', '跳躍', '畫畫', '讀書'],
-    explanation: '「sing」意為「唱歌」；「跳舞」是 dance，「游泳」是 swim。'
+    question: 'Listen to the birds in the tree! They ______ sweet songs every morning.',
+    options: ['sing', 'dance', 'swim', 'run', 'jump', 'draw', 'read'],
+    explanation: '句意為「聽樹上的鳥兒！牠們每天早上都在唱悅耳的歌。」故選 sing；dance 是跳舞，swim 是游泳。'
   }),
   createItem({
     id: 'hwg_b3_bb_43',
@@ -558,9 +558,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '青蛙（frog）在荷葉上跳來跳去。英文中表示「跳躍」的單字是哪一個？',
+    question: 'The green frog can ______ high over the small rocks by the pond.',
     options: ['jump', 'run', 'swim', 'dance', 'sing', 'fly', 'walk'],
-    explanation: '「jump」表示「跳躍」；run 是跑步，swim 是游泳。'
+    explanation: '句意為「綠色的青蛙能夠在高處跳過池塘邊的小石頭。」故選 jump；run 是跑，fly 是飛。'
   }),
   createItem({
     id: 'hwg_b3_bb_44',
@@ -591,9 +591,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'grammar',
     taskType: 'G-CTX',
     difficulty: 2,
-    question: '體育課時老師想知道大家會不會跳繩，詢問「Can you jump?」，你很有自信地回答你會，應該怎麼說？',
+    question: '體育課時老師想知道大家會不會跳繩，詢問「Can you jump rope?」，你很有自信地回答你會，應該怎麼說？',
     options: ['Yes, I can.', "No, I can't.", "Yes, I am.", "No, it isn't.", "I want an apple.", "It's sunny today.", "She is happy."],
-    explanation: '針對「Can you...?」的肯定回答為「Yes, I can.（是的，我會）」。'
+    explanation: '針對「Can you jump rope?（你會跳繩嗎？）」的肯定回答為「Yes, I can.（是的，我會）」。'
   }),
   createItem({
     id: 'hwg_b3_bb_47',
@@ -613,9 +613,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 3,
-    question: '閱讀動物小百科：「Fish live in the water. They can swim all day. Birds have wings. They can fly in the sky and sing sweet songs.」請問鳥兒（birds）在空中能夠做什麼？',
+    question: '閱讀動物小百科：「Many animals have special abilities. Fish live in the blue water and they can swim all day. Small birds have strong wings. They can fly high in the sky and sing sweet songs in the morning.」請問鳥兒（birds）在空中能夠做什麼？',
     options: ['飛翔與唱歌', '游泳與跳水', '跑步與跳舞', '爬樹與睡覺', '寫字與畫畫', '捉迷藏', '捕魚'],
-    explanation: '文中敘述「Birds have wings. They can fly in the sky and sing sweet songs」，故為「飛翔與唱歌」。'
+    explanation: '文中敘述「Small birds have strong wings. They can fly high in the sky and sing sweet songs in the morning.」，故為「飛翔與唱歌」。'
   }),
 
   // --- Festival (Halloween) ---
@@ -626,9 +626,9 @@ const BOOK_3_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '萬聖節小朋友常常提著南瓜燈去要糖果，英文「pumpkin」的意思是什麼？',
-    options: ['南瓜', '糖果', '鬼魂', '巫婆', '面具', '蘋果', '黑貓'],
-    explanation: '「pumpkin」意為「南瓜」；candy 是糖果，ghost 是鬼魂。'
+    question: 'On Halloween night, children carve a funny face on a big orange ______.',
+    options: ['pumpkin', 'candy', 'ghost', 'witch', 'mask', 'apple', 'bat'],
+    explanation: '句意為「在萬聖夜，孩子們在一個大橘色南瓜上雕刻滑稽的臉。」故選 pumpkin；candy 是糖果，ghost 是鬼魂。'
   }),
   createItem({
     id: 'hwg_b3_bb_50',
@@ -656,9 +656,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文單字「thirty」代表的阿拉伯數字是多少？',
-    options: ['30', '13', '3', '300', '40', '50', '20'],
-    explanation: '「thirty」代表數字 30；「13」是 thirteen。'
+    question: "Ten plus twenty equals ______. Let's write the number 30!",
+    options: ['thirty', 'thirteen', 'three', 'forty', 'fifty', 'twenty', 'sixty'],
+    explanation: '句意為「十加二十等於三十，讓我們寫下數字30！」故選 thirty；thirteen 是十三，forty 是四十。'
   }),
   createItem({
     id: 'hwg_b4_bb_02',
@@ -689,9 +689,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 2,
-    question: '閱讀生活短文：「David gets up at seven o\'clock. He eats breakfast at 7:30. At eight o\'clock, he goes to school with his sister.」請問 David 在幾點吃早餐？',
+    question: "閱讀生活短文：「David is an early bird. He gets up at seven o'clock every morning. He washes his face and eats breakfast at 7:30. At eight o'clock, he takes his schoolbag and walks to school with his sister.」請問 David 在幾點吃 breakfast（早餐）？",
     options: ['七點半 (7:30)', '七點整 (7:00)', '八點整 (8:00)', '八點半 (8:30)', '六點半 (6:30)', '九點整 (9:00)', '六點整 (6:00)'],
-    explanation: '文中指出「He eats breakfast at 7:30」，故為「七點半 (7:30)」。'
+    explanation: '文中指出「He washes his face and eats breakfast at 7:30」，故為「七點半 (7:30)」。'
   }),
 
   // --- Unit 1 (What time is it? / Daily Schedule) ---
@@ -746,9 +746,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文單字「dinner」是指哪一餐？',
-    options: ['晚餐', '早餐', '午餐', '下午茶', '消夜', '早午餐', '甜點'],
-    explanation: '「dinner」意為「晚餐」；breakfast 是早餐，lunch 是午餐。'
+    question: 'The family sits together at seven in the evening to eat ______.',
+    options: ['dinner', 'breakfast', 'lunch', 'dessert', 'snack', 'bread', 'soup'],
+    explanation: '句意為「全家人晚上七點坐在一起吃晚餐。」故選 dinner；breakfast 是早餐，lunch 是午餐。'
   }),
   createItem({
     id: 'hwg_b4_bb_10',
@@ -757,9 +757,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '鬧鐘響起該上床睡覺了。英文中「bed」在此片語「Time for bed.」代表什麼意思？',
-    options: ['就寢／睡覺', '起床', '洗澡', '看電視', '吃早餐', '寫作業', '做運動'],
-    explanation: '「Time for bed.」為習慣用法，意指「該上床睡覺了」。'
+    question: 'It is ten o\'clock at night. Time to sleep! Go to ______.',
+    options: ['bed', 'school', 'park', 'kitchen', 'class', 'home', 'work'],
+    explanation: '句意為「現在是晚上十點，該睡覺了！去上床睡覺吧。」片語 go to bed 為上床睡覺，故選 bed。'
   }),
   createItem({
     id: 'hwg_b4_bb_11',
@@ -801,9 +801,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 2,
-    question: '閱讀行程表：「12:00 - Eat lunch. 12:40 - Read books. 1:00 - Take a nap. 3:30 - Play basketball.」請問下午一點整（1:00）要做什麼事？',
+    question: "閱讀行程表：「Here is Peter's Sunday schedule. At twelve o'clock, he eats lunch with his family. At 12:40, he reads comic books. At 1:00, he takes a nap. At 3:30, he plays basketball in the school gym.」請問下午一點整（1:00）要做什麼事？",
     options: ['睡午覺 (Take a nap)', '吃午餐', '看書', '打籃球', '寫作業', '打掃教室', '放學回家'],
-    explanation: '根據行程表「1:00 - Take a nap」，下午一點整要做的事是「睡午覺」。'
+    explanation: '根據行程表「At 1:00, he takes a nap」，下午一點整要做的事是「睡午覺」。'
   }),
   createItem({
     id: 'hwg_b4_bb_15',
@@ -812,9 +812,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 3,
-    question: '閱讀對話：「Mom: Wake up, Ken! It\'s seven o\'clock. Ken: What time is breakfast? Mom: Breakfast is at 7:20. Hurry up!」請問早餐是在幾點幾分？',
+    question: "閱讀對話：「Mom knocks on the bedroom door. 'Wake up, Ken! It is seven o'clock.' Ken rubs his eyes and asks, 'What time is breakfast?' Mom smiles, 'Breakfast is ready at 7:20 on the dining table. Hurry up!'」請問早餐是在幾點幾分？",
     options: ['七點二十分 (7:20)', '七點整 (7:00)', '七點十分 (7:10)', '七點半 (7:30)', '八點整 (8:00)', '六點五十分 (6:50)', '八點十分 (8:10)'],
-    explanation: '根據媽媽所說「Breakfast is at 7:20」，可知早餐時間為「七點二十分」。'
+    explanation: '根據媽媽所說「Breakfast is ready at 7:20 on the dining table」，可知早餐時間為「七點二十分」。'
   }),
 
   // --- Unit 2 (Where are you? / Rooms in a House) ---
@@ -869,9 +869,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文單字「bedroom」的中文意思是什麼？',
-    options: ['臥室／臥房', '客廳', '廚房', '浴室', '餐廳', '陽台', '書房'],
-    explanation: '「bedroom」（bed + room）意為「臥室／臥房」；客廳是 living room。'
+    question: 'I sleep and keep my warm blanket in my quiet ______.',
+    options: ['bedroom', 'living room', 'kitchen', 'bathroom', 'dining room', 'garden', 'balcony'],
+    explanation: '句意為「我在安靜的臥室睡覺並蓋著溫暖的毯子。」故選 bedroom；living room 是客廳，kitchen 是廚房。'
   }),
   createItem({
     id: 'hwg_b4_bb_21',
@@ -880,9 +880,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文單字「bathroom」的中文意思是什麼？',
-    options: ['浴室／洗手間', '廚房', '客廳', '臥房', '玄關', '庭院', '地下室'],
-    explanation: '「bathroom」（bath + room）意為「浴室／洗手間」。'
+    question: 'Please brush your teeth and wash your hands in the ______.',
+    options: ['bathroom', 'kitchen', 'living room', 'bedroom', 'garden', 'hall', 'yard'],
+    explanation: '句意為「請在浴室刷牙並洗手。」故選 bathroom；kitchen 是廚房，bedroom 是臥室。'
   }),
   createItem({
     id: 'hwg_b4_bb_22',
@@ -924,9 +924,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 2,
-    question: '閱讀捉迷藏短文：「The kids play hide-and-seek at home. Andy is in the bedroom under the bed. Linda is in the dining room behind the door. Where is Toby? He is in the kitchen!」請問 Andy 躲在哪裡？',
+    question: '閱讀捉迷藏短文：「The children play hide-and-seek at home on a rainy afternoon. Andy runs into the bedroom and hides under the bed. Linda is in the dining room behind the door. Where is Toby? Look, he is in the kitchen!」請問 Andy 躲在哪裡？',
     options: ['臥室的床底下', '餐廳的門後面', '廚房裡', '客廳的沙發上', '浴室門口', '陽台花盆旁', '庭院樹下'],
-    explanation: '文中指出「Andy is in the bedroom under the bed」，故 Andy 躲在「臥室的床底下」。'
+    explanation: '文中指出「Andy runs into the bedroom and hides under the bed」，故 Andy 躲在「臥室的床底下」。'
   }),
   createItem({
     id: 'hwg_b4_bb_26',
@@ -935,7 +935,7 @@ const BOOK_4_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 3,
-    question: '閱讀家庭生活短文：「It is 6:30 in the evening. Mom and Dad are in the kitchen cooking dinner. Brother Leo is in the living room doing homework. Little May is in the bathroom washing her hands.」請問誰在浴室裡洗手？',
+    question: '閱讀家庭生活短文：「It is 6:30 in the evening and the house is lively. Mom and Dad are in the kitchen cooking dinner. Brother Leo is in the living room doing math homework. Little May is in the bathroom washing her hands.」請問誰在浴室裡洗手？',
     options: ['May (Little May)', 'Leo', 'Mom', 'Dad', 'Grandpa', 'Grandma', '鄰居'],
     explanation: '文中寫到「Little May is in the bathroom washing her hands」，故在浴室洗手的是「May」。'
   }),
@@ -992,9 +992,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文方位介系詞「under」的中文意思是什麼？',
-    options: ['在...下面／下方', '在...上面', '在...裡面', '在...旁邊', '在...後面', '在...中間', '在...前面'],
-    explanation: '「under」意為「在...下面／下方」；「在...上面」是 on。'
+    question: 'The shy kitten is hiding beneath the wooden desk. It is ______ the desk.',
+    options: ['under', 'on', 'in', 'near', 'behind', 'between', 'before'],
+    explanation: '句意為「害羞的小貓躲在木書桌下方，牠在書桌的下面。」故選 under；on 是在上面，in 是在裡面。'
   }),
   createItem({
     id: 'hwg_b4_bb_32',
@@ -1003,9 +1003,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文家具單字「chair」的中文意思是什麼？',
-    options: ['椅子', '桌子', '書桌', '床鋪', '箱子', '門', '窗戶'],
-    explanation: '「chair」意為「椅子」；table 是桌子，desk 是書桌。'
+    question: 'Please take a seat! Pull up a comfortable wooden ______ and sit down.',
+    options: ['chair', 'table', 'desk', 'bed', 'box', 'door', 'window'],
+    explanation: '句意為「請坐！拉一張舒適的木椅子坐下吧。」故選 chair；table 是餐桌，desk 是書桌。'
   }),
   createItem({
     id: 'hwg_b4_bb_33',
@@ -1014,7 +1014,7 @@ const BOOK_4_NEW_ITEMS = [
     section: 'grammar',
     taskType: 'G-MC',
     difficulty: 2,
-    question: 'Look! The little cute cat is sleeping ______ the big box.',
+    question: 'Look! The cute little cat is sleeping ______ the big box.',
     options: ['in', 'at', 'to', 'for', 'of', 'from', 'with'],
     explanation: '貓咪在箱子內部睡覺，表示在封閉立體容器內部，使用介系詞「in」。'
   }),
@@ -1047,9 +1047,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 2,
-    question: '閱讀尋物小故事：「Sam cannot find his red cap. He looks around the room. It is not on the chair. It is not under the bed. Ah, look! It is in his school bag!」請問 Sam 的紅色帽子最後在哪裡找到？',
+    question: '閱讀尋物小故事：「Sam cannot find his favorite red baseball cap before going out. He looks carefully around his bedroom. It is not on the chair. It is not under the bed. Ah, look! It is inside his blue school bag!」請問 Sam 的紅色帽子最後在哪裡找到？',
     options: ['在他的書包裡面', '在椅子上面', '在床鋪底下', '在書桌上面', '在客廳沙發上', '在衣櫃裡面', '在廚房桌上'],
-    explanation: '文末清楚寫出「It is in his school bag!（在它的書包裡面！）」，故應選「在他的書包裡面」。'
+    explanation: '文末清楚寫出「It is inside his blue school bag!（在他的書包裡面！）」，故應選「在他的書包裡面」。'
   }),
   createItem({
     id: 'hwg_b4_bb_37',
@@ -1058,9 +1058,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 3,
-    question: '閱讀房間描寫：「In Lucy\'s room, there is a big desk by the window. Her computer is on the desk. Her tennis shoes are under the chair. A cute teddy bear is on her bed.」請問泰迪熊（teddy bear）放在哪裡？',
+    question: "閱讀房間描寫：「In Lucy's cozy bedroom, there is a large wooden desk by the window. Her computer is on the desk. Her clean tennis shoes are under the chair. A cute soft teddy bear sits nicely on her bed.」請問泰迪熊（teddy bear）放在哪裡？",
     options: ['在她的床上', '在書桌上', '在椅子下', '在窗戶邊', '在書包裡', '在地毯上', '在門後'],
-    explanation: '根據最後一句「A cute teddy bear is on her bed」，泰迪熊放在「在她的床上」。'
+    explanation: '根據最後一句「A cute soft teddy bear sits nicely on her bed」，泰迪熊放在「在她的床上」。'
   }),
 
   // --- Unit 4 (What are you doing? / Present Continuous Actions) ---
@@ -1115,9 +1115,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文動作單字「cooking」是指正在進行什麼活動？',
-    options: ['做飯／烹飪', '睡覺', '閱讀', '畫畫', '唱歌', '跑步', '打掃'],
-    explanation: '「cooking」意為「做飯／烹飪」；reading 是閱讀，sleeping 是睡覺。'
+    question: 'Mom is making vegetable soup and baking bread. She is ______ dinner.',
+    options: ['cooking', 'sleeping', 'reading', 'drawing', 'singing', 'running', 'cleaning'],
+    explanation: '句意為「媽媽正在煮蔬菜湯和烤麵包，她正在煮晚餐。」故選 cooking；reading 是閱讀，sleeping 是睡覺。'
   }),
   createItem({
     id: 'hwg_b4_bb_43',
@@ -1126,9 +1126,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '英文動作單字「drawing」是指正在進行什麼活動？',
-    options: ['畫畫／繪圖', '寫字', '閱讀', '唱歌', '跳舞', '煮飯', '散步'],
-    explanation: '「drawing」意為「畫畫／繪圖」；writing 是寫字。'
+    question: 'Using colorful crayons, Kevin is ______ a funny picture of an elephant.',
+    options: ['drawing', 'writing', 'reading', 'singing', 'dancing', 'cooking', 'walking'],
+    explanation: '句意為「凱文用彩色蠟筆正在畫一張滑稽的大象圖畫。」故選 drawing；writing 是寫字，reading 是閱讀。'
   }),
   createItem({
     id: 'hwg_b4_bb_44',
@@ -1181,9 +1181,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'reading',
     taskType: 'R-COMP',
     difficulty: 3,
-    question: '閱讀週日下午短文：「It is Sunday afternoon. The Lee family is at home. Dad is cooking in the kitchen. Mom is reading in the living room. Tim is drawing a robot in his room.」請問 Tim 正在房間裡做什麼？',
+    question: '閱讀週日下午短文：「It is Sunday afternoon and everyone is busy. The Lee family is at home together. Dad is cooking tomato pasta in the kitchen. Mom is reading a book in the living room. Tim is drawing a cool robot in his room.」請問 Tim 正在房間裡做什麼？',
     options: ['畫機器人 (drawing a robot)', '做飯', '看書', '睡覺', '寫功課', '玩積木', '聽音樂'],
-    explanation: '文中指出「Tim is drawing a robot in his room」，因此 Tim 正在「畫機器人」。'
+    explanation: '文中指出「Tim is drawing a cool robot in his room」，因此 Tim 正在「畫機器人 (drawing a robot)」。'
   }),
 
   // --- Festival (Easter / Mother's Day) ---
@@ -1194,9 +1194,9 @@ const BOOK_4_NEW_ITEMS = [
     section: 'vocabulary',
     taskType: 'V-MEAN',
     difficulty: 2,
-    question: '復活節時大家會把煮熟的蛋塗上美麗繽紛的顏色，這種彩蛋在英文中稱為？',
+    question: 'Children look for hidden colorful ______ in the green grass on Easter Sunday.',
     options: ['Easter eggs', 'Easter bunnies', 'Easter cards', 'Easter hats', 'Easter baskets', 'Easter flowers', 'Easter gifts'],
-    explanation: '復活節彩蛋的英文即為「Easter eggs」；Easter bunnies 是復活節兔子。'
+    explanation: '句意為「復活節週日孩子們在綠草地上尋找藏起來的繽紛彩蛋。」故選 Easter eggs；Easter bunnies 是復活節兔子。'
   }),
   createItem({
     id: 'hwg_b4_bb_50',

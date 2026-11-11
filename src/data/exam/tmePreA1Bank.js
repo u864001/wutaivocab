@@ -163,7 +163,7 @@ const NON_WRITING_ITEMS = [
     ],
     "answer": 0,
     "explanation": "聽力發音為顏色「yellow（黃色）」，正確拼字為 y-e-l-l-o-w。",
-    "reviewed": false
+    "reviewed": true
   },
   {
     "id": "tme-listen-p2s-01",
@@ -473,7 +473,7 @@ const NON_WRITING_ITEMS = [
     ],
     "answer": 0,
     "explanation": "Andy 回答「I ride my bicycle with Peter」，交通方式為騎腳踏車（By bicycle），故選 (A)。",
-    "reviewed": false
+    "reviewed": true
   },
   {
     "id": "tme-listen-qa-05",

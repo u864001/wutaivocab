@@ -1536,12 +1536,17 @@ export const fetchStudentQuestionReportsFromCloud = async () => {
 export const resolveStudentQuestionReportInCloud = async (questionId) => {
   if (!questionId) return false;
   try {
-    const { data: existingRows } = await supabase
+    const { data: existingRows, error: selectError } = await supabase
       .from('leaderboard')
       .select('id, book')
       .eq('mode', 'exam-student-report')
       .eq('name', questionId)
       .limit(1);
+
+    if (selectError) {
+      console.warn('查詢學生疑義回報失敗 (selectError):', selectError);
+      return false;
+    }
 
     if (existingRows && existingRows.length > 0) {
       const row = existingRows[0];
@@ -1554,7 +1559,7 @@ export const resolveStudentQuestionReportInCloud = async (questionId) => {
       payload.status = 'resolved';
       payload.resolvedAt = new Date().toISOString();
 
-      await supabase
+      const { error: updateError } = await supabase
         .from('leaderboard')
         .update({
           book: JSON.stringify(payload),
@@ -1562,8 +1567,14 @@ export const resolveStudentQuestionReportInCloud = async (questionId) => {
           time: Math.floor(Date.now() / 1000)
         })
         .eq('id', row.id);
+
+      if (updateError) {
+        console.warn('解除學生疑義回報更新失敗 (updateError):', updateError);
+        return false;
+      }
       return true;
     }
+    return true;
   } catch (err) {
     console.warn('解除學生疑義回報失敗:', err);
   }

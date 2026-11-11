@@ -134,7 +134,12 @@ export function ExamAuditZone({ onBack }) {
   const handleResolveStudentReport = async (questionId) => {
     if (!questionId) return;
     try {
-      await resolveStudentQuestionReportInCloud(questionId);
+      const ok = await resolveStudentQuestionReportInCloud(questionId);
+      if (!ok) {
+        setToastMessage(`⚠️ 雲端解除失敗，請檢查網路連線或稍後再試`);
+        setTimeout(() => setToastMessage(null), 3000);
+        return;
+      }
       setStudentReports((prev) => {
         const updated = { ...prev };
         if (updated[questionId]) {
@@ -150,6 +155,8 @@ export function ExamAuditZone({ onBack }) {
       setTimeout(() => setToastMessage(null), 3000);
     } catch (e) {
       console.warn('Resolve report failed', e);
+      setToastMessage(`⚠️ 解除發生錯誤：${e?.message || '未知錯誤'}`);
+      setTimeout(() => setToastMessage(null), 3000);
     }
   };
 
@@ -372,7 +379,21 @@ export function ExamAuditZone({ onBack }) {
   const displayPool = useMemo(() => {
     let pool = currentCategoryFullPool;
     if (onlyStudentReported) {
-      pool = pool.filter((q) => {
+      // 跨體系全量搜索：當勾選「僅顯示學生提報疑義」時，跨越當前體系與年級，在三大題庫聯集中全局檢索
+      const allBanks = [
+        ...HERE_WE_GO_MCQ_BANK,
+        ...SAA_EXAM_BANK,
+        ...TME_PRE_A1_BANK
+      ];
+      const seen = new Set();
+      const uniqueAll = [];
+      for (const q of allBanks) {
+        if (q && q.id && !seen.has(q.id)) {
+          seen.add(q.id);
+          uniqueAll.push(q);
+        }
+      }
+      pool = uniqueAll.filter((q) => {
         const rep = studentReports[q?.id];
         return rep && (rep.status === 'pending' || (rep.reportCount > 0 && rep.status !== 'resolved'));
       });
@@ -385,7 +406,31 @@ export function ExamAuditZone({ onBack }) {
         return !isItemVerified(q);
       });
     }
-    return pool;
+
+    // 將待處理之學生回報優先置頂，並依提報時間新到舊排序
+    return [...pool].sort((a, b) => {
+      const repA = studentReports[a?.id];
+      const repB = studentReports[b?.id];
+      const pendingA = repA && (repA.status === 'pending' || (repA.reportCount > 0 && repA.status !== 'resolved'));
+      const pendingB = repB && (repB.status === 'pending' || (repB.reportCount > 0 && repB.status !== 'resolved'));
+      if (pendingA && !pendingB) return -1;
+      if (!pendingA && pendingB) return 1;
+      if (pendingA && pendingB) {
+        const getTime = (rep) => {
+          if (!rep) return 0;
+          if (rep.lastReportedAt) {
+            const t = new Date(rep.lastReportedAt).getTime();
+            if (!isNaN(t)) return t;
+          }
+          if (rep.time) {
+            return typeof rep.time === 'number' && rep.time < 2000000000 ? rep.time * 1000 : new Date(rep.time).getTime();
+          }
+          return 0;
+        };
+        return getTime(repB) - getTime(repA);
+      }
+      return 0;
+    });
   }, [currentCategoryFullPool, onlyStudentReported, excludeVerified, isItemVerified, studentReports]);
 
   // 確保索引絕對不會因切換分類或排除已檢核而越界溢出
