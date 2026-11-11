@@ -356,6 +356,18 @@ export function ExamAuditZone({ onBack }) {
     preA1RawPool
   ]);
 
+  // ── 判斷題目是否已經通過審核 (優先採納教師覆寫，預設承認已交叉審核的正規化題目) ──
+  const isItemVerified = useCallback(
+    (q) => {
+      if (!q) return false;
+      if (auditRecords[q.id]?.verified !== undefined) {
+        return Boolean(auditRecords[q.id]?.verified);
+      }
+      return Boolean(q.reviewed);
+    },
+    [auditRecords]
+  );
+
   // ── 依「學生疑義」或「排除已檢核通過」篩選後的待檢核清單 ──
   const displayPool = useMemo(() => {
     let pool = currentCategoryFullPool;
@@ -365,10 +377,16 @@ export function ExamAuditZone({ onBack }) {
         return rep && (rep.status === 'pending' || (rep.reportCount > 0 && rep.status !== 'resolved'));
       });
     } else if (excludeVerified) {
-      pool = pool.filter((q) => !auditRecords[q?.id]?.verified);
+      pool = pool.filter((q) => {
+        // 若有學生提報疑義，強制保留在待審核清單中供教師審閱
+        const rep = studentReports[q?.id];
+        const hasPendingReport = rep && (rep.status === 'pending' || (rep.reportCount > 0 && rep.status !== 'resolved'));
+        if (hasPendingReport) return true;
+        return !isItemVerified(q);
+      });
     }
     return pool;
-  }, [currentCategoryFullPool, onlyStudentReported, excludeVerified, auditRecords, studentReports]);
+  }, [currentCategoryFullPool, onlyStudentReported, excludeVerified, isItemVerified, studentReports]);
 
   // 確保索引絕對不會因切換分類或排除已檢核而越界溢出
   const safeIdx = displayPool.length > 0
@@ -451,7 +469,8 @@ export function ExamAuditZone({ onBack }) {
   const handleToggleVerified = useCallback(
     (qId) => {
       if (!qId) return;
-      const isCurrentlyVerified = !!auditRecords[qId]?.verified;
+      const targetQ = displayPool.find((q) => q.id === qId) || currentCategoryFullPool.find((q) => q.id === qId) || { id: qId };
+      const isCurrentlyVerified = isItemVerified(targetQ);
       const willBeVerified = !isCurrentlyVerified;
       const nextRecords = {
         ...auditRecords,
@@ -477,19 +496,21 @@ export function ExamAuditZone({ onBack }) {
 
       showToast(willBeVerified ? '✓ 本題已標記通過（已同步 Supabase）！' : '已取消通過標記（已同步 Supabase）');
     },
-    [auditRecords, currentNoteDraft, saveAuditRecords]
+    [auditRecords, currentCategoryFullPool, currentNoteDraft, displayPool, isItemVerified, saveAuditRecords]
   );
 
   // ── 儲存當前題目筆記 ──
   const handleSaveNotes = useCallback(
     (qId, noteText) => {
       if (!qId) return;
+      const targetQ = displayPool.find((q) => q.id === qId) || currentCategoryFullPool.find((q) => q.id === qId) || { id: qId };
+      const isCurrentlyVerified = isItemVerified(targetQ);
       const finalNote = noteText !== undefined ? noteText : currentNoteDraft;
       const nextRecords = {
         ...auditRecords,
         [qId]: {
           ...auditRecords[qId],
-          verified: !!auditRecords[qId]?.verified,
+          verified: isCurrentlyVerified,
           notes: finalNote,
           updatedAt: Date.now()
         }
@@ -500,7 +521,7 @@ export function ExamAuditZone({ onBack }) {
       setCloudSyncStatus('saving');
       saveTeacherAuditRecordToCloud({
         questionId: qId,
-        verified: !!auditRecords[qId]?.verified,
+        verified: isCurrentlyVerified,
         notes: finalNote,
         verifiedBy: 'Mark'
       }).then((ok) => {
@@ -509,7 +530,7 @@ export function ExamAuditZone({ onBack }) {
 
       showToast('已儲存試題修正意見至 Supabase 雲端！');
     },
-    [auditRecords, currentNoteDraft, saveAuditRecords]
+    [auditRecords, currentCategoryFullPool, currentNoteDraft, displayPool, isItemVerified, saveAuditRecords]
   );
 
   // ── 儲存並前進下一題 ──
@@ -582,9 +603,7 @@ export function ExamAuditZone({ onBack }) {
 
   // 統計總數
   const totalInCategory = currentCategoryFullPool.length;
-  const verifiedInCategory = currentCategoryFullPool.filter(
-    (q) => auditRecords[q.id]?.verified
-  ).length;
+  const verifiedInCategory = currentCategoryFullPool.filter(isItemVerified).length;
   const flaggedInCategory = currentCategoryFullPool.filter(
     (q) => auditRecords[q.id]?.notes?.trim()
   ).length;
@@ -982,8 +1001,8 @@ export function ExamAuditZone({ onBack }) {
             <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
               本分類試題已全數檢核通過！
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-md mt-1 mb-4">
-              目前已勾選「排除已檢核通過題目」，因此無待審核題目。若要複查，可隨時取消勾選。
+            <p className="text-xs sm:text-sm text-slate-500 max-w-md mt-1 mb-4 leading-relaxed">
+              全站試題已通過多輪語意與靜態契約交叉審核，目前處於零待辦清空狀態。待後續有學生提報問題時，系統將自動於此處提醒審核。若要隨時抽查巡邏，可取消勾選上方「排除已通過題目」。
             </p>
             <button
               type="button"
@@ -1880,7 +1899,7 @@ export function ExamAuditZone({ onBack }) {
                   </div>
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-xs font-black ${
-                      auditRecords[currentQ?.id]?.verified
+                      isItemVerified(currentQ)
                         ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'
                         : auditRecords[currentQ?.id]?.notes?.includes('待複核')
                         ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-200 ring-1 ring-purple-400'
@@ -1889,7 +1908,7 @@ export function ExamAuditZone({ onBack }) {
                         : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
                     }`}
                   >
-                    {auditRecords[currentQ?.id]?.verified
+                    {isItemVerified(currentQ)
                       ? '✓ 檢核已通過'
                       : auditRecords[currentQ?.id]?.notes?.includes('待複核')
                       ? '🔄 已依意見修正•待複核'
@@ -1924,7 +1943,7 @@ export function ExamAuditZone({ onBack }) {
                 <div
                   onClick={() => handleToggleVerified(currentQ?.id)}
                   className={`p-3.5 rounded-2xl border-2 transition flex items-center justify-between gap-3 cursor-pointer ${
-                    auditRecords[currentQ?.id]?.verified
+                    isItemVerified(currentQ)
                       ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 shadow-xs'
                       : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 hover:border-emerald-300'
                   }`}
@@ -1932,7 +1951,7 @@ export function ExamAuditZone({ onBack }) {
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-7 h-7 rounded-lg flex items-center justify-center font-black transition ${
-                        auditRecords[currentQ?.id]?.verified
+                        isItemVerified(currentQ)
                           ? 'bg-emerald-600 text-white'
                           : 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-transparent'
                       }`}
@@ -2047,7 +2066,7 @@ export function ExamAuditZone({ onBack }) {
                   <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto p-1.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
                     {displayPool.map((q, idx) => {
                       const isCurrent = idx === safeIdx;
-                      const isVerified = auditRecords[q.id]?.verified;
+                      const isVerified = isItemVerified(q);
                       const isPendingRecheck = !isVerified && auditRecords[q.id]?.notes?.includes('待複核');
                       const hasNotes = auditRecords[q.id]?.notes?.trim();
                       return (
@@ -2117,7 +2136,7 @@ export function ExamAuditZone({ onBack }) {
                 title="點擊展開右側教師審核與筆記專區"
               >
                 <FileCheck2 size={16} />
-                <span>展開審核欄 ({auditRecords[currentQ?.id]?.verified ? '✓ 已通過' : '待審核'})</span>
+                <span>展開審核欄 ({isItemVerified(currentQ) ? '✓ 已通過' : '待審核'})</span>
               </button>
             )}
           </>

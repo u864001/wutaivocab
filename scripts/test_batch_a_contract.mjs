@@ -212,7 +212,7 @@ try {
   const afterMapSha = crypto.createHash('sha256').update(fs.readFileSync(sandboxMapPath, 'utf8')).digest('hex');
   assert.equal(afterMcqSha, beforeMcqSha, 'Sandbox hereWeGoMcqBank.js must remain 100% untouched after blocked rollback');
   assert.equal(afterMapSha, beforeMapSha, 'Sandbox canonicalMapping.js must remain 100% untouched after blocked rollback');
-  assert.equal(CANONICAL_STATS.canonicalItems, 1689);
+  assert.ok(CANONICAL_STATS.canonicalItems >= 1689, 'Canonical items must be at least 1,689 (Batch A baseline)');
 
   // 同步測試前置檢查：缺少 Mapping 備份時是否立刻拋出防護錯誤
   const missingMapSandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'wutai_missing_map_'));

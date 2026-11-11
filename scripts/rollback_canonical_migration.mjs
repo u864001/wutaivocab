@@ -164,11 +164,9 @@ try {
   if (fs.existsSync(tmpMappingFilePath)) {
     fs.unlinkSync(tmpMappingFilePath);
   }
-  if (fs.existsSync(mcqBakPath)) {
-    fs.unlinkSync(mcqBakPath);
-  }
-  if (fs.existsSync(mappingBakPath)) {
-    fs.unlinkSync(mappingBakPath);
+  // 若交易過程中發生錯誤，保留 .active.bak 以供緊急人工復原，不直接刪除
+  if (fs.existsSync(mcqBakPath) || fs.existsSync(mappingBakPath)) {
+    console.warn('⚠️ Emergency active backups (.active.bak) retained for manual inspection and recovery.');
   }
   process.exit(1);
 }
