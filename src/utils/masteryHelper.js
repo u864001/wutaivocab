@@ -8,7 +8,8 @@
  * 3. 分母固定為題庫總試題數（如 Pre-A1 為 300 題），確保數據真實覆蓋。
  */
 
-import { resolveCanonicalId } from '../data/exam/canonicalMapping.js';
+import { resolveCanonicalId, CANONICAL_STATS } from '../data/exam/canonicalMapping.js';
+const CURRICULUM_TOTAL_ITEMS = CANONICAL_STATS?.canonicalItems || 1689;
 
 export const MASTERY_STATES = {
   UNATTEMPTED: 'unattempted', // ⚪ 未挑戰
@@ -298,9 +299,9 @@ export function migrateMasterySnapshotToCanonical(snapshot, studentId = null) {
     if (!trackData) continue;
     let trackChanged = false;
 
-    // 不論是否有 ID 變更，curriculum 軌道的 total_items 一律校準為 1,589
-    if (trackName === 'curriculum' && trackData.total_items !== 1589) {
-      trackData.total_items = 1589;
+    // 不論是否有 ID 變更，curriculum 軌道的 total_items 一律校準為最新 Canonical 題數
+    if (trackName === 'curriculum' && trackData.total_items !== CURRICULUM_TOTAL_ITEMS) {
+      trackData.total_items = CURRICULUM_TOTAL_ITEMS;
       trackChanged = true;
     }
 
@@ -405,14 +406,14 @@ export function recordExamMasterySession(studentId, track = 'tme-preA1', questio
   const snap = loadStudentMastery(studentId);
   if (!snap.tracks[track]) {
     snap.tracks[track] = {
-      total_items: track === 'tme-preA1' ? 300 : track === 'curriculum' ? 1589 : questions.length,
+      total_items: track === 'tme-preA1' ? 300 : track === 'curriculum' ? CURRICULUM_TOTAL_ITEMS : questions.length,
       mastered_count: 0,
       attempted_count: 0,
       total_attempts: 0,
       items: {}
     };
-  } else if (track === 'curriculum' && snap.tracks[track].total_items !== 1589) {
-    snap.tracks[track].total_items = 1589;
+  } else if (track === 'curriculum' && snap.tracks[track].total_items !== CURRICULUM_TOTAL_ITEMS) {
+    snap.tracks[track].total_items = CURRICULUM_TOTAL_ITEMS;
   }
 
   const trackData = snap.tracks[track];

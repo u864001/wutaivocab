@@ -54,6 +54,27 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.13 課本題庫「七大命題鐵律」確立與 Batch A（Book 1 & Book 2）100 題六大題型均衡擴充 (`hereWeGoMcqBank.js`, `canonicalMapping.js`, `expand_batch_a_b1_b2.mjs`, `audit_semantic_gates.mjs`, `verify_canonical_schema.mjs`, `QUIZ_SPELLING_HANDWRITING_SPEC.md`)
+* **確立課本題庫擴充「七大命題鐵律 (7 Golden Rules of Question Authoring)」並寫入交接規範**：
+  * 針對早期輕量模型擴充 3,317 題卻產生 1,728 筆跨單元複製題（Clones）與萬用誘答／雙黃蛋之痛點，於 [`docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md`](docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md) 第五節正式制定七大不可妥協之命題鐵律：
+    1. **Canonical 唯一實體與 Scopes 雙單元上限**：每題皆為 `isCanonical: true` 原創題，透過 `scopes: ['Unit X', 'Review Y']`（長度 $\le 2$）自動支援複習單元，嚴禁複製貼上。
+    2. **單字題 (`V-MEAN`) 全面改採生活語境句子填空**：廢除「單字 X 的中文意思是？」機械題，全面改為具唯一上下文語意線索之完整英文句子挖空（6 底線 `______`）。
+    3. **唯一正解鐵律（Anti-Multi-Correct Gate）**：嚴禁無上下文線索之同類名詞並列、嚴禁 `Yes, please.` 與 `No, thank you.` 共存、嚴禁無提示之多個合法時間／地點／性別代名詞並列。
+    4. **7 選項同質性、6 底線與禁用 12 句萬用樣板 (`BOILERPLATE_DISTRACTORS`)**。
+    5. **聽力題 (`L-WORD` / `L-RESP`) 逐字稿零洩漏鐵律**：語音存放於 `media.audioText`，題幹 (`question`) 嚴禁洩漏英文逐字稿（已納入 `audit_semantic_gates.mjs` 第 10 道自動檢查門禁）。
+    6. **詳解與正答／誘答 100% 同步鐵律**。
+    7. **入庫必過 4 道自動化驗證門禁 + 6 階段 Smoke Test**。
+* **完成 Batch A（Book 1 & Book 2）共 +100 題純 Canonical 六大題型均衡擴充 (`scripts/expand_batch_a_b1_b2.mjs`)**：
+  * **Book 1 新增 50 題 (`hwg_b1_ba_01` ~ `hwg_b1_ba_50`)**：由 159 題擴充至 **209 題**（涵蓋問候、自我介紹、年齡 1~10、顏色與日常感受）。
+  * **Book 2 新增 50 題 (`hwg_b2_ba_01` ~ `hwg_b2_ba_50`)**：由 154 題擴充至 **204 題**（涵蓋文具、家庭成員與形容詞、寵物動物與單複數、身體部位）。
+  * **每冊 +50 題均嚴格按 6 大常用題型均衡配比**：`L-WORD`（聽音選字 8 題）、`L-RESP`（聽問句選回應 8 題）、`V-MEAN`（語境句子選字 10 題）、`G-MC`（核心句型文法填空 10 題）、`G-CTX`（生活情境語用判斷 6 題）、`R-COMP`（3~4 句微型短文閱讀理解 8 題）。
+  * **全庫純 Canonical 題數由 1,589 題提升至 1,689 題**（0 Clones），全站 UI 顯示與精熟度分母（`masteryHelper.js` 動態綁定 `CANONICAL_STATS.canonicalItems`）已 100% 同步為 **1,689 題**。
+* **後續新對話接手指南（Batch B ~ Batch D）**：
+  * **Batch B（待執行）**：Book 3 & Book 4 各 +50 題（共 +100 題，目標總數 1,789 題）。
+  * **Batch C（規劃中）**：Book 5 & Book 6 各 +50 題（共 +100 題，目標總數 1,889 題）。
+  * **Batch D（規劃中）**：Book 7 & Book 8 各 +50 題（共 +100 題，目標總數 1,989 題）。
+  * 詳細題型配比與執行 SOP 已完整記載於 [`docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md`](docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md) 第五節。
+
 #### 0.0.12 課本題庫方案 A（In-Book Canonical）正式修剪落實與全站 UI 分母同步：刪除 1,728 筆同冊重複複本、全庫精簡為 1,589 題純淨 Canonical 題目 (`hereWeGoMcqBank.js`, `PreA1MasteryDashboard.jsx`, `PureMcqExamView.jsx`, `LeaderboardView.jsx`, `examTracks.js`, `exam/index.js`)
 * **正式執行 `node scripts/execute_canonical_prune.mjs`**：
   * 經 ChatGPT 本機 Windows 隔離實測確認 `2976ce0` 全面通過並正式授權，已將 `src/data/hereWeGoMcqBank.js` 由 3,317 題原子性精簡為 **1,589 題冊內 Canonical 題目**（刪除 1,728 筆同冊跨單元複本；保留 22 組跨冊獨立題目）。

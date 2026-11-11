@@ -163,17 +163,17 @@ export const SAA_DASHBOARD_META = [
   }
 ];
 
-// 📙 軌道 3：翰林課本單元進度檢定 (1,589 題)
+// 📙 軌道 3：翰林課本單元進度檢定 (1,689 題)
 export const CURRICULUM_DASHBOARD_META = [
   {
     category: 'primary_lower',
     label: '低年級：字母與啟蒙專冊 (Books 1~2 & 專冊)',
     icon: Layers,
     color: 'amber',
-    total: 626,
+    total: 726,
     subTypes: [
-      { key: 'b1', label: '第一冊 (Book 1)', total: 159, desc: '問候、自我介紹、顏色、數字' },
-      { key: 'b2', label: '第二冊 (Book 2)', total: 154, desc: '文具、家庭成員、動物、身體部位' },
+      { key: 'b1', label: '第一冊 (Book 1)', total: 209, desc: '問候、自我介紹、顏色、數字' },
+      { key: 'b2', label: '第二冊 (Book 2)', total: 204, desc: '文具、家庭成員、動物、身體部位' },
       { key: 'alpha', label: '字母啟蒙與生活專冊 (G1/G2)', total: 313, desc: '26 個英文字母大小寫與自然發音啟蒙' }
     ]
   },
@@ -249,7 +249,7 @@ export const TRACK_CONFIGS = {
     name: '翰林課本單元進度檢定',
     shortName: '課本單元進度',
     badge: 'Here We Go 全 8 冊',
-    totalItems: 1589,
+    totalItems: 1689,
     meta: CURRICULUM_DASHBOARD_META,
     heroGradient: 'from-amber-600 via-orange-600 to-amber-700',
     primaryBtn: 'bg-amber-600 hover:bg-amber-700',

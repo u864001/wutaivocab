@@ -124,7 +124,7 @@ export const EXAM_KING_SUBTRACKS = [
   {
     id: 'mcq_king',
     label: '課本單元檢定',
-    subLabel: '1,589 題單元實戰',
+    subLabel: '1,689 題單元實戰',
     icon: Crown,
     unit: '分',
     badgeColor: 'border-amber-400 text-amber-200 bg-amber-500/25 ring-amber-400/50',

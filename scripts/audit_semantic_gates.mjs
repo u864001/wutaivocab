@@ -180,6 +180,16 @@ for (const q of HERE_WE_GO_MCQ_BANK) {
       }
     }
   }
+
+  // 10. Listening tasks (L-WORD / L-RESP) must have media.audioText and never leak transcript in question stem
+  if (q.taskType === 'L-WORD' || q.taskType === 'L-RESP') {
+    const audioText = q.media?.audioText?.trim();
+    if (!audioText) {
+      issues.push({ id: q.id, type: 'MISSING_LISTENING_AUDIO_TEXT', taskType: q.taskType });
+    } else if (q.question && q.question.toLowerCase().includes(audioText.toLowerCase())) {
+      issues.push({ id: q.id, type: 'LISTENING_TRANSCRIPT_LEAK_IN_STEM', question: q.question, audioText });
+    }
+  }
 }
 
 // 2. TME Pre-A1 Exam Bank (300 questions)

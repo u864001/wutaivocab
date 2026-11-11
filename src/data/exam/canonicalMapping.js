@@ -1,31 +1,31 @@
 /**
- * 課本題庫 Canonical Question 映射表與結構定義 (Scheme A)
+ * 課本題庫 Canonical Question 映射表與結構定義 (Scheme A + Batch A Expanded)
  *
  * 規範依據：
- * - 冊內正規化 (In-book Canonical)：保留 1,589 題
- * - 刪除同冊跨單元重複複本：1,728 筆
+ * - 冊內正規化 (In-book Canonical)：現有 1689 題 (原 1,589 題 + Batch A 100 題)
+ * - 已刪除同冊跨單元重複複本：1,728 筆
  * - 跨冊複現題目保留各自獨立進度：22 組
  * - 每冊保證獨立題目數 >= 100 題
  * - scopes 精準限制為原授課單元及對應 Review (長度 <= 2)，絕無全冊漫延
  */
 
 export const CANONICAL_STATS = {
-  totalBankItems: 3317,
-  canonicalItems: 1589,
-  duplicateClones: 1728,
-  bookCounts: {
-  "1": 159,
-  "2": 154,
-  "3": 155,
-  "4": 135,
-  "5": 133,
-  "6": 149,
-  "7": 128,
-  "8": 126,
-  "9": 137,
-  "g1": 143,
-  "g2": 170
-}
+  "totalBankItems": 3417,
+  "canonicalItems": 1689,
+  "duplicateClones": 1728,
+  "bookCounts": {
+    "1": 209,
+    "2": 204,
+    "3": 155,
+    "4": 135,
+    "5": 133,
+    "6": 149,
+    "7": 128,
+    "8": 126,
+    "9": 137,
+    "g1": 143,
+    "g2": 170
+  }
 };
 
 /** 舊題號 (legacyId) -> 標準題號 (canonicalId) 映射表 */
@@ -3346,10 +3346,110 @@ export const LEGACY_TO_CANONICAL_MAP = {
   "hwg_bg2_exp_7017": "hwg_bg2_exp_7017",
   "hwg_bg2_exp_7022": "hwg_bg2_exp_7017",
   "hwg_bg2_exp_7028": "hwg_bg2_exp_7017",
-  "hwg_bg2_exp_7021": "hwg_bg2_exp_7021"
+  "hwg_bg2_exp_7021": "hwg_bg2_exp_7021",
+  "hwg_b1_ba_01": "hwg_b1_ba_01",
+  "hwg_b1_ba_02": "hwg_b1_ba_02",
+  "hwg_b1_ba_03": "hwg_b1_ba_03",
+  "hwg_b1_ba_04": "hwg_b1_ba_04",
+  "hwg_b1_ba_05": "hwg_b1_ba_05",
+  "hwg_b1_ba_06": "hwg_b1_ba_06",
+  "hwg_b1_ba_07": "hwg_b1_ba_07",
+  "hwg_b1_ba_08": "hwg_b1_ba_08",
+  "hwg_b1_ba_09": "hwg_b1_ba_09",
+  "hwg_b1_ba_10": "hwg_b1_ba_10",
+  "hwg_b1_ba_11": "hwg_b1_ba_11",
+  "hwg_b1_ba_12": "hwg_b1_ba_12",
+  "hwg_b1_ba_13": "hwg_b1_ba_13",
+  "hwg_b1_ba_14": "hwg_b1_ba_14",
+  "hwg_b1_ba_15": "hwg_b1_ba_15",
+  "hwg_b1_ba_16": "hwg_b1_ba_16",
+  "hwg_b1_ba_17": "hwg_b1_ba_17",
+  "hwg_b1_ba_18": "hwg_b1_ba_18",
+  "hwg_b1_ba_19": "hwg_b1_ba_19",
+  "hwg_b1_ba_20": "hwg_b1_ba_20",
+  "hwg_b1_ba_21": "hwg_b1_ba_21",
+  "hwg_b1_ba_22": "hwg_b1_ba_22",
+  "hwg_b1_ba_23": "hwg_b1_ba_23",
+  "hwg_b1_ba_24": "hwg_b1_ba_24",
+  "hwg_b1_ba_25": "hwg_b1_ba_25",
+  "hwg_b1_ba_26": "hwg_b1_ba_26",
+  "hwg_b1_ba_27": "hwg_b1_ba_27",
+  "hwg_b1_ba_28": "hwg_b1_ba_28",
+  "hwg_b1_ba_29": "hwg_b1_ba_29",
+  "hwg_b1_ba_30": "hwg_b1_ba_30",
+  "hwg_b1_ba_31": "hwg_b1_ba_31",
+  "hwg_b1_ba_32": "hwg_b1_ba_32",
+  "hwg_b1_ba_33": "hwg_b1_ba_33",
+  "hwg_b1_ba_34": "hwg_b1_ba_34",
+  "hwg_b1_ba_35": "hwg_b1_ba_35",
+  "hwg_b1_ba_36": "hwg_b1_ba_36",
+  "hwg_b1_ba_37": "hwg_b1_ba_37",
+  "hwg_b1_ba_38": "hwg_b1_ba_38",
+  "hwg_b1_ba_39": "hwg_b1_ba_39",
+  "hwg_b1_ba_40": "hwg_b1_ba_40",
+  "hwg_b1_ba_41": "hwg_b1_ba_41",
+  "hwg_b1_ba_42": "hwg_b1_ba_42",
+  "hwg_b1_ba_43": "hwg_b1_ba_43",
+  "hwg_b1_ba_44": "hwg_b1_ba_44",
+  "hwg_b1_ba_45": "hwg_b1_ba_45",
+  "hwg_b1_ba_46": "hwg_b1_ba_46",
+  "hwg_b1_ba_47": "hwg_b1_ba_47",
+  "hwg_b1_ba_48": "hwg_b1_ba_48",
+  "hwg_b1_ba_49": "hwg_b1_ba_49",
+  "hwg_b1_ba_50": "hwg_b1_ba_50",
+  "hwg_b2_ba_01": "hwg_b2_ba_01",
+  "hwg_b2_ba_02": "hwg_b2_ba_02",
+  "hwg_b2_ba_03": "hwg_b2_ba_03",
+  "hwg_b2_ba_04": "hwg_b2_ba_04",
+  "hwg_b2_ba_05": "hwg_b2_ba_05",
+  "hwg_b2_ba_06": "hwg_b2_ba_06",
+  "hwg_b2_ba_07": "hwg_b2_ba_07",
+  "hwg_b2_ba_08": "hwg_b2_ba_08",
+  "hwg_b2_ba_09": "hwg_b2_ba_09",
+  "hwg_b2_ba_10": "hwg_b2_ba_10",
+  "hwg_b2_ba_11": "hwg_b2_ba_11",
+  "hwg_b2_ba_12": "hwg_b2_ba_12",
+  "hwg_b2_ba_13": "hwg_b2_ba_13",
+  "hwg_b2_ba_14": "hwg_b2_ba_14",
+  "hwg_b2_ba_15": "hwg_b2_ba_15",
+  "hwg_b2_ba_16": "hwg_b2_ba_16",
+  "hwg_b2_ba_17": "hwg_b2_ba_17",
+  "hwg_b2_ba_18": "hwg_b2_ba_18",
+  "hwg_b2_ba_19": "hwg_b2_ba_19",
+  "hwg_b2_ba_20": "hwg_b2_ba_20",
+  "hwg_b2_ba_21": "hwg_b2_ba_21",
+  "hwg_b2_ba_22": "hwg_b2_ba_22",
+  "hwg_b2_ba_23": "hwg_b2_ba_23",
+  "hwg_b2_ba_24": "hwg_b2_ba_24",
+  "hwg_b2_ba_25": "hwg_b2_ba_25",
+  "hwg_b2_ba_26": "hwg_b2_ba_26",
+  "hwg_b2_ba_27": "hwg_b2_ba_27",
+  "hwg_b2_ba_28": "hwg_b2_ba_28",
+  "hwg_b2_ba_29": "hwg_b2_ba_29",
+  "hwg_b2_ba_30": "hwg_b2_ba_30",
+  "hwg_b2_ba_31": "hwg_b2_ba_31",
+  "hwg_b2_ba_32": "hwg_b2_ba_32",
+  "hwg_b2_ba_33": "hwg_b2_ba_33",
+  "hwg_b2_ba_34": "hwg_b2_ba_34",
+  "hwg_b2_ba_35": "hwg_b2_ba_35",
+  "hwg_b2_ba_36": "hwg_b2_ba_36",
+  "hwg_b2_ba_37": "hwg_b2_ba_37",
+  "hwg_b2_ba_38": "hwg_b2_ba_38",
+  "hwg_b2_ba_39": "hwg_b2_ba_39",
+  "hwg_b2_ba_40": "hwg_b2_ba_40",
+  "hwg_b2_ba_41": "hwg_b2_ba_41",
+  "hwg_b2_ba_42": "hwg_b2_ba_42",
+  "hwg_b2_ba_43": "hwg_b2_ba_43",
+  "hwg_b2_ba_44": "hwg_b2_ba_44",
+  "hwg_b2_ba_45": "hwg_b2_ba_45",
+  "hwg_b2_ba_46": "hwg_b2_ba_46",
+  "hwg_b2_ba_47": "hwg_b2_ba_47",
+  "hwg_b2_ba_48": "hwg_b2_ba_48",
+  "hwg_b2_ba_49": "hwg_b2_ba_49",
+  "hwg_b2_ba_50": "hwg_b2_ba_50"
 };
 
-/** 標準題號 (canonicalId) 元資料索引 */
+/** 標準題號 (canonicalId) -> 範圍與複本元資料 */
 export const CANONICAL_META_MAP = {
   "hwg_b1_1": {
     "canonicalId": "hwg_b1_1",
@@ -25254,6 +25354,1296 @@ export const CANONICAL_META_MAP = {
     ],
     "legacyIds": [
       "hwg_bg2_exp_7021"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_01": {
+    "canonicalId": "hwg_b1_ba_01",
+    "book": 1,
+    "primaryScope": "Starter",
+    "scopes": [
+      "Starter"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_01"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_02": {
+    "canonicalId": "hwg_b1_ba_02",
+    "book": 1,
+    "primaryScope": "Starter",
+    "scopes": [
+      "Starter"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_02"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_03": {
+    "canonicalId": "hwg_b1_ba_03",
+    "book": 1,
+    "primaryScope": "Starter",
+    "scopes": [
+      "Starter"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_03"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_04": {
+    "canonicalId": "hwg_b1_ba_04",
+    "book": 1,
+    "primaryScope": "Starter",
+    "scopes": [
+      "Starter"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_04"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_05": {
+    "canonicalId": "hwg_b1_ba_05",
+    "book": 1,
+    "primaryScope": "Starter",
+    "scopes": [
+      "Starter"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_05"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_06": {
+    "canonicalId": "hwg_b1_ba_06",
+    "book": 1,
+    "primaryScope": "Starter",
+    "scopes": [
+      "Starter"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_06"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_07": {
+    "canonicalId": "hwg_b1_ba_07",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_07"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_08": {
+    "canonicalId": "hwg_b1_ba_08",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_08"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_09": {
+    "canonicalId": "hwg_b1_ba_09",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_09"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_10": {
+    "canonicalId": "hwg_b1_ba_10",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_10"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_11": {
+    "canonicalId": "hwg_b1_ba_11",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_11"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_12": {
+    "canonicalId": "hwg_b1_ba_12",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_12"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_13": {
+    "canonicalId": "hwg_b1_ba_13",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_13"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_14": {
+    "canonicalId": "hwg_b1_ba_14",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_14"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_15": {
+    "canonicalId": "hwg_b1_ba_15",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_15"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_16": {
+    "canonicalId": "hwg_b1_ba_16",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_16"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_17": {
+    "canonicalId": "hwg_b1_ba_17",
+    "book": 1,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_17"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_18": {
+    "canonicalId": "hwg_b1_ba_18",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_18"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_19": {
+    "canonicalId": "hwg_b1_ba_19",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_19"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_20": {
+    "canonicalId": "hwg_b1_ba_20",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_20"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_21": {
+    "canonicalId": "hwg_b1_ba_21",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_21"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_22": {
+    "canonicalId": "hwg_b1_ba_22",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_22"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_23": {
+    "canonicalId": "hwg_b1_ba_23",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_23"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_24": {
+    "canonicalId": "hwg_b1_ba_24",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_24"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_25": {
+    "canonicalId": "hwg_b1_ba_25",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_25"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_26": {
+    "canonicalId": "hwg_b1_ba_26",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_26"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_27": {
+    "canonicalId": "hwg_b1_ba_27",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_27"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_28": {
+    "canonicalId": "hwg_b1_ba_28",
+    "book": 1,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_28"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_29": {
+    "canonicalId": "hwg_b1_ba_29",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_29"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_30": {
+    "canonicalId": "hwg_b1_ba_30",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_30"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_31": {
+    "canonicalId": "hwg_b1_ba_31",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_31"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_32": {
+    "canonicalId": "hwg_b1_ba_32",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_32"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_33": {
+    "canonicalId": "hwg_b1_ba_33",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_33"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_34": {
+    "canonicalId": "hwg_b1_ba_34",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_34"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_35": {
+    "canonicalId": "hwg_b1_ba_35",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_35"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_36": {
+    "canonicalId": "hwg_b1_ba_36",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_36"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_37": {
+    "canonicalId": "hwg_b1_ba_37",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_37"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_38": {
+    "canonicalId": "hwg_b1_ba_38",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_38"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_39": {
+    "canonicalId": "hwg_b1_ba_39",
+    "book": 1,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_39"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_40": {
+    "canonicalId": "hwg_b1_ba_40",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_40"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_41": {
+    "canonicalId": "hwg_b1_ba_41",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_41"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_42": {
+    "canonicalId": "hwg_b1_ba_42",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_42"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_43": {
+    "canonicalId": "hwg_b1_ba_43",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_43"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_44": {
+    "canonicalId": "hwg_b1_ba_44",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_44"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_45": {
+    "canonicalId": "hwg_b1_ba_45",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_45"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_46": {
+    "canonicalId": "hwg_b1_ba_46",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_46"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_47": {
+    "canonicalId": "hwg_b1_ba_47",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_47"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_48": {
+    "canonicalId": "hwg_b1_ba_48",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_48"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_49": {
+    "canonicalId": "hwg_b1_ba_49",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_49"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b1_ba_50": {
+    "canonicalId": "hwg_b1_ba_50",
+    "book": 1,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b1_ba_50"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_01": {
+    "canonicalId": "hwg_b2_ba_01",
+    "book": 2,
+    "primaryScope": "Starter",
+    "scopes": [
+      "Starter"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_01"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_02": {
+    "canonicalId": "hwg_b2_ba_02",
+    "book": 2,
+    "primaryScope": "Starter",
+    "scopes": [
+      "Starter"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_02"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_03": {
+    "canonicalId": "hwg_b2_ba_03",
+    "book": 2,
+    "primaryScope": "Starter",
+    "scopes": [
+      "Starter"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_03"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_04": {
+    "canonicalId": "hwg_b2_ba_04",
+    "book": 2,
+    "primaryScope": "Starter",
+    "scopes": [
+      "Starter"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_04"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_05": {
+    "canonicalId": "hwg_b2_ba_05",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_05"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_06": {
+    "canonicalId": "hwg_b2_ba_06",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_06"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_07": {
+    "canonicalId": "hwg_b2_ba_07",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_07"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_08": {
+    "canonicalId": "hwg_b2_ba_08",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_08"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_09": {
+    "canonicalId": "hwg_b2_ba_09",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_09"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_10": {
+    "canonicalId": "hwg_b2_ba_10",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_10"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_11": {
+    "canonicalId": "hwg_b2_ba_11",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_11"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_12": {
+    "canonicalId": "hwg_b2_ba_12",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_12"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_13": {
+    "canonicalId": "hwg_b2_ba_13",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_13"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_14": {
+    "canonicalId": "hwg_b2_ba_14",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_14"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_15": {
+    "canonicalId": "hwg_b2_ba_15",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_15"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_16": {
+    "canonicalId": "hwg_b2_ba_16",
+    "book": 2,
+    "primaryScope": "Unit 1",
+    "scopes": [
+      "Unit 1",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_16"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_17": {
+    "canonicalId": "hwg_b2_ba_17",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_17"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_18": {
+    "canonicalId": "hwg_b2_ba_18",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_18"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_19": {
+    "canonicalId": "hwg_b2_ba_19",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_19"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_20": {
+    "canonicalId": "hwg_b2_ba_20",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_20"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_21": {
+    "canonicalId": "hwg_b2_ba_21",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_21"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_22": {
+    "canonicalId": "hwg_b2_ba_22",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_22"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_23": {
+    "canonicalId": "hwg_b2_ba_23",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_23"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_24": {
+    "canonicalId": "hwg_b2_ba_24",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_24"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_25": {
+    "canonicalId": "hwg_b2_ba_25",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_25"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_26": {
+    "canonicalId": "hwg_b2_ba_26",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_26"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_27": {
+    "canonicalId": "hwg_b2_ba_27",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_27"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_28": {
+    "canonicalId": "hwg_b2_ba_28",
+    "book": 2,
+    "primaryScope": "Unit 2",
+    "scopes": [
+      "Unit 2",
+      "Review 1"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_28"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_29": {
+    "canonicalId": "hwg_b2_ba_29",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_29"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_30": {
+    "canonicalId": "hwg_b2_ba_30",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_30"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_31": {
+    "canonicalId": "hwg_b2_ba_31",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_31"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_32": {
+    "canonicalId": "hwg_b2_ba_32",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_32"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_33": {
+    "canonicalId": "hwg_b2_ba_33",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_33"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_34": {
+    "canonicalId": "hwg_b2_ba_34",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_34"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_35": {
+    "canonicalId": "hwg_b2_ba_35",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_35"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_36": {
+    "canonicalId": "hwg_b2_ba_36",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_36"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_37": {
+    "canonicalId": "hwg_b2_ba_37",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_37"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_38": {
+    "canonicalId": "hwg_b2_ba_38",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_38"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_39": {
+    "canonicalId": "hwg_b2_ba_39",
+    "book": 2,
+    "primaryScope": "Unit 3",
+    "scopes": [
+      "Unit 3",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_39"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_40": {
+    "canonicalId": "hwg_b2_ba_40",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_40"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_41": {
+    "canonicalId": "hwg_b2_ba_41",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_41"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_42": {
+    "canonicalId": "hwg_b2_ba_42",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_42"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_43": {
+    "canonicalId": "hwg_b2_ba_43",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_43"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_44": {
+    "canonicalId": "hwg_b2_ba_44",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_44"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_45": {
+    "canonicalId": "hwg_b2_ba_45",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_45"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_46": {
+    "canonicalId": "hwg_b2_ba_46",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_46"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_47": {
+    "canonicalId": "hwg_b2_ba_47",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_47"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_48": {
+    "canonicalId": "hwg_b2_ba_48",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_48"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_49": {
+    "canonicalId": "hwg_b2_ba_49",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_49"
+    ],
+    "duplicateCount": 0
+  },
+  "hwg_b2_ba_50": {
+    "canonicalId": "hwg_b2_ba_50",
+    "book": 2,
+    "primaryScope": "Unit 4",
+    "scopes": [
+      "Unit 4",
+      "Review 2"
+    ],
+    "legacyIds": [
+      "hwg_b2_ba_50"
     ],
     "duplicateCount": 0
   }

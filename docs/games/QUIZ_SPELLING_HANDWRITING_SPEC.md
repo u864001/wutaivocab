@@ -190,3 +190,102 @@
    - **整合實測功能**：
      - 內建 4 道高細節生活題（五年級 Q34 地圖路線、五年級 Q3 季節四格、六年級 Q32 告示牌長文、四年級 Q7 菜單點餐）。
      - 支援一鍵切換「電腦寬螢幕 / 平板 (768px) / 手機 (375px)」三種模擬裝置寬度。
+
+---
+
+## 五、 課本題庫 (`HERE_WE_GO_MCQ_BANK`) 七大命題鐵律與 Batch A~D 擴充藍圖 (2026-11-11 確立，新對話必讀)
+
+### 1. 歷史教訓：為何早期 3,317 題擴充會有 1,728 題（52%）被判定為無效複本？
+早期使用輕量模型批次生成題目時，犯下三大結構性錯誤，往後任何 AI 代理擴充題庫**絕對禁止重蹈覆轍**：
+1. **跨單元迴圈複製（In-Book Clone Bloat）**：為了湊齊每個單元與複習單元（Unit 1~4、Review 1~2、General Review）的題數，腳本將同一道題目改個 ID 後複製貼上 2～8 次，導致產生 1,728 筆完全相同的 Clone。
+2. **機械式中文翻譯模板**：大量使用 `單字「X」的中文意思是下列哪一個？` 套進單字表，毫無句子上下文。
+3. **萬用無腦誘答與雙正解地雷**：對話題固定塞入 `I am fine, thank you.`、`See you later.`、`It is over there.` 等萬用句，或在無上下文線索時同時放入 `Yes, please.` 與 `No, thank you.`、同類名詞（如 `Look! It's a small ______.` 同時放 `turtle`、`dog`、`cat`），造成嚴重雙黃蛋。
+
+---
+
+### 2. 課本題庫擴充「七大命題鐵律 (7 Golden Rules of Question Authoring)」
+
+往後所有新對話擴充 `src/data/hereWeGoMcqBank.js` 時，**每一題都必須 100% 遵守以下七大鐵律**：
+
+1. **【鐵律一：Canonical 唯一實體與 Scopes 雙單元上限】**：
+   - **嚴禁把同一道題目複製到不同單元或 Review**！
+   - 每一道新題目必須是獨立原創題，且直接設定：
+     - `isCanonical: true`
+     - `canonicalId: q.id`（與自身 `id` 相同）
+     - `primaryScope: 'Unit X'`（該單字或句型的正統首教單元）
+     - `scopes: ['Unit X', 'Review Y']`（長度最多為 **2**：首教單元 ＋ 對應的 Review 1 或 Review 2；若為字母題則 `scopes: ['Unit X (A~G)']` 長度為 1）。
+   - 新增題目後，必須同步更新 `src/data/exam/canonicalMapping.js` 中的 `CANONICAL_STATS`、`LEGACY_TO_CANONICAL_MAP` 與 `CANONICAL_META_MAP`。
+
+2. **【鐵律二：單字題 (`V-MEAN`) 全面改採「生活語境句子填空」】**：
+   - **嚴禁再寫** `單字「apple」的中文意思是下列哪一個？` 這類純背誦機械題。
+   - 必須將目標單字放入**有明確語意線索的完整英文句子**中挖空（6 個底線 `______`），讓學生透過上下文推論字義：
+     - ✅ 正確範例：`I am thirsty. I want some cold ______.`（正答：`water`；誘答：`bread`, `apples`, `cookies`, `cakes`, `eggs`, `noodles` — 皆為固體食物，唯有 `water` 符合 `thirsty` 與 `drink/cold` 線索）。
+
+3. **【鐵律三：唯一正解鐵律（Anti-Multi-Correct Gate）】**：
+   - 任何題目若拿掉中文詳解，**只看英文題幹，在 7 個選項中必須只有唯一 1 個選項在語意與文法上同時成立**！
+   - **四大必查禁區**：
+     1. **單字填空題**：題幹必須有唯一鎖定正答的線索（如顏色、數量、動作、場所、工具），誘答項雖屬同詞性但必須與題幹線索矛盾。
+     2. **禮貌邀請／提議題**（`Do you want...?` / `Would you like...?`）：選項中**嚴禁同時出現 `Yes, please.` 與 `No, thank you.`**；或者題幹後句必須給出明確線索（如 `B: ______ I am full.` 唯一鎖定 `No, thank you.`）。
+     3. **時間／地點／姓名／年齡／天氣題**：若題幹未給提示（如 `(7:00)`、`He is in the kitchen.`），選項中**只能有 1 個語法與語意皆正確的時間／地點**，其餘 6 個誘答必須設計為「文法錯誤（如 `They're seven o'clock.`、`At seven o'clock.`）」或「疑問詞答非所問（如問時間卻回答地點）」。
+     4. **人稱與性別線索**：若題幹主詞性別不明（如 `Luca`、`Alex`），選項中**嚴禁同時出現僅差在 `He/She` 或 `His/Her` 的兩個合法句子**。
+
+4. **【鐵律四：7 選項同質性、固定 6 底線與禁用萬用樣板句（Anti-Boilerplate Gate）】**：
+   - 每題必須精確包含 **7 個不重複字串選項**（`options.length === 7`），且正答固定在索引 `0`（`answer: 0`）。
+   - 題幹中的所有填空底線**必須固定為 6 個底線 (`______`)**（多一個或少一個都會被 `audit_semantic_gates.mjs` 攔截）。
+   - 選項結尾**嚴禁出現雙句點 (`..`)**，且正答與誘答之間**嚴禁出現縮寫／全寫同義衝突**（例如 `It's` 與 `It is`、`can't` 與 `cannot` 不可同時為正答與誘答）。
+   - **`G-DLG` 對話題絕對禁止使用以下 12 句禁用萬用樣板 (`BOILERPLATE_DISTRACTORS`)**：
+     - `I am fine, thank you.` / `Nice to meet you, too.` / `My name is Leo.` / `I am ten years old.` / `I am very happy.` / `See you later.` / `Have a nice day!` / `You're welcome.` / `You are welcome.` / `It is over there.` / `Go straight.` / `Turn left.`
+
+5. **【鐵律五：聽力題 (`L-WORD` / `L-RESP`) 逐字稿零洩漏鐵律】**：
+   - `section: 'listening'` 的題目（`L-WORD` 聽音選字、`L-RESP` 聽問句選回應）必須設定 `media: { audioText: '...' }`。
+   - **`question` 題幹欄位絕對不可出現 `audioText` 的英文內容**！題幹只能寫作答引導：
+     - `L-WORD` 固定題幹：`【聽力：聽音選字】請聽英語發音，選出聽到的單字：`
+     - `L-RESP` 固定題幹：`【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：`
+
+6. **【鐵律六：詳解與正答／誘答 100% 同步鐵律】**：
+   - `explanation` 必須具體說明本题的語意線索與文法規則（禁止出現「依據本課核心句型」等空洞套話）。
+   - 若正答以 `Yes` 開頭，詳解不可寫「故選否定 No」；若正答以 `No` 開頭，詳解不可寫「故選肯定 Yes」。
+
+7. **【鐵律七：入庫必過 4 道自動化驗證門禁】**：
+   每次擴充腳本執行後，必須依序執行並 100% 通過：
+   ```bash
+   node scripts/verify_canonical_schema.mjs
+   node scripts/audit_semantic_gates.mjs
+   node scripts/test_canonical_migration.mjs
+   node scripts/test_prune_roundtrip.mjs
+   npm run build && node scripts/smoke_test.mjs
+   ```
+
+---
+
+### 3. 各冊 1~8 冊「六大常用題型」均衡擴充藍圖與執行進度表 (Batch A ~ Batch D)
+
+為解決早期題庫過度偏重 `G-DLG`（完成對話），且缺乏課本聽力題 (`L-WORD`, `L-RESP`)、情境判斷題 (`G-CTX`) 與短篇閱讀理解題 (`R-COMP`) 的問題，全 1~8 冊採 **4 批次（每批次 2 冊、每冊 +50 題、共 +400 題純 Canonical 精选题）** 循序推進：
+
+#### 每冊 +50 題之標準題型配比（6 大常用題型均衡分配）
+| 大題 (`section`) | 題型代碼 (`taskType`) | 每冊新增題數 | 命題核心規範 |
+| :--- | :--- | :---: | :--- |
+| **聽力 (`listening`)** | `L-WORD`（聽音選字） | **+8 題** | `media.audioText` 發音本冊核心單字，題幹不洩漏文字，7 選項為本冊同領域或發音相近單字 |
+| **聽力 (`listening`)** | `L-RESP`（聽問句選回應） | **+8 題** | `media.audioText` 播放本冊核心生活問句，選出唯一合乎邏輯與文法的回應句 |
+| **字彙 (`vocabulary`)** | `V-MEAN`（語境句子選字） | **+10 題** | 完整生活英文句子填空 (`______`)，前後文提供唯一語意線索 |
+| **文法 (`grammar`)** | `G-MC`（核心句型文法填空） | **+10 題** | 針對本冊主詞動詞一致性、be動詞/助動詞、冠詞、介系詞、單複數設計 7 個語法變體選項 |
+| **文法 (`grammar`)** | `G-CTX`（生活情境語用判斷） | **+6 題** | 以中文或英文描述具體生活情境（如「想知道對方的名字時該怎麼問？」），選出最合適的英文表達 |
+| **閱讀 (`reading`)** | `R-COMP`（3~4 句微型短文閱讀） | **+8 題** | 題幹包含 `【閱讀短文】` 3～4 句符合該冊單字程度的小短文＋1 道細節理解問句 |
+
+#### Batch A ~ Batch D 擴充進度總表（新對話接手請直接查看此表）
+
+| 批次 | 目標冊別 | 擴充前題數 | 新增題數 | 擴充後題數 | 全庫總 Canonical 題數 | 狀態与對應腳本 |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| **Baseline** | 全 11 冊 (`g1`, `g2`, `Book 1~9`) | 3,317 (含複本) | Prune -1,728 | **1,589** | **1,589 題** | ✅ 已完成 (`cc7c275`, `732d430`) |
+| **Batch A** | **Book 1 & Book 2**（三年級上/下） | B1: 159 / B2: 154 | **+100 題** (各 +50) | **B1: 209 / B2: 204** | **1,689 題** | ✅ **已完成** (`scripts/expand_batch_a_b1_b2.mjs`) |
+| **Batch B** | **Book 3 & Book 4**（四年級上/下） | B3: 155 / B4: 135 | **+100 題** (各 +50) | **B3: 205 / B4: 185** | **1,789 題** | ⏳ **下一批次待執行**（請比照 `expand_batch_a_b1_b2.mjs` 撰寫 `scripts/expand_batch_b_b3_b4.mjs`） |
+| **Batch C** | **Book 5 & Book 6**（五年級上/下） | B5: 133 / B6: 149 | **+100 題** (各 +50) | **B5: 183 / B6: 199** | **1,889 題** | 📋 規劃中 (`scripts/expand_batch_c_b5_b6.mjs`) |
+| **Batch D** | **Book 7 & Book 8**（六年級上/下） | B7: 128 / B8: 126 | **+100 題** (各 +50) | **B7: 178 / B8: 176** | **1,989 題** | 📋 規劃中 (`scripts/expand_batch_d_b7_b8.mjs`) |
+
+#### 新對話執行下一批次（如 Batch B / C / D）之標準 SOP：
+1. 參考 `scripts/expand_batch_a_b1_b2.mjs` 的結構與冥想式嚴謹誘答設計，建立該批次腳本（如 `scripts/expand_batch_b_b3_b4.mjs`）。
+2. 腳本執行時會自動將 100 道新題寫入 `src/data/hereWeGoMcqBank.js` 並同步更新 `src/data/exam/canonicalMapping.js`（`CANONICAL_STATS.canonicalItems`、`bookCounts`、`LEGACY_TO_CANONICAL_MAP`、`CANONICAL_META_MAP`）。
+3. 同步更新前端顯示之題庫總數與分冊題數（`src/components/exam/PreA1MasteryDashboard.jsx`、`src/games/exam/PureMcqExamView.jsx`、`src/components/LeaderboardView.jsx`、`src/data/exam/examTracks.js`、`src/data/exam/index.js`；註：`src/utils/masteryHelper.js` 已改為動態讀取 `CANONICAL_STATS.canonicalItems`，無需手動改數字）。
+4. 執行 `node scripts/verify_canonical_schema.mjs && node scripts/audit_semantic_gates.mjs && node scripts/test_canonical_migration.mjs && node scripts/test_prune_roundtrip.mjs` 確認 0 錯誤。
+5. 執行 `npm run build` 與 `node scripts/smoke_test.mjs` 通過全部 6 大階段後，提交並推送至 `origin/main`。
+

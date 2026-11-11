@@ -125,7 +125,7 @@ console.log('\n[2/5] Testing Order Independence (Canonical Older Mastered + Clon
 }
 
 // ---------------------------------------------------------------------------
-// Test 3: 已全為 Canonical ID 的舊快照，分母仍須從 3,317 校準為 1,589
+// Test 3: 已全為 Canonical ID 的舊快照，分母仍須從 3,317 校準為最新 Canonical 題數 (CANONICAL_STATS.canonicalItems)
 // ---------------------------------------------------------------------------
 console.log('\n[3/5] Testing Denominator Calibration When All Keys Are Already Canonical...');
 {
@@ -154,20 +154,20 @@ console.log('\n[3/5] Testing Denominator Calibration When All Keys Are Already C
   const migrated = migrateMasterySnapshotToCanonical(snap);
   assert.equal(
     migrated.tracks.curriculum.total_items,
-    1589,
-    'total_items must be calibrated from 3317 to 1589 even when no item IDs needed migration'
+    HERE_WE_GO_MCQ_BANK.length,
+    `total_items must be calibrated from 3317 to ${HERE_WE_GO_MCQ_BANK.length} even when no item IDs needed migration`
   );
   assert.equal(migrated.tracks.curriculum.mastered_count, 1);
-  console.log('  ✓ Denominator calibrated from 3,317 to 1,589 even when all item keys are already Canonical!');
+  console.log(`  ✓ Denominator calibrated from 3,317 to ${HERE_WE_GO_MCQ_BANK.length.toLocaleString()} even when all item keys are already Canonical!`);
 }
 
 // ---------------------------------------------------------------------------
 // Test 4: 舊 Clone 錯題 ID 在 Pruned bank 中能解析出 Canonical 題目
 // ---------------------------------------------------------------------------
-console.log('\n[4/5] Testing Legacy Clone Mistake ID Resolution Against Pruned Bank (1,589 items)...');
+console.log(`\n[4/5] Testing Legacy Clone Mistake ID Resolution Against Pruned Bank (${HERE_WE_GO_MCQ_BANK.length.toLocaleString()} items)...`);
 {
   const prunedBank = HERE_WE_GO_MCQ_BANK.filter(q => q.isCanonical === true);
-  assert.equal(prunedBank.length, 1589, 'Pruned bank must have 1,589 canonical items');
+  assert.equal(prunedBank.length, HERE_WE_GO_MCQ_BANK.length, 'Pruned bank must contain 100% canonical items');
 
   // 模擬學生舊錯題本含有兩個屬於同一題的 Clone IDs 與另一個獨立 Clone ID
   const rawMistakes = {
