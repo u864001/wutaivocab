@@ -276,12 +276,14 @@ export function recordExamMasterySession(studentId, track = 'tme-preA1', questio
   const snap = loadStudentMastery(studentId);
   if (!snap.tracks[track]) {
     snap.tracks[track] = {
-      total_items: track === 'tme-preA1' ? 300 : questions.length,
+      total_items: track === 'tme-preA1' ? 300 : track === 'curriculum' ? 1589 : questions.length,
       mastered_count: 0,
       attempted_count: 0,
       total_attempts: 0,
       items: {}
     };
+  } else if (track === 'curriculum' && snap.tracks[track].total_items !== 1589) {
+    snap.tracks[track].total_items = 1589;
   }
 
   const trackData = snap.tracks[track];
@@ -290,8 +292,9 @@ export function recordExamMasterySession(studentId, track = 'tme-preA1', questio
 
   questions.forEach((q, idx) => {
     if (!q?.id) return;
+    const itemId = q.canonicalId || q.id;
     const isCorrect = answers[idx] === q.answer;
-    const current = itemsMap[q.id] || {
+    const current = itemsMap[itemId] || itemsMap[q.id] || {
       status: MASTERY_STATES.UNATTEMPTED,
       consecutive_correct: 0,
       attempts: 0,
@@ -301,7 +304,12 @@ export function recordExamMasterySession(studentId, track = 'tme-preA1', questio
 
     const next = nextMasteryState(current.status, current.consecutive_correct || 0, isCorrect);
 
-    itemsMap[q.id] = {
+    // 若原先存於舊題號，遷移至 canonical 鍵
+    if (itemId !== q.id && itemsMap[q.id]) {
+      delete itemsMap[q.id];
+    }
+
+    itemsMap[itemId] = {
       ...current,
       status: next.status,
       consecutive_correct: next.consecutiveCorrect,
@@ -312,7 +320,8 @@ export function recordExamMasterySession(studentId, track = 'tme-preA1', questio
       category: q.category || 'vocab',
       subType: q.subType || q.taskType || 'unknown',
       taskType: q.taskType || q.subType || 'unknown',
-      book: q.book
+      book: q.book,
+      canonicalId: itemId
     };
 
     trackData.total_attempts = (trackData.total_attempts || 0) + 1;

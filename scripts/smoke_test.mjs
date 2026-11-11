@@ -207,6 +207,19 @@ async function run() {
       failures.push({ target: `Static Contract: MCQ Book ${b} count < 100`, count: mcqBookCounts[b] });
     }
   }
+  // 驗證 Scheme A Canonical 契約：1,589 Canonical 題數、1,728 Clones、每冊 >= 100 題
+  const { CANONICAL_STATS, LEGACY_TO_CANONICAL_MAP } = await import('../src/data/exam/canonicalMapping.js');
+  if (CANONICAL_STATS.canonicalItems !== 1589 || CANONICAL_STATS.duplicateClones !== 1728) {
+    failures.push({ target: 'Static Contract: Scheme A canonical counts mismatch', stats: CANONICAL_STATS });
+  }
+  if (Object.keys(LEGACY_TO_CANONICAL_MAP).length !== 3317) {
+    failures.push({ target: 'Static Contract: Scheme A legacy mapping incomplete' });
+  }
+  for (const b of ['g1', 'g2', 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
+    if (CANONICAL_STATS.bookCounts[b] < 100) {
+      failures.push({ target: `Static Contract: Scheme A Book ${b} canonical count < 100`, count: CANONICAL_STATS.bookCounts[b] });
+    }
+  }
   // 驗證 SAA 115 全真學力檢測題庫 (4/5/6 年級各 35 題共 105 題，且題圖全數在線)
   const { SAA_115_G4_QUESTIONS, SAA_115_G5_QUESTIONS, SAA_115_G6_QUESTIONS } = await import('../src/data/exam/saa/index.js');
   if (SAA_115_G4_QUESTIONS.length !== 35 || SAA_115_G5_QUESTIONS.length !== 35 || SAA_115_G6_QUESTIONS.length !== 35) {

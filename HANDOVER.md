@@ -54,6 +54,31 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.9 題庫品質全面大修訂 Batch 5：消滅 Luca 性別雙正解、修正詳解錯題與舊誘答描述、落實方案 A（In-book Canonical）非破壞性架構奠基 (`hereWeGoMcqBank.js`, `canonicalMapping.js`, `PureMcqExamView.jsx`, `masteryHelper.js`, `verify_canonical_schema.mjs`)
+* **P0：消滅 Luca 房號題雙正解 (`hwg_b7_204`)**：
+  * 原選項同時包含 `Her room number is 305.` 與 `His room number is 305.`，因題幹無性別線索導致兩者皆合理。
+  * 將第二選項修正為同質錯誤項 `Her phone number is 305.`，詳解同步說明電話號碼與房號之別，確保正答唯一。
+* **P1：修正詳解錯題 (`hwg_b5_187`)**：
+  * `hwg_b5_187`（`I feel sick. I'm going to the hospital. -> Take care!`）原誤植 Where 問句解析，已全數修正為「得知對方生病就醫以 Take care! 表達關心問候」之正確情境解析。
+* **P2：全面同步校準 8 題詳解提及之舊誘答**：
+  * `hwg_b5_124`、`hwg_b5_125`、`hwg_b5_158`、`hwg_b5_172`、`hwg_b5_173`、`hwg_b7_203`、`hwg_b7_216`、`hwg_b5_174`、`hwg_b5_188` 詳解中引用的舊誘答文字（如筆/書包/湯、去哪裡、年齡動作、Sure!/Good idea! 等）已全數同步更新為當前人稱代名詞、單複數、介系詞與社交情境之真實說明。
+* **方案 A（In-book Canonical）非破壞性架構全面就緒**：
+  * **元資料與映射表建立 (`src/data/exam/canonicalMapping.js`)**：
+    * 建立全量 3,317 筆 `LEGACY_TO_CANONICAL_MAP` 與 1,589 筆 `CANONICAL_META_MAP`。
+    * 提供 `resolveCanonicalId(id)` 與 `isCanonicalId(id)` 查表工具。
+  * **非破壞性題庫擴充 (`src/data/hereWeGoMcqBank.js`)**：
+    * 全量 3,317 題無損保留（`main` 尚未刪除任何一題），精確標記 1,589 筆 `isCanonical: true` 與 1,728 筆 `isCanonical: false`。
+    * 每題植入 `canonicalId`、`primaryScope`、`scopes`，確保 Review 複習單元無縫涵蓋。
+  * **作答引擎與易錯題相容 (`PureMcqExamView.jsx`)**：
+    * `curriculumPool` 依 `canonicalId` 天然去重並支援 `scopes` 跨單元篩選，學生作答同次測驗絕不抽到重複題。
+    * 錯題本與易錯題複習機制全面以 Canonical ID 統一索引並遷移舊題號。
+  * **動態滾動精熟引擎適配 (`src/utils/masteryHelper.js`)**：
+    * 課本軌道精熟分母精準綁定 **1,589 題**，以 Canonical ID 記錄精熟，杜絕刷同字複本灌水。
+  * **CI 契約與安全回滾體系**：
+    * 新增 `scripts/verify_canonical_schema.mjs` 自動化 CI 門禁，100% 驗證總量 3,317、Canonical 1,589、Clones 1,728、11 冊每冊皆 `>= 100`。
+    * 建立 `docs/exam/CANONICAL_MIGRATION_DRY_RUN_REPORT.md` 完整乾跑報告。
+    * 建立 `scripts/rollback_canonical_migration.mjs` 單鍵回滾工具與 `scripts/execute_canonical_prune.mjs` 正式修剪工具。
+
 #### 0.0.8 題庫品質全面大修訂 Batch 4：詳解與正答同步校準、消滅選項雙句點、清零 34 題方向樣板與 CI 語意防禦升級 (`hereWeGoMcqBank.js`, `scripts/audit_semantic_gates.mjs`)
 * **P0/P1：詳解與正答完全同步校準**：
   * `hwg_b4_653`：詳解修正為肯定應答（「後句『He's in the kitchen.（他在廚房）』說明他在廚房，答句與問句一致，故選肯定應答『Yes, he is.』。」），杜絕學生答對卻看到相反解析。

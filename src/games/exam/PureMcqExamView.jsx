@@ -381,17 +381,41 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     );
   };
 
-  // 課本範圍可用題庫
+  // 課本範圍可用題庫（依 canonicalId 天然去重，杜絕同一題目在組卷中重複出現，並無縫支援 Review 跨單元 scopes）
   const curriculumPool = useMemo(() => {
-    return HERE_WE_GO_MCQ_BANK.filter(
-      (q) => q.book === selectedBook && selectedUnits.includes(q.unit)
-    );
+    const seen = new Set();
+    const pool = [];
+    for (const q of HERE_WE_GO_MCQ_BANK) {
+      if (q.book !== selectedBook) continue;
+      const inScope = (selectedUnits || []).includes(q.unit) ||
+        (Array.isArray(q.scopes) && q.scopes.some((s) => (selectedUnits || []).includes(s)));
+      if (!inScope) continue;
+      const cId = q.canonicalId || q.id;
+      if (!seen.has(cId)) {
+        seen.add(cId);
+        pool.push(q);
+      }
+    }
+    return pool;
   }, [selectedBook, selectedUnits]);
 
-  // 個人易錯題列表
+  // 個人易錯題列表（相容舊題號與 Canonical 題號）
   const mistakeQuestions = useMemo(() => {
-    const ids = new Set(Object.keys(mistakeMap || {}));
-    return HERE_WE_GO_MCQ_BANK.filter((q) => ids.has(q.id));
+    const mistakeKeys = Object.keys(mistakeMap || {});
+    if (mistakeKeys.length === 0) return [];
+    const ids = new Set(mistakeKeys);
+    const seen = new Set();
+    const list = [];
+    for (const q of HERE_WE_GO_MCQ_BANK) {
+      const cId = q.canonicalId || q.id;
+      if (ids.has(q.id) || ids.has(cId)) {
+        if (!seen.has(cId)) {
+          seen.add(cId);
+          list.push(q);
+        }
+      }
+    }
+    return list;
   }, [mistakeMap]);
 
   // Pre-A1 官方模擬題庫 (Scaffold & Registry)
@@ -813,29 +837,35 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
     questions.forEach((q, idx) => {
       const isRight = answers[idx] === q.answer;
+      const targetId = q.canonicalId || q.id;
       if (isRight) {
         correctCount++;
         // 在「個人易錯題複習」模式中答對既有易錯題：連續答對次數 +1，達 2 次即移出易錯池
-        if (scopeMode === 'mistakes' && nextMistakes[q.id]) {
-          const nextStreak = (nextMistakes[q.id].streak || 0) + 1;
+        if (scopeMode === 'mistakes' && (nextMistakes[targetId] || nextMistakes[q.id])) {
+          const currentRec = nextMistakes[targetId] || nextMistakes[q.id];
+          const nextStreak = (currentRec.streak || 0) + 1;
           if (nextStreak >= 2) {
+            delete nextMistakes[targetId];
             delete nextMistakes[q.id];
             graduatedCount++;
           } else {
-            nextMistakes[q.id] = {
-              ...nextMistakes[q.id],
+            delete nextMistakes[q.id];
+            nextMistakes[targetId] = {
+              ...currentRec,
               streak: nextStreak,
               updatedAt: Date.now()
             };
           }
         }
       } else {
-        // 答錯：加入易錯池並將連續答對紀錄歸零
-        if (!nextMistakes[q.id]) {
+        // 答錯：加入易錯池並將連續答對紀錄歸零（以 Canonical ID 統一索引）
+        if (!nextMistakes[targetId] && !nextMistakes[q.id]) {
           addedMistakeCount++;
         }
-        nextMistakes[q.id] = {
-          wrongCount: (nextMistakes[q.id]?.wrongCount || 0) + 1,
+        const prevWrong = (nextMistakes[targetId]?.wrongCount || nextMistakes[q.id]?.wrongCount || 0);
+        delete nextMistakes[q.id];
+        nextMistakes[targetId] = {
+          wrongCount: prevWrong + 1,
           streak: 0,
           updatedAt: Date.now()
         };
