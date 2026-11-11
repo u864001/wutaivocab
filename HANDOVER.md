@@ -54,6 +54,14 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.12 課本題庫方案 A（In-Book Canonical）正式修剪落實：刪除 1,728 筆同冊重複複本、全庫精簡為 1,589 題純淨 Canonical 題目 (`hereWeGoMcqBank.js`, `manifest.json`, `test_prune_roundtrip.mjs`)
+* **正式執行 `node scripts/execute_canonical_prune.mjs`**：
+  * 經 ChatGPT 本機 Windows 隔離實測確認 `2976ce0` 全面通過並正式授權，已將 `src/data/hereWeGoMcqBank.js` 由 3,317 題原子性精簡為 **1,589 題冊內 Canonical 題目**（刪除 1,728 筆同冊跨單元複本；保留 22 組跨冊獨立題目）。
+  * 生產打包體積（minified bundle）直接減少 **863 KB**（由 4,154 KB 降至 3,290 KB）。
+* **物理備份與雙模態驗證 100% 通過**：
+  * 完整 3,317 題物理備份已鎖定於 `src/data/backups/hereWeGoMcqBank.expanded.3317.js`（Normalized SHA-256: `b191fad18332b8e42a03621a45ef0eb24bcae1a77bbcb5edd04f6677b21a0434`）。
+  * `verify_canonical_schema.mjs`（`PRUNED CANONICAL (1,589 items)`）、`audit_semantic_gates.mjs`（1,589 題課本 + 300 題 TME + 285 題 SAA 零異常）、`test_canonical_migration.mjs`、`test_prune_roundtrip.mjs` 與 6 階段 `smoke_test.mjs` 100% 綠燈通過。
+
 #### 0.0.11 題庫品質全面大修訂 Batch 7：跨平台 Windows/Linux Prune 腳本相容、CRLF 正規化 SHA-256、狀態機最新紀錄合併演算法與雙平台隔離沙盒測試 (`execute_canonical_prune.mjs`, `rollback_canonical_migration.mjs`, `masteryHelper.js`, `test_canonical_migration.mjs`, `test_prune_roundtrip.mjs`, `.gitattributes`, `canonical-ci.yml`)
 * **P0：跨平台 Windows ESM 動態載入修復**：
   * `build_canonical_data.mjs`、`execute_canonical_prune.mjs`、`rollback_canonical_migration.mjs` 全面改用 `pathToFileURL(filePath)` 搭配 `importFresh()`，解決 Windows 下 `Received protocol 'c:'` 載入失敗問題。

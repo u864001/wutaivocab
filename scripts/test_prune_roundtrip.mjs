@@ -56,7 +56,6 @@ try {
     'scripts/verify_canonical_schema.mjs',
     'scripts/execute_canonical_prune.mjs',
     'scripts/rollback_canonical_migration.mjs',
-    'src/data/hereWeGoMcqBank.js',
     'src/data/exam/canonicalMapping.js'
   ];
 
@@ -67,7 +66,17 @@ try {
     );
   }
 
+  // 若正式工作區已處於 Pruned 狀態 (1,589 題)，沙盒從物理備份 (3,317 題) 啟動以測試完整 Expanded -> Prune -> Rollback 流程
+  const expandedBackupSource = path.join(projectRoot, 'src/data/backups/hereWeGoMcqBank.expanded.3317.js');
+  const activeMcqSource = path.join(projectRoot, 'src/data/hereWeGoMcqBank.js');
   const sandboxMcqPath = path.join(tmpRoot, 'src/data/hereWeGoMcqBank.js');
+
+  if (fs.existsSync(expandedBackupSource)) {
+    fs.copyFileSync(expandedBackupSource, sandboxMcqPath);
+  } else {
+    fs.copyFileSync(activeMcqSource, sandboxMcqPath);
+  }
+
   const initialHash = sha256Text(fs.readFileSync(sandboxMcqPath, 'utf8'));
   console.log(`\n[1/6] Sandbox initialized at: ${tmpRoot}`);
   console.log(`  Initial Normalized SHA-256: ${initialHash}`);
