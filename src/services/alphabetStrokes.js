@@ -467,9 +467,110 @@ export const getLetterStrokes = (char) => {
   return ALL_STROKES[char] || null;
 };
 
+const toModelPoint = (point) => ({
+  x: Array.isArray(point) ? point[0] : point.x,
+  y: Array.isArray(point) ? point[1] : point.y
+});
+
+const meanNearestDistance = (source, target) => {
+  if (!source.length || !target.length) return 99;
+  let total = 0;
+  source.forEach((point) => {
+    let nearest = Infinity;
+    target.forEach((candidate) => {
+      nearest = Math.min(nearest, Math.hypot(point.x - candidate.x, point.y - candidate.y));
+    });
+    total += nearest;
+  });
+  return total / source.length;
+};
+
+const getBounds = (points) => {
+  if (!points.length) return { minX: 0, maxX: 0, minY: 0, maxY: 0, width: 0, height: 0, centerX: 0, centerY: 0 };
+  const xs = points.map(point => point.x);
+  const ys = points.map(point => point.y);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  return {
+    minX,
+    maxX,
+    minY,
+    maxY,
+    width: maxX - minX,
+    height: maxY - minY,
+    centerX: (minX + maxX) / 2,
+    centerY: (minY + maxY) / 2
+  };
+};
+
+const getModelPointGroups = (model) => model.strokes.map((stroke) =>
+  (stroke.sample || []).map(toModelPoint)
+);
+
+/**
+ * 描紅模式的單筆比對。
+ *
+ * 不要求學生依固定編號書寫，也允許反向運筆與一筆連續涵蓋數個部件；
+ * 編號與箭頭只保留為「建議筆順」。回傳的 matchedIndices 可一次包含多筆。
+ */
+export const matchTracingStroke = ({
+  targetChar,
+  userStroke = [],
+  completedStrokeIndices = [],
+  componentTolerance = 11,
+  inkTolerance = 14
+}) => {
+  const model = getLetterStrokes(targetChar);
+  if (!model || userStroke.length < 2) {
+    return { accepted: false, matchedIndices: [], accuracy: 0, inkDistance: 99 };
+  }
+
+  const userPoints = resamplePoints(userStroke, Math.max(24, userStroke.length));
+  const modelGroups = getModelPointGroups(model);
+  const allModelPoints = modelGroups.flat();
+  const alreadyCompleted = new Set(completedStrokeIndices);
+
+  // 防止以大範圍塗鴉碰到所有部件：學生墨跡本身也必須貼近完整字形。
+  const inkDistance = meanNearestDistance(userPoints, allModelPoints);
+  if (inkDistance > inkTolerance) {
+    return {
+      accepted: false,
+      matchedIndices: [],
+      accuracy: Math.max(0, Math.round(100 - inkDistance * 5)),
+      inkDistance
+    };
+  }
+
+  const componentDistances = modelGroups.map(group => meanNearestDistance(group, userPoints));
+  let matchedIndices = componentDistances
+    .map((distance, index) => ({ distance, index }))
+    .filter(({ distance, index }) => !alreadyCompleted.has(index) && distance <= componentTolerance)
+    .map(({ index }) => index);
+
+  // 短筆畫或稀疏觸控點可能略高於門檻；允許最接近的未完成部件小幅容錯。
+  if (matchedIndices.length === 0) {
+    const best = componentDistances
+      .map((distance, index) => ({ distance, index }))
+      .filter(({ index }) => !alreadyCompleted.has(index))
+      .sort((a, b) => a.distance - b.distance)[0];
+    if (best && best.distance <= componentTolerance + 3) matchedIndices = [best.index];
+  }
+
+  return {
+    accepted: matchedIndices.length > 0,
+    matchedIndices,
+    accuracy: Math.max(0, Math.round(100 - Math.max(inkDistance, ...matchedIndices.map(index => componentDistances[index])) * 5)),
+    inkDistance,
+    componentDistances
+  };
+};
+
 /**
  * 點雲幾何比對演算法 ($P Point-Cloud Recognizer 輕量化純前端實作)
- * 評定學生在 Freehand Challenge 下書寫的筆順與形狀分數 (0 ~ 100)
+ * 評定學生在 Freehand Challenge 下的最終字形 (0 ~ 100)。
+ * 筆順、運筆方向及合理的合筆／分筆只作診斷，不作為不及格條件。
  */
 export const evaluateHandwriting = ({
   targetChar,
@@ -506,80 +607,47 @@ export const evaluateHandwriting = ({
     };
   }
 
-  // 1. 筆劃數判定 (容許 ±1 劃)
+  // 1. 筆劃數只保留 10 分的輕量診斷；正常合筆／分筆不應造成誤判。
   const countDiff = Math.abs(userCount - expCount);
-  let countScore = 30;
-  if (countDiff === 0) countScore = 30;
-  else if (countDiff === 1) countScore = 20;
-  else countScore = 10;
+  const countScore = countDiff === 0 ? 10 : countDiff === 1 ? 9 : countDiff === 2 ? 8 : 6;
 
-  // 2. 向量方向與起終點判定 (起筆與落筆方位是否正確)
-  let directionScore = 35;
-  let dirMatches = 0;
-  const pairLimit = Math.min(userCount, expCount);
+  const modelGroups = getModelPointGroups(model);
+  const modelPoints = modelGroups.flat();
+  const userPoints = userStrokes
+    .filter(stroke => stroke && stroke.length > 0)
+    .flatMap(stroke => resamplePoints(stroke, Math.max(16, Math.min(32, stroke.length))));
 
-  for (let i = 0; i < pairLimit; i++) {
-    const uStroke = userStrokes[i];
-    const eStroke = expectedStrokes[i];
-    if (!uStroke || uStroke.length < 2) continue;
+  // 2. 雙向點雲距離：順序與方向無關，同時防止額外亂畫。
+  const modelToUser = meanNearestDistance(modelPoints, userPoints);
+  const userToModel = meanNearestDistance(userPoints, modelPoints);
+  const avgDist = (modelToUser + userToModel) / 2;
+  const shapeScore = Math.max(0, Math.min(60, Math.round(60 - Math.max(0, avgDist - 2.5) * 3.2)));
 
-    const uStart = uStroke[0];
-    const uEnd = uStroke[uStroke.length - 1];
-    const uDx = uEnd.x - uStart.x;
-    const uDy = uEnd.y - uStart.y;
+  // 3. 必要部件完整度：每個模板部件只需在最終墨跡中出現，不限制第幾筆完成。
+  const componentDistances = modelGroups.map(group => meanNearestDistance(group, userPoints));
+  const coveredComponents = componentDistances.filter(distance => distance <= 12).length;
+  const completenessScore = Math.round((coveredComponents / Math.max(1, expCount)) * 20);
 
-    const eDx = eStroke.end.x - eStroke.start.x;
-    const eDy = eStroke.end.y - eStroke.start.y;
+  // 4. 四線位置、大小與比例。字形正確但略有自然偏移仍保留容錯。
+  const modelBounds = getBounds(modelPoints);
+  const userBounds = getBounds(userPoints);
+  const centerDistance = Math.hypot(
+    userBounds.centerX - modelBounds.centerX,
+    userBounds.centerY - modelBounds.centerY
+  );
+  const sizeDistance = Math.abs(userBounds.width - modelBounds.width) * 0.25
+    + Math.abs(userBounds.height - modelBounds.height) * 0.25;
+  const placementScore = Math.max(0, Math.min(10, Math.round(10 - Math.max(0, centerDistance + sizeDistance - 4) * 0.45)));
 
-    // 向量點積判定方向相似度
-    const dot = uDx * eDx + uDy * eDy;
-    const magU = Math.sqrt(uDx * uDx + uDy * uDy) || 1;
-    const magE = Math.sqrt(eDx * eDx + eDy * eDy) || 1;
-    const cosTheta = dot / (magU * magE);
-
-    if (cosTheta > 0.4) {
-      dirMatches++;
-    }
-  }
-
-  directionScore = Math.round((dirMatches / Math.max(1, expCount)) * 35);
-
-  // 3. 點雲幾何重疊度 (取樣平均距離)
-  let shapeScore = 35;
-  let totalDist = 0;
-  let sampleCount = 0;
-
-  for (let i = 0; i < pairLimit; i++) {
-    const uStroke = userStrokes[i];
-    const eSamples = expectedStrokes[i].sample || [];
-    if (!uStroke || uStroke.length === 0 || eSamples.length === 0) continue;
-
-    // 均勻重取樣平滑比對
-    const uDense = resamplePoints(uStroke, 16);
-    for (let k = 0; k < eSamples.length; k++) {
-      const targetPt = eSamples[k];
-      let minDist = 999;
-      for (let j = 0; j < uDense.length; j++) {
-        const d = Math.hypot(uDense[j].x - targetPt[0], uDense[j].y - targetPt[1]);
-        if (d < minDist) minDist = d;
-      }
-      totalDist += minDist;
-      sampleCount++;
-    }
-  }
-
-  const avgDist = sampleCount > 0 ? totalDist / sampleCount : 30;
-  shapeScore = Math.max(5, Math.min(35, Math.round(35 - Math.max(0, avgDist - 8) * 1.5)));
-
-  const totalScore = Math.min(100, Math.max(30, countScore + directionScore + shapeScore));
+  const totalScore = Math.min(100, Math.max(0, countScore + shapeScore + completenessScore + placementScore));
   const stars = totalScore >= 80 ? 3 : (totalScore >= 60 ? 2 : 1);
   const passed = totalScore >= 60;
 
-  let feedback = '字形與筆順非常標準！大武山神筆勇士！';
+  let feedback = '字形、位置與比例都很清楚！大武山神筆勇士！';
   if (totalScore < 60) {
-    feedback = '請注意四線三格位置與筆劃順序，再試一次一定能成功！';
+    feedback = '請注意字母的完整形狀與四線三格位置，再試一次一定能成功！';
   } else if (totalScore < 80) {
-    feedback = '書寫良好！若注意第 1 劃起筆位置，就能衝上三星！';
+    feedback = '書寫良好！再調整字母大小、比例與基線位置，就能衝上三星！';
   }
 
   return {
@@ -589,10 +657,14 @@ export const evaluateHandwriting = ({
     feedback,
     details: {
       countScore,
-      directionScore,
+      directionScore: null,
       shapeScore,
+      completenessScore,
+      placementScore,
       userCount,
-      expCount
+      expCount,
+      orderRequired: false,
+      averagePointDistance: Number(avgDist.toFixed(2))
     }
   };
 };

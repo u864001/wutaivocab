@@ -40,3 +40,6 @@ jobs:
       - name: 📊 Run Batch Expansion Quota & Dynamic Stats Contract Test
         run: node scripts/test_batch_a_contract.mjs
 
+      - name: ✍️ Run Flexible Handwriting Order & Manuscript Form Contract
+        run: node scripts/test_handwriting_flexible_order.mjs
+

@@ -8,9 +8,9 @@ import { soundEngine, speakEnglish } from '../../services/audio';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
 import {
   FOUR_LINES,
-  ALL_STROKES,
   getLetterStrokes,
-  evaluateHandwriting
+  evaluateHandwriting,
+  matchTracingStroke
 } from '../../services/alphabetStrokes';
 import confetti from 'canvas-confetti';
 import {
@@ -59,6 +59,11 @@ export const HandwritingGame = ({
   // 描寫版：當前聚焦字母正在進行的筆劃序號 (0, 1, 2...)
   const [activeStrokeStep, setActiveStrokeStep] = useState(0);
 
+  // 描寫版採「部件完成集合」而非強迫第 N 筆配對第 N 筆；編號只作建議筆順。
+  const [traceMatchesByLetter, setTraceMatchesByLetter] = useState({});
+  const [traceMatchHistory, setTraceMatchHistory] = useState([]);
+  const [traceHint, setTraceHint] = useState('筆順編號是建議順序；正常的替代順序也可以。');
+
   // 畫布筆跡歷史 (每一劃為一組 points: [{x, y}, ...])
   const [strokes, setStrokes] = useState([]);
   const [currentStroke, setCurrentStroke] = useState(null);
@@ -90,17 +95,27 @@ export const HandwritingGame = ({
     );
 
     if (isAlphabetMode) {
-      // 1年級大寫，2年級小寫 (單字母方形大格)
-      const isLower = studentGradeNum === 2;
-      const alphabetStr = isLower ? 'abcdefghijklmnopqrstuvwxyz' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const shuffled = alphabetStr.split('').sort(() => 0.5 - Math.random());
-      list = shuffled.slice(0, 10).map((char, i) => ({
+      // 一年級預設大寫、二年級預設小寫；實際內容尊重大廳 upper/lower/mixed 膠囊。
+      const alphaMode = ['upper', 'lower', 'mixed'].includes(settings?.alphaMode)
+        ? settings.alphaMode
+        : studentGradeNum === 2 ? 'lower' : 'upper';
+      const shuffledBase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').sort(() => 0.5 - Math.random());
+      const mixedStartsLower = Math.random() >= 0.5;
+      const alphabetChars = shuffledBase.map((letter, index) => {
+        if (alphaMode === 'lower') return letter.toLowerCase();
+        if (alphaMode === 'mixed') {
+          const useLower = index % 2 === (mixedStartsLower ? 0 : 1);
+          return useLower ? letter.toLowerCase() : letter;
+        }
+        return letter;
+      });
+      list = alphabetChars.slice(0, 10).map((char, i) => ({
         id: `char_${char}_${i}`,
         type: 'letter',
         targetChar: char,
-        displayTitle: isLower ? `小寫字母 ${char}` : `大寫字母 ${char}`,
+        displayTitle: char === char.toLowerCase() ? `小寫字母 ${char}` : `大寫字母 ${char}`,
         wordStr: char,
-        zh: isLower ? `請練習小寫字母 ${char}` : `請練習大寫字母 ${char}`
+        zh: char === char.toLowerCase() ? `請練習小寫字母 ${char}` : `請練習大寫字母 ${char}`
       }));
     } else {
       // 3~6 年級單字模式：篩選單元單字 (支援長單字如 supermarket, banana, apple)
@@ -130,6 +145,9 @@ export const HandwritingGame = ({
     setCompletedLetterIndices(new Set());
     setStrokes([]);
     setActiveStrokeStep(0);
+    setTraceMatchesByLetter({});
+    setTraceMatchHistory([]);
+    setTraceHint('筆順編號是建議順序；正常的替代順序也可以。');
     setEvalResult(null);
   }, [studentGradeNum, words, settings, qualifyingBook]);
 
@@ -184,6 +202,15 @@ export const HandwritingGame = ({
   const activeStrokeModel = useMemo(() => {
     return getLetterStrokes(activeChar) || getLetterStrokes('A');
   }, [activeChar]);
+
+  const getFirstUnmatchedStroke = useCallback((letterIdx, matches = traceMatchesByLetter) => {
+    const slot = slotList[letterIdx];
+    const model = getLetterStrokes(slot?.char);
+    if (!model) return 0;
+    const matched = new Set(matches[letterIdx] || []);
+    const nextIndex = model.strokes.findIndex((_, index) => !matched.has(index));
+    return nextIndex === -1 ? model.strokes.length : nextIndex;
+  }, [slotList, traceMatchesByLetter]);
 
   // 自動發音
   useEffect(() => {
@@ -349,40 +376,71 @@ export const HandwritingGame = ({
     isDrawingRef.current = false;
 
     if (currentStroke && currentStroke.length > 1) {
-      const nextStrokes = [...strokes, currentStroke];
-      setStrokes(nextStrokes);
       setCurrentStroke(null);
 
-      // ── 描寫模式：逐步引導推進 ──
-      if (playMode === 'tracing' && activeStrokeModel) {
-        const nextStep = activeStrokeStep + 1;
+      // ── 描寫模式：比對所有尚未完成部件，不再強迫固定筆順與方向 ──
+      if (playMode === 'tracing' && activeStrokeModel && activeSlot) {
+        const normalizedStroke = currentStroke.map(point => ({
+          x: 50 + (point.x - activeSlot.center) / activeSlot.scale,
+          y: point.y
+        }));
+        const previousMatches = traceMatchesByLetter[activeLetterIdx] || [];
+        const traceResult = matchTracingStroke({
+          targetChar: activeChar,
+          userStroke: normalizedStroke,
+          completedStrokeIndices: previousMatches
+        });
+
+        if (!traceResult.accepted) {
+          soundEngine.wrong();
+          setTraceHint('這一筆離字母太遠，請沿著任一尚未完成的螢光部件再試一次。');
+          return;
+        }
+
+        const nextStrokes = [...strokes, currentStroke];
+        setStrokes(nextStrokes);
         soundEngine.click();
 
-        if (nextStep >= activeStrokeModel.strokes.length) {
-          // 當前字母完成！
+        const mergedMatches = [...new Set([...previousMatches, ...traceResult.matchedIndices])].sort((a, b) => a - b);
+        const nextMatchesByLetter = {
+          ...traceMatchesByLetter,
+          [activeLetterIdx]: mergedMatches
+        };
+        setTraceMatchesByLetter(nextMatchesByLetter);
+        setTraceMatchHistory(prev => [...prev, {
+          letterIdx: activeLetterIdx,
+          matchedIndices: traceResult.matchedIndices
+        }]);
+        setTraceHint('寫得很好！可以依建議編號繼續，也可以先完成其他部件。');
+
+        if (mergedMatches.length >= activeStrokeModel.strokes.length) {
           const updatedSet = new Set(completedLetterIndices);
           updatedSet.add(activeLetterIdx);
           setCompletedLetterIndices(updatedSet);
           soundEngine.correct();
 
-          // 檢查單字是否還有下一個字母
-          if (isWordMode && activeLetterIdx + 1 < slotList.length) {
-            setActiveLetterIdx(activeLetterIdx + 1);
-            setActiveStrokeStep(0);
+          const nextIncompleteSlot = slotList.find(slot => !updatedSet.has(slot.index));
+          if (nextIncompleteSlot) {
+            setActiveLetterIdx(nextIncompleteSlot.index);
+            setActiveStrokeStep(getFirstUnmatchedStroke(nextIncompleteSlot.index, nextMatchesByLetter));
           } else {
-            // 全單字或全字母描寫完成！
             confetti({ particleCount: 50, spread: 65, origin: { y: 0.6 } });
             setEvalResult({
               score: 100,
               stars: 3,
               passed: true,
-              feedback: isWordMode ? `🎉 完美完成單字「${currentQ.wordStr}」四線三格描寫！` : '🎉 筆順引導描紅完成！'
+              feedback: isWordMode
+                ? `🎉 完成單字「${currentQ.wordStr}」四線三格描寫！`
+                : '🎉 字形描寫完成！建議筆順與正常替代順序都可以。'
             });
           }
         } else {
-          setActiveStrokeStep(nextStep);
+          setActiveStrokeStep(getFirstUnmatchedStroke(activeLetterIdx, nextMatchesByLetter));
         }
+        return;
       }
+
+      setStrokes(prev => [...prev, currentStroke]);
     } else {
       setCurrentStroke(null);
     }
@@ -396,6 +454,9 @@ export const HandwritingGame = ({
     setActiveLetterIdx(0);
     setActiveStrokeStep(0);
     setCompletedLetterIndices(new Set());
+    setTraceMatchesByLetter({});
+    setTraceMatchHistory([]);
+    setTraceHint('筆順編號是建議順序；正常的替代順序也可以。');
     setEvalResult(null);
   };
 
@@ -403,9 +464,29 @@ export const HandwritingGame = ({
   const handleUndo = () => {
     soundEngine.click();
     if (strokes.length > 0) {
-      setStrokes(prev => prev.slice(0, prev.length - 1));
-      if (playMode === 'tracing' && activeStrokeStep > 0) {
-        setActiveStrokeStep(s => s - 1);
+      setStrokes(prev => prev.slice(0, -1));
+      if (playMode === 'tracing' && traceMatchHistory.length > 0) {
+        const removedEntry = traceMatchHistory[traceMatchHistory.length - 1];
+        const nextHistory = traceMatchHistory.slice(0, -1);
+        const rebuiltMatches = {};
+        nextHistory.forEach(entry => {
+          rebuiltMatches[entry.letterIdx] = [
+            ...new Set([...(rebuiltMatches[entry.letterIdx] || []), ...entry.matchedIndices])
+          ].sort((a, b) => a - b);
+        });
+        const rebuiltCompleted = new Set();
+        slotList.forEach(slot => {
+          const requiredCount = getLetterStrokes(slot.char)?.strokes.length || 0;
+          if ((rebuiltMatches[slot.index] || []).length >= requiredCount && requiredCount > 0) {
+            rebuiltCompleted.add(slot.index);
+          }
+        });
+        setTraceMatchHistory(nextHistory);
+        setTraceMatchesByLetter(rebuiltMatches);
+        setCompletedLetterIndices(rebuiltCompleted);
+        setActiveLetterIdx(removedEntry.letterIdx);
+        setActiveStrokeStep(getFirstUnmatchedStroke(removedEntry.letterIdx, rebuiltMatches));
+        setTraceHint('已撤銷上一筆，請繼續完成尚未描寫的部件。');
       }
       setEvalResult(null);
     }
@@ -710,7 +791,7 @@ export const HandwritingGame = ({
                   onClick={() => {
                     soundEngine.click();
                     setActiveLetterIdx(slot.index);
-                    setActiveStrokeStep(0);
+                    setActiveStrokeStep(getFirstUnmatchedStroke(slot.index));
                   }}
                   className={`min-w-6 h-6 px-1.5 rounded-lg font-mono font-black text-xs flex items-center justify-center border transition-all cursor-pointer ${
                     isActive
@@ -727,6 +808,12 @@ export const HandwritingGame = ({
           </div>
         )}
       </div>
+
+      {playMode === 'tracing' && (
+        <div className="w-full max-w-4xl -mt-1 mb-2 px-3 py-2 rounded-xl bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 text-[11px] sm:text-xs font-bold text-amber-800 dark:text-amber-200">
+          ✍️ {traceHint}
+        </div>
+      )}
 
       {/* ── 核心四線三格手寫板主舞台 (一二年級單字方形大格，高年級長單字細長自適應長卷) ── */}
       <div
@@ -809,6 +896,7 @@ export const HandwritingGame = ({
               if (!model) return null;
               const isLetterCompleted = completedLetterIndices.has(slot.index);
               const isLetterActive = slot.index === activeLetterIdx;
+              const matchedStrokeIndices = new Set(traceMatchesByLetter[slot.index] || []);
 
               return (
                 <g
@@ -816,8 +904,8 @@ export const HandwritingGame = ({
                   transform={`translate(${slot.center}, 0) scale(${slot.scale}, 1) translate(-50, 0)`}
                 >
                   {model.strokes.map((st, sIdx) => {
-                    const isStrokeDone = isLetterCompleted || (isLetterActive && sIdx < activeStrokeStep);
-                    const isCurrentStroke = isLetterActive && sIdx === activeStrokeStep;
+                    const isStrokeDone = isLetterCompleted || matchedStrokeIndices.has(sIdx);
+                    const isCurrentStroke = isLetterActive && !isStrokeDone && sIdx === activeStrokeStep;
 
                     return (
                       <g key={st.id}>
@@ -923,8 +1011,9 @@ export const HandwritingGame = ({
                 type="button"
                 onClick={() => {
                   if (activeLetterIdx > 0) {
-                    setActiveLetterIdx(activeLetterIdx - 1);
-                    setActiveStrokeStep(0);
+                    const nextIndex = activeLetterIdx - 1;
+                    setActiveLetterIdx(nextIndex);
+                    setActiveStrokeStep(getFirstUnmatchedStroke(nextIndex));
                   }
                 }}
                 disabled={activeLetterIdx === 0}
@@ -936,8 +1025,9 @@ export const HandwritingGame = ({
                 type="button"
                 onClick={() => {
                   if (activeLetterIdx + 1 < slotList.length) {
-                    setActiveLetterIdx(activeLetterIdx + 1);
-                    setActiveStrokeStep(0);
+                    const nextIndex = activeLetterIdx + 1;
+                    setActiveLetterIdx(nextIndex);
+                    setActiveStrokeStep(getFirstUnmatchedStroke(nextIndex));
                   }
                 }}
                 disabled={activeLetterIdx + 1 >= slotList.length}

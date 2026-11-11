@@ -143,6 +143,16 @@ async function run() {
       process.exit(1);
     }
 
+    // 座標精準度測試需保留任意測試線；描寫模式現在會正確拒絕偏離字形的墨跡。
+    await client.evaluate(`
+      (() => {
+        const challengeButton = [...document.querySelectorAll('button')]
+          .find(button => button.textContent.includes('實戰默寫版'));
+        challengeButton?.click();
+      })()
+    `);
+    await new Promise(res => setTimeout(res, 100));
+
     const check = await client.evaluate(`
       (() => {
         const canvas = document.querySelector('canvas');
