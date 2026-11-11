@@ -48,7 +48,7 @@ import {
 import {
   HERE_WE_GO_MCQ_BANK,
   HERE_WE_GO_BOOK_META,
-  SAA_115_EXAM_PAPERS,
+  SAA_ALL_EXAM_PAPERS,
   SAA_EXAM_BANK,
   TME_PRE_A1_BANK,
   TME_PRE_A1_CATEGORIES,
@@ -324,14 +324,14 @@ export function ExamAuditZone({ onBack }) {
     return counts;
   }, [textbookRawPool]);
 
-  // ── 2. 學力檢測可用母池 (115 完整的 35 題原卷) ──
+  // ── 2. 學力檢測可用母池（113～115 官方 35 題原卷） ──
   const saaRawPool = useMemo(() => {
-    const paper = SAA_115_EXAM_PAPERS[selectedSaaGrade];
+    const paper = SAA_ALL_EXAM_PAPERS?.[selectedSaaYear]?.[selectedSaaGrade];
     if (paper && Array.isArray(paper.questions)) {
       return paper.questions;
     }
     return SAA_EXAM_BANK.filter((q) => q.targetGrade === selectedSaaGrade);
-  }, [selectedSaaGrade]);
+  }, [selectedSaaGrade, selectedSaaYear]);
 
   // ── 3. Pre A1 可用母池 ──
   const preA1RawPool = useMemo(() => {
@@ -889,9 +889,19 @@ export function ExamAuditZone({ onBack }) {
                 <span className="text-[11px] font-black text-slate-400 uppercase tracking-wide">
                   年度：
                 </span>
-                <span className="px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-black border border-indigo-200 dark:border-indigo-800">
-                  115 年度
-                </span>
+                {[115, 114, 113].map((year) => (
+                  <button
+                    key={year}
+                    type="button"
+                    onClick={() => {
+                      setSelectedSaaYear(year);
+                      setCurrentIdx(0);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg font-black border transition cursor-pointer ${selectedSaaYear === year ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200'}`}
+                  >
+                    {year} 年
+                  </button>
+                ))}
               </div>
               <div className="h-4 w-px bg-slate-200 dark:bg-slate-700" />
               <div className="flex items-center gap-1.5">

@@ -363,13 +363,13 @@ async function run() {
       failures.push({ target: 'Static Contract: Spotter difference type missing', requiredType, seenDifferenceTypes: [...seenDifferenceTypes] });
     }
   }
-  // 驗證 SAA 115 全真學力檢測題庫 (4/5/6 年級各 35 題共 105 題，且題圖全數在線)
-  const { SAA_115_G4_QUESTIONS, SAA_115_G5_QUESTIONS, SAA_115_G6_QUESTIONS } = await import('../src/data/exam/saa/index.js');
-  if (SAA_115_G4_QUESTIONS.length !== 35 || SAA_115_G5_QUESTIONS.length !== 35 || SAA_115_G6_QUESTIONS.length !== 35) {
-    failures.push({ target: 'Static Contract: SAA 115 paper length mismatch' });
+  // 驗證 SAA 113～115 官方學力檢測題庫（3 年 × 3 年級 × 35 題）與題圖。
+  const { SAA_ALL_OFFICIAL_QUESTIONS, SAA_ALL_EXAM_PAPERS } = await import('../src/data/exam/saa/index.js');
+  if (SAA_ALL_OFFICIAL_QUESTIONS.length !== 315 || Object.keys(SAA_ALL_EXAM_PAPERS).length !== 3) {
+    failures.push({ target: 'Static Contract: SAA official paper count mismatch' });
   }
   let missingImages = 0;
-  for (const q of [...SAA_115_G4_QUESTIONS, ...SAA_115_G5_QUESTIONS, ...SAA_115_G6_QUESTIONS]) {
+  for (const q of SAA_ALL_OFFICIAL_QUESTIONS) {
     if (q.image) {
       const relPath = path.join('public', q.image.replace(/^\//, ''));
       if (!fs.existsSync(relPath)) {
@@ -379,7 +379,7 @@ async function run() {
     }
   }
   if (failures.length === 0) {
-    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks, ${HERE_WE_GO_MCQ_BANK.length} MCQs & SAA 115 [105 questions, 70 diagrams] verified)`);
+    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks, ${HERE_WE_GO_MCQ_BANK.length} MCQs & SAA 113–115 [315 official questions] verified)`);
   }
 
   const waitForAppReady = async (maxAttempts = 40) => {
@@ -865,7 +865,7 @@ async function run() {
     console.log('  ✓ PureMcqExamView mobile 375x667: unit range, count & start buttons all reachable (no overlap)');
   }
 
-  // 5D-3. SAA 學力檢測響應式 Wizard：年度 → 年級 → 試卷，手機不得漏步或被遮擋
+  // 5D-3. SAA 學力檢測響應式 Wizard：年級 → 題源 → 年度／模式，手機不得漏步或被遮擋
   client.exceptions = [];
   await client.send('Emulation.setDeviceMetricsOverride', { width: 375, height: 667, deviceScaleFactor: 2, mobile: true });
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
@@ -893,18 +893,21 @@ async function run() {
       };
 
       const entered = await clickVisible(findButton('學力檢測練習'));
-      const step1 = (document.body.innerText || '').includes('第 1／3 步') && !!findButton('115 年度全真卷');
+      const step1 = (document.body.innerText || '').includes('第 1／3 步') && !!findButton('五年級');
       const step1NoScroll = wizardFitsWithoutScroll();
-      const continued1 = await clickVisible(findButton('繼續：選擇年級'));
-      const step2 = (document.body.innerText || '').includes('第 2／3 步') && !!findButton('五年級');
-      const step2NoScroll = wizardFitsWithoutScroll();
       const gradeSelected = await clickVisible(findButton('五年級'));
-      const continued2 = await clickVisible(findButton('繼續：選擇試卷'));
+      const continued1 = await clickVisible(findButton('繼續：選擇題源'));
+      const step2 = (document.body.innerText || '').includes('第 2／3 步') && !!findButton('官方考古題') && !!findButton('原創類題練習');
+      const step2NoScroll = wizardFitsWithoutScroll();
+      const officialSelected = await clickVisible(findButton('官方考古題'));
+      const continued2 = await clickVisible(findButton('繼續：選擇年度'));
       const step3 = (document.body.innerText || '').includes('第 3／3 步')
-        && !!findButton('聽力專項')
-        && !!findButton('閱讀專項');
+        && !!findButton('115 年')
+        && !!findButton('114 年')
+        && !!findButton('113 年');
       const step3NoScroll = wizardFitsWithoutScroll();
-      const startButton = findButton('開始學力測驗');
+      const yearSelected = await clickVisible(findButton('113 年'));
+      const startButton = findButton('開始113 年官方卷');
       const startReachable = startButton ? await (async () => {
         startButton.scrollIntoView({ block: 'center' });
         await new Promise(r => setTimeout(r, 80));
@@ -913,12 +916,12 @@ async function run() {
         return !!hit && (hit === startButton || startButton.contains(hit));
       })() : false;
       const backed = await clickVisible(findButton('上一步'));
-      const preservedGrade = (document.body.innerText || '').includes('第 2／3 步')
-        && !!findButton('五年級')
-        && findButton('五年級').className.includes('bg-emerald-600');
+      const preservedSource = (document.body.innerText || '').includes('第 2／3 步')
+        && !!findButton('官方考古題')
+        && findButton('官方考古題').className.includes('bg-emerald-600');
 
       return {
-        ok: entered && step1 && step1NoScroll && continued1 && step2 && step2NoScroll && gradeSelected && continued2 && step3 && step3NoScroll && startReachable && backed && preservedGrade,
+        ok: entered && step1 && step1NoScroll && gradeSelected && continued1 && step2 && step2NoScroll && officialSelected && continued2 && step3 && step3NoScroll && yearSelected && startReachable && backed && preservedSource,
         entered,
         step1,
         step1NoScroll,
@@ -927,7 +930,7 @@ async function run() {
         step3,
         step3NoScroll,
         startReachable,
-        preservedGrade
+        preservedSource
       };
     })()
   `);
@@ -935,7 +938,7 @@ async function run() {
   if (!saaWizardCheck?.ok || client.exceptions.length > 0) {
     failures.push({ target: 'SAA Responsive Wizard (375x667)', details: saaWizardCheck, exceptions: client.exceptions });
   } else {
-    console.log('  ✓ SAA mobile Wizard: year -> grade -> paper flow, back navigation & preserved selection verified');
+    console.log('  ✓ SAA mobile Wizard: grade -> source -> year/mode flow, 113 official paper, back navigation & preserved selection verified');
   }
 
   // 5D-4. 較矮筆電安全高度：預留瀏覽器工具列後，三步仍不得產生設定區捲軸
@@ -962,9 +965,9 @@ async function run() {
 
       const entered = await click('學力檢測練習');
       const step1 = fits();
-      const continued1 = await click('繼續：選擇年級');
+      const continued1 = await click('繼續：選擇題源');
       const step2 = fits();
-      const continued2 = await click('繼續：選擇試卷');
+      const continued2 = await click('繼續：選擇年度');
       const step3 = fits();
       return { ok: entered && continued1 && continued2 && step1 && step2 && step3, entered, step1, step2, step3 };
     })()

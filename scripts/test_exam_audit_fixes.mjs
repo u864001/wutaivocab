@@ -97,11 +97,11 @@ console.log('  ✓ Textbook 10-question mixed exam produces exactly 3 listening 
 // ── Test 3: Standardized Mastery Track Denominators ──
 console.log('\n[3/4] Validating Standardized Mastery Track Denominators...');
 assert.strictEqual(PRE_A1_TOTAL_ITEMS, 300, 'Pre-A1 total items must be 300');
-assert.strictEqual(SAA_TOTAL_ITEMS, 285, 'SAA total items must be 285');
+assert.strictEqual(SAA_TOTAL_ITEMS, 315, 'SAA total items must be 315 (113–115 official papers)');
 assert.strictEqual(CURRICULUM_TOTAL_ITEMS, CANONICAL_STATS.canonicalItems, 'Curriculum total items must match CANONICAL_STATS');
 
 assert.strictEqual(getTrackTotalItems('tme-preA1'), 300);
-assert.strictEqual(getTrackTotalItems('ministry-assessment'), 285);
+assert.strictEqual(getTrackTotalItems('ministry-assessment'), SAA_TOTAL_ITEMS);
 assert.strictEqual(getTrackTotalItems('curriculum'), CANONICAL_STATS.canonicalItems);
 
 // 模擬學生在各軌道首次作答後的 snapshot total_items
@@ -111,7 +111,7 @@ const dummyAnswers = [0];
 
 // SAA 軌道測試（原本漏洞會把 total_items 設為 questions.length 即 1）
 const saaSnap = recordExamMasterySession(dummySid, 'ministry-assessment', dummyQuestions, dummyAnswers, false);
-assert.strictEqual(saaSnap.tracks['ministry-assessment'].total_items, 285, 'SAA snapshot total_items must be 285');
+assert.strictEqual(saaSnap.tracks['ministry-assessment'].total_items, SAA_TOTAL_ITEMS, 'SAA snapshot total_items must match official paper count');
 
 // Pre-A1 軌道測試
 const preA1Snap = recordExamMasterySession(dummySid, 'tme-preA1', dummyQuestions, dummyAnswers, false);
@@ -121,7 +121,7 @@ assert.strictEqual(preA1Snap.tracks['tme-preA1'].total_items, 300, 'Pre-A1 snaps
 const currSnap = recordExamMasterySession(dummySid, 'curriculum', dummyQuestions, dummyAnswers, false);
 assert.strictEqual(currSnap.tracks['curriculum'].total_items, CANONICAL_STATS.canonicalItems, 'Curriculum snapshot total_items must match CANONICAL_STATS');
 
-console.log('  ✓ All track denominators are strictly fixed: SAA = 285, Pre-A1 = 300, Curriculum = dynamic CANONICAL_STATS.');
+console.log(`  ✓ All track denominators are strictly fixed: SAA = ${SAA_TOTAL_ITEMS}, Pre-A1 = 300, Curriculum = dynamic CANONICAL_STATS.`);
 
 // ── Test 4: Cross-Track Mistake Recovery Simulation ──
 console.log('\n[4/8] Validating Multi-Bank Mistake Pool Retrieval...');
@@ -184,10 +184,10 @@ const legacySnapshot = {
   }
 };
 const calibrated = migrateMasterySnapshotToCanonical(legacySnapshot);
-assert.strictEqual(calibrated.tracks['ministry-assessment'].total_items, 285, 'SAA total_items must calibrate from 20 to 285');
+assert.strictEqual(calibrated.tracks['ministry-assessment'].total_items, SAA_TOTAL_ITEMS, 'SAA total_items must calibrate from 20 to the current official count');
 assert.strictEqual(calibrated.tracks['tme-preA1'].total_items, 300, 'Pre-A1 total_items must calibrate from 15 to 300');
 assert.strictEqual(calibrated.tracks['curriculum'].total_items, CANONICAL_STATS.canonicalItems, 'Curriculum total_items must calibrate to CANONICAL_STATS');
-console.log('  ✓ Legacy snapshot calibration instantly restores SAA to 285, Pre-A1 to 300, and Curriculum to dynamic canonical count.');
+console.log(`  ✓ Legacy snapshot calibration instantly restores SAA to ${SAA_TOTAL_ITEMS}, Pre-A1 to 300, and Curriculum to dynamic canonical count.`);
 
 // ── Test 7: Mixed Mistake Session Isolation (No Cross-Track Pollution) ──
 console.log('\n[7/8] Validating Mixed Mistake Session Track Isolation...');

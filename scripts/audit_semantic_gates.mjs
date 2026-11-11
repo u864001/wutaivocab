@@ -245,7 +245,7 @@ for (const q of TME_PRE_A1_BANK) {
   seenGlobalIds.add(q.id);
 }
 
-// 3. SAA Exam Bank (285 questions)
+// 3. SAA active official bank (315 questions; unapproved original drafts excluded)
 for (const q of SAA_EXAM_BANK) {
   if (q.section === 'listening' && q.question && /[\n\s(（](音檔|問句|對話|廣播)[：:]/i.test(q.question)) {
     issues.push({ id: q.id, type: 'SAA_LISTENING_TRANSCRIPT_LEAK', question: q.question });

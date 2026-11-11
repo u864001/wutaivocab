@@ -13,7 +13,7 @@ import { getCurrentSemesterId, getSemesterDisplayName } from '../utils/semesterH
 import { soundEngine } from '../services/audio';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 import { pad2, formatStudentBadge, formatStudentDisplayName, isGuestStudent, parseStudentId } from '../utils/studentIdHelper';
-import { loadStudentMastery } from '../utils/masteryHelper';
+import { loadStudentMastery, SAA_TOTAL_ITEMS } from '../utils/masteryHelper';
 import { CANONICAL_STATS } from '../data/exam/canonicalMapping';
 import {
   Trophy, ArrowLeft, RotateCw, Calendar, BookOpen, Puzzle, Rocket,
@@ -116,7 +116,7 @@ export const EXAM_KING_SUBTRACKS = [
   {
     id: 'saa_mastery',
     label: 'SAA 學力成就',
-    subLabel: '教育部學力評量 285 題',
+    subLabel: `教育部 113～115 年官方 ${SAA_TOTAL_ITEMS} 題`,
     icon: CheckCircle2,
     unit: '題精熟',
     badgeColor: 'border-emerald-400 text-emerald-200 bg-emerald-500/25 ring-emerald-400/50',
@@ -519,7 +519,7 @@ export const LeaderboardView = ({ onBack, onOpenTeacherHub }) => {
                   id: 'local_mastery_saa_' + sid,
                   name: formatStudentDisplayName(currentStudent),
                   score: saa.mastered_count,
-                  time: Math.round((saa.mastered_count / (saa.total_items || 285)) * 100),
+                  time: Math.round((saa.mastered_count / (saa.total_items || SAA_TOTAL_ITEMS)) * 100),
                   book: `g${currentStudent.grade || 4}`,
                   created_at: snap.updated_at
                 }];

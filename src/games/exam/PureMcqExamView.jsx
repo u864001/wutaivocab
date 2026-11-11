@@ -38,6 +38,7 @@ import {
   HERE_WE_GO_MCQ_BANK,
   TME_PRE_A1_BANK,
   SAA_EXAM_BANK,
+  SAA_ORIGINAL_BANK,
   SAA_115_EXAM_PAPERS,
   SAA_ALL_EXAM_PAPERS
 } from '../../data/exam';
@@ -226,11 +227,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     return g >= 4 && g <= 6 ? g : 4;
   }, [currentStudent?.grade]);
   const [selectedSaaGrade, setSelectedSaaGrade] = useState(defaultSaaGrade);
-  // SAA 測驗年度: 115 (最新全真試卷) | 114 (114年全真試卷)
+  // SAA 題源：官方考古題與自主研發類題嚴格分流，不交叉抽題。
+  const [selectedSaaSource, setSelectedSaaSource] = useState('official');
+  // SAA 官方測驗年度: 115 | 114 | 113
   const [selectedSaaYear, setSelectedSaaYear] = useState(115);
   // SAA 題型組合: 'standard' (聽15+閱20) | 'listening' (聽20) | 'reading' (閱20)
   const [selectedSaaFormat, setSelectedSaaFormat] = useState('standard');
-  // SAA 響應式 Wizard：1 年度 → 2 年級 → 3 試卷類型與確認
+  // SAA 響應式 Wizard：1 年級 → 2 題源 → 3 官方年度／原創組卷模式
   const [saaWizardStep, setSaaWizardStep] = useState(1);
 
   // Pre-A1 設定: 'standard' (聽15+閱15) | 'listening' (聽20) | 'reading' (閱20) | 'writing' (寫作重組20)
@@ -468,19 +471,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // 縣市學力檢測 (SAA) 題庫 (Scaffold & Registry)
   const saaPool = useMemo(() => {
     const g = Number(selectedSaaGrade) || 4;
-    const y = Number(selectedSaaYear) || 115;
-    const paper = SAA_ALL_EXAM_PAPERS?.[y]?.[g] || SAA_115_EXAM_PAPERS[g];
-    if (paper && selectedSaaFormat === 'standard') {
-      return paper.questions;
+    if (selectedSaaSource === 'official') {
+      const y = Number(selectedSaaYear) || 115;
+      const paper = SAA_ALL_EXAM_PAPERS?.[y]?.[g] || SAA_115_EXAM_PAPERS[g];
+      return paper?.questions || [];
     }
-    let list = SAA_EXAM_BANK.filter((q) => !q.targetGrade || q.targetGrade === g);
+    let list = SAA_ORIGINAL_BANK.filter((q) => !q.targetGrade || q.targetGrade === g);
     if (selectedSaaFormat === 'listening') {
       list = list.filter((q) => q.section === 'listening' || q.type?.startsWith('L-') || q.taskType?.startsWith('L-') || q.taskType?.startsWith('A-'));
     } else if (selectedSaaFormat === 'reading') {
       list = list.filter((q) => q.section === 'reading' || q.type?.startsWith('R-') || q.taskType?.startsWith('R-') || q.taskType?.startsWith('V-') || q.taskType?.startsWith('G-'));
     }
     return list;
-  }, [selectedSaaGrade, selectedSaaFormat, selectedSaaYear]);
+  }, [selectedSaaGrade, selectedSaaFormat, selectedSaaSource, selectedSaaYear]);
 
   // 計時器（若為正式施測模式則限時 35 分鐘 2100 秒，逾時自動交卷）
   useEffect(() => {
@@ -514,6 +517,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         selectedPreA1Format,
         selectedSaaFormat,
         selectedSaaGrade,
+        selectedSaaSource,
         selectedSaaYear,
         selectedUnits,
         textbookExamMode
@@ -535,6 +539,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     selectedPreA1Format,
     selectedSaaFormat,
     selectedSaaGrade,
+    selectedSaaSource,
     selectedSaaYear,
     selectedUnits,
     textbookExamMode
@@ -569,9 +574,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           sourceList = assembleExamForm(tmePool, targetCount);
         }
       } else if (scopeMode === 'ministry-assessment') {
-        if (selectedSaaFormat === 'standard') {
+        if (selectedSaaSource === 'official') {
           targetCount = 35;
           sourceList = [...saaPool].slice(0, 35);
+        } else if (selectedSaaFormat === 'standard') {
+          targetCount = Math.min(35, saaPool.length);
+          sourceList = assembleExamForm(saaPool, targetCount);
         } else {
           const reqCount = 20;
           targetCount = Math.min(reqCount, saaPool.length);
@@ -747,6 +755,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       questionCountOpt,
       scopeMode,
       selectedSaaFormat,
+      selectedSaaSource,
       selectedPreA1Format,
       isFormalExam,
       mistakeQuestions,
@@ -1539,6 +1548,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     if (savedSession.selectedPreA1Format) setSelectedPreA1Format(savedSession.selectedPreA1Format);
                     if (savedSession.selectedSaaFormat) setSelectedSaaFormat(savedSession.selectedSaaFormat);
                     if (savedSession.selectedSaaGrade) setSelectedSaaGrade(savedSession.selectedSaaGrade);
+                    if (savedSession.selectedSaaSource) setSelectedSaaSource(savedSession.selectedSaaSource);
                     if (savedSession.selectedSaaYear) setSelectedSaaYear(savedSession.selectedSaaYear);
                     if (savedSession.selectedUnits) setSelectedUnits(savedSession.selectedUnits);
                     if (savedSession.textbookExamMode) setTextbookExamMode(savedSession.textbookExamMode);
@@ -1625,7 +1635,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       </span>
                     </div>
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">
-                      參考教育部 SAA 學習成就評量：聽 15 閱 20 正式卷或專項特訓（已建立 285 題全真題庫）
+                      教育部 SAA 學力檢測：官方 113～115 年原卷與自主研發類題嚴格分流
                     </p>
                   </div>
                 </div>
@@ -2277,7 +2287,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2 truncate">
-                      <span className="truncate">SAA 學力成就 285 題庫</span>
+                      <span className="truncate">SAA 官方 113～115 年題本</span>
                       <span className="hidden md:inline-flex text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
                         聽力三大題 · 閱讀二大題
                       </span>
@@ -2309,13 +2319,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     第 {saaWizardStep}／3 步
                   </span>
                   <span className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">
-                    {saaWizardStep === 1 ? '選擇試卷年度' : saaWizardStep === 2 ? '選擇施測年級' : '選擇試卷並確認'}
+                    {saaWizardStep === 1 ? '選擇施測年級' : saaWizardStep === 2 ? '選擇官方或原創' : selectedSaaSource === 'official' ? '選擇官方年度' : '選擇原創組卷模式'}
                   </span>
                 </div>
                 <ol className="grid grid-cols-3 gap-1.5" aria-label="學力檢測設定進度">
                   {[
-                    { step: 1, label: '年度' },
-                    { step: 2, label: '年級' },
+                    { step: 1, label: '年級' },
+                    { step: 2, label: '題源' },
                     { step: 3, label: '試卷' }
                   ].map((item) => {
                     const isCurrent = saaWizardStep === item.step;
@@ -2342,7 +2352,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
               {/* 選擇卡是本區唯一翡翠綠粗框；進度、說明與摘要使用中性色，避免誤認為可點選 */}
               <div className="min-h-0 min-w-0">
-              {/* 步驟 1：選擇測驗年度 */}
+              {/* 步驟 1：選擇施測年級 */}
               {saaWizardStep === 1 && (
               <div className="shrink-0 bg-white dark:bg-slate-900/70 rounded-2xl p-2.5 sm:p-3 border-2 border-emerald-500 dark:border-emerald-600 shadow-md shadow-emerald-500/10 space-y-2 animate-fadeIn">
                 <div className="flex items-center justify-between">
@@ -2351,65 +2361,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       1
                     </span>
                     <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                      選擇施測年度 (Exam Year)
-                    </span>
-                  </div>
-                  <span className="hidden sm:inline px-2 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">
-                    請點選一個年度
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                  {[
-                    { year: 115, label: '115 年度全真卷', badge: '最新施測 (35題)' },
-                    { year: 114, label: '114 年度全真卷', badge: '正式題本 (35題)' }
-                  ].map((y) => {
-                    const active = selectedSaaYear === y.year;
-                    return (
-                      <button
-                        key={y.year}
-                        type="button"
-                        onClick={() => setSelectedSaaYear(y.year)}
-                        aria-pressed={active}
-                        className={`py-2 px-3 rounded-xl border-2 text-center transition flex items-center justify-between cursor-pointer ${
-                          active
-                            ? 'border-emerald-700 bg-emerald-600 text-white shadow-md ring-2 ring-emerald-300/60 dark:ring-emerald-800'
-                            : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
-                        }`}
-                      >
-                        <span className="text-xs sm:text-sm font-black">{y.label}</span>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                          active ? 'bg-emerald-800/60 text-emerald-100' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
-                        }`}>
-                          {active ? '✓ 已選取' : y.badge}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              )}
-
-              {/* 步驟 2：選擇施測年級 */}
-              {saaWizardStep === 2 && (
-              <div className="shrink-0 bg-white dark:bg-slate-900/70 rounded-2xl p-2.5 sm:p-3 border-2 border-emerald-500 dark:border-emerald-600 shadow-md shadow-emerald-500/10 space-y-2 animate-fadeIn">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center">
-                      2
-                    </span>
-                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                       選擇施測年級
                     </span>
                   </div>
                   <span className="hidden sm:inline px-2 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">
-                    請點選一個年級
+                    每個年級各有 35 題官方卷
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   {[
-                    { grade: 4, label: '四年級', desc: 'Book 3~4 範圍' },
-                    { grade: 5, label: '五年級', desc: 'Book 5~6 範圍' },
-                    { grade: 6, label: '六年級', desc: 'Book 7~8 範圍' }
+                    { grade: 4, label: '四年級', desc: 'Book 3～4' },
+                    { grade: 5, label: '五年級', desc: 'Book 5～6' },
+                    { grade: 6, label: '六年級', desc: 'Book 7～8' }
                   ].map((g) => {
                     const active = selectedSaaGrade === g.grade;
                     return (
@@ -2418,15 +2381,63 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         type="button"
                         onClick={() => setSelectedSaaGrade(g.grade)}
                         aria-pressed={active}
-                        className={`py-2.5 px-3 rounded-xl border-2 text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                        className={`py-2.5 px-2 rounded-xl border-2 text-center transition flex flex-col items-center justify-center cursor-pointer ${
                           active
                             ? 'border-emerald-700 bg-emerald-600 text-white shadow-md ring-2 ring-emerald-300/60 dark:ring-emerald-800'
                             : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
                         }`}
                       >
                         <span className="text-sm sm:text-base font-black">{g.label}</span>
-                        <span className={`text-[11px] font-semibold mt-0.5 ${active ? 'text-emerald-100' : 'text-slate-400'}`}>
-                          {g.desc}
+                        <span className={`text-[10px] sm:text-[11px] font-semibold ${active ? 'text-emerald-100' : 'text-slate-400'}`}>{g.desc}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              )}
+
+              {/* 步驟 2：官方考古題／自主研發類題分流 */}
+              {saaWizardStep === 2 && (
+              <div className="shrink-0 bg-white dark:bg-slate-900/70 rounded-2xl p-2.5 sm:p-3 border-2 border-emerald-500 dark:border-emerald-600 shadow-md shadow-emerald-500/10 space-y-2 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center">
+                      2
+                    </span>
+                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                      選擇題目來源
+                    </span>
+                  </div>
+                  <span className="hidden sm:inline px-2 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">
+                    官方卷與原創題永不混抽
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                  {[
+                    { id: 'official', label: '官方考古題', desc: '113～115 年原卷原題', Icon: ClipboardCheck },
+                    { id: 'original', label: '原創類題練習', desc: '審核完成後開放', Icon: Sparkles }
+                  ].map((source) => {
+                    const active = selectedSaaSource === source.id;
+                    const SourceIcon = source.Icon;
+                    return (
+                      <button
+                        key={source.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedSaaSource(source.id);
+                          if (source.id === 'official') setSelectedSaaFormat('standard');
+                        }}
+                        aria-pressed={active}
+                        className={`py-2.5 px-3 rounded-xl border-2 text-left transition flex items-center gap-2 cursor-pointer ${
+                          active
+                            ? 'border-emerald-700 bg-emerald-600 text-white shadow-md ring-2 ring-emerald-300/60 dark:ring-emerald-800'
+                            : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
+                        }`}
+                      >
+                        <SourceIcon size={20} className="shrink-0" />
+                        <span className="min-w-0">
+                          <span className="block text-sm sm:text-base font-black truncate">{source.label}</span>
+                          <span className={`block text-[10px] sm:text-[11px] font-semibold truncate ${active ? 'text-emerald-100' : 'text-slate-400'}`}>{source.desc}</span>
                         </span>
                       </button>
                     );
@@ -2435,7 +2446,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               </div>
               )}
 
-              {/* 步驟 3：選擇題型與題數組合 (向下彈出三大膠囊) */}
+              {/* 步驟 3：官方選年度；原創選組卷模式 */}
               {saaWizardStep === 3 && (
               <>
               <div className="shrink-0 bg-white dark:bg-slate-900/70 rounded-2xl p-2.5 sm:p-3 border-2 border-emerald-500 dark:border-emerald-600 shadow-md shadow-emerald-500/10 space-y-2 animate-fadeIn">
@@ -2445,20 +2456,24 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       3
                     </span>
                     <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                      選擇測驗組合
+                      {selectedSaaSource === 'official' ? '選擇官方題本年度' : '選擇原創組卷模式'}
                     </span>
                   </div>
-                  <span className="hidden sm:inline px-2 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">請點選一種試卷</span>
+                  <span className="hidden sm:inline px-2 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">{selectedSaaSource === 'official' ? '原卷固定 15 聽力＋20 閱讀' : '目前尚無已核准原創題'}</span>
                 </div>
-                <div className="space-y-1.5 sm:space-y-2">
-                  {[
+                <div className={selectedSaaSource === 'official' ? 'grid grid-cols-3 gap-2' : 'space-y-1.5 sm:space-y-2'}>
+                  {(selectedSaaSource === 'official' ? [
+                    { id: 115, title: '115 年度', shortTitle: '115 年', count: 35, badge: '最新官方卷', description: '官方原題', Icon: FileText },
+                    { id: 114, title: '114 年度', shortTitle: '114 年', count: 35, badge: '官方題本', description: '官方原題', Icon: FileText },
+                    { id: 113, title: '113 年度', shortTitle: '113 年', count: 35, badge: '本次新增', description: '官方原題', Icon: FileText }
+                  ] : [
                     {
                       id: 'standard',
-                      title: '聽力 15 題 ＋ 閱讀 20 題',
-                      shortTitle: '全真標準卷',
+                      title: '綜合模擬卷',
+                      shortTitle: '綜合模擬',
                       count: 35,
-                      badge: '正式學測規格',
-                      description: `${selectedSaaYear} 年度原卷原圖，全真 35 題完整呈現`,
+                      badge: '建置中',
+                      description: '原創聽力 15 題＋閱讀 20 題',
                       Icon: ClipboardCheck
                     },
                     {
@@ -2466,8 +2481,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       title: '聽力測驗 20 題',
                       shortTitle: '聽力專項',
                       count: 20,
-                      badge: '專題特訓',
-                      description: '辨識句意、基本問答、言談理解三大題型',
+                      badge: '建置中',
+                      description: '只從已核准的原創聽力題組卷',
                       Icon: Headphones
                     },
                     {
@@ -2475,19 +2490,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       title: '閱讀測驗 20 題',
                       shortTitle: '閱讀專項',
                       count: 20,
-                      badge: '專題特訓',
-                      description: '字彙語法、生活告示、情境題組集中練習',
+                      badge: '建置中',
+                      description: '只從已核准的原創閱讀題組卷',
                       Icon: BookOpen
                     }
-                  ].map((option) => {
-                    const active = selectedSaaFormat === option.id;
+                  ]).map((option) => {
+                    const active = selectedSaaSource === 'official' ? selectedSaaYear === option.id : selectedSaaFormat === option.id;
                     const OptionIcon = option.Icon;
                     return (
                       <button
                         key={option.id}
                         type="button"
                         aria-pressed={active}
-                        onClick={() => setSelectedSaaFormat(option.id)}
+                        onClick={() => selectedSaaSource === 'official' ? setSelectedSaaYear(option.id) : setSelectedSaaFormat(option.id)}
                         className={`w-full min-h-13 p-2 sm:p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2 cursor-pointer ${
                           active
                             ? 'border-emerald-700 bg-emerald-600 text-white shadow-md ring-2 ring-emerald-300/60 dark:ring-emerald-800'
@@ -2502,7 +2517,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 min-w-0">
-                              <span className={`text-sm sm:text-base font-black truncate ${active ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
+                              <span className={`text-xs sm:text-base font-black truncate ${active ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
                                 <span className="sm:hidden">{option.shortTitle}</span>
                                 <span className="hidden sm:inline">{option.title}</span>
                               </span>
@@ -2518,7 +2533,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           </div>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
-                          <span className={`text-sm sm:text-lg font-black ${active ? 'text-white' : 'text-emerald-700 dark:text-emerald-300'}`}>
+                          <span className={`hidden sm:inline text-sm sm:text-lg font-black ${active ? 'text-white' : 'text-emerald-700 dark:text-emerald-300'}`}>
                             {option.count} 題
                           </span>
                           {active && <CheckCircle2 size={17} className="text-white" />}
@@ -2948,12 +2963,14 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
               {setupSubView === 'saa' && (
                 <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 py-1.5 px-3 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-black">{selectedSaaYear} 年度</span>
-                  <span>•</span>
                   <span>{selectedSaaGrade} 年級</span>
                   <span>•</span>
                   <span className="text-emerald-600 dark:text-emerald-400 font-black">
-                    {selectedSaaFormat === 'standard' ? '全真 35 題' : selectedSaaFormat === 'listening' ? '聽力 20 題' : '閱讀 20 題'}
+                    {selectedSaaSource === 'official' ? `${selectedSaaYear} 年官方卷` : '原創類題'}
+                  </span>
+                  <span>•</span>
+                  <span>
+                    {selectedSaaSource === 'official' ? '15 聽力＋20 閱讀' : selectedSaaFormat === 'standard' ? '綜合模擬' : selectedSaaFormat === 'listening' ? '純聽力' : '純閱讀'}
                   </span>
                 </div>
               )}
@@ -2980,13 +2997,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               >
                 <span>
                   {setupSubView === 'saa' && saaWizardStep < 3
-                    ? (saaWizardStep === 1 ? '繼續：選擇年級' : '繼續：選擇試卷')
+                    ? (saaWizardStep === 1 ? '繼續：選擇題源' : selectedSaaSource === 'official' ? '繼續：選擇年度' : '繼續：選擇模式')
                     : scopeMode === 'tme-preA1'
                     ? (isFormalExam
                         ? '開始 Pre-A1 正式施測 (30 題 · 限時 35 分)'
                         : (tmePool.length > 0 ? `開始 Pre-A1 練習 (${selectedPreA1Format === 'standard' ? 30 : 20} 題)` : '🚧 Pre-A1 官方題庫編製中 (敬請期待)'))
                     : scopeMode === 'ministry-assessment'
-                    ? (saaPool.length > 0 ? `開始學力測驗 (${selectedSaaFormat === 'standard' ? 35 : 20} 題)` : '🚧 SAA 學力題庫編製中 (敬請期待)')
+                    ? (saaPool.length > 0 ? `開始${selectedSaaSource === 'official' ? `${selectedSaaYear} 年官方卷 (35 題)` : `原創類題 (${selectedSaaFormat === 'standard' ? 35 : 20} 題)`}` : '🚧 原創類題審核建置中（官方卷可先練習）')
                     : scopeMode === 'mistakes'
                     ? `開始複習 (${questionCountOpt} 題)`
                     : `開始檢定 (${questionCountOpt} 題)`}
@@ -3011,7 +3028,9 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         : scopeMode === 'tme-preA1'
         ? 'Test My English Pre-A1 官方模擬檢定'
         : scopeMode === 'ministry-assessment'
-        ? `教育部 SAA 臺灣學生學習成就評量 (${selectedSaaYear} 年度 • ${selectedSaaGrade} 年級卷)`
+        ? selectedSaaSource === 'official'
+          ? `教育部 SAA 臺灣學生學習成就評量 (${selectedSaaYear} 年度 • ${selectedSaaGrade} 年級官方卷)`
+          : `SAA 自主研發類題 (${selectedSaaGrade} 年級)`
         : `${formatBookLabel(selectedBook)} 課程能力檢定`;
 
     const candidateDisplayName = isLoggedIn

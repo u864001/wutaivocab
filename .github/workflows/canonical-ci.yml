@@ -37,6 +37,9 @@ jobs:
       - name: 🛡️ Run Semantic Gates & Listening Anti-Leak Check
         run: node scripts/audit_semantic_gates.mjs
 
+      - name: 📗 Verify SAA 113 Official Papers & Source Isolation
+        run: node scripts/test_saa_113_contract.mjs
+
       - name: 📊 Run Batch Expansion Quota & Dynamic Stats Contract Test
         run: node scripts/test_batch_a_contract.mjs
 

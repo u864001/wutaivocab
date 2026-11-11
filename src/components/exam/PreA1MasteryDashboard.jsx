@@ -24,7 +24,8 @@ import {
   loadStudentMastery,
   getMasteryLevel,
   getMorandiCoverageTier,
-  MASTERY_STATES
+  MASTERY_STATES,
+  SAA_TOTAL_ITEMS
 } from '../../utils/masteryHelper';
 import { formatStudentDisplayName } from '../../utils/studentIdHelper';
 import { CANONICAL_STATS } from '../../data/exam/canonicalMapping';
@@ -146,20 +147,21 @@ export const PRE_A1_DASHBOARD_META = [
   }
 ];
 
-// 📗 軌道 2：教育部 SAA 臺灣學生學習成就評量 (285 題)
+// 📗 軌道 2：教育部 SAA 臺灣學生學習成就評量（113～115 年官方題本）
 export const SAA_DASHBOARD_META = [
   {
     category: 'listening',
     label: '第一部分：聽力測驗 (Listening)',
     icon: Headphones,
     color: 'emerald',
-    total: 125,
+    total: 135,
     subTypes: [
-      { key: 'L-SENT', label: '辨識句意', total: 54, desc: '聽日常句子，選出相符情境動作插圖' },
-      { key: 'L-CONV', label: '言談理解', total: 24, desc: '聽生活對話或日常短文廣播，回答所提出的問題' },
-      { key: 'L-WORD', label: '聽音辨字', total: 19, desc: '聽讀音選出正確拼寫之核心生活字彙與單字' },
-      { key: 'L-QA', label: '基本問答', total: 17, desc: '聽單一日常問句，選出合乎邏輯之社交應對答覆' },
-      { key: 'A-SOUND', label: '語音聽辨', total: 11, desc: '辨別母音、子音或角色對話音調' }
+      { key: 'L-SENT', label: '辨識句意', total: 50, desc: '聽日常句子，選出相符情境動作插圖' },
+      { key: 'L-CONV', label: '言談理解', total: 28, desc: '聽生活對話或日常短文廣播，回答所提出的問題' },
+      { key: 'L-WORD', label: '聽音辨字', total: 22, desc: '聽讀音選出正確拼寫之核心生活字彙與單字' },
+      { key: 'L-QA', label: '基本問答', total: 4, desc: '聽單一日常問句，選出合乎邏輯之社交應對答覆' },
+      { key: 'L-RESP', label: '生活回應', total: 7, desc: '聽生活問句或提醒，選出合適回應' },
+      { key: 'A-SOUND', label: '語音聽辨', total: 24, desc: '辨別母音、子音或角色對話音調' }
     ]
   },
   {
@@ -167,12 +169,15 @@ export const SAA_DASHBOARD_META = [
     label: '第二部分：閱讀測驗 (Reading)',
     icon: BookOpen,
     color: 'teal',
-    total: 160,
+    total: 180,
     subTypes: [
-      { key: 'R-COMP', label: '篇章理解題組', total: 71, desc: '素養導向閱讀海報、菜單、書信或短篇故事回答理解題' },
-      { key: 'G-MC', label: '單題（文法與句構）', total: 47, desc: '檢測基本字彙辨析、動詞時態、主動受格與句型結構' },
-      { key: 'V-MEAN', label: '單題（字彙理解）', total: 37, desc: '檢測日常生活核心字彙語意、字母辨識與情境對應' },
-      { key: 'G-CTX', label: '語境克漏字', total: 5, desc: '日常生活連貫語境空格填入最適當文法詞' }
+      { key: 'R-COMP', label: '篇章理解題組', total: 70, desc: '素養導向閱讀海報、菜單、書信或短篇故事回答理解題' },
+      { key: 'G-MC', label: '單題（文法與句構）', total: 31, desc: '檢測基本字彙辨析、動詞時態、主動受格與句型結構' },
+      { key: 'V-MEAN', label: '單題（字彙理解）', total: 29, desc: '檢測日常生活核心字彙語意、字母辨識與情境對應' },
+      { key: 'R-PIC', label: '圖文理解', total: 30, desc: '依圖片、圖表與生活情境選出正確敘述' },
+      { key: 'R-CLOZE', label: '閱讀克漏', total: 8, desc: '依上下文填入語意與文法均合適的答案' },
+      { key: 'G-CTX', label: '語境克漏字', total: 5, desc: '日常生活連貫語境空格填入最適當文法詞' },
+      { key: 'R-OTHER', label: '其他官方題型', total: 7, desc: '字母辨識、生活回應與數學應用' }
     ]
   }
 ];
@@ -249,7 +254,7 @@ export const TRACK_CONFIGS = {
     name: '教育部 SAA 學力檢測實戰模考',
     shortName: 'SAA 學力檢測',
     badge: 'SAA 臺灣學生學習成就評量',
-    totalItems: 285,
+    totalItems: SAA_TOTAL_ITEMS,
     meta: SAA_DASHBOARD_META,
     heroGradient: 'from-emerald-700 via-teal-600 to-emerald-800',
     primaryBtn: 'bg-emerald-600 hover:bg-emerald-700',
