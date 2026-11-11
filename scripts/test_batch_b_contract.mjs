@@ -138,7 +138,7 @@ for (const q of batchBRComp) {
   const passage = match[1].trim();
   const words = passage.split(/\s+/).filter(w => w.length > 0);
   assert.ok(
-    words.length >= 30 && words.length <= 55,
+    words.length >= 30 && words.length <= 50,
     `${q.id} (R-COMP) passage word count must be between 30 and 50 words (got ${words.length} words: "${passage}")`
   );
 }

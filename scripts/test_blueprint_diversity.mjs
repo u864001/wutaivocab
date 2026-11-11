@@ -67,7 +67,7 @@ for (let i = 0; i < 20; i++) {
   // With 8 units (where Review 1 and Review 2 have 4 questions each) and 20 questions, at least 5 units should be represented
   assert.ok(representedUnits >= 5, `Expected at least 5 distinct units represented, got ${representedUnits}`);
 }
-console.log(`  ✓ Multi-unit assembly evenly balances all ${uniqueUnits.length} units with zero clustering.`);
+console.log(`  ✓ Multi-unit assembly achieves robust cross-unit distribution (at least 5 distinct units represented per 20-item draw) with zero unit clustering.`);
 
 // Test 4: Pedagogical Easy-to-Hard Difficulty Ordering
 console.log('\n[4/4] Validating Easy-to-Hard Difficulty Monotonicity...');

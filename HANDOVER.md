@@ -54,6 +54,26 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.14 Batch B（Book 3 & Book 4）100 題擴充獨立驗收全面通過、英語檢定館 Runtime 防護與 Pre-A1 官方 15+15 藍圖落實 (`hereWeGoMcqBank.js`, `examBlueprint.js`, `PureMcqExamView.jsx`, `masteryHelper.js`, `supabase.js`, `test_batch_b_contract.mjs`, `test_exam_audit_fixes.mjs`)
+* **Batch B 擴充正式結案通過獨立驗收（Book 3 & Book 4 共 100 題純 Canonical 擴充，全庫增至 1,789 題）**：
+  * **Book 3 新增 50 題 (`hwg_b3_bb_01` ~ `hwg_b3_bb_50`)**：由 155 題擴充至 **205 題**。
+  * **Book 4 新增 50 題 (`hwg_b4_bb_01` ~ `hwg_b4_bb_50`)**：由 135 題擴充至 **185 題**。
+  * **20 題 V-MEAN 全面生活語境填空**：徹底消滅機械式中文翻譯題，題目一律包含 `______` 空格並以英文單字為選項。
+  * **16 題 R-COMP 短文理解**：文章長度嚴格限制於 30～50 字，合約測試門禁已收斂為 `<= 50`。
+  * **專屬品質修正落實**：`hwg_b3_bb_46` (Can you jump rope?)、`hwg_b4_bb_33` (The cute little cat)、`hwg_b4_bb_36` (代名詞他/它修正)。
+  * 經 ChatGPT 獨立隔離驗收，確認 1,789 題 Canonical schema、語意門禁、合約測試、Vite build 與 6 階段 smoke test 零崩潰判定通過。
+* **英語檢定館 Runtime 防護與測驗引擎健全化 (Commit `a14ed7b`)**：
+  * **Pre-A1 官方標準 30 題正式卷藍圖**：實作 `assemblePreA1ExamForm`，嚴格配置 15 聽力 + 15 閱讀/字彙，100% 排除 `W-SCRAMBLE`（寫作重組）與 `S-READ`（口說朗讀）。
+  * **正式測驗快照防暫停作弊與逾時自動交卷 (P0)**：`saveInProgress` 完整儲存 `deadlineAt = startedAt + 2100 * 1000` 與 `isFormalExam`。續考時若逾時直接結算並彈出警示，徹底防堵關閉分頁無限暫停漏洞。
+  * **個人易錯題跨三大題庫全面檢索 (P1)**：`mistakeQuestions` 跨 `HERE_WE_GO_MCQ_BANK`、`SAA_EXAM_BANK`、`TME_PRE_A1_BANK` 檢索。
+  * **三大檢定軌道精熟分母資料快照標準化 (P1)**：`masteryHelper.js` 定義常數 `PRE_A1_TOTAL_ITEMS = 300`、`SAA_TOTAL_ITEMS = 285`、`CURRICULUM_TOTAL_ITEMS = CANONICAL_STATS.canonicalItems`，快照同步不再 fallback 到 `questions.length`。
+  * **排行榜分流隔離 (P1)**：`recordMcqExamStats` 僅在 `scopeMode === 'curriculum'` 時寫入課本檢定三大累計排行榜，避免 SAA 與 Pre-A1 污染課本榜單。
+  * **學生題目疑義回報真實錯誤處理 (P1)**：`supabase.js` 檢查 `{ error }`，前端 Toast 明確回報成功或失敗。
+  * **SAA 介面文字與動態年度 (P2)**：更新標題為「285 全題庫」，標準試卷動態對齊 `${selectedSaaYear} 年度`。
+  * **課本 10 題測驗聽力黃金配比 (P2)**：配置 3 聽力 + 7 讀寫。
+* **新增專屬合約驗證腳本 (`scripts/test_exam_audit_fixes.mjs`)**：
+  * 100 次 Pre-A1 組卷（15 聽 + 15 讀）、50 次課本 10 題配比、全軌道精熟分母、跨題庫錯題檢索 100% 通過。
+
 #### 0.0.13 課本題庫「七大命題鐵律」確立、Batch A（Book 1 & Book 2）100 題精準配比擴充、Legacy Rollback P0 防護與全站動態 `CANONICAL_STATS` 綁定 (`hereWeGoMcqBank.js`, `canonicalMapping.js`, `expand_batch_a_b1_b2.mjs`, `rollback_canonical_migration.mjs`, `test_batch_a_contract.mjs`, `QUIZ_SPELLING_HANDWRITING_SPEC.md`)
 * **確立課本題庫擴充「七大命題鐵律 (7 Golden Rules of Question Authoring)」並寫入交接規範**：
   * 於 [`docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md`](docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md) 第五節正式制定七大不可妥協之命題鐵律与編號槽位規範，提供後續輕量模型（如 Gemini Flash）零失誤擴充模板。
