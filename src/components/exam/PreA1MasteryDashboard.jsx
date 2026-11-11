@@ -29,18 +29,18 @@ import {
 import { formatStudentDisplayName } from '../../utils/studentIdHelper';
 import { CANONICAL_STATS } from '../../data/exam/canonicalMapping';
 
-const BOOK_COUNTS = CANONICAL_STATS?.bookCounts || {};
-const B1_TOTAL = BOOK_COUNTS[1] || 209;
-const B2_TOTAL = BOOK_COUNTS[2] || 204;
-const ALPHA_TOTAL = (BOOK_COUNTS.g1 || 155) + (BOOK_COUNTS.g2 || 158);
-const B3_TOTAL = BOOK_COUNTS[3] || 155;
-const B4_TOTAL = BOOK_COUNTS[4] || 135;
-const B5_TOTAL = BOOK_COUNTS[5] || 133;
-const B6_TOTAL = BOOK_COUNTS[6] || 149;
-const B7_TOTAL = BOOK_COUNTS[7] || 128;
-const B8_TOTAL = BOOK_COUNTS[8] || 126;
-const B9_TOTAL = BOOK_COUNTS[9] || 137;
-const CURRICULUM_TOTAL = CANONICAL_STATS?.canonicalItems || (B1_TOTAL + B2_TOTAL + ALPHA_TOTAL + B3_TOTAL + B4_TOTAL + B5_TOTAL + B6_TOTAL + B7_TOTAL + B8_TOTAL + B9_TOTAL);
+const BOOK_COUNTS = CANONICAL_STATS.bookCounts;
+const B1_TOTAL = BOOK_COUNTS[1];
+const B2_TOTAL = BOOK_COUNTS[2];
+const ALPHA_TOTAL = BOOK_COUNTS.g1 + BOOK_COUNTS.g2;
+const B3_TOTAL = BOOK_COUNTS[3];
+const B4_TOTAL = BOOK_COUNTS[4];
+const B5_TOTAL = BOOK_COUNTS[5];
+const B6_TOTAL = BOOK_COUNTS[6];
+const B7_TOTAL = BOOK_COUNTS[7];
+const B8_TOTAL = BOOK_COUNTS[8];
+const B9_TOTAL = BOOK_COUNTS[9];
+const CURRICULUM_TOTAL = CANONICAL_STATS.canonicalItems;
 
 // 3D 立體金星列與 100% 滿分流光掃過特效組件 (無空星留白設計，靠左排列)
 const MasteryStarsDisplay = ({ stars = 0, isPerfect = false, label = '' }) => {

@@ -46,15 +46,23 @@ console.log('══════════════════════�
 console.log('  LEGACY PRUNE ROLLBACK: VERIFYING PRECONDITIONS & BACKUP     ');
 console.log('══════════════════════════════════════════════════════════════');
 
+const mcqBakPath = mcqFilePath + '.active.bak';
+const mappingBakPath = mappingFilePath + '.active.bak';
+
 try {
-  if (!fs.existsSync(backupFilePath) || !fs.existsSync(manifestFilePath)) {
-    throw new Error(`Backup file or manifest not found in ${backupDir}. Cannot rollback.`);
+  // 0. 前置檔案存在檢查：必須同時具備題庫備份、Mapping 備份與 Manifest
+  if (!fs.existsSync(backupFilePath) || !fs.existsSync(mappingBackupFilePath) || !fs.existsSync(manifestFilePath)) {
+    throw new Error(
+      `Required rollback files not found in ${backupDir}. ` +
+      `Must have: ${path.basename(backupFilePath)}, ${path.basename(mappingBackupFilePath)}, and ${path.basename(manifestFilePath)}.`
+    );
   }
 
-  // 0. P0 防護：檢查當前題庫是否為原始 1,589 Pruned 狀態（嚴禁覆蓋已擴充 Batch A~D 之題庫）
-  if (!fs.existsSync(mcqFilePath)) {
-    throw new Error(`Active bank file not found at ${mcqFilePath}.`);
+  // 1. P0 防護：檢查當前題庫與 Mapping 是否存在且處於原始 1,589 Pruned 狀態（嚴禁覆蓋已擴充 Batch A~D 之題庫）
+  if (!fs.existsSync(mcqFilePath) || !fs.existsSync(mappingFilePath)) {
+    throw new Error(`Active bank (${mcqFilePath}) or active mapping (${mappingFilePath}) not found.`);
   }
+
   const currentBankContent = normalizeForHash(fs.readFileSync(mcqFilePath, 'utf8'));
   const currentBankHash = sha256Text(currentBankContent);
   const currentMod = await importFresh(mcqFilePath);
@@ -69,43 +77,84 @@ try {
     );
   }
 
-  // 1. 驗證 Manifest 與正規化 Checksum
+  // 2. 驗證 Manifest 與兩個備份檔的正規化 Checksum
   const manifestRaw = fs.readFileSync(manifestFilePath, 'utf8');
   const manifest = JSON.parse(manifestRaw);
   const backupContent = normalizeForHash(fs.readFileSync(backupFilePath, 'utf8'));
-  const calculatedHash = sha256Text(backupContent);
+  const calculatedBankHash = sha256Text(backupContent);
 
-  if (calculatedHash !== manifest.sha256) {
-    throw new Error(`Backup integrity check failed! Manifest SHA-256: ${manifest.sha256}, but backup file SHA-256 is ${calculatedHash}`);
-  }
-  console.log(`✓ Backup integrity verified! Normalized SHA-256: ${calculatedHash}`);
-
-  // 2. 若存在 canonicalMapping.1589.js 備份，一併驗證並準備原子還原
-  let mappingBackupContent = null;
-  if (fs.existsSync(mappingBackupFilePath)) {
-    mappingBackupContent = normalizeForHash(fs.readFileSync(mappingBackupFilePath, 'utf8'));
-    const mappingHash = sha256Text(mappingBackupContent);
-    const expectedMapHash = manifest.mapping1589Sha256 || EXPECTED_MAPPING_1589_SHA256;
-    if (mappingHash !== expectedMapHash) {
-      throw new Error(`Mapping backup integrity check failed! Expected ${expectedMapHash}, got ${mappingHash}`);
-    }
-    fs.writeFileSync(tmpMappingFilePath, mappingBackupContent, 'utf8');
+  if (calculatedBankHash !== manifest.sha256) {
+    throw new Error(`Backup integrity check failed! Manifest SHA-256: ${manifest.sha256}, but backup file SHA-256 is ${calculatedBankHash}`);
   }
 
-  // 3. 寫入題庫暫存檔並驗證題數為 3,317
+  const mappingBackupContent = normalizeForHash(fs.readFileSync(mappingBackupFilePath, 'utf8'));
+  const calculatedMappingHash = sha256Text(mappingBackupContent);
+  const expectedMapHash = manifest.mapping1589Sha256 || EXPECTED_MAPPING_1589_SHA256;
+  if (calculatedMappingHash !== expectedMapHash) {
+    throw new Error(`Mapping backup integrity check failed! Expected ${expectedMapHash}, got ${calculatedMappingHash}`);
+  }
+  console.log(`✓ Backup integrity verified! Bank SHA: ${calculatedBankHash.slice(0, 16)}..., Mapping SHA: ${calculatedMappingHash.slice(0, 16)}...`);
+
+  // 3. 預先寫入暫存檔並在置換前完成完整模組載入校驗
   fs.writeFileSync(tmpFilePath, backupContent, 'utf8');
-  const tmpCheck = await importFresh(tmpFilePath);
-  if (!tmpCheck.HERE_WE_GO_MCQ_BANK || tmpCheck.HERE_WE_GO_MCQ_BANK.length !== 3317) {
-    throw new Error(`Restored database has invalid length: ${tmpCheck.HERE_WE_GO_MCQ_BANK?.length}, expected 3317.`);
+  fs.writeFileSync(tmpMappingFilePath, mappingBackupContent, 'utf8');
+
+  const tmpBankCheck = await importFresh(tmpFilePath);
+  if (!tmpBankCheck.HERE_WE_GO_MCQ_BANK || tmpBankCheck.HERE_WE_GO_MCQ_BANK.length !== 3317) {
+    throw new Error(`Restored database has invalid length: ${tmpBankCheck.HERE_WE_GO_MCQ_BANK?.length}, expected 3317.`);
   }
 
-  // 4. 原子性替換題庫與 Mapping
-  fs.renameSync(tmpFilePath, mcqFilePath);
-  if (mappingBackupContent && fs.existsSync(tmpMappingFilePath)) {
-    fs.renameSync(tmpMappingFilePath, mappingFilePath);
-    console.log('✓ Atomically restored canonicalMapping.js to 1,589 baseline state.');
+  const tmpMapCheck = await importFresh(tmpMappingFilePath);
+  if (!tmpMapCheck.CANONICAL_META_MAP || !tmpMapCheck.CANONICAL_STATS) {
+    throw new Error(`Restored mapping file is missing CANONICAL_META_MAP or CANONICAL_STATS.`);
   }
-  console.log('✓ Atomically restored hereWeGoMcqBank.js to 3,317 questions.');
+
+  // 4. 交易式原子置換 (Transactional Swap with Automatic Reversion)
+  let transactionStarted = false;
+  try {
+    // 階段 1：建立目前活躍檔案的安全快照備份 (.active.bak)
+    fs.copyFileSync(mcqFilePath, mcqBakPath);
+    fs.copyFileSync(mappingFilePath, mappingBakPath);
+    transactionStarted = true;
+
+    // 階段 2：原子重新命名置換
+    fs.renameSync(tmpFilePath, mcqFilePath);
+    fs.renameSync(tmpMappingFilePath, mappingFilePath);
+
+    // 階段 3：置換後二次載入驗證
+    const activeBankCheck = await importFresh(mcqFilePath);
+    const activeMapCheck = await importFresh(mappingFilePath);
+    if (!activeBankCheck.HERE_WE_GO_MCQ_BANK || activeBankCheck.HERE_WE_GO_MCQ_BANK.length !== 3317) {
+      throw new Error(`Post-swap verification failed for active hereWeGoMcqBank.js`);
+    }
+    if (!activeMapCheck.CANONICAL_META_MAP || !activeMapCheck.CANONICAL_STATS) {
+      throw new Error(`Post-swap verification failed for active canonicalMapping.js`);
+    }
+
+    // 階段 4：交易確認成功，清理安全快照
+    if (fs.existsSync(mcqBakPath)) fs.unlinkSync(mcqBakPath);
+    if (fs.existsSync(mappingBakPath)) fs.unlinkSync(mappingBakPath);
+    console.log('✓ Transactional swap completed: both hereWeGoMcqBank.js (3,317 items) and canonicalMapping.js (1,589 baseline) restored!');
+  } catch (swapErr) {
+    if (transactionStarted) {
+      console.error('⚠️ Transaction error encountered. Automatically reverting active files to pre-swap state...');
+      try {
+        if (fs.existsSync(mcqBakPath)) {
+          fs.copyFileSync(mcqBakPath, mcqFilePath);
+          fs.unlinkSync(mcqBakPath);
+        }
+        if (fs.existsSync(mappingBakPath)) {
+          fs.copyFileSync(mappingBakPath, mappingFilePath);
+          fs.unlinkSync(mappingBakPath);
+        }
+        console.log('✓ Successfully reverted active files to pre-swap state.');
+      } catch (revertErr) {
+        console.error('FATAL: Could not revert active files:', revertErr.message);
+      }
+    }
+    throw swapErr;
+  }
+
   console.log('🎉 Rollback completed successfully: full 3,317 database restored and verified!');
 } catch (err) {
   console.error('❌ Rollback failed:', err.message);
@@ -114,6 +163,12 @@ try {
   }
   if (fs.existsSync(tmpMappingFilePath)) {
     fs.unlinkSync(tmpMappingFilePath);
+  }
+  if (fs.existsSync(mcqBakPath)) {
+    fs.unlinkSync(mcqBakPath);
+  }
+  if (fs.existsSync(mappingBakPath)) {
+    fs.unlinkSync(mappingBakPath);
   }
   process.exit(1);
 }

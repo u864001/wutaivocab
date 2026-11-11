@@ -53730,18 +53730,18 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "______ up, please. Let's sing a song!",
+    "question": "The students leave their chairs. \"______ up, please. Let's sing a song!\"",
     "options": [
       "Stand",
       "Sit",
       "Open",
       "Close",
-      "Three",
-      "Name",
-      "Color"
+      "Read",
+      "Draw",
+      "Write"
     ],
     "answer": 0,
-    "explanation": "「Stand up, please.（請起立）」為固定教室指令片語；Sit 需搭配 down（Sit down），Open 與 Close 後方需接受詞（如 book）。",
+    "explanation": "前半句「The students leave their chairs.（學生們離開椅子）」明確指出起立的動作，因此填入「Stand」構成「Stand up, please.（請起立）」。其他選項為相近教室動作動詞但語意不合。",
     "canonicalId": "hwg_b1_ba_01",
     "primaryScope": "Starter",
     "scopes": [
@@ -55457,18 +55457,18 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "Eleven, twelve, thirteen, fourteen, ______. Let's count to fifteen!",
+    "question": "Please count ______ eleven to fifteen.",
     "options": [
-      "fifteen",
-      "five",
-      "fifty",
-      "four",
-      "ten",
-      "six",
-      "one"
+      "from",
+      "to",
+      "at",
+      "on",
+      "in",
+      "of",
+      "with"
     ],
     "answer": 0,
-    "explanation": "依數字 11 到 15 的順序，fourteen（14）緊接著的下一個數字為「fifteen（15）」。",
+    "explanation": "「count from A to B」為固定文法介系詞結構，表示「從 A 數到 B」；因此空格應填入「from」。其他介系詞無此搭配用法。",
     "canonicalId": "hwg_b2_ba_02",
     "primaryScope": "Starter",
     "scopes": [

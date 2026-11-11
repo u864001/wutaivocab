@@ -18,6 +18,7 @@
  */
 import assert from 'node:assert/strict';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import crypto from 'crypto';
 import { execFileSync } from 'child_process';
@@ -99,68 +100,163 @@ for (const q of batchAListening) {
 console.log('  ✓ All 32 Batch A listening items use exact fixed stems with zero transcript leak!');
 
 // ---------------------------------------------------------------------------
-// 4. 拼字黏連與指定題修復驗證 (hwg_b1_ba_20)
+// 4. 拼字黏連與指定題修復驗證 (hwg_b1_ba_20 & 全庫掃描)
 // ---------------------------------------------------------------------------
-console.log('\n[4/6] Verifying hwg_b1_ba_20 & Checking for Word Concatenation Typos...');
+console.log('\n[4/6] Verifying hwg_b1_ba_20 & Checking for Word Concatenation Typos Across Entire Bank...');
 const q20 = HERE_WE_GO_MCQ_BANK.find(q => q.id === 'hwg_b1_ba_20');
 assert.ok(q20, 'hwg_b1_ba_20 must exist');
 assert.equal(q20.options[0], 'I am nine years old.', 'hwg_b1_ba_20 answer must be "I am nine years old."');
 
-for (const q of [...b1BatchA, ...b2BatchA]) {
+let totalCheckedOptions = 0;
+for (const q of HERE_WE_GO_MCQ_BANK) {
   for (const opt of q.options) {
+    totalCheckedOptions++;
     assert.ok(!/\bI am[A-Za-z]/.test(opt), `Concatenation typo found in ${q.id}: "${opt}"`);
   }
 }
-console.log('  ✓ hwg_b1_ba_20 ("I am nine years old.") and all 700 Batch A options verified!');
+console.log(`  ✓ hwg_b1_ba_20 ("I am nine years old.") and all ${totalCheckedOptions} options across entire database verified with zero typos!`);
 
 // ---------------------------------------------------------------------------
-// 5. 全站 UI 與資料層動態綁定 CANONICAL_STATS (無硬編碼 1689 / 1,689)
+// 5. 全站 UI 與資料層動態綁定 CANONICAL_STATS (無硬編碼 1689 / 1,689 / 分冊數字)
 // ---------------------------------------------------------------------------
 console.log('\n[5/6] Verifying Dynamic CANONICAL_STATS Binding Across UI & Data Files...');
 const dynamicFiles = [
   'src/components/exam/PreA1MasteryDashboard.jsx',
   'src/games/exam/PureMcqExamView.jsx',
   'src/components/LeaderboardView.jsx',
-  'src/data/exam/examTracks.js'
+  'src/data/exam/examTracks.js',
+  'src/utils/masteryHelper.js',
+  'src/data/exam/index.js'
 ];
 
 for (const relPath of dynamicFiles) {
   const content = fs.readFileSync(path.join(projectRoot, relPath), 'utf8');
-  assert.ok(content.includes('CANONICAL_STATS'), `${relPath} must import and reference CANONICAL_STATS`);
-  assert.ok(!/1,689|totalItems:\s*1689/.test(content), `${relPath} still contains hardcoded 1,689 or totalItems: 1689`);
+  if (relPath !== 'src/data/exam/index.js') {
+    assert.ok(content.includes('CANONICAL_STATS'), `${relPath} must import and reference CANONICAL_STATS`);
+  }
+  assert.ok(!/1,689|1689\s*題|totalItems:\s*1689|\|\s*1689/.test(content), `${relPath} still contains hardcoded 1,689 / 1689`);
 }
-console.log('  ✓ All UI & track config files dynamically reference CANONICAL_STATS!');
+
+const dashboardContent = fs.readFileSync(path.join(projectRoot, 'src/components/exam/PreA1MasteryDashboard.jsx'), 'utf8');
+assert.ok(!/\|\s*(209|204|155|135|133|149|128|126|137)/.test(dashboardContent), 'PreA1MasteryDashboard.jsx must not contain hardcoded book count fallbacks');
+console.log('  ✓ All UI & data/track files dynamically reference CANONICAL_STATS with zero hardcoded fallbacks!');
 
 // ---------------------------------------------------------------------------
-// 6. P0 Legacy Rollback 防護驗證：拒絕覆蓋已擴充 Batch A 之題庫
+// 6. P0 Legacy Rollback 隔離沙盒防護驗證 (mkdtempSandbox，絕不觸碰正式工作區)
 // ---------------------------------------------------------------------------
-console.log('\n[6/6] Verifying Legacy Prune Rollback Refuses to Overwrite Batch A Bank...');
-const mcqPath = path.join(projectRoot, 'src/data/hereWeGoMcqBank.js');
-const mapPath = path.join(projectRoot, 'src/data/exam/canonicalMapping.js');
-const beforeMcqSha = crypto.createHash('sha256').update(fs.readFileSync(mcqPath, 'utf8')).digest('hex');
-const beforeMapSha = crypto.createHash('sha256').update(fs.readFileSync(mapPath, 'utf8')).digest('hex');
+console.log('\n[6/6] Verifying Legacy Prune Rollback Refuses Execution in Isolated Sandbox...');
+const sandboxDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wutai_rollback_guard_'));
 
-let rollbackBlocked = false;
-let rollbackErrorOutput = '';
 try {
-  execFileSync(process.execPath, ['scripts/rollback_canonical_migration.mjs'], {
-    cwd: projectRoot,
-    encoding: 'utf8',
-    stdio: 'pipe'
-  });
-} catch (err) {
-  rollbackBlocked = true;
-  rollbackErrorOutput = String(err.stderr || err.message || '');
+  // 建立隔離沙盒目錄結構
+  fs.mkdirSync(path.join(sandboxDir, 'scripts'), { recursive: true });
+  fs.mkdirSync(path.join(sandboxDir, 'src/data/exam'), { recursive: true });
+  fs.mkdirSync(path.join(sandboxDir, 'src/data/backups'), { recursive: true });
+
+  fs.writeFileSync(
+    path.join(sandboxDir, 'package.json'),
+    JSON.stringify({ type: 'module' }, null, 2),
+    'utf8'
+  );
+
+  // 複製必要檔案至沙盒
+  fs.copyFileSync(
+    path.join(projectRoot, 'scripts/rollback_canonical_migration.mjs'),
+    path.join(sandboxDir, 'scripts/rollback_canonical_migration.mjs')
+  );
+  fs.copyFileSync(
+    path.join(projectRoot, 'src/data/backups/hereWeGoMcqBank.expanded.3317.js'),
+    path.join(sandboxDir, 'src/data/backups/hereWeGoMcqBank.expanded.3317.js')
+  );
+  fs.copyFileSync(
+    path.join(projectRoot, 'src/data/backups/canonicalMapping.1589.js'),
+    path.join(sandboxDir, 'src/data/backups/canonicalMapping.1589.js')
+  );
+  fs.copyFileSync(
+    path.join(projectRoot, 'src/data/backups/manifest.json'),
+    path.join(sandboxDir, 'src/data/backups/manifest.json')
+  );
+
+  // 複製包含 Batch A (1,689 題) 的當前題庫與 mapping 至沙盒
+  fs.copyFileSync(
+    path.join(projectRoot, 'src/data/hereWeGoMcqBank.js'),
+    path.join(sandboxDir, 'src/data/hereWeGoMcqBank.js')
+  );
+  fs.copyFileSync(
+    path.join(projectRoot, 'src/data/exam/canonicalMapping.js'),
+    path.join(sandboxDir, 'src/data/exam/canonicalMapping.js')
+  );
+
+  const sandboxMcqPath = path.join(sandboxDir, 'src/data/hereWeGoMcqBank.js');
+  const sandboxMapPath = path.join(sandboxDir, 'src/data/exam/canonicalMapping.js');
+  const beforeMcqSha = crypto.createHash('sha256').update(fs.readFileSync(sandboxMcqPath, 'utf8')).digest('hex');
+  const beforeMapSha = crypto.createHash('sha256').update(fs.readFileSync(sandboxMapPath, 'utf8')).digest('hex');
+
+  let rollbackBlocked = false;
+  let rollbackErrorOutput = '';
+  try {
+    execFileSync(process.execPath, ['scripts/rollback_canonical_migration.mjs'], {
+      cwd: sandboxDir,
+      encoding: 'utf8',
+      stdio: 'pipe'
+    });
+  } catch (err) {
+    rollbackBlocked = true;
+    rollbackErrorOutput = String(err.stderr || err.message || '');
+  }
+
+  assert.equal(rollbackBlocked, true, 'Legacy rollback MUST fail in sandbox when active bank contains Batch A items');
+  assert.match(rollbackErrorOutput, /Refusing to execute legacy prune rollback/i);
+
+  const afterMcqSha = crypto.createHash('sha256').update(fs.readFileSync(sandboxMcqPath, 'utf8')).digest('hex');
+  const afterMapSha = crypto.createHash('sha256').update(fs.readFileSync(sandboxMapPath, 'utf8')).digest('hex');
+  assert.equal(afterMcqSha, beforeMcqSha, 'Sandbox hereWeGoMcqBank.js must remain 100% untouched after blocked rollback');
+  assert.equal(afterMapSha, beforeMapSha, 'Sandbox canonicalMapping.js must remain 100% untouched after blocked rollback');
+  assert.equal(CANONICAL_STATS.canonicalItems, 1689);
+
+  // 同步測試前置檢查：缺少 Mapping 備份時是否立刻拋出防護錯誤
+  const missingMapSandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'wutai_missing_map_'));
+  try {
+    fs.mkdirSync(path.join(missingMapSandbox, 'scripts'), { recursive: true });
+    fs.mkdirSync(path.join(missingMapSandbox, 'src/data/backups'), { recursive: true });
+    fs.mkdirSync(path.join(missingMapSandbox, 'src/data/exam'), { recursive: true });
+    fs.writeFileSync(path.join(missingMapSandbox, 'package.json'), JSON.stringify({ type: 'module' }, null, 2), 'utf8');
+
+    fs.copyFileSync(
+      path.join(projectRoot, 'scripts/rollback_canonical_migration.mjs'),
+      path.join(missingMapSandbox, 'scripts/rollback_canonical_migration.mjs')
+    );
+    fs.copyFileSync(
+      path.join(projectRoot, 'src/data/backups/hereWeGoMcqBank.expanded.3317.js'),
+      path.join(missingMapSandbox, 'src/data/backups/hereWeGoMcqBank.expanded.3317.js')
+    );
+    fs.copyFileSync(
+      path.join(projectRoot, 'src/data/backups/manifest.json'),
+      path.join(missingMapSandbox, 'src/data/backups/manifest.json')
+    );
+    // 刻意不複製 canonicalMapping.1589.js
+    let missingBlocked = false;
+    let missingErrorOutput = '';
+    try {
+      execFileSync(process.execPath, ['scripts/rollback_canonical_migration.mjs'], {
+        cwd: missingMapSandbox,
+        encoding: 'utf8',
+        stdio: 'pipe'
+      });
+    } catch (err) {
+      missingBlocked = true;
+      missingErrorOutput = String(err.stderr || err.message || '');
+    }
+    assert.equal(missingBlocked, true, 'Rollback must fail immediately when mapping backup is missing');
+    assert.match(missingErrorOutput, /Required rollback files not found/i);
+    console.log('  ✓ Upfront missing backup check verified in isolated sandbox!');
+  } finally {
+    fs.rmSync(missingMapSandbox, { recursive: true, force: true });
+  }
+
+  console.log('  ✓ Legacy rollback safely refused execution and threw required errors in isolated sandbox!');
+} finally {
+  fs.rmSync(sandboxDir, { recursive: true, force: true });
 }
-
-assert.equal(rollbackBlocked, true, 'Legacy rollback MUST fail when active bank contains Batch A items');
-assert.match(rollbackErrorOutput, /Refusing to execute legacy prune rollback/i);
-
-const afterMcqSha = crypto.createHash('sha256').update(fs.readFileSync(mcqPath, 'utf8')).digest('hex');
-const afterMapSha = crypto.createHash('sha256').update(fs.readFileSync(mapPath, 'utf8')).digest('hex');
-assert.equal(afterMcqSha, beforeMcqSha, 'hereWeGoMcqBank.js must remain 100% untouched after blocked rollback');
-assert.equal(afterMapSha, beforeMapSha, 'canonicalMapping.js must remain 100% untouched after blocked rollback');
-assert.equal(CANONICAL_STATS.canonicalItems, 1689);
-console.log('  ✓ Legacy rollback safely refused execution and left 1,689-item bank & mapping untouched!');
 
 console.log('\n🎉 ALL 6 BATCH A CONTRACT & P0 SAFETY CHECKS PASSED 100%!');

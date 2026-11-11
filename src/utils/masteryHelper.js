@@ -9,7 +9,7 @@
  */
 
 import { resolveCanonicalId, CANONICAL_STATS } from '../data/exam/canonicalMapping.js';
-const CURRICULUM_TOTAL_ITEMS = CANONICAL_STATS?.canonicalItems || 1689;
+const CURRICULUM_TOTAL_ITEMS = CANONICAL_STATS.canonicalItems;
 
 export const MASTERY_STATES = {
   UNATTEMPTED: 'unattempted', // ⚪ 未挑戰

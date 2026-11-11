@@ -85,9 +85,9 @@ const BOOK_1_NEW_ITEMS = [
     section: 'grammar',
     taskType: 'G-MC',
     difficulty: 1,
-    question: '______ up, please. Let\'s sing a song!',
-    options: ['Stand', 'Sit', 'Open', 'Close', 'Three', 'Name', 'Color'],
-    explanation: '「Stand up, please.（請起立）」為固定教室指令片語；Sit 需搭配 down（Sit down），Open 與 Close 後方需接受詞（如 book）。'
+    question: 'The students leave their chairs. "______ up, please. Let\'s sing a song!"',
+    options: ['Stand', 'Sit', 'Open', 'Close', 'Read', 'Draw', 'Write'],
+    explanation: '前半句「The students leave their chairs.（學生們離開椅子）」明確指出起立的動作，因此填入「Stand」構成「Stand up, please.（請起立）」。其他選項為相近教室動作動詞但語意不合。'
   }),
   createItem({
     id: 'hwg_b1_ba_02',
@@ -814,9 +814,9 @@ const BOOK_2_NEW_ITEMS = [
     section: 'grammar',
     taskType: 'G-MC',
     difficulty: 2,
-    question: 'Eleven, twelve, thirteen, fourteen, ______. Let\'s count to fifteen!',
-    options: ['fifteen', 'five', 'fifty', 'four', 'ten', 'six', 'one'],
-    explanation: '依數字 11 到 15 的順序，fourteen（14）緊接著的下一個數字為「fifteen（15）」。'
+    question: 'Please count ______ eleven to fifteen.',
+    options: ['from', 'to', 'at', 'on', 'in', 'of', 'with'],
+    explanation: '「count from A to B」為固定文法介系詞結構，表示「從 A 數到 B」；因此空格應填入「from」。其他介系詞無此搭配用法。'
   }),
   createItem({
     id: 'hwg_b2_ba_03',
