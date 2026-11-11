@@ -11,7 +11,7 @@
 | **Pruned Baseline** | 歷史清理基準點 (`cc7c275`) | 0 | 1,589 題 | ✅ 已鎖定基準 |
 | **Batch A** | 低年級：Book 1 & Book 2 | +100 題 (各 50 題) | **1,689 題** | ✅ **已完成且通過深度驗收** |
 | **Batch B** | 中年級：Book 3 & Book 4 | +100 題 (各 50 題) | **1,789 題** | ✅ **已完成且通過深度驗收** |
-| **Batch C** | 高年級：Book 5 & Book 6 | +100 題 (各 50 題) | 1,889 題 | ⏳ 待啟動 |
+| **Batch C** | 高年級：Book 5 & Book 6 | +100 題 (各 50 題) | **1,889 題** | ✅ **已完成且通過深度驗收** |
 | **Batch D** | 進階銜接：Book 7 & Book 8 | +100 題 (各 50 題) | 1,989 題 | ⏳ 待啟動 |
 
 ---
@@ -101,12 +101,15 @@
 任何新批次加入或程式碼修改後，必須 100% 通過以下 5 大驗證與 6 階段煙霧測試：
 
 ```bash
-# 1. 執行 5 大契約與語意驗證關卡
+# 1. 執行契約、題型配比與語意驗證關卡
 node scripts/verify_canonical_schema.mjs
 node scripts/audit_semantic_gates.mjs
-node scripts/test_canonical_migration.mjs
-node scripts/test_prune_roundtrip.mjs
 node scripts/test_batch_a_contract.mjs
+node scripts/test_batch_b_contract.mjs
+node scripts/test_batch_c_contract.mjs
+node scripts/test_blueprint_diversity.mjs
+node scripts/test_mastery_engine.mjs
+node scripts/test_exam_audit_fixes.mjs
 
 # 2. 執行生產打包與 6 階段全自動無頭 Chrome 防回歸測試
 npm run build && node scripts/smoke_test.mjs

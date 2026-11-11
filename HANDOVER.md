@@ -54,6 +54,26 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.15 Batch C（Book 5 & Book 6）100 題高規格擴充完成（全庫增至 1,889 題）、低年級 (G1/G2) 中文題幹語音朗讀助理全面上線 (`hereWeGoMcqBank.js`, `canonicalMapping.js`, `PureMcqExamView.jsx`, `test_batch_c_contract.mjs`, `expand_batch_c_b5_b6.mjs`)
+* **Batch C 擴充完成（Book 5 & Book 6 共 100 題純 Canonical 擴充，全庫增至 1,889 題）**：
+  * **Book 5 新增 50 題 (`hwg_b5_bc_01` ~ `hwg_b5_bc_50`)**：由 133 題擴充至 **183 題**。
+  * **Book 6 新增 50 題 (`hwg_b6_bc_01` ~ `hwg_b6_bc_50`)**：由 149 題擴充至 **199 題**。
+  * **嚴格符合 8/8/10/10/6/8 黃金配比**：每冊皆為 `L-WORD: 8`, `L-RESP: 8`, `V-MEAN: 10`, `G-MC: 10`, `G-CTX: 6`, `R-COMP: 8`。
+  * **20 題 V-MEAN 純生活語境填空**：100% 英文真實語境填空題（含有 `______` 空格），選項為純英文目標單字，0 機械式中英翻譯題。
+  * **16 題 R-COMP 短文理解**：短文長度嚴格落於 30～50 英文單字間（實測 35～39 字），情境豐富且推論線索充足。
+  * **32 題聽力題零洩漏**：`L-WORD` 與 `L-RESP` 100% 採用固定題幹，英語逐字稿僅存放於 `media.audioText`。
+  * **7 選項、answer: 0 靜態契約**：所有題目均具備 7 選項與詳實解析。
+  * **新增專屬契約測試腳本 (`scripts/test_batch_c_contract.mjs`)**：全數通過 9 大品質門禁與隔離沙盒回滾阻擋驗證。
+* **低年級 (Grade 1 & Grade 2) 英語檢定繁體中文語音朗讀助理全面上線**：
+  * **清晰中文題幹覆蓋**：全面驗證 G1 (143 題) 與 G2 (170 題) 題幹皆為繁體中文，符合一二年級識字需求。
+  * **醒目友善播音橫幅**：低年級測驗上方新增「🔊 念題目給我聽 / ⏹️ 停止念題」跳動動畫快捷橫幅與題幹旁喇叭按鈕。
+  * **自動讀題開關**：低年級預設開啟「自動讀題」，切題時自動啟動語音；亦支援手動自由切換。
+  * **高品質臺灣國語語音合成 (zh-TW)**：自動過濾括號與底線等格式字符，以 0.86 倍速親切朗讀題目與解析。
+* **英語檢定館 Runtime 核心優化**：
+  * 逾時續考結算時，嚴格在 `finalizeExam` 執行完畢後才清除快照，避免瀏覽器在 alert 期間被關閉導致紀錄丟失。
+  * `is_formal` 旗標精準綁定 `Boolean(targetIsFormal)`，避免自主練習標準 30 題被誤標記為正式施測。
+  * 依檢定軌道（課本、Pre-A1 70% 官方標準、學力檢測、易錯題）客製化顯示通關獎勵說明文字。
+
 #### 0.0.14 Batch B（Book 3 & Book 4）100 題擴充獨立驗收全面通過、英語檢定館 Runtime 防護與 Pre-A1 官方 15+15 藍圖落實 (`hereWeGoMcqBank.js`, `examBlueprint.js`, `PureMcqExamView.jsx`, `masteryHelper.js`, `supabase.js`, `test_batch_b_contract.mjs`, `test_exam_audit_fixes.mjs`)
 * **Batch B 擴充正式結案通過獨立驗收（Book 3 & Book 4 共 100 題純 Canonical 擴充，全庫增至 1,789 題）**：
   * **Book 3 新增 50 題 (`hwg_b3_bb_01` ~ `hwg_b3_bb_50`)**：由 155 題擴充至 **205 題**。
