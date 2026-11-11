@@ -1,7 +1,7 @@
 /**
  * 檢定館題庫與測驗軌道統一中樞 (Exam System Unified Hub)
  * 整合四大測驗軌道：
- * 1. 課本單元進度檢定 (textbook) - 3,317 題
+ * 1. 課本單元進度檢定 (textbook) - 1,589 題
  * 2. Test My English Pre-A1 官方模擬 (tme-preA1) - 規劃中
  * 3. 教育部縣市學力檢測 (ministry-assessment) - 規劃中
  * 4. 個人易錯題弱點擊破室 (mistakes)

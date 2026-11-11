@@ -54,10 +54,13 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
-#### 0.0.12 課本題庫方案 A（In-Book Canonical）正式修剪落實：刪除 1,728 筆同冊重複複本、全庫精簡為 1,589 題純淨 Canonical 題目 (`hereWeGoMcqBank.js`, `manifest.json`, `test_prune_roundtrip.mjs`)
+#### 0.0.12 課本題庫方案 A（In-Book Canonical）正式修剪落實與全站 UI 分母同步：刪除 1,728 筆同冊重複複本、全庫精簡為 1,589 題純淨 Canonical 題目 (`hereWeGoMcqBank.js`, `PreA1MasteryDashboard.jsx`, `PureMcqExamView.jsx`, `LeaderboardView.jsx`, `examTracks.js`, `exam/index.js`)
 * **正式執行 `node scripts/execute_canonical_prune.mjs`**：
   * 經 ChatGPT 本機 Windows 隔離實測確認 `2976ce0` 全面通過並正式授權，已將 `src/data/hereWeGoMcqBank.js` 由 3,317 題原子性精簡為 **1,589 題冊內 Canonical 題目**（刪除 1,728 筆同冊跨單元複本；保留 22 組跨冊獨立題目）。
   * 生產打包體積（minified bundle）直接減少 **863 KB**（由 4,154 KB 降至 3,290 KB）。
+* **全站 UI 顯示題數與精熟分母同步（1,589 題）**：
+  * `PreA1MasteryDashboard.jsx`：`TRACK_CONFIGS.curriculum.totalItems` 由 3,317 更新為 `1589`；`CURRICULUM_DASHBOARD_META` 分冊題數同步為低年級 626（B1: 159, B2: 154, G1/G2: 313）、中年級 290（B3: 155, B4: 135）、高年級 282（B5: 133, B6: 149）、進階與銜接 391（B7: 128, B8: 126, B9: 137）。
+  * `PureMcqExamView.jsx`、`LeaderboardView.jsx`、`examTracks.js`、`exam/index.js` 所有使用者可見題數標示全部同步為 `1,589 題`。
 * **物理備份與雙模態驗證 100% 通過**：
   * 完整 3,317 題物理備份已鎖定於 `src/data/backups/hereWeGoMcqBank.expanded.3317.js`（Normalized SHA-256: `b191fad18332b8e42a03621a45ef0eb24bcae1a77bbcb5edd04f6677b21a0434`）。
   * `verify_canonical_schema.mjs`（`PRUNED CANONICAL (1,589 items)`）、`audit_semantic_gates.mjs`（1,589 題課本 + 300 題 TME + 285 題 SAA 零異常）、`test_canonical_migration.mjs`、`test_prune_roundtrip.mjs` 與 6 階段 `smoke_test.mjs` 100% 綠燈通過。
