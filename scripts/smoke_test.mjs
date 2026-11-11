@@ -865,6 +865,67 @@ async function run() {
     console.log('  ✓ PureMcqExamView mobile 375x667: unit range, count & start buttons all reachable (no overlap)');
   }
 
+  // 5D-3. SAA 學力檢測響應式 Wizard：年度 → 年級 → 試卷，手機不得漏步或被遮擋
+  client.exceptions = [];
+  await client.send('Emulation.setDeviceMetricsOverride', { width: 375, height: 667, deviceScaleFactor: 2, mobile: true });
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
+  await new Promise(r => setTimeout(r, 900));
+  const saaWizardCheck = await client.evaluate(`
+    (async () => {
+      const buttons = () => Array.from(document.querySelectorAll('button'));
+      const findButton = (label) => buttons().find(b => (b.innerText || '').includes(label));
+      const clickVisible = async (button) => {
+        if (!button) return false;
+        button.scrollIntoView({ block: 'center' });
+        await new Promise(r => setTimeout(r, 80));
+        const rect = button.getBoundingClientRect();
+        const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        if (!hit || !(hit === button || button.contains(hit))) return false;
+        button.click();
+        await new Promise(r => setTimeout(r, 180));
+        return true;
+      };
+
+      const entered = await clickVisible(findButton('學力檢測練習'));
+      const step1 = (document.body.innerText || '').includes('第 1／3 步') && !!findButton('115 年度全真卷');
+      const continued1 = await clickVisible(findButton('繼續：選擇年級'));
+      const step2 = (document.body.innerText || '').includes('第 2／3 步') && !!findButton('五年級');
+      const gradeSelected = await clickVisible(findButton('五年級'));
+      const continued2 = await clickVisible(findButton('繼續：選擇試卷'));
+      const step3 = (document.body.innerText || '').includes('第 3／3 步')
+        && !!findButton('聽力測驗 20 題')
+        && !!findButton('閱讀測驗 20 題');
+      const startButton = findButton('開始學力測驗');
+      const startReachable = startButton ? await (async () => {
+        startButton.scrollIntoView({ block: 'center' });
+        await new Promise(r => setTimeout(r, 80));
+        const rect = startButton.getBoundingClientRect();
+        const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        return !!hit && (hit === startButton || startButton.contains(hit));
+      })() : false;
+      const backed = await clickVisible(findButton('上一步'));
+      const preservedGrade = (document.body.innerText || '').includes('第 2／3 步')
+        && !!findButton('五年級')
+        && findButton('五年級').className.includes('bg-purple-600');
+
+      return {
+        ok: entered && step1 && continued1 && step2 && gradeSelected && continued2 && step3 && startReachable && backed && preservedGrade,
+        entered,
+        step1,
+        step2,
+        step3,
+        startReachable,
+        preservedGrade
+      };
+    })()
+  `);
+  await client.send('Emulation.clearDeviceMetricsOverride', {});
+  if (!saaWizardCheck?.ok || client.exceptions.length > 0) {
+    failures.push({ target: 'SAA Responsive Wizard (375x667)', details: saaWizardCheck, exceptions: client.exceptions });
+  } else {
+    console.log('  ✓ SAA mobile Wizard: year -> grade -> paper flow, back navigation & preserved selection verified');
+  }
+
   // 5E. 課本題庫檢定館 (mcq-exam) 一頁式免捲動選範圍 -> 開始檢定 -> 選答案 -> 下一題 深度驗證
   client.exceptions = [];
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
