@@ -72,7 +72,8 @@ import {
   clearInProgress,
   purgeExpiredInProgress,
   getTaskLabel,
-  extractTargetToken
+  extractTargetToken,
+  resolveQuestionTrack
 } from './examBlueprint';
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -271,6 +272,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     addedMistakeCount: 0
   });
   const hasAwardedCoinsRef = useRef(false);
+  const hasFinalizedRef = useRef(false);
 
   // 學生試題疑義回報狀態 (僅在非正式練習開放)
   const [reportedQuestions, setReportedQuestions] = useState({}); // { [qId]: boolean }
@@ -426,7 +428,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       if (ids.has(q.id) || ids.has(cId)) {
         if (!seen.has(cId)) {
           seen.add(cId);
-          list.push(q);
+          list.push({
+            ...q,
+            sourceTrack: q.sourceTrack || resolveQuestionTrack(q)
+          });
         }
       }
     }
@@ -575,7 +580,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           const ownBooks = getDefaultBooksForGrade(currentStudent?.grade);
           const fillerCandidates = HERE_WE_GO_MCQ_BANK.filter(
             (q) => (ownBooks.length === 0 || ownBooks.includes(q.book)) && !pickedIds.has(q.id)
-          );
+          ).map((q) => ({
+            ...q,
+            sourceTrack: 'curriculum'
+          }));
           for (let i = fillerCandidates.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [fillerCandidates[i], fillerCandidates[j]] = [
@@ -706,6 +714,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       });
 
       hasAwardedCoinsRef.current = false;
+      hasFinalizedRef.current = false;
       setQuestions(prepared);
       setCurrentIndex(0);
       setAnswers({});
@@ -863,19 +872,30 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   };
 
   // 交卷結算：更新易錯題池＋計算金幣獎勵＋同步三大累計排行榜 (測驗王、勤學王、精準王)
-  const finalizeExam = useCallback(() => {
+  const finalizeExam = useCallback((overridePayload = null) => {
+    if (hasFinalizedRef.current) return;
+    hasFinalizedRef.current = true;
+
+    const targetQuestions = overridePayload?.questions || questions;
+    const targetAnswers = overridePayload?.answers || answers;
+    const targetScopeMode = overridePayload?.scopeMode || scopeMode;
+    const targetSelectedBook = overridePayload?.selectedBook || selectedBook;
+    const targetIsFormal = overridePayload?.isFormal !== undefined ? overridePayload.isFormal : isFormalExam;
+    const targetPreA1Format = overridePayload?.selectedPreA1Format || selectedPreA1Format;
+    const targetElapsedSec = overridePayload?.elapsedSec !== undefined ? overridePayload.elapsedSec : elapsedSec;
+
     let correctCount = 0;
     const nextMistakes = { ...mistakeMap };
     let graduatedCount = 0;
     let addedMistakeCount = 0;
 
-    questions.forEach((q, idx) => {
-      const isRight = answers[idx] === q.answer;
+    targetQuestions.forEach((q, idx) => {
+      const isRight = targetAnswers[idx] === q.answer;
       const targetId = resolveCanonicalId(q.canonicalId || q.id);
       if (isRight) {
         correctCount++;
         // 在「個人易錯題複習」模式中答對既有易錯題：連續答對次數 +1，達 2 次即移出易錯池
-        if (scopeMode === 'mistakes' && (nextMistakes[targetId] || nextMistakes[q.id])) {
+        if (targetScopeMode === 'mistakes' && (nextMistakes[targetId] || nextMistakes[q.id])) {
           const currentRec = nextMistakes[targetId] || nextMistakes[q.id];
           const nextStreak = (currentRec.streak || 0) + 1;
           if (nextStreak >= 2) {
@@ -908,15 +928,15 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
     saveMistakeMap(nextMistakes);
 
-    const total = questions.length || 1;
+    const total = targetQuestions.length || 1;
     const accuracyRatio = correctCount / total;
     const finalScore = Math.round(accuracyRatio * 100);
 
     // 判斷是否符合計分資格（易錯題複習、Pre-A1 官方模擬、學力檢測、或選擇學生本年級的課本冊別）
-    const isCurriculumTrack = scopeMode === 'curriculum';
+    const isCurriculumTrack = targetScopeMode === 'curriculum';
     const isOwnGradeBook =
       !isCurriculumTrack ||
-      isBookInOwnGrade(String(selectedBook), currentStudent?.grade, 'mcq-exam');
+      isBookInOwnGrade(String(targetSelectedBook), currentStudent?.grade, 'mcq-exam');
 
     let coinsEarned = 0;
     let reason = '';
@@ -932,11 +952,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       reason = `通過檢定標準（答對率 ${finalScore}%），獲得 +${coinsEarned} 金幣並計入本週三大榜！`;
 
       // 僅限課本單元檢定同步至課本三大累計排行榜（測驗王、勤學王、精準王），杜絕跨軌道污染
-      if (scopeMode === 'curriculum') {
+      if (targetScopeMode === 'curriculum') {
         const displayName = formatStudentDisplayName(currentStudent);
         recordMcqExamStats({
           grade: currentStudent?.grade,
-          book: selectedBook,
+          book: targetSelectedBook,
           name: displayName,
           correctCount,
           totalCount: total
@@ -944,24 +964,44 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       }
     }
 
-    // 記錄三大檢定動態滾動精熟狀態
+    // 記錄三大檢定動態滾動精熟狀態（若為易錯題模式，依題目原始來源軌道分組寫入對應精熟紀錄，杜絕跨軌道污染）
     const currentSid = currentStudent?.student_id || currentStudent?.id || 'guest';
-    const examTrack =
-      scopeMode === 'tme-preA1'
-        ? 'tme-preA1'
-        : scopeMode === 'ministry-assessment'
-        ? 'ministry-assessment'
-        : 'curriculum';
-    const updatedSnap = recordExamMasterySession(
-      currentSid,
-      examTrack,
-      questions,
-      answers,
-      isFormalExam || selectedPreA1Format === 'standard'
-    );
+    let updatedSnap = null;
+    if (targetScopeMode === 'mistakes') {
+      const byTrack = {};
+      targetQuestions.forEach((q, idx) => {
+        const trk = q.sourceTrack || resolveQuestionTrack(q);
+        if (!byTrack[trk]) byTrack[trk] = { questions: [], answers: [] };
+        byTrack[trk].questions.push(q);
+        byTrack[trk].answers.push(targetAnswers[idx]);
+      });
+      for (const [trk, data] of Object.entries(byTrack)) {
+        updatedSnap = recordExamMasterySession(
+          currentSid,
+          trk,
+          data.questions,
+          data.answers,
+          false // 易錯題複習為練習模式
+        );
+      }
+    } else {
+      const examTrack =
+        targetScopeMode === 'tme-preA1'
+          ? 'tme-preA1'
+          : targetScopeMode === 'ministry-assessment'
+          ? 'ministry-assessment'
+          : 'curriculum';
+      updatedSnap = recordExamMasterySession(
+        currentSid,
+        examTrack,
+        targetQuestions,
+        targetAnswers,
+        targetIsFormal || targetPreA1Format === 'standard'
+      );
+    }
 
     // 若為 Pre-A1 且學生已登入，同步滾動精熟度至英雄榜 (mode: prea1-mastery)
-    if (scopeMode === 'tme-preA1' && isLoggedIn) {
+    if (targetScopeMode === 'tme-preA1' && isLoggedIn) {
       const tmeTrack = updatedSnap?.tracks?.['tme-preA1'];
       if (tmeTrack) {
         const mCount = tmeTrack.mastered_count || 0;
@@ -983,7 +1023,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     }
 
     // 計算各大題分項診斷成績
-    const breakdown = buildTaskBreakdown(questions, answers);
+    const breakdown = buildTaskBreakdown(targetQuestions, targetAnswers);
     setTaskBreakdown(breakdown);
 
     // 清理進行中快照
@@ -1006,11 +1046,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     if (typeof onComplete === 'function') {
       onComplete(finalScore, {
         mode: 'pure-mcq',
-        book: selectedBook,
+        book: targetSelectedBook,
         correctCount,
         totalQuestions: total,
-        elapsedSec,
-        coinsEarned
+        elapsedSec: targetElapsedSec,
+        coinsEarned,
+        isFormal: targetIsFormal
       });
     }
   }, [
@@ -1386,14 +1427,27 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       const remainingMs = deadline - now;
                       if (remainingMs <= 0) {
                         clearInProgress(inProgressKey);
-                        setQuestions(savedSession.questions || []);
-                        setAnswers(savedSession.answers || {});
+                        const qs = savedSession.questions || [];
+                        const ans = savedSession.answers || {};
+                        setQuestions(qs);
+                        setAnswers(ans);
                         setFlagged(savedSession.flagged || {});
                         setElapsedSec(2100);
                         setIsFormalExam(true);
+                        if (savedSession.selectedBook) setSelectedBook(savedSession.selectedBook);
+                        if (savedSession.scopeMode) setScopeMode(savedSession.scopeMode);
+                        if (savedSession.selectedPreA1Format) setSelectedPreA1Format(savedSession.selectedPreA1Format);
                         setSavedSession(null);
                         alert('正式測驗 35 分鐘時間已逾時，系統自動為您結算作答成績！');
-                        setPhase('result');
+                        finalizeExam({
+                          questions: qs,
+                          answers: ans,
+                          scopeMode: savedSession.scopeMode || scopeMode,
+                          selectedBook: savedSession.selectedBook || selectedBook,
+                          isFormal: true,
+                          selectedPreA1Format: savedSession.selectedPreA1Format || selectedPreA1Format,
+                          elapsedSec: 2100
+                        });
                         return;
                       }
                       setIsFormalExam(true);
@@ -1404,6 +1458,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       setElapsedSec(savedSession.elapsedSec || 0);
                       setStartTime(Date.now() - (savedSession.elapsedSec || 0) * 1000);
                     }
+                    hasAwardedCoinsRef.current = false;
+                    hasFinalizedRef.current = false;
                     setQuestions(savedSession.questions);
                     setAnswers(savedSession.answers || {});
                     setFlagged(savedSession.flagged || {});

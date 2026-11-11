@@ -309,9 +309,10 @@ export function migrateMasterySnapshotToCanonical(snapshot, studentId = null) {
     if (!trackData) continue;
     let trackChanged = false;
 
-    // 不論是否有 ID 變更，curriculum 軌道的 total_items 一律校準為最新 Canonical 題數
-    if (trackName === 'curriculum' && trackData.total_items !== CURRICULUM_TOTAL_ITEMS) {
-      trackData.total_items = CURRICULUM_TOTAL_ITEMS;
+    // 不論是否有 ID 變更，三大軌道之 total_items 一律透過 getTrackTotalItems 校準為最新標準總題數 (285 / 300 / canonicalItems)
+    const expectedTrackTotal = getTrackTotalItems(trackName);
+    if (expectedTrackTotal > 0 && trackData.total_items !== expectedTrackTotal) {
+      trackData.total_items = expectedTrackTotal;
       trackChanged = true;
     }
 

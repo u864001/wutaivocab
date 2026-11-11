@@ -67,6 +67,24 @@ export function isFormalItem(q) {
 }
 
 /**
+ * 依題目屬性精準判定所屬測驗軌道 ('curriculum' | 'ministry-assessment' | 'tme-preA1')
+ */
+export function resolveQuestionTrack(q) {
+  if (!q) return 'curriculum';
+  if (q.track === 'tme-preA1' || String(q.id).startsWith('tme-') || String(q.id).startsWith('tme_')) {
+    return 'tme-preA1';
+  }
+  if (
+    q.track === 'ministry-assessment' ||
+    String(q.id).startsWith('saa-') ||
+    String(q.id).startsWith('saa_')
+  ) {
+    return 'ministry-assessment';
+  }
+  return 'curriculum';
+}
+
+/**
  * 擷取題目的核心詞彙／評量標的（用於防撞去重，防止同卷一字多出）
  */
 export function extractTargetToken(q) {

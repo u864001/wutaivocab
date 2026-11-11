@@ -42,17 +42,21 @@ export const EXAM_TRACKS = {
       listening: {
         total: 15,
         parts: [
-          { type: 'L-PIC', name: '聽音選圖', count: 5, desc: '聽日常短句或單字，選出相符之情境插圖' },
-          { type: 'L-WORD', name: '聽音選字', count: 5, desc: '聽讀音選出正確拼寫之核心單字' },
-          { type: 'L-RESP', name: '聽問句選回應', count: 5, desc: '聽日常問句，選出合乎邏輯之社交應答' }
+          { type: 'L-PIC', name: '聽音選圖', count: 3, desc: '聽日常短句或單字，選出相符之情境插圖' },
+          { type: 'L-WORD', name: '聽音選字', count: 3, desc: '聽讀音選出正確拼寫之核心單字' },
+          { type: 'L-SENT', name: '辨識句意', count: 3, desc: '聽日常句子，選出相符之情境插圖或句意' },
+          { type: 'L-RESP', name: '聽問句選回應', count: 3, desc: '聽日常問句，選出合乎邏輯之社交應答' },
+          { type: 'L-CONV', name: '聽對話選答案', count: 3, desc: '聽日常簡短對話，選出正確訊息與理解' }
         ]
       },
       reading: {
         total: 15,
         parts: [
-          { type: 'V-PIC', name: '看圖選單字', count: 5, desc: '看日常生活物品或動作照片/線稿，選出正確單字' },
-          { type: 'R-MATCH', name: '生活圖表配合', count: 5, desc: '看簡易生活標誌、時間表或告示牌選出正解' },
-          { type: 'R-TF', name: '短句是非判斷', count: 5, desc: '閱讀短句並對照生活插圖判斷真偽' }
+          { type: 'V-PIC', name: '看圖選單字', count: 3, desc: '看日常生活物品或動作照片/線稿，選出正確單字' },
+          { type: 'V-MEAN', name: '生活單字選填', count: 3, desc: '看日常生活語境句子，選出符合語意之核心單字' },
+          { type: 'G-CTX', name: '情境選句', count: 3, desc: '依據生活插圖或告示情境，選出最適合之英文敘述' },
+          { type: 'R-TF', name: '短句是非判斷', count: 3, desc: '閱讀短句並對照生活插圖判斷真偽' },
+          { type: 'R-CLOZE', name: '短文段落填空', count: 3, desc: '閱讀生活小品或訊息，推敲上下文語意填空' }
         ]
       }
     },
