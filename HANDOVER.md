@@ -54,6 +54,21 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.11 題庫品質全面大修訂 Batch 7：跨平台 Windows/Linux Prune 腳本相容、CRLF 正規化 SHA-256、狀態機最新紀錄合併演算法與雙平台隔離沙盒測試 (`execute_canonical_prune.mjs`, `rollback_canonical_migration.mjs`, `masteryHelper.js`, `test_canonical_migration.mjs`, `test_prune_roundtrip.mjs`, `.gitattributes`, `canonical-ci.yml`)
+* **P0：跨平台 Windows ESM 動態載入修復**：
+  * `build_canonical_data.mjs`、`execute_canonical_prune.mjs`、`rollback_canonical_migration.mjs` 全面改用 `pathToFileURL(filePath)` 搭配 `importFresh()`，解決 Windows 下 `Received protocol 'c:'` 載入失敗問題。
+* **P0：跨平台換行正規化 Checksum 與 `.gitattributes`**：
+  * 兩支工具均導入 `normalizeForHash(text)`（`\r\n` -> `\n`）與 `sha256Text(text)`，徹底消除 Windows Git `core.autocrlf=true` 造成的 SHA-256 校驗不一致。
+  * 新增 `.gitattributes` 鎖定 `src/data/backups/*.js`、`*.json` 與 `hereWeGoMcqBank.js` 為 `eol=lf`。
+* **P0：精熟度與錯題本合併演算法嚴格對齊狀態機**：
+  * `migrateMasterySnapshotToCanonical`：`status`、`consecutive_correct`、`last_is_correct` 一律採用 `last_attempt_at` 最新紀錄，嚴守「精熟後答錯立即退回待加強（remedial）」規則；`attempts` 加總、`is_formal` 取 OR；且不論是否有 ID 變更，`curriculum` 分母一律校準為 `1589`。
+  * `migrateMistakeMapToCanonical`：`wrongCount` 加總，`streak` 採用最新 `updatedAt` 的紀錄（避免較新答錯 `streak: 0` 被舊 `streak: 1` 覆蓋）。
+* **P1：置換前安全保護（`didSwap` & `backupVerified`）**：
+  * `execute_canonical_prune.mjs` 僅在 `if (didSwap && backupVerified)` 成立時才執行失敗回滾，絕不在置換前用備份覆寫未修改的正式檔。
+* **新增兩支全自動驗證腳本與 Windows/Linux 雙平台 GitHub Actions CI**：
+  * `scripts/test_canonical_migration.mjs`（5 項精熟與錯題合併測試）與 `scripts/test_prune_roundtrip.mjs`（`mkdtemp` 隔離沙盒全流程 round-trip 測試）。
+  * 新增 `.github/workflows/canonical-ci.yml` 於 `ubuntu-latest` 與 `windows-latest` 雙平台自動執行驗證。
+
 #### 0.0.10 題庫品質全面大修訂 Batch 6：解除四大架構阻擋（Scopes 課綱正統歸位、學生歷程無損遷移、物理備份與雙模態 CI 契約）、落實 Prune 前安全防線 (`hereWeGoMcqBank.js`, `canonicalMapping.js`, `masteryHelper.js`, `PureMcqExamView.jsx`, `execute_canonical_prune.mjs`, `rollback_canonical_migration.mjs`, `verify_canonical_schema.mjs`, `smoke_test.mjs`)
 * **Blocker 1：Scopes 課綱正統歸位（徹底解決 7~8 scopes 漫延問題）**：
   * 重新梳理全 11 冊（1~9 冊與 g1/g2）共 268 組單字群之 Here We Go 正統課本授課單元（`CURRICULUM_WORD_MAP`）。

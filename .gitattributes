@@ -1,0 +1,3 @@
+src/data/backups/*.js text eol=lf
+src/data/backups/*.json text eol=lf
+src/data/hereWeGoMcqBank.js text eol=lf

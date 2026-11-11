@@ -1,13 +1,19 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const importFresh = async (filePath) => {
+  const url = pathToFileURL(filePath);
+  url.searchParams.set('t', String(Date.now()));
+  return import(url.href);
+};
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
 const mcqFilePath = path.join(projectRoot, 'src/data/hereWeGoMcqBank.js');
 const mappingFilePath = path.join(projectRoot, 'src/data/exam/canonicalMapping.js');
 
-const { HERE_WE_GO_MCQ_BANK, HERE_WE_GO_BOOK_META } = await import(mcqFilePath);
+const { HERE_WE_GO_MCQ_BANK, HERE_WE_GO_BOOK_META } = await importFresh(mcqFilePath);
 
 /**
  * 翰林 Here We Go 課綱各冊核心單字與正式授課單元精確對照表

@@ -2,14 +2,31 @@
  * 課本題庫 Canonical 正規化安全回滾工具 (Rollback Tool from Verified Physical Backup)
  *
  * 規範依據：
- * 1. 讀取 src/data/backups/manifest.json 校驗 SHA-256 Checksum
- * 2. 完整物理還原 3,317 題 Expanded 題庫
- * 3. 驗證還原後的題庫長度與契約
+ * 1. 跨平台相容：統一使用 pathToFileURL 與 normalizeForHash (\r\n -> \n)
+ * 2. 讀取 src/data/backups/manifest.json 校驗正規化 SHA-256 Checksum
+ * 3. 完整物理還原 3,317 題 Expanded 題庫並驗證
  */
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const importFresh = async (filePath) => {
+  const url = pathToFileURL(filePath);
+  url.searchParams.set('t', String(Date.now()));
+  return import(url.href);
+};
+
+function normalizeForHash(text) {
+  return text.replace(/\r\n/g, '\n');
+}
+
+function sha256Text(text) {
+  return crypto
+    .createHash('sha256')
+    .update(normalizeForHash(text), 'utf8')
+    .digest('hex');
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
@@ -28,22 +45,22 @@ try {
     throw new Error(`Backup file or manifest not found in ${backupDir}. Cannot rollback.`);
   }
 
-  // 1. 驗證 Manifest 與 Checksum
+  // 1. 驗證 Manifest 與正規化 Checksum
   const manifestRaw = fs.readFileSync(manifestFilePath, 'utf8');
   const manifest = JSON.parse(manifestRaw);
-  const backupContent = fs.readFileSync(backupFilePath, 'utf8');
-  const calculatedHash = crypto.createHash('sha256').update(backupContent).digest('hex');
+  const backupContent = normalizeForHash(fs.readFileSync(backupFilePath, 'utf8'));
+  const calculatedHash = sha256Text(backupContent);
 
   if (calculatedHash !== manifest.sha256) {
     throw new Error(`Backup integrity check failed! Manifest SHA-256: ${manifest.sha256}, but backup file SHA-256 is ${calculatedHash}`);
   }
-  console.log(`✓ Backup integrity verified! SHA-256: ${calculatedHash}`);
+  console.log(`✓ Backup integrity verified! Normalized SHA-256: ${calculatedHash}`);
 
   // 2. 寫入暫存檔
   fs.writeFileSync(tmpFilePath, backupContent, 'utf8');
 
   // 3. 驗證暫存檔題數為 3,317
-  const tmpCheck = await import(`file://${tmpFilePath}?t=${Date.now()}`);
+  const tmpCheck = await importFresh(tmpFilePath);
   if (!tmpCheck.HERE_WE_GO_MCQ_BANK || tmpCheck.HERE_WE_GO_MCQ_BANK.length !== 3317) {
     throw new Error(`Restored database has invalid length: ${tmpCheck.HERE_WE_GO_MCQ_BANK?.length}, expected 3317.`);
   }

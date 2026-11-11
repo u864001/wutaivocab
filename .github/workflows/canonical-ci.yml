@@ -1,0 +1,35 @@
+name: 🛡️ Canonical Migration & Cross-Platform Roundtrip CI (Windows + Linux)
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  canonical-verification:
+    name: 🧪 Canonical Migration & Roundtrip (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 🔍 Verify Dual-Mode Canonical Schema
+        run: node scripts/verify_canonical_schema.mjs
+
+      - name: 🧪 Run Canonical Migration & State Machine Tests
+        run: node scripts/test_canonical_migration.mjs
+
+      - name: 🔄 Run Isolated Prune -> Verify -> Rollback Round-Trip Test
+        run: node scripts/test_prune_roundtrip.mjs

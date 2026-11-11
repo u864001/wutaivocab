@@ -28,20 +28,23 @@
   - `scopes.length >= 3`：**0 組（完全清零）**
   - 例如 `ruler` 正確歸屬於 `primaryScope: Unit 3`，`scopes: ['Unit 3', 'Review 2']`。
 
-### 2. Blocker 2：學生歷程與錯題本無損遷移（Legacy Data Protection）
-- **原問題**：直接 prune 會導致學生既有以 clone ID（如 `hwg_b1_exp_5035`）儲存的錯題本和精熟快照無法對應到題庫，造成錯題歸零或精熟斷層。
+### 2. Blocker 2：學生歷程與錯題本無損遷移（Legacy Data Protection & State Machine Strictness）
+- **原問題**：直接 prune 會導致學生既有以 clone ID（如 `hwg_b1_exp_5035`）儲存的錯題本和精熟快照無法對應到題庫；此外，若合併時取「較高精熟狀態」會違反「精熟後答錯立即退回待加強」規則。
 - **修復實現**：
-  - 在 `src/utils/masteryHelper.js` 實現 `migrateMistakeMapToCanonical(rawMap, storageKey)`：將所有舊題號遷移至標準題號，合併 `wrongCount`，保留最佳連對 `streak` 與最新 `updatedAt`，自動寫回 LocalStorage。
-  - 實現 `migrateMasterySnapshotToCanonical(snapshot, studentId)`：將學生答題快照中的題號映射至 Canonical ID，保留最優精熟狀態並重新計算分母（1,589 題）與精熟數。
-  - 在 `PureMcqExamView.jsx` 載入錯題時自動呼叫遷移，且 `mistakeQuestions` 支援雙向相容查詢。
+  - 在 `src/utils/masteryHelper.js` 實現 `migrateMistakeMapToCanonical(rawMap, storageKey)`：將所有舊題號遷移至標準題號，`wrongCount` 加總，`streak` 嚴格採用最新 `updatedAt` 的紀錄（避免較新答錯 `streak: 0` 被舊 `streak: 1` 覆蓋），自動寫回 LocalStorage。
+  - 實現 `migrateMasterySnapshotToCanonical(snapshot, studentId)`：
+    - `attempts` 加總，`is_formal` 取 OR。
+    - `status`、`consecutive_correct`、`last_is_correct` 一律採用 `last_attempt_at` 最新紀錄，100% 符合動態滾動精熟狀態機規則。
+    - 不論是否有題號遷移，`curriculum` 軌道的 `total_items` 一律校準為 `1589`，且各軌道使用獨立的 `trackChanged` 判定重算。
+  - 新增 `scripts/test_canonical_migration.mjs` 完整驗證 5 大狀態機與錯題本遷移測試案例。
 
-### 3. Blocker 3：真物理備份與原子性替換（Physical Backup & Atomic Swap）
-- **原問題**：原回滾腳本僅洗掉 metadata，無法找回刪除的 1,728 題複本。
+### 3. Blocker 3：真物理備份、跨平台 Windows/Linux 相容與安全替換（Physical Backup & Cross-Platform Atomic Swap）
+- **原問題**：原回滾腳本在 Windows 上直接 `import(filePath)` 報錯 `Received protocol 'c:'`；Git `core.autocrlf=true` 導致 CRLF SHA-256 不一致；且置換前若報錯會無條件用備份覆寫正式檔。
 - **修復實現**：
-  - 建立物理備份檔：`src/data/backups/hereWeGoMcqBank.expanded.3317.js`。
-  - 產出 SHA-256 校驗文件：`src/data/backups/manifest.json`。
-  - `scripts/execute_canonical_prune.mjs` 採原子性寫入：先寫入 `hereWeGoMcqBank.tmp.js`，驗證 1,589 題與結構完整後，以 `fs.renameSync` 原子性置換；任何錯誤自動還原。
-  - `scripts/rollback_canonical_migration.mjs` 透過 SHA-256 校驗備份檔完整性後原子性還原 3,317 題。已實測 prune 與 rollback 往返 100% 成功！
+  - **跨平台 ESM 載入**：`build_canonical_data.mjs`、`execute_canonical_prune.mjs`、`rollback_canonical_migration.mjs` 全部改用 `pathToFileURL(filePath)` 搭配 `importFresh()`。
+  - **換行正規化 Checksum**：統一使用 `normalizeForHash(text)`（将 `\r\n` 正規化為 `\n`）計算 `sha256Text()`，並新增 `.gitattributes` 強制鎖定 `eol=lf`。
+  - **置換前安全防呆**：加入 `didSwap` 與 `backupVerified` 狀態旗標，僅在 `if (didSwap && backupVerified)` 時才觸發失敗自動回滾，絕不在置換前覆寫未修改的正式檔。
+  - 新增 `scripts/test_prune_roundtrip.mjs` 於隔離沙盒（`mkdtemp`）完整執行「Expanded 驗證 → Prune → Pruned 驗證 → CRLF 模擬與 Rollback → Expanded 驗證 → SHA-256 比對 → 置換前錯誤保護」，並配置 GitHub Actions (`.github/workflows/canonical-ci.yml`) 在 `ubuntu-latest` 與 `windows-latest` 雙平台自動執行驗證！
 
 ### 4. Blocker 4：CI 契約與 Smoke Test 支援雙模態（Dual-Mode Contract）
 - **原問題**：原 CI 腳本硬編碼檢查 3,317 題，prune 後會立即紅燈。

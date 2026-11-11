@@ -258,12 +258,14 @@ export function migrateMistakeMapToCanonical(rawMap = {}, storageKey = null) {
         canonicalId: targetId
       };
     } else {
-      // 融合既有記錄
+      // 融合既有記錄：wrongCount 加總，streak 採用最新 updatedAt 的紀錄（避免較新答錯 streak 0 被舊 streak 覆蓋）
       const existing = canonicalMap[targetId];
+      const latest = (value.updatedAt || 0) >= (existing.updatedAt || 0) ? value : existing;
+
       canonicalMap[targetId] = {
-        ...existing,
+        ...latest,
         wrongCount: (existing.wrongCount || 0) + (value.wrongCount || 0),
-        streak: Math.max(existing.streak || 0, value.streak || 0),
+        streak: latest.streak || 0,
         updatedAt: Math.max(existing.updatedAt || 0, value.updatedAt || 0),
         canonicalId: targetId
       };
@@ -290,66 +292,69 @@ export function migrateMistakeMapToCanonical(rawMap = {}, storageKey = null) {
  */
 export function migrateMasterySnapshotToCanonical(snapshot, studentId = null) {
   if (!snapshot?.tracks) return snapshot;
-  let migrated = false;
+  let anyChanged = false;
 
   for (const [trackName, trackData] of Object.entries(snapshot.tracks)) {
-    if (!trackData?.items) continue;
-    const itemsMap = trackData.items;
-    const nextItems = {};
+    if (!trackData) continue;
+    let trackChanged = false;
 
-    for (const [key, item] of Object.entries(itemsMap)) {
-      if (!item) continue;
-      const targetId = resolveCanonicalId(item.canonicalId || item.id || key) || key;
-      if (targetId !== key) {
-        migrated = true;
+    // 不論是否有 ID 變更，curriculum 軌道的 total_items 一律校準為 1,589
+    if (trackName === 'curriculum' && trackData.total_items !== 1589) {
+      trackData.total_items = 1589;
+      trackChanged = true;
+    }
+
+    if (trackData.items && typeof trackData.items === 'object') {
+      const itemsMap = trackData.items;
+      const nextItems = {};
+
+      for (const [key, item] of Object.entries(itemsMap)) {
+        if (!item) continue;
+        const targetId = resolveCanonicalId(item.canonicalId || item.id || key) || key;
+        if (targetId !== key || item.canonicalId !== targetId) {
+          trackChanged = true;
+        }
+
+        if (!nextItems[targetId]) {
+          nextItems[targetId] = {
+            ...item,
+            canonicalId: targetId
+          };
+        } else {
+          // 融合既有進度：status、consecutive_correct、last_is_correct 一律採用 last_attempt_at 最新的紀錄，嚴守狀態機規則
+          const ex = nextItems[targetId];
+          const exTime = Date.parse(ex.last_attempt_at || '') || 0;
+          const itemTime = Date.parse(item.last_attempt_at || '') || 0;
+          const latest = itemTime >= exTime ? item : ex;
+
+          nextItems[targetId] = {
+            ...latest,
+            status: latest.status,
+            consecutive_correct: latest.consecutive_correct || 0,
+            last_is_correct: latest.last_is_correct,
+            last_attempt_at: latest.last_attempt_at,
+            attempts: (ex.attempts || 0) + (item.attempts || 0),
+            is_formal: Boolean(ex.is_formal || item.is_formal),
+            canonicalId: targetId
+          };
+          trackChanged = true;
+        }
       }
 
-      if (!nextItems[targetId]) {
-        nextItems[targetId] = {
-          ...item,
-          canonicalId: targetId
-        };
-      } else {
-        // 融合既有進度（優先保留更高等級之精熟狀態）
-        const ex = nextItems[targetId];
-        const statusPriority = {
-          [MASTERY_STATES.MASTERED]: 3,
-          [MASTERY_STATES.PROBATION]: 2,
-          [MASTERY_STATES.REMEDIAL]: 1,
-          [MASTERY_STATES.UNATTEMPTED]: 0
-        };
-        const higherStatus = (statusPriority[ex.status] || 0) >= (statusPriority[item.status] || 0)
-          ? ex.status
-          : item.status;
-
-        nextItems[targetId] = {
-          ...ex,
-          status: higherStatus,
-          consecutive_correct: Math.max(ex.consecutive_correct || 0, item.consecutive_correct || 0),
-          attempts: (ex.attempts || 0) + (item.attempts || 0),
-          last_is_correct: item.last_is_correct !== undefined ? item.last_is_correct : ex.last_is_correct,
-          last_attempt_at: (item.last_attempt_at && (!ex.last_attempt_at || item.last_attempt_at > ex.last_attempt_at))
-            ? item.last_attempt_at
-            : ex.last_attempt_at,
-          is_formal: ex.is_formal || item.is_formal || false,
-          canonicalId: targetId
-        };
-        migrated = true;
+      if (trackChanged) {
+        const allItemVals = Object.values(nextItems);
+        trackData.mastered_count = allItemVals.filter((it) => it.status === MASTERY_STATES.MASTERED).length;
+        trackData.attempted_count = allItemVals.length;
+        trackData.items = nextItems;
       }
     }
 
-    if (migrated) {
-      const allItemVals = Object.values(nextItems);
-      trackData.mastered_count = allItemVals.filter((it) => it.status === MASTERY_STATES.MASTERED).length;
-      trackData.attempted_count = allItemVals.length;
-      trackData.items = nextItems;
-      if (trackName === 'curriculum') {
-        trackData.total_items = 1589;
-      }
+    if (trackChanged) {
+      anyChanged = true;
     }
   }
 
-  if (migrated && studentId) {
+  if (anyChanged && studentId) {
     saveStudentMastery(studentId, snapshot);
   }
 
