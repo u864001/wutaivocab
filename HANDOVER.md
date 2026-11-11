@@ -34,6 +34,10 @@
    ```powershell
    $env:CLOUDFLARE_API_TOKEN="<YOUR_CLOUDFLARE_API_TOKEN>" ; npx wrangler pages deploy dist --project-name=wutaivocab --branch=main
    ```
+5. **鷹眼神探圖片定位唯一真實來源 (SSOT) 規範**：
+   - 嚴禁同時維護兩套獨立的人工目測座標（一套 `slot` 貼圖用，另一套 `x, y, radius` 點擊用）。
+   - 動態 Slot 場景一律以 `slot`（或由 Alpha 偵測產生的 `hitBox`）為唯一座標真實來源，點擊、提示圈、聚光燈與過關勾記一律共用幾何連動。
+   - 舊場景若無 slot 保留原 `x/y/radius` fallback，新場景一律透過 Sharp 自動掃描透明 PNG Alpha 通道產出 `slot` 與驗收疊圖，徹底告別人工作標目測拉鋸。
 
 ---
 
