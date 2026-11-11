@@ -563,6 +563,7 @@ async function run() {
     (() => {
       const target = document.querySelector('[data-alpha-tray="left"] [data-alpha-difference="true"]');
       if (!target) return { dispatched: false, reason: 'missing difference target' };
+      target.scrollIntoView({ block: 'center', inline: 'center' });
       const rect = target.getBoundingClientRect();
       const clientX = rect.left + rect.width / 2;
       const clientY = rect.top + rect.height / 2;
