@@ -23,7 +23,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "The girl is reading a book under the tree.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出最相符的情境描述：\n（音檔：The girl is reading a book under the tree.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出最相符的情境描述：",
     "options": [
       "女孩在樹下看書",
       "女孩在房間裡睡覺",
@@ -47,7 +47,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "It is rainy today. Don't forget your umbrella.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出相符的天氣與攜帶物品：\n（音檔：It is rainy today. Don't forget your umbrella.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出相符的天氣與攜帶物品：",
     "options": [
       "晴天戴帽子",
       "雨天帶雨傘",
@@ -71,7 +71,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "There are four apples and two bananas on the table.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出桌上水果的數量：\n（音檔：There are four apples and two bananas on the table.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出桌上水果的數量：",
     "options": [
       "4 顆蘋果與 2 根香蕉",
       "2 顆蘋果與 4 根香蕉",
@@ -95,7 +95,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "My brother can play basketball, but he cannot swim.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出弟弟的能力敘述：\n（音檔：My brother can play basketball, but he cannot swim.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出弟弟的能力敘述：",
     "options": [
       "會游泳但不會打籃球",
       "會打籃球但不會游泳",
@@ -119,7 +119,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "The cat is sleeping under the chair.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出小貓的位置與動作：\n（音檔：The cat is sleeping under the chair.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出小貓的位置與動作：",
     "options": [
       "貓咪在椅子上跳躍",
       "貓咪在桌子旁吃魚",
@@ -143,7 +143,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "What time is it now?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：What time is it now?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "It is ten o'clock.",
       "It is on the desk.",
@@ -167,7 +167,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Where is my pencil box?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：Where is my pencil box?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "It is red and blue.",
       "It is in your schoolbag.",
@@ -191,7 +191,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "How is the weather today?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：How is the weather today?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "I like sunny days.",
       "It is sunny and warm.",
@@ -215,7 +215,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Can you ride a bicycle?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：Can you ride a bicycle?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "Yes, I can. It's fun.",
       "No, I am not tired.",
@@ -239,7 +239,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "What are you doing, Tina?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：What are you doing, Tina?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "She is my sister.",
       "I am drawing a picture.",
@@ -263,7 +263,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Boy: Happy birthday, Amy! This gift is for you. Girl: Wow, a cute teddy bear! Thank you so much! Question: What is the birthday gift?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：\n（對話：Boy: Happy birthday, Amy! This gift is for you. Girl: Wow, a cute teddy bear! Thank you so much! 問題：What is the birthday gift?）",
+    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：",
     "options": [
       "A storybook",
       "A teddy bear",
@@ -287,7 +287,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Mom: Tom, it's seven thirty. Time for school! Tom: Okay, Mom. Where is my yellow cap? Mom: It's on your bed. Question: Where is Tom's yellow cap?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：\n（對話：Mom: Tom, it's seven thirty. Time for school! Tom: Okay, Mom. Where is my yellow cap? Mom: It's on your bed. 問題：Where is Tom's yellow cap?）",
+    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：",
     "options": [
       "Under the desk",
       "On his bed",
@@ -311,7 +311,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Girl: Look at the dog! It is running so fast! Boy: Yes, that is Max. He loves chasing balls in the park. Question: Where are the boy and girl?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：\n（對話：Girl: Look at the dog! It is running so fast! Boy: Yes, that is Max. He loves chasing balls in the park. 問題：Where are the boy and girl?）",
+    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：",
     "options": [
       "In the park",
       "In the classroom",
@@ -335,7 +335,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Man: Welcome to Good Food Diner. May I help you? Woman: Yes, please. I'd like a chicken sandwich and a glass of milk. Man: That will be eighty dollars. Question: How much does the woman pay?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：\n（對話：Man: May I help you? Woman: I'd like a chicken sandwich and milk. Man: That will be eighty dollars. 問題：How much does the woman pay?）",
+    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：",
     "options": [
       "Eighteen dollars",
       "Eighty dollars",
@@ -359,7 +359,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Teacher: Class, open your English books to page twelve. Please read the story quietly. Question: What class is it?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽廣播指令與問題，選出正確答案：\n（廣播：Teacher: Class, open your English books to page twelve. Please read quietly. 問題：What class is it?）",
+    "question": "【聽力：言談理解】請聽廣播指令與問題，選出正確答案：",
     "options": [
       "English class",
       "Math class",
@@ -883,7 +883,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "The post office is between the bank and the bookstore.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出郵局的位置描述：\n（音檔：The post office is between the bank and the bookstore.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出郵局的位置描述：",
     "options": [
       "郵局在銀行與書店的中間",
       "郵局在銀行的對面",
@@ -907,7 +907,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "We usually have science class on Thursday morning.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出自然科學課的時間：\n（音檔：We usually have science class on Thursday morning.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出自然科學課的時間：",
     "options": [
       "星期二下午",
       "星期四上午",
@@ -931,7 +931,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "How do you usually go to school?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：How do you usually go to school?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "I usually go to school on foot.",
       "At seven o'clock.",
@@ -955,7 +955,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "What does your uncle do?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：What does your uncle do?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "He is watching TV.",
       "He is a police officer.",
@@ -979,7 +979,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Boy: Excuse me, how can I get to the train station? Girl: Go straight for two blocks and turn left. It's next to the library. Question: Where is the train station?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：\n（對話：Boy: How can I get to the train station? Girl: Go straight and turn left. It's next to the library. 問題：Where is the train station?）",
+    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：",
     "options": [
       "Next to the library",
       "Behind the school",
@@ -1003,7 +1003,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "The students are planting trees in the garden.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出學生在花園裡的動作：\n（音檔：The students are planting trees in the garden.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出學生在花園裡的動作：",
     "options": [
       "在花園裡種樹",
       "在操場上踢足球",
@@ -1027,7 +1027,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "How much are these new sneakers?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：How much are these new sneakers?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "They are size nine.",
       "They are nine hundred dollars.",
@@ -1051,7 +1051,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Girl: Did you go to Kenting National Park last weekend, Eric? Boy: Yes! The ocean was so blue, and we saw many beautiful corals. Question: Where was Eric last weekend?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：\n（對話：Girl: Did you go to Kenting last weekend? Boy: Yes! The ocean was blue and we saw corals. 問題：Where was Eric last weekend?）",
+    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：",
     "options": [
       "At Kenting National Park",
       "At Taipei 101",
@@ -1075,7 +1075,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "What is your favorite subject at school?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：What is your favorite subject at school?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "I love art because I like painting.",
       "I go home at four.",
@@ -1099,7 +1099,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Woman: May I take your order? Boy: I would like beef noodles and green tea, please. Woman: For here or to go? Boy: To go, please. Question: Will the boy eat the food in the restaurant?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：\n（對話：Woman: For here or to go? Boy: To go, please. 問題：Will the boy eat the food in the restaurant?）",
+    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：",
     "options": [
       "No, he will take it away.",
       "Yes, he will eat here.",
@@ -1373,7 +1373,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Jenny is going to travel to Japan with her family next month.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出 Jenny 未來的計畫：\n（音檔：Jenny is going to travel to Japan with her family next month.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出 Jenny 未來的計畫：",
     "options": [
       "下個月將與家人去日本旅遊",
       "上個月剛從日本留學回國",
@@ -1397,7 +1397,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "What's the matter with you, Kevin? You look pale.",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：What's the matter with you, Kevin? You look pale.）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "I have a terrible headache and fever.",
       "I am twelve years old.",
@@ -1421,7 +1421,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Girl: Are you ready for the graduation speech tomorrow? Boy: I am so nervous! What if I forget the lines? Girl: Take a deep breath. You practiced many times and you will do great! Question: How does the boy feel?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：\n（對話：Girl: Ready for speech? Boy: I am nervous! Girl: Take a deep breath, you'll do great! 問題：How does the boy feel?）",
+    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：",
     "options": [
       "He feels nervous.",
       "He feels angry.",
@@ -1445,7 +1445,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Taking the metro is more convenient than driving in the city center.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出說話者的比較觀點：\n（音檔：Taking the metro is more convenient than driving in the city center.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出說話者的比較觀點：",
     "options": [
       "在市中心搭捷運比開車更方便",
       "在市中心開車比搭捷運更快速",
@@ -1469,7 +1469,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Have you ever been to the National Palace Museum in Taipei?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：Have you ever been to the National Palace Museum?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "Yes, I visited there with my classmates last year.",
       "No, I don't like reading books.",
@@ -1493,7 +1493,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Man: Can you pass me the salt, please? Woman: Here you are. The soup smells delicious! Did you cook it yourself? Man: Yes, with fresh mushrooms from Wutai. Question: What are they doing?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：\n（對話：Man: Pass me the salt. Woman: Soup smells delicious! Did you cook it? Man: Yes. 問題：What are they doing?）",
+    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：",
     "options": [
       "Having a meal together",
       "Buying vegetables at a shop",
@@ -1517,7 +1517,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Although it was raining heavily, the soccer match continued.",
       "imageId": null
     },
-    "question": "【聽力：辨識句意】請聽音檔，選出相符的事實情境：\n（音檔：Although it was raining heavily, the soccer match continued.）",
+    "question": "【聽力：辨識句意】請聽音檔，選出相符的事實情境：",
     "options": [
       "雖然下著大雨，足球賽仍持續進行",
       "因為雨勢過大，足球比賽被取消了",
@@ -1541,7 +1541,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Which sport do you like better, badminton or table tennis?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：Which sport do you like better, badminton or table tennis?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "I prefer badminton because it's fast and exciting.",
       "I have three rackets.",
@@ -1565,7 +1565,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Girl: Excuse me, does this train go to Kaohsiung? Conductor: No, miss. This is the local train to Pingtung. The express train to Kaohsiung is on platform three. Question: Where should the girl go?",
       "imageId": null
     },
-    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：\n（對話：Girl: Does this train go to Kaohsiung? Conductor: No, express train is on platform 3. 問題：Where should the girl go?）",
+    "question": "【聽力：言談理解】請聽對話與問題，選出正確答案：",
     "options": [
       "To platform three",
       "To the ticket counter",
@@ -1589,7 +1589,7 @@ const SAA_SIMULATED_BANK = [
       "audioText": "Could you please help me carry this heavy carton of books?",
       "imageId": null
     },
-    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：\n（問句：Could you please help me carry this heavy carton of books?）",
+    "question": "【聽力：基本問答】請聽問句，選出最適當的回應：",
     "options": [
       "No problem, let me take that for you.",
       "The book is very interesting.",

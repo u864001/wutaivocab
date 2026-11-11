@@ -3020,7 +3020,7 @@ const NON_WRITING_ITEMS = [
     "serialNum": 7,
     "taskType": "R-TF",
     "difficulty": 1,
-    "question": "閱讀生活情境：\nSandy loves sweet food. She buys three chocolate cookies at the bakery.\n\n判斷下列敘述是否相符：\nSandy bought three cookies. (Sandy 買了三塊餅乾)",
+    "question": "閱讀生活情境：\nSandy loves sweet food. She buys three chocolate cookies at the bakery.\n\n判斷下列敘述是否相符：\nSandy buys three cookies. (Sandy 買了三塊餅乾)",
     "options": [
       "True (相符)",
       "False (不符)"
