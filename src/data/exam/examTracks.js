@@ -16,7 +16,7 @@ export const EXAM_TRACKS = {
     badge: '基礎精熟',
     shortName: '課本檢定',
     icon: 'BookOpen',
-    themeColor: 'emerald',
+    themeColor: 'amber',
     description: '同步翰林 Here We Go 1～8 冊、字母專冊與國一先修，自選冊別與題數隨堂練習。',
     status: 'active', // 'active' | 'preparing'
     targetGrades: [1, 2, 3, 4, 5, 6],
@@ -77,7 +77,7 @@ export const EXAM_TRACKS = {
     badge: 'SAA 標準化學測',
     shortName: '學力檢測模考',
     icon: 'ClipboardCheck',
-    themeColor: 'indigo',
+    themeColor: 'emerald',
     description: '臺中教育大學 SAA 臺灣學生學習成就評量：聽力三大題 + 閱讀二大題（含長篇/圖表題組）。',
     status: 'preparing',
     targetGrades: [4, 5, 6],

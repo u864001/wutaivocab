@@ -1377,7 +1377,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     return renderShell(
       <>
         {/* 頂端精簡導覽列 */}
-        <div className={`shrink-0 px-4 sm:px-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50/80 dark:bg-slate-900/80 ${setupSubView === 'saa' ? 'py-2 sm:py-3' : 'py-3'}`}>
+        <div className={`shrink-0 px-4 sm:px-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 bg-slate-50/80 dark:bg-slate-900/80 ${setupSubView === 'saa' ? 'py-2' : 'py-3'}`}>
           {setupSubView === 'hub' ? (
             <button
               type="button"
@@ -1401,7 +1401,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           <div className="flex items-center gap-2">
             {setupSubView === 'hub' && <Award className="text-indigo-600 dark:text-indigo-400" size={22} />}
             {setupSubView === 'textbook' && <BookOpen className="text-indigo-600 dark:text-indigo-400" size={22} />}
-            {setupSubView === 'saa' && <ClipboardCheck className="text-purple-600 dark:text-purple-400" size={22} />}
+            {setupSubView === 'saa' && <ClipboardCheck className="text-emerald-600 dark:text-emerald-400" size={22} />}
             {setupSubView === 'preA1' && <Award className="text-sky-600 dark:text-sky-400" size={22} />}
             {setupSubView === 'mistakes' && <RotateCcw className="text-rose-600 dark:text-rose-400" size={22} />}
             <div>
@@ -1448,8 +1448,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           </div>
         </div>
 
-        {/* 中央設定主體（彈性自適應高度、空間不足滑動免重疊） */}
-        <div className="flex-1 min-h-0 p-3 sm:p-5 md:p-6 flex flex-col gap-3 overflow-y-auto overscroll-contain">
+        {/* 中央設定主體：SAA 桌機版固定單頁；窄螢幕保留安全捲動避免裁切 */}
+        <div className={`flex-1 min-h-0 flex flex-col overscroll-contain ${
+          setupSubView === 'saa'
+            ? 'p-2 sm:p-3 gap-2 overflow-y-auto lg:overflow-hidden'
+            : 'p-3 sm:p-5 md:p-6 gap-3 overflow-y-auto'
+        }`}>
           {/* 未完成檢定接續提醒 (6 小時內有效快照) */}
           {savedSession && (
             <div className="shrink-0 p-3 sm:p-4 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-300 dark:border-indigo-700 flex flex-wrap items-center justify-between gap-3 animate-fadeIn">
@@ -2264,11 +2268,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           {/* 模式 C：學力檢測練習 (setupSubView === 'saa')                          */}
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           {setupSubView === 'saa' && (
-            <div data-testid="saa-wizard" className="flex flex-col gap-2 sm:gap-3">
+            <div data-testid="saa-wizard" className="h-full min-h-0 flex flex-col gap-2">
               {/* SAA 頂部精熟診斷卡捷徑橫幅 */}
-              <div className="shrink-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 dark:from-emerald-950/40 dark:via-teal-950/40 dark:to-emerald-950/40 border border-emerald-300/40 dark:border-emerald-700/40 rounded-2xl p-2 sm:p-3 flex items-center justify-between gap-2">
+              <div className="shrink-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 dark:from-emerald-950/40 dark:via-teal-950/40 dark:to-emerald-950/40 border border-emerald-300/40 dark:border-emerald-700/40 rounded-2xl p-2 flex items-center justify-between gap-2 [@media(max-height:700px)]:hidden">
                 <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
                     <ClipboardCheck size={18} />
                   </div>
                   <div className="min-w-0">
@@ -2299,9 +2303,9 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               </div>
 
               {/* SAA Wizard 進度：所有裝置共用同一流程，僅改變響應式排版 */}
-              <div className="shrink-0 rounded-2xl border border-purple-300/80 dark:border-purple-800/60 bg-white/85 dark:bg-slate-800/80 px-2.5 py-2 sm:px-4 sm:py-2.5">
+              <div className="shrink-0 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-100/90 dark:bg-slate-800/80 px-2.5 py-2 sm:px-4 sm:py-2.5">
                 <div className="flex items-center justify-between gap-2 mb-1.5 sm:mb-2">
-                  <span className="text-xs sm:text-sm font-black text-purple-700 dark:text-purple-300">
+                  <span className="text-xs sm:text-sm font-black text-emerald-700 dark:text-emerald-300">
                     第 {saaWizardStep}／3 步
                   </span>
                   <span className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">
@@ -2322,7 +2326,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         aria-current={isCurrent ? 'step' : undefined}
                         className={`min-h-8 sm:min-h-9 rounded-lg sm:rounded-xl px-2 py-1 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-black border transition-colors ${
                           isCurrent
-                            ? 'bg-purple-600 border-purple-600 text-white shadow-sm'
+                            ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm'
                             : isComplete
                             ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
                             : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700 text-slate-400'
@@ -2336,65 +2340,22 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </ol>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-[220px_minmax(0,1fr)] gap-2 sm:gap-3 min-h-0">
-                {/* 電腦摘要側欄；手機在主卡上方仍可從進度與選中狀態確認 */}
-                <aside className="hidden lg:flex flex-col gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/40 p-3">
-                  <div className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">本次設定</div>
-                  {[
-                    { step: 1, label: '年度', value: `${selectedSaaYear} 年度`, ready: true },
-                    { step: 2, label: '年級', value: `${selectedSaaGrade} 年級`, ready: saaWizardStep >= 2 },
-                    {
-                      step: 3,
-                      label: '試卷',
-                      value: selectedSaaFormat === 'standard' ? '全真標準卷' : selectedSaaFormat === 'listening' ? '聽力專項' : '閱讀專項',
-                      ready: saaWizardStep >= 3
-                    }
-                  ].map((item) => (
-                    <div
-                      key={item.step}
-                      className={`rounded-xl border p-2.5 ${
-                        saaWizardStep === item.step
-                          ? 'border-purple-400 bg-purple-50 dark:bg-purple-950/40'
-                          : item.ready
-                          ? 'border-emerald-200 dark:border-emerald-800/70 bg-white dark:bg-slate-800'
-                          : 'border-slate-200 dark:border-slate-700 bg-slate-100/70 dark:bg-slate-800/50 opacity-60'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-black text-slate-400">{item.step}. {item.label}</span>
-                        {item.ready && item.step < saaWizardStep && (
-                          <button
-                            type="button"
-                            onClick={() => setSaaWizardStep(item.step)}
-                            className="text-[10px] font-black text-purple-600 dark:text-purple-300 hover:underline cursor-pointer"
-                          >
-                            修改
-                          </button>
-                        )}
-                      </div>
-                      <div className="mt-0.5 text-xs font-black text-slate-800 dark:text-slate-100">{item.ready ? item.value : '尚未確認'}</div>
-                    </div>
-                  ))}
-                  <div className="mt-auto rounded-xl bg-purple-100/70 dark:bg-purple-950/40 p-2.5 text-[11px] leading-relaxed text-purple-800 dark:text-purple-200">
-                    完成目前步驟後，請按底部「繼續」。所有選擇都會保留，可隨時返回修改。
-                  </div>
-                </aside>
-
-                <div className="min-w-0">
+              {/* 選擇卡是本區唯一翡翠綠粗框；進度、說明與摘要使用中性色，避免誤認為可點選 */}
+              <div className="min-h-0 min-w-0">
               {/* 步驟 1：選擇測驗年度 */}
               {saaWizardStep === 1 && (
-              <div className="shrink-0 bg-purple-50/60 dark:bg-purple-950/20 rounded-2xl p-2.5 sm:p-4 border-2 border-purple-400 dark:border-purple-700 ring-2 ring-purple-500/10 space-y-2 sm:space-y-2.5 animate-fadeIn">
+              <div className="shrink-0 bg-white dark:bg-slate-900/70 rounded-2xl p-2.5 sm:p-3 border-2 border-emerald-500 dark:border-emerald-600 shadow-md shadow-emerald-500/10 space-y-2 animate-fadeIn">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-xs font-black flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center">
                       1
                     </span>
                     <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                       選擇施測年度 (Exam Year)
                     </span>
                   </div>
-                  <span className="hidden sm:inline text-xs font-bold text-purple-600 dark:text-purple-400">
-                    歷屆官方全真試卷
+                  <span className="hidden sm:inline px-2 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">
+                    請點選一個年度
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
@@ -2411,15 +2372,15 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         aria-pressed={active}
                         className={`py-2 px-3 rounded-xl border-2 text-center transition flex items-center justify-between cursor-pointer ${
                           active
-                            ? 'border-purple-600 bg-purple-600 text-white shadow-md'
-                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-purple-300'
+                            ? 'border-emerald-700 bg-emerald-600 text-white shadow-md ring-2 ring-emerald-300/60 dark:ring-emerald-800'
+                            : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
                         }`}
                       >
                         <span className="text-xs sm:text-sm font-black">{y.label}</span>
                         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                          active ? 'bg-purple-800/60 text-purple-100' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
+                          active ? 'bg-emerald-800/60 text-emerald-100' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
                         }`}>
-                          {y.badge}
+                          {active ? '✓ 已選取' : y.badge}
                         </span>
                       </button>
                     );
@@ -2430,18 +2391,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
               {/* 步驟 2：選擇施測年級 */}
               {saaWizardStep === 2 && (
-              <div className="shrink-0 bg-purple-50/60 dark:bg-purple-950/20 rounded-2xl p-2.5 sm:p-4 border-2 border-purple-400 dark:border-purple-700 ring-2 ring-purple-500/10 space-y-2 sm:space-y-2.5 animate-fadeIn">
+              <div className="shrink-0 bg-white dark:bg-slate-900/70 rounded-2xl p-2.5 sm:p-3 border-2 border-emerald-500 dark:border-emerald-600 shadow-md shadow-emerald-500/10 space-y-2 animate-fadeIn">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-xs font-black flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center">
                       2
                     </span>
                     <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                       選擇施測年級
                     </span>
                   </div>
-                  <span className="hidden sm:inline text-xs font-bold text-purple-600 dark:text-purple-400">
-                    教育部 SAA 規範年級
+                  <span className="hidden sm:inline px-2 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">
+                    請點選一個年級
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -2459,12 +2420,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         aria-pressed={active}
                         className={`py-2.5 px-3 rounded-xl border-2 text-center transition flex flex-col items-center justify-center cursor-pointer ${
                           active
-                            ? 'border-purple-600 bg-purple-600 text-white shadow-md'
-                            : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-purple-300'
+                            ? 'border-emerald-700 bg-emerald-600 text-white shadow-md ring-2 ring-emerald-300/60 dark:ring-emerald-800'
+                            : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
                         }`}
                       >
                         <span className="text-sm sm:text-base font-black">{g.label}</span>
-                        <span className={`text-[11px] font-semibold mt-0.5 ${active ? 'text-purple-100' : 'text-slate-400'}`}>
+                        <span className={`text-[11px] font-semibold mt-0.5 ${active ? 'text-emerald-100' : 'text-slate-400'}`}>
                           {g.desc}
                         </span>
                       </button>
@@ -2477,17 +2438,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               {/* 步驟 3：選擇題型與題數組合 (向下彈出三大膠囊) */}
               {saaWizardStep === 3 && (
               <>
-              <div className="shrink-0 bg-purple-50/60 dark:bg-purple-950/20 rounded-2xl p-2.5 sm:p-4 border-2 border-purple-400 dark:border-purple-700 ring-2 ring-purple-500/10 space-y-2 sm:space-y-2.5 animate-fadeIn">
+              <div className="shrink-0 bg-white dark:bg-slate-900/70 rounded-2xl p-2.5 sm:p-3 border-2 border-emerald-500 dark:border-emerald-600 shadow-md shadow-emerald-500/10 space-y-2 animate-fadeIn">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white text-xs font-black flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center">
                       3
                     </span>
                     <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                       選擇測驗組合
                     </span>
                   </div>
-                  <span className="hidden sm:inline text-xs font-bold text-purple-600 dark:text-purple-300">紫色為目前選擇</span>
+                  <span className="hidden sm:inline px-2 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">請點選一種試卷</span>
                 </div>
                 <div className="space-y-1.5 sm:space-y-2">
                   {[
@@ -2529,8 +2490,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         onClick={() => setSelectedSaaFormat(option.id)}
                         className={`w-full min-h-13 p-2 sm:p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2 cursor-pointer ${
                           active
-                            ? 'border-purple-700 bg-purple-600 text-white shadow-md ring-2 ring-purple-300/60 dark:ring-purple-800'
-                            : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:border-purple-400 opacity-90'
+                            ? 'border-emerald-700 bg-emerald-600 text-white shadow-md ring-2 ring-emerald-300/60 dark:ring-emerald-800'
+                            : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
                         }`}
                       >
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -2551,13 +2512,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                                 {option.badge}
                               </span>
                             </div>
-                            <div className={`hidden sm:block text-xs mt-0.5 truncate ${active ? 'text-purple-100' : 'text-slate-500 dark:text-slate-400'}`}>
+                            <div className={`hidden sm:block text-xs mt-0.5 truncate ${active ? 'text-emerald-100' : 'text-slate-500 dark:text-slate-400'}`}>
                               {option.description}
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
-                          <span className={`text-sm sm:text-lg font-black ${active ? 'text-white' : 'text-purple-700 dark:text-purple-300'}`}>
+                          <span className={`text-sm sm:text-lg font-black ${active ? 'text-white' : 'text-emerald-700 dark:text-emerald-300'}`}>
                             {option.count} 題
                           </span>
                           {active && <CheckCircle2 size={17} className="text-white" />}
@@ -2568,31 +2529,16 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </div>
               </div>
 
-              {/* 三大等第說明 */}
-              <div className="sm:hidden px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 flex items-center justify-center gap-2 text-[10px] font-black">
+              {/* 三大等第說明：保持單列，為瀏覽器工具列與較矮筆電預留安全高度 */}
+              <div className="px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100/80 dark:bg-slate-800/80 flex items-center justify-center gap-2 text-[10px] sm:text-[11px] font-black">
                 <span className="text-emerald-700 dark:text-emerald-300">精熟 ≥85%</span>
                 <span className="text-slate-300">•</span>
                 <span className="text-amber-700 dark:text-amber-300">基礎 60–84%</span>
                 <span className="text-slate-300">•</span>
                 <span className="text-rose-700 dark:text-rose-300">待加強 &lt;60%</span>
               </div>
-              <div className="hidden sm:grid grid-cols-3 gap-2 text-center text-xs">
-                <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60">
-                  <div className="font-black text-emerald-700 dark:text-emerald-300">精熟 (Proficient)</div>
-                  <div className="text-[10px] text-slate-500">答對率 ≥ 85%</div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/60">
-                  <div className="font-black text-amber-700 dark:text-amber-300">基礎 (Basic)</div>
-                  <div className="text-[10px] text-slate-500">答對率 60%～84%</div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200/60 dark:border-rose-800/60">
-                  <div className="font-black text-rose-700 dark:text-rose-300">待加強 (Developing)</div>
-                  <div className="text-[10px] text-slate-500">答對率 &lt; 60%</div>
-                </div>
-              </div>
               </>
               )}
-                </div>
               </div>
             </div>
           )}
@@ -2945,7 +2891,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         </div>
 
         {/* 底部功能與開始測驗 CTA（固定於底部） */}
-        <div className={`shrink-0 px-3 sm:px-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-2 sm:gap-3 ${setupSubView === 'saa' ? 'py-2 sm:py-3' : 'py-2.5 sm:py-3'}`}>
+        <div className={`shrink-0 px-3 sm:px-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between gap-2 sm:gap-3 ${setupSubView === 'saa' ? 'py-2' : 'py-2.5 sm:py-3'}`}>
           {setupSubView === 'hub' ? (
             <div className="w-full flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
               <span className="font-semibold">💡 提示：本年級檢定答對率 ≥ 60% 可領取金幣獎勵</span>
@@ -3002,7 +2948,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
               {setupSubView === 'saa' && (
                 <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 py-1.5 px-3 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
-                  <span className="text-purple-600 dark:text-purple-400 font-black">{selectedSaaYear} 年度</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-black">{selectedSaaYear} 年度</span>
                   <span>•</span>
                   <span>{selectedSaaGrade} 年級</span>
                   <span>•</span>
@@ -3022,11 +2968,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     startExamSession();
                   }
                 }}
-                className={`w-full sm:w-auto sm:min-w-[260px] rounded-2xl text-white font-black text-sm sm:text-base shadow-lg transition flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed ${setupSubView === 'saa' ? 'py-2.5 sm:py-3.5 px-4 sm:px-8' : 'py-3.5 px-8'} ${
+                className={`w-full sm:w-auto sm:min-w-[260px] rounded-2xl text-white font-black text-sm sm:text-base shadow-lg transition flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed ${setupSubView === 'saa' ? 'py-2.5 px-4 sm:px-8' : 'py-3.5 px-8'} ${
                   scopeMode === 'tme-preA1'
                     ? 'bg-sky-600 hover:bg-sky-700 shadow-sky-600/25'
                     : scopeMode === 'ministry-assessment'
-                    ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-600/25'
+                    ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/25'
                     : scopeMode === 'mistakes'
                     ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/25'
                     : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/25'

@@ -915,7 +915,7 @@ async function run() {
       const backed = await clickVisible(findButton('上一步'));
       const preservedGrade = (document.body.innerText || '').includes('第 2／3 步')
         && !!findButton('五年級')
-        && findButton('五年級').className.includes('bg-purple-600');
+        && findButton('五年級').className.includes('bg-emerald-600');
 
       return {
         ok: entered && step1 && step1NoScroll && continued1 && step2 && step2NoScroll && gradeSelected && continued2 && step3 && step3NoScroll && startReachable && backed && preservedGrade,
@@ -936,6 +936,44 @@ async function run() {
     failures.push({ target: 'SAA Responsive Wizard (375x667)', details: saaWizardCheck, exceptions: client.exceptions });
   } else {
     console.log('  ✓ SAA mobile Wizard: year -> grade -> paper flow, back navigation & preserved selection verified');
+  }
+
+  // 5D-4. 較矮筆電安全高度：預留瀏覽器工具列後，三步仍不得產生設定區捲軸
+  client.exceptions = [];
+  await client.send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 650, deviceScaleFactor: 1, mobile: false });
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
+  await new Promise(r => setTimeout(r, 800));
+  const saaLaptopNoScrollCheck = await client.evaluate(`
+    (async () => {
+      const buttons = () => Array.from(document.querySelectorAll('button'));
+      const findButton = (label) => buttons().find(b => (b.innerText || '').includes(label));
+      const click = async (label) => {
+        const button = findButton(label);
+        if (!button) return false;
+        button.click();
+        await new Promise(r => setTimeout(r, 160));
+        return true;
+      };
+      const fits = () => {
+        const wizard = document.querySelector('[data-testid="saa-wizard"]');
+        const scroller = wizard?.parentElement;
+        return !!wizard && !!scroller && scroller.scrollHeight <= scroller.clientHeight + 2;
+      };
+
+      const entered = await click('學力檢測練習');
+      const step1 = fits();
+      const continued1 = await click('繼續：選擇年級');
+      const step2 = fits();
+      const continued2 = await click('繼續：選擇試卷');
+      const step3 = fits();
+      return { ok: entered && continued1 && continued2 && step1 && step2 && step3, entered, step1, step2, step3 };
+    })()
+  `);
+  await client.send('Emulation.clearDeviceMetricsOverride', {});
+  if (!saaLaptopNoScrollCheck?.ok || client.exceptions.length > 0) {
+    failures.push({ target: 'SAA Laptop Zero-Scroll Safety (1280x650)', details: saaLaptopNoScrollCheck, exceptions: client.exceptions });
+  } else {
+    console.log('  ✓ SAA laptop 1280x650: all three Wizard steps fit without setup-area scrolling');
   }
 
   // 5E. 課本題庫檢定館 (mcq-exam) 一頁式免捲動選範圍 -> 開始檢定 -> 選答案 -> 下一題 深度驗證
