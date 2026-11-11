@@ -321,48 +321,178 @@ const VIBRANT_COLORS = [
   '#f97316'  // 暖橘
 ];
 
+// 刻意使用高對比配色，不從相近色隨機抽取，避免紅/橘、藍/青等差異過小。
+const CONTRASTING_SPOTTER_COLORS = {
+  '#ef4444': ['#06b6d4', '#3b82f6'],
+  '#3b82f6': ['#f59e0b', '#f97316'],
+  '#10b981': ['#8b5cf6', '#ec4899'],
+  '#f59e0b': ['#3b82f6', '#8b5cf6'],
+  '#8b5cf6': ['#f59e0b', '#10b981'],
+  '#ec4899': ['#10b981', '#06b6d4'],
+  '#06b6d4': ['#ef4444', '#8b5cf6'],
+  '#f97316': ['#3b82f6', '#06b6d4']
+};
+
+export const getSpotterColorDistance = (leftHex, rightHex) => {
+  const toRgb = (hex) => {
+    const value = String(hex || '').replace('#', '');
+    if (!/^[0-9a-f]{6}$/i.test(value)) return null;
+    return [0, 2, 4].map(offset => Number.parseInt(value.slice(offset, offset + 2), 16));
+  };
+  const left = toRgb(leftHex);
+  const right = toRgb(rightHex);
+  if (!left || !right) return 0;
+  return Math.hypot(left[0] - right[0], left[1] - right[1], left[2] - right[2]);
+};
+
 const BLOCK_FONTS = [
   'system-ui, sans-serif',
   'Arial, Helvetica, sans-serif',
-  'Comic Sans MS, cursive, sans-serif',
-  'Impact, Charcoal, sans-serif',
   'Trebuchet MS, sans-serif',
-  'Verdana, Geneva, sans-serif'
+  'Verdana, Geneva, sans-serif',
+  'Tahoma, Geneva, sans-serif',
+  'Segoe UI, Arial, sans-serif'
 ];
 
-export const generateSpotterAlphabetRound = (itemCount = 6, diffCount = 3, grade = '01') => {
-  const isGrade2 = grade === '02';
-  const roots = SHUFFLE(UPPERCASE_ALPHABET).slice(0, itemCount);
+export const normalizeSpotterAlphabetGrade = (grade = '01') => {
+  const numericGrade = String(grade ?? '').trim().replace(/^0+/, '');
+  return numericGrade === '2' ? '02' : '01';
+};
 
-  // 在左右兩盤中均勻分佈座標 (防止重疊)
-  // 建立 3x3 網格槽位隨機挑選位置
-  const gridSlots = [];
-  for (let r = 0; r < 3; r++) {
-    for (let c = 0; c < 3; c++) {
-      gridSlots.push({
-        x: 18 + c * 32 + (Math.random() * 8 - 4), // 百分比
-        y: 18 + r * 30 + (Math.random() * 8 - 4)
-      });
+export const normalizeSpotterAlphabetCaseMode = (caseMode, grade = '01') => {
+  if (['upper', 'lower', 'mixed'].includes(caseMode)) return caseMode;
+  return normalizeSpotterAlphabetGrade(grade) === '02' ? 'lower' : 'upper';
+};
+
+/**
+ * 依觸控座標找出命中的隱形圓框。
+ *
+ * 左右托盤共用相同的圓心與半徑，圓框彼此不重疊；字母的字形、
+ * 顏色與旋轉都只在圓內呈現，不參與命中計算。
+ */
+export const resolveSpotterAlphabetHit = ({
+  blocks = [],
+  x,
+  y,
+  width,
+  height,
+  maxDistancePx = 52
+}) => {
+  if (!Array.isArray(blocks) || blocks.length === 0 ||
+      !Number.isFinite(x) || !Number.isFinite(y) ||
+      !Number.isFinite(width) || !Number.isFinite(height) ||
+      width <= 0 || height <= 0) {
+    return null;
+  }
+
+  let closest = null;
+  let closestDistance = Number.POSITIVE_INFINITY;
+
+  for (const block of blocks) {
+    const blockX = (Number(block.x) / 100) * width;
+    const blockY = (Number(block.y) / 100) * height;
+    const distance = Math.hypot(x - blockX, y - blockY);
+    const blockRadius = Number.isFinite(Number(block.hitRadiusPct))
+      ? (Number(block.hitRadiusPct) / 100) * width
+      : maxDistancePx;
+    if (distance <= blockRadius && distance < closestDistance) {
+      closest = block;
+      closestDistance = distance;
     }
   }
-  const chosenSlots = SHUFFLE(gridSlots).slice(0, itemCount);
 
-  // 挑選哪些字母要被設為「差異點」
-  const diffIndices = SHUFFLE(Array.from({ length: itemCount }, (_, i) => i)).slice(0, diffCount);
+  return closest;
+};
+
+const SPOTTER_TRAY_WIDTH = 400;
+const SPOTTER_TRAY_HEIGHT = 300;
+
+const createNonOverlappingSpotterCircles = (count) => {
+  const circles = [];
+  const gap = 14;
+
+  for (let index = 0; index < count; index++) {
+    let placed = null;
+    for (let attempt = 0; attempt < 300; attempt++) {
+      const radius = 29 + Math.random() * 9;
+      const candidate = {
+        radius,
+        x: radius + 12 + Math.random() * (SPOTTER_TRAY_WIDTH - (radius + 12) * 2),
+        y: radius + 30 + Math.random() * (SPOTTER_TRAY_HEIGHT - radius * 2 - 42)
+      };
+      const overlaps = circles.some(circle => (
+        Math.hypot(candidate.x - circle.x, candidate.y - circle.y) <
+        candidate.radius + circle.radius + gap
+      ));
+      if (!overlaps) {
+        placed = candidate;
+        break;
+      }
+    }
+
+    // 理論上 6 個圓在 400×300 足以隨機放入；若極端亂數連續碰撞，
+    // 整組改用安全槽位保底，避免單一 fallback 圓碰到先前隨機圓。
+    if (!placed) {
+      const fallbackCenters = [
+        [62, 72], [200, 72], [338, 72],
+        [62, 150], [200, 150], [338, 150],
+        [62, 228], [200, 228], [338, 228]
+      ];
+      return fallbackCenters.slice(0, count).map(([x, y]) => ({
+        x: (x / SPOTTER_TRAY_WIDTH) * 100,
+        y: (y / SPOTTER_TRAY_HEIGHT) * 100,
+        hitRadiusPct: (27 / SPOTTER_TRAY_WIDTH) * 100
+      }));
+    }
+    circles.push(placed);
+  }
+
+  return circles.map(circle => ({
+    x: (circle.x / SPOTTER_TRAY_WIDTH) * 100,
+    y: (circle.y / SPOTTER_TRAY_HEIGHT) * 100,
+    hitRadiusPct: (circle.radius / SPOTTER_TRAY_WIDTH) * 100
+  }));
+};
+
+export const generateSpotterAlphabetRound = (itemCount = 6, diffCount = 3, grade = '01', caseMode) => {
+  const normalizedGrade = normalizeSpotterAlphabetGrade(grade);
+  const normalizedCaseMode = normalizeSpotterAlphabetCaseMode(caseMode, normalizedGrade);
+  const roots = SHUFFLE(UPPERCASE_ALPHABET).slice(0, itemCount);
+  // 三種內容膠囊共用同一套引擎：upper 全大寫、lower 全小寫、mixed
+  // 每局強制同時含大/小寫。未傳模式時，一年級預設 upper、二年級 lower。
+  const lowercaseIndices = new Set();
+  if (normalizedCaseMode === 'lower') {
+    roots.forEach((_, index) => lowercaseIndices.add(index));
+  } else if (normalizedCaseMode === 'mixed' && roots.length > 1) {
+    const lowercaseCount = Math.max(1, Math.min(roots.length - 1, Math.round(roots.length * 0.4)));
+    SHUFFLE(Array.from({ length: roots.length }, (_, index) => index))
+      .slice(0, lowercaseCount)
+      .forEach(index => lowercaseIndices.add(index));
+  }
+
+  // 隨機散落的隱形圓形判定區：左右兩盤共用同一組圓心與半徑，且圓框
+  // 彼此保留安全間距。字母可以自由旋轉，但判定範圍永遠不會相互覆蓋。
+  const chosenSlots = createNonOverlappingSpotterCircles(itemCount);
+
+  // 挑選哪些字母要被設為「差異點」；支援 3 或 5 個目標，也防止
+  // 呼叫端要求的差異數超過實際字母數。
+  const safeDiffCount = Math.min(Math.max(0, Number(diffCount) || 0), roots.length);
+  const diffIndices = SHUFFLE(Array.from({ length: roots.length }, (_, i) => i)).slice(0, safeDiffCount);
 
   const leftBlocks = [];
   const rightBlocks = [];
   const differences = [];
 
   roots.forEach((rootChar, idx) => {
-    const isUpper = !isGrade2 || Math.random() < 0.6;
+    const isUpper = !lowercaseIndices.has(idx);
     const char = isUpper ? rootChar : rootChar.toLowerCase();
     const pos = chosenSlots[idx];
     const font = BLOCK_FONTS[Math.floor(Math.random() * BLOCK_FONTS.length)];
     const color = VIBRANT_COLORS[Math.floor(Math.random() * VIBRANT_COLORS.length)];
-    const fontSize = 32 + Math.floor(Math.random() * 16); // 32px ~ 48px
-    // 隨機傾斜 -22度 到 +22度 (絕對不翻轉、不鏡像！)
-    const rotation = Math.round(Math.random() * 44 - 22);
+    // SVG viewBox 內的相對字級；會跟著大/小圓框同比縮放，永不超框。
+    const fontScale = 52 + Math.floor(Math.random() * 9); // 52 ~ 60 / 100
+    // 字母可在互不重疊的圓框中自由傾斜，旋轉不再改變判定區。
+    const rotation = Math.round(Math.random() * 48 - 24);
 
     const isDifferent = diffIndices.includes(idx);
 
@@ -372,9 +502,10 @@ export const generateSpotterAlphabetRound = (itemCount = 6, diffCount = 3, grade
       rootChar,
       x: pos.x,
       y: pos.y,
+      hitRadiusPct: pos.hitRadiusPct,
       font,
       color,
-      fontSize,
+      fontScale,
       rotation,
       isDifference: isDifferent
     };
@@ -384,39 +515,65 @@ export const generateSpotterAlphabetRound = (itemCount = 6, diffCount = 3, grade
       leftBlocks.push({ ...baseBlock, side: 'left' });
       rightBlocks.push({ ...baseBlock, side: 'right' });
     } else {
-      // 植入差異！4 種差異類型隨機挑選
-      const diffTypes = ['color', 'char', 'missing'];
-      if (isGrade2) diffTypes.push('case');
-      const chosenDiff = diffTypes[Math.floor(Math.random() * diffTypes.length)];
+      // 僅使用左右都清楚可見的差異，不再使用「缺字」空白熱區。
+      const diffTypes = ['color', 'char', 'size'];
+      const rotationSafeRoots = 'ABCDEFGJKLMPRTUVWY';
+      const caseSafeRoots = 'ABDEFGHIJKLMNPQRTUY';
+      if (rotationSafeRoots.includes(rootChar)) diffTypes.push('rotation');
+      if (normalizedCaseMode === 'mixed' && caseSafeRoots.includes(rootChar)) diffTypes.push('case');
+      const primaryDiff = diffTypes[Math.floor(Math.random() * diffTypes.length)];
+      const chosenDiffs = [primaryDiff];
+      // 約 28% 目標疊加第二種明顯差異；避免 char + case 同時改寫同一屬性。
+      if (Math.random() < 0.28) {
+        let compoundCandidates = diffTypes.filter(type => type !== primaryDiff);
+        if (primaryDiff === 'char') compoundCandidates = compoundCandidates.filter(type => type !== 'case');
+        if (primaryDiff === 'case') compoundCandidates = compoundCandidates.filter(type => type !== 'char');
+        if (primaryDiff === 'rotation' || primaryDiff === 'case') {
+          compoundCandidates = compoundCandidates.filter(type => type === 'color' || type === 'char' || type === 'size');
+        }
+        if (compoundCandidates.length > 0) {
+          chosenDiffs.push(compoundCandidates[Math.floor(Math.random() * compoundCandidates.length)]);
+        }
+      }
 
       let rightChar = char;
       let rightColor = color;
-      let rightVisible = true;
-      let reasonText = '';
+      let rightRotation = rotation;
+      let rightFontScale = fontScale;
+      const reasonParts = [];
 
-      if (chosenDiff === 'color') {
-        const otherColors = VIBRANT_COLORS.filter(c => c !== color);
-        rightColor = otherColors[Math.floor(Math.random() * otherColors.length)];
-        reasonText = `字母 ${char} 顏色相異`;
-      } else if (chosenDiff === 'char') {
-        const otherChars = (isUpper ? UPPERCASE_ALPHABET : LOWERCASE_ALPHABET).filter(c => c !== char);
-        rightChar = otherChars[Math.floor(Math.random() * otherChars.length)];
-        reasonText = `字母不同（左為 ${char}，右為 ${rightChar}）`;
-      } else if (chosenDiff === 'missing') {
-        rightVisible = false;
-        reasonText = `右盤缺少字母 ${char}`;
-      } else if (chosenDiff === 'case') {
-        rightChar = isUpper ? char.toLowerCase() : char.toUpperCase();
-        reasonText = `大小寫相異（左為 ${char}，右為 ${rightChar}）`;
+      for (const chosenDiff of chosenDiffs) {
+        if (chosenDiff === 'color') {
+          const otherColors = CONTRASTING_SPOTTER_COLORS[color] || VIBRANT_COLORS.filter(c => c !== color);
+          rightColor = otherColors[Math.floor(Math.random() * otherColors.length)];
+          reasonParts.push('顏色不同');
+        } else if (chosenDiff === 'char') {
+          const otherChars = (isUpper ? UPPERCASE_ALPHABET : LOWERCASE_ALPHABET).filter(c => c !== char);
+          rightChar = otherChars[Math.floor(Math.random() * otherChars.length)];
+          reasonParts.push(`字母不同（左為 ${char}，右為 ${rightChar}）`);
+        } else if (chosenDiff === 'rotation') {
+          const rotationDelta = 55 + Math.round(Math.random() * 20);
+          rightRotation = rotation >= 0 ? rotation - rotationDelta : rotation + rotationDelta;
+          reasonParts.push('旋轉方向不同');
+        } else if (chosenDiff === 'size') {
+          rightFontScale = 28 + Math.floor(Math.random() * 7); // 28 ~ 34，與 52 ~ 60 明顯分離
+          reasonParts.push('字體大小不同');
+        } else if (chosenDiff === 'case') {
+          rightChar = isUpper ? char.toLowerCase() : char.toUpperCase();
+          reasonParts.push(`大小寫不同（左為 ${char}，右為 ${rightChar}）`);
+        }
       }
+      const reasonText = reasonParts.join('＋');
 
       const diffId = `diff_${idx}`;
       differences.push({
         id: diffId,
         blockIndex: idx,
         reason: reasonText,
+        types: [...chosenDiffs],
         x: pos.x,
         y: pos.y,
+        hitRadiusPct: pos.hitRadiusPct,
         isFound: false
       });
 
@@ -431,7 +588,8 @@ export const generateSpotterAlphabetRound = (itemCount = 6, diffCount = 3, grade
         side: 'right',
         char: rightChar,
         color: rightColor,
-        isVisible: rightVisible,
+        rotation: rightRotation,
+        fontScale: rightFontScale,
         diffId
       });
     }
@@ -441,7 +599,8 @@ export const generateSpotterAlphabetRound = (itemCount = 6, diffCount = 3, grade
     leftBlocks,
     rightBlocks,
     differences,
-    totalDiffs: diffCount,
-    promptZh: `左右托盤中共有 ${diffCount} 處積木差異（顏色不同、字母不同或缺少），請找出它們！`
+    caseMode: normalizedCaseMode,
+    totalDiffs: safeDiffCount,
+    promptZh: `左右托盤中共有 ${safeDiffCount} 處字母差異（顏色、大小、旋轉、字母或大小寫），請找出它們！`
   };
 };

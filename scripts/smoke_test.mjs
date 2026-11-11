@@ -223,6 +223,146 @@ async function run() {
       failures.push({ target: `Static Contract: Scheme A Book ${b} canonical count < 100`, count: CANONICAL_STATS.bookCounts[b] });
     }
   }
+  // 驗證低年級找不同：grade=2/02 同義、左右圓框一致、圓框不重疊、
+  // 差異資料一致，且畫面座標只能命中圓框內的字母。
+  const {
+    generateSpotterAlphabetRound,
+    getSpotterColorDistance,
+    normalizeSpotterAlphabetCaseMode,
+    normalizeSpotterAlphabetGrade,
+    resolveSpotterAlphabetHit
+  } = await import('../src/services/alphabetEngine.js');
+  if (normalizeSpotterAlphabetGrade('2') !== '02' || normalizeSpotterAlphabetGrade('02') !== '02') {
+    failures.push({ target: 'Static Contract: Spotter grade 2 normalization failed' });
+  }
+  if (normalizeSpotterAlphabetCaseMode(undefined, '1') !== 'upper' ||
+      normalizeSpotterAlphabetCaseMode(undefined, '2') !== 'lower') {
+    failures.push({ target: 'Static Contract: Spotter grade defaults must be G1 upper / G2 lower' });
+  }
+  let sawLowercase = false;
+  let sawCaseDifference = false;
+  let sawCompoundDifference = false;
+  const seenDifferenceTypes = new Set();
+  const allowedSpotterFonts = new Set([
+    'system-ui, sans-serif',
+    'Arial, Helvetica, sans-serif',
+    'Trebuchet MS, sans-serif',
+    'Verdana, Geneva, sans-serif',
+    'Tahoma, Geneva, sans-serif',
+    'Segoe UI, Arial, sans-serif'
+  ]);
+  for (let i = 0; i < 200; i++) {
+    const expectedDiffCount = i % 2 === 0 ? 3 : 5;
+    const expectedItemCount = expectedDiffCount === 5 ? 8 : 6;
+    const round = generateSpotterAlphabetRound(expectedItemCount, expectedDiffCount, '2', 'mixed');
+    const diffIds = new Set(round.differences.map(diff => diff.id));
+    if (round.totalDiffs !== expectedDiffCount || round.differences.length !== expectedDiffCount) {
+      failures.push({ target: 'Static Contract: Spotter 3/5 target count mismatch', expectedDiffCount, round });
+      break;
+    }
+    const mixedHasUppercase = round.leftBlocks.some(block => /[A-Z]/.test(block.char));
+    const mixedHasLowercase = round.leftBlocks.some(block => /[a-z]/.test(block.char));
+    if (!mixedHasUppercase || !mixedHasLowercase) {
+      failures.push({ target: 'Static Contract: Spotter mixed mode must contain both cases every round', round });
+      break;
+    }
+    const grade1Round = generateSpotterAlphabetRound(6, 3, '1');
+    if (grade1Round.leftBlocks.some(block => !/^[A-Z]$/.test(block.char))) {
+      failures.push({ target: 'Static Contract: Spotter G1 default must contain uppercase only', grade1Round });
+      break;
+    }
+    const grade2Round = generateSpotterAlphabetRound(6, 3, '2');
+    if (grade2Round.leftBlocks.some(block => !/^[a-z]$/.test(block.char))) {
+      failures.push({ target: 'Static Contract: Spotter G2 default must contain lowercase only', grade2Round });
+      break;
+    }
+    sawLowercase ||= round.leftBlocks.some(block => /[a-z]/.test(block.char));
+    sawCaseDifference ||= round.differences.some(diff => diff.reason.includes('大小寫不同'));
+    sawCompoundDifference ||= round.differences.some(diff => diff.reason.includes('＋'));
+    round.differences.forEach(diff => (diff.types || []).forEach(type => seenDifferenceTypes.add(type)));
+
+    for (let blockIndex = 0; blockIndex < round.leftBlocks.length; blockIndex++) {
+      const left = round.leftBlocks[blockIndex];
+      const right = round.rightBlocks[blockIndex];
+      if (left.x !== right.x || left.y !== right.y || left.hitRadiusPct !== right.hitRadiusPct) {
+        failures.push({ target: 'Static Contract: Spotter left/right hit circles differ', left, right });
+        break;
+      }
+      if (left.font !== right.font || !allowedSpotterFonts.has(left.font)) {
+        failures.push({ target: 'Static Contract: Spotter font must be standard and identical on both sides', left, right });
+        break;
+      }
+      const radius = (left.hitRadiusPct / 100) * 400;
+      const centerX = (left.x / 100) * 400;
+      const centerY = (left.y / 100) * 300;
+      if (centerX - radius < 0 || centerX + radius > 400 || centerY - radius < 0 || centerY + radius > 300) {
+        failures.push({ target: 'Static Contract: Spotter hit circle exceeds tray', left, radius, centerX, centerY });
+        break;
+      }
+      if (left.fontScale > 60 || left.fontScale < 52 || right.fontScale > 60 || right.fontScale < 28) {
+        failures.push({ target: 'Static Contract: Spotter SVG glyph scale can exceed hit circle', left, right });
+        break;
+      }
+
+      const visualKeys = ['char', 'color', 'rotation', 'font', 'fontScale'];
+      const visualDifferences = visualKeys.filter(key => left[key] !== right[key]);
+      const diffMeta = left.diffId ? round.differences.find(diff => diff.id === left.diffId) : null;
+      const invalidTargetDifference = left.diffId && (visualDifferences.length < 1 || visualDifferences.length > 2);
+      const typesMismatch = diffMeta && diffMeta.types.length !== visualDifferences.length;
+      const subtleColor = diffMeta?.types.includes('color') && getSpotterColorDistance(left.color, right.color) < 160;
+      const subtleSize = diffMeta?.types.includes('size') && Math.abs(left.fontScale - right.fontScale) < 18;
+      const subtleRotation = diffMeta?.types.includes('rotation') && Math.abs(left.rotation - right.rotation) < 55;
+      if (invalidTargetDifference || typesMismatch || subtleColor || subtleSize || subtleRotation || (!left.diffId && visualDifferences.length !== 0)) {
+        failures.push({ target: 'Static Contract: Spotter target/non-target visual equality mismatch', left, right, visualDifferences });
+        break;
+      }
+      for (let otherIndex = blockIndex + 1; otherIndex < round.leftBlocks.length; otherIndex++) {
+        const other = round.leftBlocks[otherIndex];
+        const distance = Math.hypot(
+          ((left.x - other.x) / 100) * 400,
+          ((left.y - other.y) / 100) * 300
+        );
+        const combinedRadii = ((left.hitRadiusPct + other.hitRadiusPct) / 100) * 400;
+        if (distance < combinedRadii) {
+          failures.push({ target: 'Static Contract: Spotter hit circles overlap', left, other, distance, combinedRadii });
+          break;
+        }
+      }
+    }
+
+    for (const block of [...round.leftBlocks, ...round.rightBlocks]) {
+      if (Boolean(block.isDifference) !== Boolean(block.diffId && diffIds.has(block.diffId))) {
+        failures.push({ target: 'Static Contract: Spotter block/difference metadata mismatch', block });
+        break;
+      }
+    }
+
+    const target = round.leftBlocks.find(block => block.diffId);
+    const hit = resolveSpotterAlphabetHit({
+      blocks: round.leftBlocks,
+      x: (target.x / 100) * 320,
+      y: (target.y / 100) * 220,
+      width: 320,
+      height: 220
+    });
+    if (hit?.id !== target.id) {
+      failures.push({ target: 'Static Contract: Spotter nearest-center hit resolution failed', target, hit });
+      break;
+    }
+  }
+  if (!sawLowercase || !sawCaseDifference || !sawCompoundDifference) {
+    failures.push({
+      target: 'Static Contract: Spotter mixed-mode variants or compound differences missing',
+      sawLowercase,
+      sawCaseDifference,
+      sawCompoundDifference
+    });
+  }
+  for (const requiredType of ['color', 'char', 'rotation', 'size', 'case']) {
+    if (!seenDifferenceTypes.has(requiredType)) {
+      failures.push({ target: 'Static Contract: Spotter difference type missing', requiredType, seenDifferenceTypes: [...seenDifferenceTypes] });
+    }
+  }
   // 驗證 SAA 115 全真學力檢測題庫 (4/5/6 年級各 35 題共 105 題，且題圖全數在線)
   const { SAA_115_G4_QUESTIONS, SAA_115_G5_QUESTIONS, SAA_115_G6_QUESTIONS } = await import('../src/data/exam/saa/index.js');
   if (SAA_115_G4_QUESTIONS.length !== 35 || SAA_115_G5_QUESTIONS.length !== 35 || SAA_115_G6_QUESTIONS.length !== 35) {
@@ -400,18 +540,75 @@ async function run() {
       const hasAlphabetTray = body.includes('左側托盤') && body.includes('右側托盤');
       const hasWordBank = body.includes('請在下方點選該相異物品');
       const trayButtons = document.querySelectorAll('button[style*="font-family"]').length;
+      const tray = document.querySelector('[data-alpha-tray="left"]');
+      const chars = [...(tray?.querySelectorAll('text') || [])].map(node => node.textContent.trim());
       return {
         hasAlphabetTray,
         hasWordBank,
-        trayButtonsCount: trayButtons
+        trayButtonsCount: trayButtons,
+        caseMode: tray?.getAttribute('data-alpha-case-mode') || null,
+        allUppercase: chars.length > 0 && chars.every(char => /^[A-Z]$/.test(char))
       };
     })()
   `);
-  if (!spotterG1Check.hasAlphabetTray || spotterG1Check.trayButtonsCount === 0) {
+  if (!spotterG1Check.hasAlphabetTray || spotterG1Check.trayButtonsCount === 0 || spotterG1Check.caseMode !== 'upper' || !spotterG1Check.allUppercase) {
     failures.push({ target: 'Spotter G1 Alphabet Trays', error: 'Alphabet trays not rendered', details: spotterG1Check });
     console.log('  ❌ Spotter G1 Alphabet Trays failed:', spotterG1Check);
   } else {
     console.log(`  ✓ Spotter G1: Alphabet Trays verified (${spotterG1Check.trayButtonsCount} interactive blocks)`);
+  }
+
+  // 以真實螢幕座標點擊差異字母中心，驗證不會因旋轉 DOM 疊層而誤判扣心。
+  const spotterCoordinateClick = await client.evaluate(`
+    (() => {
+      const target = document.querySelector('[data-alpha-tray="left"] [data-alpha-difference="true"]');
+      if (!target) return { dispatched: false, reason: 'missing difference target' };
+      const rect = target.getBoundingClientRect();
+      const clientX = rect.left + rect.width / 2;
+      const clientY = rect.top + rect.height / 2;
+      const receiver = document.elementFromPoint(clientX, clientY);
+      receiver?.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX, clientY, detail: 1 }));
+      return {
+        dispatched: Boolean(receiver),
+        targetId: target.getAttribute('data-alpha-block'),
+        receiverId: receiver?.closest?.('[data-alpha-block]')?.getAttribute('data-alpha-block') || null
+      };
+    })()
+  `);
+  await new Promise(r => setTimeout(r, 250));
+  const spotterCoordinateResult = await client.evaluate(`
+    (() => ({
+      foundOne: (document.body.innerText || '').includes('已尋獲：1 / 3'),
+      lives: document.querySelectorAll('.fill-rose-500').length
+    }))()
+  `);
+  if (!spotterCoordinateClick.dispatched || !spotterCoordinateResult.foundOne || spotterCoordinateResult.lives !== 5) {
+    failures.push({
+      target: 'Spotter G1 coordinate hit resolution',
+      error: 'Visual difference center was not accepted without life loss',
+      details: { spotterCoordinateClick, spotterCoordinateResult }
+    });
+    console.log('  ❌ Spotter G1 coordinate hit resolution failed:', spotterCoordinateClick, spotterCoordinateResult);
+  } else {
+    console.log('  ✓ Spotter G1: visual-center click accepted with all 5 lives preserved');
+  }
+
+  // 3A-2. URL 使用 grade=2 時也必須正規化為二年級 02，而非誤套一年級規則。
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=spotter&grade=2&book=abc` });
+  await waitForSpotterLoad();
+  const spotterG2Check = await client.evaluate(`
+    (() => ({
+      normalizedGrade: document.querySelector('[data-alpha-tray]')?.getAttribute('data-alpha-grade') || null,
+      caseMode: document.querySelector('[data-alpha-tray]')?.getAttribute('data-alpha-case-mode') || null,
+      allLowercase: [...document.querySelectorAll('[data-alpha-tray="left"] text')].every(node => /^[a-z]$/.test(node.textContent.trim())),
+      trayButtonsCount: document.querySelectorAll('[data-alpha-block]').length
+    }))()
+  `);
+  if (spotterG2Check.normalizedGrade !== '02' || spotterG2Check.caseMode !== 'lower' || !spotterG2Check.allLowercase || spotterG2Check.trayButtonsCount !== 12) {
+    failures.push({ target: 'Spotter G2 grade normalization', details: spotterG2Check });
+    console.log('  ❌ Spotter G2 grade normalization failed:', spotterG2Check);
+  } else {
+    console.log('  ✓ Spotter G2: grade=2 defaults to 6 lowercase letters with 12 tray blocks');
   }
 
   // 3B. 三年級紙雕場景模式 (全部 8 處差異均為正解，Word Bank 存在)

@@ -209,7 +209,9 @@ export const Lobby = ({
   const [selectedUnitFilter, setSelectedUnitFilter] = useState('all');
 
   // ── 低年級字母模式：'upper' | 'lower' | 'mixed' ──
-  const [alphaMode, setAlphaMode] = useState('upper');
+  const [alphaMode, setAlphaMode] = useState(() => (
+    parseInt(currentStudent?.grade, 10) === 2 ? 'lower' : 'upper'
+  ));
 
   // ── 密室逃脫選定主題 ──
   const [escapeThemeId, setEscapeThemeId] = useState('temple');
@@ -277,8 +279,13 @@ export const Lobby = ({
 
   // ── 根據學生年級自動初始化預設選項 ──
   useEffect(() => {
-    if (studentGradeNum === 1) setSelectedOptionId('g1');
-    else if (studentGradeNum === 2) setSelectedOptionId('g2');
+    if (studentGradeNum === 1) {
+      setSelectedOptionId('g1');
+      setAlphaMode('upper');
+    } else if (studentGradeNum === 2) {
+      setSelectedOptionId('g2');
+      setAlphaMode('lower');
+    }
     else if (studentGradeNum === 3) setSelectedOptionId('b1');
     else if (studentGradeNum === 4) setSelectedOptionId('b3');
     else if (studentGradeNum === 5) setSelectedOptionId('b5');
@@ -650,6 +657,9 @@ export const Lobby = ({
     const optData = ALL_GRADE_OPTIONS.find(o => o.id === optId);
     if (!optData) return;
 
+    const nextAlphaMode = optId === 'g2' ? 'lower' : optId === 'g1' ? 'upper' : alphaMode;
+    if (optData.isAlpha) setAlphaMode(nextAlphaMode);
+
     const bKey = optData.book;
     const bData = groupedUnits[bKey];
     const newBookUnits = optData.isAlpha
@@ -660,7 +670,7 @@ export const Lobby = ({
     setSettings(prev => ({
       ...prev,
       selectedBook: bKey,
-      alphaMode: optData.isAlpha ? alphaMode : null,
+      alphaMode: optData.isAlpha ? nextAlphaMode : null,
       selectedUnits: newBookUnits
     }));
   };

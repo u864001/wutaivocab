@@ -7,13 +7,52 @@ import { SpotterScene } from './SpotterScene';
 import { SpotterWordBank } from './SpotterWordBank';
 import { SPOTTER_SCENES, SPOTTER_SCENES_BY_BOOK, ALL_SCENES_BY_BOOK, generateSpotterRound } from './spotterData';
 import { HonorSubmissionCard } from '../../components/HonorSubmissionCard';
-import { generateSpotterAlphabetRound } from '../../services/alphabetEngine';
+import {
+  generateSpotterAlphabetRound,
+  normalizeSpotterAlphabetCaseMode,
+  normalizeSpotterAlphabetGrade,
+  resolveSpotterAlphabetHit
+} from '../../services/alphabetEngine';
 import { soundEngine } from '../../services/audio';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, Heart, Timer, Trophy, Sparkles, RefreshCw,
   CheckCircle2, AlertTriangle, ShieldAlert, Search, Lightbulb
 } from 'lucide-react';
+
+const AlphabetGlyph = ({ block }) => {
+  const clipId = React.useId().replace(/:/g, '');
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      className="w-full h-full pointer-events-none"
+      aria-hidden="true"
+    >
+      <defs>
+        <clipPath id={clipId}>
+          <circle cx="50" cy="50" r="49" />
+        </clipPath>
+      </defs>
+      <text
+        x="50"
+        y="52"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        transform={`rotate(${block.rotation} 50 50)`}
+        clipPath={`url(#${clipId})`}
+        style={{
+          fontFamily: block.font,
+          fontSize: `${block.fontScale}px`,
+          fontWeight: 900,
+          fill: block.color,
+          filter: 'drop-shadow(0 3px 3px rgba(0, 0, 0, 0.75))'
+        }}
+      >
+        {block.char}
+      </text>
+    </svg>
+  );
+};
 
 export const VocabSpotterGame = ({
   settings,
@@ -84,6 +123,22 @@ export const VocabSpotterGame = ({
       Boolean(settings?.alphaMode);
   }, [qualifyingBook, settings, currentStudent?.grade]);
 
+  // URL 測試入口可能傳入 grade=2，而學生資料通常保存為 02；統一格式後
+  // 再交給產題器，避免二年級被誤當一年級而不出現小寫/大小寫差異。
+  const alphabetGrade = useMemo(() => {
+    let requestedGrade = currentStudent?.grade || settings?.grade || '01';
+    try {
+      const urlGrade = new URLSearchParams(window.location.search).get('grade');
+      if (['1', '2', '01', '02'].includes(urlGrade)) requestedGrade = urlGrade;
+    } catch (e) {}
+    return normalizeSpotterAlphabetGrade(requestedGrade);
+  }, [currentStudent?.grade, settings?.grade]);
+
+  const alphabetCaseMode = useMemo(
+    () => normalizeSpotterAlphabetCaseMode(settings?.alphaMode, alphabetGrade),
+    [settings?.alphaMode, alphabetGrade]
+  );
+
   const scenesForBook = ALL_SCENES_BY_BOOK[selectedBook] || [SPOTTER_SCENES_BY_BOOK[selectedBook] || SPOTTER_SCENES_BY_BOOK['1']];
   const [sceneIndex, setSceneIndex] = useState(0);
   const [isPreloading, setIsPreloading] = useState(!isAlphabetMode);
@@ -94,11 +149,11 @@ export const VocabSpotterGame = ({
   const roundData = useMemo(() => generateSpotterRound(currentScene, 5), [currentScene, roundSeed]);
 
   const alphaRoundData = useMemo(() => {
-    return isAlphabetMode ? generateSpotterAlphabetRound(6, 3, currentStudent?.grade || '01') : null;
-  }, [isAlphabetMode, roundSeed, currentStudent?.grade]);
+    return isAlphabetMode ? generateSpotterAlphabetRound(6, 3, alphabetGrade, alphabetCaseMode) : null;
+  }, [isAlphabetMode, roundSeed, alphabetGrade, alphabetCaseMode]);
 
   const { activeDifferences, itemStateMap, wordBankOptions, totalCount } = isAlphabetMode
-    ? { activeDifferences: alphaRoundData?.differences || [], itemStateMap: {}, wordBankOptions: [], totalCount: 3 }
+    ? { activeDifferences: alphaRoundData?.differences || [], itemStateMap: {}, wordBankOptions: [], totalCount: alphaRoundData?.totalDiffs || 0 }
     : roundData;
 
   // 遊戲核心狀態
@@ -231,17 +286,22 @@ export const VocabSpotterGame = ({
   const handleAlphabetBlockClick = (block) => {
     if (gameState !== 'playing' || !alphaRoundData) return;
 
-    if (block.isDifference) {
+    // differences 是本局唯一真相來源；不要只信任視圖 block 上可能過期或
+    // 被複製遺漏的 isDifference，否則畫面有差異仍可能被誤判。
+    const diffObj = block?.diffId
+      ? alphaRoundData.differences.find(d => d.id === block.diffId)
+      : null;
+
+    if (diffObj) {
       if (solvedDiffIds.has(block.diffId)) return;
       const newSolved = new Set(solvedDiffIds);
       newSolved.add(block.diffId);
       setSolvedDiffIds(newSolved);
       soundEngine.correct();
 
-      const diffObj = alphaRoundData.differences.find(d => d.id === block.diffId);
       setMatchSuccessFeedback({
-        word: block.char,
-        wordZh: diffObj?.reason || '積木差異',
+        word: block.char || block.rootChar,
+        wordZh: diffObj?.reason || '字母差異',
         solvedCount: newSolved.size,
         total: alphaRoundData.totalDiffs
       });
@@ -261,7 +321,32 @@ export const VocabSpotterGame = ({
         }, 300);
       }
     } else {
-      deductLife('❌ 這裡兩邊積木完全一樣喔！請再仔細觀察其他字母～');
+      deductLife('❌ 這裡兩邊字母完全一樣喔！請再仔細觀察其他字母～');
+    }
+  };
+
+  // Pointer 點擊由托盤統一依「隱形圓框」解算，而不是相信瀏覽器
+  // 命中的矩形 DOM 按鈕。左右圓框同位置、同半徑且互不重疊，字母
+  // 的顏色或旋轉只改變視覺，不會改變正確判定範圍。
+  const handleAlphabetTrayClick = (event, blocks) => {
+    // 鍵盤觸發的 click 沒有實體座標，交回各按鈕自身的 onClick 處理。
+    if (event.detail === 0) return;
+    event.stopPropagation();
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const block = resolveSpotterAlphabetHit({
+      blocks,
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+      width: rect.width,
+      height: rect.height,
+      maxDistancePx: 56
+    });
+
+    if (block) {
+      handleAlphabetBlockClick(block);
+    } else {
+      deductLife('❌ 這裡沒有字母積木喔！請點在字母或缺少字母的位置～');
     }
   };
 
@@ -522,7 +607,9 @@ export const VocabSpotterGame = ({
           <div className="p-3 rounded-2xl bg-amber-500/15 border-2 border-amber-400 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-black flex items-center justify-between shadow-md">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-500 animate-spin-slow" />
-              <span>左右托盤散落著字母積木，找出 <strong>{alphaRoundData?.totalDiffs || 3}</strong> 處顏色、字母或大小寫相異之處！</span>
+              <span>
+                左右托盤散落著字母（{alphabetCaseMode === 'upper' ? '全部大寫' : alphabetCaseMode === 'lower' ? '全部小寫' : '大小寫混合'}），找出 <strong>{alphaRoundData?.totalDiffs || 3}</strong> 處顏色、大小、旋轉、字母或大小寫相異之處！
+              </span>
             </div>
             <span className="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-black shrink-0 shadow">
               已尋獲：{solvedDiffIds.size} / {alphaRoundData?.totalDiffs || 3}
@@ -533,10 +620,16 @@ export const VocabSpotterGame = ({
           <div className={`grid grid-cols-1 landscape:grid-cols-2 md:grid-cols-2 gap-3 transition-transform ${shakeScene ? 'animate-headShake' : ''}`}>
             {/* 左托盤 */}
             <div className="relative w-full aspect-[4/3] rounded-3xl bg-gradient-to-b from-stone-850 via-stone-900 to-stone-950 border-4 border-amber-500/70 shadow-2xl overflow-hidden p-4">
-              <div className="absolute top-2.5 left-3 z-10 px-2.5 py-1 rounded-xl bg-black/70 text-amber-300 text-xs font-black border border-amber-400/30">
+              <div className="pointer-events-none absolute top-2.5 left-3 z-10 px-2.5 py-1 rounded-xl bg-black/70 text-amber-300 text-xs font-black border border-amber-400/30">
                 左側托盤 (Left Tray)
               </div>
-              <div className="relative w-full h-full">
+              <div
+                className="relative w-full h-full"
+                data-alpha-tray="left"
+                data-alpha-grade={alphabetGrade}
+                data-alpha-case-mode={alphabetCaseMode}
+                onClickCapture={(event) => handleAlphabetTrayClick(event, alphaRoundData?.leftBlocks || [])}
+              >
                 {alphaRoundData?.leftBlocks.map((block) => {
                   const isSolved = solvedDiffIds.has(block.diffId);
                   return (
@@ -544,21 +637,26 @@ export const VocabSpotterGame = ({
                       key={block.id}
                       type="button"
                       onClick={() => handleAlphabetBlockClick(block)}
+                      data-alpha-block={block.id}
+                      data-alpha-difference={Boolean(block.diffId)}
+                      data-diff-id={block.diffId || ''}
+                      aria-label={`左側字母 ${block.char}${block.diffId ? '，此處有差異' : ''}`}
                       style={{
                         left: `${block.x}%`,
                         top: `${block.y}%`,
-                        transform: `translate(-50%, -50%) rotate(${block.rotation}deg)`,
+                        width: `${block.hitRadiusPct * 2}%`,
+                        aspectRatio: '1 / 1',
+                        transform: 'translate(-50%, -50%)',
                         fontFamily: block.font,
-                        color: block.color,
-                        fontSize: `${block.fontSize}px`
+                        color: block.color
                       }}
-                      className={`absolute w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center font-black shadow-xl border-2 transition-transform active:scale-90 cursor-pointer select-none ${
+                      className={`absolute rounded-full flex items-center justify-center font-black transition-transform active:scale-90 cursor-pointer select-none ${
                         isSolved
-                          ? 'bg-emerald-500/30 border-emerald-400 ring-4 ring-emerald-400/50 scale-105'
-                          : 'bg-stone-900/90 border-stone-600 hover:border-amber-400 hover:scale-110'
+                          ? 'bg-emerald-500/30 border-2 border-emerald-400 ring-4 ring-emerald-400/50 scale-105'
+                          : 'bg-transparent border border-transparent focus-visible:ring-2 focus-visible:ring-white/60'
                       }`}
                     >
-                      <span>{block.char}</span>
+                      <AlphabetGlyph block={block} />
                       {isSolved && (
                         <CheckCircle2 className="absolute -top-1.5 -right-1.5 w-5 h-5 text-emerald-400 bg-stone-950 rounded-full" />
                       )}
@@ -570,61 +668,43 @@ export const VocabSpotterGame = ({
 
             {/* 右托盤 */}
             <div className="relative w-full aspect-[4/3] rounded-3xl bg-gradient-to-b from-stone-850 via-stone-900 to-stone-950 border-4 border-cyan-500/70 shadow-2xl overflow-hidden p-4">
-              <div className="absolute top-2.5 left-3 z-10 px-2.5 py-1 rounded-xl bg-black/70 text-cyan-300 text-xs font-black border border-cyan-400/30">
+              <div className="pointer-events-none absolute top-2.5 left-3 z-10 px-2.5 py-1 rounded-xl bg-black/70 text-cyan-300 text-xs font-black border border-cyan-400/30">
                 右側托盤 (Right Tray)
               </div>
-              <div className="relative w-full h-full">
+              <div
+                className="relative w-full h-full"
+                data-alpha-tray="right"
+                data-alpha-grade={alphabetGrade}
+                data-alpha-case-mode={alphabetCaseMode}
+                onClickCapture={(event) => handleAlphabetTrayClick(event, alphaRoundData?.rightBlocks || [])}
+              >
                 {alphaRoundData?.rightBlocks.map((block) => {
-                  if (block.isVisible === false) {
-                    const isSolved = solvedDiffIds.has(block.diffId);
-                    return (
-                      <button
-                        key={block.id}
-                        type="button"
-                        onClick={() => handleAlphabetBlockClick({ ...block, isDifference: true })}
-                        style={{
-                          left: `${block.x}%`,
-                          top: `${block.y}%`,
-                          transform: 'translate(-50%, -50%)'
-                        }}
-                        className={`absolute w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center font-black cursor-pointer transition-all active:scale-90 select-none ${
-                          isSolved
-                            ? 'bg-emerald-500/30 border-2 border-emerald-400 text-emerald-300 ring-4 ring-emerald-400/50 scale-105'
-                            : 'bg-transparent border-0 opacity-0 hover:opacity-10'
-                        }`}
-                        title={isSolved ? '已找齊' : ''}
-                      >
-                        {isSolved ? (
-                          <>
-                            <span className="text-[11px] font-black">已找齊</span>
-                            <CheckCircle2 className="absolute -top-1.5 -right-1.5 w-5 h-5 text-emerald-400 bg-stone-950 rounded-full" />
-                          </>
-                        ) : null}
-                      </button>
-                    );
-                  }
-
                   const isSolved = solvedDiffIds.has(block.diffId);
                   return (
                     <button
                       key={block.id}
                       type="button"
                       onClick={() => handleAlphabetBlockClick(block)}
+                      data-alpha-block={block.id}
+                      data-alpha-difference={Boolean(block.diffId)}
+                      data-diff-id={block.diffId || ''}
+                      aria-label={`右側字母 ${block.char}${block.diffId ? '，此處有差異' : ''}`}
                       style={{
                         left: `${block.x}%`,
                         top: `${block.y}%`,
-                        transform: `translate(-50%, -50%) rotate(${block.rotation}deg)`,
+                        width: `${block.hitRadiusPct * 2}%`,
+                        aspectRatio: '1 / 1',
+                        transform: 'translate(-50%, -50%)',
                         fontFamily: block.font,
-                        color: block.color,
-                        fontSize: `${block.fontSize}px`
+                        color: block.color
                       }}
-                      className={`absolute w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center font-black shadow-xl border-2 transition-transform active:scale-90 cursor-pointer select-none ${
+                      className={`absolute rounded-full flex items-center justify-center font-black transition-transform active:scale-90 cursor-pointer select-none ${
                         isSolved
-                          ? 'bg-emerald-500/30 border-emerald-400 ring-4 ring-emerald-400/50 scale-105'
-                          : 'bg-stone-900/90 border-stone-600 hover:border-cyan-400 hover:scale-110'
+                          ? 'bg-emerald-500/30 border-2 border-emerald-400 ring-4 ring-emerald-400/50 scale-105'
+                          : 'bg-transparent border border-transparent focus-visible:ring-2 focus-visible:ring-white/60'
                       }`}
                     >
-                      <span>{block.char}</span>
+                      <AlphabetGlyph block={block} />
                       {isSolved && (
                         <CheckCircle2 className="absolute -top-1.5 -right-1.5 w-5 h-5 text-emerald-400 bg-stone-950 rounded-full" />
                       )}
