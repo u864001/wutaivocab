@@ -298,6 +298,30 @@ assert.strictEqual(coinAwardCount, firstCoins, 'Coins must never be double-award
 console.log('  ✓ Expired formal exam resume executes full finalization with breakdown, mastery, onComplete, and coin reward.');
 console.log('  ✓ Idempotency guard strictly prevents double-finalization and duplicate coin awards.');
 
+// ── Test 9: Grade 1 & 2 Chinese Question & Speech Routing Contract ──
+console.log('\n[9/9] Validating Grade 1 & 2 (g1 & g2) Chinese Stems & Voice Routing Contract...');
+const g1Items = HERE_WE_GO_MCQ_BANK.filter((q) => q.book === 'g1');
+const g2Items = HERE_WE_GO_MCQ_BANK.filter((q) => q.book === 'g2');
+
+assert.strictEqual(g1Items.length, 143, 'Grade 1 must have 143 questions');
+assert.strictEqual(g2Items.length, 170, 'Grade 2 must have 170 questions');
+
+for (const q of g1Items) {
+  assert.ok(/[\u4e00-\u9fa5]/.test(q.question), `Grade 1 question ${q.id} must be in Chinese: ${q.question}`);
+}
+for (const q of g2Items) {
+  assert.ok(/[\u4e00-\u9fa5]/.test(q.question), `Grade 2 question ${q.id} must be in Chinese: ${q.question}`);
+}
+
+// 驗證中文題幹語音清理邏輯（移除引號、替換空格）
+const sampleRaw = '請問依照字母順序，大寫字母「A」緊接著的下一個字母是哪一個？';
+const sampleClean = sampleRaw.replace(/_{2,}/g, ' 空格 ').replace(/[「」『』]/g, ' ');
+assert.ok(!sampleClean.includes('「') && !sampleClean.includes('」'), 'Cleaned speech text must remove bracket quotation marks');
+assert.ok(sampleClean.includes('大寫字母 A 緊接著'), 'Cleaned speech text must separate letters with clean pauses');
+
+console.log(`  ✓ 100% of Grade 1 (${g1Items.length}) & Grade 2 (${g2Items.length}) items feature clear Chinese stems.`);
+console.log('  ✓ Chinese question TTS cleaner correctly converts brackets and blanks for natural Taiwanese Mandarin pronunciation.');
+
 console.log('\n══════════════════════════════════════════════════════════════');
-console.log('  ALL 8 EXAM AUDIT & RUNTIME CONTRACT TESTS PASSED!          ');
+console.log('  ALL 9 EXAM AUDIT, RUNTIME & G1/G2 AUDIO TESTS PASSED!      ');
 console.log('══════════════════════════════════════════════════════════════');

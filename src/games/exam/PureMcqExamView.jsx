@@ -246,6 +246,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     );
   }, [selectedBook, currentStudent?.grade]);
 
+  // 一、二年級語音輔助判斷（冊別為 g1/g2，或低年級學生且進行課本單元檢定）
+  const isEarlyGrade = useMemo(() => {
+    return (
+      selectedBook === 'g1' ||
+      selectedBook === 'g2' ||
+      (scopeMode === 'curriculum' && Number(currentStudent?.grade) <= 2)
+    );
+  }, [selectedBook, scopeMode, currentStudent?.grade]);
+  const [autoReadEarlyGrade, setAutoReadEarlyGrade] = useState(true);
+  const [isSpeakingStem, setIsSpeakingStem] = useState(false);
+
   // In-Progress Snapshot Key & State (6 小時內有效)
   const inProgressKey = useMemo(() => getInProgressKey(currentStudent), [currentStudent]);
   const [savedSession, setSavedSession] = useState(null);
@@ -747,7 +758,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   );
 
   // 語音朗讀題幹（支援多角色對話男女聲；一、二年級中文題幹自動使用 zh-TW 語音讀題；三～六年級英文題幹使用 en-US 朗讀；支援正式檢定雙次播放協定）
-  const speakQuestion = (text, repeatTimes = 1) => {
+  const speakQuestion = useCallback((text, repeatTimes = 1) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     try {
       const raw = String(text || '');
@@ -759,35 +770,79 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       window.speechSynthesis.cancel();
       const clean = raw
         .replace(/_{2,}/g, hasChinese ? ' 空格 ' : ' blank ')
+        .replace(/[「」『』]/g, ' ')
         .replace(/\bA:\s*/g, '')
         .replace(/\bB:\s*/g, '');
       const utter = new SpeechSynthesisUtterance(clean);
       utter.lang = hasChinese ? 'zh-TW' : 'en-US';
-      utter.rate = 0.9;
-      if (!hasChinese && window.speechSynthesis.getVoices) {
+      utter.rate = hasChinese ? 0.86 : 0.9;
+
+      if (window.speechSynthesis.getVoices) {
         const voices = window.speechSynthesis.getVoices() || [];
-        const enVoices = voices.filter(v => (v?.lang || '').toLowerCase().replace('_', '-').startsWith('en'));
-        const usVoice = enVoices.find(v => (v?.lang || '').toLowerCase().replace('_', '-').startsWith('en-us')) || enVoices[0];
-        if (usVoice) utter.voice = usVoice;
+        if (hasChinese) {
+          const zhVoices = voices.filter((v) => (v?.lang || '').toLowerCase().replace('_', '-').startsWith('zh'));
+          const twVoice = zhVoices.find((v) => (v?.lang || '').toLowerCase().replace('_', '-').startsWith('zh-tw')) || zhVoices[0];
+          if (twVoice) utter.voice = twVoice;
+        } else {
+          const enVoices = voices.filter((v) => (v?.lang || '').toLowerCase().replace('_', '-').startsWith('en'));
+          const usVoice = enVoices.find((v) => (v?.lang || '').toLowerCase().replace('_', '-').startsWith('en-us')) || enVoices[0];
+          if (usVoice) utter.voice = usVoice;
+        }
       }
-      if (repeatTimes > 1) {
-        utter.onend = () => {
+
+      utter.onstart = () => setIsSpeakingStem(true);
+      utter.onend = () => {
+        setIsSpeakingStem(false);
+        if (repeatTimes > 1) {
           setTimeout(() => {
             try {
               const utter2 = new SpeechSynthesisUtterance(clean);
               utter2.lang = hasChinese ? 'zh-TW' : 'en-US';
-              utter2.rate = 0.9;
+              utter2.rate = hasChinese ? 0.86 : 0.9;
               if (utter.voice) utter2.voice = utter.voice;
+              utter2.onstart = () => setIsSpeakingStem(true);
+              utter2.onend = () => setIsSpeakingStem(false);
+              utter2.onerror = () => setIsSpeakingStem(false);
               window.speechSynthesis.speak(utter2);
-            } catch {}
+            } catch {
+              setIsSpeakingStem(false);
+            }
           }, 2000);
-        };
-      }
+        }
+      };
+      utter.onerror = () => setIsSpeakingStem(false);
+
       window.speechSynthesis.speak(utter);
     } catch {
-      // Ignore TTS errors
+      setIsSpeakingStem(false);
     }
-  };
+  }, []);
+
+  const stopQuestionSpeech = useCallback(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {}
+    }
+    setIsSpeakingStem(false);
+  }, []);
+
+  // 切換題目時停止上一題朗讀，若為一二年級且啟用自動朗讀則自動念出中文題目
+  useEffect(() => {
+    stopQuestionSpeech();
+    if (phase === 'exam' && isEarlyGrade && autoReadEarlyGrade && questions[currentIndex]) {
+      const timer = setTimeout(() => {
+        speakQuestion(questions[currentIndex].media?.audioText || questions[currentIndex].question);
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, phase, isEarlyGrade, autoReadEarlyGrade, questions, speakQuestion, stopQuestionSpeech]);
+
+  useEffect(() => {
+    return () => {
+      stopQuestionSpeech();
+    };
+  }, [stopQuestionSpeech]);
 
   // 第 0 頁考前音量測試發音
   const runAudioTest = useCallback(() => {
@@ -949,10 +1004,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     } else {
       // 題數 × 答對率 × 0.4（10題全對=4、20題全對=8、50題全對=20，單次上限 20 金幣）
       coinsEarned = Math.min(20, Math.max(1, Math.round(total * accuracyRatio * 0.4)));
-      reason = `通過檢定標準（答對率 ${finalScore}%），獲得 +${coinsEarned} 金幣並計入本週三大榜！`;
 
-      // 僅限課本單元檢定同步至課本三大累計排行榜（測驗王、勤學王、精準王），杜絕跨軌道污染
+      // 依測驗軌道顯示精準說明文字，杜絕跨榜誤導
       if (targetScopeMode === 'curriculum') {
+        reason = `通過檢定標準（答對率 ${finalScore}%），獲得 +${coinsEarned} 金幣並計入本週三大榜！`;
         const displayName = formatStudentDisplayName(currentStudent);
         recordMcqExamStats({
           grade: currentStudent?.grade,
@@ -961,6 +1016,15 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           correctCount,
           totalCount: total
         }).catch(() => {});
+      } else if (targetScopeMode === 'tme-preA1') {
+        reason =
+          finalScore >= 70
+            ? `通過 Pre-A1 官方合格標準（答對率 ${finalScore}% ≥ 70%），獲得 +${coinsEarned} 金幣並更新英雄榜精熟度！`
+            : `完成 Pre-A1 官方模擬測驗（答對率 ${finalScore}%），獲得 +${coinsEarned} 鼓勵金幣！`;
+      } else if (targetScopeMode === 'ministry-assessment') {
+        reason = `完成教育部學力成就模擬（答對率 ${finalScore}%），獲得 +${coinsEarned} 金幣！`;
+      } else {
+        reason = `完成個人易錯題複習（答對率 ${finalScore}%），獲得 +${coinsEarned} 金幣！`;
       }
     }
 
@@ -996,7 +1060,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         examTrack,
         targetQuestions,
         targetAnswers,
-        targetIsFormal || targetPreA1Format === 'standard'
+        Boolean(targetIsFormal) // 僅正式施測標記為 is_formal，自主練習不誤標
       );
     }
 
@@ -1426,7 +1490,6 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       const deadline = savedSession.deadlineAt || (savedSession.startedAt + 2100 * 1000);
                       const remainingMs = deadline - now;
                       if (remainingMs <= 0) {
-                        clearInProgress(inProgressKey);
                         const qs = savedSession.questions || [];
                         const ans = savedSession.answers || {};
                         setQuestions(qs);
@@ -3252,16 +3315,79 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     回報問題
                   </button>
                 )}
+                {isEarlyGrade && (
+                  <button
+                    type="button"
+                    onClick={() => setAutoReadEarlyGrade((prev) => !prev)}
+                    className={`px-2.5 py-1 rounded-lg border text-xs font-bold flex items-center gap-1 transition cursor-pointer ${
+                      autoReadEarlyGrade
+                        ? 'border-amber-400 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500'
+                    }`}
+                    title="切換是否在換題時自動朗讀題目"
+                  >
+                    <span>{autoReadEarlyGrade ? '🔊 自動讀題：開' : '🔈 自動讀題：關'}</span>
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={() => speakQuestion(currentQ.media?.audioText || currentQ.question)}
-                  className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold flex items-center gap-1 transition"
+                  onClick={() => {
+                    if (isSpeakingStem) {
+                      stopQuestionSpeech();
+                    } else {
+                      speakQuestion(currentQ.media?.audioText || currentQ.question);
+                    }
+                  }}
+                  className={`px-2.5 py-1 rounded-lg border text-xs font-bold flex items-center gap-1 transition cursor-pointer ${
+                    isSpeakingStem
+                      ? 'border-rose-400 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 animate-pulse'
+                      : isEarlyGrade
+                        ? 'border-amber-400 bg-amber-500 hover:bg-amber-600 text-white font-black shadow-xs'
+                        : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
+                  }`}
                 >
-                  <Volume2 size={14} />
-                  朗讀題幹
+                  <Volume2 size={14} className={isSpeakingStem ? 'animate-bounce' : ''} />
+                  <span>{isSpeakingStem ? '停止朗讀' : isEarlyGrade ? '🔊 念題目' : '朗讀題幹'}</span>
                 </button>
               </div>
             </div>
+
+            {/* 一、二年級專屬大喇叭友善讀題橫幅 */}
+            {isEarlyGrade && (
+              <div className="flex items-center justify-between gap-3 my-2 p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100/70 dark:from-amber-950/40 dark:to-orange-950/40 border-2 border-amber-300 dark:border-amber-700/60 shadow-xs">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isSpeakingStem) {
+                        stopQuestionSpeech();
+                      } else {
+                        speakQuestion(currentQ.question);
+                      }
+                    }}
+                    className={`px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl font-black text-sm sm:text-base flex items-center gap-2 shadow-sm transition cursor-pointer active:scale-95 shrink-0 ${
+                      isSpeakingStem
+                        ? 'bg-rose-500 hover:bg-rose-600 text-white'
+                        : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white'
+                    }`}
+                  >
+                    <Volume2 size={20} className={isSpeakingStem ? 'animate-bounce text-yellow-200' : ''} />
+                    <span>{isSpeakingStem ? '⏹️ 停止念題' : '🔊 念題目給我聽'}</span>
+                  </button>
+                  <div className="min-w-0">
+                    <div className="text-xs sm:text-sm font-black text-amber-950 dark:text-amber-100 flex items-center gap-1.5">
+                      <span>一、二年級語音輔助</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 font-bold">
+                        國語發音
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-amber-800 dark:text-amber-300 truncate">
+                      看不懂國字沒關係，點按鈕聽老師念題目！
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {currentQ.passage && (
               <div className="p-3.5 sm:p-4 rounded-xl bg-indigo-50/70 dark:bg-slate-800/90 border border-indigo-200/80 dark:border-slate-700 text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200 mb-2">
@@ -3274,8 +3400,30 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </div>
               </div>
             )}
-            <div className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-wide py-1">
-              {formatQuestionStem(currentQ.question)}
+            <div className="flex items-start gap-2.5 py-1">
+              {isEarlyGrade && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isSpeakingStem) {
+                      stopQuestionSpeech();
+                    } else {
+                      speakQuestion(currentQ.question);
+                    }
+                  }}
+                  className={`shrink-0 p-2 rounded-xl transition cursor-pointer mt-0.5 border-2 ${
+                    isSpeakingStem
+                      ? 'bg-rose-100 border-rose-300 text-rose-700 animate-pulse'
+                      : 'bg-amber-100 hover:bg-amber-200 border-amber-300 text-amber-800 dark:bg-amber-900/60 dark:border-amber-700 dark:text-amber-200 shadow-xs'
+                  }`}
+                  title="點擊聽老師念題目"
+                >
+                  <Volume2 size={20} className={isSpeakingStem ? 'animate-bounce' : ''} />
+                </button>
+              )}
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-wide leading-snug">
+                {formatQuestionStem(currentQ.question)}
+              </div>
             </div>
 
             {/* 寫作重組專屬：彩色立體磁吸單字積木架 (3D Magnetic Word Blocks Rack) */}
@@ -3983,9 +4131,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 })}
               </div>
 
-              <div className="p-3 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 text-xs sm:text-sm text-indigo-950 dark:text-indigo-100 leading-relaxed">
-                <span className="font-black text-indigo-700 dark:text-indigo-300">💡 解析：</span>
-                {currentReviewItem.q.explanation}
+              <div className="p-3 rounded-xl bg-indigo-50/80 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 text-xs sm:text-sm text-indigo-950 dark:text-indigo-100 leading-relaxed flex items-start gap-2">
+                <button
+                  type="button"
+                  onClick={() => speakQuestion(currentReviewItem.q.explanation)}
+                  className="p-1.5 rounded-lg bg-indigo-200/80 dark:bg-indigo-800/80 hover:bg-indigo-300 text-indigo-900 dark:text-indigo-100 shrink-0 transition cursor-pointer"
+                  title="朗讀解析"
+                >
+                  <Volume2 size={15} />
+                </button>
+                <div className="min-w-0">
+                  <span className="font-black text-indigo-700 dark:text-indigo-300">💡 解析：</span>
+                  {currentReviewItem.q.explanation}
+                </div>
               </div>
             </div>
           ) : (
