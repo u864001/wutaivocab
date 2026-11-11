@@ -1,11 +1,13 @@
 /**
  * 課本題庫檢定館四大測驗軌道 (Exam Tracks) 核心定義與規格
  *
- * 1. textbook: 課本同步檢定 (Here We Go 1~8 冊、字母專冊與國一先修，現有 1,689 題)
+ * 1. textbook: 課本同步檢定 (Here We Go 1~8 冊、字母專冊與國一先修，動態綁定 CANONICAL_STATS)
  * 2. tme-preA1: 教育部 Test My English Pre-A1 官方模擬檢定 (聽力 15 + 閱讀 15，共 30 題標準卷)
  * 3. ministry-assessment: 教育部/縣市學力檢測 (SAA 臺灣學生學習成就評量，國小 4~6 年級實戰模考)
  * 4. mistakes: 個人易錯題弱點擊破室 (跨軌道智慧複習，連續答對 2 次出庫)
  */
+
+import { CANONICAL_STATS } from './canonicalMapping.js';
 
 export const EXAM_TRACKS = {
   textbook: {
@@ -20,7 +22,7 @@ export const EXAM_TRACKS = {
     targetGrades: [1, 2, 3, 4, 5, 6],
     features: [
       '涵蓋 1~8 冊、國一先修及 1~2 年級字母專冊',
-      '全站現有 1,689 題原創類題庫',
+      `全站現有 ${CANONICAL_STATS.canonicalItems.toLocaleString()} 題原創類題庫`,
       '支援自選 10 題、20 題、50 題規格',
       '本年級達標 60% 即可賺取宇宙學習金幣'
     ]

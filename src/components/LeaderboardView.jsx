@@ -14,6 +14,7 @@ import { soundEngine } from '../services/audio';
 import { useEasterEgg } from '../hooks/useEasterEgg';
 import { pad2, formatStudentBadge, formatStudentDisplayName, isGuestStudent, parseStudentId } from '../utils/studentIdHelper';
 import { loadStudentMastery } from '../utils/masteryHelper';
+import { CANONICAL_STATS } from '../data/exam/canonicalMapping';
 import {
   Trophy, ArrowLeft, RotateCw, Calendar, BookOpen, Puzzle, Rocket,
   Sparkles, Keyboard, Swords, ChevronRight, ChevronLeft, ChevronDown, Compass, Flame,
@@ -124,7 +125,7 @@ export const EXAM_KING_SUBTRACKS = [
   {
     id: 'mcq_king',
     label: '課本單元檢定',
-    subLabel: '1,689 題單元實戰',
+    subLabel: `${CANONICAL_STATS.canonicalItems.toLocaleString()} 題單元實戰`,
     icon: Crown,
     unit: '分',
     badgeColor: 'border-amber-400 text-amber-200 bg-amber-500/25 ring-amber-400/50',

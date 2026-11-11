@@ -246,13 +246,14 @@
    - `explanation` 必須具體說明本题的語意線索與文法規則（禁止出現「依據本課核心句型」等空洞套話）。
    - 若正答以 `Yes` 開頭，詳解不可寫「故選否定 No」；若正答以 `No` 開頭，詳解不可寫「故選肯定 Yes」。
 
-7. **【鐵律七：入庫必過 4 道自動化驗證門禁】**：
+7. **【鐵律七：入庫必過 5 道自動化驗證門禁 + 6 階段 Smoke Test】**：
    每次擴充腳本執行後，必須依序執行並 100% 通過：
    ```bash
    node scripts/verify_canonical_schema.mjs
    node scripts/audit_semantic_gates.mjs
    node scripts/test_canonical_migration.mjs
    node scripts/test_prune_roundtrip.mjs
+   node scripts/test_batch_a_contract.mjs
    npm run build && node scripts/smoke_test.mjs
    ```
 
@@ -260,21 +261,21 @@
 
 ### 3. 各冊 1~8 冊「六大常用題型」均衡擴充藍圖與執行進度表 (Batch A ~ Batch D)
 
-為解決早期題庫過度偏重 `G-DLG`（完成對話），且缺乏課本聽力題 (`L-WORD`, `L-RESP`)、情境判斷題 (`G-CTX`) 與短篇閱讀理解題 (`R-COMP`) 的問題，全 1~8 冊採 **4 批次（每批次 2 冊、每冊 +50 題、共 +400 題純 Canonical 精选题）** 循序推進：
+為解決早期題庫過度偏重 `G-DLG`（完成對話），且缺乏課本聽力題 (`L-WORD`, `L-RESP`)、情境判斷題 (`G-CTX`) 與短篇閱讀理解題 (`R-COMP`) 的問題，全 1~8 冊採 **4 批次（每批次 2 冊、每冊 +50 題、共 +400 題純 Canonical 精選題）** 循序推進：
 
-#### 每冊 +50 題之標準題型配比（6 大常用題型均衡分配）
-| 大題 (`section`) | 題型代碼 (`taskType`) | 每冊新增題數 | 命題核心規範 |
-| :--- | :--- | :---: | :--- |
-| **聽力 (`listening`)** | `L-WORD`（聽音選字） | **+8 題** | `media.audioText` 發音本冊核心單字，題幹不洩漏文字，7 選項為本冊同領域或發音相近單字 |
-| **聽力 (`listening`)** | `L-RESP`（聽問句選回應） | **+8 題** | `media.audioText` 播放本冊核心生活問句，選出唯一合乎邏輯與文法的回應句 |
-| **字彙 (`vocabulary`)** | `V-MEAN`（語境句子選字） | **+10 題** | 完整生活英文句子填空 (`______`)，前後文提供唯一語意線索 |
-| **文法 (`grammar`)** | `G-MC`（核心句型文法填空） | **+10 題** | 針對本冊主詞動詞一致性、be動詞/助動詞、冠詞、介系詞、單複數設計 7 個語法變體選項 |
-| **文法 (`grammar`)** | `G-CTX`（生活情境語用判斷） | **+6 題** | 以中文或英文描述具體生活情境（如「想知道對方的名字時該怎麼問？」），選出最合適的英文表達 |
-| **閱讀 (`reading`)** | `R-COMP`（3~4 句微型短文閱讀） | **+8 題** | 題幹包含 `【閱讀短文】` 3～4 句符合該冊單字程度的小短文＋1 道細節理解問句 |
+#### 每冊 +50 題之強制固定配比（`8 / 8 / 10 / 10 / 6 / 8`，由 `test_batch_a_contract.mjs` 自動強制檢查）
+| 大題 (`section`) | 題型代碼 (`taskType`) | 每冊固定題數 | 編號槽位建議 (以 01~50 為例) | 命題核心規範 |
+| :--- | :--- | :---: | :---: | :--- |
+| **聽力 (`listening`)** | `L-WORD`（聽音選字） | **8 題** | `01 ~ 08` | `question` 強制固定為 `【聽力：聽音選字】請聽英語發音，選出聽到的單字：`，`media.audioText` 為本冊單字 |
+| **聽力 (`listening`)** | `L-RESP`（聽問句選回應） | **8 題** | `09 ~ 16` | `question` 強制固定為 `【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：`，選出唯一合理回應 |
+| **字彙 (`vocabulary`)** | `V-MEAN`（語境句子選字） | **10 題** | `17 ~ 26` | 完整生活英文句子填空 (`______`)，前後文提供唯一語意線索 |
+| **文法 (`grammar`)** | `G-MC`（核心句型文法填空） | **10 題** | `27 ~ 36` | 針對本冊主詞動詞一致性、be動詞/助動詞、冠詞、介系詞、單複數設計 7 個語法變體選項 |
+| **文法 (`grammar`)** | `G-CTX`（生活情境語用判斷） | **6 題** | `37 ~ 42` | 以中文描述具體生活情境（如「想知道對方的名字時該怎麼問？」），選出最合適的英文表達 |
+| **閱讀 (`reading`)** | `R-COMP`（3~4 句微型短文閱讀） | **8 題** | `43 ~ 50` | 題幹包含 `閱讀短文：` 或 `閱讀對話：` 3～4 句符合該冊單字程度的小短文＋1 道細節理解問句 |
 
 #### Batch A ~ Batch D 擴充進度總表（新對話接手請直接查看此表）
 
-| 批次 | 目標冊別 | 擴充前題數 | 新增題數 | 擴充後題數 | 全庫總 Canonical 題數 | 狀態与對應腳本 |
+| 批次 | 目標冊別 | 擴充前題數 | 新增題數 | 擴充後題數 | 全庫總 Canonical 題數 | 狀態與對應腳本 |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
 | **Baseline** | 全 11 冊 (`g1`, `g2`, `Book 1~9`) | 3,317 (含複本) | Prune -1,728 | **1,589** | **1,589 題** | ✅ 已完成 (`cc7c275`, `732d430`) |
 | **Batch A** | **Book 1 & Book 2**（三年級上/下） | B1: 159 / B2: 154 | **+100 題** (各 +50) | **B1: 209 / B2: 204** | **1,689 題** | ✅ **已完成** (`scripts/expand_batch_a_b1_b2.mjs`) |
@@ -282,10 +283,18 @@
 | **Batch C** | **Book 5 & Book 6**（五年級上/下） | B5: 133 / B6: 149 | **+100 題** (各 +50) | **B5: 183 / B6: 199** | **1,889 題** | 📋 規劃中 (`scripts/expand_batch_c_b5_b6.mjs`) |
 | **Batch D** | **Book 7 & Book 8**（六年級上/下） | B7: 128 / B8: 126 | **+100 題** (各 +50) | **B7: 178 / B8: 176** | **1,989 題** | 📋 規劃中 (`scripts/expand_batch_d_b7_b8.mjs`) |
 
-#### 新對話執行下一批次（如 Batch B / C / D）之標準 SOP：
-1. 參考 `scripts/expand_batch_a_b1_b2.mjs` 的結構與冥想式嚴謹誘答設計，建立該批次腳本（如 `scripts/expand_batch_b_b3_b4.mjs`）。
-2. 腳本執行時會自動將 100 道新題寫入 `src/data/hereWeGoMcqBank.js` 並同步更新 `src/data/exam/canonicalMapping.js`（`CANONICAL_STATS.canonicalItems`、`bookCounts`、`LEGACY_TO_CANONICAL_MAP`、`CANONICAL_META_MAP`）。
-3. 同步更新前端顯示之題庫總數與分冊題數（`src/components/exam/PreA1MasteryDashboard.jsx`、`src/games/exam/PureMcqExamView.jsx`、`src/components/LeaderboardView.jsx`、`src/data/exam/examTracks.js`、`src/data/exam/index.js`；註：`src/utils/masteryHelper.js` 已改為動態讀取 `CANONICAL_STATS.canonicalItems`，無需手動改數字）。
-4. 執行 `node scripts/verify_canonical_schema.mjs && node scripts/audit_semantic_gates.mjs && node scripts/test_canonical_migration.mjs && node scripts/test_prune_roundtrip.mjs` 確認 0 錯誤。
-5. 執行 `npm run build` 與 `node scripts/smoke_test.mjs` 通過全部 6 大階段後，提交並推送至 `origin/main`。
+#### 新對話（含輕量模型 Gemini Flash）執行下一批次（Batch B / C / D）之零失誤 SOP：
+1. **複製 `scripts/expand_batch_a_b1_b2.mjs` 為模板**（如 `scripts/expand_batch_b_b3_b4.mjs`）：
+   - 保留 `createItem()` 函式（它已內建自動將 `L-WORD` 與 `L-RESP` 鎖定為固定題幹 `FIXED_L_WORD_STEM` / `FIXED_L_RESP_STEM`）。
+   - 為避免算錯題型數量，**直接按固定題號區間填入每冊 50 題**：
+     - `01 ~ 08`（8 題）：`L-WORD`
+     - `09 ~ 16`（8 題）：`L-RESP`
+     - `17 ~ 26`（10 題）：`V-MEAN`
+     - `27 ~ 36`（10 題）：`G-MC`
+     - `37 ~ 42`（6 題）：`G-CTX`
+     - `43 ~ 50`（8 題）：`R-COMP`
+2. **全站 UI 已 100% 動態綁定 `CANONICAL_STATS`，無需手動改任何前端 JSX 數字**！
+   - `PreA1MasteryDashboard.jsx`、`PureMcqExamView.jsx`、`LeaderboardView.jsx`、`examTracks.js`、`masteryHelper.js` 皆已自動從 `src/data/exam/canonicalMapping.js` 的 `CANONICAL_STATS` 讀取總題數與各冊題數。
+3. **擴充 `scripts/test_batch_a_contract.mjs` 加入新批次之 `8/8/10/10/6/8` 自動斷言**，並依序執行 5 道測試腳本與 `npm run build && node scripts/smoke_test.mjs`。
+
 

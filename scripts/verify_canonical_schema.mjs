@@ -13,18 +13,15 @@ console.log('══════════════════════�
 
 const errors = [];
 
-// 1. Dual-Mode Detection: Expanded Historical (3,317) vs Pruned Canonical (1,589 baseline or CANONICAL_STATS.canonicalItems)
+// 1. Dual-Mode Detection: Expanded Historical (3,317) vs Pruned Canonical (strictly matching CANONICAL_STATS.canonicalItems)
 const canonicalItems = HERE_WE_GO_MCQ_BANK.filter(q => q.isCanonical === true);
 const cloneItems = HERE_WE_GO_MCQ_BANK.filter(q => q.isCanonical === false);
 
-const isExpandedMode = HERE_WE_GO_MCQ_BANK.length === 3317 && cloneItems.length === 1728;
-const isPrunedMode = cloneItems.length === 0 && (
-  HERE_WE_GO_MCQ_BANK.length === CANONICAL_STATS.canonicalItems ||
-  HERE_WE_GO_MCQ_BANK.length === 1589
-);
+const isExpandedMode = HERE_WE_GO_MCQ_BANK.length === 3317 && cloneItems.length === 1728 && CANONICAL_STATS.canonicalItems === 1589;
+const isPrunedMode = cloneItems.length === 0 && HERE_WE_GO_MCQ_BANK.length === CANONICAL_STATS.canonicalItems;
 
 if (!isPrunedMode && !isExpandedMode) {
-  errors.push(`Total bank length is ${HERE_WE_GO_MCQ_BANK.length} (clones: ${cloneItems.length}), expected either 3317 (expanded mode) or ${CANONICAL_STATS.canonicalItems} / 1589 (pruned mode).`);
+  errors.push(`Bank/Mapping mismatch: bank length is ${HERE_WE_GO_MCQ_BANK.length} (clones: ${cloneItems.length}), but CANONICAL_STATS.canonicalItems is ${CANONICAL_STATS.canonicalItems}.`);
 }
 
 const modeLabel = isPrunedMode
@@ -37,8 +34,8 @@ if (isExpandedMode && canonicalItems.length !== 1589) {
   errors.push(`Canonical questions count in expanded mode is ${canonicalItems.length}, expected 1589.`);
 }
 
-if (isPrunedMode && canonicalItems.length !== HERE_WE_GO_MCQ_BANK.length) {
-  errors.push(`Canonical questions count in pruned mode is ${canonicalItems.length}, expected ${HERE_WE_GO_MCQ_BANK.length}.`);
+if (isPrunedMode && canonicalItems.length !== CANONICAL_STATS.canonicalItems) {
+  errors.push(`Canonical questions count in pruned mode is ${canonicalItems.length}, expected ${CANONICAL_STATS.canonicalItems}.`);
 }
 
 if (isExpandedMode && cloneItems.length !== 1728) {

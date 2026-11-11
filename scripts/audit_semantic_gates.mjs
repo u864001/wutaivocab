@@ -181,13 +181,19 @@ for (const q of HERE_WE_GO_MCQ_BANK) {
     }
   }
 
-  // 10. Listening tasks (L-WORD / L-RESP) must have media.audioText and never leak transcript in question stem
+  // 10. Listening tasks (L-WORD / L-RESP) must have media.audioText, use fixed stems, and never leak transcript in question stem
   if (q.taskType === 'L-WORD' || q.taskType === 'L-RESP') {
+    const expectedStem = q.taskType === 'L-WORD'
+      ? '【聽力：聽音選字】請聽英語發音，選出聽到的單字：'
+      : '【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：';
     const audioText = q.media?.audioText?.trim();
     if (!audioText) {
       issues.push({ id: q.id, type: 'MISSING_LISTENING_AUDIO_TEXT', taskType: q.taskType });
     } else if (q.question && q.question.toLowerCase().includes(audioText.toLowerCase())) {
       issues.push({ id: q.id, type: 'LISTENING_TRANSCRIPT_LEAK_IN_STEM', question: q.question, audioText });
+    }
+    if (q.question !== expectedStem) {
+      issues.push({ id: q.id, type: 'NON_STANDARD_LISTENING_STEM', question: q.question, expectedStem });
     }
   }
 }

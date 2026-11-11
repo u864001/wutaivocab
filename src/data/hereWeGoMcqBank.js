@@ -53721,27 +53721,27 @@ export const HERE_WE_GO_MCQ_BANK = [
     "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "section": "listening",
-    "taskType": "L-WORD",
+    "section": "grammar",
+    "taskType": "G-MC",
     "difficulty": 1,
     "reviewed": true,
     "groupId": null,
     "media": {
-      "audioText": "three",
+      "audioText": null,
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的數字單字。",
+    "question": "______ up, please. Let's sing a song!",
     "options": [
-      "three",
-      "two",
-      "four",
-      "five",
-      "one",
-      "six",
-      "ten"
+      "Stand",
+      "Sit",
+      "Open",
+      "Close",
+      "Three",
+      "Name",
+      "Color"
     ],
     "answer": 0,
-    "explanation": "音檔發音為「three（3）」，其他選項為不同的數字單字。",
+    "explanation": "「Stand up, please.（請起立）」為固定教室指令片語；Sit 需搭配 down（Sit down），Open 與 Close 後方需接受詞（如 book）。",
     "canonicalId": "hwg_b1_ba_01",
     "primaryScope": "Starter",
     "scopes": [
@@ -53754,27 +53754,27 @@ export const HERE_WE_GO_MCQ_BANK = [
     "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "section": "listening",
-    "taskType": "L-WORD",
+    "section": "grammar",
+    "taskType": "G-MC",
     "difficulty": 1,
     "reviewed": true,
     "groupId": null,
     "media": {
-      "audioText": "five",
+      "audioText": null,
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的數字單字。",
+    "question": "Please ______ your book and read page one.",
     "options": [
+      "open",
+      "stand",
+      "sit",
+      "line",
       "five",
-      "four",
-      "one",
-      "two",
-      "three",
-      "seven",
-      "nine"
+      "red",
+      "am"
     ],
     "answer": 0,
-    "explanation": "音檔發音為「five（5）」，與 four（4）字首發音相近需仔細分辨。",
+    "explanation": "後半句提到「read page one（讀第一頁）」，因此前面應填動詞「open（打開）」構成「open your book（打開你的書）」。",
     "canonicalId": "hwg_b1_ba_02",
     "primaryScope": "Starter",
     "scopes": [
@@ -53787,27 +53787,27 @@ export const HERE_WE_GO_MCQ_BANK = [
     "track": "textbook",
     "book": 1,
     "unit": "Starter",
-    "section": "listening",
-    "taskType": "L-RESP",
-    "difficulty": 2,
+    "section": "reading",
+    "taskType": "R-COMP",
+    "difficulty": 3,
     "reviewed": true,
     "groupId": null,
     "media": {
-      "audioText": "Stand up, please.",
+      "audioText": null,
       "imageId": null
     },
-    "question": "請聽老師的教室指令，選出最合適的回應。",
+    "question": "閱讀短文：「Miss Lin is in the classroom. She says, \"Stand up, please. Count from one to five! One, two, three, four, five. Good job! Now sit down, please.\"」請問 Miss Lin 請同學從 1 數到多少？",
     "options": [
-      "OK, Miss Lin.",
-      "My name is Leo.",
-      "It is a red book.",
-      "I am eight years old.",
-      "She is my mother.",
-      "Yes, it is a dog.",
-      "No, I cannot swim."
+      "數到 5 (five)",
+      "數到 3 (three)",
+      "數到 4 (four)",
+      "數到 8 (eight)",
+      "數到 10 (ten)",
+      "數到 2 (two)",
+      "沒有請同學數數"
     ],
     "answer": 0,
-    "explanation": "聽到老師發出教室指令「Stand up, please.（請起立）」時，應禮貌回應「OK, Miss Lin.（好的，林老師）」。",
+    "explanation": "由短文中「Count from one to five! One, two, three, four, five.」可知林老師請同學從 1 數到 5。",
     "canonicalId": "hwg_b1_ba_03",
     "primaryScope": "Starter",
     "scopes": [
@@ -53928,7 +53928,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "hello",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的打招呼單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "hello",
       "name",
@@ -53962,7 +53962,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "name",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "name",
       "nine",
@@ -53996,7 +53996,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "What is your name?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "My name is Emma.",
       "I am seven years old.",
@@ -54030,7 +54030,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Hello, I am Lucas.",
       "imageId": null
     },
-    "question": "請聽對方的自我介紹，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "Hi, Lucas. I am Nina.",
       "It is an eraser.",
@@ -54302,7 +54302,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "seven",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的數字單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "seven",
       "six",
@@ -54336,7 +54336,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "eight",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的數字單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "eight",
       "nine",
@@ -54370,9 +54370,9 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "How old are you?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
-      "I amnine years old.",
+      "I am nine years old.",
       "My name is Chloe.",
       "It is a yellow ruler.",
       "Yes, it is a desk.",
@@ -54404,7 +54404,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Happy birthday! This gift is for you.",
       "imageId": null
     },
-    "question": "請聽生日祝福，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "Thank you!",
       "I am a student.",
@@ -54676,7 +54676,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "eraser",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的文具單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "eraser",
       "ruler",
@@ -54710,7 +54710,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "pencil",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的文具單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "pencil",
       "ruler",
@@ -54744,7 +54744,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "What is this?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "It is a ruler.",
       "I am eight years old.",
@@ -54778,7 +54778,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "What is that on the desk?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "It is an eraser.",
       "I am ten.",
@@ -55050,7 +55050,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "yellow",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的顏色單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "yellow",
       "green",
@@ -55084,7 +55084,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "green",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的顏色單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "green",
       "red",
@@ -55118,7 +55118,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "What color is your bag?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "It is blue.",
       "It is a bag.",
@@ -55152,7 +55152,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Look at the panda! What color is it?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "It is black and white.",
       "It is a desk.",
@@ -55415,27 +55415,27 @@ export const HERE_WE_GO_MCQ_BANK = [
     "track": "textbook",
     "book": 2,
     "unit": "Starter",
-    "section": "listening",
-    "taskType": "L-WORD",
-    "difficulty": 1,
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
     "reviewed": true,
     "groupId": null,
     "media": {
-      "audioText": "twelve",
+      "audioText": null,
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的數字單字。",
+    "question": "Look! I have twelve ______ in my big box.",
     "options": [
-      "twelve",
-      "eleven",
-      "thirteen",
-      "fourteen",
-      "fifteen",
-      "ten",
-      "two"
+      "pencils",
+      "pencil",
+      "a pencil",
+      "an eraser",
+      "book",
+      "ruler",
+      "am"
     ],
     "answer": 0,
-    "explanation": "音檔發音為「twelve（12）」。",
+    "explanation": "數字 twelve（12）大於 1，後面必須接複數可數名詞「pencils」。",
     "canonicalId": "hwg_b2_ba_01",
     "primaryScope": "Starter",
     "scopes": [
@@ -55448,27 +55448,27 @@ export const HERE_WE_GO_MCQ_BANK = [
     "track": "textbook",
     "book": 2,
     "unit": "Starter",
-    "section": "listening",
-    "taskType": "L-WORD",
-    "difficulty": 1,
+    "section": "grammar",
+    "taskType": "G-MC",
+    "difficulty": 2,
     "reviewed": true,
     "groupId": null,
     "media": {
-      "audioText": "fifteen",
+      "audioText": null,
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的數字單字。",
+    "question": "Eleven, twelve, thirteen, fourteen, ______. Let's count to fifteen!",
     "options": [
       "fifteen",
-      "fourteen",
-      "thirteen",
-      "twelve",
-      "eleven",
       "five",
-      "four"
+      "fifty",
+      "four",
+      "ten",
+      "six",
+      "one"
     ],
     "answer": 0,
-    "explanation": "音檔發音為「fifteen（15）」，注意字首為 fif- 而非 five-。",
+    "explanation": "依數字 11 到 15 的順序，fourteen（14）緊接著的下一個數字為「fifteen（15）」。",
     "canonicalId": "hwg_b2_ba_02",
     "primaryScope": "Starter",
     "scopes": [
@@ -55481,8 +55481,8 @@ export const HERE_WE_GO_MCQ_BANK = [
     "track": "textbook",
     "book": 2,
     "unit": "Starter",
-    "section": "vocabulary",
-    "taskType": "V-MEAN",
+    "section": "grammar",
+    "taskType": "G-CTX",
     "difficulty": 2,
     "reviewed": true,
     "groupId": null,
@@ -55490,18 +55490,18 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "Ten plus (+) four is ______.",
+    "question": "桌上有 14 顆蘋果，老師請你用英文說出「14」，你應該怎麼說？",
     "options": [
-      "fourteen",
-      "eleven",
-      "twelve",
-      "thirteen",
-      "fifteen",
-      "four",
-      "ten"
+      "Fourteen.",
+      "Four.",
+      "Forty.",
+      "Fifteen.",
+      "Twelve.",
+      "Eleven.",
+      "Thirteen."
     ],
     "answer": 0,
-    "explanation": "數學加法 10 + 4 = 14，14 的英文為「fourteen」。",
+    "explanation": "數字 14 的英文為「fourteen」（four + teen）；four 是 4，fifteen 是 15。",
     "canonicalId": "hwg_b2_ba_03",
     "primaryScope": "Starter",
     "scopes": [
@@ -55514,8 +55514,8 @@ export const HERE_WE_GO_MCQ_BANK = [
     "track": "textbook",
     "book": 2,
     "unit": "Starter",
-    "section": "vocabulary",
-    "taskType": "V-MEAN",
+    "section": "grammar",
+    "taskType": "G-CTX",
     "difficulty": 2,
     "reviewed": true,
     "groupId": null,
@@ -55523,18 +55523,18 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "Fifteen minus (-) four is ______.",
+    "question": "妹妹今年滿 11 歲了，她想用英文告訴大家「我 11 歲」，她應該怎麼說？",
     "options": [
-      "eleven",
-      "twelve",
-      "thirteen",
-      "fourteen",
-      "fifteen",
-      "nine",
-      "ten"
+      "I am eleven years old.",
+      "I am twelve years old.",
+      "I am seven years old.",
+      "My name is Eleven.",
+      "It is eleven o'clock.",
+      "He is eleven years old.",
+      "You are eleven years old."
     ],
     "answer": 0,
-    "explanation": "數學減法 15 - 4 = 11，11 的英文為「eleven」。",
+    "explanation": "介紹自己 11 歲應說「I am eleven years old.」；twelve 為 12，seven 為 7。",
     "canonicalId": "hwg_b2_ba_04",
     "primaryScope": "Starter",
     "scopes": [
@@ -55556,7 +55556,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "rabbit",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的動物單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "rabbit",
       "turtle",
@@ -55590,7 +55590,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "turtle",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的動物單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "turtle",
       "rabbit",
@@ -55624,7 +55624,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Is this a rabbit?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "Yes, it is. It has long ears.",
       "Yes, I can swim.",
@@ -55658,7 +55658,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Is that a big dog?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "No, it isn't. It is a small cat.",
       "No, I can't dance.",
@@ -55751,8 +55751,8 @@ export const HERE_WE_GO_MCQ_BANK = [
     "track": "textbook",
     "book": 2,
     "unit": "Unit 1",
-    "section": "vocabulary",
-    "taskType": "V-MEAN",
+    "section": "grammar",
+    "taskType": "G-CTX",
     "difficulty": 2,
     "reviewed": true,
     "groupId": null,
@@ -55760,18 +55760,18 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": null,
       "imageId": null
     },
-    "question": "An elephant is very ______, but an ant is very small.",
+    "question": "你在水族箱裡看到一隻非常小的烏龜，想向同學讚嘆「它是一隻小烏龜！」，你應該怎麼說？",
     "options": [
-      "big",
-      "small",
-      "red",
-      "short",
-      "cold",
-      "sad",
-      "new"
+      "It is a small turtle!",
+      "It is a big dog!",
+      "Is that a rabbit?",
+      "I can swim.",
+      "He is my brother.",
+      "She is a nurse.",
+      "Open your book, please."
     ],
     "answer": 0,
-    "explanation": "大象體型非常「大（big）」，與後半句螞蟻非常「小（small）」形成對比。",
+    "explanation": "描述單數動物「它是一隻小烏龜！」，使用「It is a small turtle!」。",
     "canonicalId": "hwg_b2_ba_11",
     "primaryScope": "Unit 1",
     "scopes": [
@@ -55964,7 +55964,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "swim",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的動作單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "swim",
       "sing",
@@ -55998,7 +55998,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "dance",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的動作單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "dance",
       "draw",
@@ -56032,7 +56032,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Can you ride a bike?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "Yes, I can.",
       "Yes, it is a bike.",
@@ -56066,7 +56066,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Can your brother swim?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "No, he can't. But he can sing.",
       "Yes, she can.",
@@ -56372,7 +56372,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "mother",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的家庭成員單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "mother",
       "father",
@@ -56406,7 +56406,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "grandfather",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的家庭成員單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "grandfather",
       "grandmother",
@@ -56440,7 +56440,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Who is she?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "She is my sister.",
       "He is my father.",
@@ -56474,7 +56474,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Who is that tall man?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "He is my father.",
       "She is my mother.",
@@ -56746,7 +56746,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "doctor",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的職業單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "doctor",
       "nurse",
@@ -56780,7 +56780,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "teacher",
       "imageId": null
     },
-    "question": "請仔細聽發音，選出正確的職業單字。",
+    "question": "【聽力：聽音選字】請聽英語發音，選出聽到的單字：",
     "options": [
       "teacher",
       "student",
@@ -56814,7 +56814,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Is your mother a teacher?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "Yes, she is.",
       "Yes, he is.",
@@ -56848,7 +56848,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "audioText": "Are you a student?",
       "imageId": null
     },
-    "question": "請聽問句，選出最合適的回應。",
+    "question": "【聽力：聽問句選回應】請聽英語問句，選出最適合的回應句：",
     "options": [
       "Yes, I am.",
       "Yes, he is.",
@@ -56941,27 +56941,27 @@ export const HERE_WE_GO_MCQ_BANK = [
     "track": "textbook",
     "book": 2,
     "unit": "Unit 4",
-    "section": "vocabulary",
-    "taskType": "V-MEAN",
-    "difficulty": 2,
+    "section": "reading",
+    "taskType": "R-COMP",
+    "difficulty": 3,
     "reviewed": true,
     "groupId": null,
     "media": {
       "audioText": null,
       "imageId": null
     },
-    "question": "Dr. Wang works in a hospital and helps sick people. He is a ______.",
+    "question": "閱讀短文：「Look at Dr. Wang! He works in a hospital and helps sick people. He is a kind doctor. Miss Chen works with Dr. Wang. She is a nurse.」請問 Dr. Wang 的職業是什麼？",
     "options": [
-      "doctor",
-      "student",
-      "farmer",
-      "cook",
-      "teacher",
-      "brother",
-      "chair"
+      "醫生 (doctor)",
+      "護理師 (nurse)",
+      "老師 (teacher)",
+      "廚師 (cook)",
+      "農夫 (farmer)",
+      "學生 (student)",
+      "司機 (driver)"
     ],
     "answer": 0,
-    "explanation": "Dr. Wang 在醫院工作並幫助生病的人，職業為「doctor（醫生）」。",
+    "explanation": "由短文中「Look at Dr. Wang! ... He is a kind doctor.」可知 Dr. Wang 是一位醫生（doctor）。",
     "canonicalId": "hwg_b2_ba_46",
     "primaryScope": "Unit 4",
     "scopes": [

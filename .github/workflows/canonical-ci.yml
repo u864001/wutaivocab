@@ -33,3 +33,10 @@ jobs:
 
       - name: 🔄 Run Isolated Prune -> Verify -> Rollback Round-Trip Test
         run: node scripts/test_prune_roundtrip.mjs
+
+      - name: 🛡️ Run Semantic Gates & Listening Anti-Leak Check
+        run: node scripts/audit_semantic_gates.mjs
+
+      - name: 📊 Run Batch Expansion Quota & Dynamic Stats Contract Test
+        run: node scripts/test_batch_a_contract.mjs
+

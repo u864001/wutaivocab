@@ -27,6 +27,20 @@ import {
   MASTERY_STATES
 } from '../../utils/masteryHelper';
 import { formatStudentDisplayName } from '../../utils/studentIdHelper';
+import { CANONICAL_STATS } from '../../data/exam/canonicalMapping';
+
+const BOOK_COUNTS = CANONICAL_STATS?.bookCounts || {};
+const B1_TOTAL = BOOK_COUNTS[1] || 209;
+const B2_TOTAL = BOOK_COUNTS[2] || 204;
+const ALPHA_TOTAL = (BOOK_COUNTS.g1 || 155) + (BOOK_COUNTS.g2 || 158);
+const B3_TOTAL = BOOK_COUNTS[3] || 155;
+const B4_TOTAL = BOOK_COUNTS[4] || 135;
+const B5_TOTAL = BOOK_COUNTS[5] || 133;
+const B6_TOTAL = BOOK_COUNTS[6] || 149;
+const B7_TOTAL = BOOK_COUNTS[7] || 128;
+const B8_TOTAL = BOOK_COUNTS[8] || 126;
+const B9_TOTAL = BOOK_COUNTS[9] || 137;
+const CURRICULUM_TOTAL = CANONICAL_STATS?.canonicalItems || (B1_TOTAL + B2_TOTAL + ALPHA_TOTAL + B3_TOTAL + B4_TOTAL + B5_TOTAL + B6_TOTAL + B7_TOTAL + B8_TOTAL + B9_TOTAL);
 
 // 3D 立體金星列與 100% 滿分流光掃過特效組件 (無空星留白設計，靠左排列)
 const MasteryStarsDisplay = ({ stars = 0, isPerfect = false, label = '' }) => {
@@ -163,18 +177,18 @@ export const SAA_DASHBOARD_META = [
   }
 ];
 
-// 📙 軌道 3：翰林課本單元進度檢定 (1,689 題)
+// 📙 軌道 3：翰林課本單元進度檢定 (動態綁定 CANONICAL_STATS)
 export const CURRICULUM_DASHBOARD_META = [
   {
     category: 'primary_lower',
     label: '低年級：字母與啟蒙專冊 (Books 1~2 & 專冊)',
     icon: Layers,
     color: 'amber',
-    total: 726,
+    total: B1_TOTAL + B2_TOTAL + ALPHA_TOTAL,
     subTypes: [
-      { key: 'b1', label: '第一冊 (Book 1)', total: 209, desc: '問候、自我介紹、顏色、數字' },
-      { key: 'b2', label: '第二冊 (Book 2)', total: 204, desc: '文具、家庭成員、動物、身體部位' },
-      { key: 'alpha', label: '字母啟蒙與生活專冊 (G1/G2)', total: 313, desc: '26 個英文字母大小寫與自然發音啟蒙' }
+      { key: 'b1', label: '第一冊 (Book 1)', total: B1_TOTAL, desc: '問候、自我介紹、顏色、數字' },
+      { key: 'b2', label: '第二冊 (Book 2)', total: B2_TOTAL, desc: '文具、家庭成員、動物、身體部位' },
+      { key: 'alpha', label: '字母啟蒙與生活專冊 (G1/G2)', total: ALPHA_TOTAL, desc: '26 個英文字母大小寫與自然發音啟蒙' }
     ]
   },
   {
@@ -182,10 +196,10 @@ export const CURRICULUM_DASHBOARD_META = [
     label: '中年級：基礎生活英語 (Books 3~4)',
     icon: BookOpen,
     color: 'orange',
-    total: 290,
+    total: B3_TOTAL + B4_TOTAL,
     subTypes: [
-      { key: 'b3', label: '第三冊 (Book 3)', total: 155, desc: '喜好食物、日常物品、位置介系詞、服飾' },
-      { key: 'b4', label: '第四冊 (Book 4)', total: 135, desc: '能力 Can、時間、日常作息、天氣與感受' }
+      { key: 'b3', label: '第三冊 (Book 3)', total: B3_TOTAL, desc: '喜好食物、日常物品、位置介系詞、服飾' },
+      { key: 'b4', label: '第四冊 (Book 4)', total: B4_TOTAL, desc: '能力 Can、時間、日常作息、天氣與感受' }
     ]
   },
   {
@@ -193,10 +207,10 @@ export const CURRICULUM_DASHBOARD_META = [
     label: '高年級：進階閱讀與語法 (Books 5~6)',
     icon: Headphones,
     color: 'rose',
-    total: 282,
+    total: B5_TOTAL + B6_TOTAL,
     subTypes: [
-      { key: 'b5', label: '第五冊 (Book 5)', total: 133, desc: '現在進行式、場所問路、職業、日常休閒活動' },
-      { key: 'b6', label: '第六冊 (Book 6)', total: 149, desc: '星期幾、日常頻率、過去式初探、生活問答' }
+      { key: 'b5', label: '第五冊 (Book 5)', total: B5_TOTAL, desc: '現在進行式、場所問路、職業、日常休閒活動' },
+      { key: 'b6', label: '第六冊 (Book 6)', total: B6_TOTAL, desc: '星期幾、日常頻率、過去式初探、生活問答' }
     ]
   },
   {
@@ -204,11 +218,11 @@ export const CURRICULUM_DASHBOARD_META = [
     label: '國一先修與素養統整 (Books 7~8 & 銜接)',
     icon: Award,
     color: 'indigo',
-    total: 391,
+    total: B7_TOTAL + B8_TOTAL + B9_TOTAL,
     subTypes: [
-      { key: 'b7', label: '第七冊 (Book 7)', total: 128, desc: '過去式時態、跨文化節慶、長篇閱讀素養' },
-      { key: 'b8', label: '第八冊 (Book 8)', total: 126, desc: '未來式、比較級最高級、生活圖表統整' },
-      { key: 'transition', label: '國中英語銜接專冊 (Book 9)', total: 137, desc: '國一核心文法先行、素養長篇篇章閱讀' }
+      { key: 'b7', label: '第七冊 (Book 7)', total: B7_TOTAL, desc: '過去式時態、跨文化節慶、長篇閱讀素養' },
+      { key: 'b8', label: '第八冊 (Book 8)', total: B8_TOTAL, desc: '未來式、比較級最高級、生活圖表統整' },
+      { key: 'transition', label: '國中英語銜接專冊 (Book 9)', total: B9_TOTAL, desc: '國一核心文法先行、素養長篇篇章閱讀' }
     ]
   }
 ];
@@ -249,7 +263,7 @@ export const TRACK_CONFIGS = {
     name: '翰林課本單元進度檢定',
     shortName: '課本單元進度',
     badge: 'Here We Go 全 8 冊',
-    totalItems: 1689,
+    totalItems: CURRICULUM_TOTAL,
     meta: CURRICULUM_DASHBOARD_META,
     heroGradient: 'from-amber-600 via-orange-600 to-amber-700',
     primaryBtn: 'bg-amber-600 hover:bg-amber-700',

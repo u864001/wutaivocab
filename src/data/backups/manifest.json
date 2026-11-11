@@ -3,6 +3,9 @@
   "backupFile": "src/data/backups/hereWeGoMcqBank.expanded.3317.js",
   "totalQuestions": 3317,
   "sha256": "b191fad18332b8e42a03621a45ef0eb24bcae1a77bbcb5edd04f6677b21a0434",
+  "pruned1589Sha256": "e497fc7d30ecb4dabde1f4197a2b1c21bcdfa28d03cc856b6ffc0ca63dcb8a09",
+  "mappingBackupFile": "src/data/backups/canonicalMapping.1589.js",
+  "mapping1589Sha256": "96f9067cc07182e2c2fcff2ec45becaa76e586d807354bf6c1f44d9f22907e5d",
   "backupDate": "2026-11-11T06:54:26.293Z",
   "status": "verified"
 }
