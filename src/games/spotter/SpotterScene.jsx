@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { SPRITE_RENDERERS } from './spotterSprites';
 import { TARGET_ITEMS_POOL } from './spotterData';
+import { getDiffGeometry } from './spotterGeometry';
 
 export const SpotterScene = ({
   scene,
@@ -90,28 +91,12 @@ export const SpotterScene = ({
     const clickX = svgPt.x;
     const clickY = svgPt.y;
 
-    // 檢查是否命中本局 5 個相異目標
+    // 檢查是否命中本局 5 個相異目標 (SSOT 幾何解算：支援 slot 矩形與舊場景橢圓 fallback)
     let hitDiff = null;
     let hitSolved = false;
     for (const diff of activeDifferences) {
-      // 目標座標（支援位移差異左右圖座標不同）
-      const targetX = (!isLeft && diff.altX !== undefined) ? diff.altX : diff.x;
-      const targetY = (!isLeft && diff.altY !== undefined) ? diff.altY : diff.y;
-      const rx = (diff.radiusX || diff.radius || 40) + 8; // 稍微加大命中容錯率，方便觸控
-      const ry = (diff.radiusY || diff.radius || 40) + 8;
-
-      let dx = clickX - targetX;
-      let dy = clickY - targetY;
-      if (diff.rotate) {
-        const rad = (-diff.rotate * Math.PI) / 180;
-        const nx = dx * Math.cos(rad) - dy * Math.sin(rad);
-        const ny = dx * Math.sin(rad) + dy * Math.cos(rad);
-        dx = nx;
-        dy = ny;
-      }
-
-      const normDistSq = Math.pow(dx / rx, 2) + Math.pow(dy / ry, 2);
-      if (normDistSq <= 1.0) {
+      const geom = getDiffGeometry(diff, isLeft);
+      if (geom && geom.containsPoint(clickX, clickY, 8)) {
         if (solvedDiffIds.has(diff.id)) {
           hitSolved = true;
           break;
@@ -148,15 +133,9 @@ export const SpotterScene = ({
     }
   };
 
-  // 當前聚光燈目標之座標
+  // 當前聚光燈目標之座標 (SSOT 幾何解算)
   const activeSpotlight = activeDifferences.find(d => d.id === spotlightDiffId);
-  const spotlightPos = activeSpotlight ? {
-    x: (!isLeft && activeSpotlight.altX !== undefined) ? activeSpotlight.altX : activeSpotlight.x,
-    y: (!isLeft && activeSpotlight.altY !== undefined) ? activeSpotlight.altY : activeSpotlight.y,
-    rx: (activeSpotlight.radiusX || activeSpotlight.radius || 46) + 4,
-    ry: (activeSpotlight.radiusY || activeSpotlight.radius || 46) + 4,
-    radius: (activeSpotlight.radius || 46) + 4
-  } : null;
+  const spotlightPos = activeSpotlight ? getDiffGeometry(activeSpotlight, isLeft) : null;
 
   const maskId = `spotlight-mask-${isLeft ? 'left' : 'right'}`;
 
@@ -209,11 +188,22 @@ export const SpotterScene = ({
             </feMerge>
           </filter>
 
-          {/* 聚光燈遮罩：背景暗化，僅目標孔徑透光 */}
+          {/* 聚光燈遮罩：背景暗化，僅目標孔徑透光 (SSOT 幾何連動) */}
           {spotlightPos && (
             <mask id={maskId}>
               <rect width="1376" height="768" fill="white" />
-              <ellipse cx={spotlightPos.x} cy={spotlightPos.y} rx={spotlightPos.rx} ry={spotlightPos.ry} fill="black" />
+              {spotlightPos.isSlot ? (
+                <rect
+                  x={spotlightPos.x}
+                  y={spotlightPos.y}
+                  width={spotlightPos.w}
+                  height={spotlightPos.h}
+                  rx={spotlightPos.cornerRadius}
+                  fill="black"
+                />
+              ) : (
+                <ellipse cx={spotlightPos.cx} cy={spotlightPos.cy} rx={spotlightPos.rx} ry={spotlightPos.ry} fill="black" />
+              )}
             </mask>
           )}
         </defs>
@@ -245,75 +235,143 @@ export const SpotterScene = ({
           );
         })}
 
-        {/* ── 5. 聚光燈遮罩特效 (Phase 2 Spotlight Effect) ── */}
+        {/* ── 5. 聚光燈遮罩特效 (Phase 2 Spotlight Effect: SSOT 幾何連動) ── */}
         {spotlightPos && (
           <g id="spotlight-overlay" className="pointer-events-none">
             <rect width="1376" height="768" fill="rgba(10, 15, 30, 0.75)" mask={`url(#${maskId})`} />
 
-            {/* 聚光燈外環脈動光波 */}
-            <ellipse
-              cx={spotlightPos.x}
-              cy={spotlightPos.y}
-              rx={spotlightPos.rx + 6}
-              ry={spotlightPos.ry + 6}
-              fill="none"
-              stroke="#fbbf24"
-              strokeWidth="4"
-              opacity="0.8"
-              className="animate-ping"
-              style={{ transformOrigin: `${spotlightPos.x}px ${spotlightPos.y}px` }}
-            />
+            {spotlightPos.isSlot ? (
+              <>
+                {/* 聚光燈外環脈動光波 (矩形槽位) */}
+                <rect
+                  x={spotlightPos.x - 6}
+                  y={spotlightPos.y - 6}
+                  width={spotlightPos.w + 12}
+                  height={spotlightPos.h + 12}
+                  rx={spotlightPos.cornerRadius + 4}
+                  fill="none"
+                  stroke="#fbbf24"
+                  strokeWidth="4"
+                  opacity="0.8"
+                  className="animate-ping"
+                  style={{ transformOrigin: `${spotlightPos.cx}px ${spotlightPos.cy}px` }}
+                />
 
-            {/* 聚光燈金色實體光圈 */}
-            <ellipse
-              cx={spotlightPos.x}
-              cy={spotlightPos.y}
-              rx={spotlightPos.rx}
-              ry={spotlightPos.ry}
-              fill="none"
-              stroke="#f59e0b"
-              strokeWidth="3.5"
-              filter="url(#glowGold)"
-            />
+                {/* 聚光燈金色實體矩形框 */}
+                <rect
+                  x={spotlightPos.x}
+                  y={spotlightPos.y}
+                  width={spotlightPos.w}
+                  height={spotlightPos.h}
+                  rx={spotlightPos.cornerRadius}
+                  fill="none"
+                  stroke="#f59e0b"
+                  strokeWidth="3.5"
+                  filter="url(#glowGold)"
+                />
 
-            {/* 瞄準十字線 */}
-            <line x1={spotlightPos.x - spotlightPos.rx - 10} y1={spotlightPos.y} x2={spotlightPos.x - spotlightPos.rx + 4} y2={spotlightPos.y} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1={spotlightPos.x + spotlightPos.rx - 4} y1={spotlightPos.y} x2={spotlightPos.x + spotlightPos.rx + 10} y2={spotlightPos.y} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1={spotlightPos.x} y1={spotlightPos.y - spotlightPos.ry - 10} x2={spotlightPos.x} y2={spotlightPos.y - spotlightPos.ry + 4} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
-            <line x1={spotlightPos.x} y1={spotlightPos.y + spotlightPos.ry - 4} x2={spotlightPos.x} y2={spotlightPos.y + spotlightPos.ry + 10} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+                {/* 瞄準十字線 */}
+                <line x1={spotlightPos.x - 10} y1={spotlightPos.cy} x2={spotlightPos.x + 4} y2={spotlightPos.cy} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1={spotlightPos.x + spotlightPos.w - 4} y1={spotlightPos.cy} x2={spotlightPos.x + spotlightPos.w + 10} y2={spotlightPos.cy} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1={spotlightPos.cx} y1={spotlightPos.y - 10} x2={spotlightPos.cx} y2={spotlightPos.y + 4} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1={spotlightPos.cx} y1={spotlightPos.y + spotlightPos.h - 4} x2={spotlightPos.cx} y2={spotlightPos.y + spotlightPos.h + 10} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
 
-            {/* 頂部引導膠囊 */}
-            <g transform={`translate(${spotlightPos.x}, ${spotlightPos.y - spotlightPos.ry - 24})`}>
-              <rect x="-80" y="-14" width="160" height="24" rx="12" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))" />
-              <text x="0" y="3" fill="#fef08a" fontSize="11" fontWeight="900" textAnchor="middle">
-                🎯 鷹眼鎖定！選出單字
-              </text>
-            </g>
+                {/* 頂部引導膠囊 */}
+                <g transform={`translate(${spotlightPos.cx}, ${spotlightPos.y - 20})`}>
+                  <rect x="-80" y="-14" width="160" height="24" rx="12" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))" />
+                  <text x="0" y="3" fill="#fef08a" fontSize="11" fontWeight="900" textAnchor="middle">
+                    🎯 鷹眼鎖定！選出單字
+                  </text>
+                </g>
+              </>
+            ) : (
+              <>
+                {/* 聚光燈外環脈動光波 (傳統橢圓) */}
+                <ellipse
+                  cx={spotlightPos.cx}
+                  cy={spotlightPos.cy}
+                  rx={spotlightPos.rx + 6}
+                  ry={spotlightPos.ry + 6}
+                  fill="none"
+                  stroke="#fbbf24"
+                  strokeWidth="4"
+                  opacity="0.8"
+                  className="animate-ping"
+                  style={{ transformOrigin: `${spotlightPos.cx}px ${spotlightPos.cy}px` }}
+                />
+
+                {/* 聚光燈金色實體光圈 */}
+                <ellipse
+                  cx={spotlightPos.cx}
+                  cy={spotlightPos.cy}
+                  rx={spotlightPos.rx}
+                  ry={spotlightPos.ry}
+                  fill="none"
+                  stroke="#f59e0b"
+                  strokeWidth="3.5"
+                  filter="url(#glowGold)"
+                />
+
+                {/* 瞄準十字線 */}
+                <line x1={spotlightPos.cx - spotlightPos.rx - 10} y1={spotlightPos.cy} x2={spotlightPos.cx - spotlightPos.rx + 4} y2={spotlightPos.cy} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1={spotlightPos.cx + spotlightPos.rx - 4} y1={spotlightPos.cy} x2={spotlightPos.cx + spotlightPos.rx + 10} y2={spotlightPos.cy} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1={spotlightPos.cx} y1={spotlightPos.cy - spotlightPos.ry - 10} x2={spotlightPos.cx} y2={spotlightPos.cy - spotlightPos.ry + 4} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1={spotlightPos.cx} y1={spotlightPos.cy + spotlightPos.ry - 4} x2={spotlightPos.cx} y2={spotlightPos.cy + spotlightPos.ry + 10} stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
+
+                {/* 頂部引導膠囊 */}
+                <g transform={`translate(${spotlightPos.cx}, ${spotlightPos.cy - spotlightPos.ry - 24})`}>
+                  <rect x="-80" y="-14" width="160" height="24" rx="12" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))" />
+                  <text x="0" y="3" fill="#fef08a" fontSize="11" fontWeight="900" textAnchor="middle">
+                    🎯 鷹眼鎖定！選出單字
+                  </text>
+                </g>
+              </>
+            )}
           </g>
         )}
 
-        {/* ── 6. 已破解相異點標記徽章 (永久性綠色勾選印記) ── */}
+        {/* ── 6. 已破解相異點標記徽章 (永久性綠色勾選印記: SSOT 幾何連動) ── */}
         {activeDifferences.map(diff => {
           if (!solvedDiffIds.has(diff.id)) return null;
-          const markerX = (!isLeft && diff.altX !== undefined) ? diff.altX : diff.x;
-          const markerY = (!isLeft && diff.altY !== undefined) ? diff.altY : diff.y;
-          const rx = diff.radiusX || diff.radius || 46;
-          const ry = diff.radiusY || diff.radius || 46;
+          const geom = getDiffGeometry(diff, isLeft);
+          if (!geom) return null;
+
+          if (geom.isSlot) {
+            return (
+              <g key={diff.id} id={`solved-marker-${diff.id}`} className="pointer-events-none animate-fadeIn">
+                <rect
+                  x={geom.x}
+                  y={geom.y}
+                  width={geom.w}
+                  height={geom.h}
+                  rx={geom.cornerRadius}
+                  fill="rgba(16, 185, 129, 0.12)"
+                  stroke="#10b981"
+                  strokeWidth="2.5"
+                  strokeDasharray="4 2"
+                />
+                <g transform={`translate(${geom.x + geom.w - 10}, ${geom.y + 10})`}>
+                  <circle cx="0" cy="0" r="10" fill="#10b981" stroke="#ffffff" strokeWidth="2" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))" />
+                  <path d="M -4 0 L -1 3 L 4 -3" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                </g>
+              </g>
+            );
+          }
 
           return (
             <g key={diff.id} id={`solved-marker-${diff.id}`} className="pointer-events-none animate-fadeIn">
               <ellipse
-                cx={markerX}
-                cy={markerY}
-                rx={rx}
-                ry={ry}
-                transform={diff.rotate ? `rotate(${diff.rotate} ${markerX} ${markerY})` : undefined}
+                cx={geom.cx}
+                cy={geom.cy}
+                rx={geom.rx}
+                ry={geom.ry}
+                transform={geom.rotate ? `rotate(${geom.rotate} ${geom.cx} ${geom.cy})` : undefined}
                 fill="rgba(16, 185, 129, 0.12)"
                 stroke="#10b981"
                 strokeWidth="2.5"
                 strokeDasharray="4 2"
               />
-              <g transform={`translate(${markerX + rx * 0.65}, ${markerY - ry * 0.65})`}>
+              <g transform={`translate(${geom.cx + geom.rx * 0.65}, ${geom.cy - geom.ry * 0.65})`}>
                 <circle cx="0" cy="0" r="10" fill="#10b981" stroke="#ffffff" strokeWidth="2" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))" />
                 <path d="M -4 0 L -1 3 L 4 -3" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
               </g>
@@ -321,15 +379,77 @@ export const SpotterScene = ({
           );
         })}
 
-        {/* ── 6.5 鷹眼提示霓虹光環 (Hint Ring: 消耗 1 心換取之顯著提示，直至點擊作答後消失) ── */}
+        {/* ── 6.5 鷹眼提示霓虹光環 (Hint Ring: SSOT 幾何連動) ── */}
         {hintDiffId && (
           (() => {
             const hintDiff = activeDifferences.find(d => d.id === hintDiffId);
             if (!hintDiff) return null;
-            const hx = (!isLeft && hintDiff.altX !== undefined) ? hintDiff.altX : hintDiff.x;
-            const hy = (!isLeft && hintDiff.altY !== undefined) ? hintDiff.altY : hintDiff.y;
-            const hrx = (hintDiff.radiusX || hintDiff.radius || 50) + 8;
-            const hry = (hintDiff.radiusY || hintDiff.radius || 50) + 8;
+            const geom = getDiffGeometry(hintDiff, isLeft);
+            if (!geom) return null;
+
+            if (geom.isSlot) {
+              return (
+                <g key="hint-neon-marker" className="pointer-events-none">
+                  {/* 外部槽位矩形金光光環 */}
+                  <rect
+                    x={geom.x - 6}
+                    y={geom.y - 6}
+                    width={geom.w + 12}
+                    height={geom.h + 12}
+                    rx={geom.cornerRadius + 4}
+                    fill="rgba(251, 191, 36, 0.22)"
+                    stroke="#fbbf24"
+                    strokeWidth="3.5"
+                    strokeDasharray="10 6"
+                    className="animate-pulse"
+                  />
+
+                  {/* 內部高亮度青藍霓虹框 */}
+                  <rect
+                    x={geom.x}
+                    y={geom.y}
+                    width={geom.w}
+                    height={geom.h}
+                    rx={geom.cornerRadius}
+                    fill="none"
+                    stroke="#00f0ff"
+                    strokeWidth="4"
+                    filter="url(#glowNeon)"
+                    className="animate-pulse"
+                  />
+
+                  {/* 頂部顯著提示膠囊標籤 */}
+                  <g transform={`translate(${geom.cx}, ${Math.max(22, geom.y - 18)})`}>
+                    <rect
+                      x="-50"
+                      y="-13"
+                      width="100"
+                      height="26"
+                      rx="13"
+                      fill="#f59e0b"
+                      stroke="#ffffff"
+                      strokeWidth="2.5"
+                      filter="drop-shadow(0 4px 8px rgba(0,0,0,0.4))"
+                    />
+                    <text
+                      x="0"
+                      y="4"
+                      fill="#ffffff"
+                      fontSize="12"
+                      fontWeight="900"
+                      textAnchor="middle"
+                    >
+                      💡 線索在此！
+                    </text>
+                  </g>
+                </g>
+              );
+            }
+
+            const hx = geom.cx;
+            const hy = geom.cy;
+            const hrx = geom.rx + 8;
+            const hry = geom.ry + 8;
 
             return (
               <g key="hint-neon-marker" className="pointer-events-none">

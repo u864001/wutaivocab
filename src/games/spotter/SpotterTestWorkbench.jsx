@@ -4,6 +4,7 @@ import {
   SPOTTER_SCENES_BY_BOOK,
   getScenesForBook
 } from './spotterData';
+import { getDiffGeometry } from './spotterGeometry';
 import {
   ArrowLeft, Eye, Layers, Sparkles, RefreshCw,
   CheckCircle2, ShieldCheck, Crosshair, Grid,
@@ -123,18 +124,8 @@ export const SpotterTestWorkbench = ({ onBack }) => {
     let hitItem = null;
 
     for (const item of items) {
-      const rx = (item.radiusX || item.radius || 50) + 10;
-      const ry = (item.radiusY || item.radius || 50) + 10;
-      let dx = cx - item.x;
-      let dy = cy - item.y;
-      if (item.rotate) {
-        const rad = (-item.rotate * Math.PI) / 180;
-        const nx = dx * Math.cos(rad) - dy * Math.sin(rad);
-        const ny = dx * Math.sin(rad) + dy * Math.cos(rad);
-        dx = nx;
-        dy = ny;
-      }
-      if ((dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1) {
+      const geom = getDiffGeometry(item, !isRight);
+      if (geom && geom.containsPoint(cx, cy, 10)) {
         hitItem = item;
         break;
       }
@@ -401,20 +392,35 @@ export const SpotterTestWorkbench = ({ onBack }) => {
 
                       return (
                         <g key={`left-${item.word}`}>
-                          {/* 判定圈 */}
+                          {/* 判定框 (SSOT: 有 slot 則使用矩形，否則 fallback 橢圓) */}
                           {showHitboxes && (
-                            <ellipse
-                              cx={item.x}
-                              cy={item.y}
-                              rx={rx}
-                              ry={ry}
-                              transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
-                              fill={isHighlighted ? `${color}40` : `${color}15`}
-                              stroke={color}
-                              strokeWidth={isHighlighted ? 4 : 2}
-                              strokeDasharray={isHighlighted ? 'none' : '6 4'}
-                              className="transition-all duration-300"
-                            />
+                            item.slot ? (
+                              <rect
+                                x={item.slot.x}
+                                y={item.slot.y}
+                                width={item.slot.w}
+                                height={item.slot.h}
+                                rx={item.slot.rx || 16}
+                                fill={isHighlighted ? `${color}40` : `${color}15`}
+                                stroke={color}
+                                strokeWidth={isHighlighted ? 4 : 2}
+                                strokeDasharray={isHighlighted ? 'none' : '6 4'}
+                                className="transition-all duration-300"
+                              />
+                            ) : (
+                              <ellipse
+                                cx={item.x}
+                                cy={item.y}
+                                rx={rx}
+                                ry={ry}
+                                transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
+                                fill={isHighlighted ? `${color}40` : `${color}15`}
+                                stroke={color}
+                                strokeWidth={isHighlighted ? 4 : 2}
+                                strokeDasharray={isHighlighted ? 'none' : '6 4'}
+                                className="transition-all duration-300"
+                              />
+                            )
                           )}
 
                           {/* 槽位裁切框 */}
@@ -433,12 +439,17 @@ export const SpotterTestWorkbench = ({ onBack }) => {
 
                           {/* 核心點 */}
                           {showHitboxes && (
-                            <circle cx={item.x} cy={item.y} r={isHighlighted ? 6 : 4} fill={color} />
+                            <circle
+                              cx={item.slot ? item.slot.x + item.slot.w / 2 : item.x}
+                              cy={item.slot ? item.slot.y + item.slot.h / 2 : item.y}
+                              r={isHighlighted ? 6 : 4}
+                              fill={color}
+                            />
                           )}
 
                           {/* 單字標籤膠囊 */}
                           {showLabels && (
-                            <g transform={`translate(${item.x}, ${Math.max(20, item.y - ry - 14)})`}>
+                            <g transform={`translate(${item.slot ? item.slot.x + item.slot.w / 2 : item.x}, ${Math.max(20, (item.slot ? item.slot.y : item.y - ry) - 14)})`}>
                               <rect
                                 x="-55"
                                 y="-12"
@@ -544,20 +555,35 @@ export const SpotterTestWorkbench = ({ onBack }) => {
 
                       return (
                         <g key={`right-${item.word}`}>
-                          {/* 判定圈 */}
+                          {/* 判定框 (SSOT: 有 slot 則使用矩形，否則 fallback 橢圓) */}
                           {showHitboxes && (
-                            <ellipse
-                              cx={item.x}
-                              cy={item.y}
-                              rx={rx}
-                              ry={ry}
-                              transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
-                              fill={isHighlighted ? `${color}40` : `${color}15`}
-                              stroke={color}
-                              strokeWidth={isHighlighted ? 4 : 2}
-                              strokeDasharray={isHighlighted ? 'none' : '6 4'}
-                              className="transition-all duration-300"
-                            />
+                            item.slot ? (
+                              <rect
+                                x={item.slot.x}
+                                y={item.slot.y}
+                                width={item.slot.w}
+                                height={item.slot.h}
+                                rx={item.slot.rx || 16}
+                                fill={isHighlighted ? `${color}40` : `${color}15`}
+                                stroke={color}
+                                strokeWidth={isHighlighted ? 4 : 2}
+                                strokeDasharray={isHighlighted ? 'none' : '6 4'}
+                                className="transition-all duration-300"
+                              />
+                            ) : (
+                              <ellipse
+                                cx={item.x}
+                                cy={item.y}
+                                rx={rx}
+                                ry={ry}
+                                transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
+                                fill={isHighlighted ? `${color}40` : `${color}15`}
+                                stroke={color}
+                                strokeWidth={isHighlighted ? 4 : 2}
+                                strokeDasharray={isHighlighted ? 'none' : '6 4'}
+                                className="transition-all duration-300"
+                              />
+                            )
                           )}
 
                           {/* 槽位裁切框 */}
@@ -576,12 +602,17 @@ export const SpotterTestWorkbench = ({ onBack }) => {
 
                           {/* 核心點 */}
                           {showHitboxes && (
-                            <circle cx={item.x} cy={item.y} r={isHighlighted ? 6 : 4} fill={color} />
+                            <circle
+                              cx={item.slot ? item.slot.x + item.slot.w / 2 : item.x}
+                              cy={item.slot ? item.slot.y + item.slot.h / 2 : item.y}
+                              r={isHighlighted ? 6 : 4}
+                              fill={color}
+                            />
                           )}
 
                           {/* 單字標籤膠囊 */}
                           {showLabels && (
-                            <g transform={`translate(${item.x}, ${Math.max(20, item.y - ry - 14)})`}>
+                            <g transform={`translate(${item.slot ? item.slot.x + item.slot.w / 2 : item.x}, ${Math.max(20, (item.slot ? item.slot.y : item.y - ry) - 14)})`}>
                               <rect
                                 x="-55"
                                 y="-12"
@@ -924,21 +955,42 @@ export const SpotterTestWorkbench = ({ onBack }) => {
 
                       return (
                         <g key={`sim-l-${item.word}`}>
-                          {/* 只有抽中的目標，在點中破解後顯示勾選綠圈 */}
+                          {/* 只有抽中的目標，在點中破解後顯示勾選標記 */}
                           {isSolved && (
                             <g>
-                              <ellipse
-                                cx={item.x}
-                                cy={item.y}
-                                rx={rx}
-                                ry={ry}
-                                transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
-                                fill="rgba(16, 185, 129, 0.2)"
-                                stroke="#10b981"
-                                strokeWidth="3"
-                              />
-                              <circle cx={item.x} cy={item.y} r="14" fill="#10b981" />
-                              <text x={item.x} y={item.y + 4} fill="#ffffff" fontSize="12" fontWeight="bold" textAnchor="middle">✓</text>
+                              {item.slot ? (
+                                <rect
+                                  x={item.slot.x}
+                                  y={item.slot.y}
+                                  width={item.slot.w}
+                                  height={item.slot.h}
+                                  rx={item.slot.rx || 16}
+                                  fill="rgba(16, 185, 129, 0.2)"
+                                  stroke="#10b981"
+                                  strokeWidth="3"
+                                />
+                              ) : (
+                                <ellipse
+                                  cx={item.x}
+                                  cy={item.y}
+                                  rx={rx}
+                                  ry={ry}
+                                  transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
+                                  fill="rgba(16, 185, 129, 0.2)"
+                                  stroke="#10b981"
+                                  strokeWidth="3"
+                                />
+                              )}
+                              {(() => {
+                                const mx = item.slot ? item.slot.x + item.slot.w / 2 : item.x;
+                                const my = item.slot ? item.slot.y + item.slot.h / 2 : item.y;
+                                return (
+                                  <>
+                                    <circle cx={mx} cy={my} r="14" fill="#10b981" />
+                                    <text x={mx} y={my + 4} fill="#ffffff" fontSize="12" fontWeight="bold" textAnchor="middle">✓</text>
+                                  </>
+                                );
+                              })()}
                             </g>
                           )}
                         </g>
@@ -995,18 +1047,39 @@ export const SpotterTestWorkbench = ({ onBack }) => {
 
                       return (
                         <g key={`sim-r-solved-${item.word}`}>
-                          <ellipse
-                            cx={item.x}
-                            cy={item.y}
-                            rx={rx}
-                            ry={ry}
-                            transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
-                            fill="rgba(16, 185, 129, 0.2)"
-                            stroke="#10b981"
-                            strokeWidth="3"
-                          />
-                          <circle cx={item.x} cy={item.y} r="14" fill="#10b981" />
-                          <text x={item.x} y={item.y + 4} fill="#ffffff" fontSize="12" fontWeight="bold" textAnchor="middle">✓</text>
+                          {item.slot ? (
+                            <rect
+                              x={item.slot.x}
+                              y={item.slot.y}
+                              width={item.slot.w}
+                              height={item.slot.h}
+                              rx={item.slot.rx || 16}
+                              fill="rgba(16, 185, 129, 0.2)"
+                              stroke="#10b981"
+                              strokeWidth="3"
+                            />
+                          ) : (
+                            <ellipse
+                              cx={item.x}
+                              cy={item.y}
+                              rx={rx}
+                              ry={ry}
+                              transform={item.rotate ? `rotate(${item.rotate} ${item.x} ${item.y})` : undefined}
+                              fill="rgba(16, 185, 129, 0.2)"
+                              stroke="#10b981"
+                              strokeWidth="3"
+                            />
+                          )}
+                          {(() => {
+                            const mx = item.slot ? item.slot.x + item.slot.w / 2 : item.x;
+                            const my = item.slot ? item.slot.y + item.slot.h / 2 : item.y;
+                            return (
+                              <>
+                                <circle cx={mx} cy={my} r="14" fill="#10b981" />
+                                <text x={mx} y={my + 4} fill="#ffffff" fontSize="12" fontWeight="bold" textAnchor="middle">✓</text>
+                              </>
+                            );
+                          })()}
                         </g>
                       );
                     })}
