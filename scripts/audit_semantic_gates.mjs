@@ -55,7 +55,10 @@ const BOILERPLATE_DISTRACTORS = new Set([
   'see you later',
   'have a nice day',
   "you're welcome",
-  'you are welcome'
+  'you are welcome',
+  'it is over there',
+  'go straight',
+  'turn left'
 ]);
 
 let issues = [];
@@ -142,7 +145,7 @@ for (const q of HERE_WE_GO_MCQ_BANK) {
     }
 
     // 8b. No simultaneous specific preposition location and general "over there"
-    if (/Where (?:is|are)/i.test(q.question)) {
+    if (/(?:where's|where\s+(?:is|are))/i.test(q.question)) {
       const hasSpecific = normOpts.some(o => /^(?:it'?s|they'?re)\s+(?:in|on|under|next to|at)\s+/i.test(o));
       const hasOverThere = normOpts.some(o => /over there/i.test(o));
       if (hasSpecific && hasOverThere) {
@@ -155,6 +158,25 @@ for (const q of HERE_WE_GO_MCQ_BANK) {
       const oclockTimes = normOpts.filter(o => /o'clock|thirty/.test(o) && /^(?:it'?s|it is)\s+/i.test(o));
       if (oclockTimes.length > 1) {
         issues.push({ id: q.id, type: 'TIME_MULTI_VALID_ANSWERS', question: q.question, oclockTimes });
+      }
+    }
+
+    // 8d. Yes/No answer vs explanation consistency
+    const ans = (q.options[0] || '').trim();
+    const exp = q.explanation || '';
+    if (/^yes\b/i.test(ans) && /(否定|選\s*「?no\b)/i.test(exp) && !/(肯定|選\s*「?yes\b)/i.test(exp)) {
+      issues.push({ id: q.id, type: 'YES_ANSWER_BUT_EXPLANATION_SAYS_NEGATIVE', answer: ans, explanation: exp });
+    }
+    if (/^no\b/i.test(ans) && /(肯定|選\s*「?yes\b)/i.test(exp) && !/(否定|選\s*「?no\b)/i.test(exp)) {
+      issues.push({ id: q.id, type: 'NO_ANSWER_BUT_EXPLANATION_SAYS_AFFIRMATIVE', answer: ans, explanation: exp });
+    }
+  }
+
+  // 9. Option formatting: no double dots
+  if (Array.isArray(q.options)) {
+    for (const o of q.options) {
+      if (typeof o === 'string' && /(?<!\.)\.\.(?!\.)/.test(o)) {
+        issues.push({ id: q.id, type: 'DOUBLE_PERIOD_IN_OPTION', option: o });
       }
     }
   }
@@ -191,6 +213,15 @@ for (const q of TME_PRE_A1_BANK) {
     }
   }
 
+  // Option formatting: no double dots
+  if (Array.isArray(q.options)) {
+    for (const o of q.options) {
+      if (typeof o === 'string' && /(?<!\.)\.\.(?!\.)/.test(o)) {
+        issues.push({ id: q.id, type: 'DOUBLE_PERIOD_IN_OPTION', option: o });
+      }
+    }
+  }
+
   // ID check
   if (!q.id || seenGlobalIds.has(q.id)) {
     issues.push({ id: q.id, type: 'DUPLICATE_OR_MISSING_ID' });
@@ -202,6 +233,15 @@ for (const q of TME_PRE_A1_BANK) {
 for (const q of SAA_EXAM_BANK) {
   if (q.section === 'listening' && q.question && /[\n\s(（](音檔|問句|對話|廣播)[：:]/i.test(q.question)) {
     issues.push({ id: q.id, type: 'SAA_LISTENING_TRANSCRIPT_LEAK', question: q.question });
+  }
+
+  // Option formatting: no double dots
+  if (Array.isArray(q.options)) {
+    for (const o of q.options) {
+      if (typeof o === 'string' && /(?<!\.)\.\.(?!\.)/.test(o)) {
+        issues.push({ id: q.id, type: 'DOUBLE_PERIOD_IN_OPTION', option: o });
+      }
+    }
   }
 
   // ID check

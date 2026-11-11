@@ -3515,12 +3515,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where's Lily? B: ______",
     "options": [
       "She's in the dining room.",
-      "She's sad and tired.",
-      "She's sixty years old.",
-      "She's sleeping.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "He's in the dining room.",
+      "They're in the dining room.",
+      "I'm in the dining room.",
+      "She in the dining room.",
+      "We're in the dining room.",
+      "You're in the dining room."
     ],
     "answer": 0,
     "explanation": "問句「Where's Lily?」詢問 Lily 的所在位置，回答需指出地點「She's in the dining room.（她在飯廳）」；其他選項回答心情、年齡或動作。"
@@ -3542,12 +3542,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where's your brother? B: ______",
     "options": [
       "He's in the kitchen.",
-      "He's swimming.",
-      "He's not my brother.",
-      "He's one hundred.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "She's in the kitchen.",
+      "They're in the kitchen.",
+      "I'm in the kitchen.",
+      "He in the kitchen.",
+      "We're in the kitchen.",
+      "You're in the kitchen."
     ],
     "answer": 0,
     "explanation": "問句詢問「Where's your brother?（你哥哥在哪裡？）」，回答應指出地點「He's in the kitchen.（他在廚房）」；其他選項回答動作或年齡。"
@@ -4433,12 +4433,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where's the bathroom? B: ______",
     "options": [
       "Follow me.",
-      "Sure!",
-      "Good idea!",
-      "Me, too.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "Good job!",
+      "Nice to meet you.",
+      "Here you are.",
+      "I'm nine.",
+      "See you.",
+      "Happy birthday!"
     ],
     "answer": 0,
     "explanation": "對方詢問「洗手間在哪裡？」，帶對方前往合宜說「Follow me.（請跟我來）」；「Sure!」回答請求，「Good idea!」回答提議。"
@@ -4784,12 +4784,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where are you going? B: ______",
     "options": [
       "I'm going to the bookstore.",
-      "They're going to the park.",
-      "Let's go to the post office.",
-      "The bank is on Apple Street.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "She's going to the bookstore.",
+      "They're going to the bookstore.",
+      "He's going to the bookstore.",
+      "I going to the bookstore.",
+      "We're go to the bookstore.",
+      "He go to the bookstore."
     ],
     "answer": 0,
     "explanation": "詢問正要前往何處使用「Where are you going?」，回答「I’m / We’re going to the + 地點.」。"
@@ -4811,12 +4811,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where's the hospital? B: ______",
     "options": [
       "It's on Doctor Street.",
-      "We're going to the bank.",
-      "I'm going to the hospital.",
-      "Excuse me. I'm lost.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "They're on Doctor Street.",
+      "He's on Doctor Street.",
+      "She's on Doctor Street.",
+      "It on Doctor Street.",
+      "We're on Doctor Street.",
+      "I'm on Doctor Street."
     ],
     "answer": 0,
     "explanation": "問句詢問醫院的位置「Where's the hospital?」，回答應指出地點所在街名「It's on Doctor Street.」；其他選項說明自己要去哪裡，未回答位置。"
@@ -4838,12 +4838,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: ______ Where's the bank? B: It's on Blue Street.",
     "options": [
       "Excuse me.",
-      "Follow me.",
-      "Me, too.",
-      "Say cheese!",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "Good job!",
+      "Take care!",
+      "Thank you!",
+      "Good night!",
+      "No problem!",
+      "Here you are."
     ],
     "answer": 0,
     "explanation": "向陌生人問路或引起他人注意時，禮貌發語詞使用「Excuse me.（不好意思／請問一下）」；「Follow me.」指跟我來，「Say cheese!」為拍照說笑一個。"
@@ -5217,11 +5217,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "Take care!",
       "Excuse me.",
-      "Calm down.",
-      "Follow me.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "Good job!",
+      "No problem!",
+      "Here you are.",
+      "Good idea!",
+      "Me, too!"
     ],
     "answer": 0,
     "explanation": "詢問正要前往何處使用「Where are you going?」，回答「I’m / We’re going to the + 地點.」。"
@@ -5648,12 +5648,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Whose cap is that on the chair? B: ______",
     "options": [
       "It's my cap.",
-      "It's Noah's pen.",
-      "It's his bag.",
-      "It's my soup.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "They're my cap.",
+      "It's me cap.",
+      "She's my cap.",
+      "He's my cap.",
+      "They are my caps.",
+      "I am my cap."
     ],
     "answer": 0,
     "explanation": "問句詢問「Whose cap is that on the chair?（椅子上的帽子是誰的？）」，回答需指稱該頂帽子「It's my cap.（那是我的帽子）」；其他選項指筆、書包或湯。"
@@ -5675,12 +5675,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What's Luca's room number? B: ______",
     "options": [
       "Her room number is 305.",
-      "My room number is 418.",
-      "Her room is big.",
-      "Her phone number is 0912-358-901.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "His room number is 305.",
+      "Their room number is 305.",
+      "Your room number is 305.",
+      "Her room number are 305.",
+      "She is room number 305.",
+      "Her room are 305."
     ],
     "answer": 0,
     "explanation": "問句詢問「Luca 的房號是幾號？」，回答說明房號「Her room number is 305.」；「Her phone number...」回答電話號碼，與問句不符。"
@@ -5972,12 +5972,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where are you from? B: ______",
     "options": [
       "I'm from Singapore.",
-      "They're from the USA.",
-      "Yes. I'm from the UK.",
-      "He's from Australia.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "He's from Singapore.",
+      "She's from Singapore.",
+      "They're from Singapore.",
+      "I from Singapore.",
+      "We from Singapore.",
+      "He from Singapore."
     ],
     "answer": 0,
     "explanation": "詢問來自哪個國家使用「Where are you / is he / is she from?」，英國與美國需加定冠詞「the UK / the USA」。"
@@ -5999,12 +5999,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where is your grandpa from? B: ______",
     "options": [
       "He's from Spain.",
-      "Yes, he is.",
-      "No, he isn't.",
-      "He's in the UK.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "She's from Spain.",
+      "They're from Spain.",
+      "I'm from Spain.",
+      "He from Spain.",
+      "We're from Spain.",
+      "You're from Spain."
     ],
     "answer": 0,
     "explanation": "問句為「Where is your grandpa from?（你的爺爺來自哪裡？）」，主詞為男性單數，回答用「He's from Spain.（他來自西班牙）」；「No...」不能用於回答 Where 問句。"
@@ -6323,12 +6323,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How do you go to school? B: ______",
     "options": [
       "I go to school by bike.",
-      "I go home by bus.",
-      "Yes. I go to school by train.",
-      "I don't go to school on foot.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "He goes to school by bike.",
+      "She goes to school by bike.",
+      "They goes to school by bike.",
+      "I goes to school by bike.",
+      "He go to school by bike.",
+      "She go to school by bike."
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -6350,12 +6350,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Does she go to school by metro? B: ______",
     "options": [
       "Yes, she does.",
-      "She goes to school by bike.",
-      "She's going to school by metro.",
+      "Yes, he does.",
+      "Yes, I do.",
+      "Yes, they do.",
       "No, she isn't.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "Yes, she is.",
+      "No, he doesn't."
     ],
     "answer": 0,
     "explanation": "問句以助動詞 Does 提問「Does she go to school by metro?」，肯定簡答為「Yes, she does.」；「No, she isn't.」助動詞不符。"
@@ -6377,12 +6377,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: How does Jerry go to the library? B: ______",
     "options": [
       "He goes to the library by car.",
-      "No. He goes to the library by bus.",
-      "He goes to the library with Sam.",
-      "Yes. He goes to the library by car.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "She goes to the library by car.",
+      "I goes to the library by car.",
+      "They goes to the library by car.",
+      "He go to the library by car.",
+      "They go to the library by car.",
+      "We goes to the library by car."
     ],
     "answer": 0,
     "explanation": "詢問交通方式使用「How do/does + 主詞 + go to ...?」，搭乘交通工具用「by + 交通工具」，步行用「on foot」。"
@@ -6547,7 +6547,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "by plane"
     ],
     "answer": 0,
-    "explanation": "後句提到「We sit together and eat apples.（我們坐在一起吃蘋果）」，代表是在車廂內共坐，且前往台北距離較遠，故選「by car（搭車／開車）」最合情理。"
+    "explanation": "後句提到「Dad drives us there.（爸爸開車載我們去）」，說明交通工具為開車，故選「by car（搭車／開車）」。"
   },
   {
     "id": "hwg_b7_237",
@@ -7160,12 +7160,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is Kate in the bedroom? B: Yes. She's ______.",
     "options": [
       "doing her homework",
-      "playing baseball",
-      "going to school",
-      "going home",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "do her homework",
+      "does her homework",
+      "did her homework",
+      "to do her homework",
+      "doing he homework",
+      "doing him homework"
     ],
     "answer": 0,
     "explanation": "問句以 Be 動詞詢問 Kate 目前是否在臥室，答句以現在進行式說明「She's (She is) + V-ing」，故選「doing her homework（正在做功課）」。"
@@ -7754,12 +7754,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where did the girls go last Thursday? B: ______",
     "options": [
       "They went to the night market.",
-      "They saw a movie.",
-      "She went to the amusement park.",
-      "She flew a kite.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "She went to the night market.",
+      "He went to the night market.",
+      "I went to the night market.",
+      "They goes to the night market.",
+      "They go to the night market.",
+      "They going to the night market."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -7808,12 +7808,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Where did Alice go last Tuesday? B: ______",
     "options": [
       "She went to the department store.",
-      "She ate snacks.",
-      "She saw a movie with Dylan.",
-      "She flew a kite last Tuesday.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "He went to the department store.",
+      "They went to the department store.",
+      "I went to the department store.",
+      "She goes to the department store.",
+      "She go to the department store.",
+      "She going to the department store."
     ],
     "answer": 0,
     "explanation": "句子含有過去時間（yesterday, last weekend 等）時使用過去式；助動詞「did / didn’t」後方的動詞必須還原為原形動詞。"
@@ -16664,12 +16664,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Lucas? B: ______",
     "options": [
       "I'm cooking.",
-      "He is cooking..",
-      "She is cooking..",
-      "They are cooking..",
-      "I cooking..",
-      "We are cooking..",
-      "You are cooking.."
+      "He is cooking.",
+      "She is cooking.",
+      "They are cooking.",
+      "I cooking.",
+      "We are cooking.",
+      "You are cooking."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16745,12 +16745,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Max? B: ______",
     "options": [
       "I'm eating.",
-      "He is eating..",
-      "She is eating..",
-      "They are eating..",
-      "I eating..",
-      "We are eating..",
-      "You are eating.."
+      "He is eating.",
+      "She is eating.",
+      "They are eating.",
+      "I eating.",
+      "We are eating.",
+      "You are eating."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16826,12 +16826,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Leo? B: ______",
     "options": [
       "I'm sleeping.",
-      "He is sleeping..",
-      "She is sleeping..",
-      "They are sleeping..",
-      "I sleeping..",
-      "We are sleeping..",
-      "You are sleeping.."
+      "He is sleeping.",
+      "She is sleeping.",
+      "They are sleeping.",
+      "I sleeping.",
+      "We are sleeping.",
+      "You are sleeping."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16907,12 +16907,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Kulas? B: ______",
     "options": [
       "I'm reading.",
-      "He is reading..",
-      "She is reading..",
-      "They are reading..",
-      "I reading..",
-      "We are reading..",
-      "You are reading.."
+      "He is reading.",
+      "She is reading.",
+      "They are reading.",
+      "I reading.",
+      "We are reading.",
+      "You are reading."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -16988,12 +16988,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Ryan? B: ______",
     "options": [
       "I'm swimming.",
-      "He is swimming..",
-      "She is swimming..",
-      "They are swimming..",
-      "I swimming..",
-      "We are swimming..",
-      "You are swimming.."
+      "He is swimming.",
+      "She is swimming.",
+      "They are swimming.",
+      "I swimming.",
+      "We are swimming.",
+      "You are swimming."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17069,12 +17069,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Owen? B: ______",
     "options": [
       "I'm running.",
-      "He is running..",
-      "She is running..",
-      "They are running..",
-      "I running..",
-      "We are running..",
-      "You are running.."
+      "He is running.",
+      "She is running.",
+      "They are running.",
+      "I running.",
+      "We are running.",
+      "You are running."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17150,12 +17150,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Noah? B: ______",
     "options": [
       "I'm writing.",
-      "He is writing..",
-      "She is writing..",
-      "They are writing..",
-      "I writing..",
-      "We are writing..",
-      "You are writing.."
+      "He is writing.",
+      "She is writing.",
+      "They are writing.",
+      "I writing.",
+      "We are writing.",
+      "You are writing."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17231,12 +17231,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Alex? B: ______",
     "options": [
       "I'm drinking.",
-      "He is drinking..",
-      "She is drinking..",
-      "They are drinking..",
-      "I drinking..",
-      "We are drinking..",
-      "You are drinking.."
+      "He is drinking.",
+      "She is drinking.",
+      "They are drinking.",
+      "I drinking.",
+      "We are drinking.",
+      "You are drinking."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17312,12 +17312,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Ethan? B: ______",
     "options": [
       "I'm drawing.",
-      "He is drawing..",
-      "She is drawing..",
-      "They are drawing..",
-      "I drawing..",
-      "We are drawing..",
-      "You are drawing.."
+      "He is drawing.",
+      "She is drawing.",
+      "They are drawing.",
+      "I drawing.",
+      "We are drawing.",
+      "You are drawing."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17393,12 +17393,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What are you doing, Dylan? B: ______",
     "options": [
       "I'm dancing.",
-      "He is dancing..",
-      "She is dancing..",
-      "They are dancing..",
-      "I dancing..",
-      "We are dancing..",
-      "You are dancing.."
+      "He is dancing.",
+      "She is dancing.",
+      "They are dancing.",
+      "I dancing.",
+      "We are dancing.",
+      "You are dancing."
     ],
     "answer": 0,
     "explanation": "問句問「你正在做什麼（What are you doing?）」，回答「I’m + V-ing.」。"
@@ -17476,10 +17476,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he isn't.",
       "Yes, he is.",
       "No, she isn't.",
-      "He is cooking.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "Yes, she is.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, I am not."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17557,10 +17557,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, he isn't.",
       "Yes, he is.",
       "No, she isn't.",
-      "He is cooking.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "Yes, she is.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, I am not."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17636,12 +17636,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is your brother in the living room? B: ______ He's in the kitchen.",
     "options": [
       "No, he isn't.",
-      "He is cooking.",
       "Yes, he is.",
       "No, she isn't.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "Yes, she is.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, I am not."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17717,12 +17717,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is your brother in the dining room? B: ______ He's in the kitchen.",
     "options": [
       "No, he isn't.",
-      "No, she isn't.",
-      "He is cooking.",
       "Yes, he is.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "No, she isn't.",
+      "Yes, she is.",
+      "No, they aren't.",
+      "Yes, they are.",
+      "No, I am not."
     ],
     "answer": 0,
     "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
@@ -17806,7 +17806,7 @@ export const HERE_WE_GO_MCQ_BANK = [
       "Yes, they are."
     ],
     "answer": 0,
-    "explanation": "後句說明他在廚房，因此不在該房間，選否定「No, he isn’t.」。"
+    "explanation": "後句「He's in the kitchen.（他在廚房）」說明他在廚房，答句與問句一致，故選肯定應答「Yes, he is.」。"
   },
   {
     "id": "hwg_b4_654",
@@ -18446,12 +18446,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is the hat on the chair? B: ______ Here it is!",
     "options": [
       "Yes, it is.",
+      "No, it isn't.",
       "Yes, they are.",
-      "No, I'm not.",
-      "He is in the yard.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "No, they aren't.",
+      "Yes, he is.",
+      "No, he isn't.",
+      "Yes, she is."
     ],
     "answer": 0,
     "explanation": "單數物品位置確認，肯定簡答「Yes, it is.」。"
@@ -18554,12 +18554,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is the bag under the desk? B: ______ Here it is!",
     "options": [
       "Yes, it is.",
+      "No, it isn't.",
       "Yes, they are.",
-      "No, I'm not.",
-      "He is in the yard.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "No, they aren't.",
+      "Yes, he is.",
+      "No, he isn't.",
+      "Yes, she is."
     ],
     "answer": 0,
     "explanation": "單數物品位置確認，肯定簡答「Yes, it is.」。"
@@ -18770,12 +18770,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Is the watch on the table? B: ______ Here it is!",
     "options": [
       "Yes, it is.",
+      "No, it isn't.",
       "Yes, they are.",
-      "No, I'm not.",
-      "He is in the yard.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "No, they aren't.",
+      "Yes, he is.",
+      "No, he isn't.",
+      "Yes, she is."
     ],
     "answer": 0,
     "explanation": "單數物品位置確認，肯定簡答「Yes, it is.」。"
@@ -22280,12 +22280,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Whose backpack is that on the desk? B: ______",
     "options": [
       "It's Emma's backpack.",
-      "I'd like some rice.",
       "They're Emma's backpack.",
-      "She is Emma.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "It's Emma backpack.",
+      "She is Emma's backpack.",
+      "He is Emma's backpack.",
+      "They are Emma backpack.",
+      "It is Emma."
     ],
     "answer": 0,
     "explanation": "單數物品 that backpack 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22335,11 +22335,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "It's Nina's umbrella.",
       "They're Nina's umbrella.",
-      "She is Nina.",
-      "I'd like some rice.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "It's Nina umbrella.",
+      "She is Nina's umbrella.",
+      "He is Nina's umbrella.",
+      "They are Nina umbrella.",
+      "It is Nina."
     ],
     "answer": 0,
     "explanation": "單數物品 that umbrella 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22443,11 +22443,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "It's Sophie's cap.",
       "They're Sophie's cap.",
-      "She is Sophie.",
-      "I'd like some rice.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "It's Sophie cap.",
+      "She is Sophie's cap.",
+      "He is Sophie's cap.",
+      "They are Sophie cap.",
+      "It is Sophie."
     ],
     "answer": 0,
     "explanation": "單數物品 that cap 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22496,12 +22496,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Whose workbook is that on the desk? B: ______",
     "options": [
       "It's Hannah's workbook.",
-      "I'd like some rice.",
       "They're Hannah's workbook.",
-      "She is Hannah.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "It's Hannah workbook.",
+      "She is Hannah's workbook.",
+      "He is Hannah's workbook.",
+      "They are Hannah workbook.",
+      "It is Hannah."
     ],
     "answer": 0,
     "explanation": "單數物品 that workbook 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22551,11 +22551,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "It's Maya's jacket.",
       "They're Maya's jacket.",
-      "She is Maya.",
-      "I'd like some rice.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "It's Maya jacket.",
+      "She is Maya's jacket.",
+      "He is Maya's jacket.",
+      "They are Maya jacket.",
+      "It is Maya."
     ],
     "answer": 0,
     "explanation": "單數物品 that jacket 回答使用「It's + 人名's + 單數名詞.」。"
@@ -22659,11 +22659,11 @@ export const HERE_WE_GO_MCQ_BANK = [
     "options": [
       "It's Ava's watch.",
       "They're Ava's watch.",
-      "She is Ava.",
-      "I'd like some rice.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "It's Ava watch.",
+      "She is Ava's watch.",
+      "He is Ava's watch.",
+      "They are Ava watch.",
+      "It is Ava."
     ],
     "answer": 0,
     "explanation": "單數物品 that watch 回答使用「It's + 人名's + 單數名詞.」。"
@@ -24413,12 +24413,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Was Nina at school last night? B: ______ She was at home.",
     "options": [
       "No, she wasn't.",
-      "No, she didn't.",
-      "No, they weren't.",
       "Yes, she was.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "No, she didn't.",
+      "Yes, she did.",
+      "No, they weren't.",
+      "Yes, they were.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "以 Was Nina...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24737,12 +24737,12 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: Was Maya at the zoo last night? B: ______ She was at home.",
     "options": [
       "No, she wasn't.",
-      "No, she didn't.",
-      "No, they weren't.",
       "Yes, she was.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "No, she didn't.",
+      "Yes, she did.",
+      "No, they weren't.",
+      "Yes, they were.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "以 Was Maya...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24820,10 +24820,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, she wasn't.",
       "Yes, she was.",
       "No, she didn't.",
+      "Yes, she did.",
       "No, they weren't.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "Yes, they were.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "以 Was Lily...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24901,10 +24901,10 @@ export const HERE_WE_GO_MCQ_BANK = [
       "No, she wasn't.",
       "Yes, she was.",
       "No, she didn't.",
+      "Yes, she did.",
       "No, they weren't.",
-      "It is over there.",
-      "Go straight.",
-      "Turn left."
+      "Yes, they were.",
+      "No, he wasn't."
     ],
     "answer": 0,
     "explanation": "以 Was Ava...? 提問且後句說明她在家，故否定簡答「No, she wasn't.」。"
@@ -24980,9 +24980,9 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Lucas do yesterday evening? B: ______",
     "options": [
       "He played the piano.",
-      "She played the piano..",
-      "They played the piano..",
-      "I played the piano..",
+      "She played the piano.",
+      "They played the piano.",
+      "I played the piano.",
       "He plays baseball.",
       "He is playing baseball.",
       "He will play baseball."
@@ -25061,9 +25061,9 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Max do yesterday evening? B: ______",
     "options": [
       "He played baseball.",
-      "She played baseball..",
-      "They played baseball..",
-      "I played baseball..",
+      "She played baseball.",
+      "They played baseball.",
+      "I played baseball.",
       "He plays baseball.",
       "He is playing baseball.",
       "He will play baseball."
@@ -25142,9 +25142,9 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Leo do yesterday evening? B: ______",
     "options": [
       "He surfed the Internet.",
-      "She surfed the Internet..",
-      "They surfed the Internet..",
-      "I surfed the Internet..",
+      "She surfed the Internet.",
+      "They surfed the Internet.",
+      "I surfed the Internet.",
       "He plays baseball.",
       "He is playing baseball.",
       "He will play baseball."
@@ -25223,9 +25223,9 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Kulas do yesterday evening? B: ______",
     "options": [
       "He watered the plants.",
-      "She watered the plants..",
-      "They watered the plants..",
-      "I watered the plants..",
+      "She watered the plants.",
+      "They watered the plants.",
+      "I watered the plants.",
       "He plays baseball.",
       "He is playing baseball.",
       "He will play baseball."
@@ -25304,9 +25304,9 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Ryan do yesterday evening? B: ______",
     "options": [
       "He watched a movie.",
-      "She watched a movie..",
-      "They watched a movie..",
-      "I watched a movie..",
+      "She watched a movie.",
+      "They watched a movie.",
+      "I watched a movie.",
       "He plays baseball.",
       "He is playing baseball.",
       "He will play baseball."
@@ -25385,9 +25385,9 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Owen do yesterday evening? B: ______",
     "options": [
       "He listened to music.",
-      "She listened to music..",
-      "They listened to music..",
-      "I listened to music..",
+      "She listened to music.",
+      "They listened to music.",
+      "I listened to music.",
       "He plays baseball.",
       "He is playing baseball.",
       "He will play baseball."
@@ -25466,9 +25466,9 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Noah do yesterday evening? B: ______",
     "options": [
       "He cleaned the room.",
-      "She cleaned the room..",
-      "They cleaned the room..",
-      "I cleaned the room..",
+      "She cleaned the room.",
+      "They cleaned the room.",
+      "I cleaned the room.",
       "He plays baseball.",
       "He is playing baseball.",
       "He will play baseball."
@@ -25547,9 +25547,9 @@ export const HERE_WE_GO_MCQ_BANK = [
     "question": "A: What did Alex do yesterday evening? B: ______",
     "options": [
       "He walked the dog.",
-      "She walked the dog..",
-      "They walked the dog..",
-      "I walked the dog..",
+      "She walked the dog.",
+      "They walked the dog.",
+      "I walked the dog.",
       "He plays baseball.",
       "He is playing baseball.",
       "He will play baseball."

@@ -54,6 +54,23 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.8 題庫品質全面大修訂 Batch 4：詳解與正答同步校準、消滅選項雙句點、清零 34 題方向樣板與 CI 語意防禦升級 (`hereWeGoMcqBank.js`, `scripts/audit_semantic_gates.mjs`)
+* **P0/P1：詳解與正答完全同步校準**：
+  * `hwg_b4_653`：詳解修正為肯定應答（「後句『He's in the kitchen.（他在廚房）』說明他在廚房，答句與問句一致，故選肯定應答『Yes, he is.』。」），杜絕學生答對卻看到相反解析。
+  * `hwg_b7_236`：詳解同步修正為車輛交通工具（「後句提到『Dad drives us there.（爸爸開車載我們去）』，說明交通工具為開車，故選『by car（搭車／開車）』。」）。
+* **P1：全題庫選項雙句點（`..`）徹底清零（84 處修正）**：
+  * 清查並修復原集中於 `hwg_b4_611`～`638` 與 `hwg_b8_919`～`940` 等現在進行式及過去式題組中產生之 84 處尾綴雙句點（`..`），使全庫 3,317 題選項標點純淨無誤。
+* **P1：清零最後 34 題方向導引通用樣板（`It is over there.` / `Go straight.` / `Turn left.`）**：
+  * 全面重構 34 題包含此三句樣板之題目（涵蓋 `hwg_b4`、`hwg_b5`、`hwg_b6`、`hwg_b7`、`hwg_b8`、`hwg_b9`），依題目實際評量標的（Yes/No 代名詞人稱一致性、所有格名詞、街名介系詞、交通工具主詞動詞一致性等）替換為同質、無多重正解之精確誘答。
+  * 徹底解決 `hwg_b5_172`（`Where's the hospital?`）與 `hwg_b5_158`（`Where's the bathroom?`）潛在之多重合法位置回答問題。
+  * 全題庫 3,317 題中 `It is over there.`、`Go straight.`、`Turn left.` 出現次數完全降至 **0**。
+* **CI 語意門禁強化 (`scripts/audit_semantic_gates.mjs`)**：
+  * 新增選項嚴格雙句點格式防禦 `(?<!\.)\.\.(?!\.)`（課本題庫、TME、SAA 全量覆蓋）。
+  * 新增 Yes/No 答句與詳解一致性防禦（`YES_ANSWER_BUT_EXPLANATION_SAYS_NEGATIVE` 及 `NO_ANSWER_BUT_EXPLANATION_SAYS_AFFIRMATIVE`）。
+  * 強化 Where 題型正規化相容 `Where's` 與 `Where is`。
+  * 將方向樣板正式納入 `BOILERPLATE_DISTRACTORS` 永久防回歸黑名單。
+  * 課本 3,317 題 ＋ TME 300 題 ＋ SAA 285 題持續 100% 通過。
+
 #### 0.0.7 題庫品質全面大修訂 Batch 3：消滅 G-DLG 新三句樣板、根除禮貌與時間雙黃蛋、重構 18 題 TME 聽力回應與 CI 語意多重正解閘門 (`hereWeGoMcqBank.js`, `tmePreA1Bank.js`, `scripts/audit_semantic_gates.mjs`)
 * **P0：精準消滅矛盾回答與雙正解地雷**：
   * `hwg_b3_582`：修正拒絕水卻要求水之矛盾，題幹改為 `A: Do you want some water, Sophie? B: ______ I want some juice.`，正解 `No, thank you.`，詳解同步精修。
