@@ -73,13 +73,18 @@ export const SAA_114_G5_QUESTIONS = [
     "number": 3,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g5_q3.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q3_a.webp",
+      "/assets/exam/saa/114/options/g5_q3_b.webp",
+      "/assets/exam/saa/114/options/g5_q3_c.webp",
+      "/assets/exam/saa/114/options/g5_q3_d.webp"
+    ],
     "question": "請聽語音，選出相符的飲品插圖：",
     "options": [
-      "選項 ① (果汁/橘子汁)",
-      "選項 ② (咖啡/熱飲)",
-      "選項 ③ (水壺/水)",
-      "選項 ④ (珍珠奶茶 bubble tea)"
+      "果汁/橘子汁",
+      "咖啡/熱飲",
+      "水壺/水",
+      "珍珠奶茶 bubble tea"
     ],
     "answer": 3,
     "media": {
@@ -103,13 +108,18 @@ export const SAA_114_G5_QUESTIONS = [
     "number": 4,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g5_q4.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q4_a.webp",
+      "/assets/exam/saa/114/options/g5_q4_b.webp",
+      "/assets/exam/saa/114/options/g5_q4_c.webp",
+      "/assets/exam/saa/114/options/g5_q4_d.webp"
+    ],
     "question": "請聽語音，選出相符的配件插圖：",
     "options": [
-      "選項 ① (太陽眼鏡 sunglasses)",
-      "選項 ② (普通眼鏡 glasses)",
-      "選項 ③ (手錶 watch)",
-      "選項 ④ (帽子 cap)"
+      "太陽眼鏡 sunglasses",
+      "普通眼鏡 glasses",
+      "手錶 watch",
+      "帽子 cap"
     ],
     "answer": 0,
     "media": {
@@ -162,13 +172,18 @@ export const SAA_114_G5_QUESTIONS = [
     "number": 6,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g5_q6.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q6_a.webp",
+      "/assets/exam/saa/114/options/g5_q6_b.webp",
+      "/assets/exam/saa/114/options/g5_q6_c.webp",
+      "/assets/exam/saa/114/options/g5_q6_d.webp"
+    ],
     "question": "請聽句子，選出相符的星期與天氣圖：",
     "options": [
-      "選項 ① (週一晴天)",
-      "選項 ② (週三多雲)",
-      "選項 ③ (週四下雨天)",
-      "選項 ④ (週五下雪天)"
+      "週一晴天",
+      "週三多雲",
+      "週四下雨天",
+      "週五下雪天"
     ],
     "answer": 2,
     "media": {
@@ -192,13 +207,18 @@ export const SAA_114_G5_QUESTIONS = [
     "number": 7,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g5_q7.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q7_a.webp",
+      "/assets/exam/saa/114/options/g5_q7_b.webp",
+      "/assets/exam/saa/114/options/g5_q7_c.webp",
+      "/assets/exam/saa/114/options/g5_q7_d.webp"
+    ],
     "question": "請聽句子，選出動作相符的插圖：",
     "options": [
-      "選項 ① (關燈)",
-      "選項 ② (開窗)",
-      "選項 ③ (開燈 Turn on the light)",
-      "選項 ④ (關門)"
+      "關燈",
+      "開窗",
+      "開燈 Turn on the light",
+      "關門"
     ],
     "answer": 2,
     "media": {
@@ -251,13 +271,18 @@ export const SAA_114_G5_QUESTIONS = [
     "number": 9,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g5_q9.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q9_a.webp",
+      "/assets/exam/saa/114/options/g5_q9_b.webp",
+      "/assets/exam/saa/114/options/g5_q9_c.webp",
+      "/assets/exam/saa/114/options/g5_q9_d.webp"
+    ],
     "question": "請聽對話，選出節慶活動相符的插圖：",
     "options": [
-      "選項 ① (端午划龍舟)",
-      "選項 ② (中秋節烤肉吃月餅)",
-      "選項 ③ (復活節彩蛋尋寶與去教堂)",
-      "選項 ④ (聖誕節交換禮物)"
+      "端午划龍舟",
+      "中秋節烤肉吃月餅",
+      "復活節彩蛋尋寶與去教堂",
+      "聖誕節交換禮物"
     ],
     "answer": 2,
     "media": {
@@ -281,13 +306,18 @@ export const SAA_114_G5_QUESTIONS = [
     "number": 10,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g5_q10.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q10_a.webp",
+      "/assets/exam/saa/114/options/g5_q10_b.webp",
+      "/assets/exam/saa/114/options/g5_q10_c.webp",
+      "/assets/exam/saa/114/options/g5_q10_d.webp"
+    ],
     "question": "請聽句子，選出作息時間相符的圖：",
     "options": [
-      "選項 ① (早上 6:30 起床)",
-      "選項 ② (早上 7:30 吃早餐)",
-      "選項 ③ (晚上 9:30 睡覺)",
-      "選項 ④ (下午 4:30 放學)"
+      "早上 6:30 起床",
+      "早上 7:30 吃早餐",
+      "晚上 9:30 睡覺",
+      "下午 4:30 放學"
     ],
     "answer": 0,
     "media": {
@@ -311,13 +341,18 @@ export const SAA_114_G5_QUESTIONS = [
     "number": 11,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g5_q11.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q11_a.webp",
+      "/assets/exam/saa/114/options/g5_q11_b.webp",
+      "/assets/exam/saa/114/options/g5_q11_c.webp",
+      "/assets/exam/saa/114/options/g5_q11_d.webp"
+    ],
     "question": "請聽句子，選出寵物外觀與年齡相符的圖：",
     "options": [
-      "選項 ① (白色小狗)",
-      "選項 ② (黑色貓咪)",
-      "選項 ③ (黃色小鴨)",
-      "選項 ④ (綠色寵物 2 歲)"
+      "白色小狗",
+      "黑色貓咪",
+      "黃色小鴨",
+      "綠色寵物 2 歲"
     ],
     "answer": 3,
     "media": {
@@ -370,13 +405,18 @@ export const SAA_114_G5_QUESTIONS = [
     "number": 13,
     "taskType": "L-CONV",
     "dimension": "言談理解",
-    "image": "/assets/exam/saa/114/g5_q13.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q13_a.webp",
+      "/assets/exam/saa/114/options/g5_q13_b.webp",
+      "/assets/exam/saa/114/options/g5_q13_c.webp",
+      "/assets/exam/saa/114/options/g5_q13_d.webp"
+    ],
     "question": "請聽廣播，選出商店性質相符的圖：",
     "options": [
-      "選項 ① (超級市場 a supermarket)",
-      "選項 ② (服飾店 a clothing store)",
-      "選項 ③ (書店 a bookstore)",
-      "選項 ④ (醫院 a hospital)"
+      "超級市場 a supermarket",
+      "服飾店 a clothing store",
+      "書店 a bookstore",
+      "醫院 a hospital"
     ],
     "answer": 0,
     "media": {
@@ -405,13 +445,18 @@ export const SAA_114_G5_QUESTIONS = [
       "title": "【火車廣播】Train Announcement from Kaohsiung to Taipei",
       "text": "Conductor: This is train number 5678 from Kaohsiung to Taipei. We will stop in Taichung at 3:30, Banqiao at 4:20, and Taipei at 4:30. The weather in Taichung is windy. The weather in Taipei is rainy."
     },
-    "image": "/assets/exam/saa/114/g5_q14.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q14_a.webp",
+      "/assets/exam/saa/114/options/g5_q14_b.webp",
+      "/assets/exam/saa/114/options/g5_q14_c.webp",
+      "/assets/exam/saa/114/options/g5_q14_d.webp"
+    ],
     "question": "Andy’s train is going to Taipei. Which is Andy’s ticket?",
     "options": [
-      "選項 ① (車次 1234)",
-      "選項 ② (車次 5678 高雄至台北)",
-      "選項 ③ (車次 5678 台中至板橋)",
-      "選項 ④ (車次 8765)"
+      "車次 1234",
+      "車次 5678 高雄至台北",
+      "車次 5678 台中至板橋",
+      "車次 8765"
     ],
     "answer": 1,
     "media": {
@@ -440,13 +485,18 @@ export const SAA_114_G5_QUESTIONS = [
       "title": "【火車廣播】Train Announcement from Kaohsiung to Taipei",
       "text": "Conductor: This is train number 5678 from Kaohsiung to Taipei. We will stop in Taichung at 3:30, Banqiao at 4:20, and Taipei at 4:30. The weather in Taichung is windy. The weather in Taipei is rainy."
     },
-    "image": "/assets/exam/saa/114/g5_q15.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q15_a.webp",
+      "/assets/exam/saa/114/options/g5_q15_b.webp",
+      "/assets/exam/saa/114/options/g5_q15_c.webp",
+      "/assets/exam/saa/114/options/g5_q15_d.webp"
+    ],
     "question": "It’s 4:40. Andy is in Taipei now. What does Andy see?",
     "options": [
-      "選項 ① (大太陽晴天)",
-      "選項 ② (颳大風)",
-      "選項 ③ (下雨天 rainy)",
-      "選項 ④ (下雪天)"
+      "大太陽晴天",
+      "颳大風",
+      "下雨天 rainy",
+      "下雪天"
     ],
     "answer": 2,
     "media": {
@@ -523,13 +573,18 @@ export const SAA_114_G5_QUESTIONS = [
     "number": 18,
     "taskType": "R-COMP",
     "dimension": "身體部位理解",
-    "image": "/assets/exam/saa/114/g5_q18.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q18_a.webp",
+      "/assets/exam/saa/114/options/g5_q18_b.webp",
+      "/assets/exam/saa/114/options/g5_q18_c.webp",
+      "/assets/exam/saa/114/options/g5_q18_d.webp"
+    ],
     "question": "Touch your nose.",
     "options": [
-      "選項 ① (摸耳朵)",
-      "選項 ② (摸眼睛)",
-      "選項 ③ (摸鼻子 Touch your nose)",
-      "選項 ④ (摸嘴巴)"
+      "摸耳朵",
+      "摸眼睛",
+      "摸鼻子 Touch your nose",
+      "摸嘴巴"
     ],
     "answer": 2,
     "explanation": "指令「Touch your nose.」意思是觸摸鼻子，圖 ③ 人物手指指向鼻子，故選 ③。"
@@ -712,13 +767,18 @@ export const SAA_114_G5_QUESTIONS = [
     "number": 25,
     "taskType": "R-COMP",
     "dimension": "服飾線稿理解",
-    "image": "/assets/exam/saa/114/g5_q25.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g5_q25_a.webp",
+      "/assets/exam/saa/114/options/g5_q25_b.webp",
+      "/assets/exam/saa/114/options/g5_q25_c.webp",
+      "/assets/exam/saa/114/options/g5_q25_d.webp"
+    ],
     "question": "She is wearing a dress and a scarf.",
     "options": [
-      "選項 ① (穿 T 恤與短褲)",
-      "選項 ② (穿襯衫與長褲)",
-      "選項 ③ (穿毛衣與牛仔褲)",
-      "選項 ④ (穿洋裝且圍圍巾 a dress and a scarf)"
+      "穿 T 恤與短褲",
+      "穿襯衫與長褲",
+      "穿毛衣與牛仔褲",
+      "穿洋裝且圍圍巾 a dress and a scarf"
     ],
     "answer": 3,
     "explanation": "句子敘述女孩穿著連身洋裝（dress）且圍著圍巾（scarf），圖 ④ 插圖相符，故選 ④。"

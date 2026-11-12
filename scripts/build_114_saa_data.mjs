@@ -2,6 +2,13 @@ import fs from 'fs';
 import path from 'path';
 
 const outDir = path.resolve('src/data/exam/saa');
+const optionImages = (name) => [
+  `/assets/exam/saa/114/options/${name}_a.webp`,
+  `/assets/exam/saa/114/options/${name}_b.webp`,
+  `/assets/exam/saa/114/options/${name}_c.webp`,
+  `/assets/exam/saa/114/options/${name}_d.webp`
+];
+
 if (!fs.existsSync(outDir)) {
   fs.mkdirSync(outDir, { recursive: true });
 }
@@ -87,9 +94,9 @@ const g4Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽對話，選出最相符的收據圖片：',
-    options: ['選項 ① ($13: 香蕉與橘子)', '選項 ② ($23: 香蕉與橘子)', '選項 ③ ($32: 蘋果與橘子)', '選項 ④ ($23: 蘋果與香蕉)'],
+    options: ['$13: 香蕉與橘子', '$23: 香蕉與橘子', '$32: 蘋果與橘子', '$23: 蘋果與香蕉'],
     answer: 1,
-    image: '/assets/exam/saa/114/g4_q8.webp',
+    optionImages: optionImages('g4_q8'),
     media: {
       audioText: "Boy: Can I have a banana and an orange, please?\nClerk: No problem. That's twenty-three dollars, please.\nBoy: Here you go."
     },
@@ -100,9 +107,9 @@ const g4Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽句子，選出相符的情境插圖：',
-    options: ['選項 ① (安靜請勿說話)', '選項 ② (請坐下)', '選項 ③ (請大聲說話)', '選項 ④ (請站起來)'],
+    options: ['安靜請勿說話', '請坐下', '請大聲說話', '請站起來'],
     answer: 2,
-    image: '/assets/exam/saa/114/g4_q9.webp',
+    optionImages: optionImages('g4_q9'),
     media: { audioText: 'Teacher: Speak louder, please.' },
     explanation: '聽力句子為「Speak louder, please.（請說大聲一點）」，選項 ③ 拿著擴音器示意大聲說話，故選 ③。'
   },
@@ -111,9 +118,9 @@ const g4Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽對話，選出物品相符的位置圖：',
-    options: ['選項 ① (筆在書桌上)', '選項 ② (筆在書桌下)', '選項 ③ (尺在書桌下)', '選項 ④ (書在椅子下)'],
+    options: ['筆在書桌上', '筆在書桌下', '尺在書桌下', '書在椅子下'],
     answer: 1,
-    image: '/assets/exam/saa/114/g4_q10.webp',
+    optionImages: optionImages('g4_q10'),
     media: {
       audioText: "Girl: Kevin, is this your pen?\nKevin: Yes, I couldn't find it.\nGirl: It is under the desk."
     },
@@ -124,9 +131,9 @@ const g4Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽對話，選出書包與箱子相符的位置圖：',
-    options: ['選項 ① (綠箱子在臥室)', '選項 ② (紅箱子在客廳)', '選項 ③ (書包在廚房)', '選項 ④ (綠箱子在客廳，書包在箱內)'],
+    options: ['綠箱子在臥室', '紅箱子在客廳', '書包在廚房', '綠箱子在客廳，書包在箱內'],
     answer: 3,
-    image: '/assets/exam/saa/114/g4_q11.webp',
+    optionImages: optionImages('g4_q11'),
     media: {
       audioText: "Mom: Where is your bag?\nBoy: My bag is in the green box.\nMom: Where is the green box?\nBoy: It's in the living room."
     },
@@ -137,9 +144,9 @@ const g4Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽對話，選出哥哥年齡與身分相符的圖：',
-    options: ['選項 ① (哥哥 22 歲，是醫生與廚師)', '選項 ② (哥哥 12 歲，是學生)', '選項 ③ (哥哥 20 歲，是廚師)', '選項 ④ (哥哥 22 歲，既是廚師也是司機)'],
+    options: ['哥哥 22 歲，是醫生與廚師', '哥哥 12 歲，是學生', '哥哥 20 歲，是廚師', '哥哥 22 歲，既是廚師也是司機'],
     answer: 3,
-    image: '/assets/exam/saa/114/g4_q12.webp',
+    optionImages: optionImages('g4_q12'),
     media: {
       audioText: "Girl: How old is your brother?\nBoy: He is twenty-two.\nGirl: Is your brother a cook?\nBoy: Yes, he is. He is a driver, too.\nGirl: Wow, cool."
     },
@@ -150,9 +157,9 @@ const g4Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽對話，選出玩具位置相符的圖片：',
-    options: ['選項 ① (近處風箏，遠處機器人)', '選項 ② (近處機器人，遠處風箏)', '選項 ③ (近處洋娃娃，遠處風箏)', '選項 ④ (近處機器人，遠處氣球)'],
+    options: ['近處風箏，遠處機器人', '近處機器人，遠處風箏', '近處洋娃娃，遠處風箏', '近處機器人，遠處氣球'],
     answer: 1,
-    image: '/assets/exam/saa/114/g4_q13.webp',
+    optionImages: optionImages('g4_q13'),
     media: {
       audioText: "Girl: What's this?\nBoy: It's my robot.\nGirl: What's that?\nBoy: It's a kite."
     },
@@ -163,9 +170,9 @@ const g4Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽敘述，選出節慶採買相符的圖：',
-    options: ['選項 ① (端午節粽子與龍舟)', '選項 ② (萬聖節南瓜與糖果)', '選項 ③ (中秋節柚子與月餅)', '選項 ④ (聖誕節拐杖糖與聖誕樹)'],
+    options: ['端午節粽子與龍舟', '萬聖節南瓜與糖果', '中秋節柚子與月餅', '聖誕節拐杖糖與聖誕樹'],
     answer: 2,
-    image: '/assets/exam/saa/114/g4_q14.webp',
+    optionImages: optionImages('g4_q14'),
     media: {
       audioText: 'Narrator: Bob is shopping for Moon Festival. He wants some pommelos and mooncakes.'
     },
@@ -176,9 +183,9 @@ const g4Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽對話，選出萬聖節相符的情境圖：',
-    options: ['選項 ① (萬聖節裝扮、下雨帶傘、時鐘 9 點)', '選項 ② (晴天出門、時鐘 8 點)', '選項 ③ (下雨沒帶傘、時鐘 9 點)', '選項 ④ (室內吃糖果、時鐘 10 點)'],
+    options: ['萬聖節裝扮、下雨帶傘、時鐘 9 點', '晴天出門、時鐘 8 點', '下雨沒帶傘、時鐘 9 點', '室內吃糖果、時鐘 10 點'],
     answer: 0,
-    image: '/assets/exam/saa/114/g4_q15.webp',
+    optionImages: optionImages('g4_q15'),
     media: {
       audioText: "Boy: Can we go trick-or-treating?\nMom: Of course.\nBoy: Thank you, Mom. I'll be back at nine o'clock.\nMom: Take an umbrella. It's rainy."
     },
@@ -234,9 +241,9 @@ const g4Questions = [
     taskType: 'V-MEAN',
     dimension: '字意理解',
     question: '選出與英文單字「fifteen」相對應的數字：',
-    options: ['選項 ① (50)', '選項 ② (5)', '選項 ③ (15)', '選項 ④ (12)'],
+    options: ['50', '5', '15', '12'],
     answer: 2,
-    image: '/assets/exam/saa/114/g4_q20.webp',
+    optionImages: optionImages('g4_q20'),
     explanation: '單字「fifteen」代表數字 15，圖 ③ 標示 15，故選 ③。'
   },
   {
@@ -294,9 +301,9 @@ const g4Questions = [
     taskType: 'R-COMP',
     dimension: '句子理解',
     question: 'It’s so hot today. I want some ice cream.',
-    options: ['選項 ① (大太陽下流汗吃冰淇淋)', '選項 ② (下雪天堆雪人)', '選項 ③ (下雨天吃熱麵)', '選項 ④ (颳大風放風箏)'],
+    options: ['大太陽下流汗吃冰淇淋', '下雪天堆雪人', '下雨天吃熱麵', '颳大風放風箏'],
     answer: 0,
-    image: '/assets/exam/saa/114/g4_q26.webp',
+    optionImages: optionImages('g4_q26'),
     explanation: '句子表達今天好熱（so hot）、想吃冰淇淋（want some ice cream），圖 ① 完全相符，故選 ①。'
   },
   {
@@ -344,9 +351,9 @@ const g4Questions = [
       title: '【視訊電話】A Video Call from Ken',
       text: "Andy: Hi, Ken! How are you?\nKen: Great! How’s the weather in Taiwan?\nAndy: It’s cold and rainy now.\nKen: It’s hot and sunny here in Sydney (雪梨).\nAndy: That’s nice. Is that your brother?\nKen: Yes, he is reading.\nAndy: It’s dinner time for me.\nKen: It’s nine thirty here in Sydney. It’s bed time for me."
     },
-    image: '/assets/exam/saa/114/g4_q31.webp',
+    optionImages: optionImages('g4_q31'),
     question: 'How’s the weather in Taiwan?',
-    options: ['選項 ① (晴天大太陽)', '選項 ② (寒冷下雨天)', '選項 ③ (下雪天)', '選項 ④ (颳大風)'],
+    options: ['晴天大太陽', '寒冷下雨天', '下雪天', '颳大風'],
     answer: 1,
     explanation: '對話中 Andy 回答「It’s cold and rainy now.（臺灣現在又冷又下雨）」，選項 ② 下雨撐傘圖相符，故選 ②。'
   },
@@ -373,9 +380,9 @@ const g4Questions = [
       title: '【視訊電話】A Video Call from Ken',
       text: "Andy: Hi, Ken! How are you?\nKen: Great! How’s the weather in Taiwan?\nAndy: It’s cold and rainy now.\nKen: It’s hot and sunny here in Sydney (雪梨).\nAndy: That’s nice. Is that your brother?\nKen: Yes, he is reading.\nAndy: It’s dinner time for me.\nKen: It’s nine thirty here in Sydney. It’s bed time for me."
     },
-    image: '/assets/exam/saa/114/g4_q33.webp',
+    optionImages: optionImages('g4_q33'),
     question: 'What time is it in Sydney?',
-    options: ['選項 ① (9:00)', '選項 ② (6:30)', '選項 ③ (8:30)', '選項 ④ (9:30)'],
+    options: ['9:00', '6:30', '8:30', '9:30'],
     answer: 3,
     explanation: '文中 Ken 說「It’s nine thirty here in Sydney.（雪梨這裡現在是九點半）」，選項 ④ 時鐘指在 9:30，故選 ④。'
   },
@@ -402,9 +409,9 @@ const g4Questions = [
       title: '【驚喜派對】A Surprise Party',
       text: "Let’s have a birthday party for my mom.\nDad: Marc, the cake is ready.\nMarc: That’s nice. I’m drawing a card. Can you help me?\nDad: No problem.\nMarc: Dad, Amber is in the bedroom. Is she sleeping?\nDad: No, she’s not. Your big sister is dancing.\nMarc: Cool! Oh! It’s cold and rainy outside.\nDad: Let’s have the party in the living room."
     },
-    image: '/assets/exam/saa/114/g4_q35.webp',
+    optionImages: optionImages('g4_q35'),
     question: 'Let’s have the party in the __________.',
-    options: ['選項 ① (臥室 bedroom)', '選項 ② (廚房 kitchen)', '選項 ③ (浴室 bathroom)', '選項 ④ (客廳 living room)'],
+    options: ['臥室 bedroom', '廚房 kitchen', '浴室 bathroom', '客廳 living room'],
     answer: 3,
     explanation: '短文最後爸爸提議「Let’s have the party in the living room.（我們在客廳辦派對吧）」，選項 ④ 客廳圖相符，故選 ④。'
   }
@@ -439,9 +446,9 @@ const g5Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽語音，選出相符的飲品插圖：',
-    options: ['選項 ① (果汁/橘子汁)', '選項 ② (咖啡/熱飲)', '選項 ③ (水壺/水)', '選項 ④ (珍珠奶茶 bubble tea)'],
+    options: ['果汁/橘子汁', '咖啡/熱飲', '水壺/水', '珍珠奶茶 bubble tea'],
     answer: 3,
-    image: '/assets/exam/saa/114/g5_q3.webp',
+    optionImages: optionImages('g5_q3'),
     media: { audioText: 'Narrator: bubble tea' },
     explanation: '聽力單字為經典臺灣代表飲品「bubble tea（珍珠奶茶）」，選項 ④ 相符。'
   },
@@ -450,9 +457,9 @@ const g5Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽語音，選出相符的配件插圖：',
-    options: ['選項 ① (太陽眼鏡 sunglasses)', '選項 ② (普通眼鏡 glasses)', '選項 ③ (手錶 watch)', '選項 ④ (帽子 cap)'],
+    options: ['太陽眼鏡 sunglasses', '普通眼鏡 glasses', '手錶 watch', '帽子 cap'],
     answer: 0,
-    image: '/assets/exam/saa/114/g5_q4.webp',
+    optionImages: optionImages('g5_q4'),
     media: { audioText: 'Narrator: sunglasses' },
     explanation: '聽力單字為「sunglasses（太陽眼鏡）」，選項 ① 插圖相符。'
   },
@@ -476,9 +483,9 @@ const g5Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽句子，選出相符的星期與天氣圖：',
-    options: ['選項 ① (週一晴天)', '選項 ② (週三多雲)', '選項 ③ (週四下雨天)', '選項 ④ (週五下雪天)'],
+    options: ['週一晴天', '週三多雲', '週四下雨天', '週五下雪天'],
     answer: 2,
-    image: '/assets/exam/saa/114/g5_q6.webp',
+    optionImages: optionImages('g5_q6'),
     media: { audioText: 'Narrator: It was rainy this Thursday.' },
     explanation: '聽力句子為「It was rainy this Thursday.（這星期四下雨）」，選項 ③ 週四下雨相符。'
   },
@@ -487,9 +494,9 @@ const g5Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽句子，選出動作相符的插圖：',
-    options: ['選項 ① (關燈)', '選項 ② (開窗)', '選項 ③ (開燈 Turn on the light)', '選項 ④ (關門)'],
+    options: ['關燈', '開窗', '開燈 Turn on the light', '關門'],
     answer: 2,
-    image: '/assets/exam/saa/114/g5_q7.webp',
+    optionImages: optionImages('g5_q7'),
     media: { audioText: 'Narrator: Turn on the light, please.' },
     explanation: '聽力句子為祈使句「Turn on the light, please.（請開燈）」，選項 ③ 伸手打開電燈開關相符。'
   },
@@ -510,9 +517,9 @@ const g5Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽對話，選出節慶活動相符的插圖：',
-    options: ['選項 ① (端午划龍舟)', '選項 ② (中秋節烤肉吃月餅)', '選項 ③ (復活節彩蛋尋寶與去教堂)', '選項 ④ (聖誕節交換禮物)'],
+    options: ['端午划龍舟', '中秋節烤肉吃月餅', '復活節彩蛋尋寶與去教堂', '聖誕節交換禮物'],
     answer: 2,
-    image: '/assets/exam/saa/114/g5_q9.webp',
+    optionImages: optionImages('g5_q9'),
     media: {
       audioText: "Girl: What do you do on Easter?\nBoy: I go egg hunting with my friends. I go to church with my family."
     },
@@ -523,9 +530,9 @@ const g5Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽句子，選出作息時間相符的圖：',
-    options: ['選項 ① (早上 6:30 起床)', '選項 ② (早上 7:30 吃早餐)', '選項 ③ (晚上 9:30 睡覺)', '選項 ④ (下午 4:30 放學)'],
+    options: ['早上 6:30 起床', '早上 7:30 吃早餐', '晚上 9:30 睡覺', '下午 4:30 放學'],
     answer: 0,
-    image: '/assets/exam/saa/114/g5_q10.webp',
+    optionImages: optionImages('g5_q10'),
     media: { audioText: 'Narrator: She gets up at 6:30.' },
     explanation: '聽力句子為「She gets up at 6:30.（她六點半起床）」，選項 ① 時鐘顯示 6:30 且人物正在起床，完全吻合。'
   },
@@ -534,9 +541,9 @@ const g5Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽句子，選出寵物外觀與年齡相符的圖：',
-    options: ['選項 ① (白色小狗)', '選項 ② (黑色貓咪)', '選項 ③ (黃色小鴨)', '選項 ④ (綠色寵物 2 歲)'],
+    options: ['白色小狗', '黑色貓咪', '黃色小鴨', '綠色寵物 2 歲'],
     answer: 3,
-    image: '/assets/exam/saa/114/g5_q11.webp',
+    optionImages: optionImages('g5_q11'),
     media: { audioText: 'Narrator: My pet is green. He is 2 years old.' },
     explanation: '聽力指出「My pet is green. He is 2 years old.（我的寵物是綠色的，牠兩歲）」，選項 ④ 綠色寵物兩歲相符。'
   },
@@ -557,9 +564,9 @@ const g5Questions = [
     taskType: 'L-CONV',
     dimension: '言談理解',
     question: '請聽廣播，選出商店性質相符的圖：',
-    options: ['選項 ① (超級市場 a supermarket)', '選項 ② (服飾店 a clothing store)', '選項 ③ (書店 a bookstore)', '選項 ④ (醫院 a hospital)'],
+    options: ['超級市場 a supermarket', '服飾店 a clothing store', '書店 a bookstore', '醫院 a hospital'],
     answer: 0,
-    image: '/assets/exam/saa/114/g5_q13.webp',
+    optionImages: optionImages('g5_q13'),
     media: {
       audioText: "Narrator: You can buy ten oranges with one hundred dollars, and eight apples with fifty dollars. We also have fish and rice cakes. Welcome to the 101 Shop now! What is 101 Shop?"
     },
@@ -574,9 +581,9 @@ const g5Questions = [
       title: '【火車廣播】Train Announcement from Kaohsiung to Taipei',
       text: "Conductor: This is train number 5678 from Kaohsiung to Taipei. We will stop in Taichung at 3:30, Banqiao at 4:20, and Taipei at 4:30. The weather in Taichung is windy. The weather in Taipei is rainy."
     },
-    image: '/assets/exam/saa/114/g5_q14.webp',
+    optionImages: optionImages('g5_q14'),
     question: 'Andy’s train is going to Taipei. Which is Andy’s ticket?',
-    options: ['選項 ① (車次 1234)', '選項 ② (車次 5678 高雄至台北)', '選項 ③ (車次 5678 台中至板橋)', '選項 ④ (車次 8765)'],
+    options: ['車次 1234', '車次 5678 高雄至台北', '車次 5678 台中至板橋', '車次 8765'],
     answer: 1,
     media: {
       audioText: "Conductor: This is train number 5678 from Kaohsiung to Taipei. We will stop in Taichung at 3:30, Banqiao at 4:20, and Taipei at 4:30. The weather in Taichung is windy. The weather in Taipei is rainy.\nQuestion 14: Andy's train is going to Taipei. Which is Andy's ticket?"
@@ -592,9 +599,9 @@ const g5Questions = [
       title: '【火車廣播】Train Announcement from Kaohsiung to Taipei',
       text: "Conductor: This is train number 5678 from Kaohsiung to Taipei. We will stop in Taichung at 3:30, Banqiao at 4:20, and Taipei at 4:30. The weather in Taichung is windy. The weather in Taipei is rainy."
     },
-    image: '/assets/exam/saa/114/g5_q15.webp',
+    optionImages: optionImages('g5_q15'),
     question: 'It’s 4:40. Andy is in Taipei now. What does Andy see?',
-    options: ['選項 ① (大太陽晴天)', '選項 ② (颳大風)', '選項 ③ (下雨天 rainy)', '選項 ④ (下雪天)'],
+    options: ['大太陽晴天', '颳大風', '下雨天 rainy', '下雪天'],
     answer: 2,
     media: {
       audioText: "Conductor: The weather in Taichung is windy. The weather in Taipei is rainy.\nQuestion 15: It's 4:40. Andy is in Taipei now. What does Andy see?"
@@ -625,9 +632,9 @@ const g5Questions = [
     taskType: 'R-COMP',
     dimension: '身體部位理解',
     question: 'Touch your nose.',
-    options: ['選項 ① (摸耳朵)', '選項 ② (摸眼睛)', '選項 ③ (摸鼻子 Touch your nose)', '選項 ④ (摸嘴巴)'],
+    options: ['摸耳朵', '摸眼睛', '摸鼻子 Touch your nose', '摸嘴巴'],
     answer: 2,
-    image: '/assets/exam/saa/114/g5_q18.webp',
+    optionImages: optionImages('g5_q18'),
     explanation: '指令「Touch your nose.」意思是觸摸鼻子，圖 ③ 人物手指指向鼻子，故選 ③。'
   },
   {
@@ -705,9 +712,9 @@ const g5Questions = [
     taskType: 'R-COMP',
     dimension: '服飾線稿理解',
     question: 'She is wearing a dress and a scarf.',
-    options: ['選項 ① (穿 T 恤與短褲)', '選項 ② (穿襯衫與長褲)', '選項 ③ (穿毛衣與牛仔褲)', '選項 ④ (穿洋裝且圍圍巾 a dress and a scarf)'],
+    options: ['穿 T 恤與短褲', '穿襯衫與長褲', '穿毛衣與牛仔褲', '穿洋裝且圍圍巾 a dress and a scarf'],
     answer: 3,
-    image: '/assets/exam/saa/114/g5_q25.webp',
+    optionImages: optionImages('g5_q25'),
     explanation: '句子敘述女孩穿著連身洋裝（dress）且圍著圍巾（scarf），圖 ④ 插圖相符，故選 ④。'
   },
   {
@@ -871,9 +878,9 @@ const g6Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽句子，選出橋樑長度相符的插圖：',
-    options: ['選項 ① (569 公尺)', '選項 ② (597 公尺)', '選項 ③ (579 公尺)', '選項 ④ (759 公尺)'],
+    options: ['569 公尺', '597 公尺', '579 公尺', '759 公尺'],
     answer: 2,
-    image: '/assets/exam/saa/114/g6_q3.webp',
+    optionImages: optionImages('g6_q3'),
     media: { audioText: 'Narrator: The bridge is five hundred and seventy-nine meters long.' },
     explanation: '聽力句子為「The bridge is five hundred and seventy-nine meters long.（這座橋長 579 公尺）」，選項 ③ 相符。'
   },
@@ -882,9 +889,9 @@ const g6Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽句子，選出動作相符的插圖：',
-    options: ['選項 ① (在陸地上跑步)', '選項 ② (在天空中飛行)', '選項 ③ (在廚房做菜)', '選項 ④ (水手在海上航行 The sailor sails the sea)'],
+    options: ['在陸地上跑步', '在天空中飛行', '在廚房做菜', '水手在海上航行 The sailor sails the sea'],
     answer: 3,
-    image: '/assets/exam/saa/114/g6_q4.webp',
+    optionImages: optionImages('g6_q4'),
     media: { audioText: 'Narrator: The sailor sails the sea.' },
     explanation: '聽力句子為繞口令趣味句「The sailor sails the sea.（水手在海上航行）」，選項 ④ 插圖相符。'
   },
@@ -893,9 +900,9 @@ const g6Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽句子，選出家人外觀特徵相符的圖：',
-    options: ['選項 ① (父親身材高大)', '選項 ② (母親身材瘦長)', '選項 ③ (父親身材矮小 short)', '選項 ④ (弟弟正在看書)'],
+    options: ['父親身材高大', '母親身材瘦長', '父親身材矮小 short', '弟弟正在看書'],
     answer: 2,
-    image: '/assets/exam/saa/114/g6_q5.webp',
+    optionImages: optionImages('g6_q5'),
     media: { audioText: "Boy: He's my father. He's short." },
     explanation: '聽力敘述為「He\'s my father. He\'s short.（他是我爸爸，他身材矮小）」，選項 ③ 人物矮小相符。'
   },
@@ -904,9 +911,9 @@ const g6Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽句子，選出相符的情境插圖：',
-    options: ['選項 ① (生氣怒吼)', '選項 ② (哭泣難過)', '選項 ③ (驚慌失措)', '選項 ④ (冷靜下來提供協助 Calm down. I can help you.)'],
+    options: ['生氣怒吼', '哭泣難過', '驚慌失措', '冷靜下來提供協助 Calm down. I can help you.'],
     answer: 3,
-    image: '/assets/exam/saa/114/g6_q6.webp',
+    optionImages: optionImages('g6_q6'),
     media: { audioText: 'Narrator: Calm down. I can help you.' },
     explanation: '聽力句子安撫對方說「Calm down. I can help you.（冷靜點，我可以幫你）」，選項 ④ 表情友善示意幫助相符。'
   },
@@ -915,9 +922,9 @@ const g6Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽句子，選出警告事項相符的圖：',
-    options: ['選項 ① (小心山上有大熊 big bears in the mountains)', '選項 ② (小心湖裡有鱷魚)', '選項 ③ (小心森林有野狼)', '選項 ④ (小心樹上有猴子)'],
+    options: ['小心山上有大熊 big bears in the mountains', '小心湖裡有鱷魚', '小心森林有野狼', '小心樹上有猴子'],
     answer: 0,
-    image: '/assets/exam/saa/114/g6_q7.webp',
+    optionImages: optionImages('g6_q7'),
     media: { audioText: 'Narrator: Be careful. There are big bears in the mountains.' },
     explanation: '聽力提醒「Be careful. There are big bears in the mountains.（小心，山上有大熊）」，選項 ① 登山與大熊警示牌相符。'
   },
@@ -926,9 +933,9 @@ const g6Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽對話，選出天氣與活動相符的圖：',
-    options: ['選項 ① (下雨天買雨傘)', '選項 ② (晴天颳風買風箏 sunny and windy, buy a kite)', '選項 ③ (下雪天堆雪人)', '選項 ④ (陰天在室內看電視)'],
+    options: ['下雨天買雨傘', '晴天颳風買風箏 sunny and windy, buy a kite', '下雪天堆雪人', '陰天在室內看電視'],
     answer: 1,
-    image: '/assets/exam/saa/114/g6_q8.webp',
+    optionImages: optionImages('g6_q8'),
     media: {
       audioText: "Boy: How's the weather?\nGirl: It's sunny and windy today. Let's buy a kite."
     },
@@ -939,9 +946,9 @@ const g6Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽敘述，選出假期相符的情境圖：',
-    options: ['選項 ① (在英國參觀大笨鐘)', '選項 ② (在美國度過暑假 goes to the USA for summer vacation)', '選項 ③ (在日本看富士山)', '選項 ④ (在澳洲看袋鼠)'],
+    options: ['在英國參觀大笨鐘', '在美國度過暑假 goes to the USA for summer vacation', '在日本看富士山', '在澳洲看袋鼠'],
     answer: 1,
-    image: '/assets/exam/saa/114/g6_q9.webp',
+    optionImages: optionImages('g6_q9'),
     media: {
       audioText: 'Narrator: Malina goes to the USA for summer vacation. She likes it there very much.'
     },
@@ -952,9 +959,9 @@ const g6Questions = [
     taskType: 'L-SENT',
     dimension: '辨識句意',
     question: '請聽對話，選出病痛部位相符的插圖：',
-    options: ['選項 ① (腿部疼痛 My leg hurts)', '選項 ② (手臂疼痛)', '選項 ③ (頭痛發燒)', '選項 ④ (喉嚨痛)'],
+    options: ['腿部疼痛 My leg hurts', '手臂疼痛', '頭痛發燒', '喉嚨痛'],
     answer: 0,
-    image: '/assets/exam/saa/114/g6_q10.webp',
+    optionImages: optionImages('g6_q10'),
     media: {
       audioText: "Girl: What's wrong?\nBoy: My leg hurts."
     },
@@ -1030,9 +1037,9 @@ const g6Questions = [
     taskType: 'R-COMP',
     dimension: '介系詞空間理解',
     question: 'My bag is under the desk.',
-    options: ['選項 ① (書包在桌子上)', '選項 ② (書包在桌子下 under the desk)', '選項 ③ (書包在椅子旁)', '選項 ④ (書包在床上)'],
+    options: ['書包在桌子上', '書包在桌子下 under the desk', '書包在椅子旁', '書包在床上'],
     answer: 1,
-    image: '/assets/exam/saa/114/g6_q16.webp',
+    optionImages: optionImages('g6_q16'),
     explanation: '句子表達書包在書桌下方（under the desk），圖 ② 書包放置在書桌下完全相符，故選 ②。'
   },
   {
@@ -1040,9 +1047,9 @@ const g6Questions = [
     taskType: 'R-COMP',
     dimension: '地圖空間理解',
     question: 'The library is next to the bus station.',
-    options: ['選項 ① (圖書館在郵局對面)', '選項 ② (圖書館在公園旁邊)', '選項 ③ (圖書館緊鄰公車站 next to the bus station)', '選項 ④ (圖書館在學校後面)'],
+    options: ['圖書館在郵局對面', '圖書館在公園旁邊', '圖書館緊鄰公車站 next to the bus station', '圖書館在學校後面'],
     answer: 2,
-    image: '/assets/exam/saa/114/g6_q17.webp',
+    optionImages: optionImages('g6_q17'),
     explanation: '句子敘述「The library is next to the bus station.（圖書館在公車站旁邊）」，圖 ③ 圖書館與公車站相鄰相符，故選 ③。'
   },
   {
@@ -1145,9 +1152,9 @@ const g6Questions = [
     taskType: 'R-COMP',
     dimension: '食物點餐會話理解',
     question: 'A: Do you want some noodles?\nB: Yes, I do. I want a cake and some orange juice, too.',
-    options: ['選項 ① (披薩、熱狗與可樂)', '選項 ② (麵條、蛋糕與柳橙汁)', '選項 ③ (漢堡、三明治與牛奶)', '選項 ④ (米飯、魚與水)'],
+    options: ['披薩、熱狗與可樂', '麵條、蛋糕與柳橙汁', '漢堡、三明治與牛奶', '米飯、魚與水'],
     answer: 1,
-    image: '/assets/exam/saa/114/g6_q27.webp',
+    optionImages: optionImages('g6_q27'),
     explanation: '對話要求吃麵（noodles）、蛋糕（cake）與柳橙汁（orange juice），圖 ② 食物組合完全吻合，故選 ②。'
   },
   {
@@ -1280,6 +1287,7 @@ function generateGradeFile(year, grade, rawQuestions, filename) {
       ...(q.groupId ? { groupId: q.groupId } : {}),
       ...(q.passage ? { passage: q.passage } : {}),
       ...(q.image ? { image: q.image } : {}),
+      ...(q.optionImages ? { optionImages: q.optionImages } : {}),
       question: q.question,
       options: q.options,
       answer: q.answer,

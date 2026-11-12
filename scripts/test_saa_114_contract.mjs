@@ -145,8 +145,6 @@ for (const q of SAA_114_ALL_QUESTIONS) {
     }
   }
 }
-console.log(`  • Verified ${verifiedAssets} image references across all 105 questions`);
-
 // Check SAA_ALL_EXAM_PAPERS has 114
 if (!SAA_ALL_EXAM_PAPERS[114]) {
   errors.push(`SAA_ALL_EXAM_PAPERS[114] is missing!`);
@@ -154,6 +152,27 @@ if (!SAA_ALL_EXAM_PAPERS[114]) {
   for (const g of [4, 5, 6]) {
     if (!SAA_ALL_EXAM_PAPERS[114][g] || SAA_ALL_EXAM_PAPERS[114][g].questions?.length !== 35) {
       errors.push(`SAA_ALL_EXAM_PAPERS[114][${g}] missing or does not have 35 questions`);
+    }
+  }
+}
+
+// 8. Option Images Decoupling & Clean Labels
+console.log('\n[8/8] Auditing Option Images Decoupling & Clean Labels...');
+const optionImageQs = SAA_114_ALL_QUESTIONS.filter(q => Array.isArray(q.optionImages));
+console.log(`  • Found ${optionImageQs.length} questions with sliced optionImages (expected 36)`);
+if (optionImageQs.length !== 36) {
+  errors.push(`Expected exactly 36 questions with optionImages, found ${optionImageQs.length}`);
+}
+for (const q of optionImageQs) {
+  if (q.optionImages.length !== 4) {
+    errors.push(`[${q.id}] optionImages must have exactly 4 items, got ${q.optionImages.length}`);
+  }
+  if (q.image) {
+    errors.push(`[${q.id}] question has both optionImages and q.image (causes duplicate 4-in-1 image render)`);
+  }
+  for (const opt of q.options) {
+    if (typeof opt === 'string' && opt.includes('選項 ①')) {
+      errors.push(`[${q.id}] option label has redundant '選項 ①' prefix: "${opt}"`);
     }
   }
 }

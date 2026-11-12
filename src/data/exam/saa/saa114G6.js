@@ -73,13 +73,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 3,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g6_q3.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q3_a.webp",
+      "/assets/exam/saa/114/options/g6_q3_b.webp",
+      "/assets/exam/saa/114/options/g6_q3_c.webp",
+      "/assets/exam/saa/114/options/g6_q3_d.webp"
+    ],
     "question": "請聽句子，選出橋樑長度相符的插圖：",
     "options": [
-      "選項 ① (569 公尺)",
-      "選項 ② (597 公尺)",
-      "選項 ③ (579 公尺)",
-      "選項 ④ (759 公尺)"
+      "569 公尺",
+      "597 公尺",
+      "579 公尺",
+      "759 公尺"
     ],
     "answer": 2,
     "media": {
@@ -103,13 +108,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 4,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g6_q4.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q4_a.webp",
+      "/assets/exam/saa/114/options/g6_q4_b.webp",
+      "/assets/exam/saa/114/options/g6_q4_c.webp",
+      "/assets/exam/saa/114/options/g6_q4_d.webp"
+    ],
     "question": "請聽句子，選出動作相符的插圖：",
     "options": [
-      "選項 ① (在陸地上跑步)",
-      "選項 ② (在天空中飛行)",
-      "選項 ③ (在廚房做菜)",
-      "選項 ④ (水手在海上航行 The sailor sails the sea)"
+      "在陸地上跑步",
+      "在天空中飛行",
+      "在廚房做菜",
+      "水手在海上航行 The sailor sails the sea"
     ],
     "answer": 3,
     "media": {
@@ -133,13 +143,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 5,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g6_q5.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q5_a.webp",
+      "/assets/exam/saa/114/options/g6_q5_b.webp",
+      "/assets/exam/saa/114/options/g6_q5_c.webp",
+      "/assets/exam/saa/114/options/g6_q5_d.webp"
+    ],
     "question": "請聽句子，選出家人外觀特徵相符的圖：",
     "options": [
-      "選項 ① (父親身材高大)",
-      "選項 ② (母親身材瘦長)",
-      "選項 ③ (父親身材矮小 short)",
-      "選項 ④ (弟弟正在看書)"
+      "父親身材高大",
+      "母親身材瘦長",
+      "父親身材矮小 short",
+      "弟弟正在看書"
     ],
     "answer": 2,
     "media": {
@@ -163,13 +178,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 6,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g6_q6.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q6_a.webp",
+      "/assets/exam/saa/114/options/g6_q6_b.webp",
+      "/assets/exam/saa/114/options/g6_q6_c.webp",
+      "/assets/exam/saa/114/options/g6_q6_d.webp"
+    ],
     "question": "請聽句子，選出相符的情境插圖：",
     "options": [
-      "選項 ① (生氣怒吼)",
-      "選項 ② (哭泣難過)",
-      "選項 ③ (驚慌失措)",
-      "選項 ④ (冷靜下來提供協助 Calm down. I can help you.)"
+      "生氣怒吼",
+      "哭泣難過",
+      "驚慌失措",
+      "冷靜下來提供協助 Calm down. I can help you."
     ],
     "answer": 3,
     "media": {
@@ -193,13 +213,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 7,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g6_q7.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q7_a.webp",
+      "/assets/exam/saa/114/options/g6_q7_b.webp",
+      "/assets/exam/saa/114/options/g6_q7_c.webp",
+      "/assets/exam/saa/114/options/g6_q7_d.webp"
+    ],
     "question": "請聽句子，選出警告事項相符的圖：",
     "options": [
-      "選項 ① (小心山上有大熊 big bears in the mountains)",
-      "選項 ② (小心湖裡有鱷魚)",
-      "選項 ③ (小心森林有野狼)",
-      "選項 ④ (小心樹上有猴子)"
+      "小心山上有大熊 big bears in the mountains",
+      "小心湖裡有鱷魚",
+      "小心森林有野狼",
+      "小心樹上有猴子"
     ],
     "answer": 0,
     "media": {
@@ -223,13 +248,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 8,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g6_q8.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q8_a.webp",
+      "/assets/exam/saa/114/options/g6_q8_b.webp",
+      "/assets/exam/saa/114/options/g6_q8_c.webp",
+      "/assets/exam/saa/114/options/g6_q8_d.webp"
+    ],
     "question": "請聽對話，選出天氣與活動相符的圖：",
     "options": [
-      "選項 ① (下雨天買雨傘)",
-      "選項 ② (晴天颳風買風箏 sunny and windy, buy a kite)",
-      "選項 ③ (下雪天堆雪人)",
-      "選項 ④ (陰天在室內看電視)"
+      "下雨天買雨傘",
+      "晴天颳風買風箏 sunny and windy, buy a kite",
+      "下雪天堆雪人",
+      "陰天在室內看電視"
     ],
     "answer": 1,
     "media": {
@@ -253,13 +283,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 9,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g6_q9.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q9_a.webp",
+      "/assets/exam/saa/114/options/g6_q9_b.webp",
+      "/assets/exam/saa/114/options/g6_q9_c.webp",
+      "/assets/exam/saa/114/options/g6_q9_d.webp"
+    ],
     "question": "請聽敘述，選出假期相符的情境圖：",
     "options": [
-      "選項 ① (在英國參觀大笨鐘)",
-      "選項 ② (在美國度過暑假 goes to the USA for summer vacation)",
-      "選項 ③ (在日本看富士山)",
-      "選項 ④ (在澳洲看袋鼠)"
+      "在英國參觀大笨鐘",
+      "在美國度過暑假 goes to the USA for summer vacation",
+      "在日本看富士山",
+      "在澳洲看袋鼠"
     ],
     "answer": 1,
     "media": {
@@ -283,13 +318,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 10,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g6_q10.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q10_a.webp",
+      "/assets/exam/saa/114/options/g6_q10_b.webp",
+      "/assets/exam/saa/114/options/g6_q10_c.webp",
+      "/assets/exam/saa/114/options/g6_q10_d.webp"
+    ],
     "question": "請聽對話，選出病痛部位相符的插圖：",
     "options": [
-      "選項 ① (腿部疼痛 My leg hurts)",
-      "選項 ② (手臂疼痛)",
-      "選項 ③ (頭痛發燒)",
-      "選項 ④ (喉嚨痛)"
+      "腿部疼痛 My leg hurts",
+      "手臂疼痛",
+      "頭痛發燒",
+      "喉嚨痛"
     ],
     "answer": 0,
     "media": {
@@ -458,13 +498,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 16,
     "taskType": "R-COMP",
     "dimension": "介系詞空間理解",
-    "image": "/assets/exam/saa/114/g6_q16.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q16_a.webp",
+      "/assets/exam/saa/114/options/g6_q16_b.webp",
+      "/assets/exam/saa/114/options/g6_q16_c.webp",
+      "/assets/exam/saa/114/options/g6_q16_d.webp"
+    ],
     "question": "My bag is under the desk.",
     "options": [
-      "選項 ① (書包在桌子上)",
-      "選項 ② (書包在桌子下 under the desk)",
-      "選項 ③ (書包在椅子旁)",
-      "選項 ④ (書包在床上)"
+      "書包在桌子上",
+      "書包在桌子下 under the desk",
+      "書包在椅子旁",
+      "書包在床上"
     ],
     "answer": 1,
     "explanation": "句子表達書包在書桌下方（under the desk），圖 ② 書包放置在書桌下完全相符，故選 ②。"
@@ -485,13 +530,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 17,
     "taskType": "R-COMP",
     "dimension": "地圖空間理解",
-    "image": "/assets/exam/saa/114/g6_q17.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q17_a.webp",
+      "/assets/exam/saa/114/options/g6_q17_b.webp",
+      "/assets/exam/saa/114/options/g6_q17_c.webp",
+      "/assets/exam/saa/114/options/g6_q17_d.webp"
+    ],
     "question": "The library is next to the bus station.",
     "options": [
-      "選項 ① (圖書館在郵局對面)",
-      "選項 ② (圖書館在公園旁邊)",
-      "選項 ③ (圖書館緊鄰公車站 next to the bus station)",
-      "選項 ④ (圖書館在學校後面)"
+      "圖書館在郵局對面",
+      "圖書館在公園旁邊",
+      "圖書館緊鄰公車站 next to the bus station",
+      "圖書館在學校後面"
     ],
     "answer": 2,
     "explanation": "句子敘述「The library is next to the bus station.（圖書館在公車站旁邊）」，圖 ③ 圖書館與公車站相鄰相符，故選 ③。"
@@ -750,13 +800,18 @@ export const SAA_114_G6_QUESTIONS = [
     "number": 27,
     "taskType": "R-COMP",
     "dimension": "食物點餐會話理解",
-    "image": "/assets/exam/saa/114/g6_q27.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g6_q27_a.webp",
+      "/assets/exam/saa/114/options/g6_q27_b.webp",
+      "/assets/exam/saa/114/options/g6_q27_c.webp",
+      "/assets/exam/saa/114/options/g6_q27_d.webp"
+    ],
     "question": "A: Do you want some noodles?\nB: Yes, I do. I want a cake and some orange juice, too.",
     "options": [
-      "選項 ① (披薩、熱狗與可樂)",
-      "選項 ② (麵條、蛋糕與柳橙汁)",
-      "選項 ③ (漢堡、三明治與牛奶)",
-      "選項 ④ (米飯、魚與水)"
+      "披薩、熱狗與可樂",
+      "麵條、蛋糕與柳橙汁",
+      "漢堡、三明治與牛奶",
+      "米飯、魚與水"
     ],
     "answer": 1,
     "explanation": "對話要求吃麵（noodles）、蛋糕（cake）與柳橙汁（orange juice），圖 ② 食物組合完全吻合，故選 ②。"

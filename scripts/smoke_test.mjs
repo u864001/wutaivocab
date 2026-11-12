@@ -377,6 +377,7 @@ async function run() {
     if (q.image) imgs.push(q.image);
     if (q.media?.image) imgs.push(q.media.image);
     if (q.passage?.image) imgs.push(q.passage.image);
+    if (Array.isArray(q.optionImages)) imgs.push(...q.optionImages);
     for (const img of imgs) {
       const relPath = path.join('public', img.replace(/^\//, ''));
       if (!fs.existsSync(relPath)) {

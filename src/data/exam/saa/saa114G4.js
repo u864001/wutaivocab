@@ -218,13 +218,18 @@ export const SAA_114_G4_QUESTIONS = [
     "number": 8,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g4_q8.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q8_a.webp",
+      "/assets/exam/saa/114/options/g4_q8_b.webp",
+      "/assets/exam/saa/114/options/g4_q8_c.webp",
+      "/assets/exam/saa/114/options/g4_q8_d.webp"
+    ],
     "question": "請聽對話，選出最相符的收據圖片：",
     "options": [
-      "選項 ① ($13: 香蕉與橘子)",
-      "選項 ② ($23: 香蕉與橘子)",
-      "選項 ③ ($32: 蘋果與橘子)",
-      "選項 ④ ($23: 蘋果與香蕉)"
+      "$13: 香蕉與橘子",
+      "$23: 香蕉與橘子",
+      "$32: 蘋果與橘子",
+      "$23: 蘋果與香蕉"
     ],
     "answer": 1,
     "media": {
@@ -248,13 +253,18 @@ export const SAA_114_G4_QUESTIONS = [
     "number": 9,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g4_q9.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q9_a.webp",
+      "/assets/exam/saa/114/options/g4_q9_b.webp",
+      "/assets/exam/saa/114/options/g4_q9_c.webp",
+      "/assets/exam/saa/114/options/g4_q9_d.webp"
+    ],
     "question": "請聽句子，選出相符的情境插圖：",
     "options": [
-      "選項 ① (安靜請勿說話)",
-      "選項 ② (請坐下)",
-      "選項 ③ (請大聲說話)",
-      "選項 ④ (請站起來)"
+      "安靜請勿說話",
+      "請坐下",
+      "請大聲說話",
+      "請站起來"
     ],
     "answer": 2,
     "media": {
@@ -278,13 +288,18 @@ export const SAA_114_G4_QUESTIONS = [
     "number": 10,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g4_q10.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q10_a.webp",
+      "/assets/exam/saa/114/options/g4_q10_b.webp",
+      "/assets/exam/saa/114/options/g4_q10_c.webp",
+      "/assets/exam/saa/114/options/g4_q10_d.webp"
+    ],
     "question": "請聽對話，選出物品相符的位置圖：",
     "options": [
-      "選項 ① (筆在書桌上)",
-      "選項 ② (筆在書桌下)",
-      "選項 ③ (尺在書桌下)",
-      "選項 ④ (書在椅子下)"
+      "筆在書桌上",
+      "筆在書桌下",
+      "尺在書桌下",
+      "書在椅子下"
     ],
     "answer": 1,
     "media": {
@@ -308,13 +323,18 @@ export const SAA_114_G4_QUESTIONS = [
     "number": 11,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g4_q11.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q11_a.webp",
+      "/assets/exam/saa/114/options/g4_q11_b.webp",
+      "/assets/exam/saa/114/options/g4_q11_c.webp",
+      "/assets/exam/saa/114/options/g4_q11_d.webp"
+    ],
     "question": "請聽對話，選出書包與箱子相符的位置圖：",
     "options": [
-      "選項 ① (綠箱子在臥室)",
-      "選項 ② (紅箱子在客廳)",
-      "選項 ③ (書包在廚房)",
-      "選項 ④ (綠箱子在客廳，書包在箱內)"
+      "綠箱子在臥室",
+      "紅箱子在客廳",
+      "書包在廚房",
+      "綠箱子在客廳，書包在箱內"
     ],
     "answer": 3,
     "media": {
@@ -338,13 +358,18 @@ export const SAA_114_G4_QUESTIONS = [
     "number": 12,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g4_q12.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q12_a.webp",
+      "/assets/exam/saa/114/options/g4_q12_b.webp",
+      "/assets/exam/saa/114/options/g4_q12_c.webp",
+      "/assets/exam/saa/114/options/g4_q12_d.webp"
+    ],
     "question": "請聽對話，選出哥哥年齡與身分相符的圖：",
     "options": [
-      "選項 ① (哥哥 22 歲，是醫生與廚師)",
-      "選項 ② (哥哥 12 歲，是學生)",
-      "選項 ③ (哥哥 20 歲，是廚師)",
-      "選項 ④ (哥哥 22 歲，既是廚師也是司機)"
+      "哥哥 22 歲，是醫生與廚師",
+      "哥哥 12 歲，是學生",
+      "哥哥 20 歲，是廚師",
+      "哥哥 22 歲，既是廚師也是司機"
     ],
     "answer": 3,
     "media": {
@@ -368,13 +393,18 @@ export const SAA_114_G4_QUESTIONS = [
     "number": 13,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g4_q13.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q13_a.webp",
+      "/assets/exam/saa/114/options/g4_q13_b.webp",
+      "/assets/exam/saa/114/options/g4_q13_c.webp",
+      "/assets/exam/saa/114/options/g4_q13_d.webp"
+    ],
     "question": "請聽對話，選出玩具位置相符的圖片：",
     "options": [
-      "選項 ① (近處風箏，遠處機器人)",
-      "選項 ② (近處機器人，遠處風箏)",
-      "選項 ③ (近處洋娃娃，遠處風箏)",
-      "選項 ④ (近處機器人，遠處氣球)"
+      "近處風箏，遠處機器人",
+      "近處機器人，遠處風箏",
+      "近處洋娃娃，遠處風箏",
+      "近處機器人，遠處氣球"
     ],
     "answer": 1,
     "media": {
@@ -398,13 +428,18 @@ export const SAA_114_G4_QUESTIONS = [
     "number": 14,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g4_q14.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q14_a.webp",
+      "/assets/exam/saa/114/options/g4_q14_b.webp",
+      "/assets/exam/saa/114/options/g4_q14_c.webp",
+      "/assets/exam/saa/114/options/g4_q14_d.webp"
+    ],
     "question": "請聽敘述，選出節慶採買相符的圖：",
     "options": [
-      "選項 ① (端午節粽子與龍舟)",
-      "選項 ② (萬聖節南瓜與糖果)",
-      "選項 ③ (中秋節柚子與月餅)",
-      "選項 ④ (聖誕節拐杖糖與聖誕樹)"
+      "端午節粽子與龍舟",
+      "萬聖節南瓜與糖果",
+      "中秋節柚子與月餅",
+      "聖誕節拐杖糖與聖誕樹"
     ],
     "answer": 2,
     "media": {
@@ -428,13 +463,18 @@ export const SAA_114_G4_QUESTIONS = [
     "number": 15,
     "taskType": "L-SENT",
     "dimension": "辨識句意",
-    "image": "/assets/exam/saa/114/g4_q15.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q15_a.webp",
+      "/assets/exam/saa/114/options/g4_q15_b.webp",
+      "/assets/exam/saa/114/options/g4_q15_c.webp",
+      "/assets/exam/saa/114/options/g4_q15_d.webp"
+    ],
     "question": "請聽對話，選出萬聖節相符的情境圖：",
     "options": [
-      "選項 ① (萬聖節裝扮、下雨帶傘、時鐘 9 點)",
-      "選項 ② (晴天出門、時鐘 8 點)",
-      "選項 ③ (下雨沒帶傘、時鐘 9 點)",
-      "選項 ④ (室內吃糖果、時鐘 10 點)"
+      "萬聖節裝扮、下雨帶傘、時鐘 9 點",
+      "晴天出門、時鐘 8 點",
+      "下雨沒帶傘、時鐘 9 點",
+      "室內吃糖果、時鐘 10 點"
     ],
     "answer": 0,
     "media": {
@@ -566,13 +606,18 @@ export const SAA_114_G4_QUESTIONS = [
     "number": 20,
     "taskType": "V-MEAN",
     "dimension": "字意理解",
-    "image": "/assets/exam/saa/114/g4_q20.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q20_a.webp",
+      "/assets/exam/saa/114/options/g4_q20_b.webp",
+      "/assets/exam/saa/114/options/g4_q20_c.webp",
+      "/assets/exam/saa/114/options/g4_q20_d.webp"
+    ],
     "question": "選出與英文單字「fifteen」相對應的數字：",
     "options": [
-      "選項 ① (50)",
-      "選項 ② (5)",
-      "選項 ③ (15)",
-      "選項 ④ (12)"
+      "50",
+      "5",
+      "15",
+      "12"
     ],
     "answer": 2,
     "explanation": "單字「fifteen」代表數字 15，圖 ③ 標示 15，故選 ③。"
@@ -728,13 +773,18 @@ export const SAA_114_G4_QUESTIONS = [
     "number": 26,
     "taskType": "R-COMP",
     "dimension": "句子理解",
-    "image": "/assets/exam/saa/114/g4_q26.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q26_a.webp",
+      "/assets/exam/saa/114/options/g4_q26_b.webp",
+      "/assets/exam/saa/114/options/g4_q26_c.webp",
+      "/assets/exam/saa/114/options/g4_q26_d.webp"
+    ],
     "question": "It’s so hot today. I want some ice cream.",
     "options": [
-      "選項 ① (大太陽下流汗吃冰淇淋)",
-      "選項 ② (下雪天堆雪人)",
-      "選項 ③ (下雨天吃熱麵)",
-      "選項 ④ (颳大風放風箏)"
+      "大太陽下流汗吃冰淇淋",
+      "下雪天堆雪人",
+      "下雨天吃熱麵",
+      "颳大風放風箏"
     ],
     "answer": 0,
     "explanation": "句子表達今天好熱（so hot）、想吃冰淇淋（want some ice cream），圖 ① 完全相符，故選 ①。"
@@ -864,13 +914,18 @@ export const SAA_114_G4_QUESTIONS = [
       "title": "【視訊電話】A Video Call from Ken",
       "text": "Andy: Hi, Ken! How are you?\nKen: Great! How’s the weather in Taiwan?\nAndy: It’s cold and rainy now.\nKen: It’s hot and sunny here in Sydney (雪梨).\nAndy: That’s nice. Is that your brother?\nKen: Yes, he is reading.\nAndy: It’s dinner time for me.\nKen: It’s nine thirty here in Sydney. It’s bed time for me."
     },
-    "image": "/assets/exam/saa/114/g4_q31.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q31_a.webp",
+      "/assets/exam/saa/114/options/g4_q31_b.webp",
+      "/assets/exam/saa/114/options/g4_q31_c.webp",
+      "/assets/exam/saa/114/options/g4_q31_d.webp"
+    ],
     "question": "How’s the weather in Taiwan?",
     "options": [
-      "選項 ① (晴天大太陽)",
-      "選項 ② (寒冷下雨天)",
-      "選項 ③ (下雪天)",
-      "選項 ④ (颳大風)"
+      "晴天大太陽",
+      "寒冷下雨天",
+      "下雪天",
+      "颳大風"
     ],
     "answer": 1,
     "explanation": "對話中 Andy 回答「It’s cold and rainy now.（臺灣現在又冷又下雨）」，選項 ② 下雨撐傘圖相符，故選 ②。"
@@ -927,13 +982,18 @@ export const SAA_114_G4_QUESTIONS = [
       "title": "【視訊電話】A Video Call from Ken",
       "text": "Andy: Hi, Ken! How are you?\nKen: Great! How’s the weather in Taiwan?\nAndy: It’s cold and rainy now.\nKen: It’s hot and sunny here in Sydney (雪梨).\nAndy: That’s nice. Is that your brother?\nKen: Yes, he is reading.\nAndy: It’s dinner time for me.\nKen: It’s nine thirty here in Sydney. It’s bed time for me."
     },
-    "image": "/assets/exam/saa/114/g4_q33.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q33_a.webp",
+      "/assets/exam/saa/114/options/g4_q33_b.webp",
+      "/assets/exam/saa/114/options/g4_q33_c.webp",
+      "/assets/exam/saa/114/options/g4_q33_d.webp"
+    ],
     "question": "What time is it in Sydney?",
     "options": [
-      "選項 ① (9:00)",
-      "選項 ② (6:30)",
-      "選項 ③ (8:30)",
-      "選項 ④ (9:30)"
+      "9:00",
+      "6:30",
+      "8:30",
+      "9:30"
     ],
     "answer": 3,
     "explanation": "文中 Ken 說「It’s nine thirty here in Sydney.（雪梨這裡現在是九點半）」，選項 ④ 時鐘指在 9:30，故選 ④。"
@@ -990,13 +1050,18 @@ export const SAA_114_G4_QUESTIONS = [
       "title": "【驚喜派對】A Surprise Party",
       "text": "Let’s have a birthday party for my mom.\nDad: Marc, the cake is ready.\nMarc: That’s nice. I’m drawing a card. Can you help me?\nDad: No problem.\nMarc: Dad, Amber is in the bedroom. Is she sleeping?\nDad: No, she’s not. Your big sister is dancing.\nMarc: Cool! Oh! It’s cold and rainy outside.\nDad: Let’s have the party in the living room."
     },
-    "image": "/assets/exam/saa/114/g4_q35.webp",
+    "optionImages": [
+      "/assets/exam/saa/114/options/g4_q35_a.webp",
+      "/assets/exam/saa/114/options/g4_q35_b.webp",
+      "/assets/exam/saa/114/options/g4_q35_c.webp",
+      "/assets/exam/saa/114/options/g4_q35_d.webp"
+    ],
     "question": "Let’s have the party in the __________.",
     "options": [
-      "選項 ① (臥室 bedroom)",
-      "選項 ② (廚房 kitchen)",
-      "選項 ③ (浴室 bathroom)",
-      "選項 ④ (客廳 living room)"
+      "臥室 bedroom",
+      "廚房 kitchen",
+      "浴室 bathroom",
+      "客廳 living room"
     ],
     "answer": 3,
     "explanation": "短文最後爸爸提議「Let’s have the party in the living room.（我們在客廳辦派對吧）」，選項 ④ 客廳圖相符，故選 ④。"
