@@ -1,25 +1,54 @@
 # 霧臺國小英語自主學習宇宙 (Wutai Vocab Adventure 2.0)
 ## 專案對話交接文檔 (Project Handover Document)
 
-> **產生時間**：2026-11-04 (更新至檢定館四大測驗分流、Pre-A1與學力檢測模組化架構奠基)
-> **當前分支**：`dev` (與 `main` 完全同步並已部署至正式線上環境)
+> **產生時間**：2026-11-13 (更新至基準 `d07d91e`，整合檢定館四軌響應式、易錯題、打地鼠/貪食蛇優化及 SAA 114 複檢待辦交接)
+> **當前分支基準**：`main` Commit `d07d91e`（新對話請以 `d07d91e` 後之最新 `main` 為基準，切勿回退）
 > **線上正式環境網址**：https://wutaivocab.pages.dev
 > **Supabase 管理帳號**：`liguyt@wutps.ptc.edu.tw`（Project ID: `fqkdkmcqjswufzbvkram`，後台：https://supabase.com/dashboard/project/fqkdkmcqjswufzbvkram）
 
 ---
 
-## 2026-11-12：SAA 114 年官方試卷「選項插圖解耦 (Stage 2)」與「音訊裁切架構 (Stage 3)」全面就緒
+## 2026-11-13：新基準 `d07d91e` 整合與 Hydrogen 接手交接清單
 
-- **Stage 2 選項插圖解耦（36 題 4 合 1 大圖 → 144 張獨立選項卡圖）**：
-  - 114 年共 36 組選項圖題（G4 13 題、G5 12 題、G6 11 題）原先為 4 合 1 複合大圖（1060px 寬），已透過 `scripts/split_114_option_images.mjs` 自動掃描純白槽道（33 組 2×2 網格 + 3 組 1×4 水平條），精準裁切為 144 張獨立 WebP（`public/assets/exam/saa/114/options/{name}_{a,b,c,d}.webp`）。
-  - 各題全面對接 `optionImages: [a, b, c, d]`，並移除重複之頂部 `q.image`，避免大圖與選項雙重渲染佔用版面。
-  - 選項標籤全面淨化：移除重複的 `'選項 ① '`、`'選項 ② '` 等硬編碼前綴，使 2×2 卡片直接顯示 (A)(B)(C)(D) 序號、乾淨插圖與獨立放大鏡按鈕，文字描述清爽置底。
-- **Stage 3 官方音訊切檔流水線與 TTS 備援就緒**：
-  - 新增 `scripts/build_114_saa_audio.mjs`，包含 G4/G5/G6 Q01~Q15 官方聽力時間戳記與 FFmpeg 切檔指令（淡入淡出、Mono 96k、小於 250KB）。
-  - 支援多路徑自動尋找原始錄音（`upload/`、`../SAA/114/` 等）；在未上傳原始檔時優雅備援至瀏覽器 Web Speech 多角色 TTS，測驗完全正常運作零報錯。
-- **合約驗證與防回歸**：
-  - `scripts/test_saa_114_contract.mjs` 擴充至 8 大門禁（包含 36 題選項解耦、144 張圖片實體驗證、無重複 q.image、無冗餘「選項 ①」前綴），100% 通過。
-  - `smoke_test.mjs` 靜態契約加入 `q.optionImages` 全量存在性檢查。
+### 1. 已合併上線之新基準功能（Commit `d07d91e` — 嚴禁回退或覆蓋）
+- **英語檢定館四軌響應式選題介面（`PureMcqExamView.jsx`、`scripts/test_exam_setup_flow.mjs`）**：
+  - 統一並優化四大軌道主色與響應式設定流程（課本藍、SAA 翡翠綠、Pre-A1 紫、個人易錯題玫紅；琥珀色保留給金幣與提示）。
+  - Pre-A1 精簡為單頁四膠囊（正式測驗、綜合練習、聽力 20 題、閱讀 20 題）。
+- **個人易錯題自適應流程（`src/games/exam/mistakeReview.js`）**：
+  - 支援來源膠囊篩選（`全部` / `課本` / `SAA` / `Pre-A1`）與作答上限（10/20/30/全部清空）。
+  - **嚴禁以一般題補滿**，僅使用真實易錯題；答錯歸零沉底再測、連續答對 2 次 (`streak >= 2`) 自動出庫；來源清空立即提前結束。
+- **街機遊戲手感與規則修正**：
+  - **打地鼠（`WhackAMoleGame.jsx`）**：新增同一題 10 秒未擊中正解自動扣 1 顆心、中斷連擊與扣 10 分，扣完 3 顆心立即結算。
+  - **貪食蛇（`SnakeGame.jsx`）**：`touchmove` 滑動一跨過依短邊自適應 12～18px 門檻即立刻排入轉向隊列（單次滑動只送一方向）；調整簡單/普通/生存速度為 `330 / 235 / 205 ms`。
+- **本機啟動腳本與測試**：新增 `preview-wutaivocab.cmd`、`一鍵預覽英語檢定館.cmd` 與 `scripts/test_exam_setup_flow.mjs`，且完整 build 與 6 階段 `smoke_test.mjs` 全數通過。
+
+### 2. SAA 114 年度現況與 P0 阻擋待辦（經 ChatGPT 獨立複檢確認 — 尚未達 Gold Standard）
+- **已確認通過部分**：105 題完整（G4/G5/G6 各 35 題，15 聽 + 20 讀）、官方元資料與 `preserveOptionOrder: true` 正確、7 組 17 題題組一致，且 **105 題答案經逐題比對官方答案 Excel 確認 105/105 完全一致（0 筆錯誤）**。
+- **P0 阻擋問題 1 — 選項圖片錯切與純淨度不足（需重切全部 144 張）**：
+  - `ae71c68` 的 `scripts/split_114_option_images.mjs` 誤將部分不規則版型當成統一十字 2×2 分割，導致以下確定錯切：
+    - **G4 Q20**：原圖非規則 2×2，目前 D 全白、A/B 混入多選項；且文字選項誤植 `[50, 5, 15, 12]`，應依官方原卷改為 `[50, 25, 15, 5]`。
+    - **G4 Q35**：原圖為上下雙行排列（左 ①③、右 ②④），目前 A 含 ①＋③、B 含 ②＋④、C/D 全白。
+    - **G5 Q15**：原圖實為橫向四選項，目前 A 含 ①＋②、B 含 ③＋④、C/D 裁成試卷說明文字。
+  - 其他多張圖檔仍殘留題號、原始 ①②③④ 圈號或題幹碎片。
+  - **修復方向**：不規則圖片須改為每個選項獨立設定 `{ left, top, width, height }`；正式卷圖片題選項卡片建議僅顯示 (A)(B)(C)(D) 與純圖，中文說明移存 `optionAltTexts` 作無障礙文字；契約測試加入 Sharp 像素門禁（非白像素比例、entropy 下限、四張不可空白或撞圖）並自動產出 144 張 Contact Sheet 供人工目視簽核；`smoke_test.mjs` 新增 114 年 G4 Q20、G4 Q35、G5 Q15 實開圖卡與放大畫面 E2E。
+- **P0 阻擋問題 2 — 官方音檔流程尚未上線（目前仍為瀏覽器 TTS）**：
+  - 114 年 45 題目前 `media.audioSrc` 均為空、`public/audio/saa/114/` 為 0 檔。
+  - `scripts/build_114_saa_audio.mjs` 待修：
+    1. 加入 `SAA/114/{grade}/`（`4`、`5`、`6`）子目錄搜尋。
+    2. 專案安裝鎖定 `ffmpeg-static` 或要求有效 `FFMPEG_PATH`；找不到 FFmpeg、來源檔或未產出完整 45 段時必須 **`exit 1`**（嚴禁靜默通過）。
+    3. 不可使用 `estimated timestamps` 直接上線，必須取得實體 MP3 後逐題聽音校準時間戳。
+    4. 參數依黃金標準對齊為 **96 kbps Mono + 0.1s 淡入淡出**（舊實作為 128 kbps 且無淡入淡出），產出後寫入 45 題 `media.audioSrc` 並驗證可解碼與時長。
+- **P1 測試門禁補漏**：
+  - `scripts/test_saa_114_contract.mjs` 須比照 113 硬編碼鎖定 105 題官方標準答案陣列並逐題比對，不可只檢查 `0~3`。
+
+---
+
+## 2026-11-12：SAA 114 年官方試卷「選項插圖解耦 (Stage 2)」與「音訊裁切架構 (Stage 3)」初步實作（見上方 2026-11-13 複檢修正）
+
+- **Stage 2 選項插圖解耦初版（待依 P0 複檢重切）**：
+  - 透過 `scripts/split_114_option_images.mjs` 初步產出 144 張 WebP 至 `public/assets/exam/saa/114/options/` 並對接 `optionImages`、移除頂部重複 `q.image` 與 `'選項 ① '` 前綴（惟不規則版面如 G4 Q20、G4 Q35、G5 Q15 等錯切，需依上方清單重切）。
+- **Stage 3 官方音訊腳本骨架**：
+  - 新增 `scripts/build_114_saa_audio.mjs` 骨架與 `scripts/test_saa_114_contract.mjs` 第 8 門禁（待依上方 P0 修正子目錄搜尋、嚴格 exit 1、96k 淡入淡出及真實時間戳校準）。
 
 ---
 
