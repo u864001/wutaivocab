@@ -86,6 +86,17 @@
 
 ### 三、近期已完成的核心修復與功能里程碑
 
+#### 0.0.17 教育部 SAA 114 年度全真試卷官方黃金標準校準、專屬自動化合約測試與歷年截取 SOP 制定 (`saa114G4.js`, `saa114G5.js`, `saa114G6.js`, `build_114_saa_data.mjs`, `test_saa_114_contract.mjs`, `smoke_test.mjs`, `SAA_OFFICIAL_EXAM_EXTRACTION_AND_SPEC_GUIDE.md`)
+* **SAA 114 年度全量 105 題官方中繼標記補齊（消除分流誤判風險）**：
+  * 四、五、六年級共 105 題官方全真試卷全面補齊 `sourceType: 'official'` 與 `sourceStatus: 'published'`，並強制綁定 `track: 'ministry-assessment'` 與 `preserveOptionOrder: true`。
+  * 徹底防堵 SAA Wizard 在「官方考古題 vs 自主研發題」分流篩選時將 114 年度題卷誤判為原創模擬卷的隱患。
+* **專屬全真試卷自動化合約測試上線 (`scripts/test_saa_114_contract.mjs`)**：
+  * **七大契約門禁 100% 通過**：(1) 每年級固定 35 題共 105 題、(2) 1~15 聽力與 16~35 閱讀分流、(3) 官方來源中繼資料、(4) 4 選項與 0~3 答案索引真實性、(5) 聽力逐字稿題幹防洩漏、(6) 7 大題組共 17 題共用材料 `passage` SSOT 100% 相同性、(7) 74 張 WebP 圖檔與 Wizard 試卷登錄完整性。
+* **全域靜態契約門禁擴充 (`scripts/smoke_test.mjs` Phase 0)**：
+  * 將 SAA 114 官方 105 題與 74 張圖檔納入每次推送必跑之靜態契約門禁，杜絕日後改動破壞 114 試卷結構。
+* **制定歷年 SAA 官方檢定截取與品質保證黃金標準指南 (`docs/exam/SAA_OFFICIAL_EXAM_EXTRACTION_AND_SPEC_GUIDE.md`)**：
+  * 融合雙 AI 優點，確立 Poppler 頁面渲染動態縮放校準、FFmpeg 聽力原聲每題切檔（避開 Cloudflare 25MB 上限）、Sharp 裁切、題組材料 SSOT 與 4 合 1 圖片選項解耦規範。
+
 #### 0.0.16 鷹眼神探 (VocabSpotter) 低年級字母托盤圓形命中區重構、三大內容膠囊與高對比明顯度契約 (Commit `001462e`)
 * **根因定位與幾何重構（徹底根治小螢幕誤觸痛點）**：
   * 原先旋轉字母按鈕使用瀏覽器 DOM 矩形，在小螢幕上因傾斜角度容易導致按鈕邊界相互重疊，學生點中相異字母時點擊事件常被相鄰普通字母攔截。

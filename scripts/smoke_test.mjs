@@ -370,16 +370,23 @@ async function run() {
   }
   let missingImages = 0;
   for (const q of SAA_ALL_OFFICIAL_QUESTIONS) {
-    if (q.image) {
-      const relPath = path.join('public', q.image.replace(/^\//, ''));
+    if (q.year === 114 && q.sourceType !== 'official') {
+      failures.push({ target: 'Static Contract: SAA 114 missing official sourceType', id: q.id });
+    }
+    const imgs = [];
+    if (q.image) imgs.push(q.image);
+    if (q.media?.image) imgs.push(q.media.image);
+    if (q.passage?.image) imgs.push(q.passage.image);
+    for (const img of imgs) {
+      const relPath = path.join('public', img.replace(/^\//, ''));
       if (!fs.existsSync(relPath)) {
-        failures.push({ target: 'Static Contract: Missing SAA image', image: q.image });
+        failures.push({ target: 'Static Contract: Missing SAA image', image: img, id: q.id });
         missingImages++;
       }
     }
   }
   if (failures.length === 0) {
-    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks, ${HERE_WE_GO_MCQ_BANK.length} MCQs & SAA 113–115 [315 official questions] verified)`);
+    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks, ${HERE_WE_GO_MCQ_BANK.length} MCQs & SAA 113–115 [315 official questions, 114 calibrated] verified)`);
   }
 
   const waitForAppReady = async (maxAttempts = 40) => {

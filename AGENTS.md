@@ -43,6 +43,7 @@
 | **叢林貪食蛇、打地鼠、極速滑卡** (`snake`, `mole`, `swipe`) | `src/games/snake/`, `mole/`, `swipe/` | [`docs/games/SNAKE_AND_ARCADE_SPEC.md`](docs/games/SNAKE_AND_ARCADE_SPEC.md) |
 | **課本題庫檢定館、經典選擇、拼字、手寫** (`mcq-exam`, `quiz`, `spelling`, `handwriting`) | `src/games/exam/`, `quiz/`, `spelling/`, `handwriting/` | [`docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md`](docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md) |
 | **Test My English Pre-A1 官方模擬與實戰備考指引** (`exam`, `tme-preA1`) | `src/games/exam/`, `src/data/exam/` | [`docs/exam/TME_PRE_A1_EXAM_SPEC_AND_GUIDE.md`](docs/exam/TME_PRE_A1_EXAM_SPEC_AND_GUIDE.md) |
+| **教育部 SAA 國小英語學力檢測官方截取與品質合約** (`saa`, `ministry-assessment`) | `src/data/exam/saa/`, `src/games/exam/` | [`docs/exam/SAA_OFFICIAL_EXAM_EXTRACTION_AND_SPEC_GUIDE.md`](docs/exam/SAA_OFFICIAL_EXAM_EXTRACTION_AND_SPEC_GUIDE.md) |
 | **三大英語檢定動態滾動精熟體系與四大天王排行榜** (`mastery`, `leaderboard`, `exam`) | `src/games/exam/`, `src/components/exam/`, `src/components/LeaderboardView.jsx` | [`docs/exam/THREE_EXAM_TRACKS_MASTERY_AND_LEADERBOARD_SPEC.md`](docs/exam/THREE_EXAM_TRACKS_MASTERY_AND_LEADERBOARD_SPEC.md) |
 | **密室逃脫、字母迷宮、星際記憶翻牌** (`escape`, `maze`, `memory`) | `src/games/escape/`, `maze/`, `memory/` | [`docs/games/ESCAPE_MAZE_MEMORY_SPEC.md`](docs/games/ESCAPE_MAZE_MEMORY_SPEC.md) |
 | **霧臺家園、聽說實驗室、自然發音、電子書** (`town`, `langlab`, `phonics`) | `src/games/town/`, `src/features/` | [`docs/games/TOWN_AND_LANGLAB_SPEC.md`](docs/games/TOWN_AND_LANGLAB_SPEC.md) |

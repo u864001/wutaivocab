@@ -1270,6 +1270,8 @@ function generateGradeFile(year, grade, rawQuestions, filename) {
       unit: `${year} 年國小${grade === 4 ? '四' : (grade === 5 ? '五' : '六')}年級學力檢測`,
       section: isListening ? 'listening' : 'reading',
       track: 'ministry-assessment',
+      sourceType: 'official',
+      sourceStatus: 'published',
       preserveOptionOrder: true,
       reviewed: true,
       number: q.number,
