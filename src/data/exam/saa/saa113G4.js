@@ -24,7 +24,11 @@ export const SAA_113_G4_QUESTIONS = [
     ],
     "answer": 0,
     "media": {
-      "audioText": "R"
+      "audioText": "R",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 125,
+      "clipEnd": 135.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔念出英文字母 R，故選 ①。"
   },
@@ -53,7 +57,11 @@ export const SAA_113_G4_QUESTIONS = [
     ],
     "answer": 2,
     "media": {
-      "audioText": "math"
+      "audioText": "math",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 146,
+      "clipEnd": 159.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔單字為 math，正確拼字是選項 ③。"
   },
@@ -82,7 +90,11 @@ export const SAA_113_G4_QUESTIONS = [
     ],
     "answer": 2,
     "media": {
-      "audioText": "fun"
+      "audioText": "fun",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 164.7,
+      "clipEnd": 175.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔單字為 fun，正確拼字是選項 ③。"
   },
@@ -111,7 +123,11 @@ export const SAA_113_G4_QUESTIONS = [
     ],
     "answer": 2,
     "media": {
-      "audioText": "silly"
+      "audioText": "silly",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 184.1,
+      "clipEnd": 193.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔單字為 silly，正確拼字是選項 ③。"
   },
@@ -140,7 +156,11 @@ export const SAA_113_G4_QUESTIONS = [
     ],
     "answer": 3,
     "media": {
-      "audioText": "draw"
+      "audioText": "draw",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 203.4,
+      "clipEnd": 214,
+      "audioSourceType": "official"
     },
     "explanation": "音檔單字為 draw，正確拼字是選項 ④。"
   },
@@ -169,7 +189,11 @@ export const SAA_113_G4_QUESTIONS = [
     ],
     "answer": 3,
     "media": {
-      "audioText": "tired"
+      "audioText": "tired",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 223.1,
+      "clipEnd": 233,
+      "audioSourceType": "official"
     },
     "explanation": "音檔單字為 tired，正確拼字是選項 ④。"
   },
@@ -199,7 +223,11 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 3,
     "image": "/assets/exam/saa/113/g4_q7.webp",
     "media": {
-      "audioText": "My grandpa is ninety years old."
+      "audioText": "My grandpa is ninety years old.",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 244.6,
+      "clipEnd": 263,
+      "audioSourceType": "official"
     },
     "explanation": "音檔說爺爺 90 歲，圖片 ④ 的蛋糕數字為 90。"
   },
@@ -229,7 +257,11 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 1,
     "image": "/assets/exam/saa/113/g4_q8.webp",
     "media": {
-      "audioText": "I bought two erasers and seven pens."
+      "audioText": "I bought two erasers and seven pens.",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 274.1,
+      "clipEnd": 294,
+      "audioSourceType": "official"
     },
     "explanation": "音檔說買了 2 個橡皮擦和 7 枝筆，明細 ② 相符。"
   },
@@ -259,7 +291,11 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 0,
     "image": "/assets/exam/saa/113/g4_q9.webp",
     "media": {
-      "audioText": "Are you okay?"
+      "audioText": "Are you okay?",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 304.9,
+      "clipEnd": 318,
+      "audioSourceType": "official"
     },
     "explanation": "Are you okay? 用來關心受傷或不舒服的人；圖片 ① 最符合。"
   },
@@ -289,7 +325,11 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 0,
     "image": "/assets/exam/saa/113/g4_q10.webp",
     "media": {
-      "audioText": "A: Andy, do you see my eraser?\nB: Oh, it's under your desk.\nA: Here it is. Thank you."
+      "audioText": "A: Andy, do you see my eraser?\nB: Oh, it's under your desk.\nA: Here it is. Thank you.",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 330,
+      "clipEnd": 358,
+      "audioSourceType": "official"
     },
     "explanation": "對話明確說橡皮擦在書桌下，圖片 ① 相符。"
   },
@@ -319,7 +359,11 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 3,
     "image": "/assets/exam/saa/113/g4_q11.webp",
     "media": {
-      "audioText": "Child: Dad, where are you?\nDad: I'm in the kitchen."
+      "audioText": "Child: Dad, where are you?\nDad: I'm in the kitchen.",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 369.9,
+      "clipEnd": 388,
+      "audioSourceType": "official"
     },
     "explanation": "爸爸回答自己在 kitchen（廚房），故選圖片 ④。"
   },
@@ -348,7 +392,11 @@ export const SAA_113_G4_QUESTIONS = [
     ],
     "answer": 2,
     "media": {
-      "audioText": "How's the weather?"
+      "audioText": "How's the weather?",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 400.4,
+      "clipEnd": 422.5,
+      "audioSourceType": "official"
     },
     "explanation": "How’s the weather? 詢問天氣，It’s rainy. 是合適回答。"
   },
@@ -378,7 +426,11 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 1,
     "image": "/assets/exam/saa/113/g4_q13.webp",
     "media": {
-      "audioText": "A: What time is it?\nB: It's five forty-five. It's time to have dinner."
+      "audioText": "A: What time is it?\nB: It's five forty-five. It's time to have dinner.",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 422.7,
+      "clipEnd": 447.5,
+      "audioSourceType": "official"
     },
     "explanation": "對話說 5:45 且該吃晚餐了，圖片 ② 相符。"
   },
@@ -408,7 +460,11 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 0,
     "image": "/assets/exam/saa/113/g4_q14.webp",
     "media": {
-      "audioText": "Child: Mom, this is for you.\nMom: A gift! Thank you. I can't wait to open it."
+      "audioText": "Child: Mom, this is for you.\nMom: A gift! Thank you. I can't wait to open it.",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 460.5,
+      "clipEnd": 486.5,
+      "audioSourceType": "official"
     },
     "explanation": "孩子把禮物送給媽媽，圖片 ① 最符合。"
   },
@@ -438,7 +494,11 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 1,
     "image": "/assets/exam/saa/113/g4_q15.webp",
     "media": {
-      "audioText": "A: Christmas is coming. What are we going to do? Let's make a to-do list.\nB: Okay. There are three things to do.\nA: What are they?\nB: Here is our Christmas to-do list."
+      "audioText": "A: Christmas is coming. What are we going to do? Let's make a to-do list.\nB: Okay. There are three things to do.\nA: What are they?\nB: Here is our Christmas to-do list.",
+      "audioSrc": "/audio/saa/113/g4-official.mp3",
+      "clipStart": 499.9,
+      "clipEnd": 546.5,
+      "audioSourceType": "official"
     },
     "explanation": "清單 ② 的禮物、聖誕樹與聖誕襪都是聖誕節活動，故選 ②。"
   },
@@ -869,7 +929,11 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 2,
     "explanation": "Anna 是 Andy 的姊妹，因此 Andy 是 Anna 的兄弟，故選 ③。",
     "groupId": "saa-113-g4-family-1",
-    "passage": "Bonnie: Hi! My name is Bonnie. What's your name?\nAndy: Hello! I'm Andy.\nBonnie: Is that your mother? She is tall.\nAndy: Oh, that's Anna. She's my sister. She's 26 years old.\nBonnie: She is beautiful!\nAndy: Thank you. Is that your brother?\nBonnie: No, he's not my brother. He's my father, Ben. He is thirty-six.\nAndy: He is my teacher.\nBonnie: Wow! Cool!"
+    "passage": {
+      "title": "【31–32 共用題組】Bonnie 與 Andy 的家庭對話",
+      "image": "/assets/exam/saa/113/materials/g4_family_1_dialogue.webp",
+      "text": "Bonnie: Hi! My name is Bonnie. What's your name?\nAndy: Hello! I'm Andy.\nBonnie: Is that your mother? She is tall.\nAndy: Oh, that's Anna. She's my sister. She's 26 years old.\nBonnie: She is beautiful!\nAndy: Thank you. Is that your brother?\nBonnie: No, he's not my brother. He's my father, Ben. He is thirty-six.\nAndy: He is my teacher.\nBonnie: Wow! Cool!"
+    }
   },
   {
     "id": "saa-113-g4-32",
@@ -895,9 +959,14 @@ export const SAA_113_G4_QUESTIONS = [
       "D = thirty-six"
     ],
     "answer": 1,
-    "image": "/assets/exam/saa/113/g4_q32.webp",
+    "image": "/assets/exam/saa/113/materials/g4_family_1_diagram.webp",
     "explanation": "家族圖中 B 表示 Bonnie 與 Ben 的父女關係，故 B = father。",
-    "groupId": "saa-113-g4-family-1"
+    "groupId": "saa-113-g4-family-1",
+    "passage": {
+      "title": "【31–32 共用題組】Bonnie 與 Andy 的家庭對話",
+      "image": "/assets/exam/saa/113/materials/g4_family_1_dialogue.webp",
+      "text": "Bonnie: Hi! My name is Bonnie. What's your name?\nAndy: Hello! I'm Andy.\nBonnie: Is that your mother? She is tall.\nAndy: Oh, that's Anna. She's my sister. She's 26 years old.\nBonnie: She is beautiful!\nAndy: Thank you. Is that your brother?\nBonnie: No, he's not my brother. He's my father, Ben. He is thirty-six.\nAndy: He is my teacher.\nBonnie: Wow! Cool!"
+    }
   },
   {
     "id": "saa-113-g4-33",
@@ -917,16 +986,25 @@ export const SAA_113_G4_QUESTIONS = [
     "dimension": "短文理解",
     "question": "This is Tina's dad.",
     "options": [
-      "圖片 ①（男孩唱歌）",
-      "圖片 ②（女生閱讀、旁有貓）",
-      "圖片 ③（男子畫貓、旁有貓）",
-      "圖片 ④（女生畫鳥）"
+      "圖片 ①",
+      "圖片 ②",
+      "圖片 ③",
+      "圖片 ④"
     ],
     "answer": 2,
-    "image": "/assets/exam/saa/113/g4_q33.webp",
+    "optionImages": [
+      "/assets/exam/saa/113/materials/g4_q33_a.webp",
+      "/assets/exam/saa/113/materials/g4_q33_b.webp",
+      "/assets/exam/saa/113/materials/g4_q33_c.webp",
+      "/assets/exam/saa/113/materials/g4_q33_d.webp"
+    ],
     "explanation": "Tina 的爸爸喜歡貓且會畫畫，圖片 ③ 相符。",
     "groupId": "saa-113-g4-family-2",
-    "passage": "Show and Tell your family!\nAmy: This is my father. He is tall. This is my mother. She can sing. And this is my little brother. He is cute.\nKen: This is my grandpa. He is a teacher. This is my grandma. She is a doctor.\nJoe: This is my big sister. She is a police officer. I want to be a police officer, too.\nTina: This is my dad. He likes cats. He can draw!"
+    "passage": {
+      "title": "【33–35 共用題組】Show and Tell Your Family",
+      "image": "/assets/exam/saa/113/materials/g4_family_2_story.webp",
+      "text": "Show and Tell your family!\nAmy: This is my father. He is tall. This is my mother. She can sing. And this is my little brother. He is cute.\nKen: This is my grandpa. He is a teacher. This is my grandma. She is a doctor.\nJoe: This is my big sister. She is a police officer. I want to be a police officer, too.\nTina: This is my dad. He likes cats. He can draw!"
+    }
   },
   {
     "id": "saa-113-g4-34",
@@ -952,9 +1030,14 @@ export const SAA_113_G4_QUESTIONS = [
       "She's Amy's mom."
     ],
     "answer": 2,
-    "image": "/assets/exam/saa/113/g4_q34.webp",
+    "image": "/assets/exam/saa/113/materials/g4_q34_police.webp",
     "explanation": "圖片人物是女警；短文說 Joe 的姊姊是警察，故選 ③。",
-    "groupId": "saa-113-g4-family-2"
+    "groupId": "saa-113-g4-family-2",
+    "passage": {
+      "title": "【33–35 共用題組】Show and Tell Your Family",
+      "image": "/assets/exam/saa/113/materials/g4_family_2_story.webp",
+      "text": "Show and Tell your family!\nAmy: This is my father. He is tall. This is my mother. She can sing. And this is my little brother. He is cute.\nKen: This is my grandpa. He is a teacher. This is my grandma. She is a doctor.\nJoe: This is my big sister. She is a police officer. I want to be a police officer, too.\nTina: This is my dad. He likes cats. He can draw!"
+    }
   },
   {
     "id": "saa-113-g4-35",
@@ -981,6 +1064,11 @@ export const SAA_113_G4_QUESTIONS = [
     ],
     "answer": 0,
     "explanation": "Joe 想當警察，不是醫生，因此選項 ① 是不正確的敘述。",
-    "groupId": "saa-113-g4-family-2"
+    "groupId": "saa-113-g4-family-2",
+    "passage": {
+      "title": "【33–35 共用題組】Show and Tell Your Family",
+      "image": "/assets/exam/saa/113/materials/g4_family_2_story.webp",
+      "text": "Show and Tell your family!\nAmy: This is my father. He is tall. This is my mother. She can sing. And this is my little brother. He is cute.\nKen: This is my grandpa. He is a teacher. This is my grandma. She is a doctor.\nJoe: This is my big sister. She is a police officer. I want to be a police officer, too.\nTina: This is my dad. He likes cats. He can draw!"
+    }
   }
 ];

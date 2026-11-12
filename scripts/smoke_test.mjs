@@ -979,6 +979,77 @@ async function run() {
     console.log('  ✓ SAA laptop 1280x650: all three Wizard steps fit without setup-area scrolling');
   }
 
+  // 5D-5. 113 六年級官方卷：題組材料需跨題保留、桌機雙欄，且圖片可開啟放大視窗。
+  client.exceptions = [];
+  await client.send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
+  await new Promise(r => setTimeout(r, 800));
+  const saa113GroupCheck = await client.evaluate(`
+    (async () => {
+      const buttons = () => Array.from(document.querySelectorAll('button'));
+      const byText = (label) => buttons().find(b => (b.innerText || '').includes(label));
+      const click = async (label, wait = 180) => {
+        const button = byText(label);
+        if (!button) return false;
+        button.click();
+        await new Promise(r => setTimeout(r, wait));
+        return true;
+      };
+
+      if (!await click('學力檢測練習')) return { ok: false, reason: 'missing SAA entry' };
+      await click('六年級');
+      await click('繼續：選擇題源');
+      await click('官方考古題');
+      await click('繼續：選擇年度');
+      await click('113 年');
+      if (!await click('開始113 年官方卷', 450)) return { ok: false, reason: 'missing 113 start' };
+      await click('開始作答', 450);
+
+      const officialAudioReady = (document.body.innerText || '').includes('播放官方原聲');
+      const q31Button = buttons().find(b => (b.innerText || '').trim() === '31');
+      if (!q31Button) return { ok: false, reason: 'missing Q31 navigation', officialAudioReady };
+      q31Button.click();
+      await new Promise(r => setTimeout(r, 350));
+
+      const material = document.querySelector('[data-testid="saa-group-material"]');
+      const question = document.querySelector('[data-testid="saa-group-question"]');
+      const materialRect = material?.getBoundingClientRect();
+      const questionRect = question?.getBoundingClientRect();
+      const twoColumn = !!materialRect && !!questionRect && materialRect.right <= questionRect.left + 8;
+      const q31Visible = (document.body.innerText || '').includes('Taylor 寫給 Stella 的信')
+        && !!material?.querySelector('img[src*="g6_letter.webp"]');
+
+      const zoomButton = Array.from(material?.querySelectorAll('button') || []).find(b => (b.innerText || '').includes('放大'));
+      zoomButton?.click();
+      await new Promise(r => setTimeout(r, 160));
+      const zoomOpened = !!document.querySelector('[data-testid="exam-image-zoom"] img[src*="g6_letter.webp"]');
+      document.querySelector('[data-testid="exam-image-zoom"] button[aria-label="關閉放大圖片"]')?.click();
+      await new Promise(r => setTimeout(r, 100));
+
+      const q32Button = buttons().find(b => (b.innerText || '').trim() === '32');
+      q32Button?.click();
+      await new Promise(r => setTimeout(r, 250));
+      const q32HasSharedLetter = !!document.querySelector('[data-testid="saa-group-material"] img[src*="g6_letter.webp"]');
+      const q32HasMap = !!document.querySelector('img[src*="g6_q32_map.webp"]');
+
+      return {
+        ok: officialAudioReady && twoColumn && q31Visible && zoomOpened && q32HasSharedLetter && q32HasMap,
+        officialAudioReady,
+        twoColumn,
+        q31Visible,
+        zoomOpened,
+        q32HasSharedLetter,
+        q32HasMap
+      };
+    })()
+  `);
+  await client.send('Emulation.clearDeviceMetricsOverride', {});
+  if (!saa113GroupCheck?.ok || client.exceptions.length > 0) {
+    failures.push({ target: 'SAA 113 shared material, zoom & official audio', details: saa113GroupCheck, exceptions: client.exceptions });
+  } else {
+    console.log('  ✓ SAA 113 G6: official audio, desktop two-column group material, cross-question persistence & image zoom verified');
+  }
+
   // 5E. 課本題庫檢定館 (mcq-exam) 一頁式免捲動選範圍 -> 開始檢定 -> 選答案 -> 下一題 深度驗證
   client.exceptions = [];
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });

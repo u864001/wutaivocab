@@ -24,7 +24,11 @@ export const SAA_113_G5_QUESTIONS = [
     ],
     "answer": 1,
     "media": {
-      "audioText": "Phil"
+      "audioText": "Phil",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 133.2,
+      "clipEnd": 142.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔念出人名 Phil，故選 ②。"
   },
@@ -53,7 +57,11 @@ export const SAA_113_G5_QUESTIONS = [
     ],
     "answer": 0,
     "media": {
-      "audioText": "bait"
+      "audioText": "bait",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 152.2,
+      "clipEnd": 161.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔單字為 bait，故選 ①。"
   },
@@ -82,7 +90,11 @@ export const SAA_113_G5_QUESTIONS = [
     ],
     "answer": 2,
     "media": {
-      "audioText": "ninety"
+      "audioText": "ninety",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 171.5,
+      "clipEnd": 176.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔數字為 ninety（90），故選 ③。"
   },
@@ -112,7 +124,11 @@ export const SAA_113_G5_QUESTIONS = [
     "answer": 3,
     "image": "/assets/exam/saa/113/g5_q4.webp",
     "media": {
-      "audioText": "shoes"
+      "audioText": "shoes",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 191.2,
+      "clipEnd": 213,
+      "audioSourceType": "official"
     },
     "explanation": "音檔單字為 shoes，圖片 ④ 是鞋子。"
   },
@@ -141,7 +157,11 @@ export const SAA_113_G5_QUESTIONS = [
     ],
     "answer": 2,
     "media": {
-      "audioText": "Two hundred and fifty-five."
+      "audioText": "Two hundred and fifty-five.",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 213.2,
+      "clipEnd": 228.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔為 255，英文是 two hundred and fifty-five，故選 ③。"
   },
@@ -171,7 +191,11 @@ export const SAA_113_G5_QUESTIONS = [
     "answer": 0,
     "image": "/assets/exam/saa/113/g5_q6.webp",
     "media": {
-      "audioText": "Let's clean up."
+      "audioText": "Let's clean up.",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 239,
+      "clipEnd": 263.8,
+      "audioSourceType": "official"
     },
     "explanation": "Let’s clean up. 表示一起打掃，圖片 ① 相符。"
   },
@@ -201,7 +225,11 @@ export const SAA_113_G5_QUESTIONS = [
     "answer": 2,
     "image": "/assets/exam/saa/113/g5_q7.webp",
     "media": {
-      "audioText": "I'm tired. Let's take a break."
+      "audioText": "I'm tired. Let's take a break.",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 264,
+      "clipEnd": 280.5,
+      "audioSourceType": "official"
     },
     "explanation": "說話者表示 tired（疲倦）並想休息，圖片 ③ 相符。"
   },
@@ -231,7 +259,11 @@ export const SAA_113_G5_QUESTIONS = [
     "answer": 0,
     "image": "/assets/exam/saa/113/g5_q8.webp",
     "media": {
-      "audioText": "It is 2024, the Year of the Dragon. Grandma gives Nina a red envelope."
+      "audioText": "It is 2024, the Year of the Dragon. Grandma gives Nina a red envelope.",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 292.2,
+      "clipEnd": 315.5,
+      "audioSourceType": "official"
     },
     "explanation": "2024 是龍年，且奶奶給 Nina 紅包；圖片 ① 符合紅包圖案的龍年情境。"
   },
@@ -260,7 +292,11 @@ export const SAA_113_G5_QUESTIONS = [
     ],
     "answer": 0,
     "media": {
-      "audioText": "Amy is sad. She is crying. What can you say to Amy?"
+      "audioText": "Amy is sad. She is crying. What can you say to Amy?",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 350.2,
+      "clipEnd": 370.5,
+      "audioSourceType": "official"
     },
     "explanation": "關心正在哭的 Amy，最適合問 Amy, are you okay?。"
   },
@@ -290,7 +326,11 @@ export const SAA_113_G5_QUESTIONS = [
     "answer": 2,
     "image": "/assets/exam/saa/113/g5_q10.webp",
     "media": {
-      "audioText": "It's time to go to bed. What time is it?"
+      "audioText": "It's time to go to bed. What time is it?",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 384.9,
+      "clipEnd": 406,
+      "audioSourceType": "official"
     },
     "explanation": "作息表顯示 9:00 PM 上床睡覺，故選 It’s nine o’clock.。"
   },
@@ -320,7 +360,11 @@ export const SAA_113_G5_QUESTIONS = [
     "answer": 0,
     "image": "/assets/exam/saa/113/g5_q11.webp",
     "media": {
-      "audioText": "Teacher: Line up, please. Three, two, one. Are you ready?\nChildren: Yes!\nTeacher: When I call your name, please raise your hand and say here. Jason.\nJason: Here.\nTeacher: Judy.\nJudy: Here.\nTeacher: Kevin.\nKevin: Here.\nTeacher: Andy.\nAndy: Here.\nTeacher: Okay, let's play a game.\nChildren: Hooray!\nNarrator: What's her name?"
+      "audioText": "Teacher: Line up, please. Three, two, one. Are you ready?\nChildren: Yes!\nTeacher: When I call your name, please raise your hand and say here. Jason.\nJason: Here.\nTeacher: Judy.\nJudy: Here.\nTeacher: Kevin.\nKevin: Here.\nTeacher: Andy.\nAndy: Here.\nTeacher: Okay, let's play a game.\nChildren: Hooray!\nNarrator: What's her name?",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 420.3,
+      "clipEnd": 494.5,
+      "audioSourceType": "official"
     },
     "explanation": "點名順序與箭頭位置顯示她是 Judy，故選 ①。"
   },
@@ -349,7 +393,11 @@ export const SAA_113_G5_QUESTIONS = [
     ],
     "answer": 1,
     "media": {
-      "audioText": "A: Kevin, what are you doing?\nKevin: I'm doing the dishes.\nNarrator: Where is he?"
+      "audioText": "A: Kevin, what are you doing?\nKevin: I'm doing the dishes.\nNarrator: Where is he?",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 509.2,
+      "clipEnd": 535.5,
+      "audioSourceType": "official"
     },
     "explanation": "Kevin 正在洗碗，最合理的位置是 kitchen，故選 ②。"
   },
@@ -379,7 +427,11 @@ export const SAA_113_G5_QUESTIONS = [
     "answer": 2,
     "image": "/assets/exam/saa/113/g5_q13.webp",
     "media": {
-      "audioText": "A: I want to make some fruit salad. Let's go shopping.\nB: What do we need?\nA: I want some oranges and apples. How about you?\nB: I want some bananas.\nA: Great! Let's go.\nNarrator: What's on their shopping list?"
+      "audioText": "A: I want to make some fruit salad. Let's go shopping.\nB: What do we need?\nA: I want some oranges and apples. How about you?\nB: I want some bananas.\nA: Great! Let's go.\nNarrator: What's on their shopping list?",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 549.4,
+      "clipEnd": 602.5,
+      "audioSourceType": "official"
     },
     "explanation": "對話列出 oranges、apples、bananas，故選清單 ③。"
   },
@@ -409,7 +461,11 @@ export const SAA_113_G5_QUESTIONS = [
     "answer": 3,
     "image": "/assets/exam/saa/113/g5_q14.webp",
     "media": {
-      "audioText": "Kate: Where are we now, Bob?\nBob: We are at Mega Bank.\nKate: Where are you going?\nBob: I want to visit the Taiwan Museum.\nKate: Where is it?\nBob: It's on Blue Street, Kate."
+      "audioText": "Kate: Where are we now, Bob?\nBob: We are at Mega Bank.\nKate: Where are you going?\nBob: I want to visit the Taiwan Museum.\nKate: Where is it?\nBob: It's on Blue Street, Kate.",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 617,
+      "clipEnd": 705.5,
+      "audioSourceType": "official"
     },
     "explanation": "Bob 明確說 We are at Mega Bank.，故選 ④。",
     "groupId": "saa-113-g5-map"
@@ -440,7 +496,11 @@ export const SAA_113_G5_QUESTIONS = [
     "answer": 2,
     "image": "/assets/exam/saa/113/g5_q15.webp",
     "media": {
-      "audioText": "Kate: Where are we now, Bob?\nBob: We are at Mega Bank.\nKate: Where are you going?\nBob: I want to visit the Taiwan Museum.\nKate: Where is it?\nBob: It's on Blue Street, Kate."
+      "audioText": "Kate: Where are we now, Bob?\nBob: We are at Mega Bank.\nKate: Where are you going?\nBob: I want to visit the Taiwan Museum.\nKate: Where is it?\nBob: It's on Blue Street, Kate.",
+      "audioSrc": "/audio/saa/113/g5-official.mp3",
+      "clipStart": 617,
+      "clipEnd": 705.5,
+      "audioSourceType": "official"
     },
     "explanation": "對話中的目的地是 Taiwan Museum，故選 ③。",
     "groupId": "saa-113-g5-map"
@@ -873,10 +933,13 @@ export const SAA_113_G5_QUESTIONS = [
       "1985-1004"
     ],
     "answer": 1,
-    "image": "/assets/exam/saa/113/g5_q31.webp",
     "explanation": "聯絡卡顯示 Harry 母親 Mandy 的電話是 0912-345678，故選 ②。",
     "groupId": "saa-113-g5-contact",
-    "passage": "Student Emergency Contact Card\nHarry Yang, Sunny Elementary School, birthday 2012.6.19, class 6-A, phone 0934-567890, teacher Sharon Pong.\nContact 1: Mandy Lin, Harry's mother, phone 0912-345678, doctor.\nContact 2: Nick Yang, Harry's brother, phone 0987-654321, police officer."
+    "passage": {
+      "title": "【31–32 共用題組】Student Emergency Contact Card",
+      "image": "/assets/exam/saa/113/materials/g5_contact_card.webp",
+      "text": "Harry Yang, Sunny Elementary School, birthday 2012.6.19, class 6-A, phone 0934-567890, teacher Sharon Pong.\nContact 1: Mandy Lin, Harry's mother, phone 0912-345678, doctor.\nContact 2: Nick Yang, Harry's brother, phone 0987-654321, police officer."
+    }
   },
   {
     "id": "saa-113-g5-32",
@@ -902,9 +965,13 @@ export const SAA_113_G5_QUESTIONS = [
       "Mandy is Nick's sister."
     ],
     "answer": 1,
-    "image": "/assets/exam/saa/113/g5_q32.webp",
     "explanation": "聯絡卡顯示 Harry 就讀 Sunny Elementary School 且有班級，Harry 是學生。",
-    "groupId": "saa-113-g5-contact"
+    "groupId": "saa-113-g5-contact",
+    "passage": {
+      "title": "【31–32 共用題組】Student Emergency Contact Card",
+      "image": "/assets/exam/saa/113/materials/g5_contact_card.webp",
+      "text": "Harry Yang, Sunny Elementary School, birthday 2012.6.19, class 6-A, phone 0934-567890, teacher Sharon Pong.\nContact 1: Mandy Lin, Harry's mother, phone 0912-345678, doctor.\nContact 2: Nick Yang, Harry's brother, phone 0987-654321, police officer."
+    }
   },
   {
     "id": "saa-113-g5-33",
@@ -930,10 +997,13 @@ export const SAA_113_G5_QUESTIONS = [
       "It's Wednesday."
     ],
     "answer": 1,
-    "image": "/assets/exam/saa/113/g5_q33.webp",
     "explanation": "票價表註明 Closed on Monday，故選 Monday。",
     "groupId": "saa-113-g5-museum",
-    "passage": "Art Museum ticket rules: Tuesday to Friday, children 6–12 are free and adults are $80. Saturday and Sunday, children are $50 and adults are $100. Closed on Monday. No eating, drinking, or pets."
+    "passage": {
+      "title": "【33–35 共用題組】Art Museum Ticket Board",
+      "image": "/assets/exam/saa/113/materials/g5_museum_board.webp",
+      "text": "Tuesday to Friday: children 6–12 are free and adults are $80. Saturday and Sunday: children are $50 and adults are $100. Closed on Monday. No eating, drinking, or pets."
+    }
   },
   {
     "id": "saa-113-g5-34",
@@ -959,9 +1029,13 @@ export const SAA_113_G5_QUESTIONS = [
       "It's Saturday."
     ],
     "answer": 3,
-    "image": "/assets/exam/saa/113/g5_q34.webp",
     "explanation": "週末兒童 $50、成人 $100，共 $150；選項中只有 Saturday 是週末。",
-    "groupId": "saa-113-g5-museum"
+    "groupId": "saa-113-g5-museum",
+    "passage": {
+      "title": "【33–35 共用題組】Art Museum Ticket Board",
+      "image": "/assets/exam/saa/113/materials/g5_museum_board.webp",
+      "text": "Tuesday to Friday: children 6–12 are free and adults are $80. Saturday and Sunday: children are $50 and adults are $100. Closed on Monday. No eating, drinking, or pets."
+    }
   },
   {
     "id": "saa-113-g5-35",
@@ -987,8 +1061,12 @@ export const SAA_113_G5_QUESTIONS = [
       "We can see paintings."
     ],
     "answer": 3,
-    "image": "/assets/exam/saa/113/g5_q35.webp",
     "explanation": "告示禁止飲食與寵物；在美術館可以看畫作，故選 ④。",
-    "groupId": "saa-113-g5-museum"
+    "groupId": "saa-113-g5-museum",
+    "passage": {
+      "title": "【33–35 共用題組】Art Museum Ticket Board",
+      "image": "/assets/exam/saa/113/materials/g5_museum_board.webp",
+      "text": "Tuesday to Friday: children 6–12 are free and adults are $80. Saturday and Sunday: children are $50 and adults are $100. Closed on Monday. No eating, drinking, or pets."
+    }
   }
 ];

@@ -24,7 +24,11 @@ export const SAA_113_G6_QUESTIONS = [
     ],
     "answer": 0,
     "media": {
-      "audioText": "park"
+      "audioText": "park",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 133.8,
+      "clipEnd": 154.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔單字為 park，故選 ①。"
   },
@@ -53,7 +57,11 @@ export const SAA_113_G6_QUESTIONS = [
     ],
     "answer": 1,
     "media": {
-      "audioText": "education"
+      "audioText": "education",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 154.5,
+      "clipEnd": 178.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔單字為 education，正確拼字是選項 ②。"
   },
@@ -82,7 +90,11 @@ export const SAA_113_G6_QUESTIONS = [
     ],
     "answer": 2,
     "media": {
-      "audioText": "Tuesday"
+      "audioText": "Tuesday",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 178.5,
+      "clipEnd": 199,
+      "audioSourceType": "official"
     },
     "explanation": "音檔念出 Tuesday，故選 ③。"
   },
@@ -111,7 +123,11 @@ export const SAA_113_G6_QUESTIONS = [
     ],
     "answer": 0,
     "media": {
-      "audioText": "glass"
+      "audioText": "glass",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 199,
+      "clipEnd": 219.2,
+      "audioSourceType": "official"
     },
     "explanation": "音檔單字為 glass，故選 ①。"
   },
@@ -140,7 +156,11 @@ export const SAA_113_G6_QUESTIONS = [
     ],
     "answer": 0,
     "media": {
-      "audioText": "seventy-six"
+      "audioText": "seventy-six",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 219.2,
+      "clipEnd": 242.5,
+      "audioSourceType": "official"
     },
     "explanation": "音檔數字為 seventy-six（76），故選 ①。"
   },
@@ -170,7 +190,11 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 0,
     "image": "/assets/exam/saa/113/g6_q6.webp",
     "media": {
-      "audioText": "Open your book."
+      "audioText": "Open your book.",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 242.5,
+      "clipEnd": 260.2,
+      "audioSourceType": "official"
     },
     "explanation": "Open your book. 表示打開書本，圖片 ① 相符。"
   },
@@ -200,7 +224,11 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 3,
     "image": "/assets/exam/saa/113/g6_q7.webp",
     "media": {
-      "audioText": "A: What time do you get up on Sunday?\nB: I get up at nine thirty on Sunday."
+      "audioText": "A: What time do you get up on Sunday?\nB: I get up at nine thirty on Sunday.",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 260.2,
+      "clipEnd": 306,
+      "audioSourceType": "official"
     },
     "explanation": "對話說星期日 9:30 起床，圖片 ④ 相符。"
   },
@@ -230,7 +258,11 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 1,
     "image": "/assets/exam/saa/113/g6_q8.webp",
     "media": {
-      "audioText": "Look at the picture. Laura is my new friend. She is from Singapore."
+      "audioText": "Look at the picture. Laura is my new friend. She is from Singapore.",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 306,
+      "clipEnd": 342.5,
+      "audioSourceType": "official"
     },
     "explanation": "Laura 來自 Singapore，圖片 ② 是新加坡。"
   },
@@ -260,7 +292,11 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 1,
     "image": "/assets/exam/saa/113/g6_q9.webp",
     "media": {
-      "audioText": "A: What would you like?\nB: I would like a glass of milk and two plates of spaghetti."
+      "audioText": "A: What would you like?\nB: I would like a glass of milk and two plates of spaghetti.",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 342.5,
+      "clipEnd": 387.4,
+      "audioSourceType": "official"
     },
     "explanation": "點餐內容是 1 杯牛奶和 2 盤義大利麵，圖片 ② 相符。"
   },
@@ -290,7 +326,11 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 3,
     "image": "/assets/exam/saa/113/g6_q10.webp",
     "media": {
-      "audioText": "Whose cap is it?"
+      "audioText": "Whose cap is it?",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 401.8,
+      "clipEnd": 429,
+      "audioSourceType": "official"
     },
     "explanation": "問句詢問 cap（帽子）是誰的，圖片 ④ 是 Lily 的帽子。"
   },
@@ -320,7 +360,11 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 3,
     "image": "/assets/exam/saa/113/g6_q11.webp",
     "media": {
-      "audioText": "I lost count of the days after being sick for many days. What day is today?"
+      "audioText": "I lost count of the days after being sick for many days. What day is today?",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 429,
+      "clipEnd": 464,
+      "audioSourceType": "official"
     },
     "explanation": "問句詢問今天星期幾，日曆圖片 ④ 顯示 Thursday，故選 ④。"
   },
@@ -349,7 +393,11 @@ export const SAA_113_G6_QUESTIONS = [
     ],
     "answer": 0,
     "media": {
-      "audioText": "Where are you from?"
+      "audioText": "Where are you from?",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 464,
+      "clipEnd": 490,
+      "audioSourceType": "official"
     },
     "explanation": "Where are you from? 詢問來自哪裡，I am from Taiwan. 最合適。"
   },
@@ -378,7 +426,11 @@ export const SAA_113_G6_QUESTIONS = [
     ],
     "answer": 2,
     "media": {
-      "audioText": "Watch out!"
+      "audioText": "Watch out!",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 490,
+      "clipEnd": 513.5,
+      "audioSourceType": "official"
     },
     "explanation": "Watch out! 是提醒小心，受提醒者以 Thank you! 回應最合適。"
   },
@@ -407,7 +459,11 @@ export const SAA_113_G6_QUESTIONS = [
     ],
     "answer": 2,
     "media": {
-      "audioText": "A: Knock, knock!\nB: Wow, Cindy! You dressed up as a vampire!\nCindy: Yes. Well, Peter, are you a ghost?\nPeter: No, I am a mummy.\nCindy: Oh, never mind. You look really cool.\nPeter: Thank you. Hey, let's practice the chant.\nCindy: Sure.\nBoth: Trick or treat, smell my feet, give me something good to eat!\nCindy: Amazing! Let's go."
+      "audioText": "A: Knock, knock!\nB: Wow, Cindy! You dressed up as a vampire!\nCindy: Yes. Well, Peter, are you a ghost?\nPeter: No, I am a mummy.\nCindy: Oh, never mind. You look really cool.\nPeter: Thank you. Hey, let's practice the chant.\nCindy: Sure.\nBoth: Trick or treat, smell my feet, give me something good to eat!\nCindy: Amazing! Let's go.",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 513.5,
+      "clipEnd": 642,
+      "audioSourceType": "official"
     },
     "explanation": "對話有變裝、Trick or treat，明確是 Halloween。",
     "groupId": "saa-113-g6-halloween"
@@ -437,7 +493,11 @@ export const SAA_113_G6_QUESTIONS = [
     ],
     "answer": 2,
     "media": {
-      "audioText": "A: Knock, knock!\nB: Wow, Cindy! You dressed up as a vampire!\nCindy: Yes. Well, Peter, are you a ghost?\nPeter: No, I am a mummy.\nCindy: Oh, never mind. You look really cool.\nPeter: Thank you. Hey, let's practice the chant.\nCindy: Sure.\nBoth: Trick or treat, smell my feet, give me something good to eat!"
+      "audioText": "A: Knock, knock!\nB: Wow, Cindy! You dressed up as a vampire!\nCindy: Yes. Well, Peter, are you a ghost?\nPeter: No, I am a mummy.\nCindy: Oh, never mind. You look really cool.\nPeter: Thank you. Hey, let's practice the chant.\nCindy: Sure.\nBoth: Trick or treat, smell my feet, give me something good to eat!",
+      "audioSrc": "/audio/saa/113/g6-official.mp3",
+      "clipStart": 513.5,
+      "clipEnd": 642,
+      "audioSourceType": "official"
     },
     "explanation": "對話明確說 Cindy dressed up as a vampire.，故選 ③。",
     "groupId": "saa-113-g6-halloween"
@@ -835,7 +895,7 @@ export const SAA_113_G6_QUESTIONS = [
       "sick"
     ],
     "answer": 0,
-    "image": "/assets/exam/saa/113/g6_q30.webp",
+    "image": "/assets/exam/saa/113/materials/g6_q30_story.webp",
     "explanation": "貼文以 Fit, healthy, happy 描述運動狀態；fit 在此意為 strong、健康強壯。"
   },
   {
@@ -864,7 +924,11 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 3,
     "explanation": "信中明確提到 There is a new museum opening in the zoo.，故選 ④。",
     "groupId": "saa-113-g6-letter",
-    "passage": "Dear Stella,\nHow is your new school? Is it far away from us? You know our school is still on Turtle Street next to the park. You are always welcome for a visit. We miss you a lot.\nI love math, but now my favorite subject is English. The English teacher is so funny. She has long hair, wears glasses, and dresses. She is my favorite teacher.\nBy the way, I am going to the zoo on Moon Festival. There is a new museum opening in the zoo. I would like to see the new exhibitions. Are you coming? Let's have dinner together after visiting the zoo and the museum. Please let me know if you are coming.\nBest,\nTaylor"
+    "passage": {
+      "title": "【31–33 共用題組】Taylor 寫給 Stella 的信",
+      "image": "/assets/exam/saa/113/materials/g6_letter.webp",
+      "text": "Dear Stella,\nHow is your new school? Is it far away from us? You know our school is still on Turtle Street next to the park. You are always welcome for a visit. We miss you a lot.\n\nI love math, but now my favorite subject is English. The English teacher is so funny. She has long hair, wears glasses, and dresses. She is my favorite teacher.\n\nBy the way, I am going to the zoo on Moon Festival. There is a new museum opening in the zoo. I would like to see the new exhibitions. Are you coming? Let's have dinner together after visiting the zoo and the museum. Please let me know if you are coming.\n\nBest,\nTaylor"
+    }
   },
   {
     "id": "saa-113-g6-32",
@@ -890,9 +954,14 @@ export const SAA_113_G6_QUESTIONS = [
       "4"
     ],
     "answer": 2,
-    "image": "/assets/exam/saa/113/g6_q32.webp",
+    "image": "/assets/exam/saa/113/materials/g6_q32_map.webp",
     "explanation": "Taylor 的學校在 Turtle Street 且在公園旁，地圖位置 ③ 符合。",
-    "groupId": "saa-113-g6-letter"
+    "groupId": "saa-113-g6-letter",
+    "passage": {
+      "title": "【31–33 共用題組】Taylor 寫給 Stella 的信",
+      "image": "/assets/exam/saa/113/materials/g6_letter.webp",
+      "text": "Dear Stella,\nHow is your new school? Is it far away from us? You know our school is still on Turtle Street next to the park. You are always welcome for a visit. We miss you a lot.\n\nI love math, but now my favorite subject is English. The English teacher is so funny. She has long hair, wears glasses, and dresses. She is my favorite teacher.\n\nBy the way, I am going to the zoo on Moon Festival. There is a new museum opening in the zoo. I would like to see the new exhibitions. Are you coming? Let's have dinner together after visiting the zoo and the museum. Please let me know if you are coming.\n\nBest,\nTaylor"
+    }
   },
   {
     "id": "saa-113-g6-33",
@@ -912,15 +981,25 @@ export const SAA_113_G6_QUESTIONS = [
     "dimension": "短文理解",
     "question": "Who is Taylor's favorite teacher?",
     "options": [
-      "圖片 ①（短髮英文老師）",
-      "圖片 ②（長髮戴眼鏡英文老師）",
-      "圖片 ③（短髮數學老師）",
-      "圖片 ④（戴眼鏡數學老師）"
+      "圖片 ①",
+      "圖片 ②",
+      "圖片 ③",
+      "圖片 ④"
     ],
     "answer": 1,
-    "image": "/assets/exam/saa/113/g6_q33.webp",
+    "optionImages": [
+      "/assets/exam/saa/113/materials/g6_q33_a.webp",
+      "/assets/exam/saa/113/materials/g6_q33_b.webp",
+      "/assets/exam/saa/113/materials/g6_q33_c.webp",
+      "/assets/exam/saa/113/materials/g6_q33_d.webp"
+    ],
     "explanation": "信中說最喜歡英文老師，老師長髮、戴眼鏡且穿洋裝，圖片 ② 相符。",
-    "groupId": "saa-113-g6-letter"
+    "groupId": "saa-113-g6-letter",
+    "passage": {
+      "title": "【31–33 共用題組】Taylor 寫給 Stella 的信",
+      "image": "/assets/exam/saa/113/materials/g6_letter.webp",
+      "text": "Dear Stella,\nHow is your new school? Is it far away from us? You know our school is still on Turtle Street next to the park. You are always welcome for a visit. We miss you a lot.\n\nI love math, but now my favorite subject is English. The English teacher is so funny. She has long hair, wears glasses, and dresses. She is my favorite teacher.\n\nBy the way, I am going to the zoo on Moon Festival. There is a new museum opening in the zoo. I would like to see the new exhibitions. Are you coming? Let's have dinner together after visiting the zoo and the museum. Please let me know if you are coming.\n\nBest,\nTaylor"
+    }
   },
   {
     "id": "saa-113-g6-34",
@@ -946,10 +1025,13 @@ export const SAA_113_G6_QUESTIONS = [
       "Penny"
     ],
     "answer": 3,
-    "image": "/assets/exam/saa/113/g6_q34.webp",
     "explanation": "週計畫寫 Tuesday: go jogging with my best friend, Penny，故選 Penny。",
     "groupId": "saa-113-g6-planner",
-    "passage": "Amy's weekly planner: Monday PE; Tuesday jogging with Penny; Wednesday park with Bernadette; Thursday art class; Friday TV; Saturday karaoke with Howard; Sunday hiking."
+    "passage": {
+      "title": "【34–35 共用題組】Amy’s Weekly Planner",
+      "image": "/assets/exam/saa/113/materials/g6_weekly_planner.webp",
+      "text": "Monday: PE class, wear sneakers.\nTuesday: go jogging with Penny.\nWednesday: go to the park with Bernadette.\nThursday: art class.\nFriday: watch TV.\nSaturday: karaoke with Howard.\nSunday: go hiking."
+    }
   },
   {
     "id": "saa-113-g6-35",
@@ -975,8 +1057,12 @@ export const SAA_113_G6_QUESTIONS = [
       "Today is Wednesday."
     ],
     "answer": 2,
-    "image": "/assets/exam/saa/113/g6_q35.webp",
     "explanation": "markers 和 crayons 是美術課用品；週計畫的 art class 在 Thursday，故選 ③。",
-    "groupId": "saa-113-g6-planner"
+    "groupId": "saa-113-g6-planner",
+    "passage": {
+      "title": "【34–35 共用題組】Amy’s Weekly Planner",
+      "image": "/assets/exam/saa/113/materials/g6_weekly_planner.webp",
+      "text": "Monday: PE class, wear sneakers.\nTuesday: go jogging with Penny.\nWednesday: go to the park with Bernadette.\nThursday: art class.\nFriday: watch TV.\nSaturday: karaoke with Howard.\nSunday: go hiking."
+    }
   }
 ];

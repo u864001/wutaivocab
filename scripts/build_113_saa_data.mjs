@@ -9,7 +9,26 @@ const ANSWERS = {
 };
 
 const image = (grade, number) => `/assets/exam/saa/113/g${grade}_q${number}.webp`;
+const material = (name) => `/assets/exam/saa/113/materials/${name}.webp`;
 const choices = (...values) => values;
+
+// Official MP3 clip boundaries. The original recording remains intact; the player
+// seeks to these ranges so students hear the official narrator and actors first.
+const OFFICIAL_AUDIO_CLIPS = {
+  4: [[125.0, 135.5], [146.0, 159.5], [164.7, 175.5], [184.1, 193.5], [203.4, 214.0], [223.1, 233.0], [244.6, 263.0], [274.1, 294.0], [304.9, 318.0], [330.0, 358.0], [369.9, 388.0], [400.4, 422.5], [422.7, 447.5], [460.5, 486.5], [499.9, 546.5]],
+  5: [[133.2, 142.5], [152.2, 161.5], [171.5, 176.5], [191.2, 213.0], [213.2, 228.5], [239.0, 263.8], [264.0, 280.5], [292.2, 315.5], [350.2, 370.5], [384.9, 406.0], [420.3, 494.5], [509.2, 535.5], [549.4, 602.5], [617.0, 705.5], [617.0, 705.5]],
+  6: [[133.8, 154.5], [154.5, 178.5], [178.5, 199.0], [199.0, 219.2], [219.2, 242.5], [242.5, 260.2], [260.2, 306.0], [306.0, 342.5], [342.5, 387.4], [401.8, 429.0], [429.0, 464.0], [464.0, 490.0], [490.0, 513.5], [513.5, 642.0], [513.5, 642.0]],
+};
+
+const officialAudio = (grade, number) => {
+  const [clipStart, clipEnd] = OFFICIAL_AUDIO_CLIPS[grade][number - 1];
+  return {
+    audioSrc: `/audio/saa/113/g${grade}-official.mp3`,
+    clipStart,
+    clipEnd,
+    audioSourceType: 'official',
+  };
+};
 
 function buildItem(grade, raw) {
   const answer = ANSWERS[grade][raw.number - 1];
@@ -36,12 +55,49 @@ function buildItem(grade, raw) {
     options: raw.options,
     answer,
     ...(raw.image ? { image: raw.image } : {}),
-    ...(raw.media ? { media: raw.media } : {}),
+    ...(raw.optionImages ? { optionImages: raw.optionImages } : {}),
+    ...(raw.media ? { media: { ...raw.media, ...(raw.number <= 15 ? officialAudio(grade, raw.number) : {}) } } : {}),
     explanation: raw.explanation,
     ...(raw.groupId ? { groupId: raw.groupId } : {}),
     ...(raw.passage ? { passage: raw.passage } : {}),
   };
 }
+
+const G4_FAMILY_1 = {
+  title: '【31–32 共用題組】Bonnie 與 Andy 的家庭對話',
+  image: material('g4_family_1_dialogue'),
+  text: "Bonnie: Hi! My name is Bonnie. What's your name?\nAndy: Hello! I'm Andy.\nBonnie: Is that your mother? She is tall.\nAndy: Oh, that's Anna. She's my sister. She's 26 years old.\nBonnie: She is beautiful!\nAndy: Thank you. Is that your brother?\nBonnie: No, he's not my brother. He's my father, Ben. He is thirty-six.\nAndy: He is my teacher.\nBonnie: Wow! Cool!",
+};
+
+const G4_FAMILY_2 = {
+  title: '【33–35 共用題組】Show and Tell Your Family',
+  image: material('g4_family_2_story'),
+  text: "Show and Tell your family!\nAmy: This is my father. He is tall. This is my mother. She can sing. And this is my little brother. He is cute.\nKen: This is my grandpa. He is a teacher. This is my grandma. She is a doctor.\nJoe: This is my big sister. She is a police officer. I want to be a police officer, too.\nTina: This is my dad. He likes cats. He can draw!",
+};
+
+const G5_CONTACT = {
+  title: '【31–32 共用題組】Student Emergency Contact Card',
+  image: material('g5_contact_card'),
+  text: "Harry Yang, Sunny Elementary School, birthday 2012.6.19, class 6-A, phone 0934-567890, teacher Sharon Pong.\nContact 1: Mandy Lin, Harry's mother, phone 0912-345678, doctor.\nContact 2: Nick Yang, Harry's brother, phone 0987-654321, police officer.",
+};
+
+const G5_MUSEUM = {
+  title: '【33–35 共用題組】Art Museum Ticket Board',
+  image: material('g5_museum_board'),
+  text: 'Tuesday to Friday: children 6–12 are free and adults are $80. Saturday and Sunday: children are $50 and adults are $100. Closed on Monday. No eating, drinking, or pets.',
+};
+
+const G6_LETTER = {
+  title: '【31–33 共用題組】Taylor 寫給 Stella 的信',
+  image: material('g6_letter'),
+  text: "Dear Stella,\nHow is your new school? Is it far away from us? You know our school is still on Turtle Street next to the park. You are always welcome for a visit. We miss you a lot.\n\nI love math, but now my favorite subject is English. The English teacher is so funny. She has long hair, wears glasses, and dresses. She is my favorite teacher.\n\nBy the way, I am going to the zoo on Moon Festival. There is a new museum opening in the zoo. I would like to see the new exhibitions. Are you coming? Let's have dinner together after visiting the zoo and the museum. Please let me know if you are coming.\n\nBest,\nTaylor",
+};
+
+const G6_PLANNER = {
+  title: '【34–35 共用題組】Amy’s Weekly Planner',
+  image: material('g6_weekly_planner'),
+  text: "Monday: PE class, wear sneakers.\nTuesday: go jogging with Penny.\nWednesday: go to the park with Bernadette.\nThursday: art class.\nFriday: watch TV.\nSaturday: karaoke with Howard.\nSunday: go hiking.",
+};
 
 const g4 = [
   { number: 1, taskType: 'A-SOUND', dimension: '語音聽辨', question: '請聽語音，選出正確的字母：', options: choices('R', 'L', 'H', 'V'), media: { audioText: 'R' }, explanation: '音檔念出英文字母 R，故選 ①。' },
@@ -74,11 +130,11 @@ const g4 = [
   { number: 28, taskType: 'R-RESP', dimension: '生活辭句回應', question: 'How old are you?', options: choices("I'm fine. Thank you.", 'I like pink.', 'I have seven pencils.', "I'm ten years old."), explanation: 'How old 詢問年齡，故選 I’m ten years old.。' },
   { number: 29, taskType: 'R-PIC', dimension: '文化理解', question: "It's twelve o'clock! Let's stand the eggs! What day is today?", options: choices('Mother’s Day', 'Dragon Boat Festival', 'Moon Festival', 'Chinese New Year'), image: image(4, 29), explanation: '中午立蛋是端午節活動，故選圖片 ②。' },
   { number: 30, taskType: 'R-PIC', dimension: '文化理解', question: "Tomorrow is Halloween. I'm going trick-or-treating. I want to be a witch. I need some bags and costume.", options: choices('圖片 ①（糖果）', '圖片 ②（稻草人）', '圖片 ③（南瓜）', '圖片 ④（女巫服裝與袋子）'), image: image(4, 30), explanation: '女巫裝扮與裝糖果的袋子在圖片 ④。' },
-  { number: 31, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g4-family-1', passage: "Bonnie: Hi! My name is Bonnie. What's your name?\nAndy: Hello! I'm Andy.\nBonnie: Is that your mother? She is tall.\nAndy: Oh, that's Anna. She's my sister. She's 26 years old.\nBonnie: She is beautiful!\nAndy: Thank you. Is that your brother?\nBonnie: No, he's not my brother. He's my father, Ben. He is thirty-six.\nAndy: He is my teacher.\nBonnie: Wow! Cool!", question: 'Who is Andy?', options: choices("Anna is Andy's mother.", "He's Bonnie's father.", "He is Anna's brother.", "Andy is Bonnie's brother."), explanation: 'Anna 是 Andy 的姊妹，因此 Andy 是 Anna 的兄弟，故選 ③。' },
-  { number: 32, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g4-family-1', question: 'Which is true?', options: choices('A = sister', 'B = father', 'C = mother', 'D = thirty-six'), image: image(4, 32), explanation: '家族圖中 B 表示 Bonnie 與 Ben 的父女關係，故 B = father。' },
-  { number: 33, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g4-family-2', passage: "Show and Tell your family!\nAmy: This is my father. He is tall. This is my mother. She can sing. And this is my little brother. He is cute.\nKen: This is my grandpa. He is a teacher. This is my grandma. She is a doctor.\nJoe: This is my big sister. She is a police officer. I want to be a police officer, too.\nTina: This is my dad. He likes cats. He can draw!", question: "This is Tina's dad.", options: choices('圖片 ①（男孩唱歌）', '圖片 ②（女生閱讀、旁有貓）', '圖片 ③（男子畫貓、旁有貓）', '圖片 ④（女生畫鳥）'), image: image(4, 33), explanation: 'Tina 的爸爸喜歡貓且會畫畫，圖片 ③ 相符。' },
-  { number: 34, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g4-family-2', question: 'Who is she?', options: choices("She's Joe's mom.", "She's Ken's grandma.", "She's Joe's sister.", "She's Amy's mom."), image: image(4, 34), explanation: '圖片人物是女警；短文說 Joe 的姊姊是警察，故選 ③。' },
-  { number: 35, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g4-family-2', question: 'Which is NOT true?', options: choices('Joe wants to be a doctor.', "Amy's dad is tall.", "Ken's grandfather is a teacher.", "Amy's mom can sing."), explanation: 'Joe 想當警察，不是醫生，因此選項 ① 是不正確的敘述。' },
+  { number: 31, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g4-family-1', passage: G4_FAMILY_1, question: 'Who is Andy?', options: choices("Anna is Andy's mother.", "He's Bonnie's father.", "He is Anna's brother.", "Andy is Bonnie's brother."), explanation: 'Anna 是 Andy 的姊妹，因此 Andy 是 Anna 的兄弟，故選 ③。' },
+  { number: 32, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g4-family-1', passage: G4_FAMILY_1, question: 'Which is true?', options: choices('A = sister', 'B = father', 'C = mother', 'D = thirty-six'), image: material('g4_family_1_diagram'), explanation: '家族圖中 B 表示 Bonnie 與 Ben 的父女關係，故 B = father。' },
+  { number: 33, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g4-family-2', passage: G4_FAMILY_2, question: "This is Tina's dad.", options: choices('圖片 ①', '圖片 ②', '圖片 ③', '圖片 ④'), optionImages: ['g4_q33_a', 'g4_q33_b', 'g4_q33_c', 'g4_q33_d'].map(material), explanation: 'Tina 的爸爸喜歡貓且會畫畫，圖片 ③ 相符。' },
+  { number: 34, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g4-family-2', passage: G4_FAMILY_2, question: 'Who is she?', options: choices("She's Joe's mom.", "She's Ken's grandma.", "She's Joe's sister.", "She's Amy's mom."), image: material('g4_q34_police'), explanation: '圖片人物是女警；短文說 Joe 的姊姊是警察，故選 ③。' },
+  { number: 35, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g4-family-2', passage: G4_FAMILY_2, question: 'Which is NOT true?', options: choices('Joe wants to be a doctor.', "Amy's dad is tall.", "Ken's grandfather is a teacher.", "Amy's mom can sing."), explanation: 'Joe 想當警察，不是醫生，因此選項 ① 是不正確的敘述。' },
 ];
 
 const g5 = [
@@ -112,11 +168,11 @@ const g5 = [
   { number: 28, taskType: 'R-PIC', dimension: '圖文理解', question: "Hank doesn't have a pencil. He says: “Lily, may I borrow your pencil?”", options: choices('圖片 ①（同學借鉛筆）', '圖片 ②（同學借書）', '圖片 ③（進教室）', '圖片 ④（上廁所）'), image: image(5, 28), explanation: '圖片 ① 顯示男生向同學借鉛筆，故選 ①。' },
   { number: 29, taskType: 'R-PIC', dimension: '文化理解', question: '請看圖片，選出正確的節慶敘述：', options: choices("We get lucky money on Chinese New Year's Eve.", 'We paint pomelo hats on Moon Festival.', 'We sing Christmas songs on Christmas.', 'We stand eggs on Dragon Boat Festival.'), image: image(5, 29), explanation: '圖中人物正在端午節正午立蛋，故選 ④。' },
   { number: 30, taskType: 'R-PIC', dimension: '文化理解', question: '請看 12/24～12/25 的促銷廣告，判斷是哪個節日：', options: choices('Christmas', 'Easter', 'Halloween', 'New Year'), image: image(5, 30), explanation: '12 月 24 至 25 日且有聖誕老人，故選 Christmas。' },
-  { number: 31, taskType: 'R-COMP', dimension: '圖表理解', groupId: 'saa-113-g5-contact', passage: "Student Emergency Contact Card\nHarry Yang, Sunny Elementary School, birthday 2012.6.19, class 6-A, phone 0934-567890, teacher Sharon Pong.\nContact 1: Mandy Lin, Harry's mother, phone 0912-345678, doctor.\nContact 2: Nick Yang, Harry's brother, phone 0987-654321, police officer.", question: "Teacher Sharon has to call Harry's mother. The number is ______.", options: choices('0934-567890', '0912-345678', '0987-654321', '1985-1004'), image: image(5, 31), explanation: '聯絡卡顯示 Harry 母親 Mandy 的電話是 0912-345678，故選 ②。' },
-  { number: 32, taskType: 'R-COMP', dimension: '圖表理解', groupId: 'saa-113-g5-contact', question: 'Which is true?', options: choices('Nick is eleven years old.', 'Harry is a student.', 'Sharon is a doctor.', "Mandy is Nick's sister."), image: image(5, 32), explanation: '聯絡卡顯示 Harry 就讀 Sunny Elementary School 且有班級，Harry 是學生。' },
-  { number: 33, taskType: 'R-COMP', dimension: '生活告示', groupId: 'saa-113-g5-museum', passage: 'Art Museum ticket rules: Tuesday to Friday, children 6–12 are free and adults are $80. Saturday and Sunday, children are $50 and adults are $100. Closed on Monday. No eating, drinking, or pets.', question: "Windy goes to the Art Museum, but it's not open. What day is it?", options: choices("It's Sunday.", "It's Monday.", "It's Tuesday.", "It's Wednesday."), image: image(5, 33), explanation: '票價表註明 Closed on Monday，故選 Monday。' },
-  { number: 34, taskType: 'R-COMP', dimension: '生活告示', groupId: 'saa-113-g5-museum', question: 'Jerry is 9 years old. Jerry’s mom is 40 years old. Their tickets are $150. What day is it?', options: choices("It's Wednesday.", "It's Thursday.", "It's Friday.", "It's Saturday."), image: image(5, 34), explanation: '週末兒童 $50、成人 $100，共 $150；選項中只有 Saturday 是週末。' },
-  { number: 35, taskType: 'R-COMP', dimension: '生活告示', groupId: 'saa-113-g5-museum', question: 'What can we do in the museum?', options: choices('We can eat hamburgers.', 'We can drink soda.', 'We can walk the dog.', 'We can see paintings.'), image: image(5, 35), explanation: '告示禁止飲食與寵物；在美術館可以看畫作，故選 ④。' },
+  { number: 31, taskType: 'R-COMP', dimension: '圖表理解', groupId: 'saa-113-g5-contact', passage: G5_CONTACT, question: "Teacher Sharon has to call Harry's mother. The number is ______.", options: choices('0934-567890', '0912-345678', '0987-654321', '1985-1004'), explanation: '聯絡卡顯示 Harry 母親 Mandy 的電話是 0912-345678，故選 ②。' },
+  { number: 32, taskType: 'R-COMP', dimension: '圖表理解', groupId: 'saa-113-g5-contact', passage: G5_CONTACT, question: 'Which is true?', options: choices('Nick is eleven years old.', 'Harry is a student.', 'Sharon is a doctor.', "Mandy is Nick's sister."), explanation: '聯絡卡顯示 Harry 就讀 Sunny Elementary School 且有班級，Harry 是學生。' },
+  { number: 33, taskType: 'R-COMP', dimension: '生活告示', groupId: 'saa-113-g5-museum', passage: G5_MUSEUM, question: "Windy goes to the Art Museum, but it's not open. What day is it?", options: choices("It's Sunday.", "It's Monday.", "It's Tuesday.", "It's Wednesday."), explanation: '票價表註明 Closed on Monday，故選 Monday。' },
+  { number: 34, taskType: 'R-COMP', dimension: '生活告示', groupId: 'saa-113-g5-museum', passage: G5_MUSEUM, question: 'Jerry is 9 years old. Jerry’s mom is 40 years old. Their tickets are $150. What day is it?', options: choices("It's Wednesday.", "It's Thursday.", "It's Friday.", "It's Saturday."), explanation: '週末兒童 $50、成人 $100，共 $150；選項中只有 Saturday 是週末。' },
+  { number: 35, taskType: 'R-COMP', dimension: '生活告示', groupId: 'saa-113-g5-museum', passage: G5_MUSEUM, question: 'What can we do in the museum?', options: choices('We can eat hamburgers.', 'We can drink soda.', 'We can walk the dog.', 'We can see paintings.'), explanation: '告示禁止飲食與寵物；在美術館可以看畫作，故選 ④。' },
 ];
 
 const g6 = [
@@ -149,12 +205,12 @@ const g6 = [
   { number: 27, taskType: 'R-CLOZE', dimension: '語意與文法', question: "I am so ______. Let's go to the ______ nearby!", options: choices('happy / post office', 'hungry / bakery', 'sad / school', 'angry / library'), explanation: '肚子餓可以去 bakery，故選 hungry / bakery。' },
   { number: 28, taskType: 'R-RESP', dimension: '生活辭句回應', question: 'A: What are you doing?\nB: ______.', options: choices("I'm fine.", "I'm hungry.", "I'm in the kitchen.", "I'm cooking."), explanation: 'What are you doing? 詢問正在做的事，I’m cooking. 回答最合適。' },
   { number: 29, taskType: 'R-CLOZE', dimension: '文化理解', question: 'Today is Chinese New Year. I ______.', options: choices('get lucky money', 'go on an egg hunt', 'get a Christmas gift', 'eat a rice dumpling'), explanation: '農曆新年會收到 lucky money（紅包），故選 ①。' },
-  { number: 30, taskType: 'R-PIC', dimension: '字意理解', question: "Look at Robin's Facebook story. What is ‘fit’?", options: choices('strong', 'angry', 'sad', 'sick'), image: image(6, 30), explanation: '貼文以 Fit, healthy, happy 描述運動狀態；fit 在此意為 strong、健康強壯。' },
-  { number: 31, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g6-letter', passage: "Dear Stella,\nHow is your new school? Is it far away from us? You know our school is still on Turtle Street next to the park. You are always welcome for a visit. We miss you a lot.\nI love math, but now my favorite subject is English. The English teacher is so funny. She has long hair, wears glasses, and dresses. She is my favorite teacher.\nBy the way, I am going to the zoo on Moon Festival. There is a new museum opening in the zoo. I would like to see the new exhibitions. Are you coming? Let's have dinner together after visiting the zoo and the museum. Please let me know if you are coming.\nBest,\nTaylor", question: 'Which is true?', options: choices('Taylor and Stella are new friends.', 'Taylor is going to the school on Moon Festival.', 'Taylor wants to have lunch with Stella.', 'There is a new museum in the zoo.'), explanation: '信中明確提到 There is a new museum opening in the zoo.，故選 ④。' },
-  { number: 32, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g6-letter', question: "Which is Taylor's school?", options: choices('1', '2', '3', '4'), image: image(6, 32), explanation: 'Taylor 的學校在 Turtle Street 且在公園旁，地圖位置 ③ 符合。' },
-  { number: 33, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g6-letter', question: "Who is Taylor's favorite teacher?", options: choices('圖片 ①（短髮英文老師）', '圖片 ②（長髮戴眼鏡英文老師）', '圖片 ③（短髮數學老師）', '圖片 ④（戴眼鏡數學老師）'), image: image(6, 33), explanation: '信中說最喜歡英文老師，老師長髮、戴眼鏡且穿洋裝，圖片 ② 相符。' },
-  { number: 34, taskType: 'R-COMP', dimension: '圖表理解', groupId: 'saa-113-g6-planner', passage: "Amy's weekly planner: Monday PE; Tuesday jogging with Penny; Wednesday park with Bernadette; Thursday art class; Friday TV; Saturday karaoke with Howard; Sunday hiking.", question: 'Today is Tuesday. Who is going to go jogging?', options: choices('Sheldon', 'Howard', 'Bernadette', 'Penny'), image: image(6, 34), explanation: '週計畫寫 Tuesday: go jogging with my best friend, Penny，故選 Penny。' },
-  { number: 35, taskType: 'R-COMP', dimension: '圖表理解', groupId: 'saa-113-g6-planner', question: 'Amy has to bring her markers and crayons with her to school. What day is today?', options: choices('Today is Monday.', 'Today is Tuesday.', 'Today is Thursday.', 'Today is Wednesday.'), image: image(6, 35), explanation: 'markers 和 crayons 是美術課用品；週計畫的 art class 在 Thursday，故選 ③。' },
+  { number: 30, taskType: 'R-PIC', dimension: '字意理解', question: "Look at Robin's Facebook story. What is ‘fit’?", options: choices('strong', 'angry', 'sad', 'sick'), image: material('g6_q30_story'), explanation: '貼文以 Fit, healthy, happy 描述運動狀態；fit 在此意為 strong、健康強壯。' },
+  { number: 31, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g6-letter', passage: G6_LETTER, question: 'Which is true?', options: choices('Taylor and Stella are new friends.', 'Taylor is going to the school on Moon Festival.', 'Taylor wants to have lunch with Stella.', 'There is a new museum in the zoo.'), explanation: '信中明確提到 There is a new museum opening in the zoo.，故選 ④。' },
+  { number: 32, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g6-letter', passage: G6_LETTER, question: "Which is Taylor's school?", options: choices('1', '2', '3', '4'), image: material('g6_q32_map'), explanation: 'Taylor 的學校在 Turtle Street 且在公園旁，地圖位置 ③ 符合。' },
+  { number: 33, taskType: 'R-COMP', dimension: '短文理解', groupId: 'saa-113-g6-letter', passage: G6_LETTER, question: "Who is Taylor's favorite teacher?", options: choices('圖片 ①', '圖片 ②', '圖片 ③', '圖片 ④'), optionImages: ['g6_q33_a', 'g6_q33_b', 'g6_q33_c', 'g6_q33_d'].map(material), explanation: '信中說最喜歡英文老師，老師長髮、戴眼鏡且穿洋裝，圖片 ② 相符。' },
+  { number: 34, taskType: 'R-COMP', dimension: '圖表理解', groupId: 'saa-113-g6-planner', passage: G6_PLANNER, question: 'Today is Tuesday. Who is going to go jogging?', options: choices('Sheldon', 'Howard', 'Bernadette', 'Penny'), explanation: '週計畫寫 Tuesday: go jogging with my best friend, Penny，故選 Penny。' },
+  { number: 35, taskType: 'R-COMP', dimension: '圖表理解', groupId: 'saa-113-g6-planner', passage: G6_PLANNER, question: 'Amy has to bring her markers and crayons with her to school. What day is today?', options: choices('Today is Monday.', 'Today is Tuesday.', 'Today is Thursday.', 'Today is Wednesday.'), explanation: 'markers 和 crayons 是美術課用品；週計畫的 art class 在 Thursday，故選 ③。' },
 ];
 
 for (const [grade, source] of [[4, g4], [5, g5], [6, g6]]) {
