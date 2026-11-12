@@ -7,8 +7,9 @@
 ## 一、 叢林神山貪食蛇 (`SnakeGame.jsx`) 核心規範
 
 1. **轉向指令緩衝隊列 (`inputQueueRef`) — 嚴禁漏接！**：
-   - 玩家透過鍵盤（`ArrowUp/Down/Left/Right`、`WASD`）、虛擬十字鍵（`onPointerDown` + `onClick` 雙綁定 0ms 延遲）或畫面連續滑動（`touchmove` 閾值 16px）輸入方向時，統一呼叫 `queueDirection(newDir)` 推入 `inputQueueRef.current`（最多保留最新 2 個有效轉彎指令，並過濾同向與 180 度直接掉頭）。
+   - 玩家透過鍵盤（`ArrowUp/Down/Left/Right`、`WASD`）、虛擬十字鍵（`onPointerDown` + `onClick` 雙綁定 0ms 延遲）或畫面滑動輸入方向時，統一呼叫 `queueDirection(newDir)` 推入 `inputQueueRef.current`（最多保留最新 2 個有效轉彎指令，並過濾同向與 180 度直接掉頭）。觸控手勢必須在 `touchmove` 一跨過依短邊自適應的 12～18px 門檻時立刻排入，不得等到 `touchend` 才反應；單次滑動只送出一個方向。
    - **關鍵鐵律**：在 `advanceOneStep()` 每推進一格時，**必須執行 `if (inputQueueRef.current.length > 0) { dirRef.current = inputQueueRef.current.shift(); }`** 將隊列中的轉向指令取出並套用至 `dirRef.current`！若漏掉此行，所有上下左右按鍵與十字鍵都會失效。
+   - **速度基準**：簡單／普通／生存模式分別為 330／235／205ms 每格；若日後調整，必須同時確認鍵盤、虛擬十字鍵與手機滑動三種輸入都能在下一個合法格點轉向。
 2. **2D 正俯視日夜雙景生態與 4K 字母清晰度 (`SnakeCanvas2D.jsx`, `snakeJungleTheme.js`)**：
    - **四周邊框與環境遮蔽 (Ambient Occlusion)**：
      - 白天：魯凱特色頁岩片疊石砌牆 (Stacked Slate Wall) ＋ 蔓生翠綠青苔 ＋ 盛開純白高山百合花飾。邊界四周具備 32px 向內漸層環境陰影（AO Gradient），與 slate 頁岩地面完美融合。
@@ -46,7 +47,7 @@
    - 當 `qualifyingBook === 'abc'` 或 `settings?.alphaMode` 為真時，自動切換為大小寫字母配對題庫。
 3. **倒數計時與愛心扣除鐵律 (`WhackAMoleGame.jsx`)**：
    - **倒數計時器**：`useEffect` 依賴項必須包含 `[gameState, isPreloading, triggerGameOver]`，確保預載完成後立即啟動 60 秒倒數，倒數至 0 秒時觸發結算；倒數最後 10 秒啟動狂暴模式與警示音。
-   - **生命值扣除與結算**：玩家誤擊干擾字（答錯）或蜂巢搗蛋鼠時，每次扣除 1 顆愛心（初始 3 顆，顯示 `-10 💔`），扣完至 0 顆立即觸發遊戲結束進入結算畫面；嚴禁在 `setState(prev => ...)` 內執行副作用。
+   - **生命值扣除與結算**：玩家誤擊干擾字（答錯）、蜂巢搗蛋鼠，或同一題 10 秒內未擊中正解時，每次扣除 1 顆愛心（初始 3 顆，並中斷連擊與扣 10 分），扣完至 0 顆立即觸發遊戲結束進入結算畫面；嚴禁在 `setState(prev => ...)` 內執行副作用。
    - **重開防呆**：點擊「再玩一次」時必須徹底重設 `isTransitioningRef.current = false`、`livesRef.current = 3`、`timeLeftRef.current = 60` 與計時器，杜絕操作被鎖死。
 4. **極速滑卡卡牌防抖與干擾字隔離 (`SwipeCardGame.jsx`)**：
    - **180ms 換牌防抖（Re-entrancy Guard）**：引入 `isSwipingRef` 旗標，在滑卡或點擊觸發 180ms 離場動畫期間鎖定操作，待 `setTimeout` 補牌完成後解鎖，杜絕快速連點造成舊牌被重複判定或跳題扣分。

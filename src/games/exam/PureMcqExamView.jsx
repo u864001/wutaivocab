@@ -17,7 +17,6 @@ import {
   Sparkles,
   UserCheck,
   Headphones,
-  PenTool,
   GraduationCap,
   ChevronRight,
   Clock,
@@ -77,6 +76,14 @@ import {
   extractTargetToken,
   resolveQuestionTrack
 } from './examBlueprint';
+import {
+  MISTAKE_SOURCE_OPTIONS,
+  buildMistakeReviewSequence,
+  filterMistakesBySource,
+  getMistakeAttemptLimit,
+  isMistakeSourceCleared,
+  simulateMistakeAttempts
+} from './mistakeReview';
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 export const STUDENT_REPORT_TAGS = [
@@ -237,10 +244,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   // SAA 響應式 Wizard：1 年級 → 2 題源 → 3 官方年度／原創組卷模式
   const [saaWizardStep, setSaaWizardStep] = useState(1);
 
-  // Pre-A1 設定: 'standard' (聽15+閱15) | 'listening' (聽20) | 'reading' (閱20) | 'writing' (寫作重組20)
+  // Pre-A1 設定: 'standard' (聽15+閱15) | 'listening' (聽20) | 'reading' (閱20)
   const [selectedPreA1Format, setSelectedPreA1Format] = useState('standard');
   // 正式施測模式 (30題 • 限時35分 • 雙次聽力播音 • 分母300題)
   const [isFormalExam, setIsFormalExam] = useState(false);
+  // 易錯題入口：題數代表最多作答次數；題目不足時不以一般題補滿。
+  const [mistakeSource, setMistakeSource] = useState('all');
+  const [mistakeAttemptLimit, setMistakeAttemptLimit] = useState(10);
   const [masteryInitialTrack, setMasteryInitialTrack] = useState('tme-preA1');
   const finalizeExamRef = useRef(null);
 
@@ -286,7 +296,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     reason: '',
     eligible: false,
     graduatedCount: 0,
-    addedMistakeCount: 0
+    addedMistakeCount: 0,
+    earlyCleared: false,
+    clearedSource: false,
+    attemptLimit: null
   });
   const hasAwardedCoinsRef = useRef(false);
   const hasFinalizedRef = useRef(false);
@@ -364,10 +377,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   }, [inProgressKey]);
 
   // 切換範圍快捷設定
-  const applyRangePreset = useCallback((preset, bookKey = selectedBook) => {
+  const applyRangePreset = useCallback((preset, bookKey = selectedBook, advance = true) => {
     setRangePreset(preset);
-    setActiveBoardStep(3);
-    setMaxReachedBoardStep((prev) => Math.max(prev, 3));
+    if (advance) {
+      setActiveBoardStep(3);
+      setMaxReachedBoardStep((prev) => Math.max(prev, 3));
+    }
     const meta = HERE_WE_GO_BOOK_META[bookKey];
     if (!meta) return;
     if (bookKey === 'g1' || bookKey === 'g2') {
@@ -410,7 +425,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       setTextbookExamMode('written');
     } else {
       const preset = rangePreset === 'custom' ? 'midterm' : rangePreset;
-      applyRangePreset(preset, bookNum);
+      applyRangePreset(preset, bookNum, false);
     }
   }, [rangePreset, applyRangePreset]);
 
@@ -461,6 +476,23 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     return list;
   }, [mistakeMap]);
 
+  const filteredMistakeQuestions = useMemo(
+    () => filterMistakesBySource(mistakeQuestions, mistakeSource),
+    [mistakeQuestions, mistakeSource]
+  );
+
+  const mistakeSourceCounts = useMemo(() => ({
+    all: mistakeQuestions.length,
+    curriculum: filterMistakesBySource(mistakeQuestions, 'curriculum').length,
+    'ministry-assessment': filterMistakesBySource(mistakeQuestions, 'ministry-assessment').length,
+    'tme-preA1': filterMistakesBySource(mistakeQuestions, 'tme-preA1').length
+  }), [mistakeQuestions]);
+
+  const effectiveMistakeAttemptLimit = useMemo(
+    () => getMistakeAttemptLimit(mistakeAttemptLimit, filteredMistakeQuestions.length),
+    [mistakeAttemptLimit, filteredMistakeQuestions.length]
+  );
+
   // Pre-A1 官方模擬題庫 (Scaffold & Registry)
   const tmePool = useMemo(() => {
     if (selectedPreA1Format === 'listening') {
@@ -468,9 +500,6 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     }
     if (selectedPreA1Format === 'reading') {
       return TME_PRE_A1_BANK.filter((q) => q.category === 'reading' || q.taskType?.startsWith('R-') || q.taskType?.startsWith('V-'));
-    }
-    if (selectedPreA1Format === 'writing') {
-      return TME_PRE_A1_BANK.filter((q) => q.category === 'writing' || q.taskType === 'W-SCRAMBLE');
     }
     return TME_PRE_A1_BANK;
   }, [selectedPreA1Format]);
@@ -521,6 +550,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         selectedBook,
         scopeMode,
         questionCountOpt,
+        mistakeSource,
+        mistakeAttemptLimit,
         selectedPreA1Format,
         selectedSaaFormat,
         selectedSaaGrade,
@@ -543,6 +574,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     selectedBook,
     scopeMode,
     questionCountOpt,
+    mistakeSource,
+    mistakeAttemptLimit,
     selectedPreA1Format,
     selectedSaaFormat,
     selectedSaaGrade,
@@ -593,35 +626,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           sourceList = assembleExamForm(saaPool, targetCount);
         }
       } else if (scopeMode === 'mistakes') {
-        targetCount = Number(questionCountOpt) || 20;
-        // 優先放入所有個人易錯題
-        const mistakeList = [...mistakeQuestions];
-        for (let i = mistakeList.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [mistakeList[i], mistakeList[j]] = [mistakeList[j], mistakeList[i]];
-        }
-        sourceList = mistakeList.slice(0, targetCount);
-
-        // 若易錯題不足目標題數，從學生本年級題庫隨機抽題補滿（不重複）
-        if (sourceList.length < targetCount) {
-          const pickedIds = new Set(sourceList.map((q) => q.id));
-          const ownBooks = getDefaultBooksForGrade(currentStudent?.grade);
-          const fillerCandidates = HERE_WE_GO_MCQ_BANK.filter(
-            (q) => (ownBooks.length === 0 || ownBooks.includes(q.book)) && !pickedIds.has(q.id)
-          ).map((q) => ({
-            ...q,
-            sourceTrack: 'curriculum'
-          }));
-          for (let i = fillerCandidates.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [fillerCandidates[i], fillerCandidates[j]] = [
-              fillerCandidates[j],
-              fillerCandidates[i]
-            ];
-          }
-          const needed = targetCount - sourceList.length;
-          sourceList = [...sourceList, ...fillerCandidates.slice(0, needed)];
-        }
+        targetCount = effectiveMistakeAttemptLimit;
+        sourceList = buildMistakeReviewSequence(
+          filteredMistakeQuestions,
+          mistakeMap,
+          targetCount
+        );
       } else {
         targetCount = Number(questionCountOpt) || 20;
         let pool = curriculumPool;
@@ -765,8 +775,9 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       selectedSaaSource,
       selectedPreA1Format,
       isFormalExam,
-      mistakeQuestions,
-      currentStudent?.grade,
+      filteredMistakeQuestions,
+      effectiveMistakeAttemptLimit,
+      mistakeMap,
       curriculumPool,
       tmePool,
       saaPool,
@@ -1075,6 +1086,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     const targetIsFormal = overridePayload?.isFormal !== undefined ? overridePayload.isFormal : isFormalExam;
     const targetPreA1Format = overridePayload?.selectedPreA1Format || selectedPreA1Format;
     const targetElapsedSec = overridePayload?.elapsedSec !== undefined ? overridePayload.elapsedSec : elapsedSec;
+    const targetEarlyCleared = Boolean(overridePayload?.earlyCleared);
+
+    if (overridePayload?.questions) setQuestions(targetQuestions);
+    if (overridePayload?.answers) setAnswers(targetAnswers);
 
     let correctCount = 0;
     const nextMistakes = { ...mistakeMap };
@@ -1231,12 +1246,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     clearInProgress(inProgressKey);
     setSavedSession(null);
 
+    const clearedSource = targetScopeMode === 'mistakes'
+      ? isMistakeSourceCleared(nextMistakes, filteredMistakeQuestions)
+      : false;
+
     setSessionRewardInfo({
       coinsEarned,
       reason,
       eligible: isOwnGradeBook && finalScore >= 60,
       graduatedCount,
-      addedMistakeCount
+      addedMistakeCount,
+      earlyCleared: targetEarlyCleared,
+      clearedSource,
+      attemptLimit: targetScopeMode === 'mistakes' ? effectiveMistakeAttemptLimit : null
     });
 
     setShowUnansweredConfirm(false);
@@ -1271,10 +1293,46 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     elapsedSec,
     inProgressKey,
     isFormalExam,
-    selectedPreA1Format
+    selectedPreA1Format,
+    effectiveMistakeAttemptLimit,
+    filteredMistakeQuestions
   ]);
 
   finalizeExamRef.current = finalizeExam;
+
+  const handleAdvanceQuestion = useCallback(() => {
+    if (scopeMode === 'mistakes') {
+      if (answers[currentIndex] === undefined) return;
+      const simulatedMap = simulateMistakeAttempts(mistakeMap, questions, answers, currentIndex);
+      if (isMistakeSourceCleared(simulatedMap, filteredMistakeQuestions)) {
+        const completedQuestions = questions.slice(0, currentIndex + 1);
+        const completedAnswers = Object.fromEntries(
+          Object.entries(answers).filter(([index]) => Number(index) <= currentIndex)
+        );
+        finalizeExamRef.current?.({
+          questions: completedQuestions,
+          answers: completedAnswers,
+          scopeMode: 'mistakes',
+          elapsedSec,
+          earlyCleared: true
+        });
+        return;
+      }
+      const completedQuestions = questions.slice(0, currentIndex + 1);
+      const pendingQuestions = questions
+        .slice(currentIndex + 1)
+        .filter((question) => !isMistakeSourceCleared(simulatedMap, [question]));
+      const replenishedQuestions = pendingQuestions.length === 0 && mistakeAttemptLimit === 'all'
+        ? filteredMistakeQuestions.filter((question) => !isMistakeSourceCleared(simulatedMap, [question]))
+        : pendingQuestions;
+      setQuestions([...completedQuestions, ...replenishedQuestions]);
+      if (replenishedQuestions.length > 0) {
+        setCurrentIndex(currentIndex + 1);
+        return;
+      }
+    }
+    setCurrentIndex((index) => Math.min(questions.length - 1, index + 1));
+  }, [scopeMode, answers, currentIndex, mistakeMap, questions, filteredMistakeQuestions, elapsedSec, mistakeAttemptLimit]);
 
   const handleRequestSubmit = () => {
     const answeredCount = Object.keys(answers).length;
@@ -1301,15 +1359,15 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         handleSelectOption(2);
       } else if (['4', 'D'].includes(key) && currentQ.options.length >= 4) {
         handleSelectOption(3);
-      } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+      } else if (e.key === 'ArrowLeft' && currentIndex > 0 && scopeMode !== 'mistakes') {
         setCurrentIndex((i) => i - 1);
       } else if (e.key === 'ArrowRight' && currentIndex < questions.length - 1) {
-        setCurrentIndex((i) => i + 1);
+        handleAdvanceQuestion();
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  });
+  }, [phase, showUnansweredConfirm, showExitConfirm, questions, currentIndex, scopeMode, handleAdvanceQuestion]);
 
   const formatTime = (sec) => {
     const m = Math.floor(sec / 60);
@@ -1432,7 +1490,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     const mistakeCount = mistakeQuestions.length;
     const canStart =
       scopeMode === 'mistakes'
-        ? true
+        ? filteredMistakeQuestions.length > 0 && effectiveMistakeAttemptLimit > 0
         : scopeMode === 'curriculum'
         ? curriculumPool.length > 0
         : scopeMode === 'tme-preA1'
@@ -1440,6 +1498,38 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         : scopeMode === 'ministry-assessment'
         ? saaPool.length > 0
         : false;
+    const setupFlowSteps =
+      setupSubView === 'textbook'
+        ? []
+        : setupSubView === 'saa'
+        ? ['年級', '題源', '試卷']
+        : setupSubView === 'preA1'
+        ? []
+        : setupSubView === 'mistakes'
+        ? ['來源', '上限']
+        : [];
+    const setupFlowActiveStep =
+      setupSubView === 'textbook'
+        ? activeBoardStep
+        : setupSubView === 'saa'
+        ? saaWizardStep
+        : setupSubView === 'mistakes'
+        ? 2
+        : 1;
+    const setupTone =
+      setupSubView === 'textbook'
+        ? 'blue'
+        : setupSubView === 'saa'
+        ? 'emerald'
+        : setupSubView === 'preA1'
+        ? 'violet'
+        : 'rose';
+    const setupToneClasses = {
+      blue: 'bg-blue-600 border-blue-600 text-white',
+      emerald: 'bg-emerald-600 border-emerald-600 text-white',
+      violet: 'bg-violet-600 border-violet-600 text-white',
+      rose: 'bg-rose-600 border-rose-600 text-white'
+    };
 
     if (setupSubView === 'preA1-dashboard') {
       return renderShell(
@@ -1535,9 +1625,9 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
           <div className="flex items-center gap-2">
             {setupSubView === 'hub' && <Award className="text-indigo-600 dark:text-indigo-400" size={22} />}
-            {setupSubView === 'textbook' && <BookOpen className="text-indigo-600 dark:text-indigo-400" size={22} />}
+            {setupSubView === 'textbook' && <BookOpen className="text-blue-600 dark:text-blue-400" size={22} />}
             {setupSubView === 'saa' && <ClipboardCheck className="text-emerald-600 dark:text-emerald-400" size={22} />}
-            {setupSubView === 'preA1' && <Award className="text-sky-600 dark:text-sky-400" size={22} />}
+            {setupSubView === 'preA1' && <Award className="text-violet-600 dark:text-violet-400" size={22} />}
             {setupSubView === 'mistakes' && <RotateCcw className="text-rose-600 dark:text-rose-400" size={22} />}
             <div>
               <h1 className="text-base sm:text-lg md:text-xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
@@ -1589,6 +1679,42 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             ? 'p-2 sm:p-3 gap-2 overflow-y-auto lg:overflow-hidden'
             : 'p-3 sm:p-5 md:p-6 gap-3 overflow-y-auto'
         }`}>
+          {setupFlowSteps.length > 0 && (
+            <ol
+              data-testid="exam-setup-step-rail"
+              className={`shrink-0 grid gap-1.5 ${setupFlowSteps.length === 4 ? 'grid-cols-4' : setupFlowSteps.length === 3 ? 'grid-cols-3' : setupFlowSteps.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}
+              aria-label="測驗設定進度"
+            >
+              {setupFlowSteps.map((label, index) => {
+                const step = index + 1;
+                const current = step === setupFlowActiveStep;
+                const complete = step < setupFlowActiveStep;
+                return (
+                  <li key={label}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (setupSubView === 'textbook') setActiveBoardStep(step);
+                        if (setupSubView === 'saa') setSaaWizardStep(step);
+                      }}
+                      disabled={setupSubView === 'preA1' || setupSubView === 'mistakes'}
+                      aria-current={current ? 'step' : undefined}
+                      className={`w-full min-h-8 rounded-xl border px-2 py-1 text-[11px] sm:text-xs font-black flex items-center justify-center gap-1 transition ${
+                        current
+                          ? setupToneClasses[setupTone]
+                          : complete
+                          ? 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
+                          : 'bg-slate-100 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-400'
+                      } ${setupSubView === 'preA1' || setupSubView === 'mistakes' ? 'cursor-default' : 'cursor-pointer'}`}
+                    >
+                      {complete ? <Check size={13} /> : <span>{step}</span>}
+                      <span>{label}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
           {/* 未完成檢定接續提醒 (6 小時內有效快照) */}
           {savedSession && (
             <div className="shrink-0 p-3 sm:p-4 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/70 border-2 border-indigo-300 dark:border-indigo-700 flex flex-wrap items-center justify-between gap-3 animate-fadeIn">
@@ -1670,6 +1796,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     setCurrentIndex(savedSession.currentIndex || 0);
                     if (savedSession.selectedBook) setSelectedBook(savedSession.selectedBook);
                     if (savedSession.questionCountOpt) setQuestionCountOpt(savedSession.questionCountOpt);
+                    if (savedSession.mistakeSource) setMistakeSource(savedSession.mistakeSource);
+                    if (savedSession.mistakeAttemptLimit) setMistakeAttemptLimit(savedSession.mistakeAttemptLimit);
                     if (savedSession.scopeMode) setScopeMode(savedSession.scopeMode);
                     if (savedSession.selectedPreA1Format) setSelectedPreA1Format(savedSession.selectedPreA1Format);
                     if (savedSession.selectedSaaFormat) setSelectedSaaFormat(savedSession.selectedSaaFormat);
@@ -1711,18 +1839,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   setSetupSubView('textbook');
                   setScopeMode('curriculum');
                 }}
-                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-indigo-50/40 dark:hover:bg-slate-800 border-2 border-indigo-200/80 dark:border-indigo-900/60 border-l-6 border-l-indigo-600 hover:border-indigo-500 dark:hover:border-indigo-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-blue-50/40 dark:hover:bg-slate-800 border-2 border-blue-200/80 dark:border-blue-900/60 border-l-6 border-l-blue-600 hover:border-blue-500 dark:hover:border-blue-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
                     <BookOpen size={24} className="sm:w-7 sm:h-7" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         課本題庫練習
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
                         {CANONICAL_STATS.canonicalItems.toLocaleString()} 題分冊精熟
                       </span>
                     </div>
@@ -1731,7 +1859,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     </p>
                   </div>
                 </div>
-                <div className="shrink-0 flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-black text-xs sm:text-sm">
+                <div className="shrink-0 flex items-center gap-1 text-blue-600 dark:text-blue-400 font-black text-xs sm:text-sm">
                   <span className="hidden sm:inline">進入練習</span>
                   <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -1745,18 +1873,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   setScopeMode('ministry-assessment');
                   setSaaWizardStep(1);
                 }}
-                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-purple-50/40 dark:hover:bg-slate-800 border-2 border-purple-200/80 dark:border-purple-900/60 border-l-6 border-l-purple-600 hover:border-purple-500 dark:hover:border-purple-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-emerald-50/40 dark:hover:bg-slate-800 border-2 border-emerald-200/80 dark:border-emerald-900/60 border-l-6 border-l-emerald-600 hover:border-emerald-500 dark:hover:border-emerald-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
                     <ClipboardCheck size={24} className="sm:w-7 sm:h-7" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                      <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                         學力檢測練習
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
                         SAA 4～6年級學測
                       </span>
                     </div>
@@ -1765,7 +1893,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     </p>
                   </div>
                 </div>
-                <div className="shrink-0 flex items-center gap-1 text-purple-600 dark:text-purple-400 font-black text-xs sm:text-sm">
+                <div className="shrink-0 flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-black text-xs sm:text-sm">
                   <span className="hidden sm:inline">進入練習</span>
                   <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -1778,18 +1906,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   setSetupSubView('preA1');
                   setScopeMode('tme-preA1');
                 }}
-                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-sky-50/40 dark:hover:bg-slate-800 border-2 border-sky-200/80 dark:border-sky-900/60 border-l-6 border-l-sky-600 hover:border-sky-500 dark:hover:border-sky-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
+                className="w-full text-left p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-800/90 hover:bg-violet-50/40 dark:hover:bg-slate-800 border-2 border-violet-200/80 dark:border-violet-900/60 border-l-6 border-l-violet-600 hover:border-violet-500 dark:hover:border-violet-400 shadow-md hover:shadow-xl transition-all duration-200 group flex items-center justify-between gap-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
                     <Award size={24} className="sm:w-7 sm:h-7" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                      <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
                         Pre A1 檢測練習
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300">
                         教育部官方標準
                       </span>
                     </div>
@@ -1798,7 +1926,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     </p>
                   </div>
                 </div>
-                <div className="shrink-0 flex items-center gap-1 text-sky-600 dark:text-sky-400 font-black text-xs sm:text-sm">
+                <div className="shrink-0 flex items-center gap-1 text-violet-600 dark:text-violet-400 font-black text-xs sm:text-sm">
                   <span className="hidden sm:inline">進入練習</span>
                   <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -1827,7 +1955,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       </span>
                     </div>
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">
-                      精準重測曾答錯題目，題數不足自動由本年級補足；連續答對 2 次自動移出
+                      可選全部、課本、SAA 或 Pre-A1；只複習真實錯題，連續答對 2 次自動移出
                     </p>
                   </div>
                 </div>
@@ -1847,46 +1975,42 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           {setupSubView === 'textbook' && (
             <div className="flex-1 flex flex-col gap-3 min-h-0">
-              {/* 頂部極簡標籤橫幅（精熟診斷卡入口與題庫統計） */}
-              <div className="shrink-0 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 dark:from-amber-950/40 dark:via-orange-950/40 dark:to-amber-950/40 border border-amber-300/40 dark:border-amber-700/40 rounded-2xl p-2.5 sm:p-3 flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-amber-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <BookOpen size={16} />
+              <div className="shrink-0 flex items-center justify-end gap-2">
+                <details className="relative">
+                  <summary className="list-none w-9 h-9 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 flex items-center justify-center cursor-pointer" aria-label="查看課本測驗說明" title="課本測驗說明">
+                    <Info size={17} />
+                  </summary>
+                  <div className="absolute z-30 right-0 top-11 w-64 p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                    依序選擇冊別、範圍、題型與題數。完成的步驟會收合並保留摘要，隨時可點回修改。
                   </div>
-                  <div className="min-w-0">
-                    <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5 truncate">
-                      <span>Here We Go {CANONICAL_STATS.canonicalItems.toLocaleString()} 全冊題庫</span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-amber-200 text-amber-800 dark:bg-amber-900 dark:text-amber-200 shrink-0">
-                        1～8 冊 · 字母專冊 · 國一先修
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                </details>
                 <button
                   type="button"
                   onClick={() => {
                     setMasteryInitialTrack('curriculum');
                     setSetupSubView('preA1-dashboard');
                   }}
-                  className="px-2.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-black shadow-xs flex items-center gap-1 transition cursor-pointer shrink-0"
+                  className="w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition cursor-pointer"
+                  aria-label="查看課本精熟卡"
+                  title="查看課本精熟卡"
                 >
-                  <BookOpen size={13} />
-                  <span>課本精熟卡 ➔</span>
+                  <Award size={17} />
                 </button>
               </div>
 
-              {/* 四聯階梯式任務控制台 (4-Column Progressive Mission Board - Zero Scroll on iPad) */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-2.5 sm:gap-3 flex-1 min-h-0">
+              {/* 手機／直向平板：四列漸進手風琴；iPad 橫向與桌機：四欄並排布題台。 */}
+              <div data-testid="textbook-setup-board" className="grid grid-cols-1 lg:grid-cols-4 gap-2 lg:gap-3 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden pr-0.5">
                 {/* ───────────────────────────────────────────────────────────── */}
                 {/* 欄 1：01 TARGET 冊別選擇                                        */}
                 {/* ───────────────────────────────────────────────────────────── */}
                 <div
+                  data-testid="textbook-step-1"
                   onClick={() => setActiveBoardStep(1)}
-                  className={`rounded-2xl p-3 flex flex-col gap-2 min-h-0 transition-all cursor-pointer ${
+                  className={`rounded-2xl p-3 flex flex-col gap-2 min-h-0 lg:h-full lg:overflow-hidden transition-all cursor-pointer ${
                     activeBoardStep === 1
-                      ? 'border-2 border-indigo-500 dark:border-indigo-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-indigo-500/25 dark:ring-indigo-400/25 opacity-100'
+                      ? 'border-2 border-blue-500 dark:border-blue-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-blue-500/20 dark:ring-blue-400/20 opacity-100'
                       : 1 <= maxReachedBoardStep
-                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-indigo-200'
+                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-blue-300'
                       : 'border-2 border-dashed border-slate-200 dark:border-slate-750 bg-slate-50/70 dark:bg-slate-850/60 opacity-45 hover:opacity-75'
                   }`}
                 >
@@ -1894,28 +2018,24 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     <div className="flex items-center gap-1.5">
                       <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center transition ${
                         activeBoardStep === 1
-                          ? 'bg-indigo-600 text-white ring-2 ring-indigo-300'
+                          ? 'bg-blue-600 text-white ring-2 ring-blue-300'
                           : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                       }`}>
                         1
                       </span>
                       <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                        01 TARGET 冊別
+                        冊別
                       </span>
                     </div>
-                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${
-                      isSelectedBookOwnGrade
-                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-                        : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
-                    }`}>
-                      {isSelectedBookOwnGrade ? '本年級計分' : '練習'}
+                    <span className="text-[11px] font-black text-blue-700 dark:text-blue-300">
+                      {formatBookLabel(selectedBook)}{isSelectedBookOwnGrade ? ' · 本年級' : ''}
                     </span>
                   </div>
 
                   {/* 冊別按鈕網格 */}
-                  <div className="flex-1 flex flex-col gap-1.5 overflow-y-auto pr-0.5 min-h-0">
+                  <div className={`${activeBoardStep === 1 ? 'flex' : 'hidden'} lg:flex flex-1 flex-col gap-1.5 overflow-y-auto pr-0.5 min-h-0`}>
                     {/* 低年級字母專冊 */}
-                    <div className="grid grid-cols-2 gap-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-1.5">
                       {['g1', 'g2'].map((bKey) => {
                         const isSelected = selectedBook === bKey;
                         const isOwn = isBookInOwnGrade(bKey, currentStudent?.grade, 'mcq-exam');
@@ -1929,13 +2049,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                             }}
                             className={`py-2 px-2 rounded-xl border text-center transition flex flex-col items-center justify-center cursor-pointer ${
                               isSelected
-                                ? 'border-indigo-600 bg-indigo-600 text-white shadow-xs font-black'
-                                : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300'
+                                ? 'border-blue-600 bg-blue-600 text-white shadow-xs font-black'
+                                : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-300'
                             }`}
                           >
                             <span className="text-sm font-black leading-tight">{formatBookLabel(bKey)}</span>
                             {isOwn && (
-                              <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                              <span className={`text-[10px] font-bold ${isSelected ? 'text-blue-100' : 'text-blue-700 dark:text-blue-300'}`}>
                                 ★ 本年級
                               </span>
                             )}
@@ -1945,7 +2065,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     </div>
 
                     {/* 3~6 年級 1~8 冊 */}
-                    <div className="grid grid-cols-2 gap-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-1.5">
                       {[1, 2, 3, 4, 5, 6, 7, 8].map((bNum) => {
                         const isSelected = selectedBook === bNum;
                         const isOwn = isBookInOwnGrade(String(bNum), currentStudent?.grade, 'mcq-exam');
@@ -1959,13 +2079,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                             }}
                             className={`py-2 px-2 rounded-xl border text-center transition flex flex-col items-center justify-center cursor-pointer ${
                               isSelected
-                                ? 'border-indigo-600 bg-indigo-600 text-white shadow-xs font-black'
-                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300'
+                                ? 'border-blue-600 bg-blue-600 text-white shadow-xs font-black'
+                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-300'
                             }`}
                           >
                             <span className="text-sm font-black leading-tight">{formatBookLabel(bNum)}</span>
                             {isOwn && (
-                              <span className={`text-[10px] font-bold ${isSelected ? 'text-amber-200' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                              <span className={`text-[10px] font-bold ${isSelected ? 'text-blue-100' : 'text-blue-700 dark:text-blue-300'}`}>
                                 ★ 本年級
                               </span>
                             )}
@@ -1983,8 +2103,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       }}
                       className={`w-full py-2 px-2 rounded-xl border text-center transition flex items-center justify-center gap-1 cursor-pointer ${
                         selectedBook === 9
-                          ? 'border-indigo-600 bg-indigo-600 text-white shadow-xs font-black'
-                          : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-indigo-300'
+                          ? 'border-blue-600 bg-blue-600 text-white shadow-xs font-black'
+                          : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-300'
                       }`}
                     >
                       <span className="text-sm font-black">國一先修 (Book 9)</span>
@@ -1996,12 +2116,16 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 {/* 欄 2：02 SCOPE 評量範圍                                        */}
                 {/* ───────────────────────────────────────────────────────────── */}
                 <div
-                  onClick={() => setActiveBoardStep(2)}
-                  className={`rounded-2xl p-3 flex flex-col gap-2 min-h-0 transition-all cursor-pointer ${
+                  data-testid="textbook-step-2"
+                  onClick={() => {
+                    if (maxReachedBoardStep >= 2) setActiveBoardStep(2);
+                  }}
+                  aria-disabled={maxReachedBoardStep < 2}
+                  className={`rounded-2xl p-3 flex flex-col gap-2 min-h-0 lg:h-full lg:overflow-hidden transition-all ${maxReachedBoardStep >= 2 ? 'cursor-pointer' : 'cursor-not-allowed'} ${
                     activeBoardStep === 2
-                      ? 'border-2 border-indigo-500 dark:border-indigo-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-indigo-500/25 dark:ring-indigo-400/25 opacity-100'
+                      ? 'border-2 border-blue-500 dark:border-blue-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-blue-500/20 dark:ring-blue-400/20 opacity-100'
                       : 2 <= maxReachedBoardStep
-                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-indigo-200'
+                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-blue-300'
                       : 'border-2 border-dashed border-slate-200 dark:border-slate-750 bg-slate-50/70 dark:bg-slate-850/60 opacity-45 hover:opacity-75'
                   }`}
                 >
@@ -2009,32 +2133,32 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     <div className="flex items-center gap-1.5">
                       <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center transition ${
                         activeBoardStep === 2
-                          ? 'bg-amber-600 text-white ring-2 ring-amber-300'
+                          ? 'bg-blue-600 text-white ring-2 ring-blue-300'
                           : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                       }`}>
                         2
                       </span>
                       <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                        02 SCOPE 範圍
+                        範圍
                       </span>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-bold truncate">
-                      {curriculumPool.length} 題可用
+                    <span className="text-[11px] text-blue-700 dark:text-blue-300 font-bold truncate">
+                      {selectedBook === 'g1' || selectedBook === 'g2' ? '全字母' : rangePreset === 'midterm' ? '上半冊' : rangePreset === 'final' ? '下半冊' : rangePreset === 'all' ? '全冊' : `自選 ${selectedUnits.length} 單元`}
                     </span>
                   </div>
 
-                  <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-0.5 min-h-0">
+                  <div className={`${activeBoardStep === 2 ? 'flex' : 'hidden'} lg:flex flex-1 flex-col gap-2 overflow-y-auto pr-0.5 min-h-0 ${maxReachedBoardStep >= 2 ? '' : 'pointer-events-none'}`}>
                     {/* 1, 2 年級：極簡自動通道 */}
                     {(selectedBook === 'g1' || selectedBook === 'g2') ? (
-                      <div className="flex-1 flex flex-col items-center justify-center text-center p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60">
-                        <Type size={24} className="text-amber-600 dark:text-amber-400 mb-1" />
-                        <div className="text-sm font-black text-amber-900 dark:text-amber-100">
+                      <div className="flex-1 flex flex-col items-center justify-center text-center p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/60">
+                        <Type size={24} className="text-blue-600 dark:text-blue-400 mb-1" />
+                        <div className="text-sm font-black text-blue-900 dark:text-blue-100">
                           全字母闖關檢定
                         </div>
-                        <p className="text-[10px] text-amber-700 dark:text-amber-300 mt-1 leading-relaxed">
+                        <p className="hidden">
                           涵蓋英文字母前後順序、缺漏字母填空與大小寫配對
                         </p>
-                        <span className="mt-2 text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-200">
+                        <span className="hidden">
                           ✓ 系統已全自動選定
                         </span>
                       </div>
@@ -2051,19 +2175,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                             }}
                             className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                               rangePreset === 'midterm'
-                                ? 'border-amber-600 bg-amber-50 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-black shadow-xs ring-1 ring-amber-500'
-                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-300 text-slate-700 dark:text-slate-300'
+                                ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-950 dark:text-blue-100 font-black shadow-xs ring-1 ring-blue-500'
+                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 text-slate-700 dark:text-slate-300'
                             }`}
                           >
                             <div className="min-w-0">
                               <div className="text-sm sm:text-base font-black flex items-center gap-1">
                                 <span>上半冊 (期中考)</span>
                               </div>
-                              <div className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                              <div className="hidden">
                                 Starter, Unit 1, Unit 2, Review 1
                               </div>
                             </div>
-                            {rangePreset === 'midterm' && <CheckCircle2 size={16} className="text-amber-600 shrink-0" />}
+                            {rangePreset === 'midterm' && <CheckCircle2 size={16} className="text-blue-600 shrink-0" />}
                           </button>
 
                           {/* 下半冊 (期末考) */}
@@ -2075,19 +2199,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                             }}
                             className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                               rangePreset === 'final'
-                                ? 'border-amber-600 bg-amber-50 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-black shadow-xs ring-1 ring-amber-500'
-                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-300 text-slate-700 dark:text-slate-300'
+                                ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-950 dark:text-blue-100 font-black shadow-xs ring-1 ring-blue-500'
+                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 text-slate-700 dark:text-slate-300'
                             }`}
                           >
                             <div className="min-w-0">
                               <div className="text-sm sm:text-base font-black flex items-center gap-1">
                                 <span>下半冊 (期末考)</span>
                               </div>
-                              <div className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                              <div className="hidden">
                                 Unit 3, Unit 4, Review 2, Festival
                               </div>
                             </div>
-                            {rangePreset === 'final' && <CheckCircle2 size={16} className="text-amber-600 shrink-0" />}
+                            {rangePreset === 'final' && <CheckCircle2 size={16} className="text-blue-600 shrink-0" />}
                           </button>
 
                           {/* 全選 / 全冊總複習 */}
@@ -2099,19 +2223,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                             }}
                             className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                               rangePreset === 'all'
-                                ? 'border-amber-600 bg-amber-50 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-black shadow-xs ring-1 ring-amber-500'
-                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-amber-300 text-slate-700 dark:text-slate-300'
+                                ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-950 dark:text-blue-100 font-black shadow-xs ring-1 ring-blue-500'
+                                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 text-slate-700 dark:text-slate-300'
                             }`}
                           >
                             <div className="min-w-0">
                               <div className="text-sm sm:text-base font-black flex items-center gap-1">
                                 <span>全冊總複習 (全選)</span>
                               </div>
-                              <div className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
+                              <div className="hidden">
                                 全冊 8 個單元總動員
                               </div>
                             </div>
-                            {rangePreset === 'all' && <CheckCircle2 size={16} className="text-amber-600 shrink-0" />}
+                            {rangePreset === 'all' && <CheckCircle2 size={16} className="text-blue-600 shrink-0" />}
                           </button>
                         </div>
 
@@ -2127,7 +2251,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                             }}
                             className={`w-full py-1.5 px-2 rounded-lg text-xs font-black border flex items-center justify-between cursor-pointer transition ${
                               rangePreset === 'custom'
-                                ? 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-300 text-indigo-700 dark:text-indigo-300'
+                              ? 'bg-blue-50 dark:bg-blue-950/50 border-blue-300 text-blue-800 dark:text-blue-200'
                                 : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
                             }`}
                           >
@@ -2153,7 +2277,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                                     }}
                                     className={`p-1.5 rounded-lg border text-left text-xs font-bold truncate flex items-center justify-between cursor-pointer ${
                                       checked
-                                        ? 'bg-indigo-600 text-white border-indigo-600'
+                                              ? 'bg-blue-600 text-white border-blue-600'
                                         : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600'
                                     }`}
                                   >
@@ -2174,12 +2298,16 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 {/* 欄 3：03 MODE 施測型態                                         */}
                 {/* ───────────────────────────────────────────────────────────── */}
                 <div
-                  onClick={() => setActiveBoardStep(3)}
-                  className={`rounded-2xl p-3 flex flex-col gap-2 min-h-0 transition-all cursor-pointer ${
+                  data-testid="textbook-step-3"
+                  onClick={() => {
+                    if (maxReachedBoardStep >= 3) setActiveBoardStep(3);
+                  }}
+                  aria-disabled={maxReachedBoardStep < 3}
+                  className={`rounded-2xl p-3 flex flex-col gap-2 min-h-0 lg:h-full lg:overflow-hidden transition-all ${maxReachedBoardStep >= 3 ? 'cursor-pointer' : 'cursor-not-allowed'} ${
                     activeBoardStep === 3
-                      ? 'border-2 border-indigo-500 dark:border-indigo-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-indigo-500/25 dark:ring-indigo-400/25 opacity-100'
+                      ? 'border-2 border-blue-500 dark:border-blue-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-blue-500/20 dark:ring-blue-400/20 opacity-100'
                       : 3 <= maxReachedBoardStep
-                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-indigo-200'
+                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-blue-300'
                       : 'border-2 border-dashed border-slate-200 dark:border-slate-750 bg-slate-50/70 dark:bg-slate-850/60 opacity-45 hover:opacity-75'
                   }`}
                 >
@@ -2187,32 +2315,32 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     <div className="flex items-center gap-1.5">
                       <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center transition ${
                         activeBoardStep === 3
-                          ? 'bg-purple-600 text-white ring-2 ring-purple-300'
+                          ? 'bg-blue-600 text-white ring-2 ring-blue-300'
                           : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                       }`}>
                         3
                       </span>
                       <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                        03 MODE 型態
+                        題型
                       </span>
                     </div>
-                    <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold">
-                      聽力/筆試配置
+                    <span className="text-[10px] text-blue-700 dark:text-blue-300 font-bold">
+                      {textbookExamMode === 'comprehensive' ? '綜合測驗' : textbookExamMode === 'written' ? '純讀寫' : '純聽力'}
                     </span>
                   </div>
 
-                  <div className="flex-1 flex flex-col gap-2 overflow-y-auto pr-0.5 min-h-0">
+                  <div className={`${activeBoardStep === 3 ? 'flex' : 'hidden'} lg:flex flex-1 flex-col gap-2 overflow-y-auto pr-0.5 min-h-0 ${maxReachedBoardStep >= 3 ? '' : 'pointer-events-none'}`}>
                     {/* 1, 2 年級：極簡自動通道 */}
                     {(selectedBook === 'g1' || selectedBook === 'g2') ? (
-                      <div className="flex-1 flex flex-col items-center justify-center text-center p-3 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/60">
-                        <GraduationCap size={24} className="text-purple-600 dark:text-purple-400 mb-1" />
-                        <div className="text-sm font-black text-purple-900 dark:text-purple-100">
+                      <div className="flex-1 flex flex-col items-center justify-center text-center p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/60">
+                        <GraduationCap size={24} className="text-blue-600 dark:text-blue-400 mb-1" />
+                        <div className="text-sm font-black text-blue-900 dark:text-blue-100">
                           字母圖文全題型
                         </div>
-                        <p className="text-[10px] text-purple-700 dark:text-purple-300 mt-1 leading-relaxed">
+                        <p className="hidden">
                           自適應派發純字母、大小寫配對與趣味圖文題，免考複雜文法與長句
                         </p>
-                        <span className="mt-2 text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-200 text-purple-900 dark:bg-purple-900 dark:text-purple-200">
+                        <span className="hidden">
                           ✓ 低年級專屬通道
                         </span>
                       </div>
@@ -2229,23 +2357,23 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           }}
                           className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                             textbookExamMode === 'comprehensive'
-                              ? 'border-purple-600 bg-purple-50 dark:bg-purple-950/60 text-purple-950 dark:text-purple-100 font-black shadow-xs ring-1 ring-purple-500'
-                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-purple-300 text-slate-700 dark:text-slate-300'
+                              ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-950 dark:text-blue-100 font-black shadow-xs ring-1 ring-blue-500'
+                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 text-slate-700 dark:text-slate-300'
                           }`}
                         >
                           <div className="min-w-0">
                             <div className="text-sm sm:text-base font-black flex items-center gap-1.5">
-                              <Headphones size={15} className="text-purple-600 shrink-0" />
+                              <Headphones size={15} className="text-blue-600 shrink-0" />
                               <span>綜合測驗</span>
-                              <span className="text-[10px] font-black px-1.5 py-0.2 rounded-full bg-purple-200 text-purple-800 dark:bg-purple-900 dark:text-purple-200 shrink-0">
+                              <span className="hidden">
                                 段考標準
                               </span>
                             </div>
-                            <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
+                            <div className="hidden">
                               含聽力 (約30%) ＋ 讀寫 (約70%)
                             </div>
                           </div>
-                          {textbookExamMode === 'comprehensive' && <CheckCircle2 size={16} className="text-purple-600 shrink-0" />}
+                          {textbookExamMode === 'comprehensive' && <CheckCircle2 size={16} className="text-blue-600 shrink-0" />}
                         </button>
 
                         {/* 純筆試測驗 */}
@@ -2259,23 +2387,23 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           }}
                           className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                             textbookExamMode === 'written'
-                              ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-950 dark:text-indigo-100 font-black shadow-xs ring-1 ring-indigo-500'
-                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 text-slate-700 dark:text-slate-300'
+                              ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-950 dark:text-blue-100 font-black shadow-xs ring-1 ring-blue-500'
+                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 text-slate-700 dark:text-slate-300'
                           }`}
                         >
                           <div className="min-w-0">
                             <div className="text-sm sm:text-base font-black flex items-center gap-1.5">
-                              <FileText size={15} className="text-indigo-600 shrink-0" />
+                              <FileText size={15} className="text-blue-600 shrink-0" />
                               <span>純筆試測驗</span>
-                              <span className="text-[10px] font-black px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 shrink-0">
+                              <span className="hidden">
                                 避開聽力
                               </span>
                             </div>
-                            <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
+                            <div className="hidden">
                               100% 讀寫選擇題，安靜教室首選
                             </div>
                           </div>
-                          {textbookExamMode === 'written' && <CheckCircle2 size={16} className="text-indigo-600 shrink-0" />}
+                          {textbookExamMode === 'written' && <CheckCircle2 size={16} className="text-blue-600 shrink-0" />}
                         </button>
 
                         {/* 純聽力特訓 */}
@@ -2289,23 +2417,23 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           }}
                           className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-1.5 cursor-pointer ${
                             textbookExamMode === 'listening'
-                              ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 text-sky-950 dark:text-sky-100 font-black shadow-xs ring-1 ring-sky-500'
-                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300 text-slate-700 dark:text-slate-300'
+                              ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-950 dark:text-blue-100 font-black shadow-xs ring-1 ring-blue-500'
+                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 text-slate-700 dark:text-slate-300'
                           }`}
                         >
                           <div className="min-w-0">
                             <div className="text-sm sm:text-base font-black flex items-center gap-1.5">
-                              <Volume2 size={15} className="text-sky-600 shrink-0" />
+                              <Volume2 size={15} className="text-blue-600 shrink-0" />
                               <span>純聽力特訓</span>
-                              <span className="text-[10px] font-black px-1.5 py-0.2 rounded-full bg-sky-200 text-sky-800 dark:bg-sky-900 dark:text-sky-200 shrink-0">
+                              <span className="hidden">
                                 聽力衝刺
                               </span>
                             </div>
-                            <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 leading-snug">
+                            <div className="hidden">
                               全卷皆為聽力理解問答，戴耳機練習
                             </div>
                           </div>
-                          {textbookExamMode === 'listening' && <CheckCircle2 size={16} className="text-sky-600 shrink-0" />}
+                          {textbookExamMode === 'listening' && <CheckCircle2 size={16} className="text-blue-600 shrink-0" />}
                         </button>
                       </>
                     )}
@@ -2313,15 +2441,19 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </div>
 
                 {/* ───────────────────────────────────────────────────────────── */}
-                {/* 欄 4：04 SCALE 題數規模 (右下控制列統一行使啟動職責)               */}
+                {/* 欄 4：04 SCALE 題數規模（與其餘三欄一致由頂端開始排列）            */}
                 {/* ───────────────────────────────────────────────────────────── */}
                 <div
-                  onClick={() => setActiveBoardStep(4)}
-                  className={`rounded-2xl p-3 flex flex-col justify-between gap-2 min-h-0 transition-all cursor-pointer ${
+                  data-testid="textbook-step-4"
+                  onClick={() => {
+                    if (maxReachedBoardStep >= 4) setActiveBoardStep(4);
+                  }}
+                  aria-disabled={maxReachedBoardStep < 4}
+                  className={`rounded-2xl p-3 flex flex-col justify-start gap-2 min-h-0 lg:h-full lg:overflow-hidden transition-all ${maxReachedBoardStep >= 4 ? 'cursor-pointer' : 'cursor-not-allowed'} ${
                     activeBoardStep === 4
-                      ? 'border-2 border-indigo-500 dark:border-indigo-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-indigo-500/25 dark:ring-indigo-400/25 opacity-100'
+                      ? 'border-2 border-blue-500 dark:border-blue-400 bg-white dark:bg-slate-800 shadow-md ring-2 ring-blue-500/20 dark:ring-blue-400/20 opacity-100'
                       : 4 <= maxReachedBoardStep
-                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-indigo-200'
+                      ? 'border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 shadow-xs opacity-95 hover:border-blue-300'
                       : 'border-2 border-dashed border-slate-200 dark:border-slate-750 bg-slate-50/70 dark:bg-slate-850/60 opacity-45 hover:opacity-75'
                   }`}
                 >
@@ -2329,22 +2461,22 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     <div className="flex items-center gap-1.5">
                       <span className={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center transition ${
                         activeBoardStep === 4
-                          ? 'bg-emerald-600 text-white ring-2 ring-emerald-300'
+                          ? 'bg-blue-600 text-white ring-2 ring-blue-300'
                           : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                       }`}>
                         4
                       </span>
                       <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
-                        04 SCALE 題數
+                        題數
                       </span>
                     </div>
-                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                      測驗規模
+                    <span className="text-[10px] text-blue-700 dark:text-blue-300 font-bold">
+                      {questionCountOpt} 題
                     </span>
                   </div>
 
                   {/* 題數選擇 */}
-                  <div className="flex flex-col gap-1.5">
+                  <div className={`${activeBoardStep === 4 ? 'flex' : 'hidden'} lg:flex flex-col gap-1.5 overflow-y-auto min-h-0 ${maxReachedBoardStep >= 4 ? '' : 'pointer-events-none'}`}>
                     {(selectedBook === 'g1' || selectedBook === 'g2' ? [
                       { count: 10, label: '10 題', sub: '小試身手 • 最高 +4 金幣' },
                       { count: 20, label: '20 題', sub: '勇者挑戰 • 最高 +8 金幣' }
@@ -2366,26 +2498,26 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                           }}
                           className={`w-full py-2.5 px-3 rounded-xl border text-left transition flex items-center justify-between gap-2 cursor-pointer ${
                             active
-                              ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-950 dark:text-emerald-100 font-black shadow-xs ring-1 ring-emerald-500'
-                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-300'
+                              ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/60 text-blue-950 dark:text-blue-100 font-black shadow-xs ring-1 ring-blue-500'
+                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-300'
                           }`}
                         >
                           <div>
                             <span className="text-sm sm:text-base font-black">{opt.label}</span>
-                            <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">{opt.sub}</div>
+                            <div className="hidden">{opt.sub}</div>
                           </div>
-                          {active && <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />}
+                          {active && <CheckCircle2 size={16} className="text-blue-600 shrink-0" />}
                         </button>
                       );
                     })}
                   </div>
 
                   {/* 下半部：精練布題摘要卡（視線引導至右下角全站啟動按鈕） */}
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-700/80">
+                  <div className="hidden">
                     <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 text-xs">
                       <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[11px] font-bold">
                         <span>已選配置摘要</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-black">{questionCountOpt} 題</span>
+                        <span className="text-blue-700 dark:text-blue-300 font-black">{questionCountOpt} 題</span>
                       </div>
                       <div className="mt-1 font-black text-slate-800 dark:text-slate-100 truncate text-xs sm:text-sm">
                         {formatBookLabel(selectedBook)} • {rangePreset === 'midterm' ? '期中考範圍' : rangePreset === 'final' ? '期末考範圍' : rangePreset === 'all' ? '全冊範圍' : `${selectedUnits.length} 個單元`}
@@ -2438,46 +2570,8 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </button>
               </div>
 
-              {/* SAA Wizard 進度：所有裝置共用同一流程，僅改變響應式排版 */}
-              <div className="shrink-0 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-100/90 dark:bg-slate-800/80 px-2.5 py-2 sm:px-4 sm:py-2.5">
-                <div className="flex items-center justify-between gap-2 mb-1.5 sm:mb-2">
-                  <span className="text-xs sm:text-sm font-black text-emerald-700 dark:text-emerald-300">
-                    第 {saaWizardStep}／3 步
-                  </span>
-                  <span className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400">
-                    {saaWizardStep === 1 ? '選擇施測年級' : saaWizardStep === 2 ? '選擇官方或原創' : selectedSaaSource === 'official' ? '選擇官方年度' : '選擇原創組卷模式'}
-                  </span>
-                </div>
-                <ol className="grid grid-cols-3 gap-1.5" aria-label="學力檢測設定進度">
-                  {[
-                    { step: 1, label: '年級' },
-                    { step: 2, label: '題源' },
-                    { step: 3, label: '試卷' }
-                  ].map((item) => {
-                    const isCurrent = saaWizardStep === item.step;
-                    const isComplete = saaWizardStep > item.step;
-                    return (
-                      <li
-                        key={item.step}
-                        aria-current={isCurrent ? 'step' : undefined}
-                        className={`min-h-8 sm:min-h-9 rounded-lg sm:rounded-xl px-2 py-1 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-black border transition-colors ${
-                          isCurrent
-                            ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm'
-                            : isComplete
-                            ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
-                            : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700 text-slate-400'
-                        }`}
-                      >
-                        {isComplete ? <Check size={13} /> : <span>{item.step}</span>}
-                        <span>{item.label}</span>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </div>
-
               {/* 選擇卡是本區唯一翡翠綠粗框；進度、說明與摘要使用中性色，避免誤認為可點選 */}
-              <div className="min-h-0 min-w-0">
+              <div data-testid="saa-option-stage" className="min-h-0 min-w-0 w-full max-w-xl mx-auto">
               {/* 步驟 1：選擇施測年級 */}
               {saaWizardStep === 1 && (
               <div className="shrink-0 bg-white dark:bg-slate-900/70 rounded-2xl p-2.5 sm:p-3 border-2 border-emerald-500 dark:border-emerald-600 shadow-md shadow-emerald-500/10 space-y-2 animate-fadeIn">
@@ -2494,7 +2588,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     每個年級各有 35 題官方卷
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="grid grid-cols-1 gap-1.5 sm:gap-2">
                   {[
                     { grade: 4, label: '四年級', desc: 'Book 3～4' },
                     { grade: 5, label: '五年級', desc: 'Book 5～6' },
@@ -2505,9 +2599,12 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       <button
                         key={g.grade}
                         type="button"
-                        onClick={() => setSelectedSaaGrade(g.grade)}
+                        onClick={() => {
+                          setSelectedSaaGrade(g.grade);
+                          setSaaWizardStep(2);
+                        }}
                         aria-pressed={active}
-                        className={`py-2.5 px-2 rounded-xl border-2 text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                        className={`py-2 px-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
                           active
                             ? 'border-emerald-700 bg-emerald-600 text-white shadow-md ring-2 ring-emerald-300/60 dark:ring-emerald-800'
                             : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
@@ -2538,7 +2635,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                     官方卷與原創題永不混抽
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                <div className="grid grid-cols-1 gap-1.5 sm:gap-2">
                   {[
                     { id: 'official', label: '官方考古題', desc: '113～115 年原卷原題', Icon: ClipboardCheck },
                     { id: 'original', label: '原創類題練習', desc: '審核完成後開放', Icon: Sparkles }
@@ -2552,6 +2649,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         onClick={() => {
                           setSelectedSaaSource(source.id);
                           if (source.id === 'official') setSelectedSaaFormat('standard');
+                          setSaaWizardStep(3);
                         }}
                         aria-pressed={active}
                         className={`py-2.5 px-3 rounded-xl border-2 text-left transition flex items-center gap-2 cursor-pointer ${
@@ -2587,7 +2685,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   </div>
                   <span className="hidden sm:inline px-2 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200">{selectedSaaSource === 'official' ? '原卷固定 15 聽力＋20 閱讀' : '目前尚無已核准原創題'}</span>
                 </div>
-                <div className={selectedSaaSource === 'official' ? 'grid grid-cols-3 gap-2' : 'space-y-1.5 sm:space-y-2'}>
+                <div className="space-y-1.5 sm:space-y-2">
                   {(selectedSaaSource === 'official' ? [
                     { id: 115, title: '115 年度', shortTitle: '115 年', count: 35, badge: '最新官方卷', description: '官方原題', Icon: FileText },
                     { id: 114, title: '114 年度', shortTitle: '114 年', count: 35, badge: '官方題本', description: '官方原題', Icon: FileText },
@@ -2688,272 +2786,69 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           {/* 模式 D：Pre A1 檢測練習 (setupSubView === 'preA1')                     */}
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           {setupSubView === 'preA1' && (
-            <div className="flex flex-col gap-3">
-              {/* 頂部快捷入口：個人精熟診斷卡 & 300 題庫總覽 */}
-              <div className="shrink-0 p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/50 dark:to-indigo-950/50 border border-sky-200 dark:border-sky-800 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black shadow-sm shrink-0">
-                    <Award size={20} />
+            <div className="flex flex-col gap-2 max-w-2xl w-full mx-auto">
+              <div className="shrink-0 flex items-center justify-end gap-2">
+                <details className="relative">
+                  <summary className="list-none w-9 h-9 rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 flex items-center justify-center cursor-pointer" aria-label="查看 Pre-A1 測驗說明" title="Pre-A1 測驗說明">
+                    <Info size={17} />
+                  </summary>
+                  <div className="absolute z-30 right-0 top-11 w-72 p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl text-xs leading-relaxed text-slate-600 dark:text-slate-300 space-y-2">
+                    <p><strong>正式測驗：</strong>30 題、35 分鐘，聽力自動播放兩次並寫入正式紀錄。</p>
+                    <p><strong>自主練習：</strong>綜合 30 題，或選擇聽力／閱讀各 20 題。</p>
+                    <p>寫作請至「拼字大師」，口說請至「聽說實驗室」練習。</p>
                   </div>
-                  <div>
-                    <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span>Test My English 官方 300 全題庫</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-200 text-sky-800 dark:bg-sky-900 dark:text-sky-200">
-                        五大面向 · 19 子題型
-                      </span>
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      動態滾動精熟體系：錯題連對 2 次翻盤解鎖為精熟，拒絕歷史錯誤懲罰
-                    </p>
-                  </div>
-                </div>
+                </details>
                 <button
                   type="button"
                   onClick={() => {
                     setMasteryInitialTrack('tme-preA1');
                     setSetupSubView('preA1-dashboard');
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-black shadow-sm flex items-center gap-1.5 transition cursor-pointer"
+                  className="w-9 h-9 rounded-xl bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center transition cursor-pointer"
+                  aria-label="查看 Pre-A1 精熟診斷卡"
+                  title="查看 Pre-A1 精熟診斷卡"
                 >
-                  <Award size={15} />
-                  <span>查看個人精熟診斷卡 ➔</span>
+                  <Award size={17} />
                 </button>
               </div>
 
-              {/* 步驟 1：選擇施測模式 (正式施測 vs 專項練習) */}
-              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-sky-600 text-white text-xs font-black flex items-center justify-center">
-                      1
-                    </span>
-                    <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                      選擇施測模式
-                    </span>
-                  </div>
-                  <span className="text-xs font-bold text-sky-600 dark:text-sky-400">
-                    教育部標準規範
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsFormalExam(true);
-                      setSelectedPreA1Format('standard');
-                    }}
-                    className={`p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2 cursor-pointer ${
-                      isFormalExam
-                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
-                    }`}
-                  >
-                    <div>
-                      <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-                        <span>🎓 正式施測模式</span>
-                        <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
-                          全真規格
+              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 border border-slate-200/80 dark:border-slate-700/70">
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    { id: 'formal', title: '正式測驗', meta: '30 題・35 分鐘', Icon: GraduationCap },
+                    { id: 'standard', title: '綜合練習', meta: '聽力 15＋閱讀 15', Icon: Award },
+                    { id: 'listening', title: '聽力練習', meta: '20 題', Icon: Headphones },
+                    { id: 'reading', title: '閱讀練習', meta: '20 題', Icon: BookOpen }
+                  ].map((mode) => {
+                    const active = mode.id === 'formal'
+                      ? isFormalExam
+                      : !isFormalExam && selectedPreA1Format === mode.id;
+                    const ModeIcon = mode.Icon;
+                    return (
+                      <button
+                        key={mode.id}
+                        type="button"
+                        onClick={() => {
+                          const formal = mode.id === 'formal';
+                          setIsFormalExam(formal);
+                          setSelectedPreA1Format(formal ? 'standard' : mode.id);
+                        }}
+                        aria-pressed={active}
+                        className={`min-h-14 px-3 py-2.5 rounded-xl border-2 text-left transition flex items-center gap-3 cursor-pointer ${active ? 'border-violet-600 bg-violet-50 dark:bg-violet-950/60 shadow-sm ring-2 ring-violet-200 dark:ring-violet-900' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-violet-300'}`}
+                      >
+                        <span className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${active ? 'bg-violet-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'}`}>
+                          <ModeIcon size={20} />
                         </span>
-                      </div>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                        30 題 (聽15+閱15) · 限時 35 分鐘 · 聽力自動朗讀 2 遍
-                      </div>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setIsFormalExam(false)}
-                    className={`p-3 rounded-xl border-2 text-left transition flex items-center justify-between gap-2 cursor-pointer ${
-                      !isFormalExam
-                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
-                    }`}
-                  >
-                    <div>
-                      <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
-                        <span>🎯 專項自主練習模式</span>
-                        <span className="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                          無壓力練習
+                        <span className="min-w-0 flex-1 flex items-center justify-between gap-3">
+                          <span className="block text-sm sm:text-base font-black text-slate-900 dark:text-white">{mode.title}</span>
+                          <span className={`text-xs font-bold ${active ? 'text-violet-700 dark:text-violet-300' : 'text-slate-400'}`}>{mode.meta}</span>
                         </span>
-                      </div>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                        自由選擇聽力、閱讀、寫作重組等專門題組
-                      </div>
-                    </div>
-                  </button>
+                      </button>
+                    );
+                  })}
                 </div>
-
-                {isFormalExam ? (
-                  <div className="p-3 rounded-xl bg-sky-100/70 dark:bg-sky-950/50 border border-sky-300 dark:border-sky-800 text-xs text-sky-900 dark:text-sky-200 space-y-1">
-                    <div className="font-black flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-sky-600" />
-                      <span>正式施測模式已就緒</span>
-                    </div>
-                    <div className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
-                      包含生活聽力 15 題與看圖閱讀 15 題，試題依循易到難階梯排序。聽力題型將依國際施測標準<strong>自動朗讀兩次</strong>。全卷限時 35 分鐘，答對 21 題 (70%) 即達 Pre-A1 合格標準！
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-2 pt-1">
-                    <div className="text-xs font-bold text-slate-600 dark:text-slate-300">
-                      選擇練習題型組合：
-                    </div>
-                  {/* 膠囊 A: 聽 15 + 閱 15 (官方標準 30 題) */}
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPreA1Format('standard')}
-                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
-                      selectedPreA1Format === 'standard'
-                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                        selectedPreA1Format === 'standard' ? 'bg-sky-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
-                      }`}>
-                        <Award size={20} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                            聽力 15 題 ＋ 閱讀 15 題
-                          </span>
-                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-sky-200 text-sky-800 dark:bg-sky-900 dark:text-sky-200">
-                            官方標準規格 (預設)
-                          </span>
-                        </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          Test My English 官方 Pre-A1 正式題數（共 30 題，答對 21 題即合格）
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-base sm:text-lg font-black text-sky-600 dark:text-sky-400">30 題</span>
-                    </div>
-                  </button>
-
-                  {/* 膠囊 B: 聽力 20 題 */}
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPreA1Format('listening')}
-                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
-                      selectedPreA1Format === 'listening'
-                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                        selectedPreA1Format === 'listening' ? 'bg-sky-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
-                      }`}>
-                        <Headphones size={20} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                            聽力測驗 20 題
-                          </span>
-                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300">
-                            專題特訓
-                          </span>
-                        </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          聽音選圖、聽音選字、生活問句應答集中強化
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-base sm:text-lg font-black text-sky-600 dark:text-sky-400">20 題</span>
-                    </div>
-                  </button>
-
-                  {/* 膠囊 C: 閱讀 20 題 */}
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPreA1Format('reading')}
-                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
-                      selectedPreA1Format === 'reading'
-                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                        selectedPreA1Format === 'reading' ? 'bg-sky-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
-                      }`}>
-                        <BookOpen size={20} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                            閱讀測驗 20 題
-                          </span>
-                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300">
-                            專題特訓
-                          </span>
-                        </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          看圖選字、日常生活告示圖文配合、短句是非判斷集中強化
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-base sm:text-lg font-black text-sky-600 dark:text-sky-400">20 題</span>
-                    </div>
-                  </button>
-
-                  {/* 膠囊 D: 寫作句子重組 20 題 (國小核心十大句型) */}
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPreA1Format('writing')}
-                    className={`w-full p-3 sm:p-3.5 rounded-xl border-2 text-left transition flex items-center justify-between gap-3 cursor-pointer ${
-                      selectedPreA1Format === 'writing'
-                        ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/60 shadow-sm'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-sky-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                        selectedPreA1Format === 'writing' ? 'bg-sky-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
-                      }`}>
-                        <PenTool size={20} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                            寫作句子重組 20 題
-                          </span>
-                          <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-200">
-                            國小核心十大句型
-                          </span>
-                        </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          Wh-問句、Be動詞、Can/Do助動詞、進行式與介系詞等 10 大核心句型立體磁吸重組特訓
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-base sm:text-lg font-black text-sky-600 dark:text-sky-400">20 題</span>
-                    </div>
-                  </button>
-                </div>
-              )}
-            </div>
-
-              {/* 口說與寫作四技整合說明小卡 */}
-              <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-sky-950/40 dark:to-indigo-950/40 border border-sky-200 dark:border-sky-800/60 space-y-2">
-                <div className="flex items-center gap-2 text-xs font-black text-sky-900 dark:text-sky-200">
-                  <Sparkles size={16} className="text-sky-600 dark:text-sky-400" />
-                  <span>全真四技整合指引（口說與寫作實戰）</span>
-                </div>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  <strong>• 寫作 (Writing)：</strong>Pre-A1 著重字母大小寫、單字拼寫與基礎句子重組，學生可至<strong>「拼字大師」</strong>遊戲隨時進行即時互動訓練。<br />
-                  <strong>• 口說 (Speaking)：</strong>Pre-A1 著重朗讀句子與日常圖片口語問答，學生可前往<strong>「聽說實驗室」</strong>進行 AI 語音即時評測與發音糾錯！
-                </p>
               </div>
+
             </div>
           )}
 
@@ -2962,53 +2857,66 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           {/* ═══════════════════════════════════════════════════════════════════════ */}
           {setupSubView === 'mistakes' && (
             <div className="flex flex-col gap-3">
-              {/* 易錯題庫概況卡 */}
-              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-700/70 space-y-3">
+              <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-rose-600 text-white text-xs font-black flex items-center justify-center">
                       1
                     </span>
                     <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                      易錯題庫概況
+                      選擇易錯題來源
                     </span>
                   </div>
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
-                    待複習：{mistakeCount} 題
+                    全部待複習：{mistakeCount} 題
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                  系統已自動為你收錄平時測驗曾答錯的題目。若目前易錯題數少於所選題數（{questionCountOpt} 題），系統將自動自你<strong>本年級（Grade {currentStudent?.grade || 4}）</strong>的題庫中隨機挑選合適題目補滿。
-                </p>
+                <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+                  {MISTAKE_SOURCE_OPTIONS.map((source) => {
+                    const active = mistakeSource === source.id;
+                    return (
+                      <button
+                        key={source.id}
+                        type="button"
+                        onClick={() => setMistakeSource(source.id)}
+                        aria-pressed={active}
+                        className={`py-2 px-1.5 rounded-xl border-2 text-center transition cursor-pointer ${active ? 'border-rose-600 bg-rose-600 text-white shadow-sm' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-rose-300'}`}
+                      >
+                        <span className="block text-xs sm:text-sm font-black">{source.label}</span>
+                        <span className={`block text-[10px] font-bold ${active ? 'text-rose-100' : 'text-slate-400'}`}>{mistakeSourceCounts[source.id]} 題</span>
+                      </button>
+                    );
+                  })}
+                </div>
                 <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-800 dark:text-emerald-300 font-bold flex items-center gap-2">
                   <Sparkles size={16} className="text-emerald-600 shrink-0" />
-                  <span>精熟機制：只要在複習中對同一題「連續答對 2 次」，系統即自動從易錯池移除！</span>
+                  <span>只使用所選來源的真實錯題；不補一般題。每題連續答對 2 次出庫，選定來源歸零時立即提前完成。</span>
                 </div>
               </div>
 
-              {/* 選擇題數 */}
               <div className="shrink-0 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 border border-slate-200/80 dark:border-slate-700/70 space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-rose-600 text-white text-xs font-black flex items-center justify-center">
                     2
                   </span>
                   <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                    選擇複習題數
+                    設定最多作答次數
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                   {[
-                    { count: 10, label: '10 題', reward: '最高 +4' },
-                    { count: 20, label: '20 題', reward: '最高 +8' },
-                    { count: 50, label: '50 題', reward: '最高 +20' }
+                    { count: 10, label: '10 次' },
+                    { count: 20, label: '20 次' },
+                    { count: 30, label: '30 次' },
+                    { count: 'all', label: '全部清空' }
                   ].map((opt) => {
-                    const active = questionCountOpt === opt.count;
+                    const active = mistakeAttemptLimit === opt.count;
                     return (
                       <button
                         key={opt.count}
                         type="button"
-                        onClick={() => setQuestionCountOpt(opt.count)}
-                        className={`py-2.5 px-3 rounded-xl border-2 text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                        onClick={() => setMistakeAttemptLimit(opt.count)}
+                        className={`py-2.5 px-1 rounded-xl border-2 text-center transition flex flex-col items-center justify-center cursor-pointer ${
                           active
                             ? 'border-rose-600 bg-rose-600 text-white shadow-sm'
                             : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-rose-300'
@@ -3017,15 +2925,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         <span className="text-sm sm:text-base font-black">{opt.label}</span>
                         <span
                           className={`text-[11px] font-bold ${
-                            active ? 'text-rose-100' : 'text-amber-600 dark:text-amber-400'
+                            active ? 'text-rose-100' : 'text-rose-600 dark:text-rose-400'
                           }`}
                         >
-                          {opt.reward}
+                          {opt.count === 'all' ? '直到題庫歸零' : '可提前結束'}
                         </span>
                       </button>
                     );
                   })}
                 </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  「次數」是上限，不是保證題數；目前選定來源有 {filteredMistakeQuestions.length} 題待複習。
+                </p>
               </div>
             </div>
           )}
@@ -3042,17 +2953,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             <>
               <button
                 type="button"
-                onClick={() => {
-                  if (setupSubView === 'saa' && saaWizardStep > 1) {
-                    setSaaWizardStep((step) => Math.max(1, step - 1));
-                  } else {
-                    setSetupSubView('hub');
-                  }
-                }}
+                onClick={() => setSetupSubView('hub')}
                 className={`px-3 sm:px-3.5 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300 transition cursor-pointer flex items-center gap-1 ${setupSubView === 'saa' ? 'py-2 sm:py-2.5' : 'py-2.5'}`}
               >
                 <ArrowLeft size={15} />
-                <span>{setupSubView === 'saa' && saaWizardStep > 1 ? '上一步' : '返回選單'}</span>
+                <span>返回選單</span>
               </button>
 
               {setupSubView === 'textbook' && (
@@ -3101,37 +3006,54 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 </div>
               )}
 
+              {setupSubView === 'preA1' && (
+                <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 py-1.5 px-3 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
+                  <span className="text-violet-600 dark:text-violet-400 font-black">
+                    {isFormalExam ? '正式標準' : selectedPreA1Format === 'standard' ? '綜合練習' : selectedPreA1Format === 'listening' ? '全聽力' : '全閱讀'}
+                  </span>
+                  <span>•</span>
+                  <span>{isFormalExam || selectedPreA1Format === 'standard' ? '30 題' : '20 題'}</span>
+                  {isFormalExam && <><span>•</span><span>限時 35 分</span></>}
+                </div>
+              )}
+
+              {setupSubView === 'mistakes' && (
+                <div className="hidden md:flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 py-1.5 px-3 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
+                  <span className="text-rose-600 dark:text-rose-400 font-black">
+                    {MISTAKE_SOURCE_OPTIONS.find((item) => item.id === mistakeSource)?.label || '全部'}
+                  </span>
+                  <span>•</span>
+                  <span>{filteredMistakeQuestions.length} 題待複習</span>
+                  <span>•</span>
+                  <span>{mistakeAttemptLimit === 'all' ? '直到清空' : `最多 ${effectiveMistakeAttemptLimit} 次`}</span>
+                </div>
+              )}
+
               <button
                 type="button"
-                disabled={setupSubView === 'saa' && saaWizardStep < 3 ? false : !canStart}
-                onClick={() => {
-                  if (setupSubView === 'saa' && saaWizardStep < 3) {
-                    setSaaWizardStep((step) => Math.min(3, step + 1));
-                  } else {
-                    startExamSession();
-                  }
-                }}
+                disabled={!canStart || (setupSubView === 'saa' && saaWizardStep < 3)}
+                onClick={() => startExamSession()}
                 className={`w-full sm:w-auto sm:min-w-[260px] rounded-2xl text-white font-black text-sm sm:text-base shadow-lg transition flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed ${setupSubView === 'saa' ? 'py-2.5 px-4 sm:px-8' : 'py-3.5 px-8'} ${
                   scopeMode === 'tme-preA1'
-                    ? 'bg-sky-600 hover:bg-sky-700 shadow-sky-600/25'
+                    ? 'bg-violet-600 hover:bg-violet-700 shadow-violet-600/25'
                     : scopeMode === 'ministry-assessment'
                     ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/25'
                     : scopeMode === 'mistakes'
                     ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/25'
-                    : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/25'
+                    : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/25'
                 }`}
               >
                 <span>
-                  {setupSubView === 'saa' && saaWizardStep < 3
-                    ? (saaWizardStep === 1 ? '繼續：選擇題源' : selectedSaaSource === 'official' ? '繼續：選擇年度' : '繼續：選擇模式')
-                    : scopeMode === 'tme-preA1'
+                  {scopeMode === 'tme-preA1'
                     ? (isFormalExam
                         ? '開始 Pre-A1 正式施測 (30 題 · 限時 35 分)'
                         : (tmePool.length > 0 ? `開始 Pre-A1 練習 (${selectedPreA1Format === 'standard' ? 30 : 20} 題)` : '🚧 Pre-A1 官方題庫編製中 (敬請期待)'))
                     : scopeMode === 'ministry-assessment'
                     ? (saaPool.length > 0 ? `開始${selectedSaaSource === 'official' ? `${selectedSaaYear} 年官方卷 (35 題)` : `原創類題 (${selectedSaaFormat === 'standard' ? 35 : 20} 題)`}` : '🚧 原創類題審核建置中（官方卷可先練習）')
                     : scopeMode === 'mistakes'
-                    ? `開始複習 (${questionCountOpt} 題)`
+                    ? (filteredMistakeQuestions.length > 0
+                        ? (mistakeAttemptLimit === 'all' ? '開始複習（直到清空）' : `開始複習（最多 ${effectiveMistakeAttemptLimit} 次）`)
+                        : '目前沒有這個來源的易錯題')
                     : `開始檢定 (${questionCountOpt} 題)`}
                 </span>
                 <ArrowRight size={18} />
@@ -3342,7 +3264,11 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               }}
               className="w-full py-3.5 sm:py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 hover:from-indigo-500 hover:to-purple-600 text-white font-black text-sm sm:text-base shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 cursor-pointer active:scale-98"
             >
-              <span>準備好了，開始作答 ({questions.length} 題)</span>
+              <span>
+                {scopeMode === 'mistakes'
+                  ? (mistakeAttemptLimit === 'all' ? '準備好了，開始複習（直到清空）' : `準備好了，開始複習（最多 ${questions.length} 次）`)
+                  : `準備好了，開始作答 (${questions.length} 題)`}
+              </span>
               <ArrowRight size={18} />
             </button>
           </div>
@@ -3905,7 +3831,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
         <div className="shrink-0 px-4 sm:px-6 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/90 flex items-center justify-between gap-3">
           <button
             type="button"
-            disabled={currentIndex === 0}
+            disabled={currentIndex === 0 || scopeMode === 'mistakes'}
             onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
             className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 disabled:opacity-40 font-black text-xs sm:text-sm flex items-center gap-1.5 shrink-0 transition"
           >
@@ -3924,6 +3850,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   key={idx}
                   type="button"
                   onClick={() => setCurrentIndex(idx)}
+                  disabled={scopeMode === 'mistakes' && idx !== currentIndex}
                   className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-[11px] font-black shrink-0 transition relative flex items-center justify-center ${
                     isCurr
                       ? 'bg-indigo-600 text-white ring-2 ring-indigo-400'
@@ -3941,13 +3868,14 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             })}
           </div>
 
-          {currentIndex < questions.length - 1 ? (
+          {currentIndex < questions.length - 1 || (scopeMode === 'mistakes' && mistakeAttemptLimit === 'all') ? (
             <button
               type="button"
-              onClick={() => setCurrentIndex((i) => Math.min(questions.length - 1, i + 1))}
-              className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shrink-0 shadow-sm transition"
+              onClick={handleAdvanceQuestion}
+              disabled={scopeMode === 'mistakes' && answers[currentIndex] === undefined}
+              className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shrink-0 shadow-sm transition"
             >
-              下一題
+              {scopeMode === 'mistakes' && mistakeAttemptLimit === 'all' && currentIndex === questions.length - 1 ? '繼續清空' : '下一題'}
               <ArrowRight size={16} />
             </button>
           ) : (
@@ -4191,6 +4119,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
               >
                 登入以入帳金幣
               </button>
+            )}
+
+            {scopeMode === 'mistakes' && (
+              <div className={`px-3 py-2.5 rounded-xl border text-xs font-black ${
+                sessionRewardInfo.clearedSource
+                  ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
+                  : 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300'
+              }`}>
+                {sessionRewardInfo.clearedSource
+                  ? `🎉 選定來源的易錯題已歸零，於 ${questions.length} 次作答後${sessionRewardInfo.earlyCleared ? '提前' : ''}完成。`
+                  : `已達本次最多 ${sessionRewardInfo.attemptLimit || questions.length} 次作答；尚未精熟的題目會保留到下次。`}
+              </div>
             )}
 
             {/* 分項診斷成績 */}

@@ -177,6 +177,29 @@ async function run() {
       failures.push({ target: 'Static Contract: premature onBack() on empty queue', file: f });
     }
   }
+
+  // Arcade controls contract: missed targets must cost a life; snake touch input must react before touchend.
+  const moleSrc = fs.readFileSync('src/games/mole/WhackAMoleGame.jsx', 'utf8');
+  const missStart = moleSrc.indexOf('const handleMissTimeout');
+  const missEnd = moleSrc.indexOf('// 輔助函式：讓指定洞', missStart);
+  const missBlock = missStart >= 0 && missEnd > missStart ? moleSrc.slice(missStart, missEnd) : '';
+  if (!/livesRef\.current\s*-\s*1/.test(missBlock) || !/triggerGameOver\('dead'\)/.test(missBlock)) {
+    failures.push({ target: 'Arcade Contract: missed correct mole must deduct life and allow death' });
+  }
+
+  const snakeSrc = fs.readFileSync('src/games/snake/SnakeGame.jsx', 'utf8');
+  const touchMoveStart = snakeSrc.indexOf('const handleTouchMove');
+  const touchEndStart = snakeSrc.indexOf('const handleTouchEnd', touchMoveStart);
+  const touchMoveBlock = touchMoveStart >= 0 && touchEndStart > touchMoveStart
+    ? snakeSrc.slice(touchMoveStart, touchEndStart)
+    : '';
+  if (!/handleDpad\(/.test(touchMoveBlock) || !/Math\.max\(12,\s*Math\.min\(18/.test(touchMoveBlock)) {
+    failures.push({ target: 'Arcade Contract: adaptive 12-18px snake swipe must turn during touchmove' });
+  }
+  if (!/easy:\s*330/.test(snakeSrc) || !/normal:\s*235/.test(snakeSrc) || !/survival:\s*205/.test(snakeSrc)) {
+    failures.push({ target: 'Arcade Contract: responsive snake speed profile regressed' });
+  }
+
   // 驗證課本題庫檢定館 (HERE_WE_GO_MCQ_BANK) 7 道品質閘門與每冊百題契約
   const { HERE_WE_GO_MCQ_BANK } = await import('../src/data/hereWeGoMcqBank.js');
   const mcqIds = new Set();
@@ -840,7 +863,7 @@ async function run() {
   }
   console.log('  ✓ Interactive gameplay clicks verified for quiz-choice, spelling, memory, meteor, swipe, mole');
 
-  // 5D-2. 課本題庫檢定館手機尺寸 (375x667) 防重疊驗證：上半冊／下半冊／題數／開始鈕皆須可被點到（未被其他區塊覆蓋）
+  // 5D-2. 課本題庫手機漸進手風琴：依序選冊別 → 範圍 → 題型 → 題數，操作不得被覆蓋。
   client.exceptions = [];
   await client.send('Emulation.setDeviceMetricsOverride', { width: 375, height: 667, deviceScaleFactor: 2, mobile: true });
   await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
@@ -852,17 +875,34 @@ async function run() {
         textbookEntry.click();
         await new Promise(r => setTimeout(r, 200));
       }
-      const labels = ['上半冊', '下半冊', '全選', '10 題', '50 題', '開始檢定'];
       const blocked = [];
-      for (const label of labels) {
+      const checkReachable = async (label, clickAfter = false) => {
         const btn = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes(label));
-        if (!btn) { blocked.push(label + ':missing'); continue; }
+        if (!btn) { blocked.push(label + ':missing'); return false; }
         btn.scrollIntoView({ block: 'center' });
         await new Promise(r => setTimeout(r, 80));
         const rect = btn.getBoundingClientRect();
         const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
-        if (!hit || !(hit === btn || btn.contains(hit))) blocked.push(label + ':covered');
-      }
+        if (!hit || !(hit === btn || btn.contains(hit))) {
+          blocked.push(label + ':covered');
+          return false;
+        }
+        if (clickAfter) {
+          btn.click();
+          await new Promise(r => setTimeout(r, 160));
+        }
+        return true;
+      };
+      await checkReachable('第 1 冊', true);
+      await checkReachable('上半冊');
+      await checkReachable('下半冊');
+      await checkReachable('全選');
+      await checkReachable('上半冊', true);
+      await checkReachable('綜合測驗', true);
+      await checkReachable('10 題');
+      await checkReachable('50 題');
+      await checkReachable('20 題', true);
+      await checkReachable('開始檢定');
       return { ok: blocked.length === 0, blocked };
     })()
   `);
@@ -870,7 +910,42 @@ async function run() {
   if (!mcqMobileCheck?.ok || client.exceptions.length > 0) {
     failures.push({ target: 'PureMcqExamView Mobile Setup Overlap (375x667)', details: mcqMobileCheck, exceptions: client.exceptions });
   } else {
-    console.log('  ✓ PureMcqExamView mobile 375x667: unit range, count & start buttons all reachable (no overlap)');
+    console.log('  ✓ PureMcqExamView mobile 375x667: progressive textbook accordion remains reachable without overlap');
+  }
+
+  // 5D-2b. iPad 橫向：課本四個必要設定必須並排成四欄，欄內可捲動但不得推動整頁。
+  client.exceptions = [];
+  await client.send('Emulation.setDeviceMetricsOverride', { width: 1024, height: 768, deviceScaleFactor: 2, mobile: false });
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
+  await new Promise(r => setTimeout(r, 850));
+  const textbookLandscapeCheck = await client.evaluate(`
+    (async () => {
+      const entry = Array.from(document.querySelectorAll('button')).find(b => (b.innerText || '').includes('課本題庫練習'));
+      entry?.click();
+      await new Promise(r => setTimeout(r, 220));
+      const board = document.querySelector('[data-testid="textbook-setup-board"]');
+      const steps = [1, 2, 3, 4].map(n => document.querySelector('[data-testid="textbook-step-' + n + '"]'));
+      const rects = steps.map(step => step?.getBoundingClientRect());
+      const columns = board ? getComputedStyle(board).gridTemplateColumns.split(' ').filter(Boolean) : [];
+      const sameRow = rects.every(rect => rect && Math.abs(rect.top - rects[0].top) <= 2);
+      const allVisible = steps.every(step => step && getComputedStyle(step).display !== 'none' && step.getBoundingClientRect().width > 150);
+      const noPageOverflow = document.documentElement.scrollWidth <= window.innerWidth + 2;
+      const boardDoesNotScrollPage = !!board && board.scrollHeight <= board.clientHeight + 2;
+      return {
+        ok: !!entry && columns.length === 4 && sameRow && allVisible && noPageOverflow && boardDoesNotScrollPage,
+        columnCount: columns.length,
+        sameRow,
+        allVisible,
+        noPageOverflow,
+        boardDoesNotScrollPage
+      };
+    })()
+  `);
+  await client.send('Emulation.clearDeviceMetricsOverride', {});
+  if (!textbookLandscapeCheck?.ok || client.exceptions.length > 0) {
+    failures.push({ target: 'Textbook iPad Landscape Four-Column Setup (1024x768)', details: textbookLandscapeCheck, exceptions: client.exceptions });
+  } else {
+    console.log('  ✓ Textbook iPad landscape 1024x768: four-column setup stays on one screen with internal column scrolling');
   }
 
   // 5D-3. SAA 學力檢測響應式 Wizard：年級 → 題源 → 年度／模式，手機不得漏步或被遮擋
@@ -901,16 +976,13 @@ async function run() {
       };
 
       const entered = await clickVisible(findButton('學力檢測練習'));
-      const step1 = (document.body.innerText || '').includes('第 1／3 步') && !!findButton('五年級');
+      const step1 = !!findButton('五年級');
       const step1NoScroll = wizardFitsWithoutScroll();
       const gradeSelected = await clickVisible(findButton('五年級'));
-      const continued1 = await clickVisible(findButton('繼續：選擇題源'));
-      const step2 = (document.body.innerText || '').includes('第 2／3 步') && !!findButton('官方考古題') && !!findButton('原創類題練習');
+      const step2 = !!findButton('官方考古題') && !!findButton('原創類題練習');
       const step2NoScroll = wizardFitsWithoutScroll();
       const officialSelected = await clickVisible(findButton('官方考古題'));
-      const continued2 = await clickVisible(findButton('繼續：選擇年度'));
-      const step3 = (document.body.innerText || '').includes('第 3／3 步')
-        && !!findButton('115 年')
+      const step3 = !!findButton('115 年')
         && !!findButton('114 年')
         && !!findButton('113 年');
       const step3NoScroll = wizardFitsWithoutScroll();
@@ -923,13 +995,12 @@ async function run() {
         const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
         return !!hit && (hit === startButton || startButton.contains(hit));
       })() : false;
-      const backed = await clickVisible(findButton('上一步'));
-      const preservedSource = (document.body.innerText || '').includes('第 2／3 步')
-        && !!findButton('官方考古題')
+      const backed = await clickVisible(findButton('題源'));
+      const preservedSource = !!findButton('官方考古題')
         && findButton('官方考古題').className.includes('bg-emerald-600');
 
       return {
-        ok: entered && step1 && step1NoScroll && gradeSelected && continued1 && step2 && step2NoScroll && officialSelected && continued2 && step3 && step3NoScroll && yearSelected && startReachable && backed && preservedSource,
+        ok: entered && step1 && step1NoScroll && gradeSelected && step2 && step2NoScroll && officialSelected && step3 && step3NoScroll && yearSelected && startReachable && backed && preservedSource,
         entered,
         step1,
         step1NoScroll,
@@ -972,19 +1043,24 @@ async function run() {
       };
 
       const entered = await click('學力檢測練習');
+      const optionStage = document.querySelector('[data-testid="saa-option-stage"]');
+      const stageRect = optionStage?.getBoundingClientRect();
+      const stageCentered = !!stageRect
+        && stageRect.width <= 580
+        && Math.abs((stageRect.left + stageRect.right) / 2 - window.innerWidth / 2) <= 3;
       const step1 = fits();
-      const continued1 = await click('繼續：選擇題源');
+      const gradeSelected = await click('五年級');
       const step2 = fits();
-      const continued2 = await click('繼續：選擇年度');
+      const sourceSelected = await click('官方考古題');
       const step3 = fits();
-      return { ok: entered && continued1 && continued2 && step1 && step2 && step3, entered, step1, step2, step3 };
+      return { ok: entered && stageCentered && gradeSelected && sourceSelected && step1 && step2 && step3, entered, stageCentered, stageWidth: stageRect?.width, step1, step2, step3 };
     })()
   `);
   await client.send('Emulation.clearDeviceMetricsOverride', {});
   if (!saaLaptopNoScrollCheck?.ok || client.exceptions.length > 0) {
     failures.push({ target: 'SAA Laptop Zero-Scroll Safety (1280x650)', details: saaLaptopNoScrollCheck, exceptions: client.exceptions });
   } else {
-    console.log('  ✓ SAA laptop 1280x650: all three Wizard steps fit without setup-area scrolling');
+    console.log('  ✓ SAA laptop 1280x650: centered vertical capsules and all three Wizard steps fit without setup-area scrolling');
   }
 
   // 5D-5. 113 六年級官方卷：題組材料需跨題保留、桌機雙欄，且圖片可開啟放大視窗。
@@ -1006,9 +1082,7 @@ async function run() {
 
       if (!await click('學力檢測練習')) return { ok: false, reason: 'missing SAA entry' };
       await click('六年級');
-      await click('繼續：選擇題源');
       await click('官方考古題');
-      await click('繼續：選擇年度');
       await click('113 年');
       if (!await click('開始113 年官方卷', 450)) return { ok: false, reason: 'missing 113 start' };
       await click('開始作答', 450);

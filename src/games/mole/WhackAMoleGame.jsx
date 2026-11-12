@@ -223,8 +223,22 @@ export const WhackAMoleGame = ({
     isTransitioningRef.current = true;
     clearAllMoleTimers();
 
-    // 中斷連擊
+    // 漏掉正解視同失誤：中斷連擊、扣分並提供明確的受傷回饋。
+    // 生命值先透過 ref 計算，避免在 setState updater 內觸發副作用。
+    soundEngine.wrong();
+    soundEngine.hapticPulse('normal');
     setCombo(0);
+    setScore(s => {
+      const next = Math.max(0, s - 10);
+      scoreRef.current = next;
+      return next;
+    });
+    setIsShaking(true);
+    setTimeout(() => setIsShaking(false), 350);
+
+    const nextLives = Math.max(0, livesRef.current - 1);
+    livesRef.current = nextLives;
+    setLives(nextLives);
 
     // 將該錯過題目沉入錯題複習池
     if (!retryPoolRef.current.some(w => w.word === missedTarget.word)) {
@@ -234,12 +248,16 @@ export const WhackAMoleGame = ({
     // 全場所有活動地鼠平滑下沉
     setHoles(curr => curr.map(h => h ? { ...h, status: 'retreating' } : null));
 
-    setTimeout(() => {
-      setHoles(Array(9).fill(null));
-      setRoundIndex(r => r + 1);
-      startNextQuestionRef.current?.();
-    }, 450);
-  }, [gameState, clearAllMoleTimers]);
+    if (nextLives <= 0) {
+      setTimeout(() => triggerGameOver('dead'), 400);
+    } else {
+      setTimeout(() => {
+        setHoles(Array(9).fill(null));
+        setRoundIndex(r => r + 1);
+        startNextQuestionRef.current?.();
+      }, 450);
+    }
+  }, [gameState, clearAllMoleTimers, triggerGameOver]);
 
   // 輔助函式：讓指定洞的地鼠平滑縮回地洞並清空
   const retreatAndClearMole = useCallback((hIdx, onComplete) => {
@@ -940,7 +958,7 @@ export const WhackAMoleGame = ({
             </h3>
             
             <p className="text-xs font-bold text-slate-300 mb-4">
-              {lives > 0 ? '手速驚人，成功守護了森林字卡！' : '別灰心，看清楚單字再敲擊，小心不要敲到錯誤單字或蜂巢喔！'}
+              {lives > 0 ? '手速驚人，成功守護了森林字卡！' : '別灰心，看清楚單字並及時敲中正解，也要小心錯誤單字與蜂巢！'}
             </p>
 
             <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-black/50 border border-white/15 mb-5 text-center">

@@ -374,11 +374,11 @@ export const SnakeGame = ({
     if (!hasStarted || isFinished) return;
 
     const speedMap = {
-      easy: 360,      // ms/格
-      normal: 270,    // ms/格
-      survival: 230   // ms/格
+      easy: 330,      // ms/格：保留低年級反應時間，但減少按鍵後的等待感
+      normal: 235,    // ms/格：一般模式提升約 15% 操控回饋
+      survival: 205   // ms/格：高壓模式維持可控而俐落
     };
-    const stepDuration = speedMap[gameMode] || 270;
+    const stepDuration = speedMap[gameMode] || 235;
 
     let animId;
     let lastTime = performance.now();
@@ -539,6 +539,25 @@ export const SnakeGame = ({
 
   const handleTouchMove = (e) => {
     if (e.cancelable) e.preventDefault();
+    if (!touchStartRef.current || !e.touches[0]) return;
+
+    const touch = e.touches[0];
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+    const minViewport = Math.min(window.innerWidth || 375, window.innerHeight || 667);
+    const swipeThreshold = Math.max(12, Math.min(18, Math.round(minViewport * 0.035)));
+
+    // 手指一跨過門檻就排入轉向，不必等放開螢幕；一次滑動只送出一個指令。
+    if (Math.max(absX, absY) >= swipeThreshold) {
+      if (absX > absY) {
+        handleDpad(dx > 0 ? 'RIGHT' : 'LEFT');
+      } else {
+        handleDpad(dy > 0 ? 'DOWN' : 'UP');
+      }
+      touchStartRef.current = null;
+    }
   };
 
   const handleTouchEnd = (e) => {
@@ -549,7 +568,11 @@ export const SnakeGame = ({
     const absX = Math.abs(dx);
     const absY = Math.abs(dy);
 
-    if (Math.max(absX, absY) > 20) {
+    const minViewport = Math.min(window.innerWidth || 375, window.innerHeight || 667);
+    const swipeThreshold = Math.max(12, Math.min(18, Math.round(minViewport * 0.035)));
+
+    // 極短但明確的輕掃仍可在放開時補送；已在 touchmove 送出的手勢會因 ref 清空而略過。
+    if (Math.max(absX, absY) >= swipeThreshold) {
       if (absX > absY) {
         handleDpad(dx > 0 ? 'RIGHT' : 'LEFT');
       } else {
