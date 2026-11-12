@@ -12,20 +12,9 @@ const image = (grade, number) => `/assets/exam/saa/113/g${grade}_q${number}.webp
 const material = (name) => `/assets/exam/saa/113/materials/${name}.webp`;
 const choices = (...values) => values;
 
-// Official MP3 clip boundaries. The original recording remains intact; the player
-// seeks to these ranges so students hear the official narrator and actors first.
-const OFFICIAL_AUDIO_CLIPS = {
-  4: [[125.0, 135.5], [146.0, 159.5], [164.7, 175.5], [184.1, 193.5], [203.4, 214.0], [223.1, 233.0], [244.6, 263.0], [274.1, 294.0], [304.9, 318.0], [330.0, 358.0], [369.9, 388.0], [400.4, 422.5], [422.7, 447.5], [460.5, 486.5], [499.9, 546.5]],
-  5: [[133.2, 142.5], [152.2, 161.5], [171.5, 176.5], [191.2, 213.0], [213.2, 228.5], [239.0, 263.8], [264.0, 280.5], [292.2, 315.5], [350.2, 370.5], [384.9, 406.0], [420.3, 494.5], [509.2, 535.5], [549.4, 602.5], [617.0, 705.5], [617.0, 705.5]],
-  6: [[133.8, 154.5], [154.5, 178.5], [178.5, 199.0], [199.0, 219.2], [219.2, 242.5], [242.5, 260.2], [260.2, 306.0], [306.0, 342.5], [342.5, 387.4], [401.8, 429.0], [429.0, 464.0], [464.0, 490.0], [490.0, 513.5], [513.5, 642.0], [513.5, 642.0]],
-};
-
 const officialAudio = (grade, number) => {
-  const [clipStart, clipEnd] = OFFICIAL_AUDIO_CLIPS[grade][number - 1];
   return {
-    audioSrc: `/audio/saa/113/g${grade}-official.mp3`,
-    clipStart,
-    clipEnd,
+    audioSrc: `/audio/saa/113/g${grade}/q${String(number).padStart(2, '0')}.mp3`,
     audioSourceType: 'official',
   };
 };

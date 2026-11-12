@@ -25,9 +25,7 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 0,
     "media": {
       "audioText": "R",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 125,
-      "clipEnd": 135.5,
+      "audioSrc": "/audio/saa/113/g4/q01.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔念出英文字母 R，故選 ①。"
@@ -58,9 +56,7 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 2,
     "media": {
       "audioText": "math",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 146,
-      "clipEnd": 159.5,
+      "audioSrc": "/audio/saa/113/g4/q02.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔單字為 math，正確拼字是選項 ③。"
@@ -91,9 +87,7 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 2,
     "media": {
       "audioText": "fun",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 164.7,
-      "clipEnd": 175.5,
+      "audioSrc": "/audio/saa/113/g4/q03.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔單字為 fun，正確拼字是選項 ③。"
@@ -124,9 +118,7 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 2,
     "media": {
       "audioText": "silly",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 184.1,
-      "clipEnd": 193.5,
+      "audioSrc": "/audio/saa/113/g4/q04.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔單字為 silly，正確拼字是選項 ③。"
@@ -157,9 +149,7 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 3,
     "media": {
       "audioText": "draw",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 203.4,
-      "clipEnd": 214,
+      "audioSrc": "/audio/saa/113/g4/q05.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔單字為 draw，正確拼字是選項 ④。"
@@ -190,9 +180,7 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 3,
     "media": {
       "audioText": "tired",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 223.1,
-      "clipEnd": 233,
+      "audioSrc": "/audio/saa/113/g4/q06.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔單字為 tired，正確拼字是選項 ④。"
@@ -224,9 +212,7 @@ export const SAA_113_G4_QUESTIONS = [
     "image": "/assets/exam/saa/113/g4_q7.webp",
     "media": {
       "audioText": "My grandpa is ninety years old.",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 244.6,
-      "clipEnd": 263,
+      "audioSrc": "/audio/saa/113/g4/q07.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔說爺爺 90 歲，圖片 ④ 的蛋糕數字為 90。"
@@ -258,9 +244,7 @@ export const SAA_113_G4_QUESTIONS = [
     "image": "/assets/exam/saa/113/g4_q8.webp",
     "media": {
       "audioText": "I bought two erasers and seven pens.",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 274.1,
-      "clipEnd": 294,
+      "audioSrc": "/audio/saa/113/g4/q08.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔說買了 2 個橡皮擦和 7 枝筆，明細 ② 相符。"
@@ -292,9 +276,7 @@ export const SAA_113_G4_QUESTIONS = [
     "image": "/assets/exam/saa/113/g4_q9.webp",
     "media": {
       "audioText": "Are you okay?",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 304.9,
-      "clipEnd": 318,
+      "audioSrc": "/audio/saa/113/g4/q09.mp3",
       "audioSourceType": "official"
     },
     "explanation": "Are you okay? 用來關心受傷或不舒服的人；圖片 ① 最符合。"
@@ -326,9 +308,7 @@ export const SAA_113_G4_QUESTIONS = [
     "image": "/assets/exam/saa/113/g4_q10.webp",
     "media": {
       "audioText": "A: Andy, do you see my eraser?\nB: Oh, it's under your desk.\nA: Here it is. Thank you.",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 330,
-      "clipEnd": 358,
+      "audioSrc": "/audio/saa/113/g4/q10.mp3",
       "audioSourceType": "official"
     },
     "explanation": "對話明確說橡皮擦在書桌下，圖片 ① 相符。"
@@ -360,9 +340,7 @@ export const SAA_113_G4_QUESTIONS = [
     "image": "/assets/exam/saa/113/g4_q11.webp",
     "media": {
       "audioText": "Child: Dad, where are you?\nDad: I'm in the kitchen.",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 369.9,
-      "clipEnd": 388,
+      "audioSrc": "/audio/saa/113/g4/q11.mp3",
       "audioSourceType": "official"
     },
     "explanation": "爸爸回答自己在 kitchen（廚房），故選圖片 ④。"
@@ -393,9 +371,7 @@ export const SAA_113_G4_QUESTIONS = [
     "answer": 2,
     "media": {
       "audioText": "How's the weather?",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 400.4,
-      "clipEnd": 422.5,
+      "audioSrc": "/audio/saa/113/g4/q12.mp3",
       "audioSourceType": "official"
     },
     "explanation": "How’s the weather? 詢問天氣，It’s rainy. 是合適回答。"
@@ -427,9 +403,7 @@ export const SAA_113_G4_QUESTIONS = [
     "image": "/assets/exam/saa/113/g4_q13.webp",
     "media": {
       "audioText": "A: What time is it?\nB: It's five forty-five. It's time to have dinner.",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 422.7,
-      "clipEnd": 447.5,
+      "audioSrc": "/audio/saa/113/g4/q13.mp3",
       "audioSourceType": "official"
     },
     "explanation": "對話說 5:45 且該吃晚餐了，圖片 ② 相符。"
@@ -461,9 +435,7 @@ export const SAA_113_G4_QUESTIONS = [
     "image": "/assets/exam/saa/113/g4_q14.webp",
     "media": {
       "audioText": "Child: Mom, this is for you.\nMom: A gift! Thank you. I can't wait to open it.",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 460.5,
-      "clipEnd": 486.5,
+      "audioSrc": "/audio/saa/113/g4/q14.mp3",
       "audioSourceType": "official"
     },
     "explanation": "孩子把禮物送給媽媽，圖片 ① 最符合。"
@@ -495,9 +467,7 @@ export const SAA_113_G4_QUESTIONS = [
     "image": "/assets/exam/saa/113/g4_q15.webp",
     "media": {
       "audioText": "A: Christmas is coming. What are we going to do? Let's make a to-do list.\nB: Okay. There are three things to do.\nA: What are they?\nB: Here is our Christmas to-do list.",
-      "audioSrc": "/audio/saa/113/g4-official.mp3",
-      "clipStart": 499.9,
-      "clipEnd": 546.5,
+      "audioSrc": "/audio/saa/113/g4/q15.mp3",
       "audioSourceType": "official"
     },
     "explanation": "清單 ② 的禮物、聖誕樹與聖誕襪都是聖誕節活動，故選 ②。"

@@ -1032,14 +1032,26 @@ async function run() {
       const q32HasSharedLetter = !!document.querySelector('[data-testid="saa-group-material"] img[src*="g6_letter.webp"]');
       const q32HasMap = !!document.querySelector('img[src*="g6_q32_map.webp"]');
 
+      const q33Button = buttons().find(b => (b.innerText || '').trim() === '33');
+      q33Button?.click();
+      await new Promise(r => setTimeout(r, 250));
+      const optionZoomButtons = Array.from(document.querySelectorAll('[data-testid="option-image-zoom"]'));
+      const allOptionImagesZoomable = optionZoomButtons.length === 4;
+      optionZoomButtons[0]?.click();
+      await new Promise(r => setTimeout(r, 160));
+      const optionZoomOpened = !!document.querySelector('[data-testid="exam-image-zoom"] img[src*="g6_q33_a.webp"]');
+      document.querySelector('[data-testid="exam-image-zoom"] button[aria-label="關閉放大圖片"]')?.click();
+
       return {
-        ok: officialAudioReady && twoColumn && q31Visible && zoomOpened && q32HasSharedLetter && q32HasMap,
+        ok: officialAudioReady && twoColumn && q31Visible && zoomOpened && q32HasSharedLetter && q32HasMap && allOptionImagesZoomable && optionZoomOpened,
         officialAudioReady,
         twoColumn,
         q31Visible,
         zoomOpened,
         q32HasSharedLetter,
-        q32HasMap
+        q32HasMap,
+        allOptionImagesZoomable,
+        optionZoomOpened
       };
     })()
   `);

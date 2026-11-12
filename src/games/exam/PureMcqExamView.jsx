@@ -300,8 +300,10 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
   const [reportToastMessage, setReportToastMessage] = useState(null);
   const [zoomedMaterial, setZoomedMaterial] = useState(null);
   const [isPlayingOfficialAudio, setIsPlayingOfficialAudio] = useState(false);
+  const [audioPlaybackMode, setAudioPlaybackMode] = useState(null); // null | 'official' | 'fallback'
   const officialAudioRef = useRef(null);
   const officialAudioTimerRef = useRef(null);
+  const officialAudioPreloadRef = useRef(new Map());
 
   const handleOpenReportModal = useCallback((question) => {
     if (!question) return;
@@ -895,14 +897,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
     audio.onended = finishPass;
     audio.onerror = () => {
       stopOfficialAudio();
+      setAudioPlaybackMode('fallback');
       speakQuestion(media.audioText || '', repeatTimes);
     };
     audio.onloadedmetadata = () => {
       audio.currentTime = clipStart;
+      setAudioPlaybackMode('official');
       setIsPlayingOfficialAudio(true);
       setIsSpeakingStem(true);
       audio.play().catch(() => {
         stopOfficialAudio();
+        setAudioPlaybackMode('fallback');
         speakQuestion(media.audioText || '', repeatTimes);
       });
     };
@@ -926,7 +931,28 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
       } catch {}
     }
     setIsSpeakingStem(false);
+    setAudioPlaybackMode(null);
   }, [stopOfficialAudio]);
+
+  // Official recordings are split into small per-question files. Preload only the
+  // current and next item (current only on Save-Data/2G) so playback starts quickly
+  // without downloading an entire paper up front.
+  useEffect(() => {
+    if (phase !== 'exam' || typeof window === 'undefined' || typeof Audio === 'undefined') return;
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const constrained = Boolean(connection?.saveData || /(^|-)2g$/.test(connection?.effectiveType || ''));
+    const candidateIndexes = constrained ? [currentIndex] : [currentIndex, currentIndex + 1];
+
+    candidateIndexes.forEach((index) => {
+      const src = questions[index]?.media?.audioSrc;
+      if (!src || officialAudioPreloadRef.current.has(src)) return;
+      const preloadAudio = new Audio();
+      preloadAudio.preload = 'auto';
+      preloadAudio.src = src;
+      preloadAudio.load();
+      officialAudioPreloadRef.current.set(src, preloadAudio);
+    });
+  }, [phase, currentIndex, questions]);
 
   // 切換題目時停止上一題朗讀，若為一二年級且啟用自動朗讀則自動念出中文題目
   useEffect(() => {
@@ -3765,7 +3791,13 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   <span>{isPlayingOfficialAudio ? '⏹️ 停止官方原聲' : currentQ.media.audioSrc ? '🎧 播放官方原聲' : isDialogue(currentQ.media.audioText) ? '🎭 播放情境對話語音' : '🎧 播放聽力語音'}</span>
                 </button>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
-                  {currentQ.media.audioSrc ? '使用官方試題原始錄音；無法播放時才改用語音備援' : '可反覆點擊按鈕聆聽發音'}
+                  {currentQ.media.audioSrc
+                    ? audioPlaybackMode === 'fallback'
+                      ? '⚠️ 官方原聲載入失敗，已自動切換美式語音備援'
+                      : audioPlaybackMode === 'official'
+                        ? '✓ 正在播放官方試卷原始錄音'
+                        : '官方原聲已預載；僅在載入失敗時切換美式語音備援'
+                    : '可反覆點擊按鈕聆聽發音'}
                 </span>
               </div>
             )}
@@ -3778,17 +3810,20 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                 {currentQ.optionImages.map((imgSrc, optIdx) => {
                   const isChosen = selectedChoice === optIdx;
                   return (
-                    <button
+                    <div
                       key={optIdx}
-                      type="button"
-                      onClick={() => handleSelectOption(optIdx)}
-                      className={`p-3 sm:p-4 rounded-2xl border-2 text-center transition flex flex-col items-center justify-between gap-2 cursor-pointer ${
+                      className={`relative rounded-2xl border-2 text-center transition overflow-hidden ${
                         isChosen
                           ? 'border-indigo-600 bg-indigo-50/90 dark:bg-indigo-950/70 shadow-md ring-2 ring-indigo-400'
                           : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-300 hover:shadow-xs'
                       }`}
                     >
-                      <div className="flex items-center justify-between w-full">
+                      <button
+                        type="button"
+                        onClick={() => handleSelectOption(optIdx)}
+                        className="w-full h-full p-3 sm:p-4 text-center flex flex-col items-center justify-between gap-2 cursor-pointer"
+                      >
+                      <div className="flex items-center justify-between w-full pr-9">
                         <span
                           className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-black text-xs sm:text-sm shrink-0 ${
                             isChosen
@@ -3817,7 +3852,18 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">
                         {currentQ.options?.[optIdx] || `選項 (${CHOICE_LABELS[optIdx]})`}
                       </span>
-                    </button>
+                      </button>
+                      <button
+                        type="button"
+                        data-testid="option-image-zoom"
+                        onClick={() => openMaterial({ image: imgSrc, title: `第 ${currentQ.number || currentIndex + 1} 題選項 ${CHOICE_LABELS[optIdx]}` })}
+                        className="absolute top-2.5 right-2.5 z-10 p-2 rounded-xl bg-slate-900/80 hover:bg-indigo-700 text-white shadow-lg cursor-zoom-in"
+                        title={`放大選項 ${CHOICE_LABELS[optIdx]} 圖片`}
+                        aria-label={`放大選項 ${CHOICE_LABELS[optIdx]} 圖片`}
+                      >
+                        <Maximize2 size={15} />
+                      </button>
+                    </div>
                   );
                 })}
               </div>
@@ -4341,10 +4387,44 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
                 {currentReviewItem.q.passage && (
                   <div className="p-3 rounded-xl bg-indigo-50/70 dark:bg-slate-800/90 border border-indigo-200/80 dark:border-slate-700 text-xs sm:text-sm font-medium leading-relaxed whitespace-pre-line text-slate-800 dark:text-slate-200 mb-2">
-                    <div className="font-black text-indigo-700 dark:text-indigo-400 mb-1 flex items-center gap-1.5 text-xs">
-                      <BookOpen size={14} />
-                      <span>{currentReviewItem.q.passage.title || '【生活閱讀篇章】'}</span>
+                    <div className="font-black text-indigo-700 dark:text-indigo-400 mb-1.5 flex items-center justify-between gap-2 text-xs">
+                      <span className="flex items-center gap-1.5 min-w-0">
+                        <BookOpen size={14} className="shrink-0" />
+                        <span className="truncate">{currentReviewItem.q.passage.title || '【生活閱讀篇章】'}</span>
+                      </span>
+                      {(currentReviewItem.q.passage.image || currentReviewItem.q.passage.text) && (
+                        <button
+                          type="button"
+                          onClick={() => setZoomedMaterial({
+                            image: currentReviewItem.q.passage.image || null,
+                            title: currentReviewItem.q.passage.title || '共用題組材料',
+                            text: currentReviewItem.q.passage.text || '',
+                          })}
+                          className="shrink-0 px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-black flex items-center gap-1 cursor-zoom-in"
+                        >
+                          <Maximize2 size={12} /> 放大
+                        </button>
+                      )}
                     </div>
+                    {currentReviewItem.q.passage.image && (
+                      <button
+                        type="button"
+                        onClick={() => setZoomedMaterial({
+                          image: currentReviewItem.q.passage.image,
+                          title: currentReviewItem.q.passage.title || '共用題組材料',
+                          text: currentReviewItem.q.passage.text || '',
+                        })}
+                        className="w-full mb-2 p-1.5 rounded-xl bg-white dark:bg-slate-950 border border-indigo-100 dark:border-slate-700 cursor-zoom-in flex justify-center"
+                        title="點擊放大題組材料"
+                      >
+                        <img
+                          src={currentReviewItem.q.passage.image}
+                          alt={currentReviewItem.q.passage.title || '共用題組材料'}
+                          className="max-h-52 max-w-full object-contain rounded-lg"
+                          loading="lazy"
+                        />
+                      </button>
+                    )}
                     <div className="font-mono text-xs text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
                       {currentReviewItem.q.passage.text}
                     </div>
@@ -4357,12 +4437,22 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
 
                 {currentReviewItem.q.image && (
                   <div className="flex justify-center my-2">
-                    <img
-                      src={currentReviewItem.q.image}
-                      alt="題目插圖"
-                      className="max-h-48 sm:max-h-56 max-w-full w-auto object-contain rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm p-1.5"
-                      loading="lazy"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => setZoomedMaterial({ image: currentReviewItem.q.image, title: `第 ${currentReviewItem.idx + 1} 題圖片`, text: '' })}
+                      className="relative rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm p-1.5 cursor-zoom-in group"
+                      title="點擊放大圖片"
+                    >
+                      <img
+                        src={currentReviewItem.q.image}
+                        alt="題目插圖"
+                        className="max-h-48 sm:max-h-56 max-w-full w-auto object-contain rounded-lg group-hover:scale-[1.01] transition-transform"
+                        loading="lazy"
+                      />
+                      <span className="absolute bottom-2 right-2 px-2 py-1 rounded-lg bg-black/75 text-white text-[11px] font-black flex items-center gap-1 shadow">
+                        <Maximize2 size={12} /> 點擊放大
+                      </span>
+                    </button>
                   </div>
                 )}
 
@@ -4413,7 +4503,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                   return (
                     <div
                       key={oIdx}
-                      className={`px-3 py-2 rounded-xl border text-xs sm:text-sm font-bold flex items-center justify-between gap-2 ${
+                      className={`px-3 py-2 rounded-xl border text-xs sm:text-sm font-bold flex flex-col gap-2 ${
                         isAns
                           ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100'
                           : isPicked && !isAns
@@ -4421,19 +4511,43 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                             : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
                       }`}
                     >
-                      <span className="break-words min-w-0">
-                        ({CHOICE_LABELS[oIdx]}) {optText}
-                      </span>
-                      {isAns && (
-                        <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-300 shrink-0">
-                          ✓ 正解
-                        </span>
+                      {currentReviewItem.q.optionImages?.[oIdx] && (
+                        <button
+                          type="button"
+                          onClick={() => setZoomedMaterial({
+                            image: currentReviewItem.q.optionImages[oIdx],
+                            title: `第 ${currentReviewItem.idx + 1} 題選項 ${CHOICE_LABELS[oIdx]}`,
+                            text: '',
+                          })}
+                          className="relative w-full h-28 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 cursor-zoom-in group flex items-center justify-center"
+                          title={`放大選項 ${CHOICE_LABELS[oIdx]} 圖片`}
+                        >
+                          <img
+                            src={currentReviewItem.q.optionImages[oIdx]}
+                            alt={`選項 ${CHOICE_LABELS[oIdx]}`}
+                            className="max-w-full max-h-full object-contain group-hover:scale-[1.02] transition-transform"
+                            loading="lazy"
+                          />
+                          <span className="absolute bottom-1.5 right-1.5 p-1 rounded-md bg-black/75 text-white">
+                            <Maximize2 size={12} />
+                          </span>
+                        </button>
                       )}
-                      {isPicked && !isAns && (
-                        <span className="text-[11px] font-black text-rose-600 shrink-0">
-                          ✗ 你的作答
+                      <div className="w-full flex items-center justify-between gap-2">
+                        <span className="break-words min-w-0">
+                          ({CHOICE_LABELS[oIdx]}) {optText}
                         </span>
-                      )}
+                        {isAns && (
+                          <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-300 shrink-0">
+                            ✓ 正解
+                          </span>
+                        )}
+                        {isPicked && !isAns && (
+                          <span className="text-[11px] font-black text-rose-600 shrink-0">
+                            ✗ 你的作答
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -4471,6 +4585,60 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
           )}
         </div>
       </div>
+
+      {zoomedMaterial && (
+        <div
+          data-testid="review-image-zoom"
+          className="fixed inset-0 z-[90] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-5"
+          onClick={() => setZoomedMaterial(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={zoomedMaterial.title || '放大題目材料'}
+        >
+          <div
+            className="w-full max-w-6xl max-h-[94vh] rounded-2xl bg-white dark:bg-slate-900 border border-white/20 shadow-2xl overflow-hidden flex flex-col"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="shrink-0 px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3">
+              <div className="font-black text-slate-900 dark:text-white truncate">
+                {zoomedMaterial.title || '題目材料'}
+              </div>
+              <button
+                type="button"
+                onClick={() => setZoomedMaterial(null)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-rose-100 dark:bg-slate-800 dark:hover:bg-rose-950 text-slate-700 dark:text-slate-200"
+                aria-label="關閉放大圖片"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="min-h-0 overflow-auto p-2 sm:p-4 flex flex-col items-center gap-3 bg-slate-100 dark:bg-slate-950">
+              {zoomedMaterial.image && (
+                <img
+                  src={zoomedMaterial.image}
+                  alt={zoomedMaterial.title || '放大題目材料'}
+                  className="max-w-full max-h-[78vh] w-auto h-auto object-contain rounded-xl bg-white shadow-lg"
+                />
+              )}
+              {!zoomedMaterial.image && zoomedMaterial.text && (
+                <div className="w-full max-w-4xl p-5 sm:p-7 rounded-xl bg-white dark:bg-slate-900 whitespace-pre-line font-mono text-sm sm:text-base leading-relaxed text-slate-800 dark:text-slate-100">
+                  {zoomedMaterial.text}
+                </div>
+              )}
+              {zoomedMaterial.image && zoomedMaterial.text && (
+                <details className="w-full max-w-4xl rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                  <summary className="px-4 py-2.5 cursor-pointer font-bold text-sm text-indigo-700 dark:text-indigo-300">
+                    顯示無障礙文字版材料
+                  </summary>
+                  <div className="px-4 pb-4 whitespace-pre-line font-mono text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+                    {zoomedMaterial.text}
+                  </div>
+                </details>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

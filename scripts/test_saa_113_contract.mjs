@@ -60,11 +60,16 @@ for (const [gradeText, questions] of Object.entries(papers)) {
       assert.ok(q.media?.audioText?.trim(), `${q.id} must contain hidden audioText`);
       assert.ok(!q.question.includes(q.media.audioText), `${q.id} must not leak the transcript in the student stem`);
       assert.equal(q.media.audioSourceType, 'official', `${q.id} must prefer official source audio`);
-      assert.ok(q.media.audioSrc?.endsWith(`g${grade}-official.mp3`), `${q.id} official audio path mismatch`);
-      assert.ok(Number.isFinite(q.media.clipStart) && Number.isFinite(q.media.clipEnd), `${q.id} must define an official clip range`);
-      assert.ok(q.media.clipEnd > q.media.clipStart, `${q.id} official clip range is invalid`);
+      assert.equal(
+        q.media.audioSrc,
+        `/audio/saa/113/g${grade}/q${String(index + 1).padStart(2, '0')}.mp3`,
+        `${q.id} must use its own official per-question audio file`,
+      );
+      assert.equal(q.media.clipStart, undefined, `${q.id} must not depend on browser-side MP3 seeking`);
+      assert.equal(q.media.clipEnd, undefined, `${q.id} must not depend on browser-side MP3 seeking`);
       const audioPath = publicFile(q.media.audioSrc);
-      assert.ok(fs.existsSync(audioPath) && fs.statSync(audioPath).size > 1_000_000, `${q.id} official MP3 is missing`);
+      assert.ok(fs.existsSync(audioPath) && fs.statSync(audioPath).size > 50_000, `${q.id} official per-question MP3 is missing`);
+      assert.ok(fs.statSync(audioPath).size < 25 * 1024 * 1024, `${q.id} exceeds Cloudflare Pages' per-file limit`);
     }
     if (q.image) {
       const filePath = publicFile(q.image);
@@ -92,6 +97,28 @@ for (const [gradeText, questions] of Object.entries(papers)) {
     members.forEach((q) => assert.equal(JSON.stringify(q.passage), expectedPassage, `${q.id} must resolve the same shared material`));
   }
 }
+
+for (const grade of [4, 5, 6]) {
+  assert.ok(!fs.existsSync(path.resolve('public', 'audio', 'saa', '113', `g${grade}-official.mp3`)), `G${grade} legacy monolithic MP3 must not be deployed`);
+}
+
+const examViewSource = fs.readFileSync(path.resolve('src', 'games', 'exam', 'PureMcqExamView.jsx'), 'utf8');
+assert.match(examViewSource, /officialAudioPreloadRef/, 'exam must preload the current/next official clip');
+assert.match(examViewSource, /connection\?\.saveData/, 'audio preloading must respect Save-Data');
+assert.match(examViewSource, /audioPlaybackMode === 'fallback'/, 'official audio fallback state must remain explicit');
+assert.match(examViewSource, /data-testid="option-image-zoom"/, 'image options must expose a dedicated zoom control');
+assert.match(examViewSource, /data-testid="review-image-zoom"/, 'review images must keep zoom support');
+
+const oversizedPublicFiles = [];
+const scanPublicFiles = (dir) => {
+  fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => {
+    const filePath = path.join(dir, entry.name);
+    if (entry.isDirectory()) scanPublicFiles(filePath);
+    else if (entry.isFile() && fs.statSync(filePath).size >= 25 * 1024 * 1024) oversizedPublicFiles.push(filePath);
+  });
+};
+scanPublicFiles(path.resolve('public'));
+assert.deepEqual(oversizedPublicFiles, [], 'Cloudflare Pages assets must remain below the 25 MiB per-file limit');
 
 assert.equal(SAA_OFFICIAL_BANK.length, 315, 'official pool must contain 113–115 papers only');
 assert.equal(SAA_ORIGINAL_BANK.length, 0, 'no original items are approved yet');

@@ -25,9 +25,7 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 0,
     "media": {
       "audioText": "park",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 133.8,
-      "clipEnd": 154.5,
+      "audioSrc": "/audio/saa/113/g6/q01.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔單字為 park，故選 ①。"
@@ -58,9 +56,7 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 1,
     "media": {
       "audioText": "education",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 154.5,
-      "clipEnd": 178.5,
+      "audioSrc": "/audio/saa/113/g6/q02.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔單字為 education，正確拼字是選項 ②。"
@@ -91,9 +87,7 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 2,
     "media": {
       "audioText": "Tuesday",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 178.5,
-      "clipEnd": 199,
+      "audioSrc": "/audio/saa/113/g6/q03.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔念出 Tuesday，故選 ③。"
@@ -124,9 +118,7 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 0,
     "media": {
       "audioText": "glass",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 199,
-      "clipEnd": 219.2,
+      "audioSrc": "/audio/saa/113/g6/q04.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔單字為 glass，故選 ①。"
@@ -157,9 +149,7 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 0,
     "media": {
       "audioText": "seventy-six",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 219.2,
-      "clipEnd": 242.5,
+      "audioSrc": "/audio/saa/113/g6/q05.mp3",
       "audioSourceType": "official"
     },
     "explanation": "音檔數字為 seventy-six（76），故選 ①。"
@@ -191,9 +181,7 @@ export const SAA_113_G6_QUESTIONS = [
     "image": "/assets/exam/saa/113/g6_q6.webp",
     "media": {
       "audioText": "Open your book.",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 242.5,
-      "clipEnd": 260.2,
+      "audioSrc": "/audio/saa/113/g6/q06.mp3",
       "audioSourceType": "official"
     },
     "explanation": "Open your book. 表示打開書本，圖片 ① 相符。"
@@ -225,9 +213,7 @@ export const SAA_113_G6_QUESTIONS = [
     "image": "/assets/exam/saa/113/g6_q7.webp",
     "media": {
       "audioText": "A: What time do you get up on Sunday?\nB: I get up at nine thirty on Sunday.",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 260.2,
-      "clipEnd": 306,
+      "audioSrc": "/audio/saa/113/g6/q07.mp3",
       "audioSourceType": "official"
     },
     "explanation": "對話說星期日 9:30 起床，圖片 ④ 相符。"
@@ -259,9 +245,7 @@ export const SAA_113_G6_QUESTIONS = [
     "image": "/assets/exam/saa/113/g6_q8.webp",
     "media": {
       "audioText": "Look at the picture. Laura is my new friend. She is from Singapore.",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 306,
-      "clipEnd": 342.5,
+      "audioSrc": "/audio/saa/113/g6/q08.mp3",
       "audioSourceType": "official"
     },
     "explanation": "Laura 來自 Singapore，圖片 ② 是新加坡。"
@@ -293,9 +277,7 @@ export const SAA_113_G6_QUESTIONS = [
     "image": "/assets/exam/saa/113/g6_q9.webp",
     "media": {
       "audioText": "A: What would you like?\nB: I would like a glass of milk and two plates of spaghetti.",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 342.5,
-      "clipEnd": 387.4,
+      "audioSrc": "/audio/saa/113/g6/q09.mp3",
       "audioSourceType": "official"
     },
     "explanation": "點餐內容是 1 杯牛奶和 2 盤義大利麵，圖片 ② 相符。"
@@ -327,9 +309,7 @@ export const SAA_113_G6_QUESTIONS = [
     "image": "/assets/exam/saa/113/g6_q10.webp",
     "media": {
       "audioText": "Whose cap is it?",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 401.8,
-      "clipEnd": 429,
+      "audioSrc": "/audio/saa/113/g6/q10.mp3",
       "audioSourceType": "official"
     },
     "explanation": "問句詢問 cap（帽子）是誰的，圖片 ④ 是 Lily 的帽子。"
@@ -361,9 +341,7 @@ export const SAA_113_G6_QUESTIONS = [
     "image": "/assets/exam/saa/113/g6_q11.webp",
     "media": {
       "audioText": "I lost count of the days after being sick for many days. What day is today?",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 429,
-      "clipEnd": 464,
+      "audioSrc": "/audio/saa/113/g6/q11.mp3",
       "audioSourceType": "official"
     },
     "explanation": "問句詢問今天星期幾，日曆圖片 ④ 顯示 Thursday，故選 ④。"
@@ -394,9 +372,7 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 0,
     "media": {
       "audioText": "Where are you from?",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 464,
-      "clipEnd": 490,
+      "audioSrc": "/audio/saa/113/g6/q12.mp3",
       "audioSourceType": "official"
     },
     "explanation": "Where are you from? 詢問來自哪裡，I am from Taiwan. 最合適。"
@@ -427,9 +403,7 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 2,
     "media": {
       "audioText": "Watch out!",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 490,
-      "clipEnd": 513.5,
+      "audioSrc": "/audio/saa/113/g6/q13.mp3",
       "audioSourceType": "official"
     },
     "explanation": "Watch out! 是提醒小心，受提醒者以 Thank you! 回應最合適。"
@@ -460,9 +434,7 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 2,
     "media": {
       "audioText": "A: Knock, knock!\nB: Wow, Cindy! You dressed up as a vampire!\nCindy: Yes. Well, Peter, are you a ghost?\nPeter: No, I am a mummy.\nCindy: Oh, never mind. You look really cool.\nPeter: Thank you. Hey, let's practice the chant.\nCindy: Sure.\nBoth: Trick or treat, smell my feet, give me something good to eat!\nCindy: Amazing! Let's go.",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 513.5,
-      "clipEnd": 642,
+      "audioSrc": "/audio/saa/113/g6/q14.mp3",
       "audioSourceType": "official"
     },
     "explanation": "對話有變裝、Trick or treat，明確是 Halloween。",
@@ -494,9 +466,7 @@ export const SAA_113_G6_QUESTIONS = [
     "answer": 2,
     "media": {
       "audioText": "A: Knock, knock!\nB: Wow, Cindy! You dressed up as a vampire!\nCindy: Yes. Well, Peter, are you a ghost?\nPeter: No, I am a mummy.\nCindy: Oh, never mind. You look really cool.\nPeter: Thank you. Hey, let's practice the chant.\nCindy: Sure.\nBoth: Trick or treat, smell my feet, give me something good to eat!",
-      "audioSrc": "/audio/saa/113/g6-official.mp3",
-      "clipStart": 513.5,
-      "clipEnd": 642,
+      "audioSrc": "/audio/saa/113/g6/q15.mp3",
       "audioSourceType": "official"
     },
     "explanation": "對話明確說 Cindy dressed up as a vampire.，故選 ③。",
