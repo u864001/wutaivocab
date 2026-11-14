@@ -1,6 +1,6 @@
 /**
  * 霧臺國小三大英語檢定軌道：動態滾動精熟引擎 (Rolling Mastery Engine)
- * 規格見 docs/exam/THREE_EXAM_TRACKS_MASTERY_AND_LEADERBOARD_SPEC.md
+ * 規格見 HANDOVER.md 第三節（滾動精熟體系與四大天王排行榜）。
  *
  * 核心原則：
  * 1. 拒絕歷史懲罰：評量學生當前能力，非懲罰歷史錯誤。

@@ -1,6 +1,6 @@
 /**
  * 課本題庫檢定館：專業語言測驗組卷藍圖 (Exam Blueprint)
- * 規格見 docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md 第四節第 5 點。
+ * 規格見 HANDOVER.md 第三、四節（檢定館與題庫規範）。
  *
  * - 大題順序固定：字母 → 聽力 → 字彙 → 文法與用法 → 閱讀
  * - 大題內同題型相鄰、由易到難；題組 (groupId) 整組不拆散
@@ -413,7 +413,7 @@ export function assembleExamForm(pool, targetCount) {
 
 /**
  * 組出 Pre-A1 官方標準試卷 (Standard/Formal Exam)
- * 規格見 docs/exam/TME_PRE_A1_EXAM_SPEC_AND_GUIDE.md
+ * 規格見 HANDOVER.md 第三、四節（Pre-A1 官方模擬與組卷規格）
  * - 30 題標準正式卷：精確配置 15 題聽力 + 15 題閱讀/字彙，作答時間 35 分鐘
  * - 20 題模擬卷：精確配置 10 題聽力 + 10 題閱讀/字彙
  * - 嚴格排除專題特訓題型：W-SCRAMBLE (寫作句子重組) 與 S-READ (口說朗讀)

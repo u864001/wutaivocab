@@ -1,6 +1,6 @@
-# WutaiVocab 專案全域核心守則與模組化交接索引 (Always-On Agent Rules)
+# WutaiVocab 專案全域核心守則與唯一交接入口 (Always-On Agent Rules)
 
-本檔案由 Antigravity 於每次新對話啟動時**自動載入**。進行任何開發前，請嚴格遵守以下全域鐵律，並依本次任務涉及的遊戲模組**按需讀取（On-Demand Read）**對應的子規格書，切勿一次載入所有歷史文件以節省 Token。
+本檔案由 Antigravity 於每次新對話啟動時**自動載入**。進行任何開發前，請嚴格遵守以下全域鐵律，並依需要讀取唯一的現況交接總手冊 [`HANDOVER.md`](HANDOVER.md)。
 
 ---
 
@@ -16,7 +16,7 @@
      npm run build ; if ($LASTEXITCODE -eq 0) { node scripts/smoke_test.mjs }
      ```
    - **以 `$LASTEXITCODE` 判斷 build 成敗**（勿用 `$?`）：PowerShell 的 `$?` 在 stderr 被重導（如 `2>&1 | Select-Object`）時，會把 Vite 警告誤判為失敗而跳過 smoke test。另**勿同時啟動兩個 smoke test**（共用 port 4198，會互相干擾產生假失敗）。
-   - 必須 100% 通過 6 大階段：(0) 靜態契約檢查（所有 `soundEngine.xxx()` 必須存在於 `src/services/audio.js`，嚴禁 `if (queue.length === 0) return onBack()` 閃退寫法）、(1) 排行榜、(2) 大廳與教師台、(3) 鷹眼神探、(4) 口說評測、(5) 核心遊戲真實互動點擊/按鍵/開房模擬、(6) 14 款遊戲 × 4 身分全量矩陣。
+   - 必須 100% 通過 6 大階段：(0) 靜態契約檢查（所有 `soundEngine.xxx()` 必須存在於 `src/services/audio.js`，嚴禁 `if (queue.length === 0) return onBack()` 閃退寫法）、(1) 排行榜、(2) 大廳與教師台、(3) 鷹眼神探、(4) 口說評測、(5) 核心遊戲真實互動點擊/按鍵/開房模擬與檢定館 E2E、(6) 14 款遊戲 × 4 身分全量矩陣。
 3. **React 與狀態安全規範**：
    - 嚴禁在 `setState(prev => ...)` updater 函式內執行副作用（如 `soundEngine`、Supabase 廣播、`onBack()`）。
    - 所有遊戲讀取 `settings?.selectedUnits` 必須加空值防禦 `(settings?.selectedUnits || [])`。
@@ -25,29 +25,14 @@
    - 日常更新推送至 `origin`（`dev` 與 `main`）；除非 Mark 特別指示，避免日常頻繁推送 `vercel` 以免耗盡免費建置配額。
 5. **高階繪圖 API 額度透明化與詢問機制（嚴禁擅自降級隱瞞）**：
    - 當呼叫高階繪圖生成工具（`image-generator` / `gemini-3.1-flash-image`）遇到配額上限（HTTP 429 `RESOURCE_EXHAUSTED`）時，**必須第一時間主動回報 Mark**。
-   - 回報內容必須明確包含：
-     1. 額度耗盡的**發生時間**。
-     2. API 配額**精確預計重置時間（Reset Timestamp 及倒數分鐘數）**。
-     3. **嚴禁在未獲 Mark 授權同意前擅自退回使用低階/程序化 SVG 向量圖取代**。必須主動詢問：「是否等待額度重置後繼續產出高階圖檔？或同意改用其他替代繪圖方式繼續？」由 Mark 明確指示後方可執行。
+   - 回報內容必須明確包含發生時間、預計重置時間，且**嚴禁在未獲授權前擅自退回使用低階/程序化 SVG 向量圖取代**。
 
 ---
 
-## 二、 14 款遊戲與學習專區「按需讀取」規格書路由表 (Modular Spec Router)
+## 二、 唯一交接文件與創作用劇本索引
 
-> **重要原則**：為避免單一交接檔過長耗盡 Context Window，各遊戲的專屬玩法與防呆規範採**分館獨立存放**。當 Mark 指示修改某款遊戲時，**請先讀取對應的子規格檔**：
-
-| 任務領域 / 遊戲名稱 | 對應原始碼目錄 | 必讀專屬規格書路徑 (按需讀取) |
-| :--- | :--- | :--- |
-| **鷹眼神探 • 找不同** (`spotter`) | `src/games/spotter/` | [`docs/SPOTTER_DESIGN_AND_HANDOVER_MANUAL.md`](docs/SPOTTER_DESIGN_AND_HANDOVER_MANUAL.md) |
-| **多人連線對戰 & 3D 隕石防衛戰** (`battle`, `meteor`) | `src/games/battle/`, `src/games/meteor/` | [`docs/games/BATTLE_AND_METEOR_SPEC.md`](docs/games/BATTLE_AND_METEOR_SPEC.md) |
-| **叢林貪食蛇、打地鼠、極速滑卡** (`snake`, `mole`, `swipe`) | `src/games/snake/`, `mole/`, `swipe/` | [`docs/games/SNAKE_AND_ARCADE_SPEC.md`](docs/games/SNAKE_AND_ARCADE_SPEC.md) |
-| **課本題庫檢定館、經典選擇、拼字、手寫** (`mcq-exam`, `quiz`, `spelling`, `handwriting`) | `src/games/exam/`, `quiz/`, `spelling/`, `handwriting/` | [`docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md`](docs/games/QUIZ_SPELLING_HANDWRITING_SPEC.md) |
-| **Test My English Pre-A1 官方模擬與實戰備考指引** (`exam`, `tme-preA1`) | `src/games/exam/`, `src/data/exam/` | [`docs/exam/TME_PRE_A1_EXAM_SPEC_AND_GUIDE.md`](docs/exam/TME_PRE_A1_EXAM_SPEC_AND_GUIDE.md) |
-| **教育部 SAA 國小英語學力檢測官方截取與品質合約** (`saa`, `ministry-assessment`) | `src/data/exam/saa/`, `src/games/exam/` | [`docs/exam/SAA_OFFICIAL_EXAM_EXTRACTION_AND_SPEC_GUIDE.md`](docs/exam/SAA_OFFICIAL_EXAM_EXTRACTION_AND_SPEC_GUIDE.md) |
-| **三大英語檢定動態滾動精熟體系與四大天王排行榜** (`mastery`, `leaderboard`, `exam`) | `src/games/exam/`, `src/components/exam/`, `src/components/LeaderboardView.jsx` | [`docs/exam/THREE_EXAM_TRACKS_MASTERY_AND_LEADERBOARD_SPEC.md`](docs/exam/THREE_EXAM_TRACKS_MASTERY_AND_LEADERBOARD_SPEC.md) |
-| **密室逃脫、字母迷宮、星際記憶翻牌** (`escape`, `maze`, `memory`) | `src/games/escape/`, `maze/`, `memory/` | [`docs/games/ESCAPE_MAZE_MEMORY_SPEC.md`](docs/games/ESCAPE_MAZE_MEMORY_SPEC.md) |
-| **霧臺家園、聽說實驗室、自然發音、電子書** (`town`, `langlab`, `phonics`) | `src/games/town/`, `src/features/` | [`docs/games/TOWN_AND_LANGLAB_SPEC.md`](docs/games/TOWN_AND_LANGLAB_SPEC.md) |
-| **全域遊戲載入進度條 & 節慶神獸** (`GamePreloader`) | `src/components/ui/`, `src/data/` | [`docs/features/GAME_PRELOADER_SPEC.md`](docs/features/GAME_PRELOADER_SPEC.md) |
-| **課本題庫擴充 SOP 與七大命題鐵律** (`canonical-expansion`) | `src/data/`, `scripts/` | [`docs/exam/CANONICAL_EXPANSION_GUIDE.md`](docs/exam/CANONICAL_EXPANSION_GUIDE.md) |
-| **霧臺三大專案生態與雲端架構總覽** | `src/services/` | [`docs/ECOSYSTEM_OVERVIEW.md`](docs/ECOSYSTEM_OVERVIEW.md) |
-| **歷史完整里程碑紀錄備查** | 全專案 | [`HANDOVER.md`](HANDOVER.md) |
+- **唯一專案交接與開發規格總手冊**：[`HANDOVER.md`](HANDOVER.md)
+  - 涵蓋：全站 7 大主館與 14 款遊戲現況、歷次錯誤嘗試與避坑清單（Postmortems）、題庫擴充／SAA 截取／找不同出圖 SOP、現況待辦進度與常用驗證指令。
+- **非交接性質之微電影創作劇本（供影音創作參考）**：
+  - [`docs/MIA_AND_BEN_HALLOWEEN_SCRIPT.md`](docs/MIA_AND_BEN_HALLOWEEN_SCRIPT.md)
+  - [`docs/SNOWY_PEAK_BISTRO_SCRIPT_BIBLE.md`](docs/SNOWY_PEAK_BISTRO_SCRIPT_BIBLE.md)
