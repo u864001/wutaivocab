@@ -224,12 +224,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q8_c.webp",
       "/assets/exam/saa/114/options/g4_q8_d.webp"
     ],
+    "optionAltTexts": [
+      "$33：木瓜 10 元與橘子 23 元",
+      "$23：香蕉 10 元與橘子 13 元",
+      "$33：香蕉 13 元與橘子 20 元",
+      "$23：木瓜 10 元與橘子 13 元"
+    ],
     "question": "請聽對話，選出最相符的收據圖片：",
     "options": [
-      "$13: 香蕉與橘子",
-      "$23: 香蕉與橘子",
-      "$32: 蘋果與橘子",
-      "$23: 蘋果與香蕉"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 1,
     "media": {
@@ -259,12 +265,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q9_c.webp",
       "/assets/exam/saa/114/options/g4_q9_d.webp"
     ],
+    "optionAltTexts": [
+      "學生分組討論說話",
+      "老師在桌旁指導學生說話",
+      "老師在講台舉手請大家大聲說",
+      "學生趴睡老師拿書說話"
+    ],
     "question": "請聽句子，選出相符的情境插圖：",
     "options": [
-      "安靜請勿說話",
-      "請坐下",
-      "請大聲說話",
-      "請站起來"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "media": {
@@ -294,12 +306,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q10_c.webp",
       "/assets/exam/saa/114/options/g4_q10_d.webp"
     ],
+    "optionAltTexts": [
+      "筆在床底下",
+      "筆在書桌底下",
+      "筆在椅子底下",
+      "筆在書桌上面"
+    ],
     "question": "請聽對話，選出物品相符的位置圖：",
     "options": [
-      "筆在書桌上",
-      "筆在書桌下",
-      "尺在書桌下",
-      "書在椅子下"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 1,
     "media": {
@@ -329,12 +347,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q11_c.webp",
       "/assets/exam/saa/114/options/g4_q11_d.webp"
     ],
+    "optionAltTexts": [
+      "臥室床前，書包在箱子旁",
+      "臥室床前，書包在箱子內",
+      "客廳沙發前，書包在箱子旁",
+      "客廳沙發前，書包在箱子內"
+    ],
     "question": "請聽對話，選出書包與箱子相符的位置圖：",
     "options": [
-      "綠箱子在臥室",
-      "紅箱子在客廳",
-      "書包在廚房",
-      "綠箱子在客廳，書包在箱內"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 3,
     "media": {
@@ -364,12 +388,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q12_c.webp",
       "/assets/exam/saa/114/options/g4_q12_d.webp"
     ],
+    "optionAltTexts": [
+      "老師與公車司機",
+      "廚師與醫生",
+      "護士與公車司機",
+      "廚師與公車司機"
+    ],
     "question": "請聽對話，選出哥哥年齡與身分相符的圖：",
     "options": [
-      "哥哥 22 歲，是醫生與廚師",
-      "哥哥 12 歲，是學生",
-      "哥哥 20 歲，是廚師",
-      "哥哥 22 歲，既是廚師也是司機"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 3,
     "media": {
@@ -399,12 +429,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q13_c.webp",
       "/assets/exam/saa/114/options/g4_q13_d.webp"
     ],
+    "optionAltTexts": [
+      "近處機器人，遠處小貓",
+      "近處機器人，遠處風箏",
+      "近處風箏，遠處機器人",
+      "近處風箏，遠處籃球"
+    ],
     "question": "請聽對話，選出玩具位置相符的圖片：",
     "options": [
-      "近處風箏，遠處機器人",
-      "近處機器人，遠處風箏",
-      "近處洋娃娃，遠處風箏",
-      "近處機器人，遠處氣球"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 1,
     "media": {
@@ -434,12 +470,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q14_c.webp",
       "/assets/exam/saa/114/options/g4_q14_d.webp"
     ],
+    "optionAltTexts": [
+      "萬聖節南瓜與糖果",
+      "端午節粽子與香包",
+      "中秋節柚子與月餅",
+      "春節魚、紅包與春聯"
+    ],
     "question": "請聽敘述，選出節慶採買相符的圖：",
     "options": [
-      "端午節粽子與龍舟",
-      "萬聖節南瓜與糖果",
-      "中秋節柚子與月餅",
-      "聖誕節拐杖糖與聖誕樹"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "media": {
@@ -469,12 +511,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q15_c.webp",
       "/assets/exam/saa/114/options/g4_q15_d.webp"
     ],
+    "optionAltTexts": [
+      "萬聖節裝扮、雨傘與掃帚",
+      "感恩節火雞、楓葉與 21:00 時鐘",
+      "雨傘、聖誕樹、雪人與聖誕老人",
+      "雨傘、復活節彩蛋與兔子"
+    ],
     "question": "請聽對話，選出萬聖節相符的情境圖：",
     "options": [
-      "萬聖節裝扮、下雨帶傘、時鐘 9 點",
-      "晴天出門、時鐘 8 點",
-      "下雨沒帶傘、時鐘 9 點",
-      "室內吃糖果、時鐘 10 點"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 0,
     "media": {
@@ -612,12 +660,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q20_c.webp",
       "/assets/exam/saa/114/options/g4_q20_d.webp"
     ],
+    "optionAltTexts": [
+      "50（50 元硬幣）",
+      "25（兩個 10 元與一個 5 元硬幣）",
+      "15（一個 10 元與一個 5 元硬幣）",
+      "5（5 元硬幣）"
+    ],
     "question": "選出與英文單字「fifteen」相對應的數字：",
     "options": [
-      "50",
-      "5",
-      "15",
-      "12"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "explanation": "單字「fifteen」代表數字 15，圖 ③ 標示 15，故選 ③。"
@@ -779,12 +833,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q26_c.webp",
       "/assets/exam/saa/114/options/g4_q26_d.webp"
     ],
+    "optionAltTexts": [
+      "太陽下流汗想吃冰淇淋",
+      "雲朵下想吃漢堡薯條",
+      "太陽下想喝飲料",
+      "風吹下想喝瓶裝水"
+    ],
     "question": "It’s so hot today. I want some ice cream.",
     "options": [
-      "大太陽下流汗吃冰淇淋",
-      "下雪天堆雪人",
-      "下雨天吃熱麵",
-      "颳大風放風箏"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 0,
     "explanation": "句子表達今天好熱（so hot）、想吃冰淇淋（want some ice cream），圖 ① 完全相符，故選 ①。"
@@ -920,12 +980,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q31_c.webp",
       "/assets/exam/saa/114/options/g4_q31_d.webp"
     ],
+    "optionAltTexts": [
+      "晴天大太陽",
+      "烏雲下雨天",
+      "強風吹樹",
+      "下雪天與雪人"
+    ],
     "question": "How’s the weather in Taiwan?",
     "options": [
-      "晴天大太陽",
-      "寒冷下雨天",
-      "下雪天",
-      "颳大風"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 1,
     "explanation": "對話中 Andy 回答「It’s cold and rainy now.（臺灣現在又冷又下雨）」，選項 ② 下雨撐傘圖相符，故選 ②。"
@@ -988,12 +1054,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q33_c.webp",
       "/assets/exam/saa/114/options/g4_q33_d.webp"
     ],
+    "optionAltTexts": [
+      "Ken 睡覺、時鐘 7:30",
+      "Andy 吃飯、時鐘 12:30",
+      "Ken 睡覺、時鐘 11:30",
+      "Andy 吃飯、時鐘 8:30"
+    ],
     "question": "What time is it in Sydney?",
     "options": [
-      "9:00",
-      "6:30",
-      "8:30",
-      "9:30"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 3,
     "explanation": "文中 Ken 說「It’s nine thirty here in Sydney.（雪梨這裡現在是九點半）」，選項 ④ 時鐘指在 9:30，故選 ④。"
@@ -1056,12 +1128,18 @@ export const SAA_114_G4_QUESTIONS = [
       "/assets/exam/saa/114/options/g4_q35_c.webp",
       "/assets/exam/saa/114/options/g4_q35_d.webp"
     ],
+    "optionAltTexts": [
+      "陽台／庭院（戶外派對佈置）",
+      "廚房（流理台與派對彩旗）",
+      "臥室（床鋪與禮物盒）",
+      "客廳（沙發、茶几與氣球禮物）"
+    ],
     "question": "Let’s have the party in the __________.",
     "options": [
-      "臥室 bedroom",
-      "廚房 kitchen",
-      "浴室 bathroom",
-      "客廳 living room"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 3,
     "explanation": "短文最後爸爸提議「Let’s have the party in the living room.（我們在客廳辦派對吧）」，選項 ④ 客廳圖相符，故選 ④。"

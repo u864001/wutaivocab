@@ -79,12 +79,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q3_c.webp",
       "/assets/exam/saa/114/options/g6_q3_d.webp"
     ],
+    "optionAltTexts": [
+      "橋樑長 597 公尺",
+      "橋樑長 567 公尺",
+      "橋樑長 579 公尺",
+      "橋樑長 589 公尺"
+    ],
     "question": "請聽句子，選出橋樑長度相符的插圖：",
     "options": [
-      "569 公尺",
-      "597 公尺",
-      "579 公尺",
-      "759 公尺"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "media": {
@@ -114,12 +120,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q4_c.webp",
       "/assets/exam/saa/114/options/g6_q4_d.webp"
     ],
+    "optionAltTexts": [
+      "醫生看診",
+      "老師上課",
+      "裁縫師縫衣",
+      "水手在海上航行"
+    ],
     "question": "請聽句子，選出動作相符的插圖：",
     "options": [
-      "在陸地上跑步",
-      "在天空中飛行",
-      "在廚房做菜",
-      "水手在海上航行 The sailor sails the sea"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 3,
     "media": {
@@ -149,12 +161,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q5_c.webp",
       "/assets/exam/saa/114/options/g6_q5_d.webp"
     ],
+    "optionAltTexts": [
+      "高個子爸爸與矮個子男孩",
+      "兩個矮個子小孩",
+      "兩個高個子大人",
+      "矮個子男孩與高個子媽媽"
+    ],
     "question": "請聽句子，選出家人外觀特徵相符的圖：",
     "options": [
-      "父親身材高大",
-      "母親身材瘦長",
-      "父親身材矮小 short",
-      "弟弟正在看書"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "media": {
@@ -184,12 +202,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q6_c.webp",
       "/assets/exam/saa/114/options/g6_q6_d.webp"
     ],
+    "optionAltTexts": [
+      "爬梯摘蘋果",
+      "家人看煙火",
+      "分享玩偶禮物",
+      "安撫哭泣的小女孩"
+    ],
     "question": "請聽句子，選出相符的情境插圖：",
     "options": [
-      "生氣怒吼",
-      "哭泣難過",
-      "驚慌失措",
-      "冷靜下來提供協助 Calm down. I can help you."
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 3,
     "media": {
@@ -219,12 +243,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q7_c.webp",
       "/assets/exam/saa/114/options/g6_q7_d.webp"
     ],
+    "optionAltTexts": [
+      "山上有兩隻大熊",
+      "樹林裡有兩隻貓頭鷹",
+      "河邊有兩隻螃蟹",
+      "河邊有兩隻烏龜"
+    ],
     "question": "請聽句子，選出警告事項相符的圖：",
     "options": [
-      "小心山上有大熊 big bears in the mountains",
-      "小心湖裡有鱷魚",
-      "小心森林有野狼",
-      "小心樹上有猴子"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 0,
     "media": {
@@ -254,12 +284,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q8_c.webp",
       "/assets/exam/saa/114/options/g6_q8_d.webp"
     ],
+    "optionAltTexts": [
+      "晴天微風散步",
+      "晴天有風買放風箏",
+      "打雷下雨撐傘",
+      "打雷下雨穿雨衣"
+    ],
     "question": "請聽對話，選出天氣與活動相符的圖：",
     "options": [
-      "下雨天買雨傘",
-      "晴天颳風買風箏 sunny and windy, buy a kite",
-      "下雪天堆雪人",
-      "陰天在室內看電視"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 1,
     "media": {
@@ -289,12 +325,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q9_c.webp",
       "/assets/exam/saa/114/options/g6_q9_d.webp"
     ],
+    "optionAltTexts": [
+      "埃及金字塔",
+      "美國自由女神像",
+      "義大利比薩斜塔",
+      "新加坡魚尾獅"
+    ],
     "question": "請聽敘述，選出假期相符的情境圖：",
     "options": [
-      "在英國參觀大笨鐘",
-      "在美國度過暑假 goes to the USA for summer vacation",
-      "在日本看富士山",
-      "在澳洲看袋鼠"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 1,
     "media": {
@@ -324,12 +366,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q10_c.webp",
       "/assets/exam/saa/114/options/g6_q10_d.webp"
     ],
+    "optionAltTexts": [
+      "腿部疼痛",
+      "牙痛或臉頰痛",
+      "腳踝或足部疼痛",
+      "手臂受傷吊三角巾"
+    ],
     "question": "請聽對話，選出病痛部位相符的插圖：",
     "options": [
-      "腿部疼痛 My leg hurts",
-      "手臂疼痛",
-      "頭痛發燒",
-      "喉嚨痛"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 0,
     "media": {
@@ -504,12 +552,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q16_c.webp",
       "/assets/exam/saa/114/options/g6_q16_d.webp"
     ],
+    "optionAltTexts": [
+      "書包在紙箱裡",
+      "書包在書桌底下",
+      "書包在椅子旁邊",
+      "書包在桌子上"
+    ],
     "question": "My bag is under the desk.",
     "options": [
-      "書包在桌子上",
-      "書包在桌子下 under the desk",
-      "書包在椅子旁",
-      "書包在床上"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 1,
     "explanation": "句子表達書包在書桌下方（under the desk），圖 ② 書包放置在書桌下完全相符，故選 ②。"
@@ -536,12 +590,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q17_c.webp",
       "/assets/exam/saa/114/options/g6_q17_d.webp"
     ],
+    "optionAltTexts": [
+      "圖書館在學校旁邊",
+      "圖書館在銀行旁邊",
+      "圖書館在公車站旁邊",
+      "圖書館在醫院旁邊"
+    ],
     "question": "The library is next to the bus station.",
     "options": [
-      "圖書館在郵局對面",
-      "圖書館在公園旁邊",
-      "圖書館緊鄰公車站 next to the bus station",
-      "圖書館在學校後面"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "explanation": "句子敘述「The library is next to the bus station.（圖書館在公車站旁邊）」，圖 ③ 圖書館與公車站相鄰相符，故選 ③。"
@@ -806,12 +866,18 @@ export const SAA_114_G6_QUESTIONS = [
       "/assets/exam/saa/114/options/g6_q27_c.webp",
       "/assets/exam/saa/114/options/g6_q27_d.webp"
     ],
+    "optionAltTexts": [
+      "麵條、冰淇淋與果汁",
+      "麵條、蛋糕與柳橙汁",
+      "麵條、冰淇淋與爆米花",
+      "麵條、濃湯與果汁"
+    ],
     "question": "A: Do you want some noodles?\nB: Yes, I do. I want a cake and some orange juice, too.",
     "options": [
-      "披薩、熱狗與可樂",
-      "麵條、蛋糕與柳橙汁",
-      "漢堡、三明治與牛奶",
-      "米飯、魚與水"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 1,
     "explanation": "對話要求吃麵（noodles）、蛋糕（cake）與柳橙汁（orange juice），圖 ② 食物組合完全吻合，故選 ②。"

@@ -702,14 +702,17 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             ...q,
             options: [...q.options],
             optionImages: q.optionImages ? [...q.optionImages] : undefined,
+            optionAltTexts: q.optionAltTexts ? [...q.optionAltTexts] : undefined,
             answer: q.answer
           };
         }
 
         const hasOptionImages = Array.isArray(q.optionImages) && q.optionImages.length === q.options.length;
+        const hasOptionAltTexts = Array.isArray(q.optionAltTexts) && q.optionAltTexts.length === q.options.length;
         const combined = q.options.map((text, idx) => ({
           text,
           img: hasOptionImages ? q.optionImages[idx] : null,
+          alt: hasOptionAltTexts ? q.optionAltTexts[idx] : null,
           isCorrect: idx === q.answer
         }));
 
@@ -747,6 +750,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
             return c.text;
           }),
           optionImages: hasOptionImages ? workingSet.map((c) => c.img) : q.optionImages,
+          optionAltTexts: hasOptionAltTexts ? workingSet.map((c) => c.alt) : q.optionAltTexts,
           answer: workingSet.findIndex((c) => c.isCorrect)
         };
       });
@@ -3769,7 +3773,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       <div className="w-full h-24 sm:h-32 flex items-center justify-center p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
                         <img
                           src={imgSrc}
-                          alt={`選項 ${CHOICE_LABELS[optIdx]}`}
+                          alt={currentQ.optionAltTexts?.[optIdx] || `選項 ${CHOICE_LABELS[optIdx]}`}
                           className="max-h-full max-w-full object-contain"
                           draggable={false}
                         />
@@ -4464,7 +4468,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                         >
                           <img
                             src={currentReviewItem.q.optionImages[oIdx]}
-                            alt={`選項 ${CHOICE_LABELS[oIdx]}`}
+                            alt={currentReviewItem.q.optionAltTexts?.[oIdx] || `選項 ${CHOICE_LABELS[oIdx]}`}
                             className="max-w-full max-h-full object-contain group-hover:scale-[1.02] transition-transform"
                             loading="lazy"
                           />
@@ -4475,7 +4479,7 @@ export function PureMcqExamView({ settings, onBack, onComplete }) {
                       )}
                       <div className="w-full flex items-center justify-between gap-2">
                         <span className="break-words min-w-0">
-                          ({CHOICE_LABELS[oIdx]}) {optText}
+                          ({CHOICE_LABELS[oIdx]}) {currentReviewItem.q.optionAltTexts?.[oIdx] || (optText === `(${CHOICE_LABELS[oIdx]})` ? '' : optText)}
                         </span>
                         {isAns && (
                           <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-300 shrink-0">

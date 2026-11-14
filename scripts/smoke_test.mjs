@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -409,8 +409,15 @@ async function run() {
       }
     }
   }
+  const saa114Audit = spawnSync(process.execPath, ['scripts/test_saa_114_contract.mjs'], { encoding: 'utf8' });
+  if (saa114Audit.status !== 0) {
+    failures.push({
+      target: 'Static Contract: SAA 114 Contract & Sharp Pixel Gate',
+      output: (saa114Audit.stderr || saa114Audit.stdout || '').slice(-800)
+    });
+  }
   if (failures.length === 0) {
-    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks, ${HERE_WE_GO_MCQ_BANK.length} MCQs & SAA 113–115 [315 official questions, 114 calibrated] verified)`);
+    console.log(`  ✓ Static Contract Gate passed (soundEngine, lifecycle hooks, ${HERE_WE_GO_MCQ_BANK.length} MCQs & SAA 113–115 [315 official questions, 114 Sharp-verified] verified)`);
   }
 
   const waitForAppReady = async (maxAttempts = 40) => {
@@ -1142,6 +1149,138 @@ async function run() {
     failures.push({ target: 'SAA 113 shared material, zoom & official audio', details: saa113GroupCheck, exceptions: client.exceptions });
   } else {
     console.log('  ✓ SAA 113 G6: official audio, desktop two-column group material, cross-question persistence & image zoom verified');
+  }
+
+  // 5D-6. 114 年 SAA G4 Q20、G4 Q35、G5 Q15：獨立純圖選項卡、(A)-(D) 無洩漏文字、optionAltTexts 與放大視窗 E2E
+  client.exceptions = [];
+  await client.send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
+  await new Promise(r => setTimeout(r, 800));
+  const saa114G4Check = await client.evaluate(`
+    (async () => {
+      const buttons = () => Array.from(document.querySelectorAll('button'));
+      const byText = (label) => buttons().find(b => (b.innerText || '').includes(label));
+      const click = async (label, wait = 180) => {
+        const button = byText(label);
+        if (!button) return false;
+        button.click();
+        await new Promise(r => setTimeout(r, wait));
+        return true;
+      };
+      const waitImagesLoaded = async (prefix) => {
+        for (let attempt = 0; attempt < 20; attempt++) {
+          const imgs = Array.from(document.querySelectorAll('img[src*="' + prefix + '"]'));
+          if (imgs.length === 4 && imgs.every(img => img.complete && img.naturalWidth > 0)) {
+            return imgs;
+          }
+          await new Promise(r => setTimeout(r, 120));
+        }
+        return Array.from(document.querySelectorAll('img[src*="' + prefix + '"]'));
+      };
+
+      if (!await click('學力檢測練習')) return { ok: false, reason: 'missing SAA entry' };
+      await click('四年級');
+      await click('官方考古題');
+      await click('114 年');
+      if (!await click('開始114 年官方卷', 450)) return { ok: false, reason: 'missing 114 G4 start' };
+      await click('開始作答', 450);
+
+      // Jump to G4 Q20
+      const q20Btn = buttons().find(b => (b.innerText || '').trim() === '20');
+      if (!q20Btn) return { ok: false, reason: 'missing G4 Q20 nav' };
+      q20Btn.click();
+      await new Promise(r => setTimeout(r, 250));
+      const q20Imgs = await waitImagesLoaded('g4_q20_');
+      const q20Alts = q20Imgs.map(img => img.getAttribute('alt') || '');
+      const q20AltOk = ['50', '25', '15', '5'].every((n, i) => (q20Alts[i] || '').includes(n));
+      const q20Loaded = q20Imgs.length === 4 && q20Imgs.every(img => img.complete && img.naturalWidth > 0);
+      const q20ZoomBtns = Array.from(document.querySelectorAll('[data-testid="option-image-zoom"]'));
+      q20ZoomBtns[0]?.click();
+      await new Promise(r => setTimeout(r, 160));
+      const q20ZoomOk = !!document.querySelector('[data-testid="exam-image-zoom"] img[src*="g4_q20_a.webp"]');
+      document.querySelector('[data-testid="exam-image-zoom"] button[aria-label="關閉放大圖片"]')?.click();
+      await new Promise(r => setTimeout(r, 120));
+
+      // Jump to G4 Q35
+      const q35Btn = buttons().find(b => (b.innerText || '').trim() === '35');
+      if (!q35Btn) return { ok: false, reason: 'missing G4 Q35 nav' };
+      q35Btn.click();
+      await new Promise(r => setTimeout(r, 250));
+      const q35GroupVisible = (document.body.innerText || '').includes('Surprise Party');
+      const q35Imgs = await waitImagesLoaded('g4_q35_');
+      const q35Loaded = q35Imgs.length === 4 && q35Imgs.every(img => img.complete && img.naturalWidth > 0);
+      const q35AltOk = q35Imgs.every(img => (img.getAttribute('alt') || '').trim().length > 2);
+      const q35ZoomBtns = Array.from(document.querySelectorAll('[data-testid="option-image-zoom"]'));
+      q35ZoomBtns[3]?.click();
+      await new Promise(r => setTimeout(r, 160));
+      const q35ZoomOk = !!document.querySelector('[data-testid="exam-image-zoom"] img[src*="g4_q35_d.webp"]');
+      document.querySelector('[data-testid="exam-image-zoom"] button[aria-label="關閉放大圖片"]')?.click();
+
+      return {
+        ok: q20Loaded && q20AltOk && q20ZoomOk && q35GroupVisible && q35Loaded && q35AltOk && q35ZoomOk,
+        q20Loaded,
+        q20AltOk,
+        q20ZoomOk,
+        q35GroupVisible,
+        q35Loaded,
+        q35AltOk,
+        q35ZoomOk
+      };
+    })()
+  `);
+
+  await client.send('Page.navigate', { url: `${BASE_URL}/?view=mcq-exam` });
+  await new Promise(r => setTimeout(r, 800));
+  const saa114G5Check = await client.evaluate(`
+    (async () => {
+      const buttons = () => Array.from(document.querySelectorAll('button'));
+      const byText = (label) => buttons().find(b => (b.innerText || '').includes(label));
+      const click = async (label, wait = 180) => {
+        const button = byText(label);
+        if (!button) return false;
+        button.click();
+        await new Promise(r => setTimeout(r, wait));
+        return true;
+      };
+      const waitImagesLoaded = async (prefix) => {
+        for (let attempt = 0; attempt < 20; attempt++) {
+          const imgs = Array.from(document.querySelectorAll('img[src*="' + prefix + '"]'));
+          if (imgs.length === 4 && imgs.every(img => img.complete && img.naturalWidth > 0)) {
+            return imgs;
+          }
+          await new Promise(r => setTimeout(r, 120));
+        }
+        return Array.from(document.querySelectorAll('img[src*="' + prefix + '"]'));
+      };
+
+      if (!await click('學力檢測練習')) return { ok: false, reason: 'missing SAA entry' };
+      await click('五年級');
+      await click('官方考古題');
+      await click('114 年');
+      if (!await click('開始114 年官方卷', 450)) return { ok: false, reason: 'missing 114 G5 start' };
+      await click('開始作答', 450);
+
+      const q15Btn = buttons().find(b => (b.innerText || '').trim() === '15');
+      if (!q15Btn) return { ok: false, reason: 'missing G5 Q15 nav' };
+      q15Btn.click();
+      await new Promise(r => setTimeout(r, 250));
+      const q15Imgs = await waitImagesLoaded('g5_q15_');
+      const q15Loaded = q15Imgs.length === 4 && q15Imgs.every(img => img.complete && img.naturalWidth > 0);
+      const q15AltOk = q15Imgs.every(img => (img.getAttribute('alt') || '').trim().length > 2);
+      const q15ZoomBtns = Array.from(document.querySelectorAll('[data-testid="option-image-zoom"]'));
+      q15ZoomBtns[2]?.click();
+      await new Promise(r => setTimeout(r, 160));
+      const q15ZoomOk = !!document.querySelector('[data-testid="exam-image-zoom"] img[src*="g5_q15_c.webp"]');
+      document.querySelector('[data-testid="exam-image-zoom"] button[aria-label="關閉放大圖片"]')?.click();
+
+      return { ok: q15Loaded && q15AltOk && q15ZoomOk, q15Loaded, q15AltOk, q15ZoomOk };
+    })()
+  `);
+  await client.send('Emulation.clearDeviceMetricsOverride', {});
+  if (!saa114G4Check?.ok || !saa114G5Check?.ok || client.exceptions.length > 0) {
+    failures.push({ target: 'SAA 114 G4 Q20/Q35 & G5 Q15 Option Cards & Zoom E2E', details: { saa114G4Check, saa114G5Check }, exceptions: client.exceptions });
+  } else {
+    console.log('  ✓ SAA 114 G4 Q20, G4 Q35 & G5 Q15: pure 4-card option images, optionAltTexts & zoom modal verified');
   }
 
   // 5E. 課本題庫檢定館 (mcq-exam) 一頁式免捲動選範圍 -> 開始檢定 -> 選答案 -> 下一題 深度驗證

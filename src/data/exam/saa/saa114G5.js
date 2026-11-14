@@ -79,12 +79,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q3_c.webp",
       "/assets/exam/saa/114/options/g5_q3_d.webp"
     ],
+    "optionAltTexts": [
+      "熱咖啡",
+      "瓶裝飲料與紙杯",
+      "檸檬汁",
+      "珍珠奶茶"
+    ],
     "question": "請聽語音，選出相符的飲品插圖：",
     "options": [
-      "果汁/橘子汁",
-      "咖啡/熱飲",
-      "水壺/水",
-      "珍珠奶茶 bubble tea"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 3,
     "media": {
@@ -114,12 +120,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q4_c.webp",
       "/assets/exam/saa/114/options/g5_q4_d.webp"
     ],
+    "optionAltTexts": [
+      "太陽眼鏡",
+      "玻璃水杯",
+      "雨傘",
+      "太陽"
+    ],
     "question": "請聽語音，選出相符的配件插圖：",
     "options": [
-      "太陽眼鏡 sunglasses",
-      "普通眼鏡 glasses",
-      "手錶 watch",
-      "帽子 cap"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 0,
     "media": {
@@ -178,12 +190,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q6_c.webp",
       "/assets/exam/saa/114/options/g5_q6_d.webp"
     ],
-    "question": "請聽句子，選出相符的星期與天氣圖：",
-    "options": [
-      "週一晴天",
-      "週三多雲",
+    "optionAltTexts": [
+      "週二晴時多雲",
+      "週三多雲時晴",
       "週四下雨天",
       "週五下雪天"
+    ],
+    "question": "請聽句子，選出相符的星期與天氣圖：",
+    "options": [
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "media": {
@@ -213,12 +231,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q7_c.webp",
       "/assets/exam/saa/114/options/g5_q7_d.webp"
     ],
+    "optionAltTexts": [
+      "打開窗戶",
+      "開冷氣",
+      "伸手開電燈",
+      "打開門"
+    ],
     "question": "請聽句子，選出動作相符的插圖：",
     "options": [
-      "關燈",
-      "開窗",
-      "開燈 Turn on the light",
-      "關門"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "media": {
@@ -277,12 +301,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q9_c.webp",
       "/assets/exam/saa/114/options/g5_q9_d.webp"
     ],
+    "optionAltTexts": [
+      "吃團圓飯",
+      "母親節擁抱媽媽與卡片",
+      "復活節尋找彩蛋",
+      "中秋節賞月吃柚子月餅"
+    ],
     "question": "請聽對話，選出節慶活動相符的插圖：",
     "options": [
-      "端午划龍舟",
-      "中秋節烤肉吃月餅",
-      "復活節彩蛋尋寶與去教堂",
-      "聖誕節交換禮物"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "media": {
@@ -312,12 +342,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q10_c.webp",
       "/assets/exam/saa/114/options/g5_q10_d.webp"
     ],
+    "optionAltTexts": [
+      "早上 6:30 起床",
+      "早上 7:30 到校上學",
+      "晚上 6:30 吃晚餐",
+      "晚上 8:00 看書"
+    ],
     "question": "請聽句子，選出作息時間相符的圖：",
     "options": [
-      "早上 6:30 起床",
-      "早上 7:30 吃早餐",
-      "晚上 9:30 睡覺",
-      "下午 4:30 放學"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 0,
     "media": {
@@ -347,12 +383,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q11_c.webp",
       "/assets/exam/saa/114/options/g5_q11_d.webp"
     ],
+    "optionAltTexts": [
+      "3 歲白色兔子 Ruby",
+      "1 歲小貓 Nina",
+      "2 歲小狗 Tommy",
+      "2 歲綠色青蛙 Freddy"
+    ],
     "question": "請聽句子，選出寵物外觀與年齡相符的圖：",
     "options": [
-      "白色小狗",
-      "黑色貓咪",
-      "黃色小鴨",
-      "綠色寵物 2 歲"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 3,
     "media": {
@@ -411,12 +453,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q13_c.webp",
       "/assets/exam/saa/114/options/g5_q13_d.webp"
     ],
+    "optionAltTexts": [
+      "蔬果攤／生鮮超市",
+      "警察局與警車",
+      "教室上課",
+      "銀行"
+    ],
     "question": "請聽廣播，選出商店性質相符的圖：",
     "options": [
-      "超級市場 a supermarket",
-      "服飾店 a clothing store",
-      "書店 a bookstore",
-      "醫院 a hospital"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 0,
     "media": {
@@ -451,12 +499,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q14_c.webp",
       "/assets/exam/saa/114/options/g5_q14_d.webp"
     ],
+    "optionAltTexts": [
+      "車次 125 台北至高雄",
+      "車次 5678 高雄至台北",
+      "車次 5678 高雄至板橋",
+      "車次 7856 高雄至台中"
+    ],
     "question": "Andy’s train is going to Taipei. Which is Andy’s ticket?",
     "options": [
-      "車次 1234",
-      "車次 5678 高雄至台北",
-      "車次 5678 台中至板橋",
-      "車次 8765"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 1,
     "media": {
@@ -491,12 +545,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q15_c.webp",
       "/assets/exam/saa/114/options/g5_q15_d.webp"
     ],
+    "optionAltTexts": [
+      "晴時多雲（太陽與白雲）",
+      "多雲陰天（兩朵白雲）",
+      "下雨天（烏雲下雨）",
+      "颳風天（雲朵吹風）"
+    ],
     "question": "It’s 4:40. Andy is in Taipei now. What does Andy see?",
     "options": [
-      "大太陽晴天",
-      "颳大風",
-      "下雨天 rainy",
-      "下雪天"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "media": {
@@ -579,12 +639,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q18_c.webp",
       "/assets/exam/saa/114/options/g5_q18_d.webp"
     ],
+    "optionAltTexts": [
+      "拍拍手",
+      "摸肩膀",
+      "摸鼻子",
+      "摸頭"
+    ],
     "question": "Touch your nose.",
     "options": [
-      "摸耳朵",
-      "摸眼睛",
-      "摸鼻子 Touch your nose",
-      "摸嘴巴"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 2,
     "explanation": "指令「Touch your nose.」意思是觸摸鼻子，圖 ③ 人物手指指向鼻子，故選 ③。"
@@ -773,12 +839,18 @@ export const SAA_114_G5_QUESTIONS = [
       "/assets/exam/saa/114/options/g5_q25_c.webp",
       "/assets/exam/saa/114/options/g5_q25_d.webp"
     ],
+    "optionAltTexts": [
+      "穿毛衣、圍巾與長褲",
+      "穿長袖上衣與長褲",
+      "穿外套與短裙",
+      "穿連身洋裝與圍圍巾"
+    ],
     "question": "She is wearing a dress and a scarf.",
     "options": [
-      "穿 T 恤與短褲",
-      "穿襯衫與長褲",
-      "穿毛衣與牛仔褲",
-      "穿洋裝且圍圍巾 a dress and a scarf"
+      "(A)",
+      "(B)",
+      "(C)",
+      "(D)"
     ],
     "answer": 3,
     "explanation": "句子敘述女孩穿著連身洋裝（dress）且圍著圍巾（scarf），圖 ④ 插圖相符，故選 ④。"
